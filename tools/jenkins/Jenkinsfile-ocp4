@@ -15,7 +15,7 @@ pipeline{
     REPO_NAME = 'educ-grad-admin'
     TESTS_REPO_NAME = ''
     OWNER = 'bcgov'
-    JOB_NAME = 'master'
+    JOB_NAME = 'Docker-build-Changes'
     TAG = 'latest'
     TARGET_ENV = 'dev'
     TARGET_ENVIRONMENT = "${NAMESPACE}-${TARGET_ENV}"
@@ -23,8 +23,8 @@ pipeline{
     APP_NAME = 'grad-admin'
     APP_DOMAIN = 'apps.silver.devops.gov.bc.ca'
 
-    SOURCE_REPO_RAW = 'https://github.com/${OWNER}/${REPO_NAME}/master'
-    SOURCE_REPO_REF = 'master'
+    SOURCE_REPO_RAW = 'https://github.com/${OWNER}/${REPO_NAME}/Docker-build-Changes'
+    SOURCE_REPO_REF = 'Docker-build-Changes'
     SOURCE_REPO_URL = 'https://github.com/${OWNER}/${REPO_NAME}.git'
 
     TOOLS_HOST_ROUTE = "${APP_NAME}-${TOOLS}.${APP_DOMAIN}"
