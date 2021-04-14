@@ -10,7 +10,6 @@ export default {
   },
   editGraduationStatus(pen, token, json) {
     const headers = { Accept: 'application/json','Content-Type': 'application/json',"Access-Control-Allow-Origin": "*",'Authorization': 'Bearer '+ token }
-    console.log('Post data: ' + json);
     return apiClient.post('/api/v1/gradstatus/gradstudent/pen/' + pen, json, { headers });
   }
   

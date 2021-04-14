@@ -69,7 +69,7 @@ export default {
         this.graduationProgramRules = response.data;
       })
       .catch((error) => {
-         //eslint-disable-next-line no-unused-vars
+         //eslint-disable-next-line
         console.log('There was an error:' + error.response);
       });
   },

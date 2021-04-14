@@ -518,7 +518,6 @@
             this.updateStatus = response.data;
             this.studentGradStatus.program = this.editedGradStatus.program;
             this.studentGradStatus.gpa = this.editedGradStatus.gpa;
-            console.log('Update status: ' + this.updateStatus);
           }).catch((error) => {
           // eslint-disable-next-line
           console.log('There was an error:' + error.response);
