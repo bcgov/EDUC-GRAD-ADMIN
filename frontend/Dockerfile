@@ -3,6 +3,7 @@ FROM docker-remote.artifacts.developer.gov.bc.ca/node:lts-alpine
 WORKDIR /opt/app-root/src
 
 COPY package*.json ./
+RUN apk --no-cache add git 
 RUN npm ci --cache .npm  --prefer-offline --no-audit
 # --no-optional --production
 
