@@ -47,7 +47,7 @@ objects:
         memory: 8Gi
     runPolicy: SerialLatestOnly
     source:
-      contextDir: frontend
+      contextDir: tools
       git:
         ref: "${SOURCE_REPO_REF}"
         uri: "${SOURCE_REPO_URL}"
