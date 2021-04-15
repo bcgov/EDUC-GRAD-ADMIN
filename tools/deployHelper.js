@@ -1,1 +1,0 @@
-echo "Loading deployment helpers"
