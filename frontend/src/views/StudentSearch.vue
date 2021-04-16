@@ -272,8 +272,6 @@ export default {
     };
   },
   created() {
-
-     console.log("API STUDENT" + process.env.STUDENTS_API_HOST)
   },
   // beforeRouteLeave(to, from, next) {
   //   next(this.loadStudent(this.selectedPen));
