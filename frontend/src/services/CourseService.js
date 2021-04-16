@@ -1,6 +1,6 @@
 import axios from 'axios'
   const apiClient = axios.create({
-  baseURL: process.env.VUE_APP_COURSE_API_HOST,
+  baseURL: process.env.COURSE_API_HOST,
   //withCredentials: false,
 
 })
