@@ -3,6 +3,7 @@
 
     cors /* https://gradstudent-api-77c02f-dev.apps.silver.devops.gov.bc.ca
     header / {
+        Access-Control-Allow-Origin *
         X-Frame-Options "SAMEORIGIN"
         X-XSS-Protection "1;mode=block"
         Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate"
