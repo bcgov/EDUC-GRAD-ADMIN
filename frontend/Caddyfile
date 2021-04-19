@@ -1,6 +1,7 @@
 *:2015 {
     root /var/www/html
 
+    cors
     header / {
         X-Frame-Options "SAMEORIGIN"
         X-XSS-Protection "1;mode=block"
