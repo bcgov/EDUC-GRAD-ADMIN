@@ -1,7 +1,7 @@
 *:2015 {
     root /var/www/html
 
-    cors
+    cors /* https://gradstudent-api-77c02f-dev.apps.silver.devops.gov.bc.ca
     header / {
         X-Frame-Options "SAMEORIGIN"
         X-XSS-Protection "1;mode=block"
@@ -23,7 +23,7 @@
     }
     log stdout
 
-    proxy /api {$HOST_ROUTE}
+    proxy /* {$HOST_ROUTE}
 
     errors stdout
 }
