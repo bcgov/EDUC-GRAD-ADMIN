@@ -1,6 +1,6 @@
 import axios from 'axios';
 const apiClient = axios.create({
-    baseURL: process.env.VUE_APP_STUDENT_ASSESSMENTS_API_HOST,
+    baseURL: "/api/student-assessments",
 })
 
 export default {

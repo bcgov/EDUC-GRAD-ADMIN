@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: process.env.VUE_APP_STUDENT_EXAMS_API_HOST,
+    baseURL: "/api/student-exams",
 });
 
 export default {
