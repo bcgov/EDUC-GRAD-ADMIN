@@ -23,8 +23,6 @@
     }
     log stdout
 
-    proxy /api {$HOST_ROUTE}
-
     errors stdout
 }
     
