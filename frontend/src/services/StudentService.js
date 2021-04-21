@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 var apiClient = axios.create({
-    baseURL: "http://grad-admin-77c02f-tools.apps.silver.devops.gov.bc.ca/grad",
+    baseURL: "https://grad-admin-77c02f-tools.apps.silver.devops.gov.bc.ca/grad",
 })
 
 export default {
