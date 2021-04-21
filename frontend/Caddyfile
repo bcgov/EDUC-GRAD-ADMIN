@@ -13,6 +13,11 @@
         Feature-Policy "fullscreen 'self'; camera 'none'; microphone 'none'"
     }
 
+    rewrite {
+    regexp .*
+    to {path} /
+    }
+
     gzip {
         level 7
     }
