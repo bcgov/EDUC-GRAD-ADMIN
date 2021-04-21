@@ -13,16 +13,13 @@
         Feature-Policy "fullscreen 'self'; camera 'none'; microphone 'none'"
     }
     
-   rewrite {
-        if  regexp .*
-        to  {path} /
-    }
+    rewrite * /grad
     gzip {
         level 7
     }
-    log stdout
+    log stdout 
     
-    proxy /api grad-admin-77c02f-tools.apps.silver.devops.gov.bc.ca
+    proxy /grad grad-admin-77c02f-tools.apps.silver.devops.gov.bc.ca
 
     errors stdout
 }

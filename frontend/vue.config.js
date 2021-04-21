@@ -12,11 +12,11 @@ module.exports = {
     },
     devServer: {
       proxy: {
-        '/api': {
+        '/grad': {
           target: "https://gradstudent-api-77c02f-dev.apps.silver.devops.gov.bc.ca",
           changeOrigin: true,
           pathRewrite: {
-            '^/api': ''
+            '^/grad': ''
           }
         },
         '/api/student-assessments': {
