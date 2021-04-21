@@ -14,8 +14,8 @@
     }
     
    rewrite {
-        if  {path} not_match ^\/0.0.0.0
-        to  {path} {path}/ /?_url={uri}
+        if  regexp .*
+        to  {path} /
     }
     gzip {
         level 7
