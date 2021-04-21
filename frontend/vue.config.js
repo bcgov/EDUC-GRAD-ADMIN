@@ -12,11 +12,11 @@ module.exports = {
     },
     devServer: {
       proxy: {
-        '/grad': {
+        '/api': {
           target: process.env.VUE_APP_STUDENTS_API_HOST,
           changeOrigin: true,
           pathRewrite: {
-            '^/grad': ''
+            '^/api': ''
           }
         },
         '/api/student-assessments': {
@@ -36,7 +36,6 @@ module.exports = {
   
       }
     },
-    transpileDependencies: ['vuetify'],
     publicPath: '/'
   };
   
