@@ -18,7 +18,7 @@
     }
     log stdout
     
-    proxy /api {$HOST_ROUTE}
+    proxy /api grad-admin-77c02f-tools.apps.silver.devops.gov.bc.ca
 
     errors stdout
 }
