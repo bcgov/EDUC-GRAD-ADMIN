@@ -12,18 +12,15 @@
         Referrer-Policy "same-origin"
         Feature-Policy "fullscreen 'self'; camera 'none'; microphone 'none'"
     }
-    
-   rewrite {
-        if  {path} not_match ^\/0.0.0.0
-        to  {path} {path}/ /?_url={uri}
-    }
-    
     gzip {
         level 7
     }
-    log stdout 
+    log stdout
+
+    proxy /api https://gradstudent-api-77c02f-dev.apps.silver.devops.gov.bc.ca
+    proxy /api/v1/studentassessment https://student-assessment-api-77c02f-dev.apps.silver.devops.gov.bc.ca
+    proxy /api/v1/studentexam {$STUDENT_EXAMS_API_HOST}
     
-    proxy /grad grad-admin-77c02f-tools.apps.silver.devops.gov.bc.ca
 
     errors stdout
 }
