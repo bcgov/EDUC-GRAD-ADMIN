@@ -18,7 +18,7 @@
             <b-form-select
                 id="inline-form-select-audience"
                 class="mb-2 mr-sm-2 mb-sm-0"
-                :options="[{ text: 'Choose...', value: null }, 'Blank certificate print', 'Reprint certificate – no principal signature block', 'Original certificate – with principal signature block', 'Blank transcript print','Transcript']"
+                :options="[{ text: 'Choose...', value: null }, { text: 'Blank certificate print', value: 'Blank certificate print' }, { text: 'Reprint certificate – no principal signature block', value: 'Reprint certificate – no principal signature block' },{ text: 'Original certificate – with principal signature block', value: 'OC' },{ text: 'Blank transcript print', value: 'Blank transcript print' },{ text: 'Transcript', value: 'OT' }]"
                 :value="tabContent[jobId].details['credential']"     
                 @change="editBatchJob(jobId,'credential', $event)"       
               ></b-form-select>
@@ -90,7 +90,7 @@
                 type="number"
                 id="inline-form-select-audience"
                 class="mb-2 mr-sm-2 mb-sm-0"
-                :value="tabContent[jobId].details['copies']"     
+                :value="1"     
                 @change="editBatchJob(jobId,'copies', $event)"       
               ></b-form-input>
           </div>  
@@ -315,7 +315,8 @@ export default {
           }
         ).catch((error) => {
           // eslint-disable-next-line
-          console.log(error)      
+          console.log(error) 
+               
           this.validating = false;
           this.$forceUpdate();
         });
@@ -346,8 +347,6 @@ export default {
           this.validating = false;
         });
       }
-
-
       if(type == "districts"){
         //remove duplicates
           this.validating = true;
@@ -382,7 +381,6 @@ export default {
         this.$forceUpdate();
         this.validating = false;   
       }
-              
     },
     addTypeToBatchId(id, type){
       this.$store.commit("addTypeToBatchId", {type, id});
@@ -431,14 +429,12 @@ export default {
         batchDetail.details['who'] = '';
         
       }
-      
       this.$store.commit("editBatchDetails", {batchDetail, id});
       this.$forceUpdate();
     },
     getCertificateTypes() {
       GraduationCommonService.getCertificateTypes(this.token)
         .then((response) => {
-        
           this.certificateTypes = response.data;
         })
         // eslint-disable-next-line
