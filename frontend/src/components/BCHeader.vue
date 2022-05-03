@@ -298,7 +298,8 @@ header .nav-btn {
   background-color:#38598a;
   color: white;
   top: 65px;
-  position: relative;
+  position: fixed;
+  width: 100%;
   -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
   -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
   box-shadow: 0 6px 8px -4px #b3b1b3;
