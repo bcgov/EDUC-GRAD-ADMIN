@@ -10,9 +10,17 @@
           <div v-for="(report, index) in reports" :key="index" class="px-3 w-100 float-left">
             <a  @click="downloadPDF(report.report,'application/pdf')" href="#" class="pdf-link float-left mt-2">{{report.gradReportTypeLabel}} (PDF)</a> 
             <div class="float-left col-12 pr-4 ml-1">
-              <strong>Status:</strong> {{report.documentStatusLabel}} 
-              <strong>Last Updated:</strong> {{report.updatedTimestamp | formatTime}} 
-              <strong>Distributed:</strong> {{report.distributionDate | formatTime}}
+              <ul>
+                <li>
+                  <strong>Status:</strong> {{report.documentStatusLabel}} 
+                </li>
+                <li>
+                  <strong>Last Updated:</strong> {{report.updatedTimestamp | formatTime}} 
+                </li>
+                <li>
+                  <strong>Distributed:</strong> {{report.distributionDate | formatTime}}
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -20,9 +28,17 @@
           <div  v-for="transcript in transcripts" :key="transcript.id" class="px-3 w-100 float-left mt-2">
             <a  @click="downloadPDF(transcript.transcript,'application/pdf')" href="#"  class="pdf-link float-left ">{{transcript.transcriptTypeLabel}} (PDF)</a> 
             <div class="float-left col-12 pr-4 ml-1">
-              <strong>Status:</strong> {{transcript.documentStatusLabel}} 
-              <strong>Last Updated:</strong> {{transcript.updatedTimestamp | formatTime}} 
-              <strong>Distributed:</strong> {{transcript.distributionDate | formatTime}}
+              <ul>
+                <li>
+                  <strong>Status:</strong> {{transcript.documentStatusLabel}} 
+                </li>
+                <li>
+                  <strong>Last Updated:</strong> {{transcript.updatedTimestamp | formatTime}} 
+                </li>
+                <li>
+                  <strong>Distributed:</strong> {{transcript.distributionDate | formatTime}}
+                </li>
+              </ul>
             </div>
           </div>    
         </div>  
