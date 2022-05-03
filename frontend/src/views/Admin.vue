@@ -360,7 +360,7 @@ export default {
             })
           }
         })  
-        setTimeout(this.getBatchProgress(), 1000);
+        setTimeout(this.getBatchProgress(requestId), 5000);
     },
     runTVRRUN(request, id){
      let requestId = id.replace("job-",""); 
@@ -391,7 +391,7 @@ export default {
             })
           }
         })  
-        setTimeout(this.getBatchProgress(requestId), 1000);
+        setTimeout(this.getBatchProgress(requestId), 5000);
     },
     runREGALG(request, id){
       let requestId = id.replace("job-",""); 
@@ -422,27 +422,26 @@ export default {
             })
           }
         })
-        setTimeout(this.getBatchProgress(requestId), 1000);
+        setTimeout(this.getBatchProgress(requestId), 5000);
     },
     getBatchProgress(requestId){
-     
-      DashboardService.getBatchSummary(this.token).then(
-        (response) => {
-          let jobDetails = response.data.batchJobList[0];
-          let job={};
-          if(jobDetails.status == 'STARTED'){
-            console.log("found an entry")
-            job = { "createUser": "?", "createDate": jobDetails.createTime, "updateUser": "?", "updateDate": jobDetails.startTime, "id": "?", "jobExecutionId": jobDetails.jobExecutionId, "startTime": jobDetails.startTime, "endTime": jobDetails.endTime, "expectedStudentsProcessed": "?", "actualStudentsProcessed": "?", "failedStudentsProcessed": "?", "status": jobDetails.status, "triggerBy": "MANUAL", "jobType": "REGALG" }
-            this.batchInfoListData.splice(0,1,job)
+      console.log("Batch Processes");
+      DashboardService.getBatchSummary(this.token).then((response) => {
+            console.log(response.data)
+            let jobDetails = response.data.batchJobList[0];
+            let date = new Date();
+            console.log(requestId)
+            let job = { "createUser": "?", "createDate": "?", "updateUser": "?", "updateDate": date.toString(), "id": "?", "jobExecutionId": "Request " + requestId, "startTime": date.toString(), "endTime": "", "expectedStudentsProcessed": "?", "actualStudentsProcessed": "?", "failedStudentsProcessed": "?", "status": "STARTED", "triggerBy": "MANUAL", "jobType": this.tabContent["job-"+requestId].details['what'] }
+
+            if(jobDetails.status == 'STARTED'){
+              job = { "createUser": "?", "createDate": jobDetails.createTime, "updateUser": "?", "updateDate": jobDetails.startTime, "id": "?", "jobExecutionId": jobDetails.jobExecutionId + " (request" + requestId + ")", "startTime": jobDetails.startTime, "endTime": jobDetails.endTime, "expectedStudentsProcessed": "?", "actualStudentsProcessed": "?", "failedStudentsProcessed": "?", "status": jobDetails.status, "triggerBy": "MANUAL", "jobType": this.tabContent["job-"+requestId].details['what'] }  
+            }
             this.$bvToast.toast("Batch for request " + requestId + " has started" , {
-            title: "BATCH PROCESSING STARTED",
-            variant: 'success',
-            noAutoHide: true,
-          })            
-            return true
-          }else{
-            return false;
-          }
+              title: "BATCH PROCESSING STARTED",
+              variant: 'success',
+              noAutoHide: true,
+            })                        
+            this.batchInfoListData.splice(0,1,job)
         }
       );  
     },    
