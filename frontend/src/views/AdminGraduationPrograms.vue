@@ -1,7 +1,6 @@
 <template>
   <div class="programs-all">
   <h1>Programs</h1>
-  <p> Manage programs settings</p>
 
 
 <div>

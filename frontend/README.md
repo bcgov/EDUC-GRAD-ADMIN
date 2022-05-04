@@ -5,7 +5,10 @@ Admin UI for Graduation Records and Assessment Data (GRAD)
 Requirements
 
 npm v7.12.1
+npm install npm@7.12.1
+
 node v12.22.1 
+Download and install node 12.22.1 LTS
 
 INSTALL
 add .env file

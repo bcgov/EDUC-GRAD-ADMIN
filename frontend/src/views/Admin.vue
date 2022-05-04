@@ -332,7 +332,6 @@ export default {
     },
     runDISTRUN(request, id, credentialType){
       let requestId = id.replace("job-",""); 
-      console.log(id)
       this.$set(this.spinners, id, true)
       let index= id.replace("job-","")-1;
       let value = true
@@ -425,12 +424,10 @@ export default {
         setTimeout(this.getBatchProgress(requestId), 5000);
     },
     getBatchProgress(requestId){
-      console.log("Batch Processes");
       DashboardService.getBatchSummary(this.token).then((response) => {
-            console.log(response.data)
+
             let jobDetails = response.data.batchJobList[0];
             let date = new Date();
-            console.log(requestId)
             let job = { "createUser": "?", "createDate": "?", "updateUser": "?", "updateDate": date.toString(), "id": "?", "jobExecutionId": "Request " + requestId, "startTime": date.toString(), "endTime": "", "expectedStudentsProcessed": "?", "actualStudentsProcessed": "?", "failedStudentsProcessed": "?", "status": "STARTED", "triggerBy": "MANUAL", "jobType": this.tabContent["job-"+requestId].details['what'] }
 
             if(jobDetails.status == 'STARTED'){
@@ -491,10 +488,7 @@ export default {
         this.runTVRRUN(request, id);
       }
       else if(this.tabContent[id].details['what'] == 'DISTRUN'){     
-       console.log(this.spinners)
-        console.log(this.tabContent[id].details['credential']);
         this.runDISTRUN(request, id, this.tabContent[id].details['credential']);
-         console.log(this.spinners)
       }           
     },
     displaySearchResults(value){ 
