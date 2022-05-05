@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-     <h3>Student change history</h3>
+    <h3>Notes</h3>
+    <h3>Undo Completion Reasons</h3>
+    <h3>Student change history</h3>
     <div class="col-12" v-for="(value, index) in changeHistory.slice().reverse()" :key="value.historyID">
       <div class="row col-12 py-2" :header="studentHistory[index].historyID">
         <div class="col-4 border-bottom">
