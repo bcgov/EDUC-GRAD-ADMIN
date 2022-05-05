@@ -3,35 +3,39 @@
 
     <!-- Notes Section -->
     <div>
-      <b-button v-b-toggle.note-collapse variant="link" v-on:click="showNotes = !showNotes">
+      <b-button v-b-toggle.note-collapse variant="link" v-on:click="showNotes = !showNotes" class="float-left">
         <img v-show="!showNotes" src="../assets/images/icon-right.svg" width="14px" aria-hidden="true" alt=""/>
         <img v-show="showNotes" src="../assets/images/icon-down.svg" height="8px" aria-hidden="true" alt=""/>
       </b-button>
-      <h3 style="display: inline;">{{'Notes ('  + studentNotes.length + ')'}}</h3>
+      <h3 class="pt-2">{{'Notes ('  + studentNotes.length + ')'}}</h3>
     </div>
-    <b-collapse id="note-collapse">
+    <b-collapse id="note-collapse" class="py-2">
       <StudentNotes />
     </b-collapse>
     <hr>
+
     <!-- Undo Completion/Ungrad reasons section -->
     <div>
-      <b-button v-b-toggle.ungrad-reasons-collapse variant="link" v-on:click="showUngradReasons = !showUngradReasons">
+      <b-button v-b-toggle.ungrad-reasons-collapse variant="link" v-on:click="showUngradReasons = !showUngradReasons" class="float-left">
         <img v-show="!showUngradReasons" src="../assets/images/icon-right.svg" width="14px" aria-hidden="true" alt=""/>
         <img v-show="showUngradReasons" src="../assets/images/icon-down.svg" height="8px" aria-hidden="true" alt=""/>
       </b-button>
-      <h3 style="display: inline;">{{'Undo Completion Reasons ('  + studentUngradReasons.length + ')'}}</h3>
+      <h3 class="pt-2">{{'Undo Completion Reasons ('  + studentUngradReasons.length + ')'}}</h3>
     </div>
     <b-collapse id="ungrad-reasons-collapse">
-      <b-table striped :items="studentUngradReasons" :fields='[{ key: "createDate",label: "Ungrad Date",class:"px-0 py-2 w-10"},{key: "ungradReasonCode",label: "Code",class:"px-0 py-2 w-10"},{key: "ungradReasonDescription",label: "Reason",class:"px-0 py-2 w-80"},{key: "createUser",label: "User",class:"px-0 py-2 w-80"}]'></b-table>
+      <div class="pb-3 px-3">
+        <b-table striped :items="studentUngradReasons" :fields='[{ key: "createDate",label: "Ungrad Date",class:"px-0 py-2 w-10"},{key: "ungradReasonCode",label: "Code",class:"px-0 py-2 w-10"},{key: "ungradReasonDescription",label: "Reason",class:"px-0 py-2 w-80"},{key: "createUser",label: "User",class:"px-0 py-2 w-80"}]'></b-table>
+      </div>
     </b-collapse>
     <hr>
+
     <!-- Student change history -->
     <div>
-      <b-button v-b-toggle.student-change-history-collapse variant="link" v-on:click="showStudentChangeHistory = !showStudentChangeHistory">
+      <b-button v-b-toggle.student-change-history-collapse variant="link" v-on:click="showStudentChangeHistory = !showStudentChangeHistory" class="float-left">
         <img v-show="!showStudentChangeHistory" src="../assets/images/icon-right.svg" width="14px" aria-hidden="true" alt=""/>
         <img v-show="showStudentChangeHistory" src="../assets/images/icon-down.svg" height="8px" aria-hidden="true" alt=""/>
       </b-button>
-      <h3 style="display: inline;">Student change history</h3>
+      <h3 class="pt-2">Student change history</h3>
     </div>
     <b-collapse id="student-change-history-collapse">
       <div class="col-12" v-for="(value, index) in changeHistory.slice().reverse()" :key="value.historyID">
@@ -41,9 +45,11 @@
             {{studentHistory[index].createDate | formatTime}}
           </div>
           <div class="float-left col-8 border-bottom">
-                  <div class="float-right w-25">
-                    <b-button v-b-toggle="'collapse-'+ studentHistory[index].historyID" variant="primary">View</b-button>
-                  </div>
+            <div class="float-right w-25">
+              <b-button v-b-toggle="'collapse-'+ studentHistory[index].historyID" variant="primary">
+                View
+              </b-button>
+            </div>
             <div v-for="v in value" :key="v.historyID" class="">
               <div class="" v-if="v.pathTo != 'updateDate' 
                 && v.pathTo != 'createDate' 
@@ -67,13 +73,14 @@
       </div>
     </b-collapse>
     <hr>
+
     <!-- Optional Program history -->
     <div>
-      <b-button v-b-toggle.optional-program-history-collapse variant="link" v-on:click="ShowOptionalProgramHistory = !ShowOptionalProgramHistory">
+      <b-button v-b-toggle.optional-program-history-collapse variant="link" v-on:click="ShowOptionalProgramHistory = !ShowOptionalProgramHistory" class="float-left">
         <img v-show="!ShowOptionalProgramHistory" src="../assets/images/icon-right.svg" width="14px" aria-hidden="true" alt=""/>
         <img v-show="ShowOptionalProgramHistory" src="../assets/images/icon-down.svg" height="8px" aria-hidden="true" alt=""/>
       </b-button>
-      <h3 style="display: inline;">Optional program change history</h3>
+      <h3 class="pt-2">Optional program change history</h3>
     </div>
 
     <b-collapse id="optional-program-history-collapse">

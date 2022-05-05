@@ -149,20 +149,8 @@
                 <b-tab v-if="this.courses == 'not loaded' || this.assessments == 'not loaded'" title="Loading ..." class="tab-loading py-3 px-0 m-1">
                   <b-card-text class="text-center">Loading Student Courses and Assesments</b-card-text>
                 </b-tab>
-                 
-                <b-tab  :title="'Ungrad Reasons ('  + studentUngradReasons.length + ')'" class="py-3 px-3 m-1">
-                  <b-card-text>
-                    <b-table striped :items="studentUngradReasons" :fields='[{ key: "createDate",label: "Ungrad Date",class:"px-0 py-2 w-10"},{key: "ungradReasonCode",label: "Code",class:"px-0 py-2 w-10"},{key: "ungradReasonDescription",label: "Reason",class:"px-0 py-2 w-80"},{key: "createUser",label: "User",class:"px-0 py-2 w-80"}]'></b-table>
-                  </b-card-text>
-                </b-tab>  
 
-                <b-tab :title="'Notes ('  + studentNotes.length + ')'" class="py-3 px-0 m-1">
-                  <b-card-text>
-                    <StudentNotes></StudentNotes>
-                    <b-overlay :show="tabLoading" rounded="sm" no-wrap></b-overlay>
-                  </b-card-text>
-                </b-tab>
-                <b-tab :title="'Audit history'" class="py-3 px-0 m-1">
+                <b-tab :title="'Audit History (' + ( studentNotes.length + studentUngradReasons.length ) + ')'" class="py-3 px-0 m-1">
                   <b-card-text>
                     <StudentAuditHistory></StudentAuditHistory>
                     <b-overlay :show="tabLoading" rounded="sm" no-wrap></b-overlay>
@@ -355,7 +343,6 @@
   import StudentCourses from "@/components/StudentCourses";
   import StudentAssessments from "@/components/StudentAssessments";
   import StudentExams from "@/components/StudentExams";
-  import StudentNotes from "@/components/StudentNotes";
   import StudentGraduationStatus from "@/components/StudentGraduationStatus";
   import StudentOptionalPrograms from "@/components/StudentOptionalPrograms";
   import StudentAuditHistory from "@/components/StudentAuditHistory";
@@ -383,7 +370,6 @@
       GRADRequirementDetails: GRADRequirementDetails,
       StudentAssessments: StudentAssessments,
       StudentExams: StudentExams,
-      StudentNotes:StudentNotes,
       StudentGraduationStatus: StudentGraduationStatus,
       StudentOptionalPrograms: StudentOptionalPrograms,
       StudentAuditHistory: StudentAuditHistory
