@@ -684,7 +684,6 @@
             });
           }
         });
-        
         StudentService.getGraduationStatus(studentIdFromURL, this.token).then(
           (response) => {
             this.$store.dispatch("setStudentGradStatus", response.data);
@@ -770,13 +769,12 @@
         });
 
         this.getStudentReportsAndCertificates(studentIdFromURL);
-
         StudentService.getStudentUngradReasons(studentIdFromURL, this.token).then(
-          (response) => {           
+          (response) => {         
             this.$store.dispatch("setStudentUngradReasons", response.data);
           }
         ).catch((error) => {
-          if(error.response.status){
+          if(error.response.status){ 
             this.$bvToast.toast("ERROR " + error.response.statusText, {
               title: "ERROR" + error.response.status,
               variant: 'danger',
@@ -785,7 +783,6 @@
           }
         });
         
-
         StudentService.getStudentHistory(studentIdFromURL, this.token).then(
             (response) => {
               this.$store.dispatch("setStudentAuditHistory", response.data);
@@ -813,7 +810,7 @@
             });
           }
         });
-      },
+      },//loadStudent
     },
   };
 </script>
@@ -905,5 +902,4 @@
   .optionalProgramName{
     margin-top: 1rem;
   }
-  
 </style>

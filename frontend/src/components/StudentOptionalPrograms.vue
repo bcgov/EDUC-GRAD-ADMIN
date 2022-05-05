@@ -53,7 +53,7 @@
               <template #cell(gradReqMetDetail)="row2">
                 <div class="p-2">
                   <strong>{{row2.item.gradReqMetDetail}}</strong><br/>
-                   {{row2.item.courseCode}} {{row2.item.courseLevel}} - {{row2.item.sessionDate | formatTime}} ({{row2.item.courseName}})
+                   {{row2.item.courseCode}} {{row2.item.courseLevel}} - {{row2.item.sessionDate}} ({{row2.item.courseName}})
                 </div>    
               </template>
             </b-table>
