@@ -1,7 +1,6 @@
 <template>
   <div class="psi-view">
     <h1>Post Secondary Institutions</h1>
-{{advancedSearchInput}}
     <b-card no-body>
       <b-tabs card>
         <b-tab title="Post Secondary Institutions" active>
