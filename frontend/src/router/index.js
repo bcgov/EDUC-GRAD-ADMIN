@@ -25,6 +25,7 @@ import GraduationProgramCourses from '../components/GraduationProgramCourses.vue
 import GraduationProgramRules from '../components/GraduationProgramRules.vue';
 import GraduationOptionalProgramRules from '@/components/GraduationOptionalProgramRules';
 import GraduationOptionalPrograms from '@/components/GraduationOptionalPrograms';
+import GraduationProgramTranscriptMessage from '@/components/GraduationProgramTranscriptMessage';
 import Admin from '../views/Admin.vue';
 import RequirementTypes from '@/components/Programs/RequirementTypes.vue';
 import LetterGrades from '@/components/Programs/LetterGrades';
@@ -84,6 +85,7 @@ const routes = [{
       { path: 'special-cases/', component: SpecialCases },
       { path: 'algorithm-rules/', component: AlgorithmRules },
       { path: 'requirement-types/', component: RequirementTypes },
+      { path: 'transcript-message/', component: GraduationProgramTranscriptMessage},
     ],
     meta: {
       requiresAuth: true
