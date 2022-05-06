@@ -1,6 +1,6 @@
-import LoginPage from '../page_objects/LoginPage';
-import StudentSearchPage from '../page_objects/StudentSearchPage';
-import MainMenu from '../page_objects/MainMenu';
+import LoginPage from '../page_objects/loginPage';
+import StudentSearchPage from '../page_objects/studentSearchPage';
+import MainMenu from '../page_objects/mainMenu';
 import { base_url, credentials, test_pen, api_html_status_threshold } from '../config/constants';
 import { ClientFunction, RequestLogger  } from 'testcafe';
 import { apiCallsFailed } from '../helpers/requestHelper';
