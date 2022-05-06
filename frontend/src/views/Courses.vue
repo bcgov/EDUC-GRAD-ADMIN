@@ -393,6 +393,13 @@
             editable: true
           },
           {
+            key: 'traxReqNumber',
+            label: "Transcript Req #",
+            sortable: true,
+            class: 'text-left',
+            editable: true,
+          },
+          {
             key: 'requirementName',
             label: 'Requirement name',
             sortable: true,
