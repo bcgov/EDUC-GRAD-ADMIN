@@ -88,14 +88,14 @@
                   />
                 </div>
                 <div class="advanced-search-field col-12 col-md-2">
-                  <label>Psi Grouping</label>
+                  <label>PSI Grouping</label>
                   <div
                     href="#"
                     v-on:click="advancedSearchInput.psiGrouping.contains = !advancedSearchInput.psiGrouping.contains"
                     v-bind:class="{active: advancedSearchInput.psiGrouping.contains}"
                     class="wild-card-button"
                     v-b-tooltip.hover
-                    title="Psi Grouping mode starts with"
+                    title="PSI Grouping mode starts with"
                   >
                     [.*]
                   </div>
@@ -248,7 +248,7 @@ export default {
         },
         {
           key: 'cslCode',
-          label: 'Csl Code',
+          label: 'CSL Code',
           sortable: true,
           class: 'text-center'
         },
@@ -265,7 +265,7 @@ export default {
         },
         {
           key: 'psiGrouping',
-          label: 'Psi Grouping',
+          label: 'PSI Grouping',
           sortable: true,
         },
       ],
@@ -331,7 +331,7 @@ export default {
       .catch((error) => {
         // eslint-disable-next-line
         console.log(
-          "There was an error adding psi information:" + error.response
+          "There was an error adding PSI information:" + error.response
         );
       });
     },
