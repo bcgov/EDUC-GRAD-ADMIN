@@ -29,41 +29,85 @@
     </b-collapse>
     <hr>
 
-    <!-- Student change history -->
+    <!-- Student audit -->
     <div>
-      <b-button v-b-toggle.student-change-history-collapse variant="link" v-on:click="showStudentChangeHistory = !showStudentChangeHistory" class="float-left">
-        <img v-show="!showStudentChangeHistory" src="../assets/images/icon-right.svg" width="14px" aria-hidden="true" alt=""/>
-        <img v-show="showStudentChangeHistory" src="../assets/images/icon-down.svg" height="8px" aria-hidden="true" alt=""/>
+      <b-button v-b-toggle.student-audit-collapse variant="link" v-on:click="showStudentAudit = !showStudentAudit" class="float-left">
+        <img v-show="!showStudentAudit" src="../assets/images/icon-right.svg" width="14px" aria-hidden="true" alt=""/>
+        <img v-show="showStudentAudit" src="../assets/images/icon-down.svg" height="8px" aria-hidden="true" alt=""/>
       </b-button>
-      <h3 class="pt-2">Student change history</h3>
+      <h3 class="pt-2">Student Audit</h3>
     </div>
-    <b-collapse id="student-change-history-collapse">
-      <div class="col-12" v-for="(value, index) in changeHistory.slice().reverse()" :key="value.historyID">
-        <div class="row col-12 py-2" :header="studentHistory[index].historyID">
-          <div class="col-4 border-bottom">
-            Activity Code: <strong>{{studentHistory[index].activityCode}}</strong> on<br/>
-            {{studentHistory[index].createDate | formatTime}}
-          </div>
-          <div class="float-left col-8 border-bottom">
-            <div class="float-right w-25">
-              <b-button v-b-toggle="'collapse-'+ studentHistory[index].historyID" variant="primary">
-                View
-              </b-button>
+    
+    <b-collapse id="student-audit-collapse">
+      <b-button class="mx-2" v-on:click="auditTab = 'studentHistory'" :variant="auditTab == 'studentHistory' ? 'primary' : 'outline-secondary'">Student change history</b-button>
+      <b-button class="mx-2" v-on:click="auditTab = 'optionalProgramHistory'" :variant="auditTab == 'optionalProgramHistory' ? 'primary' : 'outline-secondary'">Optional program change history</b-button>
+
+    <!-- Student change history -->
+      <div v-if="auditTab === 'studentHistory'">
+        <div class="col-12" v-for="(value, index) in changeHistory.slice().reverse()" :key="value.historyID">
+          <div class="row col-12 py-2" :header="studentHistory[index].historyID">
+            <div class="col-4 border-bottom">
+              Activity Code: <strong>{{studentHistory[index].activityCode}}</strong> on<br/>
+              {{studentHistory[index].createDate | formatTime}}
             </div>
-            <div v-for="v in value" :key="v.historyID" class="">
-              <div class="" v-if="v.pathTo != 'updateDate' 
-                && v.pathTo != 'createDate' 
-                && v.pathTo != 'historyID'
-                && v.pathTo != 'studentGradData'
-                && v.pathTo != 'activityCode'
-                && v.pathTo != 'recalculateGradStatus'
-                ">
+            <div class="float-left col-8 border-bottom">
+              <div class="float-right w-25">
+                <b-button v-b-toggle="'collapse-'+ studentHistory[index].historyID" variant="primary">
+                  View
+                </b-button>
+              </div>
+              <div v-for="v in value" :key="v.historyID" class="">
+                <div class="" v-if="v.pathTo != 'updateDate' 
+                  && v.pathTo != 'createDate' 
+                  && v.pathTo != 'historyID'
+                  && v.pathTo != 'studentGradData'
+                  && v.pathTo != 'activityCode'
+                  && v.pathTo != 'recalculateGradStatus'
+                  ">
+                  <div class="w-25 float-left"> <strong>{{v.pathTo | formatSetenceCase}}</strong>:</div>
+                  <div class="w-50 float-left"> {{v.lhs==null?"blank":v.lhs}} <i class="fas fa-arrow-right" aria-hidden="true"></i> {{v.rhs == null?"blank":v.rhs}}</div>
+            
+                  <div class="w-100 float-left">
+                    <b-collapse :id="'collapse-' + studentHistory[index].historyID" class="mt-2">
+                      <pre>{{JSON.stringify(studentHistory[index], null, '\t')}}</pre>
+                    </b-collapse>
+                  </div>
+                </div>  
+              </div> 
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Optional Program history -->
+
+      <div v-if="auditTab === 'optionalProgramHistory'">
+        <div class="col-12" v-for="(value, index) in optionalProgramChangeHistory.slice().reverse()" :key="value.historyID">
+          <div class="row col-12 py-2" :header="optionalProgramHistory[index+1].historyID">
+            <div class="col-4 border-bottom">
+            Edited by <strong>{{optionalProgramHistory[index+1].activityCode}}</strong> on<br/>
+            {{optionalProgramHistory[index+1].createDate | formatTime}}
+            </div>
+            <div class="float-left col-8 border-bottom">
+              <div class="float-right w-25">
+                <b-button v-b-toggle="'collapse-'+ optionalProgramHistory[index+1].historyId" variant="primary">View</b-button>
+              </div>
+              <div v-for="v in value" :key="v.historyId" class="">
+                <div class="" v-if="v.pathTo != 'updateDate' 
+                  && v.pathTo != 'createDate' 
+                  && v.pathTo != 'historyId'
+                  && v.pathTo != 'studentOptionalProgramId'
+                  && v.pathTo != 'optionalProgramID'
+                  && v.pathTo != 'studentOptionalProgramData'
+                  && v.pathTo != 'activityCode'
+                  && v.pathTo != 'recalculateGradStatus'
+                  ">
                 <div class="w-25 float-left"> <strong>{{v.pathTo | formatSetenceCase}}</strong>:</div>
                 <div class="w-50 float-left"> {{v.lhs==null?"blank":v.lhs}} <i class="fas fa-arrow-right" aria-hidden="true"></i> {{v.rhs == null?"blank":v.rhs}}</div>
           
                 <div class="w-100 float-left">
-                  <b-collapse :id="'collapse-' + studentHistory[index].historyID" class="mt-2">
-                    <pre>{{JSON.stringify(studentHistory[index], null, '\t')}}</pre>
+                  <b-collapse :id="'collapse-' + optionalProgramHistory[index+1].historyId" class="mt-2">
+                    <pre>{{JSON.stringify(optionalProgramHistory[index+1], null, '\t')}}</pre>
                   </b-collapse>
                 </div>
               </div>  
@@ -71,53 +115,11 @@
           </div>
         </div>
       </div>
+    </div>
     </b-collapse>
     <hr>
 
-    <!-- Optional Program history -->
-    <div>
-      <b-button v-b-toggle.optional-program-history-collapse variant="link" v-on:click="ShowOptionalProgramHistory = !ShowOptionalProgramHistory" class="float-left">
-        <img v-show="!ShowOptionalProgramHistory" src="../assets/images/icon-right.svg" width="14px" aria-hidden="true" alt=""/>
-        <img v-show="ShowOptionalProgramHistory" src="../assets/images/icon-down.svg" height="8px" aria-hidden="true" alt=""/>
-      </b-button>
-      <h3 class="pt-2">Optional program change history</h3>
-    </div>
 
-    <b-collapse id="optional-program-history-collapse">
-    <div class="col-12" v-for="(value, index) in optionalProgramChangeHistory.slice().reverse()" :key="value.historyID">
-      <div class="row col-12 py-2" :header="optionalProgramHistory[index+1].historyID">
-        <div class="col-4 border-bottom">
-          Edited by <strong>{{optionalProgramHistory[index+1].activityCode}}</strong> on<br/>
-          {{optionalProgramHistory[index+1].createDate | formatTime}}
-        </div>
-        <div class="float-left col-8 border-bottom">
-                <div class="float-right w-25">
-                  <b-button v-b-toggle="'collapse-'+ optionalProgramHistory[index+1].historyId" variant="primary">View</b-button>
-                </div>
-          <div v-for="v in value" :key="v.historyId" class="">
-            <div class="" v-if="v.pathTo != 'updateDate' 
-              && v.pathTo != 'createDate' 
-              && v.pathTo != 'historyId'
-              && v.pathTo != 'studentOptionalProgramId'
-              && v.pathTo != 'optionalProgramID'
-              && v.pathTo != 'studentOptionalProgramData'
-              && v.pathTo != 'activityCode'
-              && v.pathTo != 'recalculateGradStatus'
-              ">
-              <div class="w-25 float-left"> <strong>{{v.pathTo | formatSetenceCase}}</strong>:</div>
-              <div class="w-50 float-left"> {{v.lhs==null?"blank":v.lhs}} <i class="fas fa-arrow-right" aria-hidden="true"></i> {{v.rhs == null?"blank":v.rhs}}</div>
-        
-              <div class="w-100 float-left">
-                <b-collapse :id="'collapse-' + optionalProgramHistory[index+1].historyId" class="mt-2">
-                  <pre>{{JSON.stringify(optionalProgramHistory[index+1], null, '\t')}}</pre>
-                </b-collapse>
-              </div>
-            </div>  
-          </div> 
-        </div>
-      </div>
-    </div>
-    </b-collapse>
   </div>
 </template>
 
@@ -170,7 +172,10 @@ export default {
         ],
         showNotes: false,
         showUngradReasons: false,
-        showStudentChangeHistory: false,
+        showStudentAudit: false,
+        auditTab: "studentHistory",
+
+        showStudentChangeHistory: true,
         ShowOptionalProgramHistory: false,
     };
   },
