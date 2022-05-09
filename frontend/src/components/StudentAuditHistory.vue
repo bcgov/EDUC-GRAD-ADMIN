@@ -39,8 +39,8 @@
     </div>
     
     <b-collapse id="student-audit-collapse">
-      <b-button class="mx-2" v-on:click="auditTab = 'studentHistory'" :variant="auditTab == 'studentHistory' ? 'primary' : 'outline-secondary'">Student change history</b-button>
-      <b-button class="mx-2" v-on:click="auditTab = 'optionalProgramHistory'" :variant="auditTab == 'optionalProgramHistory' ? 'primary' : 'outline-secondary'">Optional program change history</b-button>
+      <b-button class="mx-2" v-on:click="auditTab = 'studentHistory'" :variant="auditTab == 'studentHistory' ? 'primary' : 'outline-secondary'">Student change history ({{this.studentHistory.length -1}})</b-button>
+      <b-button class="mx-2" v-on:click="auditTab = 'optionalProgramHistory'" :variant="auditTab == 'optionalProgramHistory' ? 'primary' : 'outline-secondary'">Optional program change history ({{this.optionalProgramHistory.length -1}})</b-button>
 
     <!-- Student change history -->
       <div v-if="auditTab === 'studentHistory'">

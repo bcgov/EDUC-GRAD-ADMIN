@@ -1,6 +1,8 @@
 <template>
 
   <div class="student-profile">
+    Student history: {{studentHistory.length}}<br>
+    Student optionalProgramHistory: {{optionalProgramHistory.length}}
     <div class="row m-0 py-3">    
       <div class="px-0">   
           <table v-if="!smallScreen" class="profile-name" aria-label="student information">
@@ -150,7 +152,7 @@
                   <b-card-text class="text-center">Loading Student Courses and Assesments</b-card-text>
                 </b-tab>
 
-                <b-tab :title="'Audit History (' + ( studentNotes.length + studentUngradReasons.length ) + ')'" class="py-3 px-0 m-1">
+                <b-tab :title="'Audit History'" class="py-3 px-0 m-1">
                   <b-card-text>
                     <StudentAuditHistory></StudentAuditHistory>
                     <b-overlay :show="tabLoading" rounded="sm" no-wrap></b-overlay>
@@ -426,6 +428,8 @@
         ungradReasons: "getUngradReasons",      
         studentUngradReasons: "getStudentUngradReasons",
         gradCourses: "gradStatusCourses",
+        studentHistory: 'getStudentAuditHistory',
+        optionalProgramHistory: 'getStudentOptionalProgramAuditHistory',
       }),
     },
     
