@@ -45,14 +45,14 @@
     <!-- Student change history -->
       <div v-if="auditTab === 'studentHistory'">
         <div class="col-12" v-for="(value, index) in changeHistory.slice().reverse()" :key="value.historyID">
-          <div class="row col-12 py-2" :header="studentHistory[index].historyID">
+          <div class="row col-12 py-2" :header="studentHistory.slice().reverse()[index].historyID">
             <div class="col-4 border-bottom">
-              Activity Code: <strong>{{studentHistory[index].activityCode}}</strong> on<br/>
-              {{studentHistory[index].createDate | formatTime}}
+              Activity Code: <strong>{{studentHistory.slice().reverse()[index].activityCode}}</strong> on<br/>
+              {{studentHistory.slice().reverse()[index].createDate | formatTime}}
             </div>
             <div class="float-left col-8 border-bottom">
               <div class="float-right w-25">
-                <b-button v-b-toggle="'collapse-'+ studentHistory[index].historyID" variant="primary">
+                <b-button v-b-toggle="'collapse-'+ studentHistory.slice().reverse()[index].historyID" variant="primary">
                   View
                 </b-button>
               </div>
@@ -65,15 +65,25 @@
                   && v.pathTo != 'recalculateGradStatus'
                   ">
                   <div class="w-25 float-left"> <strong>{{v.pathTo | formatSetenceCase}}</strong>:</div>
-                  <div class="w-50 float-left"> {{v.lhs==null?"blank":v.lhs}} <i class="fas fa-arrow-right" aria-hidden="true"></i> {{v.rhs == null?"blank":v.rhs}}</div>
-            
-                  <div class="w-100 float-left">
-                    <b-collapse :id="'collapse-' + studentHistory[index].historyID" class="mt-2">
-                      <pre>{{JSON.stringify(studentHistory[index], null, '\t')}}</pre>
-                    </b-collapse>
+                  <div class="w-50 float-left" v-if="v.kind != 'N'">
+                    {{v.lhs==null?"blank":v.lhs}}
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    {{v.rhs == null?"blank":v.rhs}}
                   </div>
+                  <div class="w-50 float-left" v-else>
+                    {{v.rhs == null?"blank":v.rhs}}
+                  </div>
+                  <!-- This empty div is just a temporary spacer; need to implement more elegant solution -->
+                  <div class="w-100 float-left"></div>
                 </div>  
               </div> 
+              <div class="w-100 float-left">
+                <b-collapse :id="'collapse-' + studentHistory.slice().reverse()[index].historyID" class="mt-2">
+                  <pre>
+                    {{JSON.stringify(studentHistory.slice().reverse()[index], null, '\t')}}
+                  </pre>
+                </b-collapse>
+              </div>
             </div>
           </div>
         </div>
@@ -102,20 +112,24 @@
                   && v.pathTo != 'activityCode'
                   && v.pathTo != 'recalculateGradStatus'
                   ">
-                <div class="w-25 float-left"> <strong>{{v.pathTo | formatSetenceCase}}</strong>:</div>
-                <div class="w-50 float-left"> {{v.lhs==null?"blank":v.lhs}} <i class="fas fa-arrow-right" aria-hidden="true"></i> {{v.rhs == null?"blank":v.rhs}}</div>
+                  <div class="w-25 float-left">
+                    <strong>{{v.pathTo | formatSetenceCase}}</strong>:
+                  </div>
+                  <div class="w-50 float-left">
+                    {{v.lhs==null?"blank":v.lhs}} <i class="fas fa-arrow-right" aria-hidden="true"></i> {{v.rhs == null?"blank":v.rhs}}
+                  </div>
           
-                <div class="w-100 float-left">
-                  <b-collapse :id="'collapse-' + optionalProgramHistory[index+1].historyId" class="mt-2">
-                    <pre>{{JSON.stringify(optionalProgramHistory[index+1], null, '\t')}}</pre>
-                  </b-collapse>
-                </div>
-              </div>  
-            </div> 
+                  <div class="w-100 float-left">
+                    <b-collapse :id="'collapse-' + optionalProgramHistory[index+1].historyId" class="mt-2">
+                      <pre>{{JSON.stringify(optionalProgramHistory[index+1], null, '\t')}}</pre>
+                    </b-collapse>
+                  </div>
+                </div>  
+              </div> 
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </b-collapse>
     <hr>
 
@@ -192,10 +206,43 @@ export default {
   },
   methods: {
     loadStudentHistory(){  
-      this.studentHistoryChangeCount = this.studentHistory.length
+      
+      this.studentHistoryChangeCount = this.studentHistory.length + 1
+      // need temp variable to avoid triggering an infinite loop w/ watchers
+      const tempHistory = this.studentHistory.slice();
+      tempHistory.unshift({});
+      // tempHistory.unshift({
+      //   "createUser": null,
+      //   "createDate": null,
+      //   "updateUser": null,
+      //   "updateDate": null,
+      //   "historyID": null,
+      //   "activityCode": null,
+      //   "studentGradData": null,
+      //   "pen": null,
+      //   "program": null,
+      //   "programName": null,
+      //   "programCompletionDate": null,
+      //   "gpa": null,
+      //   "honoursStanding": null,
+      //   "recalculateGradStatus": null,
+      //   "schoolOfRecord": null,
+      //   "studentGrade": null,
+      //   "studentStatus": null,
+      //   "studentID": null,
+      //   "schoolAtGrad": null,
+      //   "recalculateProjectedGrad": null,
+      //   "batchId": null,
+      //   "consumerEducationRequirementMet": null
+      // });
+      //eslint-disable-next-line
+      console.log(tempHistory);
+      // reset change history
+      this.changeHistory = [];
       for (let i = 0; i < this.studentHistoryChangeCount - 1; i++) {
-          var x = DeepDiff(this.studentHistory[i], this.studentHistory[i + 1]);
-          this.changeHistory.splice(i,1,x)     
+          var x = DeepDiff(tempHistory[i], tempHistory[i + 1]);
+          this.changeHistory.push(x);
+          //this.changeHistory.splice(this.studentHistoryChangeCount - i + 1,1,x)     
       }
       for (let j = 0; j < this.changeHistory.length ; j++) {  
           for (let k = 0; k < this.changeHistory[j].length; k++) { 
