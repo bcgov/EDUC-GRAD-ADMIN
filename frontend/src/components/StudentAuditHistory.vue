@@ -230,16 +230,16 @@ export default {
     },
     loadStudentOptionalProgramHistory(){
 
-      this.optionalProgramHistoryChangeCount = this.optionalProgramHistory.length; 
+      this.optionalProgramHistoryChangeCount = this.optionalProgramHistory.length + 1; 
       // need temp variable to avoid triggering an infinite loop w/ watchers
-      let tempProgramHistory = this.optionalProgramHistory.slice();
+      const tempProgramHistory = this.optionalProgramHistory.slice();
       tempProgramHistory.unshift({});
       //reset optionalProgramChangeHistory
       this.optionalProgramChangeHistory = [];
       
       for (let i = 0; i < this.optionalProgramHistoryChangeCount - 1; i++) {
-            var x = DeepDiff(this.tempProgramHistory[i], this.tempProgramHistory[i + 1]);
-            this.optionalProgramChangeHistory.push(x);
+            var z = DeepDiff(this.tempProgramHistory[i], this.tempProgramHistory[i + 1]);
+            this.optionalProgramChangeHistory.push(z);
       } 
       for (let j = 0; j < this.optionalProgramChangeHistory.length ; j++) {  
         for (let k = 0; k < this.optionalProgramChangeHistory[j].length; k++) { 
