@@ -238,7 +238,7 @@ export default {
       this.optionalProgramChangeHistory = [];
       
       for (let i = 0; i < this.optionalProgramHistoryChangeCount - 1; i++) {
-            var z = DeepDiff(this.tempProgramHistory[i], this.tempProgramHistory[i + 1]);
+            var z = DeepDiff(tempProgramHistory[i], tempProgramHistory[i + 1]);
             this.optionalProgramChangeHistory.push(z);
       } 
       for (let j = 0; j < this.optionalProgramChangeHistory.length ; j++) {  
