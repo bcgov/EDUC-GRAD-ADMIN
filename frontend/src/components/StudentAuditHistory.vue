@@ -39,8 +39,8 @@
     </div>
     
     <b-collapse id="student-audit-collapse">
-      <b-button class="mx-2" v-on:click="auditTab = 'studentHistory'" :variant="auditTab == 'studentHistory' ? 'primary' : 'outline-secondary'">Student change history ({{this.studentHistory.length -1}})</b-button>
-      <b-button class="mx-2" v-on:click="auditTab = 'optionalProgramHistory'" :variant="auditTab == 'optionalProgramHistory' ? 'primary' : 'outline-secondary'">Optional program change history ({{this.optionalProgramHistory.length -1}})</b-button>
+      <b-button class="mx-2" v-on:click="auditTab = 'studentHistory'" :variant="auditTab == 'studentHistory' ? 'primary' : 'outline-secondary'">Student change history ({{this.studentHistory.length}})</b-button>
+      <b-button class="mx-2" v-on:click="auditTab = 'optionalProgramHistory'" :variant="auditTab == 'optionalProgramHistory' ? 'primary' : 'outline-secondary'">Optional program change history ({{this.optionalProgramHistory.length}})</b-button>
 
     <!-- Student change history -->
       <div v-if="auditTab === 'studentHistory'">
@@ -93,14 +93,14 @@
 
       <div v-if="auditTab === 'optionalProgramHistory'">
         <div class="col-12" v-for="(value, index) in optionalProgramChangeHistory.slice().reverse()" :key="value.historyID">
-          <div class="row col-12 py-2" :header="optionalProgramHistory[index+1].historyID">
+          <div class="row col-12 py-2" :header="optionalProgramHistory.slice().reverse()[index].historyID">
             <div class="col-4 border-bottom">
-            Edited by <strong>{{optionalProgramHistory[index+1].activityCode}}</strong> on<br/>
-            {{optionalProgramHistory[index+1].createDate | formatTime}}
+              Activity Code: <strong>{{optionalProgramHistory.slice().reverse()[index].activityCode}}</strong> on<br/>
+            {{optionalProgramHistory.slice().reverse()[index].createDate | formatTime}}
             </div>
             <div class="float-left col-8 border-bottom">
               <div class="float-right w-25">
-                <b-button v-b-toggle="'collapse-'+ optionalProgramHistory[index+1].historyId" variant="primary">View</b-button>
+                <b-button v-b-toggle="'collapse-'+ optionalProgramHistory.slice().reverse()[index].historyId" variant="primary">View</b-button>
               </div>
               <div v-for="v in value" :key="v.historyId" class="">
                 <div class="" v-if="v.pathTo != 'updateDate' 
@@ -115,17 +115,21 @@
                   <div class="w-25 float-left">
                     <strong>{{v.pathTo | formatSetenceCase}}</strong>:
                   </div>
-                  <div class="w-50 float-left">
+                  <div class="w-50 float-left" v-if="v.kind != 'N'">
                     {{v.lhs==null?"blank":v.lhs}} <i class="fas fa-arrow-right" aria-hidden="true"></i> {{v.rhs == null?"blank":v.rhs}}
                   </div>
-          
-                  <div class="w-100 float-left">
-                    <b-collapse :id="'collapse-' + optionalProgramHistory[index+1].historyId" class="mt-2">
-                      <pre>{{JSON.stringify(optionalProgramHistory[index+1], null, '\t')}}</pre>
-                    </b-collapse>
+                  <div class="w-50 float-left" v-else>
+                    {{v.rhs == null?"blank":v.rhs}}
                   </div>
+                  <!-- This empty div is just a temporary spacer; need to implement more elegant solution -->
+                  <div class="w-100 float-left"></div>
                 </div>  
               </div> 
+              <div class="w-100 float-left">
+                <b-collapse :id="'collapse-' + optionalProgramHistory.slice().reverse()[index].historyId" class="mt-2">
+                  <pre>{{JSON.stringify(optionalProgramHistory.slice().reverse()[index], null, '\t')}}</pre>
+                </b-collapse>
+              </div>
             </div>
           </div>
         </div>
@@ -211,38 +215,12 @@ export default {
       // need temp variable to avoid triggering an infinite loop w/ watchers
       const tempHistory = this.studentHistory.slice();
       tempHistory.unshift({});
-      // tempHistory.unshift({
-      //   "createUser": null,
-      //   "createDate": null,
-      //   "updateUser": null,
-      //   "updateDate": null,
-      //   "historyID": null,
-      //   "activityCode": null,
-      //   "studentGradData": null,
-      //   "pen": null,
-      //   "program": null,
-      //   "programName": null,
-      //   "programCompletionDate": null,
-      //   "gpa": null,
-      //   "honoursStanding": null,
-      //   "recalculateGradStatus": null,
-      //   "schoolOfRecord": null,
-      //   "studentGrade": null,
-      //   "studentStatus": null,
-      //   "studentID": null,
-      //   "schoolAtGrad": null,
-      //   "recalculateProjectedGrad": null,
-      //   "batchId": null,
-      //   "consumerEducationRequirementMet": null
-      // });
-      //eslint-disable-next-line
-      console.log(tempHistory);
       // reset change history
       this.changeHistory = [];
+
       for (let i = 0; i < this.studentHistoryChangeCount - 1; i++) {
           var x = DeepDiff(tempHistory[i], tempHistory[i + 1]);
-          this.changeHistory.push(x);
-          //this.changeHistory.splice(this.studentHistoryChangeCount - i + 1,1,x)     
+          this.changeHistory.push(x);  
       }
       for (let j = 0; j < this.changeHistory.length ; j++) {  
           for (let k = 0; k < this.changeHistory[j].length; k++) { 
@@ -251,10 +229,17 @@ export default {
       }  
     },
     loadStudentOptionalProgramHistory(){
+
       this.optionalProgramHistoryChangeCount = this.optionalProgramHistory.length; 
+      // need temp variable to avoid triggering an infinite loop w/ watchers
+      let tempProgramHistory = this.optionalProgramHistory.slice();
+      tempProgramHistory.unshift({});
+      //reset optionalProgramChangeHistory
+      this.optionalProgramChangeHistory = [];
+      
       for (let i = 0; i < this.optionalProgramHistoryChangeCount - 1; i++) {
-            var x = DeepDiff(this.optionalProgramHistory[i], this.optionalProgramHistory[i + 1]);
-            this.optionalProgramChangeHistory.splice(i,1,x)     
+            var x = DeepDiff(this.tempProgramHistory[i], this.tempProgramHistory[i + 1]);
+            this.optionalProgramChangeHistory.push(x);
       } 
       for (let j = 0; j < this.optionalProgramChangeHistory.length ; j++) {  
         for (let k = 0; k < this.optionalProgramChangeHistory[j].length; k++) { 
