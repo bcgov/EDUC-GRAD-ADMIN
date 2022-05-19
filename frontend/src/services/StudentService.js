@@ -41,7 +41,7 @@ export default {
     },
     ungradStudent(id,reasonCode, reasonDesc, token, json){
         const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.post('/api/v1/student/ungradstudent/studentid/' + id + '?ungradReasonCode=' + reasonCode + '&ungradReasonDesc=' + reasonDesc,json, { headers });
+        return apiClient.post('/api/v1/student/undocompletionstudent/studentid/' + id + '?ungradReasonCode=' + reasonCode + '&ungradReasonDesc=' + reasonDesc,json, { headers });
     },
     getStudentCareerPrograms(id, token){
         const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
@@ -65,11 +65,11 @@ export default {
     },
     getStudentUngradReasons(id, token) {
         const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/ungrad/studentungradreason/studentid/' + id,{ headers});
+        return apiClient.get('/api/v1/undocompletion/studentundocompletionreason/studentid/' + id,{ headers});
     },  
     getUngradReasons(token) {
         const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/ungrad/ungradreason',{ headers });
+        return apiClient.get('/api/v1/undocompletion/undocompletionreason',{ headers });
     },
     getStudentHistory(id, token) {
         const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }

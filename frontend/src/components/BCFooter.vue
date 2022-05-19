@@ -62,7 +62,8 @@ export default {
     float: left;
     position: fixed;
     left: 0;
-    bottom: 0;
+    bottom: 2%;
     height: 4%;
+    z-index: 100;
   }
 </style>

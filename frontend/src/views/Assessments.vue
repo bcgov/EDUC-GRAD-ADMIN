@@ -103,6 +103,11 @@ export default {
           sortable: true,
         },
         {
+          key: "traxReqNumber",
+          label: "Transcript Req #",
+          sortable: true,
+        },
+        {
           key: "requirementName",
           label: "Requirement name",
           sortable: true,

@@ -7,7 +7,6 @@ export default {
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
       Authorization: "Bearer " + token,
     };
     return apiClient.get("/api/v1/assessment", { headers });
@@ -16,7 +15,6 @@ export default {
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
       Authorization: "Bearer " + token,
     };
     return apiClient.get("/api/v1/assessment/" + assmtCode, { headers });
@@ -25,7 +23,6 @@ export default {
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
       Authorization: "Bearer " + token,
     };
     return apiClient.get("/api/v1/assessment/requirement", { headers });
@@ -41,7 +38,7 @@ export default {
     });
   },
   getStudentAssessment(pen, token) {
-    const headers = { Accept: 'application/json','Content-Type': 'application/json',"Access-Control-Allow-Origin": "*",'Authorization': 'Bearer '+ token }
+    const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
     return apiClient.get('/api/v1/assessment/pen/'+ pen + '?sortForUI=true',{ headers });
   }
 };

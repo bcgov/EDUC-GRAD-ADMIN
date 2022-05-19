@@ -17,6 +17,7 @@
           >
             <b-nav-item to="/admin-graduation-programs/programs" :active="tab === 2" @click="tab = 2; closeDropdown('programs-dropdown')">Programs</b-nav-item>
             <b-nav-item to="/admin-graduation-programs/program-rules" :active="tab === 2" @click="tab = 2; closeDropdown('programs-dropdown')">Program rules</b-nav-item>
+            <b-nav-item to="/admin-graduation-programs/transcript-message" :active="tab === 2" @click="tab = 2; closeDropdown('programs-dropdown')">Transcript message</b-nav-item>
           </b-nav-item-dropdown>
 
             <b-nav-item-dropdown

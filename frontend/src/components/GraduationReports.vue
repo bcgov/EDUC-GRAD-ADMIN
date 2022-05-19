@@ -15,7 +15,7 @@
                   <strong>Status:</strong> {{report.documentStatusLabel}} 
                 </li>
                 <li>
-                  <strong>Last Updated:</strong> {{report.updatedTimestamp | formatTime}} 
+                  <strong>Last Updated:</strong> {{report.updateDate | formatTime}} 
                 </li>
                 <li>
                   <strong>Distributed:</strong> {{report.distributionDate | formatTime}}
@@ -33,7 +33,7 @@
                   <strong>Status:</strong> {{transcript.documentStatusLabel}} 
                 </li>
                 <li>
-                  <strong>Last Updated:</strong> {{transcript.updatedTimestamp | formatTime}} 
+                  <strong>Last Updated:</strong> {{transcript.updateDate | formatTime}} 
                 </li>
                 <li>
                   <strong>Distributed:</strong> {{transcript.distributionDate | formatTime}}
@@ -44,7 +44,7 @@
         </div>  
         <div>
           <div class="px-3 w-100 float-left mt-2">
-              <a href="#">View XML Preview</a>
+              <a @click="openXml(xmlReports)" href="#">View XML Preview</a>
           </div>    
         </div>                          
       </b-card-text>
@@ -62,13 +62,17 @@ import sharedMethods from '../sharedMethods';
     computed: {
       ...mapGetters({
         reports: "getStudentReports",
-        transcripts: "getStudentTranscripts"
+        transcripts: "getStudentTranscripts",
+        xmlReports: "getStudentXmlReports"
       })
     },
     methods: {
       downloadPDF: function (data, mimeType) {
-      sharedMethods.base64ToPdfAndOpenWindow(data,mimeType)
-    },
+        sharedMethods.base64ToPdfAndOpenWindow(data,mimeType)
+      },
+      openXml: function (data) {
+        sharedMethods.base64XMLToPdfAndOpenWindow(data)
+      }
   }
   }
 </script>
