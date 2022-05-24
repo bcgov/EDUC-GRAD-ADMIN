@@ -86,7 +86,7 @@
             <b-dropdown :disabled="tabLoading || !hasGradStatus" v-b-tooltip.hover.left id="actions" right :text="smallScreen?'':'Run Graduation Algorithm'" class="m-md-2 float-right admin-gear-w-text">
               <b-dropdown-item v-on:click="graduateStudent" v-if="!studentGradStatus.programCompletionDate">Graduate Student</b-dropdown-item>
               <b-dropdown-item v-on:click="graduateStudent" v-if="studentGradStatus.programCompletionDate && studentGradStatus.program == ('SCCP'||'NOPROG')">Graduate Student</b-dropdown-item>
-              <b-dropdown-item v-if="studentGradStatus.programCompletionDate" v-b-modal.ungraduate-student-modal>Ungraduate Student</b-dropdown-item>
+              <b-dropdown-item v-if="studentGradStatus.programCompletionDate" v-b-modal.ungraduate-student-modal>Undo Completion</b-dropdown-item>
               <b-dropdown-divider></b-dropdown-divider>
               <b-dropdown-item v-on:click="projectedGradStatusWithFinalMarks" >Projected final marks</b-dropdown-item>
               <b-dropdown-item v-on:click="projectedGradStatusWithFinalAndReg">Projected final marks and registrations</b-dropdown-item>
@@ -307,7 +307,7 @@
           </template>
       </b-modal>
       <div>
-        <b-modal id="ungraduate-student-modal" title="Ungraduate Student">
+        <b-modal id="ungraduate-student-modal" title="Undo Completion">
           <p>Ungraduation Reason</p>
           <b-form-select v-model="ungradReasonSelected" :options="ungradReasons" value-field="code" text-field="label"></b-form-select>
 
@@ -319,7 +319,7 @@
             <!-- Button with custom close trigger value -->
 
             <b-button size="sm" variant="primary" @click="hide('ungraduate-student-modal'); ungraduateStudent()">
-              Ungraduate Student
+              Undo Completion
             </b-button>
           </template>
           <div v-if="ungradReasonSelected == 'OTH'" class="mt=3">

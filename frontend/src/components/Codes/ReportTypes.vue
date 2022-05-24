@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Students' in the GRAD system may have several types of reports associated with their GRAD data.  The list of report types are maintained in this table.</p>
+    <p>Students' in the GRAD system may have several types of individual reports associated with their GRAD data. Schools also have several types of reports associated with their school and students' GRAD data. The list of report types are maintained in this table. The description in the Report Type table differentiates between individual student and school reports.</p>
     <DisplayTable
       title="Report Types"
       v-bind:items="reportTypes"

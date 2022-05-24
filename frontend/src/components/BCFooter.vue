@@ -1,6 +1,6 @@
 <template>
 <div>
-    <footer class="footer" id="sticky-footer">
+    <footer class="footer">
       <nav class="navbar navbar-expand-lg navbar-dark">
         <!-- Navbar content -->
         <div class="container">

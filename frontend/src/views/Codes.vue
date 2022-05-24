@@ -20,7 +20,7 @@
             <b-nav-item to="/codes/signature-blocks" :active="tab === 2" @click="tab = 2; closeDropdown('credentials-dropdown')">Signature Block</b-nav-item>
             <b-nav-item to="/codes/document-status-codes" :active="tab === 2" @click="tab = 2; closeDropdown('credentials-dropdown')">Document Status Codes</b-nav-item>
         </b-nav-item-dropdown>
-        <b-nav-item to="/codes/report-types" :active="tab === 3" @click="tab = 3">Student Level Report Types</b-nav-item>
+        <b-nav-item to="/codes/report-types" :active="tab === 3" @click="tab = 3">Report Types</b-nav-item>
         <b-nav-item to="/codes/student-status-codes" :active="tab === 4" @click="tab = 4">Student Status Codes</b-nav-item>
         <b-nav-item to="/codes/ungrad-reasons" :active="tab === 5" @click="tab = 5">Ungrad Reason Codes</b-nav-item>
         <b-nav-item to="/codes/history-activity" :active="tab === 6" @click="tab = 6">History Activity Codes</b-nav-item>

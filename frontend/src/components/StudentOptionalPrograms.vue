@@ -35,6 +35,7 @@
         <template #cell(optionalReqMet)="row">  
           <div v-if="row.item.studentOptionalProgramData">   
               <b-table v-if="row.item.optionalProgramCode == 'BC' || 
+                             row.item.optionalProgramCode == 'BD' || 
                              row.item.optionalProgramCode == 'AN' || 
                              row.item.optionalProgramCode == 'AD' || 
                              row.item.programCode == 'SCCP'"

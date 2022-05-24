@@ -17,9 +17,9 @@
                 <li>
                   <strong>Last Updated:</strong> {{report.updateDate | formatTime}} 
                 </li>
-                <li>
+                <!-- <li>
                   <strong>Distributed:</strong> {{report.distributionDate | formatTime}}
-                </li>
+                </li> -->
               </ul>
             </div>
           </div>
@@ -35,9 +35,9 @@
                 <li>
                   <strong>Last Updated:</strong> {{transcript.updateDate | formatTime}} 
                 </li>
-                <li>
+                <!-- <li>
                   <strong>Distributed:</strong> {{transcript.distributionDate | formatTime}}
-                </li>
+                </li> -->
               </ul>
             </div>
           </div>    

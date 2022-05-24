@@ -9,10 +9,10 @@
     showFilter="true"
   >
     <template #cell(effectiveDate)="row">
-      {{ row.item.effectiveDate | formatTime }}
+      {{ row.item.effectiveDate | formatSimpleDate }}
     </template>
     <template #cell(expiryDate)="row">
-      {{ row.item.expiryDate | formatTime }}
+      {{ row.item.expiryDate | formatSimpleDate }}
     </template>
     <template #cell(language)="row">
         {{ row.item.language }}

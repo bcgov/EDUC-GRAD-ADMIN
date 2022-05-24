@@ -89,3 +89,8 @@
   .nav-item a{
     border-radius: 0px !important;
   }
+
+/* disable button borders on collapsible arrows*/
+button.collapsed, button.not-collapsed, button.more-button {
+  box-shadow: none !important;
+}

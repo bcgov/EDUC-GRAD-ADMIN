@@ -64,7 +64,7 @@
                     tabindex="3"
                   />
                 </div>
-                <div class="advanced-search-field col-12 col-md-1">
+                <div class="advanced-search-field col-12 col-md-2">
                   <label>Open Flag</label>
                   <b-form-select v-model="advancedSearchInput.openFlag.value" :options="options"  tabindex="4"></b-form-select>
                 </div>
