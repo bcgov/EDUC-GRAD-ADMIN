@@ -4,6 +4,7 @@ import MainMenu from '../page_objects/mainMenu';
 import { base_url, credentials, test_pen, api_html_status_threshold } from '../config/constants';
 import { ClientFunction, RequestLogger  } from 'testcafe';
 import { apiCallsFailed } from '../helpers/requestHelper';
+import adminUser from '../config/roles';
 
 const log = require('npmlog');
 const bad_pen = '121212121';
