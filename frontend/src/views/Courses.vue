@@ -18,7 +18,7 @@
                   >
                     [.*]
                   </div>
-                  <b-input class="form__input" v-model="advancedSearchInput.courseCode.value" placeholder=""
+                  <b-input id="trax-code-input" class="form__input" v-model="advancedSearchInput.courseCode.value" placeholder=""
                     tabindex="1" />
                 </div>
                 <div class="advanced-search-field col-12 col-md-2">
@@ -31,7 +31,7 @@
                     >
                     [.*]
                   </div>
-                  <b-input class="form__input" v-model="advancedSearchInput.courseLevel.value" placeholder=""
+                  <b-input id="grade-level-input" class="form__input" v-model="advancedSearchInput.courseLevel.value" placeholder=""
                     tabindex="2" />
                 </div>
                 <div class="advanced-search-field col-12 col-md-2">
@@ -44,12 +44,13 @@
                   >
                     [.*]
                   </div>
-                  <b-input class="form__input" v-model="advancedSearchInput.courseName.value" placeholder=""
+                  <b-input id="course-title-input" class="form__input" v-model="advancedSearchInput.courseName.value" placeholder=""
                     tabindex="3" />
                 </div>
                 <div class="advanced-search-field col-12 col-md-2">
                   <label >Instruction Language</label>
-                    <b-form-select                      
+                    <b-form-select
+                      id="instruction-lang-select"
                       v-model="advancedSearchInput.language.value"
                       :options=langOptions
                     
@@ -137,12 +138,12 @@
                       >
                         [.*]
                       </div>
-                      <b-input class="form__input" v-model="requirementsSearchInput.courseCode.value" placeholder=""
+                      <b-input id="course-code-input" class="form__input" v-model="requirementsSearchInput.courseCode.value" placeholder=""
                         tabindex="1" />
                     </div>
                     <div class="advanced-search-field col-12 col-md-2">
                       <label >Course level</label>
-                      <b-input class="form__input" v-model="requirementsSearchInput.courseLevel.value" placeholder=""
+                      <b-input id="course-level-input" class="form__input" v-model="requirementsSearchInput.courseLevel.value" placeholder=""
                         tabindex="2" />
                     </div>
                     <div class="advanced-search-field col-12 col-md-2">
@@ -155,7 +156,7 @@
                       >
                         [.*]
                       </div>
-                      <b-input class="form__input" v-model="requirementsSearchInput.rule.value" placeholder=""
+                      <b-input id="rule-number-input" class="form__input" v-model="requirementsSearchInput.rule.value" placeholder=""
                         tabindex="3" />
                     </div>               
                   </div>
