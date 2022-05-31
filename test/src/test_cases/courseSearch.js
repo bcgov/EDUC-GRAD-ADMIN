@@ -30,14 +30,35 @@ test('Course Search - empty', async t => {
     
 });
 
-test('Course Search - reset', async t => {
-    await t
-    .typeText(coursesPage.TRAXCode, 'A')
-    .typeText(coursesPage.gradeLevel, '12')
-    .typeText(coursesPage.courseTitle, 'A')
-})
-
 test('Course Search - good data', async t => {
     await t
     .typeText(coursesPage.TRAXCode, 'A')
+    .click(coursesPage.TRAXCode.sibling('.wild-card-button'))
+    .typeText(coursesPage.gradeLevel, '12')
+    .typeText(coursesPage.courseTitle, 'A')
+    .click(coursesPage.courseTitle.sibling('.wild-card-button'))
+    .typeText(coursesPage.TRAXStartDate, '19950101')
+    .typeText(coursesPage.TRAXEndDate, '20220531')
+    .click(coursesPage.searchSubmit);
+
+    await t
+    .expect(await coursesPage.courseResults);
+    //.notContains('Enter at least one field to search.');
+})
+
+test('Course Search - reset', async t => {
+    await t
+    .typeText(coursesPage.TRAXCode, 'A')
+    .click(coursesPage.TRAXCode.sibling('.wild-card-button'))
+    .typeText(coursesPage.gradeLevel, '12')
+    .typeText(coursesPage.courseTitle, 'A')
+    .click(coursesPage.courseTitle.sibling('.wild-card-button'))
+    .typeText(coursesPage.TRAXStartDate, '19950101')
+    .typeText(coursesPage.TRAXEndDate, '20220531')
+    .click(coursesPage.formReset)
+    .click(couresPage.searchSubmit);
+
+    await t
+    .expect(await searchMessage.textContent)
+    .contains('Enter at least one field to search.');
 })

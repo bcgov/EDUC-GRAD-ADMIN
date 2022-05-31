@@ -110,7 +110,7 @@
              
             </div>
           </form>
-          <b-card-text >
+          <b-card-text id="courses-search-results">
             <DisplayTable title="Courses" v-bind:items="courses" v-bind:fields="courseFields" id="courseCode" :showFilter=true pagination="true"
               v-bind:role="role"></DisplayTable>
           </b-card-text>
