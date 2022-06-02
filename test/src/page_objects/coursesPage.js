@@ -15,7 +15,8 @@ class CoursesPage {
         this.instructionLanguage = Selector('#instruction-lang-select');
         this.TRAXStartDate = Selector('#datepicker-startDate');
         this.TRAXEndDate = Selector('#datepicker-endDate');
-        this.courseResults = Selector('#courses-search-results').child('table');
+        
+        this.courseResults = Selector('#courses-search-results table');
         
         // course restrictions
         

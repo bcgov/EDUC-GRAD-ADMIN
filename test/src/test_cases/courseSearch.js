@@ -9,6 +9,13 @@ const requestLogger = RequestLogger(/api\/v1/, {logResponseBody: true, logRespon
 const coursesPage = new CoursesPage();
 const searchMessage = Selector('.search-results-message > strong')
 
+// test data variables
+const TRAXSartDate = '1995-01-01';
+const TRAXEndDate = '2022-05-31';
+const expectedResults = {
+    goodDataRows : 48,
+};
+
 fixture `course-search`
     .page(base_url)
     .beforeEach( async t => {
@@ -18,47 +25,68 @@ fixture `course-search`
     })
     .afterEach(() => log.info(apiCallsFailed(requestLogger, api_html_status_threshold)));
 
-test('Course Search - empty', async t => {
+test('empty', async t => {
     await t
     .click(coursesPage.searchSubmit)
     
     await t
     .expect(await searchMessage.textContent)
     .contains('Enter at least one field to search.');
-
-    //Selector('.search-results-message > strong').withExactText('Enter at least one field to search.')
-    
 });
 
-test('Course Search - good data', async t => {
+test('reset', async t => {
     await t
     .typeText(coursesPage.TRAXCode, 'A')
     .click(coursesPage.TRAXCode.sibling('.wild-card-button'))
     .typeText(coursesPage.gradeLevel, '12')
     .typeText(coursesPage.courseTitle, 'A')
     .click(coursesPage.courseTitle.sibling('.wild-card-button'))
-    .typeText(coursesPage.TRAXStartDate, '19950101')
-    .typeText(coursesPage.TRAXEndDate, '20220531')
+    .click(coursesPage.instructionLanguage)
+    .click(coursesPage.instructionLanguage.child('option').withExactText('EN'))
+    .typeText(coursesPage.TRAXStartDate, TRAXSartDate)
+    .typeText(coursesPage.TRAXEndDate, TRAXEndDate)
+    .click(coursesPage.formReset)
     .click(coursesPage.searchSubmit);
 
     await t
-    .expect(await coursesPage.courseResults);
-    //.notContains('Enter at least one field to search.');
+    .expect(await searchMessage.textContent)
+    .contains('Enter at least one field to search.', {timeout: 2000});
 })
 
-test('Course Search - reset', async t => {
+test('good data - all fields', async t => {
     await t
     .typeText(coursesPage.TRAXCode, 'A')
     .click(coursesPage.TRAXCode.sibling('.wild-card-button'))
     .typeText(coursesPage.gradeLevel, '12')
     .typeText(coursesPage.courseTitle, 'A')
     .click(coursesPage.courseTitle.sibling('.wild-card-button'))
-    .typeText(coursesPage.TRAXStartDate, '19950101')
-    .typeText(coursesPage.TRAXEndDate, '20220531')
-    .click(coursesPage.formReset)
-    .click(couresPage.searchSubmit);
+    .click(coursesPage.instructionLanguage)
+    .click(coursesPage.instructionLanguage.child('option').withExactText('EN'))
+    .typeText(coursesPage.TRAXStartDate, TRAXSartDate)
+    .typeText(coursesPage.TRAXEndDate, TRAXEndDate)
+    //.click(coursesPage.formReset)
+    .click(coursesPage.searchSubmit);
 
     await t
-    .expect(await searchMessage.textContent)
-    .contains('Enter at least one field to search.');
+    //.expect(await Selector('table').count)
+    .expect(await coursesPage.courseResults.withAttribute('aria-rowcount', String(expectedResults.goodDataRows)).exists)
+    .ok();
+    //.notContains('Enter at least one field to search.');
+
+})
+
+test('no courses', async t => {
+    await t
+    .typeText(coursesPage.TRAXCode, 'A')
+    .click(coursesPage.searchSubmit);
+
+    // do not expect table to load since we have no courses with a code of 'A'
+    await t
+    .expect(await coursesPage.courseResults.exists).notOk();
+})
+
+test('validation', async t => {
+    // test the form validations
+    await t
+    .typeText(coursesPage, 'AAAAAA')
 })
