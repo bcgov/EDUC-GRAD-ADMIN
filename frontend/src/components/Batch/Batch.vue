@@ -18,7 +18,7 @@
             <b-form-select
                 id="inline-form-select-audience"
                 class="mb-2 mr-sm-2 mb-sm-0"
-                :options="[{ text: 'Choose...', value: null }, { text: 'Blank certificate print', value: 'Blank certificate print' }, { text: 'Reprint certificate – no principal signature block', value: 'Reprint certificate – no principal signature block' },{ text: 'Original certificate – with principal signature block', value: 'OC' },{ text: 'Blank transcript print', value: 'Blank transcript print' },{ text: 'Transcript', value: 'OT' }]"
+                :options="[{ text: 'Choose...', value: null }, { text: 'Blank certificate print', value: 'Blank certificate print' }, { text: 'Reprint certificate – no principal signature block', value: 'RC' },{ text: 'Original certificate – with principal signature block', value: 'OC' },{ text: 'Blank transcript print', value: 'Blank transcript print' },{ text: 'Transcript', value: 'OT' }]"
                 :value="tabContent[jobId].details['credential']"     
                 @change="editBatchJob(jobId,'credential', $event)"       
               ></b-form-select>
@@ -149,14 +149,16 @@
           <div class="col-2"><strong>PEN</strong></div>
           <div class="col-3"><strong>Name</strong></div>
           <div class="col-2"><strong>Birthdate</strong></div>
-          <div class="col-3"><strong>School of Record</strong></div>   
+          <div class="col-1"><strong>Status</strong></div>
+          <div class="col-2"><strong>School of Record</strong></div>   
         </div>
         <div v-for="(pen, index) in tabContent[jobId].students" :key="index" class="row pl-3 mb-1">
           <div v-if="!pen.dob" class="row col-12">
             <b-form-input type="number" v-model="pen.value" class="col-2"/>
             <b-form-input show=false disabled v-model="pen.name" :ref="'pen'+ jobId + index" class="col-3"/>
             <b-form-input show=false disabled v-model="pen.dob" :ref="'dob'+ jobId + index" class="col-2"/>
-            <b-form-input show=false disabled v-model="pen.school" :ref="'school'+ jobId + index" class="col-3"/>
+            <b-form-input show=false disabled v-model="pen.studentStatus" :ref="'student-status'+ jobId + index" class="col-1"/>            
+            <b-form-input show=false disabled v-model="pen.school" :ref="'school'+ jobId + index" class="col-2"/>
             <div v-if="index == tabContent[jobId].students.length-1" class="col-2">
               <b-button  class="btn btn-primary w-100" @click="addValueToTypeInBatchId(jobId,'students',pen.value,index)">
               <b-spinner small v-if="validating"></b-spinner> Add
@@ -167,7 +169,8 @@
             <div v-if="pen.dob" class="col-2">{{pen.value}}</div>
             <div v-if="pen.dob" class="col-3">{{pen.name}}</div>
             <div v-if="pen.dob" class="col-2">{{pen.dob}}</div>
-            <div v-if="pen.dob" class="col-3"> {{pen.school}}</div>   
+            <div v-if="pen.dob" class="col-1">{{pen.studentStatus}}</div>
+            <div v-if="pen.dob" class="col-2"> {{pen.school}}</div>   
 
             <div v-if="index != tabContent[jobId].students.length-1" class="col-2" ><b-button  class="btn btn-primary w-100" @click="deleteValueFromTypeInBatchId(jobId, 'students',pen.value)">
               Remove
@@ -214,14 +217,12 @@
       </b-card>            
       <b-card v-if="tabContent[jobId].details['who']=='Program'" class="mt-3 px-0" header="Include Programs">
       <b-alert v-if="validationMessage" show variant="danger">{{validationMessage}}</b-alert>
-
       <b-alert dismissible v-if="validationMessage" :show="validationMessage" variant="danger">{{validationMessage}}</b-alert>
         <div class="row col-12 border-bottom mb-3">
             <div class="col-2"><strong>Program</strong></div>
         </div>
         <div v-for="(program, index) in tabContent[jobId].programs" :key="index" class="row pl-3 mb-1">
           <div v-if="!program.value" class="row col-12">
-
             <b-form-select
               id="inline-form-select-type"
               class="col-2"
@@ -248,7 +249,6 @@
             </div>
           </div>
         </div>
-
       </b-card>
       </div>       
       </div>
@@ -301,7 +301,7 @@ export default {
           SchoolService.getSchoolInfo(value,this.token).then(
           (response) => {
             if(response.data.minCode){
-              this.$store.commit("addValueToTypeInBatchId", {id,type, value});
+              this.$store.commit("batchprocessing/addValueToTypeInBatchId", {id,type, value});
               this.$refs['schoolName' + id + valueIndex][0].updateValue(response.data.schoolName);        
               this.$refs['districtName' + id + valueIndex][0].updateValue(response.data.districtName);        
               this.$refs['address' + id + valueIndex][0].updateValue(response.data.address1);        
@@ -321,23 +321,25 @@ export default {
           this.$forceUpdate();
         });
       }
-
-
       if(type == "students"){
         //remove duplicates
         this.validating = true;
         StudentService.getStudentByPen(value,this.token).then(
         (response) => {
-          if(response.data.length > 0){
-            this.$store.commit("addValueToTypeInBatchId", {id,type, value});
-            this.$refs['pen' + id + valueIndex][0].updateValue(response.data[0].usualFirstName + " " + (response.data[0].usualMiddleNames?response.data[0].usualMiddleNames+ " ":"") + response.data[0].usualLastName);        
-            this.$refs['dob' + id + valueIndex][0].updateValue(response.data[0].dob);        
-            this.$refs['school' + id + valueIndex][0].updateValue(response.data[0].schoolOfRecordName);        
-          }else{
+            if(response.data.length == 0){
               this.validationMessage = value + " is not a valid PEN"
               this.deleteValueFromTypeInBatchId(id, type, value);
               this.addTypeToBatchId(id, type);
-          }
+            }else if(response.data[0].studentStatus == 'MER'){
+              this.validationMessage = value + " is a merged student and not permitted"
+            }else{
+              //valid student
+              this.$store.commit("batchprocessing/addValueToTypeInBatchId", {id,type, value});
+              this.$refs['pen' + id + valueIndex][0].updateValue(response.data[0].usualFirstName + " " + (response.data[0].usualMiddleNames?response.data[0].usualMiddleNames+ " ":"") + response.data[0].usualLastName);        
+              this.$refs['dob' + id + valueIndex][0].updateValue(response.data[0].dob);        
+              this.$refs['school' + id + valueIndex][0].updateValue(response.data[0].schoolOfRecordName);   
+              this.$refs['student-status' + id + valueIndex][0].updateValue(response.data[0].studentStatus);   
+            }
           this.$forceUpdate();
           this.validating = false;  
           
@@ -353,7 +355,7 @@ export default {
           TRAXService.getDistrict(value,this.token).then(
           (response) => {
             if(response.data){
-              this.$store.commit("addValueToTypeInBatchId", {id,type, value});
+              this.$store.commit("batchprocessing/addValueToTypeInBatchId", {id,type, value});
               this.$refs['districtName' + id + valueIndex][0].updateValue(response.data.districtName);        
               this.$refs['districtCity' + id + valueIndex][0].updateValue(response.data.city);        
             }else{
@@ -374,7 +376,7 @@ export default {
         this.validating = true;
         
         if(value){
-          this.$store.commit("addValueToTypeInBatchId", {id,type, value});
+          this.$store.commit("batchprocessing/addValueToTypeInBatchId", {id,type, value});
         }else{
           this.validationMessage = "Select a program";
         }
@@ -383,29 +385,29 @@ export default {
       }
     },
     addTypeToBatchId(id, type){
-      this.$store.commit("addTypeToBatchId", {type, id});
+      this.$store.commit("batchprocessing/addTypeToBatchId", {type, id});
       this.$forceUpdate();
     },
     
     deleteValueFromTypeInBatchId(id, type, value){
-      this.$store.commit("deleteValueFromTypeInBatchId", {id,type, value});
+      this.$store.commit("batchprocessing/deleteValueFromTypeInBatchId", {id,type, value});
       this.$forceUpdate();
     },
     deleteBatch(id){
       this.$store.commit("deleteStudentBatch", id);
     },
     clearBatchDetails: function (id) {
-      this.$store.commit("clearBatchDetails", id);
+      this.$store.commit("batchprocessing/clearBatchDetails", id);
     },
     clearBatchGroupDetails: function (id) {
-      this.$store.commit("clearBatchGroupDetails", id);
+      this.$store.commit("batchprocessing/clearBatchGroupDetails", id);
     },    
     newBatchJob() {
       let batchDetail = { details: {what: 'what' +this.tabCounter, who: 'who'+this.tabCounter, credential: ""}, students: [{}], schools:[{}], districts: [{}], programs:[{}],blankTranscriptDetails:[{}],blankCertificateDetails:[{}]};
       let id = "job-" + this.tabCounter;
       
-      this.$store.commit("editBatchDetails",  {batchDetail, id});
-      this.$store.commit("addBatchJob", id);
+      this.$store.commit("batchprocessing/editBatchDetails",  {batchDetail, id});
+      this.$store.commit("batchprocessing/addBatchJob", id);
         requestAnimationFrame(() => {
           this.selectedTab = this.tabs.length;
         })
@@ -429,7 +431,7 @@ export default {
         batchDetail.details['who'] = '';
         
       }
-      this.$store.commit("editBatchDetails", {batchDetail, id});
+      this.$store.commit("batchprocessing/editBatchDetails", {batchDetail, id});
       this.$forceUpdate();
     },
     getCertificateTypes() {
@@ -465,10 +467,10 @@ export default {
   },  
   computed: {
     ...mapGetters({  
-      tabCounter: "getBatchCounter",
-      tabContent: "getBatchDetails",
-      token: "getToken",
-      programOptions: "getProgramOptions"      
+      tabCounter: "batchprocessing/getBatchCounter",
+      tabContent: "batchprocessing/getBatchDetails",
+      token: "auth/getToken",
+      programOptions: "app/getProgramOptions"      
 
     }),
   },

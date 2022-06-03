@@ -1,20 +1,19 @@
   import Vue from "vue";
   import Vuex from "vuex";
-
-  Vue.use(Vuex);
-  import ProgramManagementService from '@/services/ProgramManagementService.js';
+  import batchprocessing from '@/store/modules/batchprocessing.js';
+  import app from '@/store/modules/app.js';
+  import auth from '@/store/modules/auth.js';
   import SchoolService from '@/services/SchoolService.js';
-  import StudentService from '@/services/StudentService.js';
+  import ProgramManagementService from '@/services/ProgramManagementService.js';
+  Vue.use(Vuex);
+  
   export default new Vuex.Store({
     init: {
       //Initialize the store
     },
-    
     state: {
       advancedSearchProps:"",
       tokenTimeout: "",
-      token:"",
-      refreshToken: "",
       roles: "unauthenticated",
       permissions: "",
       username: "",
@@ -41,52 +40,8 @@
         auditHistory:[],
         auditHistoryOptionalPrograms:[],
       },
-      applicationVariables:{
-        programOptions:[],
-        studentStatusOptions:[],
-        ungradReasons:[]
-      },
-      tabs: [],
-      batchDetails: [],
-      batchAutoIncrement: 1,
-      batchTabsLoading: [],
-
     },
     mutations: {
-      setTabLoading(state, payload){
-        state.batchTabsLoading[payload['index']] = payload['value'];
-      },
-      addValueToTypeInBatchId(state, payload){
-        state.batchDetails[payload['id']][payload['type']].push({})
-      },
-      addTypeToBatchId(state, payload){
-        state.batchDetails[payload['id']][payload['type']].push({})
-      },
-      addSchoolToBatch(state,payload){
-        state.batchDetails[payload].schools.push({})
-      },
-      addDistrictToBatch(state,payload){
-        state.batchDetails[payload].districts.push({})
-      },
-      addStudentToBatch(state,payload){
-        state.batchDetails[payload].students.push({})
-      },
-
-
-      //id, type, value
-      deleteValueFromTypeInBatchId(state,payload){
-        let items = state.batchDetails[payload['id']][payload['type']];
-
-        for( var i = 0; i < items.length; i++){    
-          if ( items[i].value === payload['value']) { 
-            items.splice(i--, 1); 
-          }
-        }
-        if(items.length == 0){
-          items.push({});
-        }
-      },
-
       setStudentAuditHistory(state, payload){
         state.student.auditHistory = payload; 
       },
@@ -114,17 +69,6 @@
       setStudentXmlReport(state, payload){
         state.student.xmlReports = payload;         
       },      
-      setProgramOptions(state, payload){
-        state.applicationVariables.programOptions = payload;
-      },
-      setStudentStatusCodesOptions(state, payload){
-        
-        state.applicationVariables.studentStatusOptions = payload;
-     
-      },
-      setUngradReasons(state, payload){
-        state.applicationVariables.ungradReasons = payload;
-      },      
       setUsername(state, payload){
         state.username = payload;
       },
@@ -140,14 +84,7 @@
       setHasGradStatusPendingUpdates(state, payload) {
           state.student.hasGradStatusPendingUpdates = payload;
       },
-      setToken(state, payload) {
-        localStorage.setItem("jwt", payload);
-        state.token = payload;
-      },
-      setRefreshToken(state, payload) {
-        localStorage.setItem("refresh", payload);
-        state.refreshToken = payload;
-      },
+
       setStudentProfile(state, payload) {
         state.student.profile = payload;
       },
@@ -202,105 +139,23 @@
         state.student.reports = "not loaded";
         state.student.transcripts = "not loaded";
         state.student.xmlReports = "not loaded";
-        state.student.ungradReasons = "";
+        state.student.ungradReasons = [];
         state.student.careerPrograms = [];
       },
       setRoles(state, payload){
         state.roles = payload;
-      },
-      logout(state){
-        state.token ="";
-        state.refreshToke ="";
-      },        
-      addBatchJob(state,id){
-        state.batchAutoIncrement++;
-        state.tabs.push(id);
-      },
-      editBatchDetails(state,payload){
-        state.batchDetails[payload['id']]=payload['batchDetail'];
-      },
-      clearBatchDetails(state,payload){
-        state.batchDetails[payload]['details'].who="Choose...";
-        state.batchDetails[payload].schools=[{}];
-        state.batchDetails[payload].districts=[{}];
-        state.batchDetails[payload].programs=[{}];
-        state.batchDetails[payload].students=[{}];
-        state.batchDetails[payload]['details'].blankCertificateDetails=[{}];
-        state.batchDetails[payload]['details'].blankTranscriptDetails=[{}];
-        state.batchDetails[payload]['details'].credential="";
-        state.batchDetails[payload]['details'].categoryCode="";
-        state.batchDetails[payload]['details'].copies="";
-      },
-      clearBatchGroupDetails(state,payload){
-        state.batchDetails[payload].schools=[{}];
-        state.batchDetails[payload].districts=[{}];
-        state.batchDetails[payload].programs=[{}];
-        state.batchDetails[payload].students=[{}];
-      },     
-      clearBatchCredentialsDetails(state,payload){
-        state.batchDetails[payload].details['blankCertificateDetails']=[{}];
-        state.batchDetails[payload].details['blankTranscriptDetails']=[{}];
-      }            
+      },         
     },
     actions: {
-      validateStudentInGrad({state}, payload){
-        
-        StudentService.getStudentByPen(payload['pen'],state.token).then(
-          (response) => {
-            this.$store.commit("addValueToTypeInBatchId", payload);
-            return response;
-          }
-        ).catch((error) => {
-          // eslint-disable-next-line
-          console.log(error.response.status);
-        });
-      },
-      addStudentToBatch({commit}, payload){
-        commit('addStudentToBatch', payload);
-      },
-      addSchoolToBatch({commit}, payload){
-        commit('addSchoolToBatch', payload);
-      },
-      addDistrictToBatch({commit}, payload){
-        commit('addDistrictToBatch', payload);
-      },      
-      setApplicationVariables({commit,state}) {
-        ProgramManagementService.getGraduationPrograms(state.token).then(
-          (response) => {
-            commit('setProgramOptions', response.data);
-          }
-        ).catch((error) => {
-          // eslint-disable-next-line
-          console.log(error.response.status);
-        });
-        StudentService.getStudentStatusCodes(state.token).then(
-          (response) => {
-            commit('setStudentStatusCodesOptions', response.data);
-          }
-        ).catch((error) => {
-          // eslint-disable-next-line
-          console.log(error.response.status);
-        });
-        StudentService.getUngradReasons(state.token).then(
-          (response) => {
-            commit('setUngradReasons', response.data);
-          }
-        ).catch((error) => {
-          // eslint-disable-next-line
-          console.log(error.response.status);
-        });        
-      }, 
       setUsername({commit}, payload){
         commit('setUsername', payload);
       },
       setPermissions({commit}, payload){
         commit('setPermissions', payload);
       },
-
-      // Programs
-      
+      // Programs      
       createProgram({state}, payload) {
-        ProgramManagementService.createProgram(payload, state.token).then(
+        ProgramManagementService.createProgram(payload, state.auth.token).then(
           (response) => {
             return "STORE REspsonse to display table" + response;
           }
@@ -311,7 +166,7 @@
       },   
       deleteProgram({state}, payload) {
         
-        ProgramManagementService.deleteProgram(payload, state.token).then(
+        ProgramManagementService.deleteProgram(payload, state.auth.token).then(
           (response) => {
             // eslint-disable-next-line
             console.log(response);
@@ -323,7 +178,7 @@
       },   
       updateProgram({state}, payload) {
         
-        ProgramManagementService.updateProgram(payload, state.token).then(
+        ProgramManagementService.updateProgram(payload, state.auth.token).then(
           (response) => {
             // eslint-disable-next-line
             console.log(response);
@@ -335,7 +190,7 @@
       },   
        // Optional Programs
        createOptionalProgram({state}, payload) {
-        ProgramManagementService.createOptionalProgram(payload, state.token).then(
+        ProgramManagementService.createOptionalProgram(payload, state.auth.token).then(
           (response) => {
             return "STORE REspsonse to display table" + response;
           }
@@ -346,7 +201,7 @@
       },   
       deleteOptionalProgram({state}, payload) {
         
-        ProgramManagementService.deleteOptionalProgram(payload, state.token).then(
+        ProgramManagementService.deleteOptionalProgram(payload, state.auth.token).then(
           (response) => {
             // eslint-disable-next-line
             console.log(response);
@@ -358,7 +213,7 @@
       },   
       updateOptionalProgram({state}, payload) {
         
-        ProgramManagementService.updateOptionalProgram(payload, state.token).then(
+        ProgramManagementService.updateOptionalProgram(payload, state.auth.token).then(
           (response) => {
             // eslint-disable-next-line
             console.log(response);
@@ -370,7 +225,7 @@
       },   
       getGraduationPrograms({state}) {
         
-        ProgramManagementService.getGraduationPrograms(state.token).then(
+        ProgramManagementService.getGraduationPrograms(state.auth.token).then(
           (response) => {
             return response.data;
           }
@@ -412,13 +267,6 @@
       setStudentGradStatusOptionalPrograms({commit}, payload) {
         commit('setStudentGradStatusOptionalPrograms', payload);
       },
-      
-      setToken({commit}, payload) {
-        commit('setToken', payload);
-      },
-      setRefreshToken({commit}, payload) {
-        commit('setRefreshToken', payload);
-      },
       setStudentProfile({
         commit
       }, payload) {
@@ -457,7 +305,7 @@
       },    
       // SEARCH
       searchSchools({state},payload) {
-        SchoolService.searchSchools(payload,state.token).then(
+        SchoolService.searchSchools(payload,state.auth.token).then(
           (response) => {
             return response.data;
           }
@@ -467,9 +315,6 @@
         });
       },      
     },
-
-    
-
     getters: {
       getStudentAuditHistory(state){
         return state.student.auditHistory;
@@ -568,12 +413,7 @@
       gradStatusAssessments(state){
         return state.student.gradStatus.studentGradData.studentAssessments.studentAssessmentList;
       },      
-      getToken(state){
-        return state.token;
-      },
-      getRefreshToken(state){
-        return state.refreshToken;
-      },      
+  
       getRoles(state){
         return state.roles;
       },
@@ -589,15 +429,6 @@
       getUsername(state){
         return state.username;
       },
-      getProgramOptions(state){
-        return state.applicationVariables.programOptions;
-      },
-      getStudentStatusOptions(state){
-        return state.applicationVariables.studentStatusOptions;
-      },
-      getUngradReasons(state){
-        return state.applicationVariables.ungradReasons;
-      },
       getRequirementsMet(state){
         return state.student.gradStatus.studentGradData.requirementsMet;
       },
@@ -607,21 +438,10 @@
       getStudentCareerPrograms(state){
         return state.student.careerPrograms;
       },
-      getTabs(state){
-        return state.tabs;
-      },
-      getBatchDetails(state){
-        return state.batchDetails;
-      },
-      getBatchCounter(state){
-          return state.batchAutoIncrement;
-      },
-      getBatchTabsLoading(state){
-        return state.batchTabsLoading;
-      }
-
-      
-        
     },
-    modules: {}
+    modules: {
+      app,
+      auth,
+      batchprocessing
+    }
   })

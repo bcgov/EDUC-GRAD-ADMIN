@@ -427,7 +427,7 @@
     computed: {
       
       ...mapGetters({
-        token: "getToken",
+        token: "auth/getToken",
         role: "getRoles"
       }),
     },

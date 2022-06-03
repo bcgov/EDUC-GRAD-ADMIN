@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-
     <!-- Notes Section -->
     <div>
       <b-button v-b-toggle.note-collapse variant="link" v-on:click="showNotes = !showNotes" class="float-left">
@@ -24,7 +23,7 @@
     </div>
     <b-collapse id="ungrad-reasons-collapse">
       <div class="pb-3 px-3">
-        <b-table striped :items="studentUngradReasons" :fields='[{ key: "createDate",label: "Undo Completion Date",class:"px-0 py-2 w-15"},{key: "ungradReasonCode",label: "Code",class:"px-0 py-2 w-10"},{key: "ungradReasonDescription",label: "Reason",class:"px-0 py-2 w-80"},{key: "createUser",label: "User",class:"px-0 py-2 w-80"}]'></b-table>
+        <DisplayTable striped :items="studentUngradReasons" :fields='[{ key: "createDate",label: "Undo Completion Date",class:"px-0 py-2 w-15"},{key: "ungradReasonCode",label: "Code",class:"px-0 py-2 w-10"},{key: "ungradReasonDescription",label: "Reason",class:"px-0 py-2 w-80"},{key: "createUser",label: "User",class:"px-0 py-2 w-80"}]'></DisplayTable>
       </div>
     </b-collapse>
     <hr>
@@ -49,6 +48,7 @@
           <div class="row col-12 py-2" :header="studentHistory.slice().reverse()[index].historyID">
             <div class="col-4 border-bottom">
               <p><strong>Activity Code: </strong>{{studentHistory.slice().reverse()[index].activityCode}}</p>
+              <ul><li>{{studentHistory.slice().reverse()[index].activityCodeDescription}}</li></ul>
               <p><strong>Update User: </strong>{{studentHistory.slice().reverse()[index].updateUser}}</p>
               <p><strong>Updated: </strong>{{studentHistory.slice().reverse()[index].createDate | formatTime}}</p>
             </div>
@@ -63,7 +63,9 @@
                   && v.pathTo != 'createDate' 
                   && v.pathTo != 'historyID'
                   && v.pathTo != 'studentGradData'
+                  && v.pathTo != 'studentProjectedGradData'
                   && v.pathTo != 'activityCode'
+                  && v.pathTo != 'activityCodeDescription'
                   && v.pathTo != 'studentID'
                   && v.pathTo != 'updateUser'
                   && (v.kind != 'N' || v.rhs)
@@ -154,17 +156,19 @@ import { mapGetters } from "vuex";
 import { DeepDiff } from 'deep-diff';
 import sharedMethods from '../sharedMethods';
 import StudentNotes from "@/components/StudentNotes";
+import DisplayTable from "@/components/DisplayTable.vue";
 
 export default {
   name: "StudentAuditHistory",
   components: {
     StudentNotes: StudentNotes,
+    DisplayTable: DisplayTable,
   },
   props: {},
   computed: {
     ...mapGetters({
         studentId: "getStudentId",
-        token: "getToken",
+        token: "auth/getToken",
         studentHistory: 'getStudentAuditHistory',
         optionalProgramHistory: 'getStudentOptionalProgramAuditHistory',
         studentUngradReasons: "getStudentUngradReasons",
@@ -223,7 +227,7 @@ export default {
       this.changeHistory = [];
 
       for (let i = 0; i < this.studentHistoryChangeCount - 1; i++) {
-          var x = DeepDiff(tempHistory[i], tempHistory[i + 1]);
+          let x = DeepDiff(tempHistory[i], tempHistory[i + 1]);
           this.changeHistory.push(x);  
       }
       for (let j = 0; j < this.changeHistory.length ; j++) {  
@@ -242,7 +246,7 @@ export default {
       this.optionalProgramChangeHistory = [];
       
       for (let i = 0; i < this.optionalProgramHistoryChangeCount - 1; i++) {
-            var z = DeepDiff(tempProgramHistory[i], tempProgramHistory[i + 1]);
+            let z = DeepDiff(tempProgramHistory[i], tempProgramHistory[i + 1]);
             this.optionalProgramChangeHistory.push(z);
       } 
       for (let j = 0; j < this.optionalProgramChangeHistory.length ; j++) {  

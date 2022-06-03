@@ -89,7 +89,7 @@ export default {
   computed: {
     ...mapGetters({
       studentNotes: "getStudentNotes",
-      token: "getToken",
+      token: "auth/getToken",
       profile: "getStudentProfile",
       username: "getUsername"
     }),

@@ -38,7 +38,7 @@ export default {
   },
   computed: {
   ...mapGetters({
-      getToken: "getToken"
+      getToken: "auth/getToken"
     }),
   },
   methods: {
@@ -46,7 +46,7 @@ export default {
       e.preventDefault()
       if (this.password.length > 0) {
         LoginService.handleSubmit(this.id, this.password).then((response) => {
-            this.$store.dispatch('setToken', response.data.access_token);
+            this.$store.dispatch('auth/setToken', response.data.access_token);
         });
       }
     }

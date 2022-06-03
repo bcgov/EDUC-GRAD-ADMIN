@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>A students' Transcript, Student Achievement Report (TVR) and Certificate(s) will show a status as the student progresses through the system.  The list of document statuses are maintained in this table.  Documents will show In Progress until the student graduates, once a student graduates and the final documents are created, the documents will show a status of Completed.  If, and only if, a student gets "ungraded" will a students existing documents get Archived. </p>
+    <p>A student's Transcript, Student Achievement Report (TVR) and Certificate(s) will show a status as the student progresses through the system.  The list of document statuses are maintained in this table.  Documents will show In Progress until the student graduates, once a student graduates and the final documents are created, the documents will show a status of Completed. If, and only if, the student has completed the SCCP program and the User moves the SCCP student to a graduation program will the students existing documents get Archived.</p>
     <DisplayTable
         title="Program Certificate Transcripts"
         v-bind:items="documentStatusCodes"
@@ -81,7 +81,7 @@ export default {
   },
   computed: {
     ...mapGetters({  
-      token: "getToken",
+      token: "auth/getToken",
       role: "getRoles"
     }),
   },

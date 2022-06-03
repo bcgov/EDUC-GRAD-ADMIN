@@ -1,5 +1,4 @@
 <template>
-
   <div class="student-profile">
     <div class="row m-0 py-3">    
       <div class="px-0">   
@@ -308,7 +307,7 @@
       </b-modal>
       <div>
         <b-modal id="ungraduate-student-modal" title="Undo Completion">
-          <p>Ungraduation Reason</p>
+          <p>Undo Completion Reason</p>
           <b-form-select v-model="ungradReasonSelected" :options="ungradReasons" value-field="code" text-field="label"></b-form-select>
 
           <template #modal-footer="{ok, cancel, hide}">
@@ -354,10 +353,26 @@
   export default {
     name: "studentProfile",
     created() {
+
+  
+        StudentService.getStudentPen(this.$route.params.studentId, this.token).then(
+          (response) => {           
+            this.pen = response.data.pen
+            const studentIdFromURL = this.$route.params.studentId;
+            this.loadStudent(studentIdFromURL)
+          }
+        ).catch((error) => {
+          if(error.response.status){
+
+            this.showNotification(
+              "danger",
+              "There was an error: " + error.response.status
+            );
+          }
+        })       
+
       this.showNotification = sharedMethods.showNotification;
-      const penFromURL = this.$route.params.pen;
-      const studentIdFromURL = this.$route.params.studentId;
-      this.loadStudent(penFromURL, studentIdFromURL);
+
       this.window.width = window.innerWidth;
       this.window.height = window.innerHeight;
       if (this.window.width < 768) {
@@ -377,12 +392,11 @@
       StudentAuditHistory: StudentAuditHistory
     },
     props: {
-      pen: {
-        type: String,
-      }
+
     },
     data() {
       return { 
+        pen: "",
         optionalProgramTab: "",
         projectedOptionalGradStatus:"",
         nonGradReasons:"",
@@ -419,13 +433,13 @@
         gradInfo: "getStudentGraduationCreationAndUpdate",
         hasGradStatus: "studentHasGradStatus",
         studentGradStatus: "getStudentGradStatus",
-        token: "getToken",
+        token: "auth/getToken",
         studentId: "getStudentId",
         studentPen: "getStudentPen",
         studentInfo: "getStudentProfile",
         studentNotes: "getStudentNotes",
         optionalPrograms: "getStudentOptionalPrograms",    
-        ungradReasons: "getUngradReasons",      
+        ungradReasons: "app/getUngradReasons",      
         studentUngradReasons: "getStudentUngradReasons",
         gradCourses: "gradStatusCourses",
         studentHistory: 'getStudentAuditHistory',
@@ -440,7 +454,7 @@
       ungraduateStudent(){
         this.tabLoading = true;
         let ungradCode = this.ungradReasonSelected;
-        var ungradDesc = this.ungradReasonDesc;
+        let ungradDesc = this.ungradReasonDesc;
         if(ungradCode != "OTH"){
           ungradDesc = this.ungradReasons.filter(function (reason){  
             return reason.code == ungradCode;
@@ -547,7 +561,10 @@
             this.$store.dispatch("setStudentXmlReport", response.data);
           }
         ).catch((error) => {
-          if(error.response.status){
+          if(error.response.status == 404){
+            // eslint-disable-next-line
+            console.log(error);
+          } else {
             this.$bvToast.toast("ERROR " + error.response.statusText, {
               title: "Service ERROR" + error.response.status,
               variant: 'danger',
@@ -577,8 +594,8 @@
         this.selectedTab = 0;
         this.tabLoading = true; 
         GraduationService.graduateStudent(this.studentId, this.token).then(() => {
-          this.reloadGradStatus();
-               
+          // this.reloadGradStatus();
+          this.loadStudent(this.studentId);    
         }).catch((error) => {
           this.tabLoading = false; 
           if(error.response.status){
@@ -680,8 +697,8 @@
           this.smallScreen = false;
         }
       },
-      loadStudent(pen, studentIdFromURL) {
-        StudentService.getStudentByPen(pen, this.token).then((response) => {
+      loadStudent(studentIdFromURL) {
+        StudentService.getStudentByPen(this.pen, this.token).then((response) => {
           this.$store.dispatch('setStudentProfile', response.data);
         }).catch((error) => {
           if(error.response.status){
@@ -689,11 +706,9 @@
               "danger",
               "There was an error with the Student Service (getting the Student using PEN): " + error.response.status
             );
-          }
-         
+          }  
         });
-
-        AssessmentService.getStudentAssessment(pen, this.token).then((response) => {
+        AssessmentService.getStudentAssessment(this.pen, this.token).then((response) => {
           this.$store.dispatch('setStudentAssessments', response.data);
         }).catch((error) => {
           if(error.response.status){
@@ -715,7 +730,6 @@
             );
           }
         });
-
         StudentService.getGraduationStatusOptionalPrograms(studentIdFromURL, this.token).then(
           (response) => {
             this.$store.dispatch("setStudentGradStatusOptionalPrograms", response.data);
@@ -727,7 +741,6 @@
             );
           }
         });
-
         StudentService.getStudentCareerPrograms(studentIdFromURL, this.token).then(
           (response) => {
             this.$store.dispatch("setStudentCareerPrograms", response.data);
@@ -740,8 +753,7 @@
             );
           }
         });        
-
-        CourseService.getStudentCourseAchievements(pen, this.token).then(
+        CourseService.getStudentCourseAchievements(this.pen, this.token).then(
           (response) => {
             
             this.$store.dispatch("setStudentCourses", response.data);
@@ -754,8 +766,7 @@
             );
           }
         });
-
-        CourseService.getStudentExamDetails(pen, this.token).then(
+        CourseService.getStudentExamDetails(this.pen, this.token).then(
           (response) => {           
             this.$store.dispatch("setStudentExams", response.data);
           }
@@ -767,7 +778,6 @@
             );
           }
         });
-
         StudentService.getStudentNotes(studentIdFromURL, this.token).then(
           (response) => {           
             this.$store.dispatch("setStudentNotes", response.data);
@@ -780,9 +790,7 @@
             );
           }
         });
-
-        this.getStudentReportsAndCertificates(studentIdFromURL, pen);
-
+        this.getStudentReportsAndCertificates(studentIdFromURL, this.pen);
         StudentService.getStudentUngradReasons(studentIdFromURL, this.token).then(
           (response) => {         
             this.$store.dispatch("setStudentUngradReasons", response.data);
@@ -791,11 +799,10 @@
           if(error.response.status){ 
             this.showNotification(
               "danger",
-              "There was an error with the Student Service (getting the Ungrad Reasons): " + error.response.status
+              "There was an error with the Student Service (getting the Undo Completion Reasons): " + error.response.status
             );
           }
-        });
-        
+        });    
         StudentService.getStudentHistory(studentIdFromURL, this.token).then(
             (response) => {
               this.$store.dispatch("setStudentAuditHistory", response.data);
@@ -808,7 +815,6 @@
             );
           }
         });
-
         StudentService.getStudentOptionalProgramHistory(studentIdFromURL, this.token).then(
           (response) => {
   
@@ -821,6 +827,7 @@
             );
           }
         });
+        this.tabLoading = false;
       },//loadStudent
     },
   };

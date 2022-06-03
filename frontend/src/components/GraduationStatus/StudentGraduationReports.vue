@@ -35,16 +35,16 @@
                 <li>
                   <strong>Last Updated:</strong> {{transcript.updateDate | formatTime}} 
                 </li>
-                <!-- <li>
+                <li>
                   <strong>Distributed:</strong> {{transcript.distributionDate | formatTime}}
-                </li> -->
+                </li>
               </ul>
             </div>
           </div>    
         </div>  
         <div>
-          <div class="px-3 w-100 float-left mt-2">
-              <a @click="openXml(xmlReports)" href="#">View XML Preview</a>
+          <div v-if="xmlReports != 'not loaded'" class="px-3 w-100 float-left mt-2">
+              <a @click="downloadPDF(xmlReports,'application/pdf')" href="#">View XML Preview</a>
           </div>    
         </div>                          
       </b-card-text>
@@ -54,10 +54,10 @@
 
 <script>
 import { mapGetters } from "vuex";
-import sharedMethods from '../sharedMethods';
+import sharedMethods from '../../sharedMethods';
 
   export default {
-    name: "GraduationReports",
+    name: "StudentGraduationReports",
     props: {},
     computed: {
       ...mapGetters({
@@ -69,9 +69,6 @@ import sharedMethods from '../sharedMethods';
     methods: {
       downloadPDF: function (data, mimeType) {
         sharedMethods.base64ToPdfAndOpenWindow(data,mimeType)
-      },
-      openXml: function (data) {
-        sharedMethods.base64XMLToPdfAndOpenWindow(data)
       }
   }
   }

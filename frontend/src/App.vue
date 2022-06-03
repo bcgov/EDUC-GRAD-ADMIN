@@ -42,7 +42,7 @@ export default {
   },
   created() {
     if(this.role == "administrator"){
-      this.$store.dispatch("setApplicationVariables");
+      this.$store.dispatch("app/setApplicationVariables");
     }
   },
   data() {

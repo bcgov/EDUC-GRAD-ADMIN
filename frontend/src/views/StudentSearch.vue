@@ -31,34 +31,34 @@
                 <div v-if="roles == 'debug'" class="sample-pens m-3">
                   Samples: V0.1.2
                   <div class="row col-12">
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(102262375)">102262375</a> 1950 NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(106900004)">106900004</a> 1950 NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(109526160)">109526160</a> 1950 NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(106146418)">106146418</a> 1950 COMPLETED 2017/08/01</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(107223315)">106146418</a> 1950 COMPLETED 2019/05/01</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(106146418)">108311507</a> 1950 COMPLETED 2012/11/01</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(114541337)">114541337</a> 2004-EN NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(135290237)">135290237</a> 2004-EN NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(115599722)">115599722</a> 2004-EN COMPLETED 2021/02/01</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(118688159)">118688159</a> 2004-PF COMPLETED 2015/06/01</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(124304700)">124304700</a> 2018-EN COMPLETED 2021/01/01</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(126287598)">126287598</a> 2018-EN COMPLETED 2020/11/01</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(125355511)">125355511</a> 2018-EN COMPLETED 2020/06/01</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(126774009)">126774009</a> 2018-EN NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(127518017)">127518017</a> 2018-EN NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(129320966)">129320966</a> 2018-EN NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(126604461)">126604461</a> 2018-PF COMPLETED 2020/06/01</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(126870211)">126870211</a> 2018-PF COMPLETED 2020/05/01</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(126885227)">126885227</a> 2018-PF COMPLETED 2020/04/01</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(126891977)">126891977</a> 2018-PF NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(127590453)">127590453</a> 2018-PF NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(127644656)">127644656</a> 2018-PF NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(101005700)">101005700</a> 1950 NOPROG AN NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(124849662)">127644656</a> 1950 NOPROG AN NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(114269459)">114269459</a> SCCP AD NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(118701325)">118701325</a> SCCP AD NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(128025632)">128025632</a> SCCP AD NOT COMPLETED</div>
-                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByPenSample(128041027)">128041027</a> SCCP AD NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a00dfa87ff1')">Student 1</a> 1950 NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a0b1f6b7896')">Student 2</a> 1950 NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a0bd2497bc2')">Student 3</a> 1950 NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a06f60a6439')">Student 4</a> 1950 COMPLETED 2017/08/01</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a0b10330d76')">Student 5</a> 1950 COMPLETED 2019/05/01</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a06f60a6439')">Student 6</a> 1950 COMPLETED 2012/11/01</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a1baa405960')">Student 7</a> 2004-EN NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a41d6d647fa')">Student 8</a> 2004-EN NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a1b7186023a')">Student 9</a> 2004-EN COMPLETED 2021/02/01</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a1f51581eaa')">Student 10</a> 2004-PF COMPLETED 2015/06/01</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a2e514f0fcb')">Student 11</a> 2018-EN COMPLETED 2021/01/01</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a2e6d724185')">Student 13</a> 2018-EN COMPLETED 2020/11/01</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a2e3d7130cd')">Student 14</a> 2018-EN COMPLETED 2020/06/01</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a32b43b1cc5')">Student 15</a> 2018-EN NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a3003f356c5')">Student 16</a> 2018-EN NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a33cd244fad')">Student 17</a> 2018-EN NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a32cae02ba7')">Student 18</a> 2018-PF COMPLETED 2020/06/01</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a3288dc765f')">Student 19</a> 2018-PF COMPLETED 2020/05/01</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a3288e77b17')">Student 20</a> 2018-PF COMPLETED 2020/04/01</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a3288ef7ea2')">Student 21</a> 2018-PF NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a3004627073')">Student 22</a> 2018-PF NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a338168590c')">Student 23</a> 2018-PF NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-49ffe91c03e6')">Student 24</a> 1950 NOPROG AN NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a2e225977c8')">Student 25</a> 1950 NOPROG AN NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a19919c7262')">Student 26</a> SCCP AD NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a1f06df5d06')">Student 27</a> SCCP AD NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a335e95483b')">Student 28</a> SCCP AD NOT COMPLETED</div>
+                    <div class="px-3 col-4"><a href="#" v-on:click="findStudentByStudentIdSample('ac339d70-7649-1a2e-8176-4a335e8e44ae')">Student 29</a> SCCP AD NOT COMPLETED</div>
                   </div>
                 </div>
               </b-card-text>
@@ -224,7 +224,7 @@
                     v-bind:pagination = "true"
                   >
                       <template #cell(pen)="data">
-                        <router-link :to="'/student-profile/' + data.item.pen + '/' + data.item.studentID">{{ data.item.pen }}</router-link>
+                        <router-link :to="'/student-profile/' + data.item.studentID">{{ data.item.pen }}</router-link>
                       </template>
                       <template #cell(more)="row">
                         <b-btn
@@ -465,7 +465,7 @@ export default {
       exams: "getStudentExams",
       gradStatus: "getStudentGradStatus",
       hasGradStatus: "studentHasGradStatus",
-      token: "getToken",
+      token: "auth/getToken",
       roles: "getRoles",
     }),
   },
@@ -484,9 +484,24 @@ export default {
         }
       }
     },
-    findStudentByPenSample: function (pen) {
-      this.penInput = pen;
-      this.findStudentByPen();
+    findStudentByStudentIdSample: function (studentId) {
+      StudentService.getStudentPen(studentId, this.token).then(
+          (response) => {           
+            this.penInput = response.data.pen;
+            this.findStudentByPen();
+          }
+        ).catch((error) => {
+          if(error.response.status){
+
+            this.showNotification(
+              "danger",
+              "There was an error: " + error.response.status
+            );
+          }
+        })       
+      
+     
+      
     },
     findStudentByPen: function () {
       if (this.penInput) {
@@ -578,7 +593,7 @@ export default {
         this.selectedPen = student[0].pen;
         this.selectedId = student[0].studentID;
         this.$router.push({
-          path: `/student-profile/${this.selectedPen}/${this.selectedId}`
+          path: `/student-profile/${this.selectedId}`
         });
       },
 

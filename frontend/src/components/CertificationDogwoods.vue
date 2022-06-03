@@ -33,6 +33,7 @@ import { mapGetters } from "vuex";
 import sharedMethods from '../sharedMethods';
 
 export default {
+
   name: "CertificationDogwoods",
   props: {},
   computed: {

@@ -39,7 +39,7 @@ export default {
   },
   props: {},
   computed: {...mapGetters({
-      token: "getToken",
+      token: "auth/getToken",
       role: "getRoles", 
   })},
   data: function () {

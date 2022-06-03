@@ -117,8 +117,8 @@ let keycloak = Keycloak(initOptions);
 keycloak.init({ onLoad: initOptions.onLoad, token, refreshToken ,"checkLoginIframe" : false,  idpHint:'IDIR'}).success((auth) =>{
     
     if(auth) {
-      store.dispatch("setToken",keycloak.token);
-      store.dispatch("setRefreshToken",keycloak.refreshToken);
+      store.dispatch("auth/setToken",keycloak.token);
+      store.dispatch("auth/setRefreshToken",keycloak.refreshToken);
       store.dispatch("setPermissions",keycloak.tokenParsed.scope);
       store.dispatch("setUsername",keycloak.tokenParsed.name);
   
@@ -137,8 +137,8 @@ keycloak.init({ onLoad: initOptions.onLoad, token, refreshToken ,"checkLoginIfra
       setInterval(() =>{
         keycloak.updateToken(70).success((refreshed)=>{
           if (refreshed) {
-            store.dispatch("setToken",keycloak.token);
-            store.dispatch("setRefreshToken",keycloak.refreshToken);
+            store.dispatch("auth/setToken",keycloak.token);
+            store.dispatch("auth/setRefreshToken",keycloak.refreshToken);
             store.dispatch("setPermissions",keycloak.tokenParsed.scope);
             store.dispatch("setUsername",keycloak.tokenParsed.name);
           } else {

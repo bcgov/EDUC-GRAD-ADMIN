@@ -22,7 +22,7 @@ export default {
   name: "GraduationOptionalProgramRules",
   props: {},
   computed: {...mapGetters({
-      token: "getToken"
+      token: "auth/getToken"
   })},
   components:{
     DisplayTable: DisplayTable,

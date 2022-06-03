@@ -5,6 +5,7 @@
   <div class="mt-2 row">
   <div class="col-12 float-left p-0">
     <div ref="top">
+
       <b-card no-body>
         <b-tabs v-model="selectedTab" active card>
           <b-tab title="Job/Runs">
@@ -96,11 +97,11 @@
 
 <script>
 // @ is an alias to /src
-import DashboardService from "@/services/DashboardService.js";
+import BatchProcessingService from "@/services/BatchProcessingService.js";
 import DisplayTable from '@/components/DisplayTable.vue';
-import BatchJobSearchResults from "@/components/BatchJobSearchResults.vue";
-import BatchJobErrorResults from "@/components/BatchJobErrorResults.vue";
-import BatchJobForm from "@/components/Dashboard/Batch.vue";
+import BatchJobSearchResults from "@/components/Batch/BatchJobSearchResults.vue";
+import BatchJobErrorResults from "@/components/Batch/BatchJobErrorResults.vue";
+import BatchJobForm from "@/components/Batch/Batch.vue";
 import {
   mapGetters
 } from "vuex";
@@ -114,16 +115,17 @@ export default {
       return this.batchInfoListData;
     },
     ...mapGetters({
-      tabCounter: "getBatchCounter",
-      tabContent: "getBatchDetails",
-      tabs: "getTabs",
-      token: "getToken",
+      tabCounter: "batchprocessing/getBatchCounter",
+      tabContent: "batchprocessing/getBatchDetails",
+      tabs: "batchprocessing/getBatchProcessingTabs",
+      spinners: "batchprocessing/getBatchTabsLoading",
+      token: "auth/getToken",
       courses: "getStudentCourses",
       gradStatusCourses: "gradStatusCourses",
       studentGradStatus: "getStudentGradStatus",
       hasGradStatus: "studentHasGradStatus",
-      gradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
-      spinners: "getBatchTabsLoading"
+      gradStatusPendingUpdates: "getHasGradStatusPendingUpdates"
+      
 
     }),
   },
@@ -251,7 +253,7 @@ export default {
         if (this.tabs[i] == id) {
           this.tabs.splice(i, 1);
           this.spinners.splice(i,1)
-          this.$store.commit("clearBatchDetails",id);
+          this.$store.commit("batchprocessing/clearBatchDetails",id);
           return;
         }
       }
@@ -263,8 +265,8 @@ export default {
       
       let id = "job-" + this.tabCounter;
       this.$set(this.spinners, id, false)
-      this.$store.commit("editBatchDetails",  {batchDetail, id});
-      this.$store.commit("addBatchJob", "job-"+this.tabCounter);
+      this.$store.commit("batchprocessing/editBatchDetails",  {batchDetail, id});
+      this.$store.commit("batchprocessing/addBatchJob", "job-"+this.tabCounter);
         requestAnimationFrame(() => {
           this.selectedTab = this.tabs.length;
         })
@@ -273,7 +275,7 @@ export default {
       return  value.toLocaleString('en-CA', { timeZone: 'PST' });
     },
     getAdminDashboardData(){
-      DashboardService.getDashboardInfo(this.token).then(
+      BatchProcessingService.getDashboardInfo(this.token).then(
         (response) => {
             this.dashboardData = response.data;
             this.batchInfoListData = response.data.batchInfoList;
@@ -336,8 +338,8 @@ export default {
       this.$set(this.spinners, id, true)
       let index= id.replace("job-","")-1;
       let value = true
-      this.$store.commit("setTabLoading",{index, value});
-        DashboardService.runDISTRUN(this.token, request, credentialType).then(
+      this.$store.commit("batchprocessing/setTabLoading",{index, value});
+        BatchProcessingService.runDISTRUN(this.token, request, credentialType).then(
         (response) => {
            //update the admin dashboard
           this.getAdminDashboardData();
@@ -368,8 +370,8 @@ export default {
       this.$set(this.spinners, id, true)
       let index= id.replace("job-","")-1;
       let value = true
-      this.$store.commit("setTabLoading",{index, value});
-        DashboardService.runTVRRUN(this.token, request).then(
+      this.$store.commit("batchprocessing/setTabLoading",{index, value});
+        BatchProcessingService.runTVRRUN(this.token, request).then(
         (response) => {
            //update the admin dashboard
           this.getAdminDashboardData();
@@ -400,8 +402,8 @@ export default {
       this.$set(this.spinners, id, true)
       let index= id.replace("job-","")-1;
       let value = true
-      this.$store.commit("setTabLoading",{index, value});
-        DashboardService.runREGALG(this.token, request).then(
+      this.$store.commit("batchprocessing/setTabLoading",{index, value});
+        BatchProcessingService.runREGALG(this.token, request).then(
         (response) => {
            //update the admin dashboard
           this.getAdminDashboardData();
@@ -428,7 +430,7 @@ export default {
         setTimeout(this.getBatchProgress(requestId), 5000);
     },
     getBatchProgress(requestId){
-      DashboardService.getBatchSummary(this.token).then((response) => {
+      BatchProcessingService.getBatchSummary(this.token).then((response) => {
 
             let jobDetails = response.data.batchJobList[0];
             let date = new Date();

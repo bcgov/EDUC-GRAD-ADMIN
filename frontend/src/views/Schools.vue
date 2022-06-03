@@ -251,7 +251,7 @@ mapGetters
     },
     computed: {
       ...mapGetters({
-        token: "getToken"
+        token: "auth/getToken"
       }),
     },
     created() {
