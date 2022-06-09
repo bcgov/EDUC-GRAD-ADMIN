@@ -43,6 +43,7 @@
         <b-nav-item><router-link to="/schools">Schools</router-link></b-nav-item>
         <b-nav-item><router-link to="/psi">PSI</router-link></b-nav-item>
         <b-nav-item><router-link to="/codes">Codes</router-link></b-nav-item>
+        <b-nav-item><router-link to="/school-reports">School Reports</router-link></b-nav-item>
         <b-nav-item><router-link to="/batch-processing">Batch Processing</router-link></b-nav-item>
         <b-nav-item v-if="!profile.pen" class="disabled"><a id="profile-route" class="text-decoration-none text-disabled" :disabled=true>Profile (Student not loaded)</a></b-nav-item>
         <b-nav-item v-else><router-link :to="`/student-profile/${this.profile.studentID}`" id="profile-route">Profile ({{profile.pen? profile.pen : 'Student not loaded'}})</router-link></b-nav-item>
@@ -68,7 +69,8 @@
           <li><router-link to="/schools" id="schools-route">Schools</router-link></li>
           <li><router-link to="/psi" id="psi-route">PSI</router-link></li>
           <li><router-link to="/codes" id="codes-route">Codes</router-link></li>
-           <li><router-link to="/batch-processing">Batch Processing</router-link></li>
+          <li><router-link to="/school-reports">School Reports</router-link></li>
+          <li><router-link to="/batch-processing">Batch Processing</router-link></li>
           <li v-if="!profile.pen" class="disabled"><a id="profile-route" class="text-decoration-none text-disabled" :disabled=true>Profile (Student not loaded)</a></li>
           <li v-else><router-link :to="`/student-profile/${this.profile.studentID}`" id="profile-route">Profile ({{profile.pen? profile.pen : 'Student not loaded'}})</router-link></li>
 

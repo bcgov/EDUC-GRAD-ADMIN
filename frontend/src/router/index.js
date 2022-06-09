@@ -7,6 +7,7 @@ import Assessments from '../views/Assessments.vue';
 import Courses from '../views/Courses.vue';
 import Schools from '../views/Schools.vue';
 import PSI from '../views/PSI.vue';
+import SchoolReports from '../views/SchoolReports.vue';
 import AdminGraduationPrograms from '../views/Programs.vue';
 import AdminCodes from '../views/Codes.vue';
 import CareerPrograms from '../components/Codes/CareerPrograms.vue';
@@ -124,6 +125,14 @@ const routes = [{
     path: '/courses',
     name: 'courses',
     component: Courses,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/school-reports',
+    name: 'schoolReports',
+    component: SchoolReports,
     meta: {
       requiresAuth: true
     }

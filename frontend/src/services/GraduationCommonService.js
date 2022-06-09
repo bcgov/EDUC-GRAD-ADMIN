@@ -52,5 +52,9 @@ export default {
   getDigitalSignaturesBlockTypes(token) {
     const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token };
     return apiClient.get('/api/v1/signatures/getSignatureBlockTypeCodes',{ headers });
+  },
+  getAllReportsForSchool(id, token) {
+    const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token };
+    return apiClient.get('/api/v1/graduationreports/schoolreport/' + id,{ headers });
   }
 };
