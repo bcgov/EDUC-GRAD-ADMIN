@@ -15,7 +15,6 @@
 
               <b-row align-v="stretch" class="row-eq-height">
                 <b-col>
-                  <!-- TODO: wildcard div here -->
                   <b-input class="col-6" v-model="mincode" v-on:keyup="keyHandler" placeholder="" id="mincode" />
                 </b-col>
               </b-row>
@@ -141,7 +140,6 @@
         //reset results
         this.totalResults= "";
         this.searchMessage= "";
-        //let isEmpty = true;
 
         if(!this.mincode) {
           this.totalResults = "";
@@ -177,5 +175,7 @@
 </script>
 
 <style scoped>
-
+.table th, .table td{
+  border-top: none !important;
+}
 </style>
