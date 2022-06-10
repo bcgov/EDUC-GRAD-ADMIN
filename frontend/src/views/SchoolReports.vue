@@ -16,7 +16,7 @@
               <b-row align-v="stretch" class="row-eq-height">
                 <b-col>
                   <!-- TODO: wildcard div here -->
-                  <b-input class="col-6" v-model="search.mincode.value" v-on:keyup="keyHandler" placeholder="" id="mincode" />
+                  <b-input class="col-6" v-model="mincode" v-on:keyup="keyHandler" placeholder="" id="mincode" />
                 </b-col>
               </b-row>
 
@@ -34,7 +34,7 @@
               </b-row>
               <div v-if="reports">
                 <div v-if="totalResults > 0 && !searchLoading" class="row">
-                  <div class="search-results-message my-3 col-12 col-md-8"><strong>{{ totalResults }}</strong> report{{ totalresults === 1 ? '' : 's'}} found.</div>
+                  <div class="search-results-message my-3 col-12 col-md-8"><strong>{{ totalResults }}</strong> report{{ totalResults === 1 ? '' : 's'}} found.</div>
                 </div>
                 <div v-if="searchMessage" class="row">
                   <div class="search-results-message my-2 col-12 col-md-8"><strong>{{ searchMessage }}</strong></div>
@@ -42,7 +42,21 @@
               </div>
             </b-container>
 
-            <DisplayTable title="Results" v-bind:items="reports" v-bind:fields="reportFields" sortKey="report" id="mincode" v-bind:showFileter=true pagination="true">schoolReportSearch</DisplayTable>
+            <DisplayTable title="Results" v-bind:items="reports" v-bind:fields="reportFields" sortKey="report" id="mincode" v-bind:showFileter=true pagination="true">schoolReportSearch
+              <template #cell(report)="row">
+                <a
+                  @click="downloadPDF(row.item.report,'application/pdf')"
+                  href="#"
+                  class="pdf-link float-left mt-2"
+                  >
+                  {{row.item.reportTypeLabel}} (PDF)
+                </a>
+              </template>
+
+              <template #cell(updateDate)="row">
+                {{ row.item.updateDate | formatSimpleDate }}
+              </template>
+            </DisplayTable>
           </b-card-text>
         </b-tab>
       </b-tabs>
@@ -65,6 +79,7 @@
       return {
         url: null,
         file: [],
+        mincode: "",
         totalResults: "",
         searchMessage: "",
         searchLoading: false,
@@ -83,30 +98,24 @@
             sortDirection: 'asc'
           },
           {
-            key: 'schoolCode',
+            key: 'schoolOfRecord',
             label: 'School Code',
             sortable: true,
             sortDirection: 'asc'
           },
           {
-            key: 'lastUpdateUser',
+            key: 'updateUser',
             label: 'Last Update User',
             sortable: true,
             sortDirection: 'asc'
           },
           {
-            key: 'lastUpdateDate',
+            key: 'updateDate',
             label: 'Last Update Date',
             sortable: true,
             sortDirection: 'asc'
           },
         ],
-        search: {
-          mincode: {
-            value: "",
-            contains: false
-          }
-        },
         groupOptions: [
           { text: "Schools", value: "schools"},
           { text: "Students", value: "students"},
@@ -134,12 +143,12 @@
         this.searchMessage= "";
         //let isEmpty = true;
 
-        if(!this.search.mincode.value) {
+        if(!this.mincode) {
           this.totalResults = "";
           this.searchLoading = false;
           this.searchMessage = "Enter a school mincode to view reports."
         } else {
-          GraduationCommonService.getAllReportsForSchool(this.search.mincode.value, this.token)
+          GraduationCommonService.getAllReportsForSchool(this.mincode, this.token)
           .then(
             (response) => {
               this.reports = response.data;
@@ -158,12 +167,10 @@
       },
       clearInput: function () {
         this.reports = "";
-        for (var key in this.search) {
-          if (this.search.hasOwnProperty(key)) {
-            this.search[key].value = "";
-            this.search[key].contains = false;
-          }
-        }
+        this.mincode = "";
+      },
+      downloadPDF: function (data, mimeType) {
+        sharedMethods.base64ToPdfAndOpenWindow(data,mimeType)
       },
     },
   }
