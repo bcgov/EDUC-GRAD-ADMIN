@@ -34,56 +34,56 @@ test('empty', async t => {
     .contains('Enter at least one field to search.');
 });
 
-// test('reset', async t => {
-//     await t
-//     .typeText(coursesPage.TRAXCode, 'A')
-//     .click(coursesPage.TRAXCode.sibling('.wild-card-button'))
-//     .typeText(coursesPage.gradeLevel, '12')
-//     .typeText(coursesPage.courseTitle, 'A')
-//     .click(coursesPage.courseTitle.sibling('.wild-card-button'))
-//     .click(coursesPage.instructionLanguage)
-//     .click(coursesPage.instructionLanguage.child('option').withExactText('EN'))
-//     .typeText(coursesPage.TRAXStartDate, TRAXSartDate)
-//     .typeText(coursesPage.TRAXEndDate, TRAXEndDate)
-//     .click(coursesPage.formReset)
-//     .click(coursesPage.searchSubmit);
+test('reset', async t => {
+    await t
+    .typeText(coursesPage.TRAXCode, 'A')
+    .click(coursesPage.TRAXCode.sibling('.wild-card-button'))
+    .typeText(coursesPage.gradeLevel, '12')
+    .typeText(coursesPage.courseTitle, 'A')
+    .click(coursesPage.courseTitle.sibling('.wild-card-button'))
+    .click(coursesPage.instructionLanguage)
+    .click(coursesPage.instructionLanguage.child('option').withExactText('EN'))
+    .typeText(coursesPage.TRAXStartDate, TRAXSartDate)
+    .typeText(coursesPage.TRAXEndDate, TRAXEndDate)
+    .click(coursesPage.formReset)
+    .click(coursesPage.searchSubmit);
 
-//     await t
-//     .expect(await searchMessage.textContent)
-//     .contains('Enter at least one field to search.', {timeout: 2000});
-// })
+    await t
+    .expect(await searchMessage.textContent)
+    .contains('Enter at least one field to search.', {timeout: 2000});
+})
 
-// test('good data - all fields', async t => {
-//     await t
-//     .typeText(coursesPage.TRAXCode, 'A')
-//     .click(coursesPage.TRAXCode.sibling('.wild-card-button'))
-//     .typeText(coursesPage.gradeLevel, '12')
-//     .typeText(coursesPage.courseTitle, 'A')
-//     .click(coursesPage.courseTitle.sibling('.wild-card-button'))
-//     .click(coursesPage.instructionLanguage)
-//     .click(coursesPage.instructionLanguage.child('option').withExactText('EN'))
-//     .typeText(coursesPage.TRAXStartDate, TRAXSartDate)
-//     .typeText(coursesPage.TRAXEndDate, TRAXEndDate)
-//     //.click(coursesPage.formReset)
-//     .click(coursesPage.searchSubmit);
+test('good data - all fields', async t => {
+    await t
+    .typeText(coursesPage.TRAXCode, 'A')
+    .click(coursesPage.TRAXCode.sibling('.wild-card-button'))
+    .typeText(coursesPage.gradeLevel, '12')
+    .typeText(coursesPage.courseTitle, 'A')
+    .click(coursesPage.courseTitle.sibling('.wild-card-button'))
+    .click(coursesPage.instructionLanguage)
+    .click(coursesPage.instructionLanguage.child('option').withExactText('EN'))
+    .typeText(coursesPage.TRAXStartDate, TRAXSartDate)
+    .typeText(coursesPage.TRAXEndDate, TRAXEndDate)
+    //.click(coursesPage.formReset)
+    .click(coursesPage.searchSubmit);
 
-//     await t
-//     //.expect(await Selector('table').count)
-//     .expect(await coursesPage.courseResults.withAttribute('aria-rowcount', String(expectedResults.goodDataRows)).exists)
-//     .ok();
-//     //.notContains('Enter at least one field to search.');
+    await t
+    //.expect(await Selector('table').count)
+    .expect(await coursesPage.courseResults.withAttribute('aria-rowcount', String(expectedResults.goodDataRows)).exists)
+    .ok();
+    //.notContains('Enter at least one field to search.');
 
-// })
+})
 
-// test('no courses', async t => {
-//     await t
-//     .typeText(coursesPage.TRAXCode, 'A')
-//     .click(coursesPage.searchSubmit);
+test('no courses', async t => {
+    await t
+    .typeText(coursesPage.TRAXCode, 'A')
+    .click(coursesPage.searchSubmit);
 
-//     // do not expect table to load since we have no courses with a code of 'A'
-//     await t
-//     .expect(await coursesPage.courseResults.exists).notOk();
-// })
+    // do not expect table to load since we have no courses with a code of 'A'
+    await t
+    .expect(await coursesPage.courseResults.exists).notOk();
+})
 
 // test('validation', async t => {
 //     // test the form validations

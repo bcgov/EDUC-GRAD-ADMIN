@@ -9,14 +9,20 @@ class CoursesPage {
         this.requirementsTab = Selector('a[role=tab]').withExactText('Course requirements');
 
         // course search elements
-        this.TRAXCode = Selector('#trax-code-input');
-        this.gradeLevel = Selector('#grade-level-input');
-        this.courseTitle = Selector('#course-title-input');
-        this.instructionLanguage = Selector('#instruction-lang-select');
+        //this.TRAXCode = Selector('#trax-code-input');
+        // this.gradeLevel = Selector('#grade-level-input');
+        // this.courseTitle = Selector('#course-title-input');
+        // this.instructionLanguage = Selector('#instruction-lang-select');
+
+        this.TRAXCode = Selector('.advanced-search-field > label').withExactText('TRAX Code').sibling('input');
+        this.gradeLevel = Selector('.advanced-search-field > label').withExactText('Grade Level').sibling('input');
+        this.courseTitle = Selector('.advanced-search-field > label').withExactText('Course Title').sibling('input');
+        this.instructionLanguage = Selector('.advanced-search-field > label').withExactText('Instruction Language').sibling('select');
         this.TRAXStartDate = Selector('#datepicker-startDate');
         this.TRAXEndDate = Selector('#datepicker-endDate');
         
-        this.courseResults = Selector('#courses-search-results table');
+        // need to add an ID to this element later on; targeting using col count for now due to second table on crouses view.
+        this.courseResults = Selector('.table-responsive table[aria-colcount="10"]');
         
         // course restrictions
         
