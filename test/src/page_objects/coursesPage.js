@@ -25,7 +25,9 @@ class CoursesPage {
         this.courseResults = Selector('.table-responsive table[aria-colcount="10"]');
         
         // course restrictions
-        
+        this.courseRestrictionsTable = Selector('.tab-content p.card-text table');
+        //this.courseCodeMain = Selector('th[role=columnheader][aria-colindex="1"]');
+
         // course requirements search elements
         this.courseCode = Selector('#course-code-input');
         this.courseLevel = Selector('#course-level-input');
@@ -53,6 +55,13 @@ class CoursesPage {
     async courseSearch(code, grade, title, lang, start, end) {
         await t
         .typeText('test');
+    }
+
+    // course restrictions table
+    async getCellValue(col, row) {
+        let t = await Selector(`tr[aria-rowindex="${row}"]>td[aria-colindex="${col}"]>div>div`).innerText;
+        //console.log('debug output of cell: ', t);
+        return t;
     }
 }
 
