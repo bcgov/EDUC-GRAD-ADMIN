@@ -1,0 +1,205 @@
+{"timestamp":"2022-07-05 14:29:44.822","level":"info","message":"Listening on port 8080"}
+{"timestamp":"2022-07-05 14:29:44.847","level":"info","message":"connected to redis."}
+{"timestamp":"2022-07-05 14:29:44.855","level":"info","message":"Redis Ready."}
+{"timestamp":"2022-07-05 14:38:45.183","level":"info","message":"POST /api/auth/refresh 401 5.063 ms - -\n"}
+{"timestamp":"2022-07-05 14:38:45.186","level":"info","message":"POST /api/auth/refresh 401 1.126 ms - -\n"}
+{"timestamp":"2022-07-05 14:38:45.237","level":"info","message":"GET /api/auth/logout?sessionExpired=true 302 6.941 ms - 118\n"}
+{"timestamp":"2022-07-05 14:38:45.906","level":"verbose","message":"refreshJWT","detail":["No existing User or JWT"]}
+{"timestamp":"2022-07-05 14:38:45.913","level":"info","message":"GET /api/auth/token 401 3.441 ms - 27\n"}
+{"timestamp":"2022-07-05 14:38:50.715","level":"info","message":"GET /api/auth/login 302 3.611 ms - 0\n"}
+{"timestamp":"2022-07-05 14:38:50.997","level":"info","message":"GET /api/auth/callback?state=HbuOIdboCnO4guuW5NXLJI8i&session_state=d77e8281-83c8-429f-896a-04baae2a0295&code=5edfc02d-a8df-4baa-938f-0bf366fe96be.d77e8281-83c8-429f-896a-04baae2a0295.c5ee0ba1-d898-4d59-aced-bb3709cf54b6 302 162.792 ms - 86\n"}
+{"timestamp":"2022-07-05 14:38:51.403","level":"verbose","message":"refreshJWT","detail":["User & JWT exists"]}
+{"timestamp":"2022-07-05 14:38:51.408","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:38:51.414","level":"info","message":"GET /api/auth/token 200 8.702 ms - 927\n"}
+{"timestamp":"2022-07-05 14:38:51.421","level":"verbose","message":"refreshJWT","detail":["User & JWT exists"]}
+{"timestamp":"2022-07-05 14:38:51.423","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:38:51.430","level":"info","message":"GET /api/auth/token 200 4.756 ms - 927\n"}
+{"timestamp":"2022-07-05 14:38:51.482","level":"info","message":"GET /api/auth/user 200 4.227 ms - 146\n"}
+{"timestamp":"2022-07-05 14:38:51.497","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:38:51.505","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:38:51.508","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:38:51.936","level":"info","message":"GET /api/v1/studentgraduation/undocompletion/undocompletionreason 200 423.593 ms - 1493\n"}
+{"timestamp":"2022-07-05 14:38:51.949","level":"info","message":"GET /api/v1/program/programs 200 449.007 ms - 6009\n"}
+{"timestamp":"2022-07-05 14:38:52.970","level":"info","message":"GET /api/v1/student/studentstatus 200 1460.535 ms - 2726\n"}
+{"timestamp":"2022-07-05 14:39:19.219","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:39:19.377","level":"info","message":"GET /api/v1/graduationreports/schoolreport/06161024 200 156.627 ms - 2\n"}
+{"timestamp":"2022-07-05 14:39:25.664","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:39:26.178","level":"info","message":"GET /api/v1/graduationreports/schoolreport/00502001 200 513.433 ms - 212622\n"}
+{"timestamp":"2022-07-05 14:40:06.175","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:06.180","level":"info","message":"POST /api/auth/refresh 200 4.337 ms - 927\n"}
+{"timestamp":"2022-07-05 14:40:06.431","level":"info","message":"GET /api/auth/user 200 1.655 ms - 146\n"}
+{"timestamp":"2022-07-05 14:40:06.502","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:12.462","level":"info","message":"GET /api/v1/course/restriction 200 5959.278 ms - 357888\n"}
+{"timestamp":"2022-07-05 14:40:17.705","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:17.709","level":"info","message":"POST /api/auth/refresh 200 2.962 ms - 927\n"}
+{"timestamp":"2022-07-05 14:40:18.038","level":"info","message":"GET /api/auth/user 200 2.417 ms - 146\n"}
+{"timestamp":"2022-07-05 14:40:18.300","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:18.424","level":"info","message":"GET /api/v1/assessment 200 122.913 ms - 1249\n"}
+{"timestamp":"2022-07-05 14:40:18.434","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:20.450","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:20.787","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:20.789","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:20.794","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:20.797","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:20.855","level":"info","message":"GET /api/v1/graduationreports/reporttype 200 61.020 ms - 2047\n"}
+{"timestamp":"2022-07-05 14:40:20.867","level":"info","message":"GET /api/v1/student/studentstatus 200 68.328 ms - 2726\n"}
+{"timestamp":"2022-07-05 14:40:20.999","level":"info","message":"GET /api/v1/program/careerprogram 200 548.003 ms - 32946\n"}
+{"timestamp":"2022-07-05 14:40:21.171","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:21.228","level":"info","message":"GET /api/v1/studentgraduation/undocompletion/undocompletionreason 200 56.153 ms - 1493\n"}
+{"timestamp":"2022-07-05 14:40:21.313","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:21.769","level":"info","message":"GET /api/v1/program/careerprogram 200 447.238 ms - 32946\n"}
+{"timestamp":"2022-07-05 14:40:24.604","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:25.930","level":"info","message":"GET /api/v1/program/gradrequirementtype 200 5137.954 ms - 3622\n"}
+{"timestamp":"2022-07-05 14:40:31.415","level":"info","message":"GET /api/v1/assessment/requirement 200 12979.758 ms - 4948\n"}
+{"timestamp":"2022-07-05 14:40:35.907","level":"info","message":"GET /api/v1/graduationreports/certificatetype 200 15119.853 ms - 3522\n"}
+{"timestamp":"2022-07-05 14:40:37.894","level":"info","message":"GET /api/v1/reports/signatures/get/all 200 13289.117 ms - 274387\n"}
+{"timestamp":"2022-07-05 14:40:47.859","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:47.940","level":"info","message":"GET /api/v1/graduationreports/reporttype 200 82.486 ms - 2047\n"}
+{"timestamp":"2022-07-05 14:40:48.742","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:48.810","level":"info","message":"GET /api/v1/student/studentstatus 200 66.786 ms - 2726\n"}
+{"timestamp":"2022-07-05 14:40:50.181","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:50.236","level":"info","message":"GET /api/v1/studentgraduation/undocompletion/undocompletionreason 200 54.596 ms - 1493\n"}
+{"timestamp":"2022-07-05 14:40:58.966","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:40:59.344","level":"info","message":"GET /api/v1/student/historyactivity 200 376.776 ms - 6283\n"}
+{"timestamp":"2022-07-05 14:41:41.284","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:41:41.358","level":"info","message":"GET /api/v1/studentgraduation/undocompletion/undocompletionreason 200 72.627 ms - 1493\n"}
+{"timestamp":"2022-07-05 14:41:43.874","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:41:43.934","level":"info","message":"GET /api/v1/student/studentstatus 200 58.689 ms - 2726\n"}
+{"timestamp":"2022-07-05 14:41:49.664","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:42:14.758","level":"info","message":"GET /api/v1/graduationreports/reporttype 200 25091.819 ms - 2047\n"}
+{"timestamp":"2022-07-05 14:42:22.744","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:42:27.826","level":"info","message":"GET /api/v1/student/studentstatus 200 5073.409 ms - 2726\n"}
+{"timestamp":"2022-07-05 14:42:34.101","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:42:34.174","level":"info","message":"GET /api/v1/studentgraduation/undocompletion/undocompletionreason 200 71.625 ms - 1493\n"}
+{"timestamp":"2022-07-05 14:42:39.074","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:42:39.422","level":"info","message":"GET /api/v1/student/historyactivity 200 345.569 ms - 6283\n"}
+{"timestamp":"2022-07-05 14:42:41.610","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:42:42.156","level":"info","message":"GET /api/v1/program/careerprogram 200 543.636 ms - 32946\n"}
+{"timestamp":"2022-07-05 14:42:43.849","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:42:47.412","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:42:47.517","level":"info","message":"GET /api/v1/student/studentstatus 200 102.978 ms - 2726\n"}
+{"timestamp":"2022-07-05 14:42:53.913","level":"info","message":"GET /api/v1/graduationreports/reporttype 200 10061.998 ms - 2047\n"}
+{"timestamp":"2022-07-05 14:42:54.251","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:42:54.363","level":"info","message":"GET /api/v1/graduationreports/reporttype 200 106.713 ms - 2047\n"}
+{"timestamp":"2022-07-05 14:42:57.547","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:43:02.940","level":"info","message":"GET /api/v1/reports/signatures/get/all 200 5392.170 ms - 274387\n"}
+{"timestamp":"2022-07-05 14:43:06.382","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:43:06.497","level":"info","message":"GET /api/v1/graduationreports/transcripttype 200 111.199 ms - 7441\n"}
+{"timestamp":"2022-07-05 14:43:08.707","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:43:08.812","level":"info","message":"GET /api/v1/graduationreports/allprogramcertificates 200 105.037 ms - 15293\n"}
+{"timestamp":"2022-07-05 14:43:12.599","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:43:12.678","level":"info","message":"GET /api/v1/reports/signatures/getSignatureBlockTypeCodes 200 80.302 ms - 3453\n"}
+{"timestamp":"2022-07-05 14:43:14.385","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:43:14.552","level":"info","message":"GET /api/v1/graduationreports/documentstatus 200 167.616 ms - 1134\n"}
+{"timestamp":"2022-07-05 14:44:07.366","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:07.369","level":"info","message":"POST /api/auth/refresh 200 97.484 ms - 927\n"}
+{"timestamp":"2022-07-05 14:44:07.702","level":"info","message":"GET /api/auth/user 200 1.337 ms - 146\n"}
+{"timestamp":"2022-07-05 14:44:07.955","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:08.057","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:08.282","level":"info","message":"GET /api/v1/assessment 200 321.723 ms - 1249\n"}
+{"timestamp":"2022-07-05 14:44:08.770","level":"info","message":"GET /api/v1/assessment/requirement 200 710.672 ms - 4948\n"}
+{"timestamp":"2022-07-05 14:44:09.813","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:09.817","level":"info","message":"POST /api/auth/refresh 200 3.673 ms - 927\n"}
+{"timestamp":"2022-07-05 14:44:10.154","level":"info","message":"GET /api/auth/user 200 1.156 ms - 146\n"}
+{"timestamp":"2022-07-05 14:44:10.409","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:11.075","level":"info","message":"GET /api/v1/course/restriction 200 664.336 ms - 357888\n"}
+{"timestamp":"2022-07-05 14:44:11.376","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:11.380","level":"info","message":"POST /api/auth/refresh 200 1.926 ms - 927\n"}
+{"timestamp":"2022-07-05 14:44:11.710","level":"info","message":"GET /api/auth/user 200 1.946 ms - 146\n"}
+{"timestamp":"2022-07-05 14:44:16.265","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:16.473","level":"info","message":"GET /api/v1/trax/school/search?mincode=5* 200 203.927 ms - 2\n"}
+{"timestamp":"2022-07-05 14:44:24.568","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:25.685","level":"info","message":"GET /api/v1/trax/school/search?mincode=02* 200 1115.635 ms - 66848\n"}
+{"timestamp":"2022-07-05 14:44:34.712","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:36.642","level":"info","message":"GET /api/v1/trax/school/search?mincode=*5 200 1927.304 ms - 2\n"}
+{"timestamp":"2022-07-05 14:44:41.671","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:41.876","level":"info","message":"GET /api/v1/trax/school/search?mincode=*2 200 205.046 ms - 18411\n"}
+{"timestamp":"2022-07-05 14:44:55.524","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:55.528","level":"info","message":"POST /api/auth/refresh 200 3.220 ms - 927\n"}
+{"timestamp":"2022-07-05 14:44:55.858","level":"info","message":"GET /api/auth/user 200 1.209 ms - 146\n"}
+{"timestamp":"2022-07-05 14:44:56.105","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:56.214","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:56.555","level":"info","message":"GET /api/v1/studentgraduation/algo/algorithm-rules 200 340.106 ms - 132241\n"}
+{"timestamp":"2022-07-05 14:44:56.620","level":"info","message":"GET /api/v1/course/restriction 200 512.181 ms - 357888\n"}
+{"timestamp":"2022-07-05 14:44:58.182","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:44:58.561","level":"info","message":"GET /api/v1/program/allprogramrules 200 378.176 ms - 113338\n"}
+{"timestamp":"2022-07-05 14:45:00.266","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:45:00.392","level":"info","message":"GET /api/v1/studentgraduation/transcript/gradmessages 200 125.173 ms - 17765\n"}
+{"timestamp":"2022-07-05 14:48:19.411","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:19.416","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:19.419","level":"info","message":"POST /api/auth/refresh 200 3.193 ms - 927\n"}
+{"timestamp":"2022-07-05 14:48:19.420","level":"info","message":"POST /api/auth/refresh 200 3.059 ms - 927\n"}
+{"timestamp":"2022-07-05 14:48:19.520","level":"info","message":"GET /api/auth/user 200 2.507 ms - 146\n"}
+{"timestamp":"2022-07-05 14:48:19.527","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:19.531","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:19.532","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:19.597","level":"info","message":"GET /api/v1/studentgraduation/undocompletion/undocompletionreason 200 60.149 ms - 1493\n"}
+{"timestamp":"2022-07-05 14:48:19.600","level":"info","message":"GET /api/v1/program/programs 200 69.094 ms - 6009\n"}
+{"timestamp":"2022-07-05 14:48:19.827","level":"info","message":"GET /api/v1/student/studentstatus 200 294.251 ms - 2726\n"}
+{"timestamp":"2022-07-05 14:48:34.140","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:36.539","level":"info","message":"GET /api/v1/student/pen/124988833 200 2395.284 ms - 734\n"}
+{"timestamp":"2022-07-05 14:48:36.876","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:36.879","level":"info","message":"POST /api/auth/refresh 200 2.524 ms - 927\n"}
+{"timestamp":"2022-07-05 14:48:37.146","level":"info","message":"GET /api/auth/user 200 3.242 ms - 146\n"}
+{"timestamp":"2022-07-05 14:48:37.192","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:37.507","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:37.554","level":"info","message":"GET /api/v1/student/stdid/ac339d70-7649-1a2e-8176-4a2e39561635 200 354.780 ms - 732\n"}
+{"timestamp":"2022-07-05 14:48:37.571","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:37.589","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:37.591","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:37.597","level":"info","message":"GET /api/v1/program/programs 200 83.051 ms - 6009\n"}
+{"timestamp":"2022-07-05 14:48:37.886","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:37.889","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:37.919","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:38.056","level":"info","message":"GET /api/v1/student/pen/124988833 200 478.904 ms - 734\n"}
+{"timestamp":"2022-07-05 14:48:38.260","level":"info","message":"GET /api/v1/assessment/pen/124988833?sortForUI=true 200 664.319 ms - 1221\n"}
+{"timestamp":"2022-07-05 14:48:38.377","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:38.588","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:38.645","level":"info","message":"GET /api/v1/student/studentnotes/studentid/ac339d70-7649-1a2e-8176-4a2e39561635 200 57.181 ms - 2\n"}
+{"timestamp":"2022-07-05 14:48:38.775","level":"info","message":"GET /api/v1/course/studentexam/pen/124988833?sortForUI=true 200 394.763 ms - 601\n"}
+{"timestamp":"2022-07-05 14:48:38.973","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:39.064","level":"info","message":"GET /api/v1/graduationreports/studentcertificate/ac339d70-7649-1a2e-8176-4a2e39561635 200 87.905 ms - 2\n"}
+{"timestamp":"2022-07-05 14:48:39.104","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:39.379","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:39.430","level":"info","message":"GET /api/v1/graduationreports/studentreport/ac339d70-7649-1a2e-8176-4a2e39561635 200 322.646 ms - 176527\n"}
+{"timestamp":"2022-07-05 14:48:39.468","level":"info","message":"GET /api/v1/graduationreports/studenttranscript/ac339d70-7649-1a2e-8176-4a2e39561635 200 87.160 ms - 2\n"}
+{"timestamp":"2022-07-05 14:48:39.624","level":"info","message":"GET /api/v1/course/studentcourse/pen/124988833?sortForUI=true 200 1702.350 ms - 37879\n"}
+{"timestamp":"2022-07-05 14:48:39.746","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:39.777","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:39.835","level":"info","message":"GET /api/v1/studentgraduation/undocompletion/studentundocompletionreason/studentid/ac339d70-7649-1a2e-8176-4a2e39561635 200 57.634 ms - 2\n"}
+{"timestamp":"2022-07-05 14:48:39.932","level":"info","message":"GET /api/v1/student/studentid/ac339d70-7649-1a2e-8176-4a2e39561635 200 2336.807 ms - 56513\n"}
+{"timestamp":"2022-07-05 14:48:39.946","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:40.084","level":"info","message":"GET /api/v1/student/studentHistory/ac339d70-7649-1a2e-8176-4a2e39561635 200 137.406 ms - 4430\n"}
+{"timestamp":"2022-07-05 14:48:40.151","level":"silly","message":"valid GRAD_SYSTEM_COORDINATOR Roles from environment variable are [\"GRAD_SYSTEM_COORDINATOR\"]"}
+{"timestamp":"2022-07-05 14:48:40.318","level":"info","message":"GET /api/v1/student/studentOptionalProgramHistory/ac339d70-7649-1a2e-8176-4a2e39561635 200 165.177 ms - 1276\n"}
+{"timestamp":"2022-07-05 14:48:43.048","level":"info","message":"GET /api/v1/student/studentcareerprogram/studentid/ac339d70-7649-1a2e-8176-4a2e39561635 200 5156.617 ms - 307\n"}
+{"timestamp":"2022-07-05 14:48:43.069","level":"info","message":"GET /api/v1/student/optionalprogram/studentid/ac339d70-7649-1a2e-8176-4a2e39561635 200 5177.753 ms - 3805\n"}
+{"timestamp":"2022-07-05 14:48:52.561","level":"info","message":"GET /api/v1/graduate/report/transcript/124988833?interim=Interim 200 12810.226 ms - 2\n"}
+{"timestamp":"2022-07-05 16:17:20.716","level":"info","message":"connected to redis."}
+{"timestamp":"2022-07-05 16:17:20.839","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:20.991","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:21.206","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:21.468","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:21.780","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:22.138","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:22.554","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:23.017","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:23.529","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:24.094","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:24.698","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:25.353","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:26.071","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:26.829","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:27.636","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:28.513","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:29.431","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:30.393","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:31.408","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:32.462","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:33.577","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:34.733","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:35.949","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:36.001","level":"info","message":"process terminated"}
+{"timestamp":"2022-07-05 16:17:37.205","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:38.513","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}
+{"timestamp":"2022-07-05 16:17:39.873","level":"error","message":"error occurred in redis client. Error: connect ECONNREFUSED 127.0.0.1:6379"}

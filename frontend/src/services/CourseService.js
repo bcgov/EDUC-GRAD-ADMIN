@@ -38,11 +38,11 @@ export default {
   },
   getStudentCourseAchievements(pen, token) {
     const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-    return apiClient.get('/api/v1/studentcourse/pen/' + pen + '?sortForUI=true',{ headers })
+    return apiClient.get('/api/v1/course/studentcourse/pen/' + pen + '?sortForUI=true',{ headers })
   },
   getStudentExamDetails(pen, token) {
     const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-    return apiClient.get('/api/v1/studentexam/pen/' + pen + '?sortForUI=true',{ headers })
+    return apiClient.get('/api/v1/course/studentexam/pen/' + pen + '?sortForUI=true',{ headers })
   }
 }
 

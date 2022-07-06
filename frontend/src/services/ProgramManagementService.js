@@ -7,15 +7,15 @@ const apiClient = axios.create({
 export default {
     getAlgorithmRules(token) {
         const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token };
-        return apiClient.get('/api/v1/algo/algorithm-rules',{ headers});
+        return apiClient.get('/api/v1/studentgraduation/algo/algorithm-rules',{ headers});
     },
     getLetterGrades(token) {
         const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/lgSc/lettergrade',{ headers });
+        return apiClient.get('/api/v1/studentgraduation/lgSc/lettergrade',{ headers });
     },
     getSpecialCases(token){
         const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/lgSc/specialcase',{ headers });
+        return apiClient.get('/api/v1/studentgraduation/lgSc/specialcase',{ headers });
     },
     getGraduationPrograms(token) { 
         const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }

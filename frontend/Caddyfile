@@ -38,13 +38,13 @@
     proxy /api/v1/studentassessment {$VUE_APP_ASSESSMENT_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
-    proxy /api/v1/school {$VUE_APP_TRAX_API_HOST} {
+    proxy /api/v1/trax/school {$VUE_APP_TRAX_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
-    proxy /api/v1/district {$VUE_APP_TRAX_API_HOST} {
+    proxy /api/v1/trax/district {$VUE_APP_TRAX_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
-    proxy /api/v1/psi {$VUE_APP_TRAX_API_HOST} {
+    proxy /api/v1/trax/psi {$VUE_APP_TRAX_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
     proxy /api/v1/program {$VUE_APP_PROGRAM_API_HOST} {
@@ -56,10 +56,10 @@
     proxy /api/v1/course {$VUE_APP_COURSE_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }   
-    proxy /api/v1/studentcourse {$VUE_APP_COURSE_API_HOST} {
+    proxy /api/v1/course/studentcourse {$VUE_APP_COURSE_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
-    proxy /api/v1/studentexam {$VUE_APP_COURSE_API_HOST} {
+    proxy /api/v1/course/studentexam {$VUE_APP_COURSE_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
     proxy /api/v1/assessment {$VUE_APP_ASSESSMENT_API_HOST} {
@@ -71,13 +71,13 @@
     proxy /api/v1/code {$VUE_APP_CODE_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
-    proxy /api/v1/undocompletion {$VUE_APP_STUDENT_GRADUATION_API_HOST} {
+    proxy /api/v1/studentgraduation/undocompletion {$VUE_APP_STUDENT_GRADUATION_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
-    proxy /api/v1/lgSc {$VUE_APP_STUDENT_GRADUATION_API_HOST} {
+    proxy /api/v1/studentgraduation/lgSc {$VUE_APP_STUDENT_GRADUATION_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
-    proxy /api/v1/algo {$VUE_APP_STUDENT_GRADUATION_API_HOST} {
+    proxy /api/v1/studentgraduation/algo {$VUE_APP_STUDENT_GRADUATION_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
     proxy /api/v1/graduationreports {$VUE_APP_GRADUATION_REPORT_API_HOST} {
@@ -86,7 +86,7 @@
     proxy /api/v1/graduationreports/documentstatus {$VUE_APP_GRADUATION_REPORT_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
-    proxy /api/v1/signatures {$VUE_APP_GRAD_REPORT_API_HOST} {
+    proxy /api/v1/reports/signatures {$VUE_APP_GRAD_REPORT_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
     proxy /api/v1/batch/dashboard {$VUE_APP_BATCH_GRADUATION_API_HOST} {
@@ -98,7 +98,7 @@
     proxy /api/v1/batch {$VUE_APP_BATCH_GRADUATION_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
-    proxy /api/v1/transcript/gradmessages {$VUE_APP_STUDENT_GRADUATION_API_HOST} {
+    proxy /api/v1/studentgraduation/transcript/gradmessages {$VUE_APP_STUDENT_GRADUATION_API_HOST} {
         header_upstream Cookie "SMSESSION=siteminder"
     }
       

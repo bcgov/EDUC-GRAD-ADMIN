@@ -20,12 +20,24 @@ module.exports = {
         target: process.env.VUE_APP_COURSE_API_HOST,
         changeOrigin: true,
       },
-      '/api/v1/studentcourse': {
-        target: process.env.VUE_APP_COURSE_API_HOST,
+      '/api/v1/studentgraduation/undocompletion/': {
+        target: process.env.VUE_APP_STUDENT_GRADUATION_API_HOST,
         changeOrigin: true,
       },
-      '/api/v1/studentexam':{
-        target: process.env.VUE_APP_COURSE_API_HOST,
+      '/api/v1/studentgraduation/transcript/gradmessages' : {
+        target: process.env.VUE_APP_STUDENT_GRADUATION_API_HOST,
+        changeOrigin: true,
+      },
+      '/api/v1/studentgraduation/algo/algorithm-rules': {
+        target: process.env.VUE_APP_STUDENT_GRADUATION_API_HOST,
+        changeOrigin: true,
+      },
+      '/api/v1/studentgraduation/lgSc/lettergrade': {
+        target: process.env.VUE_APP_STUDENT_GRADUATION_API_HOST,
+        changeOrigin: true,
+      },
+      '/api/v1/studentgraduation/lgSc/specialcase': {
+        target: process.env.VUE_APP_STUDENT_GRADUATION_API_HOST,
         changeOrigin: true,
       },
       '/api/v1/studentassessment': {
@@ -60,15 +72,7 @@ module.exports = {
         target: process.env.VUE_APP_STUDENTS_API_HOST,
         changeOrigin: true,
       },
-      '/api/v1/algo': {
-        target: process.env.VUE_APP_STUDENT_GRADUATION_API_HOST,
-        changeOrigin: true,
-      },
-      '/api/v1/lgSc': {
-        target: process.env.VUE_APP_STUDENT_GRADUATION_API_HOST,
-        changeOrigin: true,
-      },
-      '/api/v1/undocompletion/': {
+      '/api/v1/studentgraduation/': {
         target: process.env.VUE_APP_STUDENT_GRADUATION_API_HOST,
         changeOrigin: true,
       },
@@ -80,7 +84,7 @@ module.exports = {
         target: process.env.VUE_APP_GRADUATION_REPORT_API_HOST,
         changeOrigin: true,
       },
-      '/api/v1/signatures': {
+      '/api/v1/reports/signatures': {
         target: process.env.VUE_APP_GRAD_REPORT_API_HOST,
         changeOrigin: true,
       },      
@@ -88,15 +92,15 @@ module.exports = {
         target: process.env.VUE_APP_PROGRAM_API_HOST,
         changeOrigin: true,
       },
-      '/api/v1/school': {
+      '/api/v1/trax/school': {
         target: process.env.VUE_APP_TRAX_API_HOST,
         changeOrigin: true,
       },
-      '/api/v1/psi': {
+      '/api/v1/trax/psi': {
         target: process.env.VUE_APP_TRAX_API_HOST,
         changeOrigin: true,
       },    
-      '/api/v1/district': {
+      '/api/v1/trax/district': {
         target: process.env.VUE_APP_TRAX_API_HOST,
         changeOrigin: true,
       },          
@@ -112,10 +116,6 @@ module.exports = {
         target: process.env.VUE_APP_BATCH_GRADUATION_API_HOST,
         changeOrigin: true,
       },
-      '/api/v1/transcript/gradmessages' : {
-        target: process.env.VUE_APP_STUDENT_GRADUATION_API_HOST,
-        changeOrigin: true,
-      }
     }
   },
   transpileDependencies: ['vuetify'],

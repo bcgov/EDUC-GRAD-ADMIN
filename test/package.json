@@ -6,7 +6,8 @@
     "test": "src"
   },
   "scripts": {
-    "smoke-test": "node --max-http-header-size=81000 src/test_suites/smoke-test.js"
+    "smoke-test": "node --max-http-header-size=81000 src/test_suites/smoke-test.js",
+    "daily-regression": "node --max-http-header-size=81000 src/test_suites/daily-regression-test.js"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
   },
   "homepage": "https://github.com/bcgov/EDUC-GRAD-TEST-AUTOMATION#readme",
   "dependencies": {
+    "@testing-library/testcafe": "^4.4.0",
     "axios": "^0.21.1",
     "date-and-time": "^0.14.2",
     "dotenv": "^8.2.0",

@@ -7,11 +7,11 @@ const apiClient = axios.create({
 export default {
     getSchoolInfo(mincode, token) {
         const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/school/' + mincode,{ headers });
+        return apiClient.get('/api/v1/trax/school/' + mincode,{ headers });
     },
     getAllSchools(token) {
         const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/school/',{ headers });
+        return apiClient.get('/api/v1/trax/school/',{ headers });
     },
     searchSchools(searchInput, token) {
         
@@ -31,6 +31,6 @@ export default {
             }
         }
         queryString = queryString.slice(0, -1); //remove trailing ampersand
-        return apiClient.get('/api/v1/school/search?' + queryString,{ headers });
+        return apiClient.get('/api/v1/trax/school/search?' + queryString,{ headers });
     }
 };

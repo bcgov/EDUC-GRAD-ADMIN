@@ -7,7 +7,7 @@ const apiClient = axios.create({
 export default {
     getTranscriptMessage(token) {
         const headers = { Accept: 'application/json','Content-Type': 'application/json', 'Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/transcript/gradmessages',{ headers })
+        return apiClient.get('/api/v1/studentgraduation/transcript/gradmessages',{ headers })
 
     },
 };
