@@ -39,11 +39,11 @@ objects:
         name: "${REPO_NAME}-frontend:latest"
     postCommit: {}
     resources:
-      requests:
-        cpu: 500m
-        memory: 2Gi
       limits:
-        cpu: 1200m
+        cpu: '2'
+        memory: 5Gi
+      requests:
+        cpu: '1'
         memory: 3Gi
     runPolicy: SerialLatestOnly
     source:
