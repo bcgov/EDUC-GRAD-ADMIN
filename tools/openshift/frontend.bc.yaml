@@ -29,7 +29,6 @@ objects:
       build: "${REPO_NAME}-frontend"
     name: "${REPO_NAME}-frontend"
   spec:
-    completionDeadlineSeconds: 900
     successfulBuildsHistoryLimit: 3
     failedBuildsHistoryLimit: 3
     nodeSelector:
