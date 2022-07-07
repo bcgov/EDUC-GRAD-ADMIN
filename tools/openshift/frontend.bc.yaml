@@ -41,10 +41,10 @@ objects:
     resources:
       requests:
         cpu: 500m
-        memory: 1Gi
+        memory: 2Gi
       limits:
         cpu: 1200m
-        memory: 2Gi
+        memory: 3Gi
     runPolicy: SerialLatestOnly
     source:
       contextDir: frontend
