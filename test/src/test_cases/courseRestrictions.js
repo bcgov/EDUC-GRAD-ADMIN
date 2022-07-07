@@ -1,7 +1,7 @@
 import { base_url, api_html_status_threshold } from '../config/constants';
 import { RequestLogger, Selector } from 'testcafe';
 import { apiCallsFailed } from '../helpers/requestHelper';
-import { adminUser } from '../config/roles';
+import adminUser from '../config/roles';
 import CoursesPage from '../page_objects/coursesPage';
 import commonUtils from '../helpers/commonUtils.js';
 
@@ -14,6 +14,7 @@ fixture `course-restrictions`
     .beforeEach( async t => {
         await t
             .useRole(adminUser)
+            .navigateTo(base_url)
             .click('#courses-route')
             .click(coursesPage.restrictionsTab);
     })
@@ -42,12 +43,10 @@ fixture `course-restrictions`
                 let curCell = await coursesPage.getCellValue(col, row);
 
                 // cols 3 and 5 are singled out beause they are sorted descending order
-                if (index % 2 == 0 && (col != 3 && col != 5)) {
+                // this logic can be simplified
+                if (index % 2 == 0 && (col != 3 && col != 5) || index % 2 == 1 && (col == 3 || col == 5)) {
                     await t.expect(commonUtils.isAscending(curCell, prevCell)).ok(`index: ${index}, col: ${col} and row: ${row}\nExpected "${prevCell}" to be less than "${curCell}"`);
                     
-                } else if (index % 2 == 1 && (col == 3 || col == 5)) { 
-                    await t.expect(commonUtils.isAscending(curCell, prevCell)).ok(`index: ${index}, col: ${col} and row: ${row}\nExpected "${prevCell}" to be less than "${curCell}"`);
-                
                 } else {
                     await t.expect(commonUtils.isDescending(curCell, prevCell)).ok(`index: ${index}, col: ${col} and row: ${row}\nExpected "${prevCell}" to be greater than "${curCell}"`);
                     

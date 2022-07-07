@@ -5,7 +5,7 @@ import { apiCallsFailed } from '../helpers/requestHelper';
 import adminUser from '../config/roles';
 
 const log = require('npmlog');
-const adminUser = require('../config/roles');
+//const adminUser = require('../config/roles');
 const bad_pen = '121212121';
 const searchPage = new StudentSearchPage();
 const requestLogger = RequestLogger(/api\/v1/, {logResponseBody: true, logResponseHeaders: true});
@@ -14,8 +14,8 @@ fixture `grad-login-admin`
     .requestHooks(requestLogger)
     .beforeEach(async t => {
         // log in as studentAdmin
-        await t.useRole(adminUser);
-        await t.maximizeWindow();
+        await t.useRole(adminUser).navigateTo(base_url);
+        //await t.maximizeWindow();
     }).afterEach(async t => {
         // run locally for api call failure output
         //log.info(apiCallsFailed(requestLogger, api_html_status_threshold));
