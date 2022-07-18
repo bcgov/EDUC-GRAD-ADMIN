@@ -31,7 +31,7 @@ objects:
             deploymentConfig: "${REPO_NAME}-backend-dc"
         spec:
           containers:
-            - image: image-registry.openshift-image-registry.svc:5000/bbe4c3-dev/${REPO_NAME}-backend:${TAG_NAME}
+            - image: image-registry.openshift-image-registry.svc:5000/bbe4c3-tools/${REPO_NAME}-backend:${TAG_NAME}
               imagePullPolicy: Always
               name: "${REPO_NAME}-backend"
               ports:

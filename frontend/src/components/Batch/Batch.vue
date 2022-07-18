@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{tabContent[jobId]}}
     <b-overlay :show='processingBatch'>
       <div class="row">
         <div class="col-12 col-md-3 border-right">
@@ -138,7 +137,7 @@
             <b-form-select
               id="inline-form-select-type"
               class="col-12 my-2"
-              :options="[{ text: 'Choose...', value: null }, { text: '01 Public', value: '01' }, { text: '02 Independent', value: '02' }, { text: '03 Federally Operated Band School', value: '03' }, { text: '04 Yukon School', value: '04' },{ text: '05 Offshore', value: '05' }]"
+              :options="[{ text: 'Choose...', value: null }, { text: '01 Public', value: '01' }, { text: '02 Independent', value: '02' }, { text: '03 Federally Operated Band School', value: '03' }, { text: '04 Yukon School', value: '04' },{ text: '09 Offshore', value: '09' }]"
               :value="tabContent[jobId].districts['categoryCode']"
               @change="editBatchJob(jobId,'categoryCode', $event)"
             ></b-form-select>
@@ -345,12 +344,6 @@
                     </div>
                 </b-form-group>
           </b-form-group>
-          <b-card>
-            Batch Run 
-            <b-card-text>
-              Schedule:
-            </b-card-text>
-          </b-card>
         </b-modal>
     </div>
     </b-overlay>
@@ -424,15 +417,21 @@ export default {
       //console.log(this.batchRunCustomDate + "T" + this.batchRunCustomTime)
       //console.log()
       if(this.batchRunSchedule == 'N'){
-        return null;
-      }else if(this.batchRunSchedule == 'W'){
         let today = new Date();
-        return "0 0 6 " + today.getDate()  + " " +  (today.getMonth()+1)   + " *";
+        return "0 30 18 " + today.getDate()  + " " +  (today.getMonth()+1)   + " *";
+      }else if(this.batchRunSchedule == 'W'){      
+        
+        const today = new Date();
+        const first = today.getDate() - today.getDay() + 1;
+        const sixth = first + 5;
+        const saturday = new Date(today.setDate(sixth));
+        return "0 30 18 " + saturday.getDate()  + " " +  (saturday.getMonth()+1)   + " *";
+
       }else if(this.batchRunSchedule == 'M'){
           const today = new Date()
           let tomorrow = new Date(today)
           tomorrow.setDate(tomorrow.getDate() + 1)
-          return "0 30 6 " + tomorrow.getDate()  + " " +  (tomorrow.getMonth()+1)   + " *";
+          return "0 30 18 " + tomorrow.getDate()  + " " +  (tomorrow.getMonth()+1)   + " *";
       }else if(this.batchRunSchedule == 'Custom'){
         let dateTime = new Date(this.batchRunCustomDate + "T" + this.batchRunCustomTime)
         return dateTime.getSeconds() + " "  + dateTime.getMinutes()  + " " + dateTime.getHours()  + " " + dateTime.getDate()   + " " +  (dateTime.getMonth()+1)   + " *"

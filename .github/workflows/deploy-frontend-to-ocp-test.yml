@@ -1,4 +1,4 @@
-name: Build & Deploy Backend-DEV
+name: Deploy Frontend-TEST
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -7,7 +7,7 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: bbe4c3-dev
+  OPENSHIFT_NAMESPACE: bbe4c3-test
 
   # 🖊️ EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
@@ -15,19 +15,19 @@ env:
   IMAGE_REGISTRY_USER: ${{ github.actor }}
   IMAGE_REGISTRY_PASSWORD: ${{ github.token }}
 
-  IMAGE_NAME: educ-grad-admin-backend
+  IMAGE_NAME: educ-grad-admin-frontend
   DOCKER_ARTIFACTORY_REPO: docker-remote.artifacts.developer.gov.bc.ca
   ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca
 
   APP_NAME: 'educ-grad-admin'
   REPO_NAME: "educ-grad-admin"
   BRANCH: "main"
-  APP_NAME_BACKEND: "educ-grad-admin-backend"
+  APP_NAME_FRONTEND: "educ-grad-admin-frontend"
   NAMESPACE: bbe4c3
   NAMESPACE_TOOLS: bbe4c3-tools
   COMMON_NAMESPACE: 75e61b
   TAG: "latest"
-  TARGET_ENV: "dev"
+  TARGET_ENV: "test"
 
   # SITE_URL should have no scheme or port. It will be prepended with https://
   HOST_ROUTE: ${{ secrets.SITE_URL }}
@@ -37,10 +37,10 @@ on:
 
 jobs:
   openshift-ci-cd:
-    name: Build & Deploy Backend to DEV
+    name: Deploy Frontend to TEST
     # ubuntu-20.04 can also be used.
     runs-on: ubuntu-18.04
-    environment: dev
+    environment: test
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
@@ -85,46 +85,10 @@ jobs:
               core.info(`✅ All the required secrets are set`);
             }
 
-      - name: Check out repository
-        uses: actions/checkout@v2
-
       - name: Determine app name
-        if: env.APP_NAME_BACKEND == ''
+        if: env.APP_NAME_FRONTEND == ''
         run: |
-          echo "APP_NAME_BACKEND=$(basename $PWD)" | tee -a $GITHUB_ENV
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ env.DOCKER_ARTIFACTORY_REPO }}
-          username: ${{ secrets.DOCKER_ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.DOCKER_ARTIFACTORY_ACCESS_TOKEN }}
-
-      # https://github.com/redhat-actions/buildah-build#readme
-      - name: Build backend from Dockerfile
-        id: build-image-backend
-        uses: redhat-actions/buildah-build@v2
-        with:
-          image: ${{ env.APP_NAME_BACKEND }}
-          tags: "latest"
-
-          # If you don't have a Dockerfile/Containerfile, refer to https://github.com/redhat-actions/buildah-build#scratch-build-inputs
-          # Or, perform a source-to-image build using https://github.com/redhat-actions/s2i-build
-          # Otherwise, point this to your Dockerfile/Containerfile relative to the repository root.
-          dockerfiles: |
-            ./backend/Dockerfile
-          context: ./backend
-
-        # https://github.com/redhat-actions/push-to-registry#readme
-      - name: Push backend to registry
-        id: push-image-backend
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: ${{ steps.build-image-backend.outputs.image }}
-          tags: ${{ steps.build-image-backend.outputs.tags }}
-          registry: ${{ env.IMAGE_REGISTRY }}
-          username: ${{ env.IMAGE_REGISTRY_USER }}
-          password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
+          echo "APP_NAME_FRONTEND=$(basename $PWD)" | tee -a $GITHUB_ENV
 
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
@@ -142,18 +106,12 @@ jobs:
           # Cancel any rollouts in progress
           oc rollout cancel dc/${{ env.IMAGE_NAME }}-dc 2> /dev/null \
           || true && echo "No rollout in progress"
-          
-          oc project ${{ env.NAMESPACE_TOOLS }}
-
-          # Create the image stream if it doesn't exist
-          oc create imagestream ${{ env.REPO_NAME }}-backend 2> /dev/null || true && echo "Backend image stream in place"
-
-          oc tag ${{ steps.push-image-backend.outputs.registry-path }} ${{ env.REPO_NAME }}-backend:${{ env.TAG }}
-          
-          oc project ${{ env.OPENSHIFT_NAMESPACE }}
 
           # Process and apply deployment template
-          oc process -f tools/openshift/backend-dc.yaml -p REPO_NAME=educ-grad-admin -p HOST_ROUTE=educ-grad-admin-bbe4c3-dev.apps.silver.devops.gov.bc.ca | oc apply -n bbe4c3-dev -f -
+          oc process -f tools/openshift/frontend-static.dc.ocp4.yaml -p REPO_NAME=educ-grad-admin \
+          -p HOST_ROUTE=educ-grad-admin-bbe4c3-test.apps.silver.devops.gov.bc.ca -p NAMESPACE=${{ env.NAMESPACE_TOOLS }} \
+          -p APP_NAME=educ-grad-admin -p TAG=latest -p MIN_REPLICAS=2 -p MAX_REPLICAS=3 -p MIN_CPU=50m -p MAX_CPU=100m \
+          -p MIN_MEM=200Mi -p MAX_MEM=250Mi | oc apply -n bbe4c3-test -f -
 
           # Start rollout (if necessary) and follow it
           oc rollout latest dc/${{ env.IMAGE_NAME }}-dc 2> /dev/null \
@@ -166,4 +124,4 @@ jobs:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.3.0
         with:
-          target: 'https://educ-grad-admin-bbe4c3-dev.apps.silver.devops.gov.bc.ca'
+          target: 'https://educ-grad-admin-bbe4c3-test.apps.silver.devops.gov.bc.ca'
