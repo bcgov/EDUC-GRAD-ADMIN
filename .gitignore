@@ -1,3 +1,4 @@
+*.iml
 .idea/**
 *.iml
 # Ignore VS Code settings

@@ -89,7 +89,6 @@ export default {
   computed: {
     ...mapGetters({
       studentNotes: "getStudentNotes",
-      token: "auth/getToken",
       profile: "getStudentProfile",
       username: "getUsername"
     }),
@@ -118,7 +117,7 @@ export default {
   },
   methods: {
     onSaveEditedNote(studentNoteIndex, editedNote){
-      StudentService.addStudentNotes(editedNote, this.token)
+      StudentService.addStudentNotes(editedNote)
         .then((response) => {
           this.showNotification('success','Student note saved')
           if(response.data && response.data.value){
@@ -156,7 +155,7 @@ export default {
         this.newNote.studentID = this.$route.params.studentId;
         this.newNote.createdBy = this.username;
         this.newNote.createdTimestamp = current;
-        StudentService.addStudentNotes(this.newNote, this.token)
+        StudentService.addStudentNotes(this.newNote)
           .then((response) => {
             if(response.data && response.data.value){
               this.studentNotes.unshift(response.data.value)
@@ -176,13 +175,13 @@ export default {
         this.newNote.note = '';
       },
       onDelete(noteID) {
-        StudentService.deleteStudentNotes(noteID, this.token)  
+        StudentService.deleteStudentNotes(noteID)  
           var removeIndex = this.studentNotes.map(function(item) { return item.id; }).indexOf(noteID); 
           this.studentNotes.splice(removeIndex, 1);
           this.showNotification('success','Student note deleted')
       },
       getNotes(){
-        StudentService.getStudentNotes(this.$route.params.studentid, this.token).then(
+        StudentService.getStudentNotes(this.$route.params.studentid).then(
           (response) => {           
             this.studentNotes = response.data
           }

@@ -20,10 +20,6 @@
 
 <script>
 
-import {
-  mapGetters
-} from "vuex";
-
 import DisplayTable from "@/components/DisplayTable";
 import StudentService from "@/services/StudentService.js";
 
@@ -33,7 +29,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    StudentService.getStudentHistoryActivityCode(this.token)
+    StudentService.getStudentHistoryActivityCode()
     .then((response) => {
       this.historyActivityCode = response.data;
     })
@@ -78,12 +74,6 @@ export default {
         }
       ],
     };
-  },
-  computed: {
-    ...mapGetters({  
-      token: "auth/getToken",
-      role: "getRoles"
-    }),
   },
   methods: {
   },

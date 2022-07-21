@@ -19,9 +19,6 @@
 </template>
 
 <script>
-import {
-  mapGetters
-} from "vuex";
 import DisplayTable from "@/components/DisplayTable";
 import StudentService from "@/services/StudentService.js";
 
@@ -32,7 +29,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-       StudentService.getStudentStatusCodes(this.token)
+       StudentService.getStudentStatusCodes()
         .then((response) => {
           this.studentStatusCodes = response.data;
         })
@@ -80,10 +77,6 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({  
-      token: "auth/getToken",
-      role: "getRoles"
-    }),
   },
   methods: {
   },

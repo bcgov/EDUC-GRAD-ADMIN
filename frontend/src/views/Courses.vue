@@ -110,11 +110,9 @@
              
             </div>
           </form>
-          <b-card-text>
-            <div id="courses-search-results">
-              <DisplayTable title="Courses" v-bind:items="courses" v-bind:fields="courseFields" id="courseCode" :showFilter=true pagination="true"
-              v-bind:role="role"></DisplayTable>
-            </div>
+          <b-card-text >
+            <DisplayTable title="Courses" v-bind:items="courses" v-bind:fields="courseFields" id="courseCode" :showFilter=true pagination="true"
+            ></DisplayTable>
           </b-card-text>
           </b-tab>
           <b-tab title="Course restrictions">
@@ -194,9 +192,6 @@
 
 <script>
   import sharedMethods from '../sharedMethods'
-  import {
-    mapGetters
-  } from "vuex";
   import CourseService from '@/services/CourseService.js';
   import DisplayTable from '@/components/DisplayTable.vue';
   export default {
@@ -424,13 +419,6 @@
         params:""
       };
     },
-    computed: {
-      
-      ...mapGetters({
-        token: "auth/getToken",
-        role: "getRoles"
-      }),
-    },
     created() {
       this.showNotification = sharedMethods.showNotification
       this.getAllCourseRestrictions();
@@ -512,7 +500,7 @@
                 this.params.append('endDate', this.advancedSearchInput.endDate.value);
               }              
             }
-            CourseService.getCoursesByAdvanceSearch(this.params,this.token)
+            CourseService.getCoursesByAdvanceSearch(this.params)
             .then((response) => {
               this.advancedSearchLoading = false;
               this.courses = response.data;
@@ -583,7 +571,7 @@
                 }   
               }
             }
-            CourseService.getCourseRequirements(this.params,this.token)
+            CourseService.getCourseRequirements(this.params)
             .then((response) => {
               this.courseRequirementLoading = false;
               this.courseRequirements = response.data;
@@ -609,7 +597,7 @@
         }   
       }, 
       searchCourseByCourseCode() {
-        CourseService.getCourses(this.courseCode, this.token)
+        CourseService.getCourses(this.courseCode)
           .then((response) => {
             this.courses = response.data;
           })   
@@ -620,7 +608,7 @@
           });
       },
       getAllCourses() {
-        CourseService.getAllCourses(this.token)
+        CourseService.getAllCourses()
           .then((response) => {
             this.courses = response.data;
           })
@@ -632,7 +620,7 @@
           });
       },
       getAllCourseRequirements() {
-        CourseService.getAllCourseRequirements(this.token)
+        CourseService.getAllCourseRequirements()
           .then((response) => {
             this.courseRequirements = response.data;
           })
@@ -644,7 +632,7 @@
         });
       },
       getAllCourseRestrictions() {
-        CourseService.getCourseRestrictions(this.token)
+        CourseService.getCourseRestrictions()
           .then((response) => {
             this.courseRestrictions = response.data;
           })
@@ -656,7 +644,7 @@
         });
       },
       getAllCourseRestriction(mainCourseLevel, mainCourseCode) {
-        CourseService.getCourseRestriction(mainCourseLevel, mainCourseCode, this.token)
+        CourseService.getCourseRestriction(mainCourseLevel, mainCourseCode)
           .then((response) => {
             this.courseRestrictions = response.data;
           })

@@ -22,7 +22,6 @@ export default {
   name: "GraduationOptionalProgramRules",
   props: {},
   computed: {...mapGetters({
-      token: "auth/getToken"
   })},
   components:{
     DisplayTable: DisplayTable,
@@ -106,7 +105,7 @@ export default {
           },
           {
             key: 'optionalProgramRequirementCode.languageOfInstruction',
-            label: 'Language',
+            label: 'Required Language of Instruction',
             sortable: true,
             editable: true,
             class: '',
@@ -122,7 +121,7 @@ export default {
     };
   },
   created() {
-    ProgramManagementService.getAllOptionalProgramRules(this.token)
+    ProgramManagementService.getAllOptionalProgramRules()
       .then((response) => {
         this.optionalProgramRules = response.data;
       })

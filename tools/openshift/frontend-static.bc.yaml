@@ -50,7 +50,7 @@ objects:
     creationTimestamp:
     labels:
       build: "${REPO_NAME}-frontend-static"
-    name: "${REPO_NAME}-frontend-static-${JOB_NAME}"
+    name: "${REPO_NAME}-frontend-static"
   spec:
     completionDeadlineSeconds: 600
     successfulBuildsHistoryLimit: 3
@@ -63,11 +63,11 @@ objects:
     postCommit: {}
     resources:
       requests:
-        cpu: 1000m
-        memory: 1Gi
+        cpu: "100m"
+        memory: "500Mi"
       limits:
-        cpu: 2000m
-        memory: 2Gi
+        cpu: "250m"
+        memory: "750Mi"
     runPolicy: SerialLatestOnly
     source:
       dockerfile: |-
@@ -79,7 +79,7 @@ objects:
       - as:
         from:
           kind: ImageStreamTag
-          name: "${REPO_NAME}-frontend:${JOB_NAME}"
+          name: "${REPO_NAME}-frontend:latest"
           namespace: "${NAMESPACE}"
         paths:
         - destinationDir: tmp
@@ -94,9 +94,6 @@ objects:
 parameters:
 - name: REPO_NAME
   description: Application repository name
-  required: true
-- name: JOB_NAME
-  description: Job identifier (i.e. 'pr-5' OR 'main')
   required: true
 - name: NAMESPACE
   description: Target namespace reference (i.e. 'k8vopl-dev')

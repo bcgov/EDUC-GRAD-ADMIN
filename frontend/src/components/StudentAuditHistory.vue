@@ -23,7 +23,14 @@
     </div>
     <b-collapse id="ungrad-reasons-collapse">
       <div class="pb-3 px-3">
-        <DisplayTable striped :items="studentUngradReasons" :fields='[{ key: "createDate",label: "Undo Completion Date",class:"px-0 py-2 w-15"},{key: "ungradReasonCode",label: "Code",class:"px-0 py-2 w-10"},{key: "ungradReasonDescription",label: "Reason",class:"px-0 py-2 w-80"},{key: "createUser",label: "User",class:"px-0 py-2 w-80"}]'></DisplayTable>
+        <DisplayTable striped :items="studentUngradReasons"
+          :fields='[
+            {key: "createDate", label: "Undo Completion Date", class:"px-0 py-2 w-15"},
+            {key: "undoCompletionReasonCode",label: "Code",class:"px-0 py-2 w-10"},
+            {key: "undoCompletionReasonDescription",label: "Reason",class:"px-0 py-2 w-80"},
+            {key: "createUser",label: "User",class:"px-0 py-2 w-80"}
+          ]'>
+        </DisplayTable>
       </div>
     </b-collapse>
     <hr>
@@ -168,7 +175,6 @@ export default {
   computed: {
     ...mapGetters({
         studentId: "getStudentId",
-        token: "auth/getToken",
         studentHistory: 'getStudentAuditHistory',
         optionalProgramHistory: 'getStudentOptionalProgramAuditHistory',
         studentUngradReasons: "getStudentUngradReasons",

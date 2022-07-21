@@ -12,9 +12,6 @@
 </template>
 
 <script>
-import {
-  mapGetters
-} from "vuex";
 import DisplayTable from "@/components/DisplayTable";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import sharedMethods from '../../sharedMethods';
@@ -25,7 +22,7 @@ export default {
   },  
   created() {
      this.showNotification = sharedMethods.showNotification; 
-     ProgramManagementService.getLetterGrades(this.token)
+     ProgramManagementService.getLetterGrades()
       .then((response) => {
         this.letterGrades = response.data;       
       })
@@ -87,12 +84,6 @@ export default {
         }                              
       ]
     };
-  },
-  computed: {
-    ...mapGetters({  
-      token: "auth/getToken",
-      role: "getRoles"
-    }),
   },
   methods: {
   },

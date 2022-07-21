@@ -2,7 +2,7 @@
   <div>
     <b-overlay :show='processingBatch'>
       <div class="row">
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3 border-right">
           <div class="m-0">
             <label class="font-weight-bold">Run Type</label>
             <b-form-select
@@ -53,38 +53,96 @@
           </div>                                                      
         </div>
         <div class="col-9">
-
+            
           <div class="m-0 p-0 col-2">
-            <label class="font-weight-bold">Group</label>
+            <label class="font-weight-bold pt-1">Group</label>
             <b-form-select
-                id="inline-form-select-audience"
-                class="mb-2 mr-sm-2 mb-sm-0"
-                :options="[{ text: '', value: null }, 'Student', 'School', 'District', 'Program']"
-                :value="tabContent[jobId].details['who']"     
-                @change="editBatchJob(jobId,'who', $event)"  
-                v-if="tabContent[jobId].details['credential'] != 'Blank certificate print' && tabContent[jobId].details['credential'] != 'Blank transcript print' "     
-              ></b-form-select>
-              <b-form-select
-                id="inline-form-select-audience"
-                class="mb-2 mr-sm-2 mb-sm-0"
-                :options="[{ text: '', value: null }, 'School', 'Ministry of Advanced Education']"
-                :value="tabContent[jobId].details['who']"     
-                @change="editBatchJob(jobId,'who', $event)"       
-                v-else
-              ></b-form-select>                    
+              id="inline-form-select-audience"
+              class="mb-2 mr-sm-2 mb-sm-0"
+              :options="[{ text: '', value: null }, 'Student', 'School', 'District', 'Program']"
+              :value="tabContent[jobId].details['who']"     
+              @change="editBatchJob(jobId,'who', $event)"  
+              v-if="tabContent[jobId].details['credential'] != 'Blank certificate print' && tabContent[jobId].details['credential'] != 'Blank transcript print' "     
+            ></b-form-select>
+            <b-form-select
+              id="inline-form-select-audience"
+              class="mb-2 mr-sm-2 mb-sm-0"
+              :options="[{ text: '', value: null }, 'School', 'Ministry of Advanced Education']"
+              :value="tabContent[jobId].details['who']"     
+              @change="editBatchJob(jobId,'who', $event)"       
+              v-else
+            ></b-form-select>   
           </div>
+          <div v-if="tabContent[jobId].details['who'] !='Student'" class="m-0 p-0">
+            <label class="font-weight-bold p-0 m-0 row">Grad Date</label>
+            <b-form-select
+              id="inline-form-select-audience"
+              class="mb-2 mr-sm-2 mb-sm-0 col-3"
+              :options="[{ text: 'Current Students', value: 'Current Students' }, { text: 'Date Range', value: 'Date Range' }]"
+              :value="tabContent[jobId].details['gradDate']"     
+              @change="editBatchJob(jobId,'gradDate', $event)"    
+            ></b-form-select>    
+              <div class="date-ranges col-12 row" v-if="tabContent[jobId].details['gradDate']=='Date Range'">            
+                <div class="float-left col-3 m-0 p-0" >
+                  <strong><label class="pt-1">Grad Start Date</label></strong>
+                  <b-input-group class="mb-3">
+                    <b-form-input
+                      id="gradDateFromInput"
+                      v-model="gradDateFrom"
+                      type="text"
+                      placeholder="YYYY-MM-DD"
+                      autocomplete="off"
+                      @input="editBatchJob(jobId,'gradDateFrom', $event)"    
+                    ></b-form-input>
+                    <b-input-group-append>
+                      <b-form-datepicker
+                        v-model="gradDateFrom"
+                        button-only
+                        right
+                        locale="en-US"
+                        @input="editBatchJob(jobId,'gradDateFrom', $event)"    
+                      ></b-form-datepicker>
+                    </b-input-group-append>
+                  </b-input-group>
+                </div>
+
+                <div class="float-left col-3">
+                  <strong><label class="pt-1">Grad End Date</label></strong>
+                  <b-input-group class="mb-3">
+                    <b-form-input
+                      id="gradDateToInput"
+                      v-model="gradDateTo"
+                      type="text"
+                      placeholder="YYYY-MM-DD"
+                      autocomplete="off"
+                      @input="editBatchJob(jobId,'gradDateTo', $event)"    
+                    ></b-form-input>
+                    <b-input-group-append>
+                      <b-form-datepicker
+                        v-model="gradDateTo"
+                        button-only
+                        right
+                        locale="en-US"
+                        aria-controls="example-input"
+                        @input="editBatchJob(jobId,'gradDateTo', $event)"    
+                      ></b-form-datepicker>
+                    </b-input-group-append>
+                  </b-input-group>
+                </div>
+              </div>
+           </div>          
                     
           <div class="p-0 mt-3 col-3" v-if="tabContent[jobId].details['who'] == 'District'">
             <label class="font-weight-bold">District Category</label>
             <b-form-select
               id="inline-form-select-type"
               class="col-12 my-2"
-              :options="[{ text: 'Choose...', value: null }, { text: '01 Public', value: '01' }, { text: '02 Independent', value: '02' }, { text: '03 Federally Operated Band School', value: '03' }, { text: '04 Yukon School', value: '04' },{ text: '05 Offshore', value: '05' }]"
+              :options="[{ text: 'Choose...', value: null }, { text: '01 Public', value: '01' }, { text: '02 Independent', value: '02' }, { text: '03 Federally Operated Band School', value: '03' }, { text: '04 Yukon School', value: '04' },{ text: '09 Offshore', value: '09' }]"
               :value="tabContent[jobId].districts['categoryCode']"
               @change="editBatchJob(jobId,'categoryCode', $event)"
             ></b-form-select>
           </div>
-          <div class="mt-1" v-if="tabContent[jobId].details['what'] == 'DISTRUN'">
+          <div class="mt-1 col-1 p-0" v-if="tabContent[jobId].details['what'] == 'DISTRUN'">
             <label class="font-weight-bold">Copies</label>
             <b-form-input
                 type="number"
@@ -256,29 +314,66 @@
         <b-button size="sm" variant="danger" class="btn btn-danger float-right col-2 p-2" @click="cancelBatchJob(jobId)">
           Cancel
         </b-button>
-        <b-button size="sm" variant="primary" class="btn btn-primary w-100 float-right col-2 p-2" @click="runBatch(jobId)">
-          Run Batch
+        <b-button v-b-modal.batch-modal size="sm" variant="primary" class="btn btn-primary w-100 float-right col-2 p-2">
+          Schedule/Run Batch
         </b-button>
+        <b-modal id="batch-modal" :title="'RUN ' + jobId " @show="resetModal" @hidden="resetModal" ok-title="Confirm" :ok-disabled="disableConfirm()" @ok="runBatch(jobId)">
+          <b-form-group label="Batch Run" v-slot="{ ariaDescribedby }"> 
+            <b-form-radio v-model="batchRunTime" :aria-describedby="ariaDescribedby" name="batch-runtime-options" value="Run Now">Run Now</b-form-radio>
+            <b-form-radio v-model="batchRunTime" :aria-describedby="ariaDescribedby" name="batch-runtime-options" value="Run Later">Run Later</b-form-radio>
+                <b-form-group v-if="batchRunTime == 'Run Later'" label="Schedule" v-slot="{ ariaDescribedby }">
+                  <b-form-radio v-model="batchRunSchedule" :aria-describedby="ariaDescribedby" name="schedule-options" value="N">Tonight at 6:30PM</b-form-radio>
+                  <b-form-radio v-model="batchRunSchedule" :aria-describedby="ariaDescribedby" name="schedule-options" value="W">Weekend Batch - Saturday 12:00PM</b-form-radio>
+                  <b-form-radio v-model="batchRunSchedule" :aria-describedby="ariaDescribedby" name="schedule-options" value="M">Tommorow at 6:30AM</b-form-radio>
+                  <b-form-radio v-model="batchRunSchedule" :aria-describedby="ariaDescribedby" name="schedule-options" value="Custom">Custom</b-form-radio>
+                    <div class="pl-4" v-if="batchRunSchedule == 'Custom'">
+                      <!-- <label for="batch-datepicker">Choose a date:</label> -->
+
+                      <b-form-datepicker id="batch-datepicker" v-model="batchRunCustomDate" class="mb-2"></b-form-datepicker>
+                      <b-form-timepicker
+                        id="timepicker-buttons"
+                        v-model='batchRunCustomTime'
+                        now-button
+                        reset-button
+                        locale="en"
+                      ></b-form-timepicker>
+                         <!-- <b-form-input
+                            id="bforminput"
+                            v-model="cronTime"
+                          ></b-form-input> -->
+                    </div>
+                </b-form-group>
+          </b-form-group>
+        </b-modal>
     </div>
     </b-overlay>
+    
   </div>
 </template>
 <script>
 import TRAXService from "@/services/TRAXService.js";
 import SchoolService from "@/services/SchoolService.js";
 import StudentService from "@/services/StudentService.js";
-import GraduationCommonService from "@/services/GraduationCommonService.js";
+import GraduationReportService from "@/services/GraduationReportService.js";
 import {
   mapGetters
 } from "vuex";
 export default {
   data: function () {
     return {
+      batchRunDetails: "",
+      cronTime: "",
+      batchRunTime: "Run Now",
+      batchRunCustomDate: "",
+      batchRunCustomTime: "",
+      batchRunSchedule: "",
       processingBatch: false,
       validationMessage: "",
       validating: false,
       certificateTypes:[],
       transcriptTypes:[],
+      gradDateFrom:"",
+      gradDateTo: ""
     }
   },
   created() {
@@ -287,8 +382,62 @@ export default {
     this.certificateTypes = this.getCertificateTypes();
   },
   methods: {
+    disableConfirm(){
+      if(this.batchRunTime == 'Run Now'){
+        return false
+      }else{
+        if(this.batchRunSchedule && this.batchRunSchedule == 'Custom'){
+          if(this.batchRunTime && this.batchRunCustomDate){
+            return false;
+          }else{
+            return true;
+          }
+        }
+        
+      }
+    },
+    resetModal(){
+      this.batchRunSchedule = ""
+      this.cronTime = ""
+      this.batchRunTime = ""
+      this.batchRunCustomDate = ""
+      this.batchRunCustomTime = ""
+    },
     runBatch(id){
-      this.$emit("runbatch",id)
+      if(this.batchRunTime == 'Run Later'){
+        this.cronTime = this.getCronTime()
+        this.$emit("runbatch",id, this.cronTime);
+      }else{
+        this.$emit("runbatch",id);
+      }
+    },
+    getCronTime(){
+
+      //console.log(this.batchRunSchedule)
+      //console.log(this.batchRunCustomDate + "T" + this.batchRunCustomTime)
+      //console.log()
+      if(this.batchRunSchedule == 'N'){
+        let today = new Date();
+        return "0 30 18 " + today.getDate()  + " " +  (today.getMonth()+1)   + " *";
+      }else if(this.batchRunSchedule == 'W'){      
+        
+        const today = new Date();
+        const first = today.getDate() - today.getDay() + 1;
+        const sixth = first + 5;
+        const saturday = new Date(today.setDate(sixth));
+        return "0 30 18 " + saturday.getDate()  + " " +  (saturday.getMonth()+1)   + " *";
+
+      }else if(this.batchRunSchedule == 'M'){
+          const today = new Date()
+          let tomorrow = new Date(today)
+          tomorrow.setDate(tomorrow.getDate() + 1)
+          return "0 30 18 " + tomorrow.getDate()  + " " +  (tomorrow.getMonth()+1)   + " *";
+      }else if(this.batchRunSchedule == 'Custom'){
+        let dateTime = new Date(this.batchRunCustomDate + "T" + this.batchRunCustomTime)
+        return dateTime.getSeconds() + " "  + dateTime.getMinutes()  + " " + dateTime.getHours()  + " " + dateTime.getDate()   + " " +  (dateTime.getMonth()+1)   + " *"
+      }else{
+        return null
+      }
     },
     cancelBatchJob(id){
       //Use the parents method to close and clear a batch job by ID
@@ -298,7 +447,7 @@ export default {
       this.validationMessage = "";
       if(type == "schools"){
           this.validating = true;
-          SchoolService.getSchoolInfo(value,this.token).then(
+          SchoolService.getSchoolInfo(value).then(
           (response) => {
             if(response.data.minCode){
               this.$store.commit("batchprocessing/addValueToTypeInBatchId", {id,type, value});
@@ -324,7 +473,7 @@ export default {
       if(type == "students"){
         //remove duplicates
         this.validating = true;
-        StudentService.getStudentByPen(value,this.token).then(
+        StudentService.getStudentByPen(value).then(
         (response) => {
             if(response.data.length == 0){
               this.validationMessage = value + " is not a valid PEN"
@@ -352,7 +501,7 @@ export default {
       if(type == "districts"){
         //remove duplicates
           this.validating = true;
-          TRAXService.getDistrict(value,this.token).then(
+          TRAXService.getDistrict(value).then(
           (response) => {
             if(response.data){
               this.$store.commit("batchprocessing/addValueToTypeInBatchId", {id,type, value});
@@ -413,29 +562,30 @@ export default {
         })
     },
     editBatchJob(id,type,event){
-      let batchDetail = this.tabContent[id];
-      //change the value
-      if(type == "what" && batchDetail.details[type] != event){
-        this.clearBatchDetails(id)
-      }
-      if(type == "who" && batchDetail.details[type] != event){
-        
-        this.clearBatchGroupDetails(id)
-       
-      }   
-      batchDetail.details[type] = event;   
-      if(type == "credential" && event == 'Blank certificate print'){
-        if(batchDetail.details[type] != event){
-          this.clearBatchCredentialDetails(id);
-        }
-        batchDetail.details['who'] = '';
-        
-      }
-      this.$store.commit("batchprocessing/editBatchDetails", {batchDetail, id});
-      this.$forceUpdate();
+      this.$nextTick(() => {
+
+          let batchDetail = this.tabContent[id];
+          //change the value          
+          if(type == "what" && batchDetail.details[type] != event){
+            this.clearBatchDetails(id)
+          }
+          if(type == "who" && batchDetail.details[type] != event){
+            this.clearBatchGroupDetails(id)
+          }   
+          batchDetail.details[type] = event; 
+          if(type == "credential" && event == 'Blank certificate print'){
+            if(batchDetail.details[type] != event){
+              this.clearBatchCredentialDetails(id);
+            }
+            batchDetail.details['who'] = '';
+            
+          }
+          this.$store.commit("batchprocessing/editBatchDetails", {batchDetail, id});
+          this.$forceUpdate();
+      })
     },
     getCertificateTypes() {
-      GraduationCommonService.getCertificateTypes(this.token)
+      GraduationReportService.getCertificateTypes()
         .then((response) => {
           this.certificateTypes = response.data;
         })
@@ -445,7 +595,7 @@ export default {
         });
     },
     getTranscriptTypes() {
-      GraduationCommonService.getTranscriptTypes(this.token)
+      GraduationReportService.getTranscriptTypes()
         .then((response) => {
           this.transcriptTypes = response.data;
         })
@@ -469,7 +619,6 @@ export default {
     ...mapGetters({  
       tabCounter: "batchprocessing/getBatchCounter",
       tabContent: "batchprocessing/getBatchDetails",
-      token: "auth/getToken",
       programOptions: "app/getProgramOptions"      
 
     }),

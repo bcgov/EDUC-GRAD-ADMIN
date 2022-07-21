@@ -19,11 +19,8 @@
 </template>
 
 <script>
-import {
-  mapGetters
-} from "vuex";
 import DisplayTable from "@/components/DisplayTable";
-import GraduationCommonService from "@/services/GraduationCommonService.js";
+import GraduationReportService from "@/services/GraduationReportService.js";
 
 
 export default {
@@ -32,7 +29,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-      GraduationCommonService.getTranscriptTypes(this.token)
+      GraduationReportService.getTranscriptTypes()
       .then((response) => {
         this.transcriptTypes = response.data;
       })
@@ -77,12 +74,6 @@ export default {
         },
       ],
     };
-  },
-  computed: {
-    ...mapGetters({  
-      token: "auth/getToken",
-      role: "getRoles"
-    }),
   },
   methods: {
   },

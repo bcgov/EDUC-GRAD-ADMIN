@@ -1,23 +1,21 @@
 <template>
   <div id="app">
     <Bcheader class="bcheader" style="margin-bottom: 15px; text-transform: capitalize">
-    <a v-b-toggle.sidebar-1>{{username}}</a>
-    <b-sidebar id="sidebar-1" title="Permissions" shadow>
-      <div class="px-3 py-2">
-        <h1>{{username}}</h1>
-        <p>
-          {{permissions}}
-        </p>
+      <div v-if="isAuthenticated && dataReady">
+        <a v-b-toggle.sidebar-1>{{ userInfo.userName }} </a>
+        <b-sidebar id="sidebar-1" title="Permissions" shadow>
+          <div class="px-3 py-2">
+              {{getProgramOptions}}
+          </div>
+        </b-sidebar>
+            (<a>{{ roles }}</a>) |
+            <a :href='routes.LOGOUT' class="text-white">Logout</a>
       </div>
-    </b-sidebar>
-        (<a @click="toggleRole">{{role}}</a>) | 
-        <router-link
-      to="/logout"
-      class="text-white"
-      id="logout-route"
-    >Logout</router-link>
-        </Bcheader>
-    
+      <div v-else-if="!isAuthenticated">
+        <a :href='routes.LOGIN' class="text-white">Login</a>
+      </div>
+    </Bcheader>
+  
     <div class="container" style="height: 100%;">
         <transition
           name="fade"
@@ -29,55 +27,53 @@
   </div>
 </template>
 <script>
-import {
-  mapGetters
-} from "vuex";
+import { mapActions, mapMutations, mapGetters,mapState } from 'vuex';
 
 import Bcheader from "@/components/BCHeader";
 import BCFooter from "@/components/BCFooter";
+import { Routes } from '@/utils/constants';
 export default {
   components: {
     Bcheader,
     BCFooter
   },
-  created() {
-    if(this.role == "administrator"){
-      this.$store.dispatch("app/setApplicationVariables");
-    }
-  },
   data() {
-      return { 
+      return {
+        routes: Routes,
         host: location.protocol + "//" + location.host,
       }
   },
   computed: {
-    ...mapGetters({
-      role: "getRoles",
-      permissions: "getPermissions",
-      username: "getUsername",
-    }),
+  
+    ...mapGetters('auth', ['roles','isAuthenticated', 'loginError', 'isLoading', 'userInfo']),
+    ...mapGetters('app', ['getProgramOptions']),
+    ...mapState('app', ['pageTitle']),
+    dataReady: function() {
+      return this.userInfo;
+    }
   },
   methods:{
-    logout(){
-      document.cookie = 'SMSESSION=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    },
-    toggleRole(){
-      if(this.role == "administrator"){
-         this.$store.dispatch("setRoles","authenticated");
-      }else if(this.role == "authenticated"){
-         this.$store.dispatch("setRoles","debug");
-      }else if(this.role == "debug"){
-         this.$store.dispatch("setRoles","administrator");
+      
+      ...mapMutations('auth', ['setLoading']),
+      ...mapActions('auth', ['getJwtToken', 'getUserInfo', 'logout']),
+       ...mapActions('app', ['setApplicationVariables']),
+  },
+  async created() {
+    this.getJwtToken().then(() =>
+        this.setApplicationVariables()
+    ).catch(e => {
+      if(! e.response) {
+        this.logout();
+        this.$router.replace({name: 'error', query: { message: `500_${e.data || 'ServerError'}` } });
       }
-    }
+    }).finally(() => {
+      
+    });
   }
 }
-
-
 </script>
 
 <style>
-
 #app {
   background: #F9F9FB;
   -webkit-font-smoothing: antialiased;

@@ -5,7 +5,7 @@
       header="GRAD status"
       >
       <b-card-text class="p-3">         
-        <b-button-group v-if="this.role =='administrator'" class="gradstatus-actions float-right">
+        <b-button-group v-if="this.roles.includes('Administrator')" class="gradstatus-actions float-right">
           <div v-if="!showEdit">
             <b-link href="#" class="edit" v-on:click="editGradStatus" size="sm" variant="primary">
               Edit 
@@ -37,10 +37,10 @@
           </b-alert>
         </div>    
         <div v-else-if="studentGradStatus && studentGradStatus.studentStatus == 'DEC' && showEdit">
-          <b-alert show variant="info" class="p-3 mb-1">
+          <b-alert show variant="warning" class="p-3 mb-1">
             <h4 class="alert-heading">Student status: Deceased</h4>
               <p class="locked-message">
-                This student's status is set to 'Deceased'. Their data cannot be changed.
+                Warning: This student is showing as "Deceased". 
               </p>
             </b-alert>
           </div>          
@@ -269,6 +269,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+
 import SchoolService from "@/services/SchoolService.js";
 import sharedMethods from '../../sharedMethods';
 import StudentService from "@/services/StudentService.js";
@@ -276,6 +277,7 @@ import StudentService from "@/services/StudentService.js";
 export default {
   name: "GRADStatus",
   computed: {
+    ...mapGetters('auth', ['roles']),
     studentGradeChange(){
       return this.editedGradStatus.studentGrade;
     },
@@ -292,14 +294,12 @@ export default {
       return this.editedGradStatus.schoolAtGrad;
     },
     disableSaveButton(){
-      return this.studentGradStatus.studentStatus == "DEC" || this.disableButton
+      return this.disableButton
     },
     recalculateFlag(){
       return this.studentGradStatus.recalculateGradStatus; 
     },
     ...mapGetters({
-    role: "getRoles",
-    token: "auth/getToken",
     optionalPrograms: "getStudentOptionalPrograms",
     programOptions: "app/getProgramOptions",
     studentStatusOptions: "app/getStudentStatusOptions",
@@ -377,7 +377,8 @@ export default {
       }
       this.programEffectiveDate = this.programCompletionEffectiveDateList[0].effectiveDate
       this.programExpiryDate = this.programCompletionEffectiveDateList[0].expiryDate
-      var compareDate = new Date(this.editedGradStatus.programCompletionDate);
+      let compareDate = new Date(this.editedGradStatus.programCompletionDate);
+      let today = new Date();
       if(!this.editedGradStatus.programCompletionDate){
         if(this.editedGradStatus.program == 'SCCP'){
           this.disableButton = false;
@@ -399,12 +400,18 @@ export default {
       }
       if(this.studentGradStatus.programCompletionDate){
         if(this.editedGradStatus.program == 'SCCP'){
-          if(compareDate > this.todayDate){
+          if(compareDate > today){
             this.dateInFutureWarning = true;
             this.disableButton = true;
           }else{
             this.dateInFutureWarning = false;
+            this.disableButton = false;
+            if(!this.editedGradStatus.programCompletionDate || this.editedGradStatus.programCompletionDate == undefined){
+            this.disableButton = true;
+          } else {
+            this.disableButton = false;
           }        
+          }         
         }
       }      
     },
@@ -432,7 +439,7 @@ export default {
             this.schoolOfRecordWarning = false;
             this.schoolOfRecordInputWarning = false;
             this.schoolFound = false;
-            SchoolService.getSchoolInfo(this.editedGradStatus.schoolOfRecord, this.token)
+            SchoolService.getSchoolInfo(this.editedGradStatus.schoolOfRecord)
             .then((response) => {
               this.schoolOfRecordStatus = response.data.openFlag
               if(response.statusText == "No Content"){
@@ -489,7 +496,7 @@ export default {
             this.schoolAtGraduationWarning = false;
             this.schoolAtGraduationInputWarning = false;
             this.schoolAtGraduationFound= false;
-            SchoolService.getSchoolInfo(this.editedGradStatus.schoolAtGrad, this.token)
+            SchoolService.getSchoolInfo(this.editedGradStatus.schoolAtGrad)
             .then((response) => {         
               this.schoolAtGraduationStatus = response.data.openFlag
               if(response.statusText == "No Content"){
@@ -513,6 +520,9 @@ export default {
       }  
     },
   methods: {
+    getStudentReportsAndCertificates: function(){
+      this.$root.$emit('studentProfile')
+    },
     getStudentStatus(code) {
       return sharedMethods.getStudentStatus(code, this.studentStatusOptions);
     },
@@ -540,7 +550,7 @@ export default {
         this.disableSchoolAtGrad = true;
       }
 
-      if(this.studentGradStatus.studentStatus == 'MER' || this.studentGradStatus.studentStatus == 'DEC'){
+      if(this.studentGradStatus.studentStatus == 'MER'){
         this.disableInput = true;
         this.disableStudentStatus = true;
       }
@@ -601,11 +611,11 @@ export default {
 
       StudentService.editGraduationStatus(
         id,
-        this.token,
         this.editedGradStatus
       )
       .then((response) => {
         this.updateStatus = response.data;
+        this.getStudentReportsAndCertificates();
         this.studentGradStatus.pen = response.data.pen;
         this.studentGradStatus.program = response.data.program;
         this.studentGradStatus.programCompletionDate = response.data.programCompletionDate;
@@ -647,7 +657,7 @@ export default {
     },
   
     getSchoolInfo(mincode, type) {
-      SchoolService.getSchoolInfo(mincode, this.token)
+      SchoolService.getSchoolInfo(mincode)
       .then((response) => {
         if(type == 'schoolOfRecord'){
           this.schoolOfRecord = response.data;

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --mode development",
+    "serve": "vue-cli-service serve --mode development --port 8081",
     "start": "vue-cli-service serve",
     "serve:demo": "vue-cli-service serve --mode demo",
     "build": "vue-cli-service build --dest dist/app/view",
@@ -25,6 +25,7 @@
     "query-string": "^6.14.1",
     "vue": "^2.6.12",
     "vue-router": "^3.5.1",
+    "vue-service": "^1.0.3",
     "vuejs-logger": "1.5.3",
     "vuejs-smart-table": "0.0.7",
     "vuelidate": "^0.7.6",

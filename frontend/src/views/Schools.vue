@@ -137,9 +137,6 @@
 import SchoolService from '@/services/SchoolService.js';
 import DisplayTable from '@/components/DisplayTable.vue';
 import sharedMethods from '../sharedMethods';
-import {
-mapGetters
-} from "vuex";
   export default {
     name: "schools",
     components: {
@@ -249,11 +246,6 @@ mapGetters
         },
       }
     },
-    computed: {
-      ...mapGetters({
-        token: "auth/getToken"
-      }),
-    },
     created() {
       this.showNotification = sharedMethods.showNotification
     },
@@ -286,7 +278,7 @@ mapGetters
         }else if(!isEmpty){
           this.searchLoading = true;
           this.schools = {};
-          SchoolService.searchSchools(this.search, this.token).then((res) => {
+          SchoolService.searchSchools(this.search).then((res) => {
             this.schools = res.data;
             this.searchLoading = false;
             this.totalResults = this.schools.length;

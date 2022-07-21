@@ -1,44 +1,13 @@
-import axios from "axios";
-const apiClient = axios.create({
-  baseURL: process.env.VUE_APP_BASE_URL,
-});
+import ApiService from '../common/apiService';
+
 export default {
-  getAllAssesments(token) {
-    const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    };
-    return apiClient.get("/api/v1/assessment", { headers });
+  getAllAssesments(){
+    return ApiService.apiAxios.get('/api/v1/assessment')
   },
-  getAssesmentByCode(assmtCode, token) {
-    const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    };
-    return apiClient.get("/api/v1/assessment/" + assmtCode, { headers });
+  getAllAssesmentRequirements() {
+    return ApiService.apiAxios.get('/api/v1/assessment/requirement')
   },
-  getAllAssesmentRequirements(token) {
-    const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    };
-    return apiClient.get("/api/v1/assessment/requirement", { headers });
-  },
-  getRuleCourseRequirements(rule, token) {
-    const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    };
-    return apiClient.get("/api/v1/assessment/requirement/rule?rule=" + rule, {
-      headers,
-    });
-  },
-  getStudentAssessment(pen, token) {
-    const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-    return apiClient.get('/api/v1/assessment/pen/'+ pen + '?sortForUI=true',{ headers });
+  getStudentAssessment(pen) {
+    return ApiService.apiAxios.get('/api/v1/assessment/pen/'+ pen + '?sortForUI=true')
   }
 };

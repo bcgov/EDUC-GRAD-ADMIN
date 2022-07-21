@@ -9,58 +9,104 @@
       <b-card no-body>
         <b-tabs v-model="selectedTab" active card>
           <b-tab title="Job/Runs">
-            <b-card-text class="row">
-              <div :class="isBatchShowing || isErrorShowing ? 'col-12 col-md-7':'col-12'">
-                <DisplayTable title="Job/Runs" :items="batchInfoListData"
-                  v-bind:fields="jobRunFields" id="id" :showFilter=false pagination="true"
-                >
-                  <template #cell(jobExecutionId)="row">
-                    <b-btn v-if="row.item.status == 'COMPLETED'" :id="'batch-job-id-btn'+ row.item.jobExecutionId" variant='link' size="xs">   
-                      {{row.item.jobExecutionId}}   
-                    </b-btn>
-                    <b-btn v-else disabled variant='link' size="xs">  
-                      {{row.item.jobExecutionId}}   
-                    </b-btn>                  
-                    <b-popover :target="'batch-job-id-btn'+ row.item.jobExecutionId" triggers="focus" :ref="'popover'+row.item.jobExecutionId">
-                      <template #title>Search batch job</template>
-                      <b-btn :id="'batch-job-id-btn'+ row.item.jobExecutionId" variant='link' size="xs" @click="setBatchId(row.item.jobExecutionId, 'batch')">   
-                        All results           
-                      </b-btn>
-                    </b-popover>
-                  </template>
-                  <template #cell(failedStudentsProcessed)="row">
-                    <b-btn v-if="row.item.failedStudentsProcessed != 0" variant='link' size="xs" @click="setBatchId(row.item.jobExecutionId, 'error')">  
-                      {{row.item.failedStudentsProcessed}}   
-                    </b-btn>  
-                    <div v-if="row.item.failedStudentsProcessed == 0">{{row.item.failedStudentsProcessed}}</div>       
-                  </template>
-                </DisplayTable>
-              </div>
-              <!-- All batch results -->
-              <div v-if="isBatchShowing"  class="col-12 col-md-5 float-right pl-2 pr-0">
-                <b-card bg-variant="light" :header="'Batch Job '+ this.adminSelectedBatchId" class="text-left mb-2">
-                  <b-card-text>                
-                    <BatchJobSearchResults :selectedBatchId="adminSelectedBatchId"></BatchJobSearchResults>
-                    <b-btn variant="danger" size="xs" class="float-right" @click="isBatchShowing ^= true">  
-                      Close 
-                    </b-btn> 
+          <div>
+            <b-card no-body class="border-0">
+              <b-tabs pills class="border-0">
+                <b-tab title="Completed" active>
+                  <b-card-text class="row">
+                    <div :class="isBatchShowing || isErrorShowing ? 'col-12 col-md-7':'col-12'">
+                      <DisplayTable title="Job/Runs" :items="batchInfoListData"
+                        v-bind:fields="jobRunFields" id="id" :showFilter=false pagination="true"
+                      >
+                        <template #cell(jobExecutionId)="row">
+                          <b-btn v-if="row.item.status == 'COMPLETED'" :id="'batch-job-id-btn'+ row.item.jobExecutionId" variant='link' size="xs">   
+                            {{row.item.jobExecutionId}}   
+                          </b-btn>
+                          <b-btn v-else disabled variant='link' size="xs">  
+                            {{row.item.jobExecutionId}}   
+                          </b-btn>                  
+                          <b-popover :target="'batch-job-id-btn'+ row.item.jobExecutionId" triggers="focus" :ref="'popover'+row.item.jobExecutionId">
+                            <template #title>Search batch job</template>
+                            <b-btn :id="'batch-job-id-btn'+ row.item.jobExecutionId" variant='link' size="xs" @click="setBatchId(row.item.jobExecutionId, 'batch')">   
+                              All results           
+                            </b-btn>
+                          </b-popover>
+                        </template>
+                        <template #cell(failedStudentsProcessed)="row">
+                          <b-btn v-if="row.item.failedStudentsProcessed != 0" variant='link' size="xs" @click="setBatchId(row.item.jobExecutionId, 'error')">  
+                            {{row.item.failedStudentsProcessed}}   
+                          </b-btn>  
+                          <div v-if="row.item.failedStudentsProcessed == 0">{{row.item.failedStudentsProcessed}}</div>       
+                        </template>
+                      </DisplayTable>
+                    </div>
+                    <!-- All batch results -->
+                    <div v-if="isBatchShowing"  class="col-12 col-md-5 float-right pl-2 pr-0">
+                      <b-card bg-variant="light" :header="'Batch Job '+ this.adminSelectedBatchId" class="text-left mb-2">
+                        <b-card-text>                
+                          <BatchJobSearchResults :selectedBatchId="adminSelectedBatchId"></BatchJobSearchResults>
+                          <b-btn variant="danger" size="xs" class="float-right" @click="isBatchShowing ^= true">  
+                            Close 
+                          </b-btn> 
+                        </b-card-text>
+                      </b-card>
+                    </div>
+                    <!-- All error results -->
+                    <div v-if="isErrorShowing"  class="col-12 col-md-5 float-right pl-2 pr-0">
+                      <b-card bg-variant="light" :header="'Batch Job Error '+ this.adminSelectedErrorId" class="text-left mb-2">
+                        <b-card-text>                   
+                          <BatchJobErrorResults :selectedErrorId="adminSelectedErrorId"></BatchJobErrorResults>
+                          <b-btn variant="danger" size="xs" class="float-right" @click="isErrorShowing ^= true">  
+                            Close 
+                          </b-btn> 
+                        </b-card-text>
+                      </b-card>
+                    </div>
                   </b-card-text>
-                </b-card>
-              </div>
-              <!-- All error results -->
-              <div v-if="isErrorShowing"  class="col-12 col-md-5 float-right pl-2 pr-0">
-                <b-card bg-variant="light" :header="'Batch Job Error '+ this.adminSelectedErrorId" class="text-left mb-2">
-                  <b-card-text>                   
-                    <BatchJobErrorResults :selectedErrorId="adminSelectedErrorId"></BatchJobErrorResults>
-                     <b-btn variant="danger" size="xs" class="float-right" @click="isErrorShowing ^= true">  
-                      Close 
-                    </b-btn> 
+                </b-tab>
+                <b-tab class="btn-sm" :title="'User Scheduled (' + scheduledJobs.length + ')'">
+                  <b-card-text>
+                      <div v-if="!scheduledJobs.length">
+                        No Scheduled Jobs
+                      </div>
+                     <DisplayTable title="Job/Runs" :items="scheduledJobs"
+                        v-bind:fields="scheduledJobFields" id="rowId" :showFilter=false pagination="true" deleteLabel="Cancel" delete="batchprocessing/removeScheduledJobs"
+                      >
+                        <template #cell(jobExecutionId)="row">
+                          <b-btn v-if="row.item.status == 'COMPLETED'" :id="'batch-job-id-btn'+ row.item.jobExecutionId" variant='link' size="xs">   
+                            {{row.item.jobExecutionId}}   
+                          </b-btn>
+                          <b-btn v-else disabled variant='link' size="xs">  
+                            {{row.item.jobExecutionId}}   
+                          </b-btn>                  
+                          <b-popover :target="'batch-job-id-btn'+ row.item.jobExecutionId" triggers="focus" :ref="'popover'+row.item.jobExecutionId">
+                            <template #title>Search batch job</template>
+                            <b-btn :id="'batch-job-id-btn'+ row.item.jobExecutionId" variant='link' size="xs" @click="setBatchId(row.item.jobExecutionId, 'batch')">   
+                              All results           
+                            </b-btn>
+                          </b-popover>
+                        </template>
+                        <template #cell(failedStudentsProcessed)="row">
+                          <b-btn v-if="row.item.failedStudentsProcessed != 0" variant='link' size="xs" @click="setBatchId(row.item.jobExecutionId, 'error')">  
+                            {{row.item.failedStudentsProcessed}}   
+                          </b-btn>  
+                          <div v-if="row.item.failedStudentsProcessed == 0">{{row.item.failedStudentsProcessed}}</div>       
+                        </template>
+                        <template #cell(job-state)="row">
+                          <b-form-checkbox switch size="lg">Large</b-form-checkbox>
+                        </template>
+                      </DisplayTable>
                   </b-card-text>
-                </b-card>
-              </div>
-            </b-card-text>
-         </b-tab>
-         
+                </b-tab>
+                <b-tab class="btn-sm" :title="'Routines'">
+                  <b-card-text>
+                      <BatchRoutines/>
+                  </b-card-text>
+                </b-tab>                
+              </b-tabs>
+            </b-card>
+          </div>
+        </b-tab>
          <b-tab v-for="i in tabs" :key="'dyn-tab-' + i" :title="'Request ' + i" >
            
              <template #title>
@@ -102,8 +148,9 @@ import DisplayTable from '@/components/DisplayTable.vue';
 import BatchJobSearchResults from "@/components/Batch/BatchJobSearchResults.vue";
 import BatchJobErrorResults from "@/components/Batch/BatchJobErrorResults.vue";
 import BatchJobForm from "@/components/Batch/Batch.vue";
+import BatchRoutines from "@/components/Batch/Routines.vue";
 import {
-  mapGetters
+  mapGetters, mapActions
 } from "vuex";
 export default {
   name: "test",
@@ -119,14 +166,12 @@ export default {
       tabContent: "batchprocessing/getBatchDetails",
       tabs: "batchprocessing/getBatchProcessingTabs",
       spinners: "batchprocessing/getBatchTabsLoading",
-      token: "auth/getToken",
+      scheduledJobs: "batchprocessing/getScheduledBatchJobs",
       courses: "getStudentCourses",
       gradStatusCourses: "gradStatusCourses",
       studentGradStatus: "getStudentGradStatus",
       hasGradStatus: "studentHasGradStatus",
       gradStatusPendingUpdates: "getHasGradStatusPendingUpdates"
-      
-
     }),
   },
   props: [
@@ -136,7 +181,8 @@ export default {
       DisplayTable: DisplayTable,
       BatchJobSearchResults: BatchJobSearchResults,
       BatchJobErrorResults: BatchJobErrorResults,
-      BatchJobForm: BatchJobForm
+      BatchJobForm: BatchJobForm,
+      BatchRoutines: BatchRoutines
   },
   data() {
     return {
@@ -165,6 +211,44 @@ export default {
       batchInfoListData:[],
       certificateTypes:[],
       transcriptTypes:[],
+      scheduledJobFields: [
+        {
+          key: 'rowId',
+          label: 'ID',
+          sortable: true,
+          class: 'text-left',
+        }, 
+        {
+          key: 'jobId',
+          label: 'Job ID',
+          sortable: true,
+          class: 'text-left',
+        }, 
+        {
+          key: 'jobName',
+          label: 'Job Name',
+          sortable: true,
+          class: 'text-left',
+        },         
+        {
+          key: 'schedule/removedBy',
+          label: 'Scheduled By',
+          sortable: true,
+          class: 'text-left',
+        }, 
+        {
+          key: 'status',
+          label: 'Status',
+          sortable: true,
+          class: 'text-left',
+        },    
+        {
+          key: 'delete',
+          label: 'Delete',
+          sortable: true,
+          class: 'text-left',
+        },                                             
+      ], 
       jobRunFields: [
          {
             key: 'jobExecutionId',
@@ -238,15 +322,15 @@ export default {
       jobs: [],   
       selectedTab: 0,     
       searchResults: [], 
-      
-      
+      batchValid: false
     };
-    
   },
   created() {
     this.getAdminDashboardData()
+    this.getScheduledJobs()
   },
   methods: { 
+    ...mapActions('batchprocessing', ['setScheduledBatchJobs']),
     cancelBatchJob(id) {
   
       for (let i = 0; i < this.tabs.length; i++) {
@@ -275,7 +359,7 @@ export default {
       return  value.toLocaleString('en-CA', { timeZone: 'PST' });
     },
     getAdminDashboardData(){
-      BatchProcessingService.getDashboardInfo(this.token).then(
+      BatchProcessingService.getDashboardInfo().then(
         (response) => {
             this.dashboardData = response.data;
             this.batchInfoListData = response.data.batchInfoList;
@@ -339,7 +423,7 @@ export default {
       let index= id.replace("job-","")-1;
       let value = true
       this.$store.commit("batchprocessing/setTabLoading",{index, value});
-        BatchProcessingService.runDISTRUN(this.token, request, credentialType).then(
+        BatchProcessingService.runDISTRUN(request, credentialType).then(
         (response) => {
            //update the admin dashboard
           this.getAdminDashboardData();
@@ -371,7 +455,7 @@ export default {
       let index= id.replace("job-","")-1;
       let value = true
       this.$store.commit("batchprocessing/setTabLoading",{index, value});
-        BatchProcessingService.runTVRRUN(this.token, request).then(
+        BatchProcessingService.runTVRRUN(request).then(
         (response) => {
            //update the admin dashboard
           this.getAdminDashboardData();
@@ -403,7 +487,7 @@ export default {
       let index= id.replace("job-","")-1;
       let value = true
       this.$store.commit("batchprocessing/setTabLoading",{index, value});
-        BatchProcessingService.runREGALG(this.token, request).then(
+        BatchProcessingService.runREGALG(request).then(
         (response) => {
            //update the admin dashboard
           this.getAdminDashboardData();
@@ -429,8 +513,45 @@ export default {
         })
         setTimeout(this.getBatchProgress(requestId), 5000);
     },
+    addScheduledJob(request, id){
+      let requestId = id.replace("job-",""); 
+      this.$set(this.spinners, id, true)
+      let index= id.replace("job-","")-1;
+      let value = true
+      this.$store.commit("batchprocessing/setTabLoading",{index, value});
+        BatchProcessingService.addScheduledJob(request).then(
+        (response) => {
+           //update the admin dashboard
+          this.getScheduledJobs();
+          // eslint-disable-next-line
+          console.log(response)
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
+          this.$bvToast.toast("Request " + requestId + " has successfully been scheduled", {
+            title: "SCHEDULING USER REQUEST",
+            variant: 'success',
+            noAutoHide: true,
+          })
+        })
+        .catch((error) => {
+          if(error){
+            this.$bvToast.toast("There was an error scheduling your request", {
+              title: "SCHEDULING ERROR",
+              variant: 'success',
+              noAutoHide: true,
+            })
+          }
+        })
+        setTimeout(this.getBatchProgress(requestId), 5000);
+    },    
+    getScheduledJobs(){
+
+      BatchProcessingService.getScheduledBatchJobs().then((response) => {
+        this.setScheduledBatchJobs(response.data);
+      })
+    },
     getBatchProgress(requestId){
-      BatchProcessingService.getBatchSummary(this.token).then((response) => {
+      BatchProcessingService.getBatchSummary().then((response) => {
 
             let jobDetails = response.data.batchJobList[0];
             let date = new Date();
@@ -448,7 +569,49 @@ export default {
         }
       );  
     },    
-    runbatch(id){    
+    validateBatch(id){
+      let pens = [], schools = [], districts = [], programs = [], districtCategoryCode="";
+      if(this.tabContent[id].details['who'] == 'School'){
+        schools = this.tabContent[id].schools.map(this.getBatchData);  
+        schools.pop();
+        if(!schools.length){
+          this.validationMessage = "Please select a school."
+          this.batchValid = false;
+          return
+        }
+      }else if(this.tabContent[id].details['who'] == 'Student'){
+        pens = this.tabContent[id].students.map(this.getBatchData);  
+        pens.pop();
+        if(!pens.length){
+          this.validationMessage = "Please select a student."
+          this.batchValid = false;
+          return
+        }
+      }else if(this.tabContent[id].details['who'] == 'District'){
+        districts = this.tabContent[id].districts.map(this.getBatchData);  
+        districtCategoryCode = this.tabContent[id]['details'].categoryCode;
+        districts.pop();
+        if(!districtCategoryCode){
+          this.validationMessage = "Please select a district category"
+          this.batchValid = false;
+        }
+        if(!districts.length){
+          this.validationMessage = "Please select a district."
+          this.batchValid = false;
+          return
+        }
+      }else if(this.tabContent[id].details['who'] == 'Program'){
+        programs = this.tabContent[id].programs.map(this.getBatchData);  
+        programs.pop();
+        if(!programs.length){
+          this.validationMessage = "Please select a program."
+          this.batchValid = false;
+          return
+        }
+      }
+      this.batchValid = true;
+    },
+    runbatch(id, cronTime){    
       let pens = [], schools = [], districts = [], programs = [], districtCategoryCode="";
       if(this.tabContent[id].details['who'] == 'School'){
         schools = this.tabContent[id].schools.map(this.getBatchData);  
@@ -467,6 +630,9 @@ export default {
       }else if(this.tabContent[id].details['who'] == 'District'){
         districts = this.tabContent[id].districts.map(this.getBatchData);  
         districtCategoryCode = this.tabContent[id]['details'].categoryCode;
+        if( this.tabContent[id]['details'].categoryCode == ""){
+          districtCategoryCode =  []
+        }
         districts.pop();
         if(!districtCategoryCode){
           this.validationMessage = "Please select a district category"
@@ -483,19 +649,51 @@ export default {
           return
         }
       }
-      let request = {"pens": pens, "schoolOfRecords":schools,"districts":districts, "schoolCategoryCodes": [districtCategoryCode], "programs":programs, "validateInput": false}
+      let gradDateFrom = this.tabContent[id].details['gradDateFrom']
+      let gradDateTo = this.tabContent[id].details['gradDateTo']
+
+      let request = {"pens": pens, "schoolOfRecords":schools,"districts":districts, "schoolCategoryCodes": [], "programs":programs, "gradDateFrom":gradDateFrom, "gradDateTo":gradDateTo,"validateInput": false, }
       if(this.batchHasErrors(this.tabContent[id])){
         return;
       }
       if(this.tabContent[id].details['what'] == 'REGALG'){     
-        this.runREGALG(request, id);
-          
-      }else if(this.tabContent[id].details['what'] == 'TVRRUN'){     
-        this.runTVRRUN(request, id);
+        if(cronTime){
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime
+          scheduledRequest.jobName = 'SGBJ'
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id)
+        }else{
+          this.runREGALG(request, id);  
+        }
+      }else if(this.tabContent[id].details['what'] == 'TVRRUN'){    
+        if(cronTime){
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime
+          scheduledRequest.jobName = 'STBJ'
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id)
+        }else{
+          this.runTVRRUN(request, id);
+        }
+        
       }
       else if(this.tabContent[id].details['what'] == 'DISTRUN'){     
-        this.runDISTRUN(request, id, this.tabContent[id].details['credential']);
-      }           
+        if(cronTime){
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime
+          scheduledRequest.jobName = 'URDBJ'
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          
+          this.addScheduledJob(scheduledRequest, id)
+        }else{
+          this.runDISTRUN(request, id, this.tabContent[id].details['credential']);
+        }
+        
+      }        
     },
     displaySearchResults(value){ 
       this.searchResults = value
@@ -535,5 +733,4 @@ h6 {
 .delete-button{
   border-radius: 0px;
 }
-
 </style>

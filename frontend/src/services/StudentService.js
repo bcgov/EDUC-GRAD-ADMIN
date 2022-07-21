@@ -1,16 +1,10 @@
-import axios from 'axios';
-
-var apiClient = axios.create({
-    baseURL: process.env.VUE_APP_BASE_URL,
-})
+import ApiService from '../common/apiService';
 
 export default {
-    getStudentByPen(pen, token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/student/pen/' + pen,{ headers });
+    getStudentByPen(pen) {
+        return ApiService.apiAxios.get('/api/v1/student/pen/' + pen)
     },
-    getStudentsByAdvancedSearch(advancedSearchInput, token){
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
+    getStudentsByAdvancedSearch(advancedSearchInput){
         let queryString = ""
         for (var key in advancedSearchInput) {
             if (advancedSearchInput.hasOwnProperty(key)) {
@@ -25,70 +19,54 @@ export default {
                 }
             }
         }
-        return apiClient.get('/api/v1/student/gradstudentsearch?' + queryString,{ headers },{timeout:600}); 
+        return ApiService.apiAxios.get('/api/v1/student/gradstudentsearch?' + queryString)
     },  
-    getGraduationStatus(id, token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/student/studentid/' + id,{ headers });
+    getGraduationStatus(id) {
+        return ApiService.apiAxios.get('/api/v1/student/studentid/' + id)
     },
-    getGraduationStatusOptionalPrograms(id, token){
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/student/optionalprogram/studentid/' + id,{ headers });
+    getGraduationStatusOptionalPrograms(id){
+        return ApiService.apiAxios.get('/api/v1/student/optionalprogram/studentid/' + id)
     },
-    editGraduationStatus(id, token, json) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.post('/api/v1/student/gradstudent/studentid/' + id, json, { headers });
+    editGraduationStatus(id, json) {
+        return ApiService.apiAxios.post('/api/v1/student/gradstudent/studentid/' + id, json)
     },
-    ungradStudent(id,reasonCode, reasonDesc, token, json){
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.post('/api/v1/student/undocompletionstudent/studentid/' + id + '?ungradReasonCode=' + reasonCode + '&ungradReasonDesc=' + reasonDesc,json, { headers });
+    ungradStudent(id,reasonCode, reasonDesc, json){
+        return ApiService.apiAxios.post('/api/v1/student/undocompletionstudent/studentid/' + id + '?ungradReasonCode=' + reasonCode + '&ungradReasonDesc=' + reasonDesc, json)
     },
-    getStudentCareerPrograms(id, token){
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/student/studentcareerprogram/studentid/' + id,{ headers });
+    getStudentCareerPrograms(id){
+        return ApiService.apiAxios.get('/api/v1/student/studentcareerprogram/studentid/' + id)
     },  
-    getStudentStatusCodes(token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/student/studentstatus',{ headers });
+    getStudentStatusCodes() {
+        return ApiService.apiAxios.get('/api/v1/student/studentstatus')
     },
-    getStudentNotes(id, token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token, "responseType": "arraybuffer" }
-        return apiClient.get('/api/v1/student/studentnotes/studentid/' + id,{ headers });
+    getStudentNotes(id) {
+        return ApiService.apiAxios.get('/api/v1/student/studentnotes/studentid/' + id)
     },
-    addStudentNotes(json, token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.post('/api/v1/student/studentnotes/', json, { headers});
+    addStudentNotes(json) {
+        return ApiService.apiAxios.post('/api/v1/student/studentnotes/',json)
     },
-    deleteStudentNotes(noteID, token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.delete('/api/v1/student/studentnotes/' + noteID, { headers});
+    deleteStudentNotes(noteID) {
+        return ApiService.apiAxios.delete('/api/v1/student/studentnotes/' + noteID)
     },
-    getStudentUngradReasons(id, token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/studentgraduation/undocompletion/studentundocompletionreason/studentid/' + id,{ headers});
+    getStudentUngradReasons(id) {
+        return ApiService.apiAxios.get('/api/v1/studentgraduation/undocompletion/studentundocompletionreason/studentid/' + id)
     },  
-    getUngradReasons(token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/studentgraduation/undocompletion/undocompletionreason',{ headers });
+    getUngradReasons() {
+        return ApiService.apiAxios.get('/api/v1/studentgraduation/undocompletion/undocompletionreason')
     },
-    getStudentHistory(id, token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/student/studentHistory/' + id,{ headers });
+    getStudentHistory(id) {
+        return ApiService.apiAxios.get('/api/v1/student/studentHistory/' + id)
     },
-    getBatchHistory(id, page, token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/student/studentHistory/batchid/' + id + '?pageNumber=' + page,{ headers });
+    getBatchHistory(id, page) {
+        return ApiService.apiAxios.get('/api/v1/student/studentHistory/batchid/' + id + '?pageNumber=' + page)
     },
-    getStudentOptionalProgramHistory(id, token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json', 'Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/student/studentOptionalProgramHistory/' + id,{ headers });
+    getStudentOptionalProgramHistory(id) {
+        return ApiService.apiAxios.get('/api/v1/student/studentOptionalProgramHistory/' + id)
     },  
-    getStudentHistoryActivityCode(token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/student/historyactivity',{ headers });
+    getStudentHistoryActivityCode() {
+        return ApiService.apiAxios.get('/api/v1/student/historyactivity')
     },
-    getStudentPen(id,token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/student/stdid/' + id,{ headers });
+    getStudentPen(id) {
+        return ApiService.apiAxios.get('/api/v1/student/stdid/' + id)
     }  
 }

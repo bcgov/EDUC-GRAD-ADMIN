@@ -19,9 +19,6 @@
 </template>
 
 <script>
-import {
-  mapGetters
-} from "vuex";
 import DisplayTable from "@/components/DisplayTable";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 
@@ -32,7 +29,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-      ProgramManagementService.getCareerPrograms(this.token)
+      ProgramManagementService.getCareerPrograms()
         .then((response) => {
           this.careerPrograms = response.data;
         })
@@ -73,12 +70,6 @@ export default {
         },
       ]
     };
-  },
-  computed: {
-    ...mapGetters({  
-      token: "auth/getToken",
-      role: "getRoles"
-    }),
   },
   methods: {
   },

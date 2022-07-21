@@ -14,9 +14,14 @@
     state: {
       advancedSearchProps:"",
       tokenTimeout: "",
-      roles: "unauthenticated",
+      isAuthenticated: localStorage.getItem('jwtToken') !== null,
+      token:"",
+      refreshToken: "",
+      correlationID: "",
+      roles: "administrator",
       permissions: "",
       username: "",
+      pageTitle: null,
       student: {
         profile: {},
         courses: "not loaded",
@@ -42,6 +47,43 @@
       },
     },
     mutations: {
+      setPageTitle: (state, pageTitle) => {
+        state.pageTitle = pageTitle;
+      },
+      setTabLoading(state, payload){
+        state.batchTabsLoading[payload['index']] = payload['value'];
+      },
+      addValueToTypeInBatchId(state, payload){
+        state.batchDetails[payload['id']][payload['type']].push({})
+      },
+      addTypeToBatchId(state, payload){
+        state.batchDetails[payload['id']][payload['type']].push({})
+      },
+      addSchoolToBatch(state,payload){
+        state.batchDetails[payload].schools.push({})
+      },
+      addDistrictToBatch(state,payload){
+        state.batchDetails[payload].districts.push({})
+      },
+      addStudentToBatch(state,payload){
+        state.batchDetails[payload].students.push({})
+      },
+
+
+      //id, type, value
+      deleteValueFromTypeInBatchId(state,payload){
+        let items = state.batchDetails[payload['id']][payload['type']];
+
+        for( var i = 0; i < items.length; i++){    
+          if ( items[i].value === payload['value']) { 
+            items.splice(i--, 1); 
+          }
+        }
+        if(items.length == 0){
+          items.push({});
+        }
+      },
+
       setStudentAuditHistory(state, payload){
         state.student.auditHistory = payload; 
       },
@@ -85,6 +127,22 @@
           state.student.hasGradStatusPendingUpdates = payload;
       },
 
+      // TO DO ADD THIS TO AUTH
+      setToken(state, payload = null) {
+ 
+        localStorage.setItem("jwt", payload);
+        state.token = payload;
+      },
+      setRefreshToken(state, payload) {
+
+        localStorage.setItem("refresh", payload);
+        state.refreshToken = payload;
+      },
+      setCorrelationID(state, payload) {
+
+        localStorage.setItem("correlationID", payload);
+        state.correlationID = payload;
+      },
       setStudentProfile(state, payload) {
         state.student.profile = payload;
       },
@@ -212,7 +270,6 @@
         });
       },   
       updateOptionalProgram({state}, payload) {
-        
         ProgramManagementService.updateOptionalProgram(payload, state.auth.token).then(
           (response) => {
             // eslint-disable-next-line
@@ -223,9 +280,9 @@
           console.log(error.response.status);
         });
       },   
-      getGraduationPrograms({state}) {
+      getGraduationPrograms() {
         
-        ProgramManagementService.getGraduationPrograms(state.auth.token).then(
+        ProgramManagementService.getGraduationPrograms().then(
           (response) => {
             return response.data;
           }

@@ -1,21 +1,14 @@
-import axios from 'axios';
-
-const apiClient = axios.create({
-    baseURL: process.env.VUE_APP_BASE_URL,
-});
+import ApiService from '../common/apiService';
 
 export default {
-    getPSI(token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/trax/psi',{ headers });
+    getPSI() {
+        return ApiService.apiAxios.get('/api/v1/trax/psi')
     },
-    getPSIByAdvanceSearch(params, token) {
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/trax/psi/search/?'  + params,{ headers });
+    getPSIByAdvanceSearch(params) {
+        return ApiService.apiAxios.get('/api/v1/trax/psi/search/?'  + params)
     },
-    getDistrict(district, token){
-        const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-        return apiClient.get('/api/v1/trax/district/'  + district ,{ headers });
+    getDistrict(district){
+        return ApiService.apiAxios.get('/api/v1/trax/district/'  + district)
     }
 };
 

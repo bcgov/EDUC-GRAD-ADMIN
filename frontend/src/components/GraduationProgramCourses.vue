@@ -22,17 +22,11 @@
 import AssessmentService from "@/services/AssessmentService.js";
 import CourseService from "@/services/CourseService.js";
 import DisplayTable from "@/components/DisplayTable";
-import { mapGetters } from "vuex";
 export default {
   name: "GraduationProgramCourses",
   props: {},
   components: {
     DisplayTable: DisplayTable,
-  },
-  computed: {
-    ...mapGetters({
-      token: "auth/getToken",
-    }),
   },
   data: function () {
     return {
@@ -102,7 +96,6 @@ export default {
     if (this.$route.params.category == "A") {
       AssessmentService.getRuleCourseRequirements(
         this.$route.params.rule,
-        this.token
       ).then((response) => {
         this.fields = this.assessmentFields;
         this.graduationProgramRuleCourses = response.data;
@@ -115,7 +108,6 @@ export default {
     if (this.$route.params.category == "C") {
       CourseService.getRuleCourseRequirements(
         this.$route.params.rule,
-        this.token
       ).then((response) => {
         this.fields = this.courseFields;
         this.graduationProgramRuleCourses = response.data;

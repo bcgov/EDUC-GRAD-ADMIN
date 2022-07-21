@@ -1,8 +1,10 @@
 import StudentService from '@/services/StudentService.js';
+import BatchProcessingService from '@/services/BatchProcessingService.js';
 export default {
   namespaced: true,
   state: {
     batchDetails: [],
+    scheduledBatchJobs: [],
     batchAutoIncrement: 1,
     batchTabsLoading: [],
     tabs: [],
@@ -49,6 +51,9 @@ export default {
     },
     clearBatchDetails(state,payload){
       state.batchDetails[payload]['details'].who="Choose...";
+      state.batchDetails[payload]['details'].gradDate="Current Students";
+      state.batchDetails[payload]['details'].gradDateFrom="";
+      state.batchDetails[payload]['details'].gradDateTo="";
       state.batchDetails[payload].schools=[{}];
       state.batchDetails[payload].districts=[{}];
       state.batchDetails[payload].programs=[{}];
@@ -64,16 +69,21 @@ export default {
       state.batchDetails[payload].districts=[{}];
       state.batchDetails[payload].programs=[{}];
       state.batchDetails[payload].students=[{}];
+      
     },     
     clearBatchCredentialsDetails(state,payload){
       state.batchDetails[payload].details['blankCertificateDetails']=[{}];
       state.batchDetails[payload].details['blankTranscriptDetails']=[{}];
-    }             
+    },     
+    setScheduledBatchJobs(state, payload){
+      state.scheduledBatchJobs = payload;
+    }        
   },
   actions: {
-    validateStudentInGrad({state}, payload){
+    
+    validateStudentInGrad(payload){
         
-      StudentService.getStudentByPen(payload['pen'],state.token).then(
+      StudentService.getStudentByPen(payload['pen']).then(
         (response) => {
           this.$store.commit("batchprocessing/addValueToTypeInBatchId", payload);
           return response;
@@ -83,6 +93,15 @@ export default {
         console.log(error.response.status);
       });
     },
+    setScheduledBatchJobs({commit}, payload) {
+      commit('setScheduledBatchJobs', payload);
+    },
+    removeScheduledJobs({state}, payload) {
+       // eslint-disable-next-line
+      console.log(state.batchDetails)
+      return BatchProcessingService.removeScheduledJobs(payload['id']);
+      
+    },    
     addStudentToBatch({commit}, payload){
       commit('addStudentToBatch', payload);
     },
@@ -106,5 +125,8 @@ export default {
     getBatchProcessingTabs(state){
       return state.tabs;
     },    
+    getScheduledBatchJobs(state){
+      return state.scheduledBatchJobs;
+    },        
   },  
 };

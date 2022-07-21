@@ -1,54 +1,44 @@
 <template>
   <div class="d-flex justify-content-center">
-    <div class="card col-sm-12 col-md-4 col-lg-4">
+    <div class="col-sm-12 col-md-4 col-lg-4">
       <div class="container pt-3 pb-4"> 
-        <form>
-            <div class="form-group">
-              <label for="id" >User ID</label>
-                  <input id="id" type="text" class="form-control form-control-lg" v-model="id" required autofocus>
-            </div>
-
-            <div class="form-group">
-                <label for="password" >Password</label>
-                <input id="password" type="password" class="form-control form-control-lg" v-model="password" required>
-            </div>
-            <div>
-                <button type="submit" class="btn btn-primary btn-lg btn-block" @click="submit">
-                    Login
-                </button>
-            </div>
-        </form>
+        <b-card>
+          <b-card-title class="gov-header">
+            <h4 id="login_text">Log In</h4>
+          </b-card-title>
+          <b-card-text id="login_descriptor">
+            To access the Graduation Administration Application, you must have a valid IDIR.
+          </b-card-text>
+          <b-card-body>
+            <b-row >
+              <b-button type="button" class="btn btn-primary btn-lg btn-block" @click="clearStorage" :href="routes.LOGIN">
+                Login
+              </b-button>
+            </b-row>
+          </b-card-body>
+        </b-card>
       </div>  
     </div>
   </div>  
 </template>
 
 <script>
-// @ is an alias to /src
-import LoginService from "@/services/LoginService.js";
+import { Routes } from '@/utils/constants';
 import { mapGetters } from "vuex";
 export default {
   name: "Login",
   data() {
     return {
       token: "",
-      id : "",
-      password : ""
+      routes: Routes
     }
   },
   computed: {
-  ...mapGetters({
-      getToken: "auth/getToken"
-    }),
+    ...mapGetters('auth', ['isAuthenticated','jwtToken']),
   },
   methods: {
-    submit(e){
-      e.preventDefault()
-      if (this.password.length > 0) {
-        LoginService.handleSubmit(this.id, this.password).then((response) => {
-            this.$store.dispatch('auth/setToken', response.data.access_token);
-        });
-      }
+    clearStorage(){
+      this.$store.dispatch('auth/setJwtToken', null);
     }
   }
 }

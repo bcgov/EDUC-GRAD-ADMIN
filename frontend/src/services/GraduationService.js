@@ -1,23 +1,16 @@
-import axios from 'axios'
+import ApiService from '../common/apiService';
 
-const apiClient = axios.create({
-  baseURL: process.env.VUE_APP_BASE_URL,
-})
 export default {
-  graduateStudent(id, token) {
-    const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-    return apiClient.get('/api/v1/graduate/studentid/' + id + '/run/GS',{ headers });
+  graduateStudent(id) {
+    return ApiService.apiAxios.get('/api/v1/graduate/studentid/' + id + '/run/GS')
   },
-  projectedGradFinalMarks(id, token) {
-    const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-    return apiClient.get('/api/v1/graduate/studentid/' + id + '/run/FM',{ headers });
+  projectedGradFinalMarks(id) {
+    return ApiService.apiAxios.get('/api/v1/graduate/studentid/' + id + '/run/FM')
   },
-  projectedGradStatusWithFinalAndReg(id, token) {
-    const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-    return apiClient.get('/api/v1/graduate/studentid/' + id + '/run/REGFM',{ headers });
+  projectedGradStatusWithFinalAndReg(id) {
+    return ApiService.apiAxios.get('/api/v1/graduate/studentid/' + id + '/run/REGFM')
   },
-  updateStudentReports(id, token) {
-    const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-    return apiClient.get('/api/v1/graduate/studentid/' + id + '/run/FMR',{ headers });
+  updateStudentReports(id) {
+    return ApiService.apiAxios.get('/api/v1/graduate/studentid/' + id + '/run/FMR')
   }
 }

@@ -25,8 +25,6 @@ export default {
   props: {},
   computed: {
     ...mapGetters({
-      token: "auth/getToken",
-      role: "getRoles", 
   })},
   components: {
    DisplayTable: DisplayTable,
@@ -90,7 +88,7 @@ export default {
   },
   created() {
     this.showNotification = sharedMethods.showNotification
-    ProgramManagementService.getOptionalPrograms(this.token)
+    ProgramManagementService.getOptionalPrograms()
     .then((response) => {
       this.graduationOptionalPrograms = response.data;
     })

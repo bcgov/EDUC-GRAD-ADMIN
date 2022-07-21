@@ -1,5 +1,6 @@
 //Rename this service to GraduationReportService
 import axios from 'axios'
+import ApiService from '../common/apiService';
 
 const apiClient = axios.create({
   baseURL: process.env.VUE_APP_BASE_URL,
@@ -52,5 +53,8 @@ export default {
   getDigitalSignaturesBlockTypes(token) {
     const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token };
     return apiClient.get('/api/v1/reports/signatures/getSignatureBlockTypeCodes',{ headers });
+  },
+  getAllReportsForSchool(id) {
+    return ApiService.apiAxios.get('/api/v1/graduationreports/schoolreport/' + id);
   }
 };

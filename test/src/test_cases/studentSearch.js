@@ -1,5 +1,6 @@
 import StudentSearchPage from '../page_objects/studentSearchPage';
-import { base_url, test_pen, api_html_status_threshold } from '../config/constants';
+import MainMenu from '../page_objects/mainMenu';
+import { base_url, credentials, test_pen, api_html_status_threshold } from '../config/constants';
 import { ClientFunction, RequestLogger, Role  } from 'testcafe';
 import { apiCallsFailed } from '../helpers/requestHelper';
 import adminUser from '../config/roles';
@@ -8,6 +9,7 @@ const log = require('npmlog');
 //const adminUser = require('../config/roles');
 const bad_pen = '121212121';
 const searchPage = new StudentSearchPage();
+const mainMenu = new MainMenu();
 const requestLogger = RequestLogger(/api\/v1/, {logResponseBody: true, logResponseHeaders: true});
 
 fixture `grad-login-admin`
@@ -17,10 +19,10 @@ fixture `grad-login-admin`
         await t.useRole(adminUser).navigateTo(base_url);
         //await t.maximizeWindow();
     }).afterEach(async t => {
-        // run locally for api call failure output
-        //log.info(apiCallsFailed(requestLogger, api_html_status_threshold));
-        await t.useRole(Role.anonymous());
-    });
+            // run locally for api call failure output
+            //log.info(apiCallsFailed(requestLogger, api_html_status_threshold));
+            await t.useRole(Role.anonymous());
+        });
 
 test('Pen Search', async t => {
     await t.navigateTo(base_url);
@@ -28,7 +30,7 @@ test('Pen Search', async t => {
     // testing bad pen search
     log.info("Testing student does not exist");
     await searchPage.selectPenSearchTab();
-    await searchPage.studentSearch(bad_pen);
+    await searchPage.studentSearch("121212121");
     await t.expect(searchPage.searchMessage.innerText).contains('Student cannot be found', 'Student cannot be found error message did not occur', {timeout: 2000});
     
     await searchPage.clearSearchInput();
