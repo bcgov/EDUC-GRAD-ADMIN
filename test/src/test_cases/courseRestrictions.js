@@ -22,7 +22,7 @@ fixture `course-restrictions`
 
     test('table loads', async t => {
         await t
-        .expect(coursesPage.courseRestrictionsTable.exists).ok();
+        .expect(coursesPage.courseRestrictionsTab.exists).ok();
     });
 
     test('table sorting', async t => {
@@ -42,16 +42,21 @@ fixture `course-restrictions`
                 row++;
                 let curCell = await coursesPage.getCellValue(col, row);
 
-                // cols 3 and 5 are singled out beause they are sorted descending order
-                // this logic can be simplified
+                // loop through cells in in column to test sorting.
+                // cols 3 and 5 are singled out beause they are sorted descending order while the rest are ascending
                 if (index % 2 == 0 && (col != 3 && col != 5) || index % 2 == 1 && (col == 3 || col == 5)) {
                     await t.expect(commonUtils.isAscending(curCell, prevCell)).ok(`index: ${index}, col: ${col} and row: ${row}\nExpected "${prevCell}" to be less than "${curCell}"`);
                     
                 } else {
                     await t.expect(commonUtils.isDescending(curCell, prevCell)).ok(`index: ${index}, col: ${col} and row: ${row}\nExpected "${prevCell}" to be greater than "${curCell}"`);
-                    
                 }
             }
         }
         
+    })
+    
+    test('table filter', async t => {
+        await t
+        .typeText(coursesPage.courseRestrictionsFilter, "cop", {timeout: 50000})
+        .expect(Selector('.table-responsive table[aria-colcount="6"] tbody').child('tr').count).eql(6, {timeout: 50000});
     })

@@ -25,7 +25,8 @@ class CoursesPage {
         this.courseResults = Selector('.table-responsive table[aria-colcount="10"]');
         
         // course restrictions
-        this.courseRestrictionsTable = Selector('.tab-content p.card-text table');
+        this.courseRestrictionsTab = Selector('.tab-content p.card-text table');
+        this.courseRestrictionsFilter = Selector('#filter-input-course-restrictions');
         //this.courseCodeMain = Selector('th[role=columnheader][aria-colindex="1"]');
 
         // course requirements search elements
