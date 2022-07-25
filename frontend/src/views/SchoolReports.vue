@@ -53,7 +53,7 @@
             <DisplayTable title="Results" v-bind:items="reports" v-bind:fields="reportFields" sortKey="report" id="mincode" v-bind:showFileter=true pagination="true">schoolReportSearch
               <template #cell(report)="row">
                 <a
-                  @click="downloadPDF(row.item.report,'application/pdf')"
+                  @click="downloadFile(row.item.report,'application/pdf')"
                   href="#"
                   class="pdf-link float-left mt-2"
                   >
@@ -196,8 +196,8 @@
         this.mincode.value = "";
         this.mincode.contains = false;
       },
-      downloadPDF: function (data, mimeType) {
-        sharedMethods.base64ToPdfAndOpenWindow(data,mimeType)
+      downloadFile: function (data, mimeType) {
+        sharedMethods.base64ToFileTypeAndOpenWindow(data,mimeType)
       },
     },
   }

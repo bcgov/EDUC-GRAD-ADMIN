@@ -60,7 +60,15 @@
               </p>
             </b-alert>
           </div>
-              
+          <div v-if="dateInFutureWarning">
+            <b-alert show variant="warning" class="p-3 mb-1">
+              <h4 class="alert-heading">Grad Status can't be updated</h4>
+              <p class="locked-message">
+                If a student has completed SCCP. You can MODIFY the completion date to a different date - but <strong>not in the future</strong> & you <strong>cannot blank out</strong> the completion date.<br>
+                Please use Undo Completion from the Run Graduation Algorithm dropdown.   
+              </p>
+            </b-alert>
+          </div>    
         <table  role="presentation" aria-label="edit grad status" class="table  table-hover table-sm" >
                 <tbody>
                   <tr v-if="!showEdit">
@@ -307,6 +315,56 @@ export default {
     studentGradStatus: "getStudentGradStatus"
   })
   },
+  data() {
+    return {
+      programCompletionEffectiveDateList:[],
+      programCompletionDateRangeError:false,
+      programChangeWarning:false,
+      programEffectiveDate: "",
+      programExpiryDate: "", 
+      errorMessage:"",
+      dismissSecs: 3,
+      dismissCountDown: 0,
+      showModal: false,
+      showTop: false,
+      showEdit: false,
+      show: false,
+      projectedStudentGradStatus: [],
+      updateStatus: [],
+      schoolOfRecord: "",
+      schoolOfRecordStatus:"",
+      schoolOfRecordMissing: false,
+      schoolOfRecordWarning: false,
+      schoolNotFoundWarning: false,
+      schoolOfRecordInputWarning: false,
+      schoolFound: false,
+      schoolAtGradProgramCompletionDateMessage: false,
+      schoolAtGraduation: "",
+      schoolAtGraduationStatus:"",
+      schoolAtGraduationWarning: false,
+      schoolAtGraduationNotFoundWarning:false,
+      schoolAtGraduationInputWarning:false,
+      schoolAtGraduationFound: false,
+      editedGradStatus: {},
+      studentUngradReason: "",
+      disableButton:false,
+      disableSchoolAtGrad:false,
+      disableInput:false,
+      disableStudentStatus:false,
+      dateInFutureWarning:false,
+      gradeOptions: [
+        { text: "08", value: "8" },
+        { text: "09", value: "9" },
+        { text: "10", value: "10" },
+        { text: "11", value: "11" },
+        { text: "12", value: "12" },
+        { text: "HS - Homeschool", value: "HS" },
+        { text: "OT - Other", value: "OT" },
+        { text: "AD - Adult expected to graduate", value: "AD" },
+        { text: "AN - Adult not expected to graduate", value: "AN" },     
+      ]
+    }
+  },
   created() {
     this.showNotification = sharedMethods.showNotification;
   },
@@ -382,11 +440,9 @@ export default {
       if(!this.editedGradStatus.programCompletionDate){
         if(this.editedGradStatus.program == 'SCCP'){
           this.disableButton = false;
-          this.dateInFutureWarning = false;
         } else {
           this.disableSchoolAtGrad = true;
           this.disableButton = false;
-          this.dateInFutureWarning = false;
         }       
       } else {
         if(this.editedGradStatus.programCompletionDate > this.programExpiryDate || this.editedGradStatus.programCompletionDate < this.programEffectiveDate)
@@ -407,10 +463,12 @@ export default {
             this.dateInFutureWarning = false;
             this.disableButton = false;
             if(!this.editedGradStatus.programCompletionDate || this.editedGradStatus.programCompletionDate == undefined){
-            this.disableButton = true;
-          } else {
-            this.disableButton = false;
-          }        
+              this.disableButton = true;
+              this.dateInFutureWarning = true;
+            } else {
+              this.disableButton = false;
+              this.dateInFutureWarning = false;
+            }        
           }         
         }
       }      
@@ -670,55 +728,6 @@ export default {
         // eslint-disable-next-line
         console.log("There was an error:" + error.response);
       });
-    }
-  },
-  data() {
-    return {
-      programCompletionEffectiveDateList:[],
-      programCompletionDateRangeError:false,
-      programChangeWarning:false,
-      programEffectiveDate: "",
-      programExpiryDate: "", 
-      errorMessage:"",
-      dismissSecs: 3,
-      dismissCountDown: 0,
-      showModal: false,
-      showTop: false,
-      showEdit: false,
-      show: false,
-      projectedStudentGradStatus: [],
-      updateStatus: [],
-      schoolOfRecord: "",
-      schoolOfRecordStatus:"",
-      schoolOfRecordMissing: false,
-      schoolOfRecordWarning: false,
-      schoolNotFoundWarning: false,
-      schoolOfRecordInputWarning: false,
-      schoolFound: false,
-      schoolAtGradProgramCompletionDateMessage: false,
-      schoolAtGraduation: "",
-      schoolAtGraduationStatus:"",
-      schoolAtGraduationWarning: false,
-      schoolAtGraduationNotFoundWarning:false,
-      schoolAtGraduationInputWarning:false,
-      schoolAtGraduationFound: false,
-      editedGradStatus: {},
-      studentUngradReason: "",
-      disableButton:false,
-      disableSchoolAtGrad:false,
-      disableInput:false,
-      disableStudentStatus:false,
-      gradeOptions: [
-        { text: "08", value: "8" },
-        { text: "09", value: "9" },
-        { text: "10", value: "10" },
-        { text: "11", value: "11" },
-        { text: "12", value: "12" },
-        { text: "HS - Homeschool", value: "HS" },
-        { text: "OT - Other", value: "OT" },
-        { text: "AD - Adult expected to graduate", value: "AD" },
-        { text: "AN - Adult not expected to graduate", value: "AN" },     
-      ]
     }
   }
 }

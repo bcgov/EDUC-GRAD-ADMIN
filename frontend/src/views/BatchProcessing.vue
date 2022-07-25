@@ -5,7 +5,6 @@
   <div class="mt-2 row">
   <div class="col-12 float-left p-0">
     <div ref="top">
-
       <b-card no-body>
         <b-tabs v-model="selectedTab" active card>
           <b-tab title="Job/Runs">
@@ -144,11 +143,14 @@
 <script>
 // @ is an alias to /src
 import BatchProcessingService from "@/services/BatchProcessingService.js";
+import DistributionService from "@/services/DistributionService.js";
 import DisplayTable from '@/components/DisplayTable.vue';
 import BatchJobSearchResults from "@/components/Batch/BatchJobSearchResults.vue";
 import BatchJobErrorResults from "@/components/Batch/BatchJobErrorResults.vue";
 import BatchJobForm from "@/components/Batch/Batch.vue";
 import BatchRoutines from "@/components/Batch/Routines.vue";
+import sharedMethods from '../sharedMethods';
+
 import {
   mapGetters, mapActions
 } from "vuex";
@@ -322,7 +324,7 @@ export default {
       jobs: [],   
       selectedTab: 0,     
       searchResults: [], 
-      batchValid: false
+      batchValid: false,
     };
   },
   created() {
@@ -331,6 +333,10 @@ export default {
   },
   methods: { 
     ...mapActions('batchprocessing', ['setScheduledBatchJobs']),
+
+    getZipLink: function (data, mimeType) {
+      return sharedMethods.base64ToFileTypeData(data,mimeType)
+    },
     cancelBatchJob(id) {
   
       for (let i = 0; i < this.tabs.length; i++) {
@@ -431,11 +437,26 @@ export default {
           console.log(response)
           this.cancelBatchJob(id);
           this.selectedTab = 0;
-          this.$bvToast.toast("Batch run has completed for request " + requestId , {
-            title: "BATCH PROCESSING COMPLETED",
-            variant: 'success',
-            noAutoHide: true,
-          })
+     
+          if(request.localDownload == 'Y'){
+            
+            let bid = response.data.batchId;
+            DistributionService.downloadDISTRUN(bid).then((res) => {
+              this.$bvToast.toast('Download (.zip)' , {
+                title: "BATCH PROCESSING COMPLETED",
+                href: "data:application/zip;base64," + res.data,
+                variant: 'success',
+                noAutoHide: true,
+              })
+            });
+                        
+          }else{
+            this.$bvToast.toast("Batch run has completed for request " + requestId , {
+              title: "BATCH PROCESSING COMPLETED",
+              variant: 'success',
+              noAutoHide: true,
+            })
+          }
         })
         .catch((error) => {
           if(error){
@@ -612,7 +633,8 @@ export default {
       this.batchValid = true;
     },
     runbatch(id, cronTime){    
-      let pens = [], schools = [], districts = [], programs = [], districtCategoryCode="";
+      let pens = [], schools = [], districts = [], programs = [], psi = [], districtCategoryCode="";
+      
       if(this.tabContent[id].details['who'] == 'School'){
         schools = this.tabContent[id].schools.map(this.getBatchData);  
         schools.pop();
@@ -641,6 +663,14 @@ export default {
           this.validationMessage = "Please select a district."
           return
         }
+      }else if(this.tabContent[id].details['who'] == 'PSI'){
+        psi = this.tabContent[id].psi.map(this.getBatchData);  
+        psi.pop();
+        if(!psi.length){
+          this.validationMessage = "Please select a Post Secondary Institution."
+          return
+        }        
+        
       }else if(this.tabContent[id].details['who'] == 'Program'){
         programs = this.tabContent[id].programs.map(this.getBatchData);  
         programs.pop();
@@ -651,8 +681,8 @@ export default {
       }
       let gradDateFrom = this.tabContent[id].details['gradDateFrom']
       let gradDateTo = this.tabContent[id].details['gradDateTo']
-
-      let request = {"pens": pens, "schoolOfRecords":schools,"districts":districts, "schoolCategoryCodes": [], "programs":programs, "gradDateFrom":gradDateFrom, "gradDateTo":gradDateTo,"validateInput": false, }
+      let localDownload = this.tabContent[id].details['where']=='localDownload'?'Y':'N'
+      let request = {"pens": pens, "schoolOfRecords":schools,"districts":districts, "schoolCategoryCodes": [], "programs":programs, "psi": psi, "gradDateFrom":gradDateFrom, "gradDateTo":gradDateTo,"validateInput": false, "localDownload": localDownload }
       if(this.batchHasErrors(this.tabContent[id])){
         return;
       }

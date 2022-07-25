@@ -19,7 +19,7 @@
         </div>
         <div v-if="certificates">
           <div v-for="(certificate, index) in certificates" :key="index" class="px-3 w-100 float-left">        
-            <a @click="downloadPDF(certificate.certificate,'application/pdf')" href="#"  class="pdf-link float-left mt-2">{{certificate.gradCertificateTypeLabel}} (PDF)</a> 
+            <a @click="downloadFile(certificate.certificate,'application/pdf')" href="#"  class="pdf-link float-left mt-2">{{certificate.gradCertificateTypeLabel}} (PDF)</a> 
             <div class="float-left col-12 pr-3">
               <ul>
                 <li>
@@ -55,8 +55,8 @@ export default {
     })
   },
   methods: {
-    downloadPDF: function (data, mimeType) {
-      sharedMethods.base64ToPdfAndOpenWindow(data,mimeType)
+    downloadFile: function (data, mimeType) {
+      sharedMethods.base64ToFileTypeAndOpenWindow(data,mimeType)
     },
   }
 }

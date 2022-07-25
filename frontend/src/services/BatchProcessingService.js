@@ -17,11 +17,12 @@ export default {
       return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OC', users);
     }else if(credentialType == "RC"){
       return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/RC', users);
+    }else if(credentialType == "Blank transcript print"){
+      return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OT', users);
+    }else if(credentialType == "Blank certificate print"){
+      return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OC', users);
     }
-  },     
-  runOriginalCertificateDISTRUN(users) {
-    return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OC', users);
-  },   
+  },      
   getBatchErrors(id, page) {
     return ApiService.apiAxios.get('/api/v1/batch/dashboard/errors/'  + id + '?pageNumber=' + page);
   },
@@ -42,5 +43,6 @@ export default {
   },
   batchProcessingToggleRoutine(jobType){
     return ApiService.apiAxios.get('/api/v1/batch/processing/toggle/' + jobType);
-  }
+  },
+ 
 }

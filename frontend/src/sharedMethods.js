@@ -27,7 +27,7 @@ export default {
             autoHideDelay: delay,
         });
     },
-    base64ToPdfAndOpenWindow: function (data, mimeType) {
+    base64ToFileTypeAndOpenWindow: function (data, mimeType) {
         var byteCharacters = atob(data);
         var byteNumbers = new Array(byteCharacters.length);
         for (var i = 0; i < byteCharacters.length; i++) {
@@ -35,9 +35,19 @@ export default {
         }
         var byteArray = new Uint8Array(byteNumbers);
         var file = new Blob([byteArray], { type: mimeType + ';base64' });
-        var fileURL = URL.createObjectURL(file);
+        var fileURL = URL.createObjectURL(file);        
         window.open(fileURL);
-    },
+    },   
+    base64ToFileTypeData: function (data, mimeType) {
+      var byteCharacters = atob(data);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      var file = new Blob([byteArray], { type: mimeType + ';base64' });
+      return file;
+    },       
     loadStudent: function (student) {
         this.selectedPen = student[0].pen;
         this.selectedId = student[0].studentID;

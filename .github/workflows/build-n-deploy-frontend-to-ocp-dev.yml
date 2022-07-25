@@ -21,7 +21,7 @@ env:
 
   APP_NAME: 'educ-grad-admin'
   REPO_NAME: "educ-grad-admin"
-  BRANCH: "feature/nodejs"
+  BRANCH: "main"
   APP_NAME_FRONTEND: "educ-grad-admin-frontend"
   NAMESPACE: bbe4c3
   NAMESPACE_TOOLS: bbe4c3-tools
@@ -144,14 +144,6 @@ jobs:
           # Create the image stream if it doesn't exist
           oc create imagestream ${{ env.REPO_NAME }}-frontend 2> /dev/null || true && echo "Frontend image stream in place"
           oc tag ${{ steps.push-image-frontend.outputs.registry-path }} ${{ env.REPO_NAME }}-frontend:${{ env.TAG }}
-
-          # Process and apply build template
-          oc process -f tools/openshift/frontend-static.bc.yaml -p REPO_NAME=educ-grad-admin -p NAMESPACE=${{ env.NAMESPACE_TOOLS }} \
-           | oc apply -n bbe4c3-tools -f -
-
-          # Start build (if necessary) and follow it
-          oc start-build bc/${{ env.IMAGE_NAME }}-static -F 2> /dev/null \
-          || true && echo "Build in progress"
 
         # https://github.com/redhat-actions/oc-login#readme
       - uses: actions/checkout@v2

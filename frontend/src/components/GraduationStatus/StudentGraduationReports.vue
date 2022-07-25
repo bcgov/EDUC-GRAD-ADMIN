@@ -18,7 +18,7 @@
               
         <div v-if="reports">
           <div v-for="(report, index) in reports" :key="index" class="px-3 w-100 float-left">
-            <a  @click="downloadPDF(report.report,'application/pdf')" href="#" class="pdf-link float-left mt-2">{{report.gradReportTypeLabel}} (PDF)</a> 
+            <a  @click="downloadFile(report.report,'application/pdf')" href="#" class="pdf-link float-left mt-2">{{report.gradReportTypeLabel}} (PDF)</a> 
             <div class="float-left col-12 pr-4 ml-1">
               <ul>
                 <li>
@@ -36,7 +36,7 @@
           </div>        
         <div v-if="transcripts">
           <div  v-for="transcript in transcripts" :key="transcript.id" class="px-3 w-100 float-left mt-2">
-            <a  @click="downloadPDF(transcript.transcript,'application/pdf')" href="#"  class="pdf-link float-left ">{{transcript.transcriptTypeLabel}} (PDF)</a> 
+            <a  @click="downloadFile(transcript.transcript,'application/pdf')" href="#"  class="pdf-link float-left ">{{transcript.transcriptTypeLabel}} (PDF)</a> 
             <div class="float-left col-12 pr-4 ml-1">
               <ul>
                 <li>
@@ -54,7 +54,7 @@
         </div>  
         <div>
           <div class="px-3 w-100 float-left mt-2">
-              <b-button variant="link" :disabled="studentGradStatus.studentGradData.school.transcriptEligibility === 'N'" @click="downloadPDF(xmlReports,'application/pdf')" href="#">View XML Preview</b-button>
+              <b-button variant="link" :disabled="studentGradStatus.studentGradData.school.transcriptEligibility === 'N'" @click="downloadFile(xmlReports,'application/pdf')" href="#">View XML Preview</b-button>
           </div>    
         </div> 
       </div>                          
@@ -80,8 +80,8 @@ import sharedMethods from '../../sharedMethods';
       })
     },
     methods: {
-      downloadPDF: function (data, mimeType) {
-        sharedMethods.base64ToPdfAndOpenWindow(data,mimeType)
+      downloadFile: function (data, mimeType) {
+        sharedMethods.base64ToFileTypeAndOpenWindow(data,mimeType)
       }
   }
   }

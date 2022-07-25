@@ -9,7 +9,7 @@ Requirements
 The Node.js Frontend for GRAD Administration application.
 
 ### Local Setup
- **`Step 1`**. make sure you have Node.js 14.19.0 installed in your local machine. if not download from here https://nodejs.org/en/ 
+ **`Step 1`**. make sure you have Node.js 16.16.0 installed in your local machine. if not download from here https://nodejs.org/en/ 
  
  **`Step 2`**. run `npm i --save-dev` in command line from frontend folder, to install required dependencies.
 
