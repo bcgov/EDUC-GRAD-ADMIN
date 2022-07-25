@@ -15,7 +15,7 @@ fixture `course-restrictions`
         await t
             .useRole(adminUser)
             .navigateTo(base_url)
-            .click('#courses-route')
+            .click(coursesPage.view)
             .click(coursesPage.restrictionsTab);
     })
     .afterEach(() => log.info(apiCallsFailed(requestLogger, api_html_status_threshold)));

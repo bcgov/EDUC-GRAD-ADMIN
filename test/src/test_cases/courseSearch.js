@@ -22,7 +22,7 @@ fixture `course-search`
         await t
             .useRole(adminUser)
             .navigateTo(base_url)
-            .click('#courses-route');
+            .click(coursesPage.view);
     })
     .afterEach(() => log.info(apiCallsFailed(requestLogger, api_html_status_threshold)));
 

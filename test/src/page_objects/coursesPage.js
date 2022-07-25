@@ -3,6 +3,7 @@ import { Selector, t } from 'testcafe';
 class CoursesPage {
     constructor() {
 
+        this.view = Selector('#courses-route');
         // tabs
         this.courseTab = Selector('a[role=tab]').withExactText('Course');
         this.restrictionsTab = Selector('a[role=tab]').withExactText('Course restrictions');
