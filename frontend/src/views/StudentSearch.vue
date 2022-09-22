@@ -75,11 +75,11 @@
 
             <b-tab id="advanced-search-tab" title="Advanced search">
               <b-card-text>
-                <form v-on:submit.prevent>
+                <form v-on:submit.prevent class="col-2 float-left">
                   <!-- advanced Search -->
-                  <div class="advanced-search-form">
+                  <div class="advanced-search-form col-12">
                     <div class="row my-3">
-                      <div class="advanced-search-field col-12 col-md-2">
+                      <div class="advanced-search-field col-12 col-md-12">
                         <label >Legal surname</label>
                         <div href="#"
                           v-on:click="advancedSearchInput.legalLastName.contains = !advancedSearchInput.legalLastName.contains"
@@ -90,7 +90,7 @@
                         <b-input id="legal-surname-input" class="form__input" v-model="advancedSearchInput.legalLastName.value" placeholder=""
                           v-on:keyup="keyHandler" tabindex="1" />
                       </div>
-                      <div class="advanced-search-field col-12 col-md-2">
+                      <div class="advanced-search-field col-12 col-md-12">
                         <label>Legal given</label>
                         <div href="#"
                           v-on:click="advancedSearchInput.legalFirstName.contains = !advancedSearchInput.legalFirstName.contains"
@@ -102,7 +102,7 @@
                           v-on:keyup="keyHandler" tabindex="2" />
                       </div>
                       
-                      <div class="advanced-search-field col-12 col-md-2">
+                      <div class="advanced-search-field col-12 col-md-12">
                         <label>Legal middle</label>
                         <div href="#"
                           v-on:click="advancedSearchInput.legalMiddleNames.contains = !advancedSearchInput.legalMiddleNames.contains"
@@ -113,12 +113,12 @@
                         <b-input id="legal-middle-input" v-model="advancedSearchInput.legalMiddleNames.value" placeholder=""
                           v-on:keyup=" keyHandler" tabindex="3" />
                       </div>
-                      <div class="advanced-search-field  col-12 col-md-2">
+                      <div class="advanced-search-field  col-12 col-md-12">
                         <label>Gender</label>
                          <b-form-select id="gender-select" v-model="advancedSearchInput.gender.value" :options="genderOptions" tabindex="4"></b-form-select>  
                       </div>
                       <div
-                        class="form-group advanced-search-field col-12 col-md-2"
+                        class="form-group advanced-search-field col-12 col-md-12"
                       >
                         <label for="datepicker-birthdate-from form__label"
                           >Birthdate from</label
@@ -146,7 +146,7 @@
                         Birthdate from must not be greater than today.
                       </div>
                       </div>  
-                      <div class="advanced-search-field col-12 col-md-2">
+                      <div class="advanced-search-field col-12 col-md-12">
                         <label for="datepicker-birthdate-to"
                           >Birthdate to</label
                         >
@@ -166,7 +166,7 @@
                       </div>
                     </div>
                     <div class="row">
-                       <div class="advanced-search-field col-12 col-md-2">
+                       <div class="advanced-search-field col-12 col-md-12">
                         <label>Usual surname</label>
                         <div href="#"
                           v-on:click="advancedSearchInput.usualLastName.contains = !advancedSearchInput.usualLastName.contains"
@@ -177,7 +177,7 @@
                         <b-input id="usual-surname-input" v-model="advancedSearchInput.usualLastName.value" placeholder=""
                           v-on:keyup="keyHandler" tabindex="7" />
                       </div>
-                      <div class="advanced-search-field col-12 col-md-2">
+                      <div class="advanced-search-field col-12 col-md-12">
                         <label>Usual given</label>
                         <div href="#"
                           v-on:click="advancedSearchInput.usualFirstName.contains = !advancedSearchInput.usualFirstName.contains"
@@ -188,7 +188,7 @@
                         <b-input id="usual-given-input" v-model="advancedSearchInput.usualFirstName.value" placeholder=""
                           v-on:keyup="keyHandler" tabindex="8" />
                       </div>
-                      <div class="advanced-search-field col-12 col-md-2">
+                      <div class="advanced-search-field col-12 col-md-12">
                         <label>Usual middle</label>
                         <div href="#"
                           v-on:click="advancedSearchInput.usualMiddleNames.contains = !advancedSearchInput.usualMiddleNames.contains"
@@ -208,17 +208,27 @@
                         &nbsp;&nbsp;<b-spinner v-if="advancedSearchLoading" label="Loading">Loading</b-spinner>             
                       </div>
                     </div>
-                  </div>
-                  <div v-if="studentSearchResults" class="row">
+                  </div>          
+                </form>
+                <DisplayTable v-if="studentSearchResults.length"
+                      v-bind:items="studentSearchResults" 
+                      title="Student search results" 
+                      v-bind:fields="studentSearchResultsFields" 
+                      id="pen"
+                      showBlankTable = "true"
+                      v-bind:showFilter = "false"  
+                      v-bind:pagination = "true"
+                      class="col-12"
+                    >
+                  </DisplayTable>
+                <div v-if="studentSearchResults" class="table-responsive col-10 float-left">  
+                  <div v-if="studentSearchResults">
                     <div class="search-results-message my-4 col-12 col-md-8"><strong><span id="adv-search-results-message" v-if="advancedSearchMessage">{{ advancedSearchMessage }} {{advancedSearchAPIMessage}}</span></strong></div>
                     <div class="results-option-group col-12 col-md-4">
                       <label v-if="totalPages > 1">Results per page</label>
                       <b-form-select class="results-option" v-if="totalPages > 1" @change="findStudentsByAdvancedSearch()" v-model="resultsPerPage" :options="resultsPerPageOptions" :value="resultsPerPage"></b-form-select>
                     </div>
-                  </div>              
-                </form>
-                <transition name="fade">
-                <div v-if="studentSearchResults" class="table-responsive">  
+                  </div>    
                   <DisplayTable v-if="studentSearchResults.length"  
                     v-bind:items="studentSearchResults" 
                     title="Student search results" 
@@ -253,7 +263,6 @@
                       </template>                               
                   </DisplayTable>
                 </div>  
-                </transition>    
               </b-card-text>
             </b-tab>
           </b-tabs>

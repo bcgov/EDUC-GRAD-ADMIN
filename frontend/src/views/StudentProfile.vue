@@ -6,7 +6,7 @@
             <tr>
               <th class="align-top profile-name-header" scope="col"></th>
               <th class="align-top profile-name-header" scope="col"><label>PEN</label></th>
-              <th class="align-top profile-name-header" scope="col"><label>Legal surname</label></th>
+              <th class="align-top profile-name-header" scope="col"><label>Legal surnamess</label></th>
               <th class="align-top profile-name-header" scope="col"><label>Legal given</label></th>
               <th class="align-top profile-name-header" scope="col"><label>Legal middle</label></th>
               <th class="align-top profile-name-header" scope="col"><label>Birthdate (yyyy-mm-dd)</label></th>

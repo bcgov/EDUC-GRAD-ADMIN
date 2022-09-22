@@ -106,7 +106,13 @@
           </div>
         </b-card-text>
       </b-card>
-    </b-row>   
+    </b-row> 
+
+    <b-table v-if="items.length > 0 && showBlankTable=='true'" class="col-10 float-left" bordered :head-variant="'light'" hover  :fields="fields" show-empty>
+      <template #empty="scope">
+          Whatever HTML you put here will be shown when the table is empty
+      </template>
+    </b-table>
     <b-table
       v-if="items && items.length"
       :responsive="responsive"
@@ -235,7 +241,8 @@ export default {
     "filterOn",
     "sortBy",
     "sortByField",
-    "sortDesc"
+    "sortDesc",
+    "showBlankTable"
   ],
   data() {
     return {
