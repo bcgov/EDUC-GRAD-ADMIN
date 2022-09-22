@@ -199,34 +199,32 @@
         <b-card class="mt-3 px-0" header="Include Geographic Districts">
             <b-alert dismissible v-if="validationMessage" :show="validationMessage" variant="danger">{{validationMessage}}</b-alert>
 
-        <div class="row col-12">
-            <div class="col-2 p-2"><strong>Code</strong></div>
-            <div class="col-4 p-2"><strong>District</strong></div>
-            <div class="col-4 p-2"><strong>City</strong></div>
+        
+        <table border=1 width=100%>
+        <tr class="row col-12">
+            <td class=""><strong>Code</strong></td>
+            <td class=""><strong>District</strong></td>
+            <td class=""><strong>City</strong></td>
 
-        </div>
-        <div v-for="(district, index) in batch.districts" :key="index" class="row pl-3 mb-1">
-          <div v-if="!district.districtName" class="row col-12">
-            <b-form-input type="number" v-model="district.value" class="col-2"/>
-            <b-form-input show=false disabled v-model="district.districtName" :ref="'districtName' + jobId + index" class="col-4"/>
-            <b-form-input show=false disabled v-model="district.city" :ref="'districtCity' + jobId + index" class="col-4"/>
-            <div v-if="index == batch.districts.length-1" class="col-2">
+        </tr>
+        <tr v-for="(district, index) in batch.districts" :key="index" class="row pl-3 mb-1">
+            <td v-if="!district.districtName"><b-form-input type="number" v-model="district.value"/></td>
+            <td v-if="!district.districtName"><b-form-input show=false disabled v-model="district.districtName" :ref="'districtName' + jobId + index"/></td>
+            <td v-if="!district.districtName"><b-form-input show=false disabled v-model="district.city" :ref="'districtCity' + jobId + index"/></td>
+            <td v-if="index == batch.districts.length-1 && !district.districtName">
               <b-button  class="btn btn-primary w-100" @click="addValueToTypeInBatchId(jobId,'districts',district.value,index)">
               <b-spinner small v-if="validating"></b-spinner> Add
               </b-button>   
-            </div>
-          </div>
-          <div class="row col-12">
-            <div v-if="district.districtName" class="col-2">{{district.value}}</div>
-            <div v-if="district.districtName" class="col-4">{{district.districtName}}</div>
-            <div v-if="district.districtName" class="col-4">{{district.city}}</div>
-
-            <div v-if="index != batch.districts.length-1" class="col-2" ><b-button class="btn btn-primary w-100" @click="deleteValueFromTypeInBatchId(jobId, 'districts',district.value)">
+            </td>
+            <td v-if="district.districtName">{{district.value}}</td>
+            <td v-if="district.districtName">{{district.districtName}}</td>
+            <td v-if="district.districtName">{{district.city}}</td>
+            <td v-if="index != batch.districts.length-1" class="col-2" ><b-button class="btn btn-primary w-100" @click="deleteValueFromTypeInBatchId(jobId, 'districts',district.value)">
               Remove
             </b-button>
-            </div>
-          </div>
-        </div>
+            </td>            
+          </tr>
+        </table>
           <pre>TEST districts: 061 062 063</pre>     
         </b-card> 
       </div>
