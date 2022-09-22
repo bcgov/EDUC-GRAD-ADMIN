@@ -75,7 +75,7 @@
 
             <b-tab id="advanced-search-tab" title="Advanced search">
               <b-card-text>
-                <form v-on:submit.prevent class="col-2 float-left">
+                <form v-on:submit.prevent class="col-12 col-md-2 mx-0 px-0 float-left">
                   <!-- advanced Search -->
                   <div class="advanced-search-form col-12">
                     <div class="row my-3">
@@ -210,17 +210,19 @@
                     </div>
                   </div>          
                 </form>
-                <DisplayTable v-if="studentSearchResults.length"
-                      v-bind:items="studentSearchResults" 
-                      title="Student search results" 
-                      v-bind:fields="studentSearchResultsFields" 
-                      id="pen"
-                      showBlankTable = "true"
-                      v-bind:showFilter = "false"  
-                      v-bind:pagination = "true"
-                      class="col-12"
-                    >
-                  </DisplayTable>
+
+            
+                <DisplayTable v-if="studentSearchResults.length == 0"
+                    v-bind:items="studentSearchResults" 
+                    title="Student search results" 
+                    v-bind:fields="studentSearchResultsFields" 
+                    id="pen"
+                    showBlankTable = "true"
+                    v-bind:showFilter = "false"  
+                    v-bind:pagination = "true"
+                    class="col-12"
+                  >
+                </DisplayTable>
                 <div v-if="studentSearchResults" class="table-responsive col-10 float-left">  
                   <div v-if="studentSearchResults">
                     <div class="search-results-message my-4 col-12 col-md-8"><strong><span id="adv-search-results-message" v-if="advancedSearchMessage">{{ advancedSearchMessage }} {{advancedSearchAPIMessage}}</span></strong></div>

@@ -28,7 +28,7 @@
     <b-row>
       <b-col lg="8" class="px-0 float-left">
       </b-col>
-      <b-col sm="12" lg="4" class="my-1 table-filter p-0" v-if="this.showFilter">
+      <b-col sm="12"  lg="4" class="my-1 table-filter p-0" v-if="this.showFilter">
         <b-form-group
           label-for="filter-input"
           label-cols-sm="3"
@@ -107,10 +107,9 @@
         </b-card-text>
       </b-card>
     </b-row> 
-
-    <b-table v-if="items.length > 0 && showBlankTable=='true'" class="col-10 float-left" bordered :head-variant="'light'" hover  :fields="fields" show-empty>
-      <template #empty="scope">
-          Whatever HTML you put here will be shown when the table is empty
+    <b-table v-if="items.length == 0 && showBlankTable=='true'" class="col-12 col-lg-10  float-left" striped :items="[{},{},{},{},{},{}]" :fields="fields" show-empty>
+      <template #empty="scope">          
+          Search for a student and click search button
       </template>
     </b-table>
     <b-table

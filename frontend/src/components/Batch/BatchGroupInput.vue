@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{fields}}
       <b-card class="mt-3 px-0" :header="'Include ' + label ">
         <b-alert dismissible v-if="validationMessage" :show="validationMessage" variant="danger">{{validationMessage}}</b-alert>
         <div class="row col-12 border-bottom mb-3">
