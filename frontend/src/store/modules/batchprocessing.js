@@ -5,12 +5,16 @@ export default {
   state: {
     batchDetails: [],
     scheduledBatchJobs: [],
+    batchInfoList: [],
     batchAutoIncrement: 1,
     batchTabsLoading: [],
     tabs: [],
     
   },
   mutations: {
+    getBatchInfoList(state, payload){
+      state.batchInfoList = payload;
+    },
     setTabLoading(state, payload){
       state.batchTabsLoading[payload['index']] = payload['value'];
     },
@@ -88,15 +92,38 @@ export default {
       for (let value of state.scheduledBatchJobs) {
         value.jobParameters = JSON.parse(value.jobParameters); 
       }
-    }        
+    }, 
+    setBatchInfoList(state, payload){
+      state.batchInfoList = payload; 
+    },     
+    addQueuedRequestToBatchInfoList(state, payload){
+      console.log(state.batchInfoList)
+      console.log(payload)
+      state.batchInfoList.push(payload)
+    }
+           
   },
   actions: {
-    
+    addQueuedRequestToBatchInfoList({commit}, payload){
+      commit("addQueuedRequestToBatchInfoList", payload);
+    },    
+    updateBatchInfoList({commit}){
+      BatchProcessingService.getDashboardInfo().then(
+        (response) => {
+          if(response.data.batchInfoList){
+            commit("setBatchInfoList", response.data.batchInfoList);
+          }
+        }
+      ).catch((error) => {
+        // eslint-disable-next-line
+        console.log(error.response.status);
+      });
+    },
     validateStudentInGrad(payload){
         
       StudentService.getStudentByPen(payload['pen']).then(
         (response) => {
-          this.$store.commit("batchprocessing/addValueToTypeInBatchId", payload);
+          this.$store.commit("addValueToTypeInBatchId", payload);
           return response;
         }
       ).catch((error) => {
@@ -145,6 +172,9 @@ export default {
         return state.batchDetails[args].details['what']
         
       }
+    },
+    getBatchInfoList(state){
+      return state.batchInfoList;
     },
     getbatchDetailsGroupById(state){
       return function(args){

@@ -164,7 +164,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
 
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import DistributionService from "@/services/DistributionService.js";
@@ -195,6 +194,7 @@ export default {
     batchInfoListDataChange(){
       return this.batchInfoListData;
     },
+    
     ...mapGetters({
       tabCounter: "batchprocessing/getBatchCounter",
       tabContent: "batchprocessing/getBatchDetails",
@@ -205,7 +205,8 @@ export default {
       gradStatusCourses: "gradStatusCourses",
       studentGradStatus: "getStudentGradStatus",
       hasGradStatus: "studentHasGradStatus",
-      gradStatusPendingUpdates: "getHasGradStatusPendingUpdates"
+      gradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
+      batchInfoListData: "batchprocessing/getBatchInfoList"
     }),
   },
   props: [
@@ -243,7 +244,7 @@ export default {
       timePerRecord: "18s",
       isErrorShowing: false,
       isBatchShowing: false,
-      batchInfoListData:[],
+      
       certificateTypes:[],
       transcriptTypes:[],
       scheduledJobFields: [
@@ -372,7 +373,7 @@ export default {
     this.getScheduledJobs()
   },
   methods: { 
-    ...mapActions('batchprocessing', ['setScheduledBatchJobs']),
+    ...mapActions('batchprocessing', ['setScheduledBatchJobs','addQueuedRequestToBatchInfoList']),
     downloadDISTRUNUSER(bid){
       DistributionService.downloadDISTRUNUSER(bid).then((res) => {
         this.$bvToast.toast('Download (.zip)' , {
@@ -420,10 +421,14 @@ export default {
       return  value.toLocaleString('en-CA', { timeZone: 'PST' });
     },
     getAdminDashboardData(){
+
+      this.$store.dispatch("batchprocessing/updateBatchInfoList")
       BatchProcessingService.getDashboardInfo().then(
         (response) => {
             this.dashboardData = response.data;
-            this.batchInfoListData = response.data.batchInfoList;
+
+            this.$store.commit("batchprocessing/setBatchInfoList", response.data.batchInfoList)
+
             //Processed
             this.processed = this.dashboardData.lastActualStudentsProcessed;
             this.lastExpectedStudentsProcessed = this.dashboardData.lastExpectedStudentsProcessed;
@@ -746,7 +751,7 @@ export default {
               variant: 'success',
               noAutoHide: true,
             })                        
-            this.batchInfoListData.splice(0,1,job)
+            this.addQueuedRequestToBatchInfoList(job)
         }
       );  
     },    

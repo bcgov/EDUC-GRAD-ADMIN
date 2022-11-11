@@ -56,7 +56,7 @@ export default {
       
       ...mapMutations('auth', ['setLoading']),
       ...mapActions('auth', ['getJwtToken', 'getUserInfo', 'logout']),
-       ...mapActions('app', ['setApplicationVariables']),
+      ...mapActions('app', ['setApplicationVariables']),
   },
   async created() {
     this.getJwtToken().then(() =>

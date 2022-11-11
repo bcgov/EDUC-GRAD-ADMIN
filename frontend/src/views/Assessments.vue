@@ -83,7 +83,6 @@ export default {
           class: "w-20",
         },
       ],
-
       assessmentRequirementsFields: [
         {
           key: "assessmentCode",
