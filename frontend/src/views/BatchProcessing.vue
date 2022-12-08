@@ -833,9 +833,6 @@ export default {
             timeZone: "PST",
           });
           //parameters
-          //console.log(this.batchInfoListData)
-
-          // console.log(JSON.stringify(this.batchInfoListData[0].jobParameters, null, "\t"))
           for(const [batch] in this.batchInfoListData){
             this.batchInfoListData[batch].jobParameters = this.removeEmpty(JSON.parse(this.batchInfoListData[batch].jobParameters))
           }
@@ -1227,7 +1224,8 @@ export default {
         if (this.tabContent[id]["details"].categoryCode == "") {
           districtCategoryCode = [];
         }
-        if (!districtCategoryCode) {
+        if (!districtCategoryCode.length) {
+          
           this.validationMessage = "Please select a district category";
           return;
         }
@@ -1364,6 +1362,7 @@ export default {
             this.tabContent[id].details["credential"]
           );
         }
+        this.validationMessage = "";
       }
     },
     rerunBatchSchoolReports(bid) {

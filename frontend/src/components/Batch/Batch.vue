@@ -97,6 +97,7 @@
             class="p-0 mt-3"
             v-if="
               batch.details['what'] &&
+              formElements[batch.details['what']] &&
               formElements[batch.details['what']].message
             "
           >
@@ -132,7 +133,27 @@
             "
             class="p-0 mt-3"
           >
+
+          <div class="p-0 mt-3 col-3" v-if="batch.details['who'] == 'District'">
+            <label class="font-weight-bold">School Category</label>
+            <b-form-select
+              id="inline-form-select-type"
+              class="col-12 my-2"
+              :options="[
+                { text: 'Choose...', value: null },
+                { text: '01 Public', value: '01' },
+                { text: '02 Independent', value: '02' },
+                { text: '03 Federally Operated Band School', value: '03' },
+                { text: '04 Yukon School', value: '04' },
+                { text: '09 Offshore', value: '09' },
+              ]"
+              :value="batch.districts['categoryCode']"
+              @change="editBatchJob('categoryCode', $event)"
+            ></b-form-select>
+          </div>
+
             <label class="font-weight-bold p-0 m-0 row">Select Students</label>
+
             <b-form-select
               id="inline-form-select-audience"
               class="mb-2 mr-sm-2 mb-sm-0 col-3"
@@ -213,24 +234,6 @@
                 </b-input-group>
               </div>
             </div>
-          </div>
-
-          <div class="p-0 mt-3 col-3" v-if="batch.details['who'] == 'District'">
-            <label class="font-weight-bold">School Category</label>
-            <b-form-select
-              id="inline-form-select-type"
-              class="col-12 my-2"
-              :options="[
-                { text: 'Choose...', value: null },
-                { text: '01 Public', value: '01' },
-                { text: '02 Independent', value: '02' },
-                { text: '03 Federally Operated Band School', value: '03' },
-                { text: '04 Yukon School', value: '04' },
-                { text: '09 Offshore', value: '09' },
-              ]"
-              :value="batch.districts['categoryCode']"
-              @change="editBatchJob('categoryCode', $event)"
-            ></b-form-select>
           </div>
           <div
             class="p-0 mt-3 col-3"
@@ -822,7 +825,7 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
           size="sm"
           variant="primary"
           class="btn btn-primary w-100 float-right col-2 p-2"
-          :disabled="batch.details['what'] == 'DISTRUN'"
+          :disabled="(batch.details['what'] == 'DISTRUN') ||  (batchTypeDesc == '')"
         >
           Schedule/Run Batch
         </b-button>
@@ -1030,6 +1033,10 @@ export default {
           ],
           psiYear: true,
           psiTransmissionMode: true,
+        },
+        DISTRUN_SUPP:{
+        },
+        NONGRADRUN:{ 
         },
         DISTRUN: {
           message:
@@ -1481,10 +1488,10 @@ export default {
         let id = this.jobId;
         let batchDetail = this.batch;
         //change the value
-        if (type == "what" && batchDetail.details[type] != event) {
-          for (let i=0; i < this.batchTypes.length; i++) {
-            if(this.batchTypes[i].code == event) {
-              this.batchTypeDesc = this.batchTypes[i].description;
+        if (type == "what" && batchDetail.details[type] != event ) {
+          for (const batchType of this.batchTypes) {
+            if(batchType.code == event) {
+              this.batchTypeDesc = batchType.description;
             } 
           } 
           this.clearBatchDetails(id);

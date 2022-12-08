@@ -98,3 +98,13 @@ button.collapsed, button.not-collapsed, button.more-button {
 .form-validation-message{
   font-size: 11px;
 }
+option:disabled {
+  color: rgb(201 197 197) !important;
+}
+.dropdown-item.disabled, .dropdown-item:disabled {
+  color: rgb(201 197 197) !important;
+  pointer-events: none;
+}
+.disabled {
+  color: rgb(201 197 197) !important;
+}
