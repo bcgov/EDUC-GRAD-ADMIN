@@ -542,6 +542,7 @@
             <b-button
               size="sm"
               variant="primary"
+              :disabled="ungradReasonSelected == 'OTH' && ungradReasonDesc.length == 0"
               @click="
                 hide('ungraduate-student-modal');
                 ungraduateStudent();
@@ -552,7 +553,7 @@
           </template>
           <div v-if="ungradReasonSelected == 'OTH'" class="mt=3">
             <label class="pt-3">Description</label>
-            <b-form-textarea v-model="ungradReasonDesc"></b-form-textarea>
+            <b-form-textarea v-model="ungradReasonDesc" placeholder="Reason for running undo completion on this student..." :state="ungradReasonDesc.length > 0"></b-form-textarea>
           </div>
         </b-modal>
       </div>
