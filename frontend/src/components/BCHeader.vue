@@ -46,7 +46,7 @@
           ><router-link to="/courses">Courses</router-link></b-nav-item
         >
         <b-nav-item
-          ><router-link to="/assessment">Assessments</router-link></b-nav-item
+          ><router-link to="/assessments">Assessments</router-link></b-nav-item
         >
         <b-nav-item
           ><router-link to="/schools">Schools</router-link></b-nav-item

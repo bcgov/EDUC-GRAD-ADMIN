@@ -766,6 +766,8 @@ export default {
           StudentService.getGraduationStatus(this.studentId)
             .then((response) => {
               this.$store.dispatch("setStudentGradStatus", response.data);
+              this.loadStudentHistory(this.studentId);
+              this.loadStudentOptionalProgramHistory(this.studentId);
               this.tabLoading = false;
             })
             .catch((error) => {
