@@ -50,7 +50,7 @@
             <b-card
               v-if="batch.details['credential'] == 'Blank transcript print'"
               class="mt-3 px-0"
-              header="Blank Transcript Details"
+              header="Choose Transcript Type(s)"
             >
               <b-form-checkbox-group
                 multiple
@@ -68,10 +68,10 @@
             <b-card
               v-if="batch.details['credential'] == 'Blank certificate print'"
               class="mt-3 px-0"
-              header="Blank Certificate Details"
+              header=""
             >
               <b-form-group
-                label="Blank Certificate Details"
+                label="Choose Certificate Type"
                 v-slot="{ blankCertificateDetailsOptions }"
               >
                 <b-form-checkbox-group
@@ -816,6 +816,7 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
           size="sm"
           variant="primary"
           class="btn btn-primary w-100 float-right col-2 p-2"
+          :disabled="(batch.details['who'] == '')||(batch.details['who'] == 'Choose...')"
         >
           Download
         </b-button>
@@ -825,7 +826,15 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
           size="sm"
           variant="primary"
           class="btn btn-primary w-100 float-right col-2 p-2"
-          :disabled="(batch.details['what'] == 'DISTRUN') ||  (batchTypeDesc == '')"
+          :disabled="(batch.details['what'] == 'DISTRUN') ||  
+          (batch.details['what'] == 'DISTRUN_SUPP') ||
+          (batch.details['what'] == 'NONGRADRUN') ||
+          (batch.details['what'] == '') ||
+          (batch.details['who'] == '') ||
+          (batch.details['who'] == 'Choose...') ||
+          (batch.details['credential'] == '')||
+          (batch.details['where'] == '')
+          "
         >
           Schedule/Run Batch
         </b-button>
@@ -1017,6 +1026,7 @@ export default {
       gradDateFrom: "",
       gradDateTo: "",
       batchTypeDesc:"",
+      disableButton:false,
       formElements: {
         PSIRUN: {
           group: [
@@ -1168,7 +1178,7 @@ export default {
         this.batch.details["blankCertificateDetails"][0] == "A"
       ) {
         return [
-          { text: "", value: null },
+          { text: "Choose...", value: null },
           { text: "School", value: "School" },
           {
             text: "Ministry of Advanced Education",
@@ -1181,7 +1191,7 @@ export default {
         this.batch.details["credential"] == "Blank transcript print"
       ) {
         return [
-          { text: "", value: null },
+          { text: "Choose...", value: null },
           { text: "School", value: "School" },
           {
             text: "Ministry of Advanced Education - Select only Adult Dogwood (Public)",
@@ -1583,7 +1593,7 @@ export default {
     },
     requestId() {
       return this.jobId.replace("job-", "");
-    },
+    }, 
   },
 };
 </script>
