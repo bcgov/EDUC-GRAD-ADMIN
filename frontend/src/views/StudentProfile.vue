@@ -542,7 +542,9 @@
             <b-button
               size="sm"
               variant="primary"
-              :disabled="ungradReasonSelected == 'OTH' && ungradReasonDesc.length == 0"
+              :disabled="
+                ungradReasonSelected == 'OTH' && ungradReasonDesc.length == 0
+              "
               @click="
                 hide('ungraduate-student-modal');
                 ungraduateStudent();
@@ -553,7 +555,11 @@
           </template>
           <div v-if="ungradReasonSelected == 'OTH'" class="mt=3">
             <label class="pt-3">Description</label>
-            <b-form-textarea v-model="ungradReasonDesc" placeholder="Reason for running undo completion on this student..." :state="ungradReasonDesc.length > 0"></b-form-textarea>
+            <b-form-textarea
+              v-model="ungradReasonDesc"
+              placeholder="Reason for running undo completion on this student..."
+              :state="ungradReasonDesc.length > 0"
+            ></b-form-textarea>
           </div>
         </b-modal>
       </div>
@@ -710,7 +716,7 @@ export default {
       this.getStudentReportsAndCertificates(this.studentId, this.pen);
     });
     this.$root.$on("refreshStudentGraduationOptionalPrograms", () => {
-      this.loadOptionalPrograms(this.studentId);
+      this.loadStudentOptionalPrograms(this.studentId);
     });
     this.$root.$on("refreshStudentHistory", () => {
       this.loadStudentHistory(this.studentId);
@@ -768,6 +774,7 @@ export default {
               this.$store.dispatch("setStudentGradStatus", response.data);
               this.loadStudentHistory(this.studentId);
               this.loadStudentOptionalProgramHistory(this.studentId);
+              this.loadStudentOptionalPrograms(this.studentId);
               this.tabLoading = false;
             })
             .catch((error) => {
@@ -1025,7 +1032,7 @@ export default {
       this.loadStudentProfile();
       this.loadAssessments();
       this.loadGraduationStatus(studentIdFromURL);
-      this.loadOptionalPrograms(studentIdFromURL);
+      this.loadStudentOptionalPrograms(studentIdFromURL);
       this.loadCareerPrograms(studentIdFromURL);
       this.loadStudentCourseAchievements();
       this.loadStudentExamDetails();
@@ -1099,7 +1106,7 @@ export default {
           }
         });
     },
-    loadOptionalPrograms(studentIdFromURL) {
+    loadStudentOptionalPrograms(studentIdFromURL) {
       StudentService.getGraduationStatusOptionalPrograms(studentIdFromURL)
         .then((response) => {
           this.$store.dispatch(
