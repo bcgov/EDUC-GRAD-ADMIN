@@ -38,8 +38,8 @@ on:
 jobs:
   openshift-ci-cd:
     name: Build & Deploy Backend to TOOLS
-    # ubuntu-20.04 can also be used.
-    runs-on: ubuntu-18.04
+    # ubuntu-latest can also be used.
+    runs-on: ubuntu-20.04
     environment: dev
 
     outputs:
