@@ -87,7 +87,7 @@ objects:
               emptyDir: { }
             - name: flb-sc-config-volume
               configMap:
-                name: "${APP_NAME}-flb-sc-config-map"
+                name: "${REPO_NAME}-flb-sc-config-map"
       test: false
   - apiVersion: v1
     kind: Service
