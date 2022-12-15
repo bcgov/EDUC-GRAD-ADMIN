@@ -111,7 +111,7 @@
                                           </a>
                                         </div>
                                       </div>
-                                      <div class="row border-bottom p-2">
+                                      <div class="row border-bottom p-2" v-if="row.item.jobType != 'DISTRUNUSER'">
                                         <div class="col-10 p-2">
                                           Rerun this batch for <br />{{
                                             row.item
@@ -122,7 +122,7 @@
                                           }}
                                           students
                                         </div>
-                                        <div class="col-2 px-2 m-0">
+                                        <div class="col-2 px-2 m-0" v-if="row.item.jobType != 'DISTRUNUSER'">
                                           <b-btn
                                             :id="
                                               'batch-job-id-rerun-btn' +
@@ -149,7 +149,7 @@
                                         </div>
                                       </div>
 
-                                      <div class="row border-bottom p-2">
+                                      <div class="row border-bottom p-2" v-if="row.item.jobType != 'DISTRUNUSER'">
                                         <div class="col-10 p-2">
                                           Rerun
                                           {{
@@ -160,7 +160,7 @@
                                           }}
                                           students with errors
                                         </div>
-                                        <div class="col-2 px-2 m-0">
+                                        <div class="col-2 px-2 m-0" >
                                           <b-btn
                                             :disabled="
                                               row.item.jobType != 'TVRRUN' &&
@@ -188,7 +188,7 @@
                                         </div>
                                       </div>
 
-                                      <div class="row p-2 border-bottom">
+                                      <div class="row p-2 border-bottom" v-if="row.item.jobType != 'DISTRUNUSER'">
                                         <div class="col-10 p-2">
                                           Rerun school reports
                                         </div>
