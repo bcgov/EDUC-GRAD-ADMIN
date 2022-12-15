@@ -14,14 +14,7 @@
             <template #cell(gradReqMet)="row">
               <div class="d-flex flex-column text-md-left">
                 <div class="gradReqsMet">
-                  <span v-if="row.item.used">
-                    {{ row.item.gradReqMet ? row.item.gradReqMet : "" }}
-                  </span>
-                  <span v-if="!row.item.used">Not Used</span>
-                  <span v-if="row.item.notCompleted">No Attempt</span>
-                  <span v-if="row.item.projected">Registration</span>
-                  <span v-if="row.item.failed">Not Completed</span>
-                  <span v-if="row.item.duplicate">Repeat</span>
+                  {{row.value}}
                 </div>
               </div>
             </template>
@@ -122,6 +115,28 @@ export default {
           label: "Reqts Met",
           sortable: true,
           class: "text-left",
+          sortByFormatted: true,
+          formatter: (value, key, item) => {
+            let formattedValue = value;
+
+            if (!item.used) {
+              formattedValue = "Not Used";
+            }
+            if (item.notCompleted) {
+              formattedValue += ", No Attempt"
+            }
+            if (item.projected) {
+              formattedValue += ", Registration"
+            }
+            if (item.failed) {
+              formattedValue += ", Not Completed"
+            }
+            if (item.duplicate) {
+              formattedValue += ", Repeat"
+            }
+            
+            return formattedValue;
+          },
         },
         {
           key: "gradReqMetDetail",
