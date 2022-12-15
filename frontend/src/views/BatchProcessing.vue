@@ -148,8 +148,7 @@
                                           </b-btn>
                                         </div>
                                       </div>
-
-                                      <div class="row border-bottom p-2" v-if="row.item.jobType != 'DISTRUNUSER'">
+                                      <div class="row border-bottom p-2" v-if="row.item.jobType != 'DISTRUNUSER' && row.item.failedStudentsProcessed != 0">
                                         <div class="col-10 p-2">
                                           Rerun
                                           {{
