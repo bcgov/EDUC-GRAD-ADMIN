@@ -37,29 +37,29 @@
     <b-collapse id="navbarSmallScreen" is-nav>
       <b-navbar-nav class="mr-auto">
         <b-nav-item>
-          <router-link to="/">Student Search</router-link>
+          <router-link :to="routes.studentSearch">Student Search</router-link>
         </b-nav-item>
         <b-nav-item>
-          <router-link to="/programs">Programs</router-link>
+          <router-link :to="routes.programs">Programs</router-link>
         </b-nav-item>
         <b-nav-item
-          ><router-link to="/courses">Courses</router-link></b-nav-item
+          ><router-link :to="routes.courses">Courses</router-link></b-nav-item
         >
         <b-nav-item
-          ><router-link to="/assessment">Assessments</router-link></b-nav-item
+          ><router-link :to="routes.assessments">Assessments</router-link></b-nav-item
         >
         <b-nav-item
-          ><router-link to="/schools">Schools</router-link></b-nav-item
+          ><router-link :to="routes.schools">Schools</router-link></b-nav-item
         >
-        <b-nav-item><router-link to="/psi">PSI</router-link></b-nav-item>
-        <b-nav-item><router-link to="/codes">Codes</router-link></b-nav-item>
+        <b-nav-item><router-link :to="routes.psi">PSI</router-link></b-nav-item>
+        <b-nav-item><router-link :to="routes.codes">Codes</router-link></b-nav-item>
         <b-nav-item
-          ><router-link to="/school-reports"
+          ><router-link :to="routes.schoolReports"
             >School Reports</router-link
           ></b-nav-item
         >
         <b-nav-item
-          ><router-link to="/batch-processing"
+          ><router-link :to="routes.batchProcessing"
             >Batch Processing</router-link
           ></b-nav-item
         >
@@ -90,33 +90,33 @@
       <div class="container">
         <ul>
           <li>
-            <router-link to="/" id="select-student-route"
+            <router-link :to="routes.studentSearch" id="select-student-route"
               >Student Search</router-link
             >
           </li>
           <li>
-            <router-link to="/programs" id="programs-route"
+            <router-link :to="routes.programs" id="programs-route"
               >Programs</router-link
             >
           </li>
           <li>
-            <router-link to="/courses" id="courses-route">Courses</router-link>
+            <router-link :to="routes.courses" id="courses-route">Courses</router-link>
           </li>
           <li>
-            <router-link to="/assessments" id="assessments-route"
+            <router-link :to="routes.assessments" id="assessments-route"
               >Assessments</router-link
             >
           </li>
           <li>
-            <router-link to="/schools" id="schools-route">Schools</router-link>
+            <router-link :to="routes.schools" id="schools-route">Schools</router-link>
           </li>
-          <li><router-link to="/psi" id="psi-route">PSI</router-link></li>
-          <li><router-link to="/codes" id="codes-route">Codes</router-link></li>
+          <li><router-link :to="routes.psi" id="psi-route">PSI</router-link></li>
+          <li><router-link :to="routes.codes" id="codes-route">Codes</router-link></li>
           <li>
-            <router-link to="/school-reports">School Reports</router-link>
+            <router-link :to="routes.schoolReports">School Reports</router-link>
           </li>
           <li>
-            <router-link to="/batch-processing">Batch Processing</router-link>
+            <router-link :to="routes.batchProcessing">Batch Processing</router-link>
           </li>
           <li v-if="!profile.pen" class="disabled">
             <a
@@ -195,6 +195,17 @@ export default {
       studentSearchResults: [],
       host: location.protocol + "//" + location.host,
       studentUrlID: "",
+      routes: {
+        studentSearch: "/",
+        programs: "/programs",
+        courses: "/courses",
+        assessments: "/assessments",
+        schools: "/schools",
+        psi: "/psi",
+        codes: "/codes",
+        schoolReports: "/school-reports",
+        batchProcessing: "/batch-processing",
+      }
     };
   },
   created() {
