@@ -14,14 +14,7 @@
             <template #cell(gradReqMet)="row">
               <div class="d-flex flex-column text-md-left">
                 <div class="gradReqsMet">
-                  <span v-if="row.item.used">
-                    {{ row.item.gradReqMet ? row.item.gradReqMet : "" }}
-                  </span>
-                  <span v-if="!row.item.used">Not Used</span>
-                  <span v-if="row.item.notCompleted">No Attempt</span>
-                  <span v-if="row.item.projected">Registration</span>
-                  <span v-if="row.item.failed">Not Completed</span>
-                  <span v-if="row.item.duplicate">Repeat</span>
+                  {{row.value}}
                 </div>
               </div>
             </template>
@@ -40,36 +33,7 @@
             <template #cell(gradReqMet)="row">
               <div class="d-flex flex-column text-md-left">
                 <div class="gradReqsMet">
-                  <span v-if="row.item.used">{{
-                    row.item.gradReqMet ? row.item.gradReqMet : ""
-                  }}</span>
-                  <span v-if="!row.item.used">Not Used</span>
-                  <span v-if="row.item.notCompleted">Incomplete Course</span>
-                  <span v-if="row.item.projected">Registration or Interim</span>
-                  <span v-if="row.item.failed">Failed</span>
-                  <span v-if="row.item.duplicate">Repeat</span>
-                  <span v-if="row.item.careerPrep">Career Prep course</span>
-                  <span v-if="row.item.locallyDeveloped"
-                    >Locally Developed course</span
-                  >
-                  <span v-if="row.item.boardAuthorityAuthorized"
-                    >Board/Authority Authorized Course</span
-                  >
-                  <span v-if="row.item.independentDirectedStudies"
-                    >Independent Directed Studies course</span
-                  >
-                  <span v-if="row.item.cutOffCourse"
-                    >Course taken after Program Expiry Date</span
-                  >
-                  <span v-if="row.item.grade10Course"
-                    >Grade 10 ineligible (1995 program)</span
-                  >
-                  <span v-if="row.item.lessCreditCourse"
-                    >Courses with credits &lt; 4 ineligible</span
-                  >
-                  <span v-if="row.item.restricted"
-                    >Course restricted against another course</span
-                  >
+                  {{row.value}}
                 </div>
               </div>
             </template>
@@ -151,6 +115,28 @@ export default {
           label: "Reqts Met",
           sortable: true,
           class: "text-left",
+          sortByFormatted: true,
+          formatter: (value, key, item) => {
+            let formattedValue = value;
+
+            if (!item.used) {
+              formattedValue = "Not Used";
+            }
+            if (item.notCompleted) {
+              formattedValue += ", No Attempt"
+            }
+            if (item.projected) {
+              formattedValue += ", Registration"
+            }
+            if (item.failed) {
+              formattedValue += ", Not Completed"
+            }
+            if (item.duplicate) {
+              formattedValue += ", Repeat"
+            }
+            
+            return formattedValue;
+          },
         },
         {
           key: "gradReqMetDetail",
@@ -211,6 +197,49 @@ export default {
           label: "Reqts Met",
           sortable: true,
           class: "text-left",
+          sortByFormatted: true,
+          formatter: (value, key, item) => {
+            let formattedValue = value;
+
+            if (!item.used) {
+              formattedValue = "Not Used";
+            }
+            if (item.notCompleted) {
+              formattedValue += ", Incomplete Course"
+            }
+            if (item.projected) {
+              formattedValue += ", Registration or Interim"
+            }
+            if (item.failed) {
+              formattedValue += ", Failed"
+            }
+            if (item.duplicate) {
+              formattedValue += ", Repeat"
+            }
+            if (item.careerPrep) {
+              formattedValue += ", Career Prep course"
+            }
+            if (item.locallyDeveloped) {
+              formattedValue += ", Locally Developed course"
+            }
+            if (item.boardAuthorityAuthorized) {
+              formattedValue += ", Board/Authority Authorized Course"
+            }
+            if (item.cutOffCourse) {
+              formattedValue += ", Course taken after Program Expiry Date"
+            }
+            if (item.grade10Course) {
+              formattedValue += ", Grade 10 ineligible (1995 program)"
+            }
+            if (item.lessCreditCourse) {
+              formattedValue += ", Courses with credits &lt; 4 ineligible"
+            }
+            if (item.restricted) {
+              formattedValue += ", Course restricted against another course"
+            }
+
+            return formattedValue;
+          },
         },
         {
           key: "gradReqMetDetail",

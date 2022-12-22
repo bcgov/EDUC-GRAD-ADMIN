@@ -232,30 +232,37 @@ export default {
     },
     findStudentByPen: function () {
       if (this.penInput) {
-        this.searchLoading = true;
-        this.studentSearchResults = [];
-        StudentService.getStudentByPen(this.penInput)
-          .then((response) => {
-            if (response.data) {
-              this.$store.commit("unsetStudent");
-              this.loadStudent(response.data);
-              this.$store.dispatch(
-                "setQuickSearchPen",
-                response.data[0].studentID
-              );
-              this.searchLoading = false;
-              this.penInput = "";
-            }
-          })
-          .catch((error) => {
-            // eslint-disable-next-line
-            console.log("BCHeader: " + error);
-            this.searchLoading = false;
-            this.showNotification(
-              "danger",
-              "Student cannot be found on the GRAD or PEN database"
+        if (this.penInput == this.profile.pen){
+          this.showNotification(
+              "warning",
+              "The entered PEN is the same as the currently loaded student"
             );
-          });
+        } else {
+          this.searchLoading = true;
+          this.studentSearchResults = [];
+          StudentService.getStudentByPen(this.penInput)
+            .then((response) => {
+              if (response.data) {
+                this.$store.commit("unsetStudent");
+                this.loadStudent(response.data);
+                this.$store.dispatch(
+                  "setQuickSearchPen",
+                  response.data[0].studentID
+                );
+                this.searchLoading = false;
+                this.penInput = "";
+              }
+            })
+            .catch((error) => {
+              // eslint-disable-next-line
+              console.log("BCHeader: " + error);
+              this.searchLoading = false;
+              this.showNotification(
+                "danger",
+                "Student cannot be found on the GRAD or PEN database"
+              );
+            });
+        }
       }
     },
     keyHandler: function (e) {
