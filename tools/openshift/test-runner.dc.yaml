@@ -15,7 +15,7 @@ spec:
       containers:
         - name: ${RUNNER_ID}
           image: >-
-            image-registry.apps.silver.devops.gov.bc.ca/${OPENSHIFT_NAMESPACE}/gh-runner-ubuntu-18:latest
+            image-registry.apps.silver.devops.gov.bc.ca/${OPENSHIFT_NAMESPACE}/gh-runner-ubuntu-20:latest
           resources:
             requests:
               cpu: 100m

@@ -8,7 +8,7 @@ inputs:
   runner-is-name:
     description: The name of the imagestream to be created
     required: false
-    default: "gh-runner-ubuntu-18"
+    default: "gh-runner-ubuntu-20"
   image-tags:
     description: Any tag for the image
     required: false
@@ -46,7 +46,7 @@ runs:
     - name: Deploy runner
       id: deploy_runner
       env:
-        RUNNER_IS_NAME: gh-runner-ubuntu-18
+        RUNNER_IS_NAME: gh-runner-ubuntu-20
         IMAGE_TAGS: latest
         REGISTRY_PATH: ghcr.io/bcgov/gh-runner:latest
       run: |
