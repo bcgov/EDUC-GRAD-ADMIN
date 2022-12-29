@@ -32,7 +32,7 @@
     "faker": "^5.5.3",
     "nconf": "^0.11.4",
     "npmlog": "^4.1.2",
-    "testcafe": "^1.17.0"
+    "testcafe": "^15.1.317922"
   },
   "devDependencies": {
     "@testing-library/testcafe": "^4.4.1"
