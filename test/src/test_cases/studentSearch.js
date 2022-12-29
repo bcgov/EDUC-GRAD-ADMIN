@@ -48,7 +48,7 @@ test('Pen Search - good PEN', async t => {
     
     // testing good pen search
     log.info("Testing search for existing student");
-    await t.typeText(searchPage.searchInput, bad_pen)
+    await t.typeText(searchPage.searchInput, test_pen)
            .click(searchPage.searchSubmit);
            //.wait(30000)
            //.expect(penSearchLogger.contains(r => commonUtils.outputStatusCode(r.response.statusCode, api_html_status_threshold)), {timeout: max_acceptable_timeout}).ok();
