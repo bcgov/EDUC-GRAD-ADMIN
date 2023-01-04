@@ -212,8 +212,8 @@ export default {
 
   computed: {
     ...mapGetters({
-      optionalPrograms: "getStudentOptionalPrograms",
-      careerPrograms: "getStudentCareerPrograms",
+      optionalPrograms: "student/getStudentOptionalPrograms",
+      careerPrograms: "student/getStudentCareerPrograms",
     }),
   },
   data: function () {

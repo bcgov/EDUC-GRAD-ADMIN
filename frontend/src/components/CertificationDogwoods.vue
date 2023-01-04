@@ -63,7 +63,7 @@ export default {
   computed: {
     ...mapGetters({
       certificates: "getStudentCertificates",
-      studentGradStatus: "getStudentGradStatus",
+      studentGradStatus: "student/getStudentGradStatus",
     }),
   },
   methods: {

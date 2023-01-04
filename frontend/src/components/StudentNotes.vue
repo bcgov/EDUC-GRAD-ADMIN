@@ -97,8 +97,8 @@ export default {
   name: "StudentNotes",
   computed: {
     ...mapGetters({
-      studentNotes: "getStudentNotes",
-      profile: "getStudentProfile",
+      studentNotes: "student/getStudentNotes",
+      profile: "student/getStudentProfile",
       username: "getUsername",
       userInfo: "auth/userInfo"
     }),

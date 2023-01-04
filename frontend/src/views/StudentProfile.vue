@@ -688,26 +688,24 @@ export default {
   },
   computed: {
     ...mapGetters({
-      profile: "getStudentProfile",
-      courses: "getStudentCourses",
-      assessments: "getStudentAssessments",
-      exams: "getStudentExams",
-      studentHasCourses: "studentHasCourses",
-      studentHasAssessments: "studentHasAssessments",
-      studentHasNotes: "studentHasNotes",
-      gradInfo: "getStudentGraduationCreationAndUpdate",
-      hasGradStatus: "studentHasGradStatus",
-      studentGradStatus: "getStudentGradStatus",
-      studentId: "getStudentId",
-      studentPen: "getStudentPen",
-      studentInfo: "getStudentProfile",
-      studentNotes: "getStudentNotes",
-      optionalPrograms: "getStudentOptionalPrograms",
+      profile: "student/getStudentProfile",
+      courses: "student/getStudentCourses",
+      assessments: "student/getStudentAssessments",
+      exams: "student/getStudentExams",
+      studentHasCourses: "student/studentHasCourses",
+      gradInfo: "student/getStudentGraduationCreationAndUpdate",
+      hasGradStatus: "student/studentHasGradStatus",
+      studentGradStatus: "student/getStudentGradStatus",
+      studentId: "student/getStudentId",
+      studentPen: "student/getStudentPen",
+      studentInfo: "student/getStudentProfile",
+      studentNotes: "student/getStudentNotes",
+      optionalPrograms: "student/getStudentOptionalPrograms",
       ungradReasons: "app/getUngradReasons",
-      studentUngradReasons: "getStudentUngradReasons",
-      gradCourses: "gradStatusCourses",
-      studentHistory: "getStudentAuditHistory",
-      optionalProgramHistory: "getStudentOptionalProgramAuditHistory",
+      studentUngradReasons: "student/getStudentUngradReasons",
+      gradCourses: "student/gradStatusCourses",
+      studentHistory: "student/getStudentAuditHistory",
+      optionalProgramHistory: "student/getStudentOptionalProgramAuditHistory",
       quickSearchPen: "getQuickSearchPen",
     }),
   },
@@ -759,7 +757,7 @@ export default {
         .then(() => {
           StudentService.getStudentUngradReasons(this.studentId)
             .then((response) => {
-              this.$store.dispatch("setStudentUngradReasons", response.data);
+              this.$store.dispatch("student/setStudentUngradReasons", response.data);
             })
             .catch((error) => {
               if (error.response.status) {
@@ -771,7 +769,7 @@ export default {
             });
           StudentService.getGraduationStatus(this.studentId)
             .then((response) => {
-              this.$store.dispatch("setStudentGradStatus", response.data);
+              this.$store.dispatch("student/setStudentGradStatus", response.data);
               this.loadStudentHistory(this.studentId);
               this.loadStudentOptionalProgramHistory(this.studentId);
               this.loadStudentOptionalPrograms(this.studentId);
@@ -807,7 +805,7 @@ export default {
     getStudentReportsAndCertificates(id, pen) {
       GraduationReportService.getStudentCertificates(id)
         .then((response) => {
-          this.$store.dispatch("setStudentCertificates", response.data);
+          this.$store.dispatch("student/setStudentCertificates", response.data);
         })
         .catch((error) => {
           if (error.response.data.code == "404") {
@@ -825,7 +823,7 @@ export default {
         });
       GraduationReportService.getStudentReports(id)
         .then((response) => {
-          this.$store.dispatch("setStudentReports", response.data);
+          this.$store.dispatch("student/setStudentReports", response.data);
         })
         .catch((error) => {
           if (error.response.data.code == "404") {
@@ -843,7 +841,7 @@ export default {
         });
       GraduationReportService.getStudentTranscripts(id)
         .then((response) => {
-          this.$store.dispatch("setStudentTranscripts", response.data);
+          this.$store.dispatch("student/setStudentTranscripts", response.data);
         })
         .catch((error) => {
           if (error.response.data.code == "404") {
@@ -861,7 +859,7 @@ export default {
         });
       GraduationReportService.getStudentXmlReport(pen)
         .then((response) => {
-          this.$store.dispatch("setStudentXmlReport", response.data);
+          this.$store.dispatch("student/setStudentXmlReport", response.data);
         })
         .catch((error) => {
           if (error.response.status == 404) {
@@ -879,7 +877,7 @@ export default {
     reloadGradStatus() {
       StudentService.getGraduationStatus(this.studentId)
         .then((res) => {
-          this.$store.dispatch("setStudentGradStatus", res.data);
+          this.$store.dispatch("student/setStudentGradStatus", res.data);
         })
         .catch((error) => {
           if (error.res.status) {
@@ -922,7 +920,7 @@ export default {
           );
           StudentService.getGraduationStatus(this.studentId)
             .then((res) => {
-              this.$store.dispatch("setStudentGradStatus", res.data);
+              this.$store.dispatch("student/setStudentGradStatus", res.data);
               this.tabLoading = false;
             })
             .catch((error) => {
@@ -1017,7 +1015,7 @@ export default {
         });
     },
     closeRecord: function () {
-      this.$store.commit("unsetStudent");
+      this.$store.commit("student/unsetStudent");
     },
     handleResize() {
       this.window.width = window.innerWidth;
@@ -1064,7 +1062,7 @@ export default {
                 }
               });
           }
-          this.$store.dispatch("setStudentProfile", data);
+          this.$store.dispatch("student/setStudentProfile", data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1079,7 +1077,7 @@ export default {
     loadAssessments() {
       AssessmentService.getStudentAssessment(this.pen)
         .then((response) => {
-          this.$store.dispatch("setStudentAssessments", response.data);
+          this.$store.dispatch("student/setStudentAssessments", response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1094,7 +1092,7 @@ export default {
     loadGraduationStatus(studentIdFromURL) {
       StudentService.getGraduationStatus(studentIdFromURL)
         .then((response) => {
-          this.$store.dispatch("setStudentGradStatus", response.data);
+          this.$store.dispatch("student/setStudentGradStatus", response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1110,7 +1108,7 @@ export default {
       StudentService.getGraduationStatusOptionalPrograms(studentIdFromURL)
         .then((response) => {
           this.$store.dispatch(
-            "setStudentGradStatusOptionalPrograms",
+            "student/setStudentGradStatusOptionalPrograms",
             response.data
           );
         })
@@ -1127,7 +1125,7 @@ export default {
     loadCareerPrograms(studentIdFromURL) {
       StudentService.getStudentCareerPrograms(studentIdFromURL)
         .then((response) => {
-          this.$store.dispatch("setStudentCareerPrograms", response.data);
+          this.$store.dispatch("student/setStudentCareerPrograms", response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1142,7 +1140,7 @@ export default {
     loadStudentCourseAchievements() {
       CourseService.getStudentCourseAchievements(this.pen)
         .then((response) => {
-          this.$store.dispatch("setStudentCourses", response.data);
+          this.$store.dispatch("student/setStudentCourses", response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1157,7 +1155,7 @@ export default {
     loadStudentExamDetails() {
       CourseService.getStudentExamDetails(this.pen)
         .then((response) => {
-          this.$store.dispatch("setStudentExams", response.data);
+          this.$store.dispatch("student/setStudentExams", response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1172,7 +1170,7 @@ export default {
     loadStudentNotes(studentIdFromURL) {
       StudentService.getStudentNotes(studentIdFromURL)
         .then((response) => {
-          this.$store.dispatch("setStudentNotes", response.data);
+          this.$store.dispatch("student/setStudentNotes", response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1187,7 +1185,7 @@ export default {
     loadStudentUngradReasons(studentIdFromURL) {
       StudentService.getStudentUngradReasons(studentIdFromURL)
         .then((response) => {
-          this.$store.dispatch("setStudentUngradReasons", response.data);
+          this.$store.dispatch("student/setStudentUngradReasons", response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1202,7 +1200,7 @@ export default {
     loadStudentHistory(studentIdFromURL) {
       StudentService.getStudentHistory(studentIdFromURL)
         .then((response) => {
-          this.$store.dispatch("setStudentAuditHistory", response.data);
+          this.$store.dispatch("student/setStudentAuditHistory", response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1218,7 +1216,7 @@ export default {
       StudentService.getStudentOptionalProgramHistory(studentIdFromURL)
         .then((response) => {
           this.$store.dispatch(
-            "setStudentOptionalProgramsAuditHistory",
+            "student/setStudentOptionalProgramsAuditHistory",
             response.data
           );
         })

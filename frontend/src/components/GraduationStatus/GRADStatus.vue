@@ -740,11 +740,11 @@ export default {
       return this.studentGradStatus.recalculateProjectedGrad;
     },
     ...mapGetters({
-      optionalPrograms: "getStudentOptionalPrograms",
+      optionalPrograms: "student/getStudentOptionalPrograms",
       programOptions: "app/getProgramOptions",
       studentStatusOptions: "app/getStudentStatusOptions",
-      studentId: "getStudentId",
-      studentGradStatus: "getStudentGradStatus",
+      studentId: "student/getStudentId",
+      studentGradStatus: "student/getStudentGradStatus",
     }),
   },
   data() {

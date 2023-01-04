@@ -9,7 +9,7 @@
           </div>
         </b-sidebar>
             (<a>{{ roles }}</a>) |
-            <a :href='logout' class="text-white">Logout</a>
+            <a :href='logoutRoute' class="text-white">Logout</a>
       </div>
       <div v-else-if="!isAuthenticated">
         <a :href='login'>Login</a>
@@ -40,7 +40,7 @@ export default {
   data() {
       return {
         login: Routes.LOGIN,
-        logout: Routes.LOGOUT,
+        logoutRoute: Routes.LOGOUT,
         host: location.protocol + "//" + location.host,
       }
   },

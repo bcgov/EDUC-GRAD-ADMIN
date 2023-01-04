@@ -465,16 +465,15 @@ export default {
     },
     ...mapGetters({
       savedAdvSearchInput: "getAdvancedSearchProps",
-      profile: "getStudentProfile",
-      courses: "getStudentCourses",
-      exams: "getStudentExams",
-      gradStatus: "getStudentGradStatus",
-      hasGradStatus: "studentHasGradStatus",
+      profile: "student/getStudentProfile",
+      courses: "student/getStudentCourses",
+      exams: "student/getStudentExams",
+      gradStatus: "student/getStudentGradStatus",
     }),
   },
   methods: {
     closeRecord: function () {
-        this.$store.commit("unsetStudent");
+        this.$store.commit("student/unsetStudent");
     },
     keyHandler: function (e) {
       if (e.keyCode === 13) {

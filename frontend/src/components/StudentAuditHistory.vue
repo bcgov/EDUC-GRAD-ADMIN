@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <b-card no-body>
-      <b-tabs :pills="smallScreen" v-model="selectedTab" card>
+      <b-tabs card>
         <b-tab title="Student Change History">
           <DisplayTable
             :items="studentChangeHighlight"
@@ -149,11 +149,11 @@ export default {
   props: {},
   computed: {
     ...mapGetters({
-      studentId: "getStudentId",
-      studentHistory: "getStudentAuditHistory",
-      optionalProgramHistory: "getStudentOptionalProgramAuditHistory",
-      studentUngradReasons: "getStudentUngradReasons",
-      studentNotes: "getStudentNotes",
+      studentId: "student/getStudentId",
+      studentHistory: "student/getStudentAuditHistory",
+      optionalProgramHistory: "student/getStudentOptionalProgramAuditHistory",
+      studentUngradReasons: "student/getStudentUngradReasons",
+      studentNotes: "student/getStudentNotes",
     }),
   },
   data: function () {

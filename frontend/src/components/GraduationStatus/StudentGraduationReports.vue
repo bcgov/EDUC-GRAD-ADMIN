@@ -92,11 +92,11 @@ export default {
   props: {},
   computed: {
     ...mapGetters({
-      transcripts: "getStudentTranscripts",
-      reports: "getStudentReports",
-      xmlReports: "getStudentXmlReports",
-      studentGradStatus: "getStudentGradStatus",
-      optionalPrograms: "getStudentOptionalPrograms",
+      transcripts: "student/getStudentTranscripts",
+      reports: "student/getStudentReports",
+      xmlReports: "student/getStudentXmlReports",
+      studentGradStatus: "student/getStudentGradStatus",
+      optionalPrograms: "student/getStudentOptionalPrograms",
     }),
   },
   methods: {

@@ -100,7 +100,7 @@ export default {
   props: {},
   computed: {
     ...mapGetters({
-      assessments: "getStudentAssessments",
+      assessments: "student/getStudentAssessments",
     }),
   },
   data: function () {
