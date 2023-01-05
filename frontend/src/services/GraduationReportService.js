@@ -4,6 +4,9 @@ export default {
   getAchievementReport(id) {
     return ApiService.apiAxios.get('/api/v1/graduationreports/studentreport/?studentID=' + id + '&reportType=ACHV')
   },
+  getAllReportsForSchool(id) {
+    return ApiService.apiAxios.get('/api/v1/graduationreports/schoolreport/' + id);
+  },
   getStudentTranscripts(id) {
     return ApiService.apiAxios.get('/api/v1/graduationreports/studenttranscript/' + id)
   },
@@ -29,7 +32,7 @@ export default {
     return ApiService.apiAxios.get('/api/v1/graduationreports/documentstatus')
   },
   getStudentXmlReport(id){
-    return ApiService.apiAxios.get('/api/v1/graduate/report/transcript/' + id + '?interim=Interim')
+    return ApiService.apiAxios.get('/api/v1/graduate/report/transcript/' + id + '?interim=Interim&preview=true')
   }, 
   getDigitalSignatures() {
     return ApiService.apiAxios.get('/api/v1/reports/signatures/get/all')

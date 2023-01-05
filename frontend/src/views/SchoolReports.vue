@@ -80,7 +80,7 @@
 
 <script>
   import DisplayTable from '@/components/DisplayTable.vue';
-  import GraduationCommonService from '@/services/GraduationCommonService.js';
+  import GraduationReportService from '@/services/GraduationReportService.js';
   import sharedMethods from '../sharedMethods';
   import { mapGetters } from "vuex";
 
@@ -171,7 +171,7 @@
           this.searchLoading = false;
           this.searchMessage = "Enter a school mincode to view reports."
         } else {
-          GraduationCommonService.getAllReportsForSchool(this.mincode.value + (this.mincode.contains ? "*" : ""), this.token)
+          GraduationReportService.getAllReportsForSchool(this.mincode.value + (this.mincode.contains ? "*" : ""), this.token)
           .then(
             (response) => {
               this.reports = response.data;
