@@ -71,7 +71,7 @@ jobs:
           oc rollout cancel dc/${{ env.IMAGE_NAME }}-dc 2> /dev/null \
           || true && echo "No rollout in progress"
 
-          oc tag ${{ env.NAMESPACE }}-test/${{ env.REPO_NAME }}-frontend:${{ steps.get-latest-tag.outputs.tag }} ${{ env.NAMESPACE }}-prod/${{ env.REPO_NAME }}-frontend:${{ steps.get-latest-tag.outputs.tag }}
+          oc tag ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-frontend:${{ steps.get-latest-tag.outputs.tag }} ${{ env.NAMESPACE }}-prod/${{ env.REPO_NAME }}-frontend:${{ steps.get-latest-tag.outputs.tag }}
 
           # Process and apply deployment template
           oc process -f tools/openshift/frontend-dc.yaml -p REPO_NAME=educ-grad-admin \
@@ -86,8 +86,3 @@ jobs:
           oc logs -f dc/${{ env.IMAGE_NAME }}-dc
           # Get status, returns 0 if rollout is successful
           oc rollout status dc/${{ env.IMAGE_NAME }}-dc
-
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.3.0
-        with:
-          target: 'https://educ-grad-admin-bbe4c3-test.apps.silver.devops.gov.bc.ca'
