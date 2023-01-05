@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-alert :show="batchTypeDesc != ''" variant="info">
-      {{batchTypeDesc}}
+      {{ batchTypeDesc }}
     </b-alert>
     <b-overlay :show="processingBatch">
       <div class="row">
@@ -133,24 +133,26 @@
             "
             class="p-0 mt-3"
           >
-
-          <div class="p-0 mt-3 col-3" v-if="batch.details['who'] == 'District'">
-            <label class="font-weight-bold">School Category</label>
-            <b-form-select
-              id="inline-form-select-type"
-              class="col-12 my-2"
-              :options="[
-                { text: 'Choose...', value: null },
-                { text: '01 Public', value: '01' },
-                { text: '02 Independent', value: '02' },
-                { text: '03 Federally Operated Band School', value: '03' },
-                { text: '04 Yukon School', value: '04' },
-                { text: '09 Offshore', value: '09' },
-              ]"
-              :value="batch.districts['categoryCode']"
-              @change="editBatchJob('categoryCode', $event)"
-            ></b-form-select>
-          </div>
+            <div
+              class="p-0 mt-3 col-3"
+              v-if="batch.details['who'] == 'District'"
+            >
+              <label class="font-weight-bold">School Category</label>
+              <b-form-select
+                id="inline-form-select-type"
+                class="col-12 my-2"
+                :options="[
+                  { text: 'Choose...', value: null },
+                  { text: '01 Public', value: '01' },
+                  { text: '02 Independent', value: '02' },
+                  { text: '03 Federally Operated Band School', value: '03' },
+                  { text: '04 Yukon School', value: '04' },
+                  { text: '09 Offshore', value: '09' },
+                ]"
+                :value="batch.districts['categoryCode']"
+                @change="editBatchJob('categoryCode', $event)"
+              ></b-form-select>
+            </div>
 
             <label class="font-weight-bold p-0 m-0 row">Select Students</label>
 
@@ -816,7 +818,9 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
           size="sm"
           variant="primary"
           class="btn btn-primary w-100 float-right col-2 p-2"
-          :disabled="(batch.details['who'] == '')||(batch.details['who'] == 'Choose...')"
+          :disabled="
+            batch.details['who'] == '' || batch.details['who'] == 'Choose...'
+          "
         >
           Download
         </b-button>
@@ -826,15 +830,6 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
           size="sm"
           variant="primary"
           class="btn btn-primary w-100 float-right col-2 p-2"
-          :disabled="(batch.details['what'] == 'DISTRUN') ||  
-          (batch.details['what'] == 'DISTRUN_SUPP') ||
-          (batch.details['what'] == 'NONGRADRUN') ||
-          (batch.details['what'] == '') ||
-          (batch.details['who'] == '') ||
-          (batch.details['who'] == 'Choose...') ||
-          (batch.details['credential'] == '')||
-          (batch.details['where'] == '')
-          "
         >
           Schedule/Run Batch
         </b-button>
@@ -1025,8 +1020,8 @@ export default {
       transcriptTypes: [],
       gradDateFrom: "",
       gradDateTo: "",
-      batchTypeDesc:"",
-      disableButton:false,
+      batchTypeDesc: "",
+      disableButton: false,
       formElements: {
         PSIRUN: {
           group: [
@@ -1044,10 +1039,8 @@ export default {
           psiYear: true,
           psiTransmissionMode: true,
         },
-        DISTRUN_SUPP:{
-        },
-        NONGRADRUN:{ 
-        },
+        DISTRUN_SUPP: {},
+        NONGRADRUN: {},
         DISTRUN: {
           message:
             "This is the monthly distribution run and is not currently available for Users to run manually.",
@@ -1294,6 +1287,7 @@ export default {
       //Use the parents method to close and clear a batch job by ID
       this.$emit("cancelBatchJob", id);
     },
+
     addValueToTypeInBatchId(id, type, value, valueIndex) {
       this.validationMessage = "";
       if (type == "schools") {
@@ -1498,12 +1492,12 @@ export default {
         let id = this.jobId;
         let batchDetail = this.batch;
         //change the value
-        if (type == "what" && batchDetail.details[type] != event ) {
+        if (type == "what" && batchDetail.details[type] != event) {
           for (const batchType of this.batchTypes) {
-            if(batchType.code == event) {
+            if (batchType.code == event) {
               this.batchTypeDesc = batchType.description;
-            } 
-          } 
+            }
+          }
           this.clearBatchDetails(id);
           if (event == "PSIRUN") {
             batchDetail.details["who"] = "PSI";
@@ -1593,7 +1587,7 @@ export default {
     },
     requestId() {
       return this.jobId.replace("job-", "");
-    }, 
+    },
   },
 };
 </script>
