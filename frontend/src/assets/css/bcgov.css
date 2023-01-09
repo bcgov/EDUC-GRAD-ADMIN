@@ -1,6 +1,9 @@
 /* Updates BC Gov Bootstrap theme with new design system https://developer.gov.bc.ca/Design-System */
 
 body {
+  display: flex;
+  flex-flow: column nowrap;
+  min-height:100%;
   color:#313132;
   size: 16px;
 }
