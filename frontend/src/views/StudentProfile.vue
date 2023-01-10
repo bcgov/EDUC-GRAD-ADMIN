@@ -543,7 +543,9 @@
               size="sm"
               variant="primary"
               :disabled="
-                ungradReasonSelected == 'OTH' && ungradReasonDesc.length == 0
+                (ungradReasonSelected == 'OTH' &&
+                  ungradReasonDesc.length == 0) ||
+                ungradReasonSelected == ''
               "
               @click="
                 hide('ungraduate-student-modal');
