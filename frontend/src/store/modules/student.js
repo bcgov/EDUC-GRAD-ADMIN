@@ -229,6 +229,9 @@ export default {
           "pen": state.student.profile.pen
         };
       },
+      getStudentCertificates(state){
+        return state.student.certificates;
+    },
       getStudentPen(state) {
         return state.student.profile.pen;
       },

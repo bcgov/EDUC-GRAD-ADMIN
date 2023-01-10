@@ -75,7 +75,7 @@ export default {
       studentStatusOptions: "app/getStudentStatusOptions",
       studentId: "student/getStudentId",
       username: "getUsername",
-      certificates: "getStudentCertificates",
+      certificates: "student/getStudentCertificates",
       reports: "student/getStudentReports",
       transcripts: "student/getStudentTranscripts",
     }),

@@ -62,7 +62,7 @@ export default {
   props: {},
   computed: {
     ...mapGetters({
-      certificates: "getStudentCertificates",
+      certificates: "student/getStudentCertificates",
       studentGradStatus: "student/getStudentGradStatus",
     }),
   },
