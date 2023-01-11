@@ -29,6 +29,13 @@ env:
   TAG: "latest"
   TARGET_ENV: "test"
 
+  MIN_CPU: "50m"
+  MAX_CPU: "100m"
+  MIN_MEM: "200Mi"
+  MAX_MEM: "250Mi"
+  MIN_REPLICAS: "3"
+  MAX_REPLICAS: "3"
+
   # SITE_URL should have no scheme or port. It will be prepended with https://
   HOST_ROUTE: ${{ secrets.SITE_URL }}
 
@@ -76,8 +83,7 @@ jobs:
           # Process and apply deployment template
           oc process -f tools/openshift/frontend-dc.yaml -p REPO_NAME=educ-grad-admin \
           -p HOST_ROUTE=educ-grad-admin-bbe4c3-test.apps.silver.devops.gov.bc.ca -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
-          -p APP_NAME=educ-grad-admin -p TAG=${{ steps.get-latest-tag.outputs.tag }} -p MIN_REPLICAS=2 -p MAX_REPLICAS=3 -p MIN_CPU=50m -p MAX_CPU=100m \
-          -p MIN_MEM=200Mi -p MAX_MEM=250Mi | oc apply -n bbe4c3-test -f -
+          -p APP_NAME=educ-grad-admin -p TAG=${{ steps.get-latest-tag.outputs.tag }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} | oc apply -n bbe4c3-test -f -
           
           # Start rollout (if necessary) and follow it
           oc rollout latest dc/${{ env.IMAGE_NAME }}-dc 2> /dev/null \
