@@ -5,14 +5,12 @@ labels:
   template: "${REPO_NAME}-template"
 metadata:
   name: "${REPO_NAME}-frontend"
-  creationTimestamp:
 objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftNewApp
-    creationTimestamp:
     labels:
       app: "${APP_NAME}"
       app.kubernetes.io/part-of: GRAD-ADMIN
