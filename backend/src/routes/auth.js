@@ -146,7 +146,8 @@ router.get('/user', passport.authenticate('jwt', {session: false}), (req, res) =
     userFullName: userToken['name'],
     userName: userToken['idir_username'],
     userGuid: userToken['idir_guid'].toUpperCase(),
-    userRoles: userToken.realm_access.roles
+    userRoles: userToken.realm_access.roles,
+    userAccess: userToken.scope
   };
 
   if (userName.userName && userName.userGuid) {
