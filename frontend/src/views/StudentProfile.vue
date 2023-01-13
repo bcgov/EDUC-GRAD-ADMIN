@@ -689,6 +689,14 @@ export default {
     };
   },
   computed: {
+    ...mapGetters("auth", [
+      "roles",
+      "isAuthenticated",
+      "loginError",
+      "isLoading",
+      "userInfo",
+    ]),
+    ...mapGetters("useraccess", ["userAccess"]),
     ...mapGetters({
       profile: "student/getStudentProfile",
       courses: "student/getStudentCourses",

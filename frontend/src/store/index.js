@@ -143,7 +143,6 @@
           // eslint-disable-next-line
           console.log(error);
         });
-      },      
     },
     getters: {
   
