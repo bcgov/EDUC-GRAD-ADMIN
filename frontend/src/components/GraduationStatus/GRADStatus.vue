@@ -11,7 +11,10 @@
               href="#"
               class="edit"
               disabled
-              v-if="studentGradStatus.studentStatus === 'MER'"
+              v-if="
+                studentGradStatus.studentStatus === 'MER' ||
+                !userAccess.includes('UPDATE_GRAD_GRADUATION_STATUS')
+              "
               v-on:click="editGradStatus"
               size="sm"
               variant="primary"
@@ -32,7 +35,10 @@
           <div v-if="showEdit">
             <b-button-group>
               <b-button
-                :disabled="disableSaveButton"
+                :disabled="
+                  disableSaveButton ||
+                  !userAccess.includes('UPDATE_GRAD_GRADUATION_STATUS')
+                "
                 v-on:click="saveGraduationStatus(studentId)"
                 size="sm"
                 variant="primary"
@@ -147,7 +153,8 @@
           <b-alert show variant="warning" class="p-3 mb-1">
             <h4 class="alert-heading">Student status: Archived</h4>
             <p class="locked-message">
-              This student is not active. Re-activate by setting their status to "Current" if they are currently attending school 
+              This student is not active. Re-activate by setting their status to
+              "Current" if they are currently attending school
             </p>
           </b-alert>
         </div>
@@ -715,6 +722,14 @@ export default {
   name: "GRADStatus",
   computed: {
     ...mapGetters("auth", ["roles"]),
+    ...mapGetters("useraccess", ["userAccess"]),
+    ...mapGetters({
+      optionalPrograms: "getStudentOptionalPrograms",
+      programOptions: "app/getProgramOptions",
+      studentStatusOptions: "app/getStudentStatusOptions",
+      studentId: "getStudentId",
+      studentGradStatus: "getStudentGradStatus",
+    }),
     studentGradeChange() {
       return this.editedGradStatus.studentGrade;
     },
@@ -739,13 +754,6 @@ export default {
     recalculateProjectedGradFlag() {
       return this.studentGradStatus.recalculateProjectedGrad;
     },
-    ...mapGetters({
-      optionalPrograms: "getStudentOptionalPrograms",
-      programOptions: "app/getProgramOptions",
-      studentStatusOptions: "app/getStudentStatusOptions",
-      studentId: "getStudentId",
-      studentGradStatus: "getStudentGradStatus",
-    }),
   },
   data() {
     return {
