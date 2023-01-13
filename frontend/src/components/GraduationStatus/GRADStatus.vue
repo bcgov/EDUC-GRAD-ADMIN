@@ -754,7 +754,6 @@ export default {
     recalculateProjectedGradFlag() {
       return this.studentGradStatus.recalculateProjectedGrad;
     },
-<<<<<<< HEAD
     ...mapGetters({
       optionalPrograms: "student/getStudentOptionalPrograms",
       programOptions: "app/getProgramOptions",
@@ -762,8 +761,6 @@ export default {
       studentId: "student/getStudentId",
       studentGradStatus: "student/getStudentGradStatus",
     }),
-=======
->>>>>>> 4b332d813074ed428431cac2ac28a708fd91270e
   },
   data() {
     return {

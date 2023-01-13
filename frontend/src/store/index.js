@@ -1,6 +1,7 @@
   import Vue from "vue";
   import Vuex from "vuex";
   import batchprocessing from '@/store/modules/batchprocessing.js';
+  import useraccess from '@/store/modules/access.js';
   import app from '@/store/modules/app.js';
   import student from '@/store/modules/student.js';
   import auth from '@/store/modules/auth.js';
@@ -143,6 +144,7 @@
           // eslint-disable-next-line
           console.log(error);
         });
+      }
     },
     getters: {
   
@@ -175,6 +177,7 @@
       student,
       app,
       auth,
-      batchprocessing
+      batchprocessing,
+      useraccess
     }
   })
