@@ -47,7 +47,7 @@ async function deleteStudentAPI(req, res) {
   const token = getBackendToken(req);
   try {  
     const url = `${config.get('server:studentAPIURL')}/student` + req.url;
-    const data = await deleteData(token, url);
+    const data = await deleteData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
       return errorResponse(res);
