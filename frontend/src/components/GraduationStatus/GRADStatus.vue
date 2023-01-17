@@ -3,7 +3,7 @@
     <b-card no-body header="GRAD status">
       <b-card-text class="p-3">
         <b-button-group
-          v-if="this.roles.includes('Administrator')"
+          v-if="allowUpdateGradStatus"
           class="gradstatus-actions float-right"
         >
           <div v-if="!showEdit">
@@ -11,10 +11,7 @@
               href="#"
               class="edit"
               disabled
-              v-if="
-                studentGradStatus.studentStatus === 'MER' ||
-                !userAccess.includes('UPDATE_GRAD_GRADUATION_STATUS')
-              "
+              v-if="studentGradStatus.studentStatus === 'MER'"
               v-on:click="editGradStatus"
               size="sm"
               variant="primary"
@@ -35,10 +32,7 @@
           <div v-if="showEdit">
             <b-button-group>
               <b-button
-                :disabled="
-                  disableSaveButton ||
-                  !userAccess.includes('UPDATE_GRAD_GRADUATION_STATUS')
-                "
+                :disabled="disableSaveButton"
                 v-on:click="saveGraduationStatus(studentId)"
                 size="sm"
                 variant="primary"
@@ -722,7 +716,7 @@ export default {
   name: "GRADStatus",
   computed: {
     ...mapGetters("auth", ["roles"]),
-    ...mapGetters("useraccess", ["userAccess"]),
+    ...mapGetters("useraccess", ["allowUpdateGradStatus"]),
     ...mapGetters({
       optionalPrograms: "getStudentOptionalPrograms",
       programOptions: "app/getProgramOptions",
