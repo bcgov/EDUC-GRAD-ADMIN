@@ -14,7 +14,7 @@ async function getDistributionAPI(req, res) {
   const token = getBackendToken(req);
   try {
     const url = `${config.get('server:distributionAPIURL')}/distribute` + req.url;
-    const data = await getData(token, url);
+    const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
     if(e.data.message){
