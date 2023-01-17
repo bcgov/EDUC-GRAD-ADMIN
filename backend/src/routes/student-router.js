@@ -32,7 +32,7 @@ async function postStudentAPI(req, res) {
   const token = getBackendToken(req);
   try {  
     const url = `${config.get('server:studentAPIURL')}/student` + req.url;
-    const data = await postData(token, url, req.body );
+    const data = await postData(token, url, req.body, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
     if(e.data.messages){
