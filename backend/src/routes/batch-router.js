@@ -57,7 +57,7 @@ async function putBatchInfoAPI(req, res) {
   const token = getBackendToken(req);
   try {
     const url = `${config.get('server:batchAPIURL')}/batch` + req.url;
-    const data = await putData(token, {}, url);
+    const data = await putData(token, {}, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
     if(e.data.message){
