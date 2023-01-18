@@ -14,7 +14,7 @@
             <template #cell(gradReqMet)="row">
               <div class="d-flex flex-column text-md-left">
                 <div class="gradReqsMet">
-                  {{row.value}}
+                  {{ row.value }}
                 </div>
               </div>
             </template>
@@ -33,7 +33,7 @@
             <template #cell(gradReqMet)="row">
               <div class="d-flex flex-column text-md-left">
                 <div class="gradReqsMet">
-                  {{row.value}}
+                  {{ row.value }}
                 </div>
               </div>
             </template>
@@ -123,18 +123,18 @@ export default {
               formattedValue = "Not Used";
             }
             if (item.notCompleted) {
-              formattedValue += ", No Attempt"
+              formattedValue += ", No Attempt";
             }
             if (item.projected) {
-              formattedValue += ", Registration"
+              formattedValue += ", Registration";
             }
             if (item.failed) {
-              formattedValue += ", Not Completed"
+              formattedValue += ", Not Completed";
             }
             if (item.duplicate) {
-              formattedValue += ", Repeat"
+              formattedValue += ", Repeat";
             }
-            
+
             return formattedValue;
           },
         },
@@ -205,37 +205,37 @@ export default {
               formattedValue = "Not Used";
             }
             if (item.notCompleted) {
-              formattedValue += ", Incomplete Course"
+              formattedValue += ", Incomplete Course";
             }
             if (item.projected) {
-              formattedValue += ", Registration or Interim"
+              formattedValue += ", Registration or Interim";
             }
             if (item.failed) {
-              formattedValue += ", Failed"
+              formattedValue += ", Failed";
             }
             if (item.duplicate) {
-              formattedValue += ", Repeat"
+              formattedValue += ", Repeat";
             }
             if (item.careerPrep) {
-              formattedValue += ", Career Prep course"
+              formattedValue += ", Career Prep course";
             }
             if (item.locallyDeveloped) {
-              formattedValue += ", Locally Developed course"
+              formattedValue += ", Locally Developed course";
             }
             if (item.boardAuthorityAuthorized) {
-              formattedValue += ", Board/Authority Authorized Course"
+              formattedValue += ", Board/Authority Authorized Course";
             }
             if (item.cutOffCourse) {
-              formattedValue += ", Course taken after Program Expiry Date"
+              formattedValue += ", Course taken after Program Expiry Date";
             }
             if (item.grade10Course) {
-              formattedValue += ", Grade 10 ineligible (1995 program)"
+              formattedValue += ", Grade 10 ineligible (1995 program)";
             }
             if (item.lessCreditCourse) {
-              formattedValue += ", Courses with credits &lt; 4 ineligible"
+              formattedValue += ", Courses with credits < 4 ineligible";
             }
             if (item.restricted) {
-              formattedValue += ", Course restricted against another course"
+              formattedValue += ", Course restricted against another course";
             }
 
             return formattedValue;
