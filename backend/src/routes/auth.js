@@ -117,11 +117,19 @@ router.post('/refresh', [
 router.get('/token', auth.refreshJWT, (req, res) => {
   const isAuthorizedUser = isValidStaffUserWithRoles(req);
   if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
+    if (req.session?.passport?.user?._json) {
+      const correlationID = uuidv4();
+      req.session.correlationID = correlationID;
+      const correlation = {
+        user_guid: req.session?.passport?.user?._json.idir_guid,
+        correlation_id: correlationID
+      };
+      log.info('created correlation id and stored in session', correlation);
+    }
     const responseJson = {
       jwtFrontend: req['user'].jwtFrontend,
       isAuthorizedUser: isAuthorizedUser
     };
-    req.session.correlationID = uuidv4();
     res.status(HttpStatus.OK).json(responseJson);
   } else {
     res.status(HttpStatus.UNAUTHORIZED).json({
