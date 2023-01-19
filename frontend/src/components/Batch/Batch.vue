@@ -1,5 +1,7 @@
 <template>
   <div>
+    {{ batchIsValid }}
+
     <b-alert :show="batchTypeDesc != ''" variant="info">
       {{ batchTypeDesc }}
     </b-alert>
@@ -25,7 +27,7 @@
               id="inline-form-select-audience"
               class="mb-2 mr-sm-2 mb-sm-0"
               :options="[
-                { text: 'Choose...', value: null },
+                { text: 'Choose...', value: '' },
                 {
                   text: 'Blank certificate print',
                   value: 'Blank certificate print',
@@ -142,7 +144,7 @@
                 id="inline-form-select-type"
                 class="col-12 my-2"
                 :options="[
-                  { text: 'Choose...', value: null },
+                  { text: 'Choose...', value: '' },
                   { text: '01 Public', value: '01' },
                   { text: '02 Independent', value: '02' },
                   { text: '03 Federally Operated Band School', value: '03' },
@@ -396,7 +398,7 @@
               id="inline-form-select-type"
               class="col-3"
               :options="[
-                { text: 'Choose...', value: null },
+                { text: 'Choose...', value: '' },
                 { text: 'Paper', value: 'PAPER' },
                 { text: 'FTP', value: 'FTP' },
               ]"
@@ -506,13 +508,10 @@
             class="mt-3 px-0"
             header="Include Students"
           >
-            <b-alert
-              dismissible
-              v-if="validationMessage"
-              :show="validationMessage"
-              variant="danger"
-              >{{ validationMessage }}</b-alert
-            >
+            {{ validationMessage }}
+            <b-alert dismissible v-if="validationMessage" variant="danger">{{
+              validationMessage
+            }}</b-alert>
             <div class="row col-12 border-bottom mb-3">
               <div class="col-2"><strong>PEN</strong></div>
               <div class="col-3"><strong>Name</strong></div>
@@ -818,9 +817,7 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
           size="sm"
           variant="primary"
           class="btn btn-primary w-100 float-right col-2 p-2"
-          :disabled="
-            batch.details['who'] == '' || batch.details['who'] == 'Choose...'
-          "
+          :disabled="batch.details['who'] == '' || batch.details['who'] == null"
         >
           Download
         </b-button>
@@ -829,6 +826,7 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
           v-b-modal="'batch-modal-' + jobId"
           size="sm"
           variant="primary"
+          :disabled="!batchIsValid"
           class="btn btn-primary w-100 float-right col-2 p-2"
         >
           Schedule/Run Batch
@@ -1006,6 +1004,7 @@ export default {
   },
   data: function () {
     return {
+      batchIsValid: true,
       batchTypes: [],
       batchRunDetails: "",
       cronTime: "",
@@ -1142,6 +1141,18 @@ export default {
   },
 
   methods: {
+    validBatch() {
+      console.log(this.batch.details["who"]);
+      if (
+        this.batch.details["who"] == "" ||
+        this.batch.details["who"] == null
+      ) {
+        this.batchIsValid = false;
+      } else {
+        this.batchIsValid = true;
+      }
+      console.log("edit" + this.batchIsValid);
+    },
     getBatchJobTypes() {
       BatchProcessingService.getBatchJobTypes()
         .then((response) => {
@@ -1171,7 +1182,7 @@ export default {
         this.batch.details["blankCertificateDetails"][0] == "A"
       ) {
         return [
-          { text: "Choose...", value: null },
+          { text: "Choose...", value: "" },
           { text: "School", value: "School" },
           {
             text: "Ministry of Advanced Education",
@@ -1184,7 +1195,7 @@ export default {
         this.batch.details["credential"] == "Blank transcript print"
       ) {
         return [
-          { text: "Choose...", value: null },
+          { text: "Choose...", value: "" },
           { text: "School", value: "School" },
           {
             text: "Ministry of Advanced Education - Select only Adult Dogwood (Public)",
@@ -1346,27 +1357,56 @@ export default {
                 response.data[0].studentID
               ).then((res) => {
                 if (res.data) {
-                  this.$store.dispatch(
-                    "batchprocessing/addValueToTypeInBatchId",
-                    { id, type, value }
-                  );
-                  this.$refs["pen" + id + valueIndex][0].updateValue(
-                    response.data[0].legalFirstName +
-                      " " +
-                      (response.data[0].legalMiddleNames
-                        ? response.data[0].legalMiddleNames + " "
-                        : "") +
-                      response.data[0].legalLastName
-                  );
-                  this.$refs["dob" + id + valueIndex][0].updateValue(
-                    response.data[0].dob
-                  );
-                  this.$refs["school" + id + valueIndex][0].updateValue(
-                    response.data[0].schoolOfRecordName
-                  );
-                  this.$refs["student-status" + id + valueIndex][0].updateValue(
-                    response.data[0].studentStatus
-                  );
+                  //check if student has certificate to reprint
+                  console.log(this.batch.details["what"]);
+                  console.log(this.batch.details["blankCertificateDetails"]);
+                  if (
+                    this.batch.details["what"] == "DISTRUNUSER" &&
+                    (this.batch.details["credential"] == "RC" ||
+                      this.batch.details["credential"] == "OC")
+                  ) {
+                    GraduationReportService.getStudentCertificates(
+                      response.data[0].studentID
+                    ).then((certificates) => {
+                      console.log(certificates.data.length);
+                      if (certificates.data.length == 0) {
+                        if (this.batch.details["credential"] == "RC") {
+                          this.validationMessage =
+                            "Cannot reprint certificate for this student.";
+                        } else if (this.batch.details["credential"] == "OC") {
+                          this.validationMessage =
+                            "Cannot print certificate for this student,this student does not have a certificate";
+                        }
+                        console.log(this.validationMessage);
+                        this.$forceUpdate();
+                        this.validating = false;
+                        return;
+                      }
+                    });
+                  } else {
+                    console.log("dispatch");
+                    this.$store.dispatch(
+                      "batchprocessing/addValueToTypeInBatchId",
+                      { id, type, value }
+                    );
+                    this.$refs["pen" + id + valueIndex][0].updateValue(
+                      response.data[0].legalFirstName +
+                        " " +
+                        (response.data[0].legalMiddleNames
+                          ? response.data[0].legalMiddleNames + " "
+                          : "") +
+                        response.data[0].legalLastName
+                    );
+                    this.$refs["dob" + id + valueIndex][0].updateValue(
+                      response.data[0].dob
+                    );
+                    this.$refs["school" + id + valueIndex][0].updateValue(
+                      response.data[0].schoolOfRecordName
+                    );
+                    this.$refs[
+                      "student-status" + id + valueIndex
+                    ][0].updateValue(response.data[0].studentStatus);
+                  }
                 } else {
                   this.validationMessage =
                     value + " is not a valid PEN in GRAD";
@@ -1483,6 +1523,7 @@ export default {
     },
     clearBatchDetails: function (id) {
       this.$store.commit("batchprocessing/clearBatchDetails", id);
+      this.batchIsValid = false;
     },
     clearBatchGroupDetails: function (id) {
       this.$store.commit("batchprocessing/clearBatchGroupDetails", id);
@@ -1534,6 +1575,7 @@ export default {
         });
 
         this.$forceUpdate();
+        this.validBatch();
       });
     },
     getCertificateTypes() {
@@ -1582,6 +1624,7 @@ export default {
       programOptions: "app/getProgramOptions",
       userFullName: "auth/userFullName",
     }),
+
     batch() {
       return this.tabContent[this.jobId];
     },

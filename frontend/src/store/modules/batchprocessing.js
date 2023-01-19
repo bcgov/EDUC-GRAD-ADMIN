@@ -49,7 +49,7 @@ export default {
       state.batchDetails[payload['id']]=payload['batchDetail'];
     },
     clearBatchDetails(state,payload){
-      state.batchDetails[payload]['details'].who="Choose...";
+      state.batchDetails[payload]['details'].who="";
       state.batchDetails[payload]['details'].where="BC Mail";
       state.batchDetails[payload]['details'].gradDate="Current Students";
       state.batchDetails[payload]['details'].gradDateFrom="";
