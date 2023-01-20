@@ -13,7 +13,7 @@
         </b-sidebar>
         (<a>{{ roles }}</a
         >) |
-        <a :href="logout" class="text-white">Logout</a>
+        <a :href="userLogout" class="text-white">Logout</a>
       </div>
       <div v-else-if="!isAuthenticated">
         <a :href="login">Login</a>
@@ -42,7 +42,7 @@ export default {
   data() {
     return {
       login: Routes.LOGIN,
-      logout: Routes.LOGOUT,
+      userLogout: Routes.LOGOUT,
       host: location.protocol + "//" + location.host,
     };
   },
@@ -71,7 +71,7 @@ export default {
       .then(() => this.setApplicationVariables())
       .catch((e) => {
         if (!e.response) {
-          this.logout();
+          this.userLogout();
           this.$router.replace({
             name: "error",
             query: { message: `500_${e.data || "ServerError"}` },
