@@ -18,7 +18,6 @@ import '../src/assets/css/global.css';
 
 
 // Install BootstrapVue
-import SmartTable from 'vuejs-smart-table';
 Vue.use(Vuelidate);
 Vue.config.productionTip = false;
 const options = {
@@ -32,7 +31,6 @@ const options = {
 };
 
 Vue.use(VueLogger, options);
-Vue.use(SmartTable);
 Vue.use(qs);
 Vue.use(VueFilterDateParse);
 Vue.use(VueFilterDateFormat);

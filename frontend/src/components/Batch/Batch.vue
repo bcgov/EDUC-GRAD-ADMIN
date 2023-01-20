@@ -1,7 +1,7 @@
 <template>
   <div>
     {{ batchIsValid }}
-
+    {{ validationMessage }}
     <b-alert :show="batchTypeDesc != ''" variant="info">
       {{ batchTypeDesc }}
     </b-alert>
@@ -509,7 +509,7 @@
             header="Include Students"
           >
             {{ validationMessage }}
-            <b-alert dismissible v-if="validationMessage" variant="danger">{{
+            <b-alert dismissible v-model="validationMessage" variant="danger">{{
               validationMessage
             }}</b-alert>
             <div class="row col-12 border-bottom mb-3">
