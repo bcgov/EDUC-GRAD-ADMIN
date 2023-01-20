@@ -883,7 +883,7 @@ export default {
         })
         .catch((error) => {
           this.adminDashboardLoading = false;
-          if (error.response.status) {
+          if (error.response) {
             this.$bvToast.toast("ERROR " + error.response.statusText, {
               title: "ERROR" + error.response.status,
               variant: "danger",
