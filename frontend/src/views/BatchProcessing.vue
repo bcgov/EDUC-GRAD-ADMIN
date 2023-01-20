@@ -360,7 +360,7 @@
                             <div v-if="!scheduledJobs.length">
                               No Scheduled Jobs
                             </div>
-                            <DisplayTablegetZipLink
+                            <DisplayTable
                               title="Job/Runs"
                               :items="scheduledJobs"
                               v-bind:fields="scheduledJobFields"
@@ -472,7 +472,7 @@
                                   </div>
                                 </b-card>
                               </template>
-                            </DisplayTablegetZipLink>
+                            </DisplayTable>
                           </b-card-text>
                         </b-tab>
                         <b-tab class="btn-sm" :title="'Routines'">
