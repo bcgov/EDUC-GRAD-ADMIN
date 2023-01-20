@@ -1331,58 +1331,63 @@ export default {
       if (type == "students") {
         //remove duplicates
         this.validating = true;
-        StudentService.getStudentByPen(value)
-          .then((response) => {
-            if (response.data.length == 0) {
-              this.validationMessage = value + " is not a valid PEN";
-              this.deleteValueFromTypeInBatchId(id, type, value);
-              this.addTypeToBatchId(id, type);
-            } else if (response.data[0].studentStatus == "MER") {
-              this.validationMessage =
-                value + " is a merged student and not permitted";
-            } else {
-              //valid student that checks for GRAD status
-              StudentService.getGraduationStatus(
-                response.data[0].studentID
-              ).then((res) => {
-                if (res.data) {
-                  this.$store.dispatch(
-                    "batchprocessing/addValueToTypeInBatchId",
-                    { id, type, value }
-                  );
-                  this.$refs["pen" + id + valueIndex][0].updateValue(
-                    response.data[0].legalFirstName +
-                      " " +
-                      (response.data[0].legalMiddleNames
-                        ? response.data[0].legalMiddleNames + " "
-                        : "") +
-                      response.data[0].legalLastName
-                  );
-                  this.$refs["dob" + id + valueIndex][0].updateValue(
-                    response.data[0].dob
-                  );
-                  this.$refs["school" + id + valueIndex][0].updateValue(
-                    response.data[0].schoolOfRecordName
-                  );
-                  this.$refs["student-status" + id + valueIndex][0].updateValue(
-                    response.data[0].studentStatus
-                  );
-                } else {
-                  this.validationMessage =
-                    value + " is not a valid PEN in GRAD";
-                }
-                this.$forceUpdate();
-              });
-            }
+        if (typeof value === "undefined") {
+          this.makeToast("ERROR " + "Please enter a valid PEN", "danger");
+          this.validating = false;
+        } else {
+          StudentService.getStudentByPen(value)
+            .then((response) => {
+              if (response.data.length == 0) {
+                this.validationMessage = value + " is not a valid PEN";
+                this.deleteValueFromTypeInBatchId(id, type, value);
+                this.addTypeToBatchId(id, type);
+              } else if (response.data[0].studentStatus == "MER") {
+                this.validationMessage =
+                  value + " is a merged student and not permitted";
+              } else {
+                //valid student that checks for GRAD status
+                StudentService.getGraduationStatus(
+                  response.data[0].studentID
+                ).then((res) => {
+                  if (res.data) {
+                    this.$store.dispatch(
+                      "batchprocessing/addValueToTypeInBatchId",
+                      { id, type, value }
+                    );
+                    this.$refs["pen" + id + valueIndex][0].updateValue(
+                      response.data[0].legalFirstName +
+                        " " +
+                        (response.data[0].legalMiddleNames
+                          ? response.data[0].legalMiddleNames + " "
+                          : "") +
+                        response.data[0].legalLastName
+                    );
+                    this.$refs["dob" + id + valueIndex][0].updateValue(
+                      response.data[0].dob
+                    );
+                    this.$refs["school" + id + valueIndex][0].updateValue(
+                      response.data[0].schoolOfRecordName
+                    );
+                    this.$refs[
+                      "student-status" + id + valueIndex
+                    ][0].updateValue(response.data[0].studentStatus);
+                  } else {
+                    this.validationMessage =
+                      value + " is not a valid PEN in GRAD";
+                  }
+                  this.$forceUpdate();
+                });
+              }
 
-            this.$forceUpdate();
-            this.validating = false;
-          })
-          .catch((error) => {
-            // eslint-disable-next-line
-            console.log(error);
-            this.validating = false;
-          });
+              this.$forceUpdate();
+              this.validating = false;
+            })
+            .catch((error) => {
+              // eslint-disable-next-line
+              console.log(error);
+              this.validating = false;
+            });
+        }
       }
       if (type == "districts") {
         //remove duplicates
