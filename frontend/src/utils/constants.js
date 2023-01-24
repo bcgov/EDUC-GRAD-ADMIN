@@ -24,6 +24,8 @@ export const RolePermissions = Object.freeze({
 export const RoleAccess = Object.freeze({
   UPDATE_GRAD_GRADUATION_STATUS: "UPDATE_GRAD_GRADUATION_STATUS",
   CREATE_GRAD_STUDENT_NOTES_DATA: "CREATE_GRAD_STUDENT_NOTES_DATA",
+  RUN_GRAD_ALGORITHM: "RUN_GRAD_ALGORITHM ",
+  CREATE_GRAD_BATCH_JOB_CODE_DATA: "CREATE_GRAD_BATCH_JOB_CODE_DATA",
 });
 
 export const MinistryAddressLabel = Object.freeze({
