@@ -511,7 +511,7 @@
                 </b-tab>
 
                 <!-- New Tab Button (Using tabs-end slot) -->
-                <template #tabs-end>
+                <template #tabs-end v-if="allowCreateBatchJob">
                   <b-nav-item
                     role="presentation"
                     @click.prevent="newBatchJob"
@@ -570,6 +570,7 @@ export default {
     batchInfoListDataChange() {
       return this.batchInfoListData;
     },
+    ...mapGetters("useraccess", ["allowCreateBatchJob"]),
     ...mapGetters({
       tabCounter: "batchprocessing/getBatchCounter",
       tabContent: "batchprocessing/getBatchDetails",
@@ -882,7 +883,7 @@ export default {
         })
         .catch((error) => {
           this.adminDashboardLoading = false;
-          if (error.response.status) {
+          if (error.response) {
             this.$bvToast.toast("ERROR " + error.response.statusText, {
               title: "ERROR" + error.response.status,
               variant: "danger",
@@ -1264,7 +1265,11 @@ export default {
           districtCategoryCode = [];
         }
         if (!districtCategoryCode.length) {
+<<<<<<< HEAD
           this.validationMessage = "Please select a school category";
+=======
+          this.validationMessage = "Please select a district category";
+>>>>>>> e991608e9d7e5b5362d71db52398542a08f99fdb
           return;
         }
         districts.pop();
