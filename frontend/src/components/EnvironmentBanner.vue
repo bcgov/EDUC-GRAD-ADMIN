@@ -60,6 +60,8 @@ export default {
 #env-banner .local-env {
   background-color: #ffffff52;
   color: #000;
+  text-align: left;
+  width: fit-content;
 }
 #env-banner .dev-env {
   background-color: #ffa6009d;
