@@ -3,7 +3,7 @@
     <b-card no-body header="GRAD status">
       <b-card-text class="p-3">
         <b-button-group
-          v-if="this.roles.includes('Administrator')"
+          v-if="allowUpdateGradStatus"
           class="gradstatus-actions float-right"
         >
           <div v-if="!showEdit">
@@ -704,6 +704,14 @@ export default {
   name: "GRADStatus",
   computed: {
     ...mapGetters("auth", ["roles"]),
+    ...mapGetters("useraccess", ["allowUpdateGradStatus"]),
+    ...mapGetters({
+      optionalPrograms: "getStudentOptionalPrograms",
+      programOptions: "app/getProgramOptions",
+      studentStatusOptions: "app/getStudentStatusOptions",
+      studentId: "getStudentId",
+      studentGradStatus: "getStudentGradStatus",
+    }),
     studentGradeChange() {
       return this.editedGradStatus.studentGrade;
     },
@@ -728,13 +736,6 @@ export default {
     recalculateProjectedGradFlag() {
       return this.studentGradStatus.recalculateProjectedGrad;
     },
-    ...mapGetters({
-      optionalPrograms: "getStudentOptionalPrograms",
-      programOptions: "app/getProgramOptions",
-      studentStatusOptions: "app/getStudentStatusOptions",
-      studentId: "getStudentId",
-      studentGradStatus: "getStudentGradStatus",
-    }),
   },
   data() {
     return {

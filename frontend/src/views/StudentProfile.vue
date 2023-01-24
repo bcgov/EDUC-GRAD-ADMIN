@@ -3,7 +3,7 @@
     <div class="row m-0 py-3">
       <StudentInformation></StudentInformation>
       <div class="col-12 px-3">
-        <div class="float-right grad-actions">
+        <div class="float-right grad-actions" v-if="allowRunGradAlgorithm">
           <b-spinner v-if="tabLoading" class="px-1 my-2"></b-spinner>
           <b-dropdown
             :disabled="tabLoading || !hasGradStatus"
@@ -543,7 +543,9 @@
               size="sm"
               variant="primary"
               :disabled="
-                ungradReasonSelected == 'OTH' && ungradReasonDesc.length == 0
+                (ungradReasonSelected == 'OTH' &&
+                  ungradReasonDesc.length == 0) ||
+                ungradReasonSelected == ''
               "
               @click="
                 hide('ungraduate-student-modal');
@@ -687,6 +689,14 @@ export default {
     };
   },
   computed: {
+    ...mapGetters("auth", [
+      "roles",
+      "isAuthenticated",
+      "loginError",
+      "isLoading",
+      "userInfo",
+    ]),
+    ...mapGetters("useraccess", ["userAccess", "allowRunGradAlgorithm"]),
     ...mapGetters({
       profile: "getStudentProfile",
       courses: "getStudentCourses",
