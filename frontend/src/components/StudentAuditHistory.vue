@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <b-card no-body>
-      <b-tabs :pills="smallScreen" v-model="selectedTab" card>
+      <b-tabs card>
         <b-tab title="Student Change History">
           <DisplayTable
             :items="studentChangeHighlight"
