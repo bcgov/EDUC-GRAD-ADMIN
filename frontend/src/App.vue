@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <EnvironmentBanner />
     <Bcheader
       class="bcheader"
       style="margin-bottom: 15px; text-transform: capitalize"
@@ -33,11 +34,13 @@ import { mapActions, mapMutations, mapGetters, mapState } from "vuex";
 
 import Bcheader from "@/components/BCHeader";
 import BCFooter from "@/components/BCFooter";
+import EnvironmentBanner from "@/components/EnvironmentBanner";
 import { Routes } from "@/utils/constants";
 export default {
   components: {
     Bcheader,
     BCFooter,
+    EnvironmentBanner,
   },
   data() {
     return {

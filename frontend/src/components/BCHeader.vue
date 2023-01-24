@@ -46,13 +46,17 @@
           ><router-link :to="routes.courses">Courses</router-link></b-nav-item
         >
         <b-nav-item
-          ><router-link :to="routes.assessments">Assessments</router-link></b-nav-item
+          ><router-link :to="routes.assessments"
+            >Assessments</router-link
+          ></b-nav-item
         >
         <b-nav-item
           ><router-link :to="routes.schools">Schools</router-link></b-nav-item
         >
         <b-nav-item><router-link :to="routes.psi">PSI</router-link></b-nav-item>
-        <b-nav-item><router-link :to="routes.codes">Codes</router-link></b-nav-item>
+        <b-nav-item
+          ><router-link :to="routes.codes">Codes</router-link></b-nav-item
+        >
         <b-nav-item
           ><router-link :to="routes.schoolReports"
             >School Reports</router-link
@@ -100,7 +104,9 @@
             >
           </li>
           <li>
-            <router-link :to="routes.courses" id="courses-route">Courses</router-link>
+            <router-link :to="routes.courses" id="courses-route"
+              >Courses</router-link
+            >
           </li>
           <li>
             <router-link :to="routes.assessments" id="assessments-route"
@@ -108,15 +114,23 @@
             >
           </li>
           <li>
-            <router-link :to="routes.schools" id="schools-route">Schools</router-link>
+            <router-link :to="routes.schools" id="schools-route"
+              >Schools</router-link
+            >
           </li>
-          <li><router-link :to="routes.psi" id="psi-route">PSI</router-link></li>
-          <li><router-link :to="routes.codes" id="codes-route">Codes</router-link></li>
+          <li>
+            <router-link :to="routes.psi" id="psi-route">PSI</router-link>
+          </li>
+          <li>
+            <router-link :to="routes.codes" id="codes-route">Codes</router-link>
+          </li>
           <li>
             <router-link :to="routes.schoolReports">School Reports</router-link>
           </li>
           <li>
-            <router-link :to="routes.batchProcessing">Batch Processing</router-link>
+            <router-link :to="routes.batchProcessing"
+              >Batch Processing</router-link
+            >
           </li>
           <li v-if="!profile.pen" class="disabled">
             <a
@@ -205,7 +219,7 @@ export default {
         codes: "/codes",
         schoolReports: "/school-reports",
         batchProcessing: "/batch-processing",
-      }
+      },
     };
   },
   created() {
@@ -232,11 +246,11 @@ export default {
     },
     findStudentByPen: function () {
       if (this.penInput) {
-        if (this.penInput == this.profile.pen){
+        if (this.penInput == this.profile.pen) {
           this.showNotification(
-              "warning",
-              "The entered PEN is the same as the currently loaded student"
-            );
+            "warning",
+            "The entered PEN is the same as the currently loaded student"
+          );
         } else {
           this.searchLoading = true;
           this.studentSearchResults = [];
