@@ -1364,7 +1364,6 @@ export default {
                 await GraduationReportService.getStudentCertificates(
                   student.data[0].studentID
                 );
-              console.log(certificate.data);
               if (certificate.data.length) {
                 //check that certificate has does nto have a null distribution date
                 if (this.batch.details["credential"] == "RC") {
@@ -1417,7 +1416,6 @@ export default {
             this.validationMessage = value + " is not a valid PEN in GRAD";
           }
         }
-        console.log(student);
         this.validating = false;
       }
       if (type == "districts") {
