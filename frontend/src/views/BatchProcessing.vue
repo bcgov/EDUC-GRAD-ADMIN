@@ -1265,11 +1265,7 @@ export default {
           districtCategoryCode = [];
         }
         if (!districtCategoryCode.length) {
-<<<<<<< HEAD
-          this.validationMessage = "Please select a school category";
-=======
           this.validationMessage = "Please select a district category";
->>>>>>> e991608e9d7e5b5362d71db52398542a08f99fdb
           return;
         }
         districts.pop();
