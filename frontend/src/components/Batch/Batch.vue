@@ -1003,7 +1003,7 @@ export default {
   },
   data: function () {
     return {
-      batchIsValid: true,
+      batchIsValid: false,
       batchTypes: [],
       batchRunDetails: "",
       cronTime: "",
@@ -1147,9 +1147,16 @@ export default {
         this.batch.details["who"] == null
       ) {
         this.batchIsValid = false;
-      } else {
-        this.batchIsValid = true;
+        return;
       }
+      if (
+        this.batch.details["who"] == "District" &&
+        !this.batch.details["categoryCode"]
+      ) {
+        this.batchIsValid = false;
+        return;
+      }
+      this.batchIsValid = true;
     },
     getBatchJobTypes() {
       BatchProcessingService.getBatchJobTypes()
