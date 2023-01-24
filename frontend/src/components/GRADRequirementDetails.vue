@@ -237,6 +237,9 @@ export default {
             if (item.restricted) {
               formattedValue += ", Course restricted against another course";
             }
+            if (item.independentDirectedStudies) {
+              formattedValue += ", Independent Directed Studies course";
+            }
 
             return formattedValue;
           },
