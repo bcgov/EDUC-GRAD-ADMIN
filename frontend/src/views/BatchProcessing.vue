@@ -46,7 +46,7 @@
                                   pagination="true"
                                 >
                                   <template #cell(jobExecutionId)="row">
-                                    <!-- <a
+                                    <a
                                       v-if="
                                         row.item.jobParameters.localDownload ==
                                         'Y'
@@ -59,7 +59,7 @@
                                       "
                                       ><i class="fas fa-download"></i
                                     ></a>
-                                    <span v-else class="px-2"></span> -->
+                                    <span v-else class="px-2"></span>
                                     <b-btn
                                       v-if="row.item.status == 'COMPLETED'"
                                       :id="

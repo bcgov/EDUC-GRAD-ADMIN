@@ -54,8 +54,10 @@ export default {
   text-align: center;
 }
 #env-banner div {
+  float: right;
   padding: 0 1em;
   height: 26px;
+  margin-right: 40px;
 }
 #env-banner .local-env {
   background-color: #ffffff52;
