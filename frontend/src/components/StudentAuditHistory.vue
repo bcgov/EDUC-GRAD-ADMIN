@@ -166,6 +166,7 @@ export default {
       testHistory: [],
       sortDesc: true,
       smallScreen: false,
+      window: { width: 0, height: 0 },
       studentChangeFields: [
         {
           key: "more",
