@@ -921,9 +921,12 @@ export default {
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
       BatchProcessingService.runDISTRUN_YE()
         .then((response) => {
-          if (response) {
+          if (response.data) {
             this.$bvToast.toast(
-              "Batch run has started for request " + requestId,
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
               {
                 title: "BATCH PROCESSING STARTED",
                 variant: "success",
@@ -965,14 +968,19 @@ export default {
             let bid = response.data.batchId;
             setTimeout(this.downloadDISTRUNUSER, 3000, bid);
           } else {
-            this.$bvToast.toast(
-              "Batch run has started for request " + requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            if (response.data) {
+              this.$bvToast.toast(
+                "Batch run " +
+                  response.data.batchId +
+                  " has started for request " +
+                  requestId,
+                {
+                  title: "BATCH PROCESSING STARTED",
+                  variant: "success",
+                  noAutoHide: true,
+                }
+              );
+            }
           }
         })
         .catch((error) => {
@@ -1007,14 +1015,19 @@ export default {
             let bid = response.data.batchId;
             setTimeout(this.downloadDISTRUNUSER, 3000, bid);
           } else {
-            this.$bvToast.toast(
-              "Batch run has started for request " + requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            if (response.data) {
+              this.$bvToast.toast(
+                "Batch run " +
+                  response.data.batchId +
+                  " has started for request " +
+                  requestId,
+                {
+                  title: "BATCH PROCESSING STARTED",
+                  variant: "success",
+                  noAutoHide: true,
+                }
+              );
+            }
           }
         })
         .catch((error) => {
@@ -1040,20 +1053,24 @@ export default {
       let value = true;
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
       BatchProcessingService.runPSIRUN(request, transmissionType)
-        .then(() => {
+        .then((response) => {
           //update the admin dashboard
           this.getAdminDashboardData();
           this.cancelBatchJob(id);
           this.selectedTab = 0;
-
-          this.$bvToast.toast(
-            "Batch run has started for request " + requestId,
-            {
-              title: "BATCH PROCESSING STARTED",
-              variant: "success",
-              noAutoHide: true,
-            }
-          );
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
         })
         .catch((error) => {
           if (error) {
@@ -1078,19 +1095,24 @@ export default {
       let value = true;
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
       BatchProcessingService.runTVRRUN(request)
-        .then(() => {
+        .then((response) => {
           //update the admin dashboard
           this.getAdminDashboardData();
           this.cancelBatchJob(id);
           this.selectedTab = 0;
-          this.$bvToast.toast(
-            "Batch run has started for request " + requestId,
-            {
-              title: "BATCH PROCESSING STARTED",
-              variant: "success",
-              noAutoHide: true,
-            }
-          );
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
         })
         .catch((error) => {
           if (error) {
@@ -1115,19 +1137,24 @@ export default {
       let value = true;
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
       BatchProcessingService.runREGALG(request)
-        .then(() => {
+        .then((response) => {
           //update the admin dashboard
           this.getAdminDashboardData();
           this.cancelBatchJob(id);
           this.selectedTab = 0;
-          this.$bvToast.toast(
-            "Batch run has started for request " + requestId,
-            {
-              title: "BATCH PROCESSING STARTED",
-              variant: "success",
-              noAutoHide: true,
-            }
-          );
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
         })
         .catch((error) => {
           if (error) {
