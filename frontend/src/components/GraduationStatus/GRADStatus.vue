@@ -886,7 +886,6 @@ export default {
       }
     },
     programCompletionDateChange: function () {
-      // Figure out exactly what this does
       let programNameSearch = this.editedGradStatus.program;
       for (let programOpt of this.programOptions) {
         if (programOpt.programCode == programNameSearch) {
@@ -899,8 +898,6 @@ export default {
       this.programExpiryDate = new Date(
         this.programCompletionEffectiveDateList[0].expiryDate
       );
-      //let compareDate = new Date(this.editedGradStatus.programCompletionDate);
-      //let today = new Date();
 
       if (this.editedGradStatus.program === "SCCP") {
         this.disableSave = !this.validCompletionDate(
@@ -910,83 +907,17 @@ export default {
         );
       }
 
-      // if (!this.editedGradStatus.programCompletionDate) {
-      //   if (this.editedGradStatus.program == "SCCP") {
-      //     this.disableSave = false;
-      //   } else {
-      //     this.disableSchoolAtGrad = true;
-      //     this.disableSave = false;
-      //   }
-      // } else {
-      //   if (
-      //     this.containsAnyLetters(this.editedGradStatus.programCompletionDate)
-      //   ) {
-      //     this.notANumberWarning = true;
-      //     this.disableSave = true;
-      //   } else {
-      //     this.notANumberWarning = false;
-      //     if (this.editedGradStatus.program != "SCCP") {
-      //       if (
-      //         this.editedGradStatus.programCompletionDate >
-      //           this.programExpiryDate ||
-      //         this.editedGradStatus.programCompletionDate <
-      //           this.programEffectiveDate
-      //       ) {
-      //         this.disableSave = true;
-      //         this.programCompletionDateRangeError = true;
-      //       } else {
-      //         this.programCompletionDateRangeError = false;
-      //         this.disableSave = false;
-      //       }
-      //     } else {
-      //       if (
-      //         this.editedGradStatus.programCompletionDate <
-      //         this.programEffectiveDate
-      //       ) {
-      //         this.disableSave = true;
-      //         this.programCompletionDateRangeError = true;
-      //       } else {
-      //         this.disableSave = false;
-      //         this.programCompletionDateRangeError = false;
-      //       }
-      //     }
-      //   }
-      // }
-      // if (this.studentGradStatus.programCompletionDate) {
-      //   if (
-      //     this.containsAnyLetters(this.editedGradStatus.programCompletionDate)
-      //   ) {
-      //     this.disableSave = true;
-      //     this.notANumberWarning = true;
-      //   } else {
-      //     this.notANumberWarning = false;
-      //     if (this.editedGradStatus.program == "SCCP") {
-      //       if (compareDate > today) {
-      //         this.dateInFutureWarning = true;
-      //         this.disableSave = true;
-      //       } else {
-      //         this.dateInFutureWarning = false;
-      //         this.disableSave = true;
-      //         if (
-      //           this.editedGradStatus.programCompletionDate == undefined ||
-      //           this.editedGradStatus.programCompletionDate <
-      //             this.programEffectiveDate
-      //         ) {
-      //           this.disableSave = true;
-      //           if (!this.editedGradStatus.programCompletionDate) {
-      //             this.dateBlankWarning = true;
-      //           }
-      //         } else {
-      //           this.disableSave = false;
-      //           this.dateBlankWarning = false;
-      //         }
-      //       }
-      //     }
-      //   }
-      //   if (this.editedGradStatus.programCompletionDate == "") {
-      //     this.disableSave = true;
-      //   }
-      // }
+      if (this.editedGradStatus.programCompletionDate) {
+        if (
+          this.containsAnyLetters(this.editedGradStatus.programCompletionDate)
+        ) {
+          this.notANumberWarning = true;
+          this.disableSave = true;
+        } else {
+          this.notANumberWarning = false;
+          this.disableSave = false;
+        }
+      }
     },
     schoolOfRecordChange: function () {
       if (this.editedGradStatus.schoolOfRecord.length == "") {
@@ -1135,18 +1066,12 @@ export default {
       );
     },
     disableEditProgramCompletionDate() {
-      return this.editedGradStatus.program !== "SCCP" || this.isSCCPCompleted();
+      return this.editedGradStatus.program !== "SCCP";
     },
-    isSCCPCompleted() {
-      let today = new Date();
-      return (
-        this.studentGradStatus.programCompletionDate &&
-        new Date(this.studentGradStatus.programCompletionDate) < today
-      );
-    },
+
     validCompletionDate(date, start, end) {
-      // how to handle null
       return (!start || date < end) && (!end || date > start);
+      // how to handle null
     },
     editGradStatus() {
       //If the student has a programCompletionDate disable input fields
