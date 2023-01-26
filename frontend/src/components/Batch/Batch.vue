@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ validationMessage }}
     <b-alert :show="batchTypeDesc != ''" variant="info">
       {{ batchTypeDesc }}
     </b-alert>
@@ -25,7 +26,7 @@
               id="inline-form-select-audience"
               class="mb-2 mr-sm-2 mb-sm-0"
               :options="[
-                { text: 'Choose...', value: null },
+                { text: 'Choose...', value: '' },
                 {
                   text: 'Blank certificate print',
                   value: 'Blank certificate print',
@@ -142,7 +143,7 @@
                 id="inline-form-select-type"
                 class="col-12 my-2"
                 :options="[
-                  { text: 'Choose...', value: null },
+                  { text: 'Choose...', value: '' },
                   { text: '01 Public', value: '01' },
                   { text: '02 Independent', value: '02' },
                   { text: '03 Federally Operated Band School', value: '03' },
@@ -396,7 +397,7 @@
               id="inline-form-select-type"
               class="col-3"
               :options="[
-                { text: 'Choose...', value: null },
+                { text: 'Choose...', value: '' },
                 { text: 'Paper', value: 'PAPER' },
                 { text: 'FTP', value: 'FTP' },
               ]"
@@ -506,13 +507,10 @@
             class="mt-3 px-0"
             header="Include Students"
           >
-            <b-alert
-              dismissible
-              v-if="validationMessage"
-              :show="validationMessage"
-              variant="danger"
-              >{{ validationMessage }}</b-alert
-            >
+            <b-alert :show="validationMessage != ''" variant="danger">{{
+              validationMessage
+            }}</b-alert>
+
             <div class="row col-12 border-bottom mb-3">
               <div class="col-2"><strong>PEN</strong></div>
               <div class="col-3"><strong>Name</strong></div>
@@ -818,9 +816,7 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
           size="sm"
           variant="primary"
           class="btn btn-primary w-100 float-right col-2 p-2"
-          :disabled="
-            batch.details['who'] == '' || batch.details['who'] == 'Choose...'
-          "
+          :disabled="batch.details['who'] == '' || batch.details['who'] == null"
         >
           Download
         </b-button>
@@ -829,6 +825,7 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
           v-b-modal="'batch-modal-' + jobId"
           size="sm"
           variant="primary"
+          :disabled="!batchIsValid"
           class="btn btn-primary w-100 float-right col-2 p-2"
         >
           Schedule/Run Batch
@@ -1006,6 +1003,7 @@ export default {
   },
   data: function () {
     return {
+      batchIsValid: false,
       batchTypes: [],
       batchRunDetails: "",
       cronTime: "",
@@ -1014,6 +1012,7 @@ export default {
       batchRunCustomTime: "",
       batchRunSchedule: "",
       processingBatch: false,
+      vv: "",
       validationMessage: "",
       validating: false,
       certificateTypes: [],
@@ -1142,6 +1141,23 @@ export default {
   },
 
   methods: {
+    validBatch() {
+      if (
+        this.batch.details["who"] == "" ||
+        this.batch.details["who"] == null
+      ) {
+        this.batchIsValid = false;
+        return;
+      }
+      if (
+        this.batch.details["who"] == "District" &&
+        !this.batch.details["categoryCode"]
+      ) {
+        this.batchIsValid = false;
+        return;
+      }
+      this.batchIsValid = true;
+    },
     getBatchJobTypes() {
       BatchProcessingService.getBatchJobTypes()
         .then((response) => {
@@ -1171,7 +1187,7 @@ export default {
         this.batch.details["blankCertificateDetails"][0] == "A"
       ) {
         return [
-          { text: "Choose...", value: null },
+          { text: "Choose...", value: "" },
           { text: "School", value: "School" },
           {
             text: "Ministry of Advanced Education",
@@ -1184,7 +1200,7 @@ export default {
         this.batch.details["credential"] == "Blank transcript print"
       ) {
         return [
-          { text: "Choose...", value: null },
+          { text: "Choose...", value: "" },
           { text: "School", value: "School" },
           {
             text: "Ministry of Advanced Education - Select only Adult Dogwood (Public)",
@@ -1287,8 +1303,7 @@ export default {
       //Use the parents method to close and clear a batch job by ID
       this.$emit("cancelBatchJob", id);
     },
-
-    addValueToTypeInBatchId(id, type, value, valueIndex) {
+    async addValueToTypeInBatchId(id, type, value, valueIndex) {
       this.validationMessage = "";
       if (type == "schools") {
         this.validating = true;
@@ -1331,58 +1346,84 @@ export default {
       if (type == "students") {
         //remove duplicates
         this.validating = true;
-        StudentService.getStudentByPen(value)
-          .then((response) => {
-            if (response.data.length == 0) {
-              this.validationMessage = value + " is not a valid PEN";
-              this.deleteValueFromTypeInBatchId(id, type, value);
-              this.addTypeToBatchId(id, type);
-            } else if (response.data[0].studentStatus == "MER") {
-              this.validationMessage =
-                value + " is a merged student and not permitted";
-            } else {
-              //valid student that checks for GRAD status
-              StudentService.getGraduationStatus(
-                response.data[0].studentID
-              ).then((res) => {
-                if (res.data) {
-                  this.$store.dispatch(
-                    "batchprocessing/addValueToTypeInBatchId",
-                    { id, type, value }
-                  );
-                  this.$refs["pen" + id + valueIndex][0].updateValue(
-                    response.data[0].legalFirstName +
-                      " " +
-                      (response.data[0].legalMiddleNames
-                        ? response.data[0].legalMiddleNames + " "
-                        : "") +
-                      response.data[0].legalLastName
-                  );
-                  this.$refs["dob" + id + valueIndex][0].updateValue(
-                    response.data[0].dob
-                  );
-                  this.$refs["school" + id + valueIndex][0].updateValue(
-                    response.data[0].schoolOfRecordName
-                  );
-                  this.$refs["student-status" + id + valueIndex][0].updateValue(
-                    response.data[0].studentStatus
-                  );
-                } else {
+        let student = await StudentService.getStudentByPen(value);
+        if (student.data.length == 0) {
+          this.validationMessage = value + " is not a valid PEN";
+          this.deleteValueFromTypeInBatchId(id, type, value);
+          this.addTypeToBatchId(id, type);
+        } else if (student.data[0].studentStatus == "MER") {
+          this.validationMessage =
+            value + " is a merged student and not permitted";
+        } else {
+          //check if student has a gradStatus
+          let studentGradStatus = await StudentService.getGraduationStatus(
+            student.data[0].studentID
+          );
+          if (studentGradStatus) {
+            //student is in grad system
+
+            if (
+              this.batch.details["what"] == "DISTRUNUSER" &&
+              (this.batch.details["credential"] == "RC" ||
+                this.batch.details["credential"] == "OC")
+            ) {
+              let certificate =
+                await GraduationReportService.getStudentCertificates(
+                  student.data[0].studentID
+                );
+              if (certificate.data.length) {
+                //check that certificate has does nto have a null distribution date
+                if (this.batch.details["credential"] == "RC") {
+                  if (!certificate.data.distributionDate) {
+                    this.validationMessage =
+                      "Cannot reprint certificate for this student. Distribution date is null";
+                  }
+                }
+              } else {
+                //student has a gradstatus buut does not have a certificate
+                if (this.batch.details["credential"] == "RC") {
                   this.validationMessage =
-                    value + " is not a valid PEN in GRAD";
+                    "Cannot reprint certificate for this student.";
+                }
+                if (this.batch.details["credential"] == "OC") {
+                  this.validationMessage =
+                    "Cannot print certificate for this student,this student does not have a certificate.";
                 }
                 this.$forceUpdate();
-              });
+                this.validating = false;
+                return;
+              }
             }
-
+            this.$store.dispatch("batchprocessing/addValueToTypeInBatchId", {
+              id,
+              type,
+              value,
+            });
+            this.$refs["pen" + id + valueIndex][0].updateValue(
+              student.data[0].legalFirstName +
+                " " +
+                (student.data[0].legalMiddleNames
+                  ? student.data[0].legalMiddleNames + " "
+                  : "") +
+                student.data[0].legalLastName
+            );
+            this.$refs["dob" + id + valueIndex][0].updateValue(
+              student.data[0].dob
+            );
+            this.$refs["school" + id + valueIndex][0].updateValue(
+              student.data[0].schoolOfRecordName
+            );
+            this.$refs["student-status" + id + valueIndex][0].updateValue(
+              student.data[0].studentStatus
+            );
             this.$forceUpdate();
+
             this.validating = false;
-          })
-          .catch((error) => {
-            // eslint-disable-next-line
-            console.log(error);
-            this.validating = false;
-          });
+          } else {
+            this.validationMessage = value + " is not a valid PEN in GRAD";
+          }
+        }
+        this.validating = false;
       }
       if (type == "districts") {
         //remove duplicates
@@ -1483,6 +1524,7 @@ export default {
     },
     clearBatchDetails: function (id) {
       this.$store.commit("batchprocessing/clearBatchDetails", id);
+      this.batchIsValid = false;
     },
     clearBatchGroupDetails: function (id) {
       this.$store.commit("batchprocessing/clearBatchGroupDetails", id);
@@ -1534,6 +1576,7 @@ export default {
         });
 
         this.$forceUpdate();
+        this.validBatch();
       });
     },
     getCertificateTypes() {
@@ -1582,6 +1625,7 @@ export default {
       programOptions: "app/getProgramOptions",
       userFullName: "auth/userFullName",
     }),
+
     batch() {
       return this.tabContent[this.jobId];
     },

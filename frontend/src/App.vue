@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <EnvironmentBanner />
     <Bcheader
       class="bcheader"
       style="margin-bottom: 15px; text-transform: capitalize"
@@ -13,7 +14,7 @@
         </b-sidebar>
         (<a>{{ roles }}</a
         >) |
-        <a :href="logoutRoute" class="text-white">Logout</a>
+        <a :href="userLogout" class="text-white">Logout</a>
       </div>
       <div v-else-if="!isAuthenticated">
         <a :href="login">Login</a>
@@ -33,16 +34,18 @@ import { mapActions, mapMutations, mapGetters, mapState } from "vuex";
 
 import Bcheader from "@/components/BCHeader";
 import BCFooter from "@/components/BCFooter";
+import EnvironmentBanner from "@/components/EnvironmentBanner";
 import { Routes } from "@/utils/constants";
 export default {
   components: {
     Bcheader,
     BCFooter,
+    EnvironmentBanner,
   },
   data() {
     return {
       login: Routes.LOGIN,
-      logoutRoute: Routes.LOGOUT,
+      userLogout: Routes.LOGOUT,
       host: location.protocol + "//" + location.host,
     };
   },
@@ -71,7 +74,7 @@ export default {
       .then(() => this.setApplicationVariables())
       .catch((e) => {
         if (!e.response) {
-          this.logout();
+          this.userLogout();
           this.$router.replace({
             name: "error",
             query: { message: `500_${e.data || "ServerError"}` },

@@ -3,7 +3,7 @@
     <div class="row m-0 py-3">
       <StudentInformation></StudentInformation>
       <div class="col-12 px-3">
-        <div class="float-right grad-actions">
+        <div class="float-right grad-actions" v-if="allowRunGradAlgorithm">
           <b-spinner v-if="tabLoading" class="px-1 my-2"></b-spinner>
           <b-dropdown
             :disabled="tabLoading || !hasGradStatus"
@@ -696,7 +696,7 @@ export default {
       "isLoading",
       "userInfo",
     ]),
-    ...mapGetters("useraccess", ["userAccess"]),
+    ...mapGetters("useraccess", ["userAccess", "allowRunGradAlgorithm"]),
     ...mapGetters({
       profile: "student/getStudentProfile",
       courses: "student/getStudentCourses",

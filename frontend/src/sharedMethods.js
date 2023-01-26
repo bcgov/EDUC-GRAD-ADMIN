@@ -42,7 +42,7 @@ export default {
         var byteArray = new Uint8Array(byteNumbers);
         var file = new Blob([byteArray], { type: mimeType + ';base64' });
         var fileURL = URL.createObjectURL(file);        
-        window.open(fileURL);
+        window.open(fileURL, '_blank');
     },   
     base64ToFileTypeData: function (data, mimeType) {
       var byteCharacters = atob(data);

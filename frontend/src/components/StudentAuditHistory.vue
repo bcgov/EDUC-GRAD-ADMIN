@@ -165,6 +165,8 @@ export default {
       optionalProgramChangeHistory: [],
       testHistory: [],
       sortDesc: true,
+      smallScreen: false,
+      window: { width: 0, height: 0 },
       studentChangeFields: [
         {
           key: "more",
@@ -320,6 +322,10 @@ export default {
     this.highlightStudentHistoryChanges();
     this.highlightOptionalProgramHistoryChanges();
   },
+  created() {
+    window.addEventListener("resize", this.handleResize);
+    this.handleResize();
+  },
   watch: {
     studentHistory: function () {
       this.highlightStudentHistoryChanges();
@@ -329,6 +335,15 @@ export default {
     },
   },
   methods: {
+    handleResize() {
+      this.window.width = window.innerWidth;
+      this.window.height = window.innerHeight;
+      if (this.window.width < 992) {
+        this.smallScreen = true;
+      } else {
+        this.smallScreen = false;
+      }
+    },
     highlightStudentHistoryChanges() {
       const changes = [];
 

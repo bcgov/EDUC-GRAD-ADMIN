@@ -46,8 +46,20 @@
                                   pagination="true"
                                 >
                                   <template #cell(jobExecutionId)="row">
-                                    <!-- <a v-if="row.item.jobParameters.localDownload=='Y'" href="#" @click="downloadDISTRUNUSER(row.item.jobExecutionId)"><i class="fas fa-download"></i></a>
-                                    <span v-else class="px-2"></span> -->
+                                    <a
+                                      v-if="
+                                        row.item.jobParameters.localDownload ==
+                                        'Y'
+                                      "
+                                      href="#"
+                                      @click="
+                                        downloadDISTRUNUSER(
+                                          row.item.jobExecutionId
+                                        )
+                                      "
+                                      ><i class="fas fa-download"></i
+                                    ></a>
+                                    <span v-else class="px-2"></span>
                                     <b-btn
                                       v-if="row.item.status == 'COMPLETED'"
                                       :id="
@@ -56,12 +68,10 @@
                                       "
                                       variant="link"
                                       size="xs"
-                                      
                                     >
                                       {{ row.item.jobExecutionId }}
-                                      
                                     </b-btn>
-                                    
+
                                     <b-btn
                                       v-else
                                       disabled
@@ -111,7 +121,10 @@
                                           </a>
                                         </div>
                                       </div>
-                                      <div class="row border-bottom p-2" v-if="row.item.jobType != 'DISTRUNUSER'">
+                                      <div
+                                        class="row border-bottom p-2"
+                                        v-if="row.item.jobType != 'DISTRUNUSER'"
+                                      >
                                         <div class="col-10 p-2">
                                           Rerun this batch for <br />{{
                                             row.item
@@ -122,7 +135,12 @@
                                           }}
                                           students
                                         </div>
-                                        <div class="col-2 px-2 m-0" v-if="row.item.jobType != 'DISTRUNUSER'">
+                                        <div
+                                          class="col-2 px-2 m-0"
+                                          v-if="
+                                            row.item.jobType != 'DISTRUNUSER'
+                                          "
+                                        >
                                           <b-btn
                                             :id="
                                               'batch-job-id-rerun-btn' +
@@ -148,7 +166,13 @@
                                           </b-btn>
                                         </div>
                                       </div>
-                                      <div class="row border-bottom p-2" v-if="row.item.jobType != 'DISTRUNUSER' && row.item.failedStudentsProcessed != 0">
+                                      <div
+                                        class="row border-bottom p-2"
+                                        v-if="
+                                          row.item.jobType != 'DISTRUNUSER' &&
+                                          row.item.failedStudentsProcessed != 0
+                                        "
+                                      >
                                         <div class="col-10 p-2">
                                           Rerun
                                           {{
@@ -159,12 +183,13 @@
                                           }}
                                           students with errors
                                         </div>
-                                        <div class="col-2 px-2 m-0" >
+                                        <div class="col-2 px-2 m-0">
                                           <b-btn
                                             :disabled="
                                               row.item.jobType != 'TVRRUN' &&
                                               row.item.jobType != 'REGALG' &&
-                                              row.item.failedStudentsProcessed == 0
+                                              row.item
+                                                .failedStudentsProcessed == 0
                                             "
                                             :id="
                                               'batch-job-id-error-rerun-btn' +
@@ -187,7 +212,10 @@
                                         </div>
                                       </div>
 
-                                      <div class="row p-2 border-bottom" v-if="row.item.jobType != 'DISTRUNUSER'">
+                                      <div
+                                        class="row p-2 border-bottom"
+                                        v-if="row.item.jobType != 'DISTRUNUSER'"
+                                      >
                                         <div class="col-10 p-2">
                                           Rerun school reports
                                         </div>
@@ -222,7 +250,15 @@
                                         title="Batch Job Parameters"
                                       >
                                         <b-card-text>
-                                          <pre>{{ JSON.stringify(row.item.jobParameters, null, "\t") }} </pre>
+                                          <pre
+                                            >{{
+                                              JSON.stringify(
+                                                row.item.jobParameters,
+                                                null,
+                                                "\t"
+                                              )
+                                            }} </pre
+                                          >
                                         </b-card-text>
                                       </b-card>
                                     </b-popover>
@@ -475,7 +511,7 @@
                 </b-tab>
 
                 <!-- New Tab Button (Using tabs-end slot) -->
-                <template #tabs-end>
+                <template #tabs-end v-if="allowCreateBatchJob">
                   <b-nav-item
                     role="presentation"
                     @click.prevent="newBatchJob"
@@ -534,6 +570,7 @@ export default {
     batchInfoListDataChange() {
       return this.batchInfoListData;
     },
+    ...mapGetters("useraccess", ["allowCreateBatchJob"]),
     ...mapGetters({
       tabCounter: "batchprocessing/getBatchCounter",
       tabContent: "batchprocessing/getBatchDetails",
@@ -723,8 +760,10 @@ export default {
         });
       });
     },
-    removeEmpty(obj){
-      Object.keys(obj).forEach((k) => (!obj[k] && obj[k] !== undefined) && delete obj[k]);
+    removeEmpty(obj) {
+      Object.keys(obj).forEach(
+        (k) => !obj[k] && obj[k] !== undefined && delete obj[k]
+      );
       return obj;
     },
     getZipLink: function (data, mimeType) {
@@ -827,8 +866,10 @@ export default {
             timeZone: "PST",
           });
           //parameters
-          for(const [batch] in this.batchInfoListData){
-            this.batchInfoListData[batch].jobParameters = this.removeEmpty(JSON.parse(this.batchInfoListData[batch].jobParameters))
+          for (const [batch] in this.batchInfoListData) {
+            this.batchInfoListData[batch].jobParameters = this.removeEmpty(
+              JSON.parse(this.batchInfoListData[batch].jobParameters)
+            );
           }
           //Expected
           this.expected = this.dashboardData.lastExpectedStudentsProcessed;
@@ -837,7 +878,7 @@ export default {
         })
         .catch((error) => {
           this.adminDashboardLoading = false;
-          if (error.response.status) {
+          if (error.response) {
             this.$bvToast.toast("ERROR " + error.response.statusText, {
               title: "ERROR" + error.response.status,
               variant: "danger",
@@ -875,9 +916,12 @@ export default {
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
       BatchProcessingService.runDISTRUN_YE()
         .then((response) => {
-          if (response) {
+          if (response.data) {
             this.$bvToast.toast(
-              "Batch run has started for request " + requestId,
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
               {
                 title: "BATCH PROCESSING STARTED",
                 variant: "success",
@@ -919,14 +963,19 @@ export default {
             let bid = response.data.batchId;
             setTimeout(this.downloadDISTRUNUSER, 3000, bid);
           } else {
-            this.$bvToast.toast(
-              "Batch run has started for request " + requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            if (response.data) {
+              this.$bvToast.toast(
+                "Batch run " +
+                  response.data.batchId +
+                  " has started for request " +
+                  requestId,
+                {
+                  title: "BATCH PROCESSING STARTED",
+                  variant: "success",
+                  noAutoHide: true,
+                }
+              );
+            }
           }
         })
         .catch((error) => {
@@ -961,14 +1010,19 @@ export default {
             let bid = response.data.batchId;
             setTimeout(this.downloadDISTRUNUSER, 3000, bid);
           } else {
-            this.$bvToast.toast(
-              "Batch run has started for request " + requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            if (response.data) {
+              this.$bvToast.toast(
+                "Batch run " +
+                  response.data.batchId +
+                  " has started for request " +
+                  requestId,
+                {
+                  title: "BATCH PROCESSING STARTED",
+                  variant: "success",
+                  noAutoHide: true,
+                }
+              );
+            }
           }
         })
         .catch((error) => {
@@ -994,20 +1048,24 @@ export default {
       let value = true;
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
       BatchProcessingService.runPSIRUN(request, transmissionType)
-        .then(() => {
+        .then((response) => {
           //update the admin dashboard
           this.getAdminDashboardData();
           this.cancelBatchJob(id);
           this.selectedTab = 0;
-
-          this.$bvToast.toast(
-            "Batch run has started for request " + requestId,
-            {
-              title: "BATCH PROCESSING STARTED",
-              variant: "success",
-              noAutoHide: true,
-            }
-          );
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
         })
         .catch((error) => {
           if (error) {
@@ -1032,19 +1090,24 @@ export default {
       let value = true;
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
       BatchProcessingService.runTVRRUN(request)
-        .then(() => {
+        .then((response) => {
           //update the admin dashboard
           this.getAdminDashboardData();
           this.cancelBatchJob(id);
           this.selectedTab = 0;
-          this.$bvToast.toast(
-            "Batch run has started for request " + requestId,
-            {
-              title: "BATCH PROCESSING STARTED",
-              variant: "success",
-              noAutoHide: true,
-            }
-          );
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
         })
         .catch((error) => {
           if (error) {
@@ -1069,19 +1132,24 @@ export default {
       let value = true;
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
       BatchProcessingService.runREGALG(request)
-        .then(() => {
+        .then((response) => {
           //update the admin dashboard
           this.getAdminDashboardData();
           this.cancelBatchJob(id);
           this.selectedTab = 0;
-          this.$bvToast.toast(
-            "Batch run has started for request " + requestId,
-            {
-              title: "BATCH PROCESSING STARTED",
-              variant: "success",
-              noAutoHide: true,
-            }
-          );
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
         })
         .catch((error) => {
           if (error) {
@@ -1219,7 +1287,6 @@ export default {
           districtCategoryCode = [];
         }
         if (!districtCategoryCode.length) {
-          
           this.validationMessage = "Please select a district category";
           return;
         }

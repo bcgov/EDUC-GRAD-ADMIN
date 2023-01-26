@@ -8,7 +8,11 @@
         class="col-12 note-card mb-3"
         v-if="showForm"
       >
-        <b-form @submit="onSubmit" @reset="onReset">
+        <b-form
+          @submit="onSubmit"
+          @reset="onReset"
+          v-if="allowCreateStudentNotes"
+        >
           <b-form-group id="note-form" label="Add note:" label-for="comment">
             <b-form-textarea
               id="comment"
@@ -18,12 +22,18 @@
               required
             ></b-form-textarea>
           </b-form-group>
-          <b-button type="submit" variant="primary" size="sm" class="mr-1"
-            >Add</b-button
-          >
-          <b-button type="reset" variant="outline-secondary" size="sm" class=""
-            >Reset</b-button
-          >
+          <b-button-group>
+            <b-button type="submit" variant="primary" size="sm" class="mr-1"
+              >Add</b-button
+            >
+            <b-button
+              type="reset"
+              variant="outline-secondary"
+              size="sm"
+              class=""
+              >Reset</b-button
+            >
+          </b-button-group>
         </b-form>
       </b-card>
       <!-- Notes from the store pull from the database -->
@@ -100,8 +110,9 @@ export default {
       studentNotes: "student/getStudentNotes",
       profile: "student/getStudentProfile",
       username: "getUsername",
-      userInfo: "auth/userInfo"
+      userInfo: "auth/userInfo",
     }),
+    ...mapGetters("useraccess", ["allowCreateStudentNotes"]),
   },
   created() {
     this.studentProfile = this.profile;

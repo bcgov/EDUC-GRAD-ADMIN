@@ -1,13 +1,25 @@
 import ApiService from "@/common/apiService";
-import { Routes } from "@/utils/constants";
+import { Routes, RoleAccess } from "@/utils/constants";
 
 export default {
   namespaced: true,
   state: {
-    userAccess: null,
+    userAccess: "",
+    UpdateGradStatus: RoleAccess.UPDATE_GRAD_GRADUATION_STATUS,
+    CreateStudentNotes: RoleAccess.CREATE_GRAD_STUDENT_NOTES_DATA,
+    RunGradAlgorithm: RoleAccess.RUN_GRAD_ALGORITHM,
+    CreateBatchJob: RoleAccess.CREATE_GRAD_BATCH_JOB_CODE_DATA,
   },
   getters: {
     userAccess: (state) => state.userAccess,
+    allowUpdateGradStatus: (state) =>
+      state.userAccess.includes(state.UpdateGradStatus),
+    allowCreateStudentNotes: (state) =>
+      state.userAccess.includes(state.CreateStudentNotes),
+    allowRunGradAlgorithm: (state) =>
+      state.userAccess.includes(state.RunGradAlgorithm),
+    allowCreateBatchJob: (state) =>
+      state.userAccess.includes(state.CreateBatchJob),
   },
   mutations: {
     setUserAccess: (state, userAccess) => {
