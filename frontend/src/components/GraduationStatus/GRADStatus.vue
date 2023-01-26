@@ -284,7 +284,10 @@
               </td>
               <td>
                 <b-input
-                  :disabled="disableEditProgramCompletionDate()"
+                  :disabled="
+                    editedGradStatus.programCompletionDate &&
+                    editedGradStatus.programCompletionDate.length > 0
+                  "
                   size="sm"
                   type="text"
                   maxLength="10"
@@ -1102,9 +1105,6 @@ export default {
         /^([\d]{4})([\d]{2})([\d]{2})$/,
         "$1/$2/$3"
       );
-    },
-    disableEditProgramCompletionDate() {
-      return this.editedGradStatus.program !== "SCCP";
     },
 
     validCompletionDate(date, start, end) {
