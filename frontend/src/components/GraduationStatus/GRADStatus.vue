@@ -348,6 +348,7 @@
                 </b-form-select>
               </td>
             </tr>
+
             <tr v-if="!showEdit">
               <td><strong>School of record: </strong></td>
               <td>
@@ -658,6 +659,29 @@
                 </ul>
               </td>
             </tr>
+            <tr v-if="!showEdit">
+              <td><strong>Adult start date: </strong></td>
+              <td>
+                <span v-if="studentGradStatus.adultStartDate">{{
+                  studentGradStatus.adultStartDate
+                }}</span>
+              </td>
+            </tr>
+            <tr v-if="showEdit">
+              <td>
+                <strong>Adult start date: </strong>
+              </td>
+              <td>
+                <b-input
+                  :disabled="editedGradStatus.program != '1950'"
+                  size="sm"
+                  type="text"
+                  maxLength="10"
+                  @keyup="dateFormatYYYYMMDD()"
+                  v-model="editedGradStatus.adultStartDate"
+                ></b-input>
+              </td>
+            </tr>
             <tr v-if="showEdit">
               <td><strong>Consumer education requirement met:</strong></td>
               <td>
@@ -726,6 +750,9 @@ export default {
     },
     schoolAtGradChange() {
       return this.editedGradStatus.schoolAtGrad;
+    },
+    adultStartDateChange() {
+      return this.editedGradStatus.adultStartDate;
     },
     disableSaveButton() {
       return this.disableSave;
@@ -1032,6 +1059,17 @@ export default {
             });
         } else {
           this.schoolAtGraduationInputWarning = true;
+        }
+      }
+    },
+    adultStartDateChange: function () {
+      if (this.editedGradStatus.adultStartDate) {
+        if (this.containsAnyLetters(this.editedGradStatus.adultStartDate)) {
+          this.notANumberWarning = true;
+          this.disableSave = true;
+        } else {
+          this.notANumberWarning = false;
+          this.disableSave = false;
         }
       }
     },
