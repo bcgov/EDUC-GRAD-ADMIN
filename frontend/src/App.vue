@@ -20,7 +20,7 @@
       </div>
     </Bcheader>
 
-    <div class="container" style="height: 100%">
+    <div class="container" style="min-height: 100vh">
       <transition name="fade">
         <router-view />
       </transition>

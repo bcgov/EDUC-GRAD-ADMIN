@@ -2,14 +2,16 @@
 
 body {
   display: flex;
-  flex-flow: column nowrap;
+  flex-direction: column;
   min-height:100%;
   color:#313132;
   size: 16px;
+  
 }
 
 #app {
-  background: #fff;
+  min-height: 100vh;
+  
 }
 
 form {
