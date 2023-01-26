@@ -1199,6 +1199,11 @@ export default {
       );
       this.$set(
         this.editedGradStatus,
+        "adultStartDate",
+        this.studentGradStatus.adultStartDate
+      );
+      this.$set(
+        this.editedGradStatus,
         "consumerEducationRequirementMet",
         this.studentGradStatus.consumerEducationRequirementMet
       );
@@ -1263,6 +1268,7 @@ export default {
             response.data.recalculateGradStatus;
           this.studentGradStatus.updatedTimestamp =
             response.data.updatedTimestamp;
+          this.studentGradStatus.adultStartDate = response.data.adultStartDate;
           this.studentGradStatus.consumerEducationRequirementMet =
             response.data.consumerEducationRequirementMet;
           this.getStudentGraduationOptionalPrograms();
