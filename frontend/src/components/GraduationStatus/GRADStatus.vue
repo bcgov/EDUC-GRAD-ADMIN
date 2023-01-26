@@ -270,7 +270,7 @@
                   ></i>
                 </div>
               </td>
-              <td v-if="editedGradStatus.program == 'SCCP'">
+              <td v-else-if="editedGradStatus.program == 'SCCP'">
                 <strong>Program completion date: (YYYY/MM/DD)</strong><br />
                 <div
                   v-if="programCompletionDateRangeError"
@@ -282,21 +282,9 @@
                   ></i>
                 </div>
               </td>
-              <td v-if="editedGradStatus.program != 'SCCP'">
+              <td>
                 <b-input
-                  :disabled="
-                    studentGradStatus.programCompletionDate != null ||
-                    studentGradStatus.program !== 'SCCP'
-                  "
-                  size="sm"
-                  type="text"
-                  maxLength="7"
-                  @keyup="dateFormatYYYYMM()"
-                  v-model="editedGradStatus.programCompletionDate"
-                ></b-input>
-              </td>
-              <td v-if="editedGradStatus.program == 'SCCP'">
-                <b-input
+                  :disabled="disableEditProgramCompletionDate()"
                   size="sm"
                   type="text"
                   maxLength="10"
@@ -740,7 +728,7 @@ export default {
       return this.editedGradStatus.schoolAtGrad;
     },
     disableSaveButton() {
-      return this.disableButton;
+      return this.disableSave;
     },
     recalculateFlag() {
       return this.studentGradStatus.recalculateGradStatus;
@@ -782,7 +770,7 @@ export default {
       schoolAtGraduationFound: false,
       editedGradStatus: {},
       studentUngradReason: "",
-      disableButton: false,
+      disableSave: false,
       notANumberWarning: false,
       disableSchoolAtGrad: false,
       disableProgramInput: false,
@@ -827,13 +815,13 @@ export default {
         if (this.editedGradStatus.program == "1950") {
           if (this.editedGradStatus.schoolOfRecord == "") {
             this.schoolOfRecordMissing = true;
-            this.disableButton = true;
+            this.disableSave = true;
           } else {
             this.schoolOfRecordMissing = false;
-            this.disableButton = false;
+            this.disableSave = false;
           }
         } else {
-          this.disableButton = true;
+          this.disableSave = true;
         }
       }
       if (
@@ -841,21 +829,21 @@ export default {
         this.editedGradStatus.studentGrade != "AN"
       ) {
         if (this.editedGradStatus.program == "1950") {
-          this.disableButton = true;
+          this.disableSave = true;
         } else {
           if (this.editedGradStatus.schoolOfRecord == "") {
             this.schoolOfRecordMissing = true;
-            this.disableButton = true;
+            this.disableSave = true;
           } else {
             this.schoolOfRecordMissing = false;
-            this.disableButton = false;
+            this.disableSave = false;
           }
           if (this.editedGradStatus.schoolOfRecord == "") {
             this.schoolOfRecordMissing = true;
-            this.disableButton = true;
+            this.disableSave = true;
           } else {
             this.schoolOfRecordMissing = false;
-            this.disableButton = false;
+            this.disableSave = false;
           }
         }
       }
@@ -867,28 +855,28 @@ export default {
         this.studentGradStatus.program != "SCCP"
       ) {
         this.disableProgramInput = true;
-        this.disableButton = true;
+        this.disableSave = true;
       } else {
         this.disableProgramInput = false;
-        this.disableButton = false;
+        this.disableSave = false;
       }
       if (this.editedGradStatus.program == "1950") {
         if (
           this.editedGradStatus.studentGrade == "AD" ||
           this.editedGradStatus.studentGrade == "AN"
         ) {
-          this.disableButton = false;
+          this.disableSave = false;
         } else {
-          this.disableButton = true;
+          this.disableSave = true;
         }
       } else {
         if (
           this.editedGradStatus.studentGrade == "AD" ||
           this.editedGradStatus.studentGrade == "AN"
         ) {
-          this.disableButton = true;
+          this.disableSave = true;
         } else {
-          this.disableButton = false;
+          this.disableSave = false;
         }
       }
       if (this.ifProgramsWithExpiry(this.editedGradStatus.program)) {
@@ -904,97 +892,39 @@ export default {
           this.programCompletionEffectiveDateList.push(programOpt);
         }
       }
-      this.programEffectiveDate =
-        this.programCompletionEffectiveDateList[0].effectiveDate;
-      this.programExpiryDate =
-        this.programCompletionEffectiveDateList[0].expiryDate;
-      let compareDate = new Date(this.editedGradStatus.programCompletionDate);
-      let today = new Date();
+      this.programEffectiveDate = new Date(
+        this.programCompletionEffectiveDateList[0].effectiveDate
+      );
+      this.programExpiryDate = new Date(
+        this.programCompletionEffectiveDateList[0].expiryDate
+      );
 
-      if (!this.editedGradStatus.programCompletionDate) {
-        if (this.editedGradStatus.program == "SCCP") {
-          this.disableButton = false;
-        } else {
-          this.disableSchoolAtGrad = true;
-          this.disableButton = false;
-        }
-      } else {
-        if (
-          this.containsAnyLetters(this.editedGradStatus.programCompletionDate)
-        ) {
-          this.notANumberWarning = true;
-          this.disableButton = true;
-        } else {
-          this.notANumberWarning = false;
-          if (this.editedGradStatus.program != "SCCP") {
-            if (
-              this.editedGradStatus.programCompletionDate >
-                this.programExpiryDate ||
-              this.editedGradStatus.programCompletionDate <
-                this.programEffectiveDate
-            ) {
-              this.disableButton = true;
-              this.programCompletionDateRangeError = true;
-            } else {
-              this.programCompletionDateRangeError = false;
-              this.disableButton = false;
-            }
-          } else {
-            if (
-              this.editedGradStatus.programCompletionDate <
-              this.programEffectiveDate
-            ) {
-              this.disableButton = true;
-              this.programCompletionDateRangeError = true;
-            } else {
-              this.disableButton = false;
-              this.programCompletionDateRangeError = false;
-            }
-          }
-        }
+      if (this.editedGradStatus.program === "SCCP") {
+        this.disableSave = !this.validCompletionDate(
+          new Date(this.editedGradStatus.programCompletionDate),
+          this.programEffectiveDate,
+          this.programExpiryDate
+        );
       }
-      if (this.studentGradStatus.programCompletionDate) {
+
+      if (this.editedGradStatus.programCompletionDate) {
         if (
           this.containsAnyLetters(this.editedGradStatus.programCompletionDate)
         ) {
-          this.disableButton = true;
           this.notANumberWarning = true;
+          this.disableSave = true;
         } else {
           this.notANumberWarning = false;
-          if (this.editedGradStatus.program == "SCCP") {
-            if (compareDate > today) {
-              this.dateInFutureWarning = true;
-              this.disableButton = true;
-            } else {
-              this.dateInFutureWarning = false;
-              this.disableButton = true;
-              if (
-                this.editedGradStatus.programCompletionDate == undefined ||
-                this.editedGradStatus.programCompletionDate <
-                  this.programEffectiveDate
-              ) {
-                this.disableButton = true;
-                if (!this.editedGradStatus.programCompletionDate) {
-                  this.dateBlankWarning = true;
-                }
-              } else {
-                this.disableButton = false;
-                this.dateBlankWarning = false;
-              }
-            }
-          }
-        }
-        if (this.editedGradStatus.programCompletionDate == "") {
-          this.disableButton = true;
+          this.disableSave = false;
         }
       }
     },
     schoolOfRecordChange: function () {
       if (this.editedGradStatus.schoolOfRecord.length == "") {
-        this.disableButton = true;
+        this.disableSave = true;
       } else {
         this.schoolOfRecordMissing = false;
-        this.disableButton = false;
+        this.disableSave = false;
       }
       if (this.editedGradStatus.schoolOfRecord.length < 8) {
         this.schoolOfRecordWarning = false;
@@ -1043,14 +973,14 @@ export default {
     schoolAtGradChange: function () {
       if (this.editedGradStatus.schoolAtGrad == "") {
         if (this.editedGradStatus.programCompletionDate != "") {
-          this.disableButton = true;
+          this.disableSave = true;
           this.schoolAtGradProgramCompletionDateMessage = true;
         } else {
-          this.disableButton = false;
+          this.disableSave = false;
           this.schoolAtGradProgramCompletionDateMessage = false;
         }
       } else {
-        this.disableButton = false;
+        this.disableSave = false;
         this.schoolAtGradProgramCompletionDateMessage = false;
       }
 
@@ -1135,7 +1065,14 @@ export default {
         "$1/$2/$3"
       );
     },
+    disableEditProgramCompletionDate() {
+      return this.editedGradStatus.program !== "SCCP";
+    },
 
+    validCompletionDate(date, start, end) {
+      return (!start || date < end) && (!end || date > start);
+      // how to handle null
+    },
     editGradStatus() {
       //If the student has a programCompletionDate disable input fields
       this.schoolOfRecordWarning = false;
