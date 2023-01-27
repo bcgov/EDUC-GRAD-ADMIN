@@ -1346,115 +1346,124 @@ export default {
       if (type == "students") {
         //remove duplicates
         this.validating = true;
-        let student = await StudentService.getStudentByPen(value);
-        if (student.data.length == 0) {
-          this.validationMessage = value + " is not a valid PEN";
-          this.deleteValueFromTypeInBatchId(id, type, value);
-          this.addTypeToBatchId(id, type);
-        } else if (student.data[0].studentStatus == "MER") {
-          this.validationMessage =
-            value + " is a merged student and not permitted";
-        } else {
-          //check if student has a gradStatus
-          let studentGradStatus = await StudentService.getGraduationStatus(
-            student.data[0].studentID
-          );
-          if (studentGradStatus) {
-            //student is in grad system
-
-            if (
-              this.batch.details["what"] == "DISTRUNUSER" &&
-              (this.batch.details["credential"] == "RC" ||
-                this.batch.details["credential"] == "OC")
-            ) {
-              let certificate =
-                await GraduationReportService.getStudentCertificates(
-                  student.data[0].studentID
-                );
-              if (certificate.data.length) {
-                //check that certificate has does nto have a null distribution date
-                if (this.batch.details["credential"] == "RC") {
-                  if (!certificate.data.distributionDate) {
-                    this.validationMessage =
-                      "Cannot reprint certificate for this student. Distribution date is null";
-                  }
-                }
-              } else {
-                //student has a gradstatus buut does not have a certificate
-                if (this.batch.details["credential"] == "RC") {
-                  this.validationMessage =
-                    "Cannot reprint certificate for this student.";
-                }
-                if (this.batch.details["credential"] == "OC") {
-                  this.validationMessage =
-                    "Cannot print certificate for this student,this student does not have a certificate.";
-                }
-                this.$forceUpdate();
-                this.validating = false;
-                return;
-              }
-            }
-            this.$store.dispatch("batchprocessing/addValueToTypeInBatchId", {
-              id,
-              type,
-              value,
-            });
-            this.$refs["pen" + id + valueIndex][0].updateValue(
-              student.data[0].legalFirstName +
-                " " +
-                (student.data[0].legalMiddleNames
-                  ? student.data[0].legalMiddleNames + " "
-                  : "") +
-                student.data[0].legalLastName
-            );
-            this.$refs["dob" + id + valueIndex][0].updateValue(
-              student.data[0].dob
-            );
-            this.$refs["school" + id + valueIndex][0].updateValue(
-              student.data[0].schoolOfRecordName
-            );
-            this.$refs["student-status" + id + valueIndex][0].updateValue(
-              student.data[0].studentStatus
-            );
-            this.$forceUpdate();
-
-            this.validating = false;
+        if (value) {
+          let student = await StudentService.getStudentByPen(value);
+          if (student.data.length == 0) {
+            this.validationMessage = value + " is not a valid PEN";
+            this.deleteValueFromTypeInBatchId(id, type, value);
+            this.addTypeToBatchId(id, type);
+          } else if (student.data[0].studentStatus == "MER") {
+            this.validationMessage =
+              value + " is a merged student and not permitted";
           } else {
-            this.validationMessage = value + " is not a valid PEN in GRAD";
+            //check if student has a gradStatus
+            let studentGradStatus = await StudentService.getGraduationStatus(
+              student.data[0].studentID
+            );
+            if (studentGradStatus) {
+              //student is in grad system
+
+              if (
+                this.batch.details["what"] == "DISTRUNUSER" &&
+                (this.batch.details["credential"] == "RC" ||
+                  this.batch.details["credential"] == "OC")
+              ) {
+                let certificate =
+                  await GraduationReportService.getStudentCertificates(
+                    student.data[0].studentID
+                  );
+                if (certificate.data.length) {
+                  //check that certificate has does nto have a null distribution date
+                  if (this.batch.details["credential"] == "RC") {
+                    if (!certificate.data.distributionDate) {
+                      this.validationMessage =
+                        "Cannot reprint certificate for this student. Distribution date is null";
+                    }
+                  }
+                } else {
+                  //student has a gradstatus buut does not have a certificate
+                  if (this.batch.details["credential"] == "RC") {
+                    this.validationMessage =
+                      "Cannot reprint certificate for this student.";
+                  }
+                  if (this.batch.details["credential"] == "OC") {
+                    this.validationMessage =
+                      "Cannot print certificate for this student,this student does not have a certificate.";
+                  }
+                  this.$forceUpdate();
+                  this.validating = false;
+                  return;
+                }
+              }
+              this.$store.dispatch("batchprocessing/addValueToTypeInBatchId", {
+                id,
+                type,
+                value,
+              });
+              this.$refs["pen" + id + valueIndex][0].updateValue(
+                student.data[0].legalFirstName +
+                  " " +
+                  (student.data[0].legalMiddleNames
+                    ? student.data[0].legalMiddleNames + " "
+                    : "") +
+                  student.data[0].legalLastName
+              );
+              this.$refs["dob" + id + valueIndex][0].updateValue(
+                student.data[0].dob
+              );
+              this.$refs["school" + id + valueIndex][0].updateValue(
+                student.data[0].schoolOfRecordName
+              );
+              this.$refs["student-status" + id + valueIndex][0].updateValue(
+                student.data[0].studentStatus
+              );
+              this.$forceUpdate();
+
+              this.validating = false;
+            } else {
+              this.validationMessage = value + " is not a valid PEN in GRAD";
+            }
           }
+        } else {
+          this.makeToast("ERROR Please enter a valid PEN", "danger");
         }
         this.validating = false;
       }
       if (type == "districts") {
         //remove duplicates
         this.validating = true;
-        TRAXService.getDistrict(value)
-          .then((response) => {
-            if (response.data) {
-              this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
-                id,
-                type,
-                value,
-              });
-              this.$refs["districtName" + id + valueIndex][0].updateValue(
-                response.data.districtName
-              );
-              this.$refs["districtCity" + id + valueIndex][0].updateValue(
-                response.data.city
-              );
-            } else {
-              this.validationMessage = value + " is not a valid District";
-              this.deleteValueFromTypeInBatchId(id, type, value);
-              this.addTypeToBatchId(id, type);
-            }
-            this.$forceUpdate();
-            this.validating = false;
-          })
-          .catch((error) => {
-            // eslint-disable-next-line
-            console.log(error);
-            this.validating = false;
-          });
+        if (value) {
+          TRAXService.getDistrict(value)
+            .then((response) => {
+              if (response.data) {
+                this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
+                  id,
+                  type,
+                  value,
+                });
+                this.$refs["districtName" + id + valueIndex][0].updateValue(
+                  response.data.districtName
+                );
+                this.$refs["districtCity" + id + valueIndex][0].updateValue(
+                  response.data.city
+                );
+              } else {
+                this.validationMessage = value + " is not a valid District";
+                this.deleteValueFromTypeInBatchId(id, type, value);
+                this.addTypeToBatchId(id, type);
+              }
+              this.$forceUpdate();
+              this.validating = false;
+            })
+            .catch((error) => {
+              // eslint-disable-next-line
+              console.log(error);
+              this.validating = false;
+            });
+        } else {
+          this.makeToast("ERROR Please enter a valid District", "danger");
+        }
+        this.validating = false;
       }
       if (type == "psi") {
         //remove duplicates
