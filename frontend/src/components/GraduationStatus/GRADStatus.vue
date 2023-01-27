@@ -285,8 +285,9 @@
               <td>
                 <b-input
                   :disabled="
-                    studentGradStatus.programCompletionDate &&
-                    studentGradStatus.programCompletionDate.length > 0
+                    editedGradStatus.program != 'SCCP' ||
+                    (studentGradStatus.programCompletionDate &&
+                      studentGradStatus.programCompletionDate.length > 0)
                   "
                   size="sm"
                   type="text"
