@@ -1378,13 +1378,18 @@ export default {
                 if (certificate.data.length) {
                   //check that certificate has does nto have a null distribution date
                   if (this.batch.details["credential"] == "RC") {
-                    if (!certificate.data.distributionDate) {
-                      this.validationMessage =
-                        "Cannot reprint certificate for this student. Distribution date is null";
+                    for (let cert of certificate.data) {
+                      if (!cert.distributionDate) {
+                        this.validationMessage =
+                          "Cannot reprint certificate for this student. Distribution date is null";
+                        this.validating = false;
+                      } else {
+                        this.validationMessage = "";
+                      }
                     }
                   }
                 } else {
-                  //student has a gradstatus buut does not have a certificate
+                  //student has a gradstatus but does not have a certificate
                   if (this.batch.details["credential"] == "RC") {
                     this.validationMessage =
                       "Cannot reprint certificate for this student.";
@@ -1394,8 +1399,7 @@ export default {
                       "Cannot print certificate for this student,this student does not have a certificate.";
                   }
                   this.$forceUpdate();
-                  //Temp fix for GRAD2-1837
-                  //this.validating = false;
+                  this.validating = false;
                   return;
                 }
               }
