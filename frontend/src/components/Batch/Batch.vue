@@ -1307,41 +1307,44 @@ export default {
       this.validationMessage = "";
       if (type == "schools") {
         this.validating = true;
-        SchoolService.getSchoolInfo(value)
-          .then((response) => {
-            if (response.data.minCode) {
-              this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
-                id,
-                type,
-                value,
-              });
-              this.$refs["schoolName" + id + valueIndex][0].updateValue(
-                response.data.schoolName
-              );
-              this.$refs["districtName" + id + valueIndex][0].updateValue(
-                response.data.districtName
-              );
-              this.$refs["address" + id + valueIndex][0].updateValue(
-                response.data.address1
-              );
-            } else {
-              this.validationMessage = value + " is not a valid School.";
-              this.deleteValueFromTypeInBatchId(id, type, value);
-              this.addTypeToBatchId(id, type);
-            }
-            this.$forceUpdate();
-            this.validating = false;
-          })
-          .catch((error) => {
-            if (error.response.statusText) {
-              this.makeToast("ERROR " + error.response.statusText, "danger");
-            } else {
-              this.makeToast("ERROR " + "error with webservervice", "danger");
-            }
-
-            this.validating = false;
-            this.$forceUpdate();
-          });
+        if (value) {
+          SchoolService.getSchoolInfo(value)
+            .then((response) => {
+              if (response.data.minCode) {
+                this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
+                  id,
+                  type,
+                  value,
+                });
+                this.$refs["schoolName" + id + valueIndex][0].updateValue(
+                  response.data.schoolName
+                );
+                this.$refs["districtName" + id + valueIndex][0].updateValue(
+                  response.data.districtName
+                );
+                this.$refs["address" + id + valueIndex][0].updateValue(
+                  response.data.address1
+                );
+              } else {
+                this.validationMessage = value + " is not a valid School.";
+                this.deleteValueFromTypeInBatchId(id, type, value);
+                this.addTypeToBatchId(id, type);
+              }
+              this.$forceUpdate();
+              this.validating = false;
+            })
+            .catch((error) => {
+              if (error.response.statusText) {
+                this.makeToast("ERROR " + error.response.statusText, "danger");
+              } else {
+                this.makeToast("ERROR " + "error with webservervice", "danger");
+              }
+              this.$forceUpdate();
+            });
+        } else {
+          this.makeToast("ERROR Please enter a valid School", "danger");
+        }
+        this.validating = false;
       }
       if (type == "students") {
         //remove duplicates
@@ -1391,7 +1394,8 @@ export default {
                       "Cannot print certificate for this student,this student does not have a certificate.";
                   }
                   this.$forceUpdate();
-                  this.validating = false;
+                  //Temp fix for GRAD2-1837
+                  //this.validating = false;
                   return;
                 }
               }
@@ -1468,36 +1472,40 @@ export default {
       if (type == "psi") {
         //remove duplicates
         this.validating = true;
-        TRAXService.getPSIByAdvanceSearch("psiCode=" + value)
-          .then((response) => {
-            if (response.data) {
-              this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
-                id,
-                type,
-                value,
-              });
-              this.$refs["psiName" + id + valueIndex][0].updateValue(
-                response.data[0].psiName
-              );
-              this.$refs["psiCity" + id + valueIndex][0].updateValue(
-                response.data[0].city
-              );
-            } else {
-              this.validationMessage = value + " is not a valid District";
-              this.deleteValueFromTypeInBatchId(id, type, value);
-              this.addTypeToBatchId(id, type);
-            }
-            this.$forceUpdate();
-            this.validating = false;
-          })
-          .catch((error) => {
-            if (error.response.statusText) {
-              this.makeToast("ERROR " + error.response.statusText, "danger");
-            } else {
-              this.makeToast("ERROR " + "error with webservervice", "danger");
-            }
-            this.validating = false;
-          });
+        if (value) {
+          TRAXService.getPSIByAdvanceSearch("psiCode=" + value)
+            .then((response) => {
+              if (response.data) {
+                this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
+                  id,
+                  type,
+                  value,
+                });
+                this.$refs["psiName" + id + valueIndex][0].updateValue(
+                  response.data[0].psiName
+                );
+                this.$refs["psiCity" + id + valueIndex][0].updateValue(
+                  response.data[0].city
+                );
+              } else {
+                this.validationMessage = value + " is not a valid District";
+                this.deleteValueFromTypeInBatchId(id, type, value);
+                this.addTypeToBatchId(id, type);
+              }
+              this.$forceUpdate();
+              this.validating = false;
+            })
+            .catch((error) => {
+              if (error.response.statusText) {
+                this.makeToast("ERROR " + error.response.statusText, "danger");
+              } else {
+                this.makeToast("ERROR " + "error with webservervice", "danger");
+              }
+              this.validating = false;
+            });
+        } else {
+          this.makeToast("ERROR Please enter a valid PSI", "danger");
+        }
       }
       if (type == "programs") {
         this.validating = true;
