@@ -1398,7 +1398,16 @@ export default {
           );
         }
       } else if (this.tabContent[id].details["what"] == "DISTRUN_YE") {
-        this.runDISTRUN_YE(id);
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "YDBJ";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runDISTRUN_YE(id);
+        }
       } else if (this.tabContent[id].details["what"] == "DISTRUNUSER") {
         if (cronTime) {
           let scheduledRequest = {};
