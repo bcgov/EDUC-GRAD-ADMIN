@@ -306,7 +306,7 @@
                 dismissible
                 v-if="validationMessage"
                 :show="validationMessage"
-                variant="danger"
+                variant="warning"
                 >{{ validationMessage }}</b-alert
               >
 
@@ -420,7 +420,7 @@
                 dismissible
                 v-if="validationMessage"
                 :show="validationMessage"
-                variant="danger"
+                variant="warning"
                 >{{ validationMessage }}</b-alert
               >
               <b-form-checkbox
@@ -507,7 +507,7 @@
             class="mt-3 px-0"
             header="Include Students"
           >
-            <b-alert :show="validationMessage != ''" variant="danger">{{
+            <b-alert :show="validationMessage != ''" variant="warning">{{
               validationMessage
             }}</b-alert>
 
@@ -598,7 +598,7 @@
               dismissible
               v-if="validationMessage"
               :show="validationMessage"
-              variant="danger"
+              variant="warning"
               >{{ validationMessage }}</b-alert
             >
             <div class="row col-12 border-bottom mb-3">
@@ -712,14 +712,14 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
             class="mt-3 px-0"
             header="Include Programs"
           >
-            <b-alert v-if="validationMessage" show variant="danger">{{
+            <b-alert v-if="validationMessage" show variant="warning">{{
               validationMessage
             }}</b-alert>
             <b-alert
               dismissible
               v-if="validationMessage"
               :show="validationMessage"
-              variant="danger"
+              variant="warning"
               >{{ validationMessage }}</b-alert
             >
             <div class="row col-12 border-bottom mb-3">
