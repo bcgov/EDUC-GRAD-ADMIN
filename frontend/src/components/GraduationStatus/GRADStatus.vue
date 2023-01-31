@@ -284,7 +284,11 @@
               </td>
               <td>
                 <b-input
-                  :disabled="disableEditProgramCompletionDate()"
+                  :disabled="
+                    editedGradStatus.program != 'SCCP' ||
+                    (studentGradStatus.programCompletionDate &&
+                      studentGradStatus.programCompletionDate.length > 0)
+                  "
                   size="sm"
                   type="text"
                   maxLength="10"
@@ -348,6 +352,7 @@
                 </b-form-select>
               </td>
             </tr>
+
             <tr v-if="!showEdit">
               <td><strong>School of record: </strong></td>
               <td>
@@ -658,6 +663,29 @@
                 </ul>
               </td>
             </tr>
+            <tr v-if="!showEdit">
+              <td><strong>Adult start date: </strong></td>
+              <td>
+                <span v-if="studentGradStatus.adultStartDate">{{
+                  studentGradStatus.adultStartDate
+                }}</span>
+              </td>
+            </tr>
+            <tr v-if="showEdit">
+              <td>
+                <strong>Adult start date: </strong>
+              </td>
+              <td>
+                <b-input
+                  :disabled="editedGradStatus.program != '1950'"
+                  size="sm"
+                  type="text"
+                  maxLength="10"
+                  @keyup="dateFormatYYYYMMDD()"
+                  v-model="editedGradStatus.adultStartDate"
+                ></b-input>
+              </td>
+            </tr>
             <tr v-if="showEdit">
               <td><strong>Consumer education requirement met:</strong></td>
               <td>
@@ -726,6 +754,9 @@ export default {
     },
     schoolAtGradChange() {
       return this.editedGradStatus.schoolAtGrad;
+    },
+    adultStartDateChange() {
+      return this.editedGradStatus.adultStartDate;
     },
     disableSaveButton() {
       return this.disableSave;
@@ -1035,6 +1066,17 @@ export default {
         }
       }
     },
+    adultStartDateChange: function () {
+      if (this.editedGradStatus.adultStartDate) {
+        if (this.containsAnyLetters(this.editedGradStatus.adultStartDate)) {
+          this.notANumberWarning = true;
+          this.disableSave = true;
+        } else {
+          this.notANumberWarning = false;
+          this.disableSave = false;
+        }
+      }
+    },
   },
   methods: {
     getStudentReportsAndCertificates: function () {
@@ -1064,9 +1106,6 @@ export default {
         /^([\d]{4})([\d]{2})([\d]{2})$/,
         "$1/$2/$3"
       );
-    },
-    disableEditProgramCompletionDate() {
-      return this.editedGradStatus.program !== "SCCP";
     },
 
     validCompletionDate(date, start, end) {
@@ -1161,6 +1200,11 @@ export default {
       );
       this.$set(
         this.editedGradStatus,
+        "adultStartDate",
+        this.studentGradStatus.adultStartDate
+      );
+      this.$set(
+        this.editedGradStatus,
         "consumerEducationRequirementMet",
         this.studentGradStatus.consumerEducationRequirementMet
       );
@@ -1225,6 +1269,7 @@ export default {
             response.data.recalculateGradStatus;
           this.studentGradStatus.updatedTimestamp =
             response.data.updatedTimestamp;
+          this.studentGradStatus.adultStartDate = response.data.adultStartDate;
           this.studentGradStatus.consumerEducationRequirementMet =
             response.data.consumerEducationRequirementMet;
           this.getStudentGraduationOptionalPrograms();
