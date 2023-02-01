@@ -681,7 +681,6 @@
                   size="sm"
                   type="text"
                   maxLength="10"
-                  @keyup="dateFormatYYYYMMDD()"
                   v-model="editedGradStatus.adultStartDate"
                 ></b-input>
               </td>
@@ -915,6 +914,20 @@ export default {
       } else {
         this.closedProgramWarning = false;
       }
+
+      //clear out whatever the user had for the program completion date
+      if (
+        this.studentGradStatus.programCompletionDate !=
+        this.editedGradStatus.programCompletionDate
+      ) {
+        this.editedGradStatus.programCompletionDate =
+          this.studentGradStatus.programCompletionDate;
+      }
+
+      // clear out whatever the user had for the adult start date
+      if (this.studentGradStatus.adultStartDate != this.editedGradStatus.adultStartDate) {
+        this.editedGradStatus.adultStartDate = this.studentGradStatus.adultStartDate;
+      }
     },
     programCompletionDateChange: function () {
       let programNameSearch = this.editedGradStatus.program;
@@ -1063,7 +1076,9 @@ export default {
           this.disableSave = true;
         } else {
           this.notANumberWarning = false;
-          this.disableSave = false;
+          this.disableSave = !this.validAdultStartDate(
+            this.editedGradStatus.adultStartDate
+          );
         }
       }
     },
@@ -1113,6 +1128,12 @@ export default {
       return (!start || compareDate > start) && (!end || compareDate < end);
       //return (!start || date < end) && (!end || date > start);
       // how to handle null
+    },
+    validAdultStartDate(date) {
+      // format date to valid adult start date
+      this.editedGradStatus.adultStart = this.dateFormatYYYYMMDD(date);
+
+      return true;
     },
     editGradStatus() {
       //If the student has a programCompletionDate disable input fields
