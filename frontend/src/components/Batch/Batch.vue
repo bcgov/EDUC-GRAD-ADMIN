@@ -1396,7 +1396,7 @@ export default {
                     for (let cert of certificate.data) {
                       if (!cert.distributionDate) {
                         this.validationMessage =
-                          "Cannot reprint certificate for this student. Distribution date is null";
+                          "Warning: This students' certificate distribution date is null.  Their original certificate has not been distributed.";
                         this.validating = false;
                       } else {
                         this.validationMessage = "";
