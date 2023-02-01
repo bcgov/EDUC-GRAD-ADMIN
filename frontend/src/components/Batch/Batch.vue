@@ -54,12 +54,26 @@
               header="Choose Transcript Type(s)"
             >
               <b-form-checkbox-group
+                v-if="batch.details['credential'] != 'Blank transcript print'"
                 multiple
                 stacked
                 :select-size="10"
                 id="inline-form-select-audience"
                 class="mb-2 mr-sm-2 mb-sm-0"
                 :options="transcriptTypes"
+                value-field="code"
+                text-field="description"
+                :value="batch.details['credentialDetails']"
+                @change="editBatchJob('blankTranscriptDetails', $event)"
+              ></b-form-checkbox-group>
+              <b-form-checkbox-group
+                v-if="batch.details['credential'] == 'Blank transcript print'"
+                multiple
+                stacked
+                :select-size="10"
+                id="inline-form-select-audience"
+                class="mb-2 mr-sm-2 mb-sm-0"
+                :options="blankTranscriptTypes"
                 value-field="code"
                 text-field="description"
                 :value="batch.details['credentialDetails']"
@@ -1017,6 +1031,7 @@ export default {
       validating: false,
       certificateTypes: [],
       transcriptTypes: [],
+      blankTranscriptTypes: [],
       gradDateFrom: "",
       gradDateTo: "",
       batchTypeDesc: "",
@@ -1618,6 +1633,15 @@ export default {
       GraduationReportService.getTranscriptTypes()
         .then((response) => {
           this.transcriptTypes = response.data;
+          for (let transcriptType of this.transcriptTypes) {
+            if (
+              !["SCCP-FR", "BC1996-IND", "BC1986-IND"].includes(
+                transcriptType.code
+              )
+            ) {
+              this.blankTranscriptTypes.push(transcriptType);
+            }
+          }
         })
         // eslint-disable-next-line
         .catch((error) => {
