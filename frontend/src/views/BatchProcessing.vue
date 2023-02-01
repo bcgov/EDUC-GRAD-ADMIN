@@ -880,10 +880,10 @@ export default {
             timeZone: "PST",
           });
           //parameters
-          for (const [batch] in this.batchInfoListData) {
-            this.batchInfoListData[batch].jobParameters = this.removeEmpty(
-              JSON.parse(this.batchInfoListData[batch].jobParameters)
-            );
+          for (let batchData of this.batchInfoListData) {
+            if (batchData.jobParameters) {
+              batchData.jobParameters = JSON.parse(batchData.jobParameters);
+            }
           }
           //Expected
           this.expected = this.dashboardData.lastExpectedStudentsProcessed;
