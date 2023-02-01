@@ -879,6 +879,7 @@ export default {
       }
     },
     programChange: function () {
+      // Samara to look at cleaning this up
       this.programChangeWarning = true;
       if (
         this.studentGradStatus.programCompletionDate &&
@@ -925,15 +926,18 @@ export default {
       }
 
       // clear out whatever the user had for the adult start date
-      if (this.studentGradStatus.adultStartDate != this.editedGradStatus.adultStartDate) {
-        this.editedGradStatus.adultStartDate = this.studentGradStatus.adultStartDate;
+      if (
+        this.studentGradStatus.adultStartDate !=
+        this.editedGradStatus.adultStartDate
+      ) {
+        this.editedGradStatus.adultStartDate =
+          this.studentGradStatus.adultStartDate;
       }
     },
     programCompletionDateChange: function () {
       let programNameSearch = this.editedGradStatus.program;
       for (let programOpt of this.programOptions) {
         if (programOpt.programCode == programNameSearch) {
-          //this.programCompletionEffectiveDateList.push(programOpt);
           this.programEffectiveDate = programOpt.effectiveDate;
           this.programExpiryDate = programOpt.expiryDate;
         }
@@ -1106,7 +1110,6 @@ export default {
     },
 
     dateFormatYYYYMMDD(value) {
-      //let value = this.editedGradStatus.programCompletionDate;
       return value.replace(/^([\d]{4})([\d]{2})([\d]{2})$/, "$1/$2/$3");
     },
 
