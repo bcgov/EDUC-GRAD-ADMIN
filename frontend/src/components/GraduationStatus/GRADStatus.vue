@@ -292,7 +292,7 @@
                   size="sm"
                   type="text"
                   maxLength="10"
-                  @keyup="dateFormatYYYYMMDD()"
+                  @keyup="validCompletionDate()"
                   v-model="editedGradStatus.programCompletionDate"
                 ></b-input>
               </td>
@@ -681,7 +681,6 @@
                   size="sm"
                   type="text"
                   maxLength="10"
-                  @keyup="dateFormatYYYYMMDD()"
                   v-model="editedGradStatus.adultStartDate"
                 ></b-input>
               </td>
@@ -880,6 +879,7 @@ export default {
       }
     },
     programChange: function () {
+      // Samara to look at cleaning this up
       this.programChangeWarning = true;
       if (
         this.studentGradStatus.programCompletionDate &&
@@ -915,27 +915,32 @@ export default {
       } else {
         this.closedProgramWarning = false;
       }
+
+      //clear out whatever the user had for the program completion date
+      if (
+        this.studentGradStatus.programCompletionDate !=
+        this.editedGradStatus.programCompletionDate
+      ) {
+        this.editedGradStatus.programCompletionDate =
+          this.studentGradStatus.programCompletionDate;
+      }
+
+      // clear out whatever the user had for the adult start date
+      if (
+        this.studentGradStatus.adultStartDate !=
+        this.editedGradStatus.adultStartDate
+      ) {
+        this.editedGradStatus.adultStartDate =
+          this.studentGradStatus.adultStartDate;
+      }
     },
     programCompletionDateChange: function () {
       let programNameSearch = this.editedGradStatus.program;
       for (let programOpt of this.programOptions) {
         if (programOpt.programCode == programNameSearch) {
-          this.programCompletionEffectiveDateList.push(programOpt);
+          this.programEffectiveDate = programOpt.effectiveDate;
+          this.programExpiryDate = programOpt.expiryDate;
         }
-      }
-      this.programEffectiveDate = new Date(
-        this.programCompletionEffectiveDateList[0].effectiveDate
-      );
-      this.programExpiryDate = new Date(
-        this.programCompletionEffectiveDateList[0].expiryDate
-      );
-
-      if (this.editedGradStatus.program === "SCCP") {
-        this.disableSave = !this.validCompletionDate(
-          new Date(this.editedGradStatus.programCompletionDate),
-          this.programEffectiveDate,
-          this.programExpiryDate
-        );
       }
 
       if (this.editedGradStatus.programCompletionDate) {
@@ -946,7 +951,9 @@ export default {
           this.disableSave = true;
         } else {
           this.notANumberWarning = false;
-          this.disableSave = false;
+          this.disableSave = !this.validCompletionDate(
+            this.editedGradStatus.programCompletionDate
+          );
         }
       }
     },
@@ -1073,7 +1080,9 @@ export default {
           this.disableSave = true;
         } else {
           this.notANumberWarning = false;
-          this.disableSave = false;
+          this.disableSave = !this.validAdultStartDate(
+            this.editedGradStatus.adultStartDate
+          );
         }
       }
     },
@@ -1100,17 +1109,34 @@ export default {
       );
     },
 
-    dateFormatYYYYMMDD() {
-      let value = this.editedGradStatus.programCompletionDate;
-      this.editedGradStatus.programCompletionDate = value.replace(
-        /^([\d]{4})([\d]{2})([\d]{2})$/,
-        "$1/$2/$3"
-      );
+    dateFormatYYYYMMDD(value) {
+      return value.replace(/^([\d]{4})([\d]{2})([\d]{2})$/, "$1/$2/$3");
     },
 
-    validCompletionDate(date, start, end) {
-      return (!start || date < end) && (!end || date > start);
+    validCompletionDate(date) {
+      // format date to valid SCCP date
+      if (this.editedGradStatus === "SCCP") {
+        this.editedGradStatus.programCompletionDate =
+          this.dateFormatYYYYMMDD(date);
+      }
+
+      let start = this.programEffectiveDate
+        ? new Date(this.programEffectiveDate)
+        : null;
+      let end = this.programExpiryDate
+        ? new Date(this.programExpiryDate)
+        : null;
+      let compareDate = date ? new Date(date) : null;
+
+      return (!start || compareDate > start) && (!end || compareDate < end);
+      //return (!start || date < end) && (!end || date > start);
       // how to handle null
+    },
+    validAdultStartDate(date) {
+      // format date to valid adult start date
+      this.editedGradStatus.adultStart = this.dateFormatYYYYMMDD(date);
+
+      return true;
     },
     editGradStatus() {
       //If the student has a programCompletionDate disable input fields
