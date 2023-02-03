@@ -47,10 +47,6 @@
                                 >
                                   <template #cell(jobExecutionId)="row">
                                     <a
-                                      v-if="
-                                        row.item.jobParameters.localDownload ==
-                                        'Y'
-                                      "
                                       href="#"
                                       @click="
                                         downloadDISTRUNUSER(
@@ -59,7 +55,7 @@
                                       "
                                       ><i class="fas fa-download"></i
                                     ></a>
-                                    <span v-else class="px-2"></span>
+
                                     <b-btn
                                       v-if="row.item.status == 'COMPLETED'"
                                       :id="
@@ -756,13 +752,14 @@ export default {
   methods: {
     ...mapActions("batchprocessing", ["setScheduledBatchJobs"]),
     downloadDISTRUNUSER(bid) {
-      DistributionService.downloadDISTRUNUSER(bid).then((res) => {
-        this.$bvToast.toast("Download (.zip)", {
-          title: "FILE SUCCESSFULLY CREATED",
-          href: "data:application/zip;base64," + res.data,
-          variant: "success",
-          noAutoHide: true,
-        });
+      DistributionService.downloadDISTRUNUSER(bid).then((response) => {
+        console.log(response);
+        const blob = new Blob([response.data], { type: "application/zip" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "download";
+        link.click();
+        URL.revokeObjectURL(link.href);
       });
     },
     removeEmpty(obj) {
