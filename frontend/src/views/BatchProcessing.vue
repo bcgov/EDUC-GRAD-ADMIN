@@ -761,6 +761,7 @@ export default {
     };
   },
   created() {
+    this.showNotification = sharedMethods.showNotification;
     this.getAdminDashboardData();
     this.getScheduledJobs();
   },
@@ -769,41 +770,12 @@ export default {
 
     downloadDISTRUNUSER(bid) {
       DistributionService.downloadDISTRUNUSER(bid).then((response) => {
-        let b64Data = response.data;
-        let sliceSize = 512;
-        let contentType = "application/zip";
-
-        const byteCharacters = atob(b64Data);
-        const byteArrays = [];
-
-        for (
-          let offset = 0;
-          offset < byteCharacters.length;
-          offset += sliceSize
-        ) {
-          const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-          const byteNumbers = new Array(slice.length);
-          for (let i = 0; i < slice.length; i++) {
-            byteNumbers[i] = slice.charCodeAt(i);
-          }
-
-          const byteArray = new Uint8Array(byteNumbers);
-          byteArrays.push(byteArray);
-        }
-
-        const blob = new Blob(byteArrays, { type: contentType });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "download";
-        link.click();
-        URL.revokeObjectURL(link.href);
-
-        this.$bvToast.toast("Download Completed", {
-          title: "DOWNLOAD",
-          variant: "success",
-          noAutoHide: true,
-        });
+        sharedMethods.base64ToFileTypeAndDownload(
+          response.data,
+          "application/zip",
+          bid
+        );
+        this.showNotification("success", "Download Completed");
       });
     },
     removeEmpty(obj) {
@@ -811,9 +783,6 @@ export default {
         (k) => !obj[k] && obj[k] !== undefined && delete obj[k]
       );
       return obj;
-    },
-    getZipLink: function (data, mimeType) {
-      return sharedMethods.base64ToFileTypeData(data, mimeType);
     },
     getCurrentPSIYear() {
       let date = new Date();
