@@ -26,7 +26,13 @@
             class="px-3 w-100 float-left"
           >
             <a
-              @click="downloadFile(certificate.certificate, 'application/pdf')"
+              @click="
+                downloadFile(
+                  certificate.certificate,
+                  'application/pdf',
+                  certificate.gradCertificateTypeLabel
+                )
+              "
               href="#"
               class="pdf-link float-left mt-2"
               >{{ certificate.gradCertificateTypeLabel }} (PDF)</a
@@ -59,6 +65,9 @@ import sharedMethods from "../sharedMethods";
 
 export default {
   name: "CertificationDogwoods",
+  created() {
+    this.showNotification = sharedMethods.showNotification;
+  },
   props: {},
   computed: {
     ...mapGetters({
@@ -66,9 +75,11 @@ export default {
       studentGradStatus: "getStudentGradStatus",
     }),
   },
+
   methods: {
-    downloadFile: function (data, mimeType) {
-      sharedMethods.base64ToFileTypeAndOpenWindow(data, mimeType);
+    downloadFile: function (data, mimeType, filename) {
+      sharedMethods.base64ToFileTypeAndDownload(data, mimeType, filename);
+      this.showNotification("success", "Download Completed");
     },
     isCertificateEligible: function () {
       return (

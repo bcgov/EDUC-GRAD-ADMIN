@@ -33,27 +33,40 @@ export default {
             autoHideDelay: delay,
         });
     },
-    base64ToFileTypeAndOpenWindow: function (data, mimeType) {
-        var byteCharacters = atob(data);
-        var byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
+    base64ToFileTypeAndDownload: function (data, mimeType, filename) {
+      let b64Data = data;
+      let sliceSize = 512;
+      let contentType = mimeType;
+
+      const byteCharacters = atob(b64Data);
+
+      Buffer.from(data).toString('base64');
+      const byteArrays = [];
+
+      for (
+        let offset = 0;
+        offset < byteCharacters.length;
+        offset += sliceSize
+      ) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
         }
-        var byteArray = new Uint8Array(byteNumbers);
-        var file = new Blob([byteArray], { type: mimeType + ';base64' });
-        var fileURL = URL.createObjectURL(file);        
-        window.open(fileURL, '_blank');
-    },   
-    base64ToFileTypeData: function (data, mimeType) {
-      var byteCharacters = atob(data);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
+
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
       }
-      var byteArray = new Uint8Array(byteNumbers);
-      var file = new Blob([byteArray], { type: mimeType + ';base64' });
-      return file;
-    }, 
+
+      const blob = new Blob(byteArrays, { type: contentType });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+
+    },   
     getStudentID: function (pen){
       StudentService.getStudentByPen(pen).then((response) => {
         return response.data[0].studentID;
