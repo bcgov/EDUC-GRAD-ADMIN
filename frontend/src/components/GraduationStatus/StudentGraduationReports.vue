@@ -22,7 +22,13 @@
                 class="px-3 w-100 float-left"
               >
                 <a
-                  @click="downloadFile(report.report, 'application/pdf')"
+                  @click="
+                    downloadFile(
+                      report.report,
+                      'application/pdf',
+                      report.gradReportTypeLabel
+                    )
+                  "
                   href="#"
                   class="pdf-link float-left mt-2"
                   >{{ report.gradReportTypeLabel }} (PDF)</a
@@ -45,7 +51,11 @@
               >
                 <a
                   @click="
-                    downloadFile(transcript.transcript, 'application/pdf')
+                    downloadFile(
+                      transcript.transcript,
+                      'application/pdf',
+                      transcript.transcriptTypeLabel
+                    )
                   "
                   href="#"
                   class="pdf-link float-left"
@@ -70,7 +80,9 @@
                 <b-button
                   variant="link"
                   :disabled="!showXMLPreview()"
-                  @click="downloadFile(xmlReports, 'application/pdf')"
+                  @click="
+                    downloadFile(xmlReports, 'application/pdf', 'xml-preview')
+                  "
                   href="#"
                   >View XML Preview</b-button
                 >
@@ -85,11 +97,14 @@
 
 <script>
 import { mapGetters } from "vuex";
-import sharedMethods from "../../sharedMethods";
+import sharedMethods from "../../sharedMethods.js";
 
 export default {
   name: "StudentGraduationReports",
   props: {},
+  created() {
+    this.showNotification = sharedMethods.showNotification;
+  },
   computed: {
     ...mapGetters({
       transcripts: "student/getStudentTranscripts",
@@ -100,8 +115,9 @@ export default {
     }),
   },
   methods: {
-    downloadFile: function (data, mimeType) {
-      sharedMethods.base64ToFileTypeAndOpenWindow(data, mimeType);
+    downloadFile: function (data, mimeType, filename) {
+      sharedMethods.base64ToFileTypeAndDownload(data, mimeType, filename);
+      this.showNotification("success", "Download Completed");
     },
     isTranscriptEligible: function () {
       return (
@@ -111,11 +127,14 @@ export default {
     },
     showXMLPreview: function () {
       return (
-        this.studentGradStatus && this.studentGradStatus.studentGradData &&
+        this.studentGradStatus &&
+        this.studentGradStatus.studentGradData &&
         ((this.studentGradStatus.studentGradData.studentAssessments &&
-          this.studentGradStatus.studentGradData.studentAssessments.studentAssessmentList.length) ||
+          this.studentGradStatus.studentGradData.studentAssessments
+            .studentAssessmentList.length) ||
           (this.studentGradStatus.studentGradData.studentCourses &&
-            this.studentGradStatus.studentGradData.studentCourses.studentCourseList.length) ||
+            this.studentGradStatus.studentGradData.studentCourses
+              .studentCourseList.length) ||
           (this.studentGradStatus.studentGradData.studentExams &&
             this.studentGradStatus.studentGradData.studentExams.length) ||
           (this.optionalPrograms && this.optionalPrograms.length)) &&

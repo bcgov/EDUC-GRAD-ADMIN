@@ -46,20 +46,31 @@
                                   pagination="true"
                                 >
                                   <template #cell(jobExecutionId)="row">
-                                    <a
-                                      v-if="
-                                        row.item.jobParameters.localDownload ==
-                                        'Y'
-                                      "
-                                      href="#"
-                                      @click="
-                                        downloadDISTRUNUSER(
-                                          row.item.jobExecutionId
-                                        )
-                                      "
-                                      ><i class="fas fa-download"></i
-                                    ></a>
-                                    <span v-else class="px-2"></span>
+                                    <div
+                                      class="float-left downloadIcon"
+                                      v-if="row.item.jobParameters"
+                                    >
+                                      <div class="float-left">
+                                        <a
+                                          v-if="
+                                            row.item.jobParameters.payload
+                                              .localDownload == 'Y'
+                                          "
+                                          href="#"
+                                          @click="
+                                            downloadDISTRUNUSER(
+                                              row.item.jobExecutionId
+                                            )
+                                          "
+                                          ><i class="fas fa-download"></i
+                                        ></a>
+                                        <div v-else>&nbsp;&nbsp;</div>
+                                      </div>
+                                    </div>
+                                    <div v-else class="float-left downloadIcon">
+                                      &nbsp;&nbsp;
+                                    </div>
+
                                     <b-btn
                                       v-if="row.item.status == 'COMPLETED'"
                                       :id="
@@ -89,7 +100,7 @@
                                       :ref="
                                         'popover-' + row.item.jobExecutionId
                                       "
-                                      class="w-50"
+                                      class="w-40"
                                     >
                                       <template #title
                                         >Batch Job #{{
@@ -497,7 +508,7 @@
                     ></b-spinner>
                     Request {{ i | jobIdLabel }}
                   </template>
-                  <b-alert v-if="validationMessage" show>{{
+                  <b-alert variant="warning" v-if="validationMessage" show>{{
                     validationMessage
                   }}</b-alert>
                   <b-overlay :show="spinners[i]">
@@ -745,19 +756,21 @@ export default {
     };
   },
   created() {
+    this.showNotification = sharedMethods.showNotification;
     this.getAdminDashboardData();
     this.getScheduledJobs();
   },
   methods: {
     ...mapActions("batchprocessing", ["setScheduledBatchJobs"]),
+
     downloadDISTRUNUSER(bid) {
-      DistributionService.downloadDISTRUNUSER(bid).then((res) => {
-        this.$bvToast.toast("Download (.zip)", {
-          title: "FILE SUCCESSFULLY CREATED",
-          href: "data:application/zip;base64," + res.data,
-          variant: "success",
-          noAutoHide: true,
-        });
+      DistributionService.downloadDISTRUNUSER(bid).then((response) => {
+        sharedMethods.base64ToFileTypeAndDownload(
+          response.data,
+          "application/zip",
+          bid
+        );
+        this.showNotification("success", "Download Completed");
       });
     },
     removeEmpty(obj) {
@@ -765,9 +778,6 @@ export default {
         (k) => !obj[k] && obj[k] !== undefined && delete obj[k]
       );
       return obj;
-    },
-    getZipLink: function (data, mimeType) {
-      return sharedMethods.base64ToFileTypeData(data, mimeType);
     },
     getCurrentPSIYear() {
       let date = new Date();
@@ -866,10 +876,10 @@ export default {
             timeZone: "PST",
           });
           //parameters
-          for (const [batch] in this.batchInfoListData) {
-            this.batchInfoListData[batch].jobParameters = this.removeEmpty(
-              JSON.parse(this.batchInfoListData[batch].jobParameters)
-            );
+          for (let batchData of this.batchInfoListData) {
+            if (batchData.jobParameters) {
+              batchData.jobParameters = JSON.parse(batchData.jobParameters);
+            }
           }
           //Expected
           this.expected = this.dashboardData.lastExpectedStudentsProcessed;
@@ -891,13 +901,32 @@ export default {
       batch.validationMessage = "";
       //check for what
       if (!batch.details["what"]) {
-        batch.validationMessage = "Type of batch Not Specified";
+        this.validationMessage = "Type of batch Not Specified";
         return true;
       }
       //check for who
       if (!batch.details["who"]) {
-        batch.validationMessage = "Group not specified";
+        this.validationMessage = "Group not specified";
         return true;
+      }
+      //check for local download
+      if (batch.details["where"] == "localDownload") {
+        if (batch.details["what"] == "DISTRUNUSER") {
+          if (batch.details["credential"] == "Blank certificate print") {
+            if (!batch.details["blankCertificateDetails"].length) {
+              this.validationMessage =
+                "Please choose at least one certificate type";
+              return true;
+            }
+          }
+          if (batch.details["credential"] == "Blank transcript print") {
+            if (!batch.details["blankTranscriptDetails"].length) {
+              this.validationMessage =
+                "Please choose at least one transcript type";
+              return true;
+            }
+          }
+        }
       }
       return false;
     },
@@ -933,16 +962,11 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            this.$bvToast.toast(
-              "Batch run is still in progress for request" +
-                requestId +
-                " and will run in the background",
-              {
-                title: "BATCH PROCESSING UPDATE",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
           }
         });
     },
@@ -981,16 +1005,11 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            this.$bvToast.toast(
-              "Batch run is still in progress for request" +
-                requestId +
-                " and will run in the background",
-              {
-                title: "BATCH PROCESSING UPDATE",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
           }
         });
     },
@@ -1028,16 +1047,11 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            this.$bvToast.toast(
-              "Batch run is still in progress for request" +
-                requestId +
-                " and will run in the background",
-              {
-                title: "BATCH PROCESSING UPDATE",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
           }
         });
     },
@@ -1070,16 +1084,11 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            this.$bvToast.toast(
-              "Batch run is still in progress for request" +
-                requestId +
-                " and will run in the background",
-              {
-                title: "BATCH PROCESSING UPDATE",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
           }
         });
     },
@@ -1112,16 +1121,11 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            this.$bvToast.toast(
-              "Batch run is still in progress for request" +
-                requestId +
-                " and will run in the background",
-              {
-                title: "BATCH PROCESSING UPDATE",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
           }
         });
     },
@@ -1154,16 +1158,11 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            this.$bvToast.toast(
-              "Batch run is still in progress for request" +
-                requestId +
-                " and will run in the background",
-              {
-                title: "BATCH PROCESSING UPDATE",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
           }
         });
     },
@@ -1495,6 +1494,9 @@ export default {
 };
 </script>
 <style scoped>
+.downloadIcon {
+  min-width: 25px;
+}
 .alert,
 .card,
 .btn.btn-primary {

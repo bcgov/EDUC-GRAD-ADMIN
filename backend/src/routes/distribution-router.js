@@ -30,7 +30,7 @@ async function getDistributionAPI(req, res) {
     const url =
       `${config.get("server:distributionAPIURL")}/distribute` + req.url;
     const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data);
+    res.send(data)
   } catch (e) {
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);
