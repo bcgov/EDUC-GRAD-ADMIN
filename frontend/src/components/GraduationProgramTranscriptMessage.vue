@@ -5,7 +5,6 @@
       title="Transcript Message"
       v-bind:fields="transcriptMessageFields"
       id="transcriptMessage"
-      v-bind:role="role"
       :slots="templates"
       showFilter="true"
       pagnation="true"

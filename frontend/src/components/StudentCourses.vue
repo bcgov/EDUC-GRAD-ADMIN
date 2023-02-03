@@ -62,7 +62,9 @@
               :title="row.item.courseName"
             >
               <div class="row py-1">
-                <div class="col-7"><strong>Instruction Language:</strong></div>
+                <div class="col-7">
+                  <strong>Instruction Language:</strong>
+                </div>
                 <div class="col-5">{{ row.item.courseDetails.language }}</div>
               </div>
               <div class="row py-1">
@@ -88,7 +90,9 @@
                 </div>
               </div>
               <div class="row py-1">
-                <div class="col-7"><strong>Generic Course Type:</strong></div>
+                <div class="col-7">
+                  <strong>Generic Course Type:</strong>
+                </div>
                 <div class="col-5">
                   {{ row.item.courseDetails.genericCourseType }}
                 </div>

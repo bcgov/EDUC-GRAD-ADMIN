@@ -7,7 +7,6 @@
       v-bind:fields="letterGradesFields"
       id="letterGrade"
       showFilter="true"
-      v-bind:role="role"
     >
       <template #cell(expiryDate)="row">
         <div v-if="row.item.expiryDate">
