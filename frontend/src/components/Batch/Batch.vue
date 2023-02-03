@@ -54,12 +54,26 @@
               header="Choose Transcript Type(s)"
             >
               <b-form-checkbox-group
+                v-if="batch.details['credential'] != 'Blank transcript print'"
                 multiple
                 stacked
                 :select-size="10"
                 id="inline-form-select-audience"
                 class="mb-2 mr-sm-2 mb-sm-0"
                 :options="transcriptTypes"
+                value-field="code"
+                text-field="description"
+                :value="batch.details['credentialDetails']"
+                @change="editBatchJob('blankTranscriptDetails', $event)"
+              ></b-form-checkbox-group>
+              <b-form-checkbox-group
+                v-if="batch.details['credential'] == 'Blank transcript print'"
+                multiple
+                stacked
+                :select-size="10"
+                id="inline-form-select-audience"
+                class="mb-2 mr-sm-2 mb-sm-0"
+                :options="blankTranscriptTypes"
                 value-field="code"
                 text-field="description"
                 :value="batch.details['credentialDetails']"
@@ -306,7 +320,7 @@
                 dismissible
                 v-if="validationMessage"
                 :show="validationMessage"
-                variant="danger"
+                variant="warning"
                 >{{ validationMessage }}</b-alert
               >
 
@@ -420,7 +434,7 @@
                 dismissible
                 v-if="validationMessage"
                 :show="validationMessage"
-                variant="danger"
+                variant="warning"
                 >{{ validationMessage }}</b-alert
               >
               <b-form-checkbox
@@ -507,7 +521,7 @@
             class="mt-3 px-0"
             header="Include Students"
           >
-            <b-alert :show="validationMessage != ''" variant="danger">{{
+            <b-alert :show="validationMessage != ''" variant="warning">{{
               validationMessage
             }}</b-alert>
 
@@ -598,7 +612,7 @@
               dismissible
               v-if="validationMessage"
               :show="validationMessage"
-              variant="danger"
+              variant="warning"
               >{{ validationMessage }}</b-alert
             >
             <div class="row col-12 border-bottom mb-3">
@@ -712,14 +726,14 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
             class="mt-3 px-0"
             header="Include Programs"
           >
-            <b-alert v-if="validationMessage" show variant="danger">{{
+            <b-alert v-if="validationMessage" show variant="warning">{{
               validationMessage
             }}</b-alert>
             <b-alert
               dismissible
               v-if="validationMessage"
               :show="validationMessage"
-              variant="danger"
+              variant="warning"
               >{{ validationMessage }}</b-alert
             >
             <div class="row col-12 border-bottom mb-3">
@@ -1017,6 +1031,7 @@ export default {
       validating: false,
       certificateTypes: [],
       transcriptTypes: [],
+      blankTranscriptTypes: [],
       gradDateFrom: "",
       gradDateTo: "",
       batchTypeDesc: "",
@@ -1307,188 +1322,209 @@ export default {
       this.validationMessage = "";
       if (type == "schools") {
         this.validating = true;
-        SchoolService.getSchoolInfo(value)
-          .then((response) => {
-            if (response.data.minCode) {
-              this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
-                id,
-                type,
-                value,
-              });
-              this.$refs["schoolName" + id + valueIndex][0].updateValue(
-                response.data.schoolName
-              );
-              this.$refs["districtName" + id + valueIndex][0].updateValue(
-                response.data.districtName
-              );
-              this.$refs["address" + id + valueIndex][0].updateValue(
-                response.data.address1
-              );
-            } else {
-              this.validationMessage = value + " is not a valid School.";
-              this.deleteValueFromTypeInBatchId(id, type, value);
-              this.addTypeToBatchId(id, type);
-            }
-            this.$forceUpdate();
-            this.validating = false;
-          })
-          .catch((error) => {
-            if (error.response.statusText) {
-              this.makeToast("ERROR " + error.response.statusText, "danger");
-            } else {
-              this.makeToast("ERROR " + "error with webservervice", "danger");
-            }
-
-            this.validating = false;
-            this.$forceUpdate();
-          });
+        if (value) {
+          SchoolService.getSchoolInfo(value)
+            .then((response) => {
+              if (response.data.minCode) {
+                this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
+                  id,
+                  type,
+                  value,
+                });
+                this.$refs["schoolName" + id + valueIndex][0].updateValue(
+                  response.data.schoolName
+                );
+                this.$refs["districtName" + id + valueIndex][0].updateValue(
+                  response.data.districtName
+                );
+                this.$refs["address" + id + valueIndex][0].updateValue(
+                  response.data.address1
+                );
+              } else {
+                this.validationMessage = value + " is not a valid School.";
+                this.deleteValueFromTypeInBatchId(id, type, value);
+                this.addTypeToBatchId(id, type);
+              }
+              this.$forceUpdate();
+              this.validating = false;
+            })
+            .catch((error) => {
+              if (error.response.statusText) {
+                this.makeToast("ERROR " + error.response.statusText, "danger");
+              } else {
+                this.makeToast("ERROR " + "error with webservervice", "danger");
+              }
+              this.$forceUpdate();
+            });
+        } else {
+          this.makeToast("ERROR Please enter a valid School", "danger");
+        }
+        this.validating = false;
       }
       if (type == "students") {
         //remove duplicates
         this.validating = true;
-        let student = await StudentService.getStudentByPen(value);
-        if (student.data.length == 0) {
-          this.validationMessage = value + " is not a valid PEN";
-          this.deleteValueFromTypeInBatchId(id, type, value);
-          this.addTypeToBatchId(id, type);
-        } else if (student.data[0].studentStatus == "MER") {
-          this.validationMessage =
-            value + " is a merged student and not permitted";
-        } else {
-          //check if student has a gradStatus
-          let studentGradStatus = await StudentService.getGraduationStatus(
-            student.data[0].studentID
-          );
-          if (studentGradStatus) {
-            //student is in grad system
-
-            if (
-              this.batch.details["what"] == "DISTRUNUSER" &&
-              (this.batch.details["credential"] == "RC" ||
-                this.batch.details["credential"] == "OC")
-            ) {
-              let certificate =
-                await GraduationReportService.getStudentCertificates(
-                  student.data[0].studentID
-                );
-              if (certificate.data.length) {
-                //check that certificate has does nto have a null distribution date
-                if (this.batch.details["credential"] == "RC") {
-                  if (!certificate.data.distributionDate) {
-                    this.validationMessage =
-                      "Cannot reprint certificate for this student. Distribution date is null";
-                  }
-                }
-              } else {
-                //student has a gradstatus buut does not have a certificate
-                if (this.batch.details["credential"] == "RC") {
-                  this.validationMessage =
-                    "Cannot reprint certificate for this student.";
-                }
-                if (this.batch.details["credential"] == "OC") {
-                  this.validationMessage =
-                    "Cannot print certificate for this student,this student does not have a certificate.";
-                }
-                this.$forceUpdate();
-                this.validating = false;
-                return;
-              }
-            }
-            this.$store.dispatch("batchprocessing/addValueToTypeInBatchId", {
-              id,
-              type,
-              value,
-            });
-            this.$refs["pen" + id + valueIndex][0].updateValue(
-              student.data[0].legalFirstName +
-                " " +
-                (student.data[0].legalMiddleNames
-                  ? student.data[0].legalMiddleNames + " "
-                  : "") +
-                student.data[0].legalLastName
-            );
-            this.$refs["dob" + id + valueIndex][0].updateValue(
-              student.data[0].dob
-            );
-            this.$refs["school" + id + valueIndex][0].updateValue(
-              student.data[0].schoolOfRecordName
-            );
-            this.$refs["student-status" + id + valueIndex][0].updateValue(
-              student.data[0].studentStatus
-            );
-            this.$forceUpdate();
-
-            this.validating = false;
+        if (value) {
+          let student = await StudentService.getStudentByPen(value);
+          if (student.data.length == 0) {
+            this.validationMessage = value + " is not a valid PEN";
+            this.deleteValueFromTypeInBatchId(id, type, value);
+            this.addTypeToBatchId(id, type);
+          } else if (student.data[0].studentStatus == "MER") {
+            this.validationMessage =
+              value + " is a merged student and not permitted";
           } else {
-            this.validationMessage = value + " is not a valid PEN in GRAD";
+            //check if student has a gradStatus
+            let studentGradStatus = await StudentService.getGraduationStatus(
+              student.data[0].studentID
+            );
+            if (studentGradStatus) {
+              //student is in grad system
+
+              if (
+                this.batch.details["what"] == "DISTRUNUSER" &&
+                (this.batch.details["credential"] == "RC" ||
+                  this.batch.details["credential"] == "OC")
+              ) {
+                let certificate =
+                  await GraduationReportService.getStudentCertificates(
+                    student.data[0].studentID
+                  );
+                if (certificate.data.length) {
+                  //check that certificate has does nto have a null distribution date
+                  if (this.batch.details["credential"] == "RC") {
+                    for (let cert of certificate.data) {
+                      if (!cert.distributionDate) {
+                        this.validationMessage =
+                          "Warning: This students' certificate distribution date is null.  Their original certificate has not been distributed.";
+                        this.validating = false;
+                      } else {
+                        this.validationMessage = "";
+                      }
+                    }
+                  }
+                } else {
+                  //student has a gradstatus but does not have a certificate
+                  if (this.batch.details["credential"] == "RC") {
+                    this.validationMessage =
+                      "Cannot reprint certificate for this student.";
+                  }
+                  if (this.batch.details["credential"] == "OC") {
+                    this.validationMessage =
+                      "Cannot print certificate for this student,this student does not have a certificate.";
+                  }
+                  this.$forceUpdate();
+                  this.validating = false;
+                  return;
+                }
+              }
+              this.$store.dispatch("batchprocessing/addValueToTypeInBatchId", {
+                id,
+                type,
+                value,
+              });
+              this.$refs["pen" + id + valueIndex][0].updateValue(
+                student.data[0].legalFirstName +
+                  " " +
+                  (student.data[0].legalMiddleNames
+                    ? student.data[0].legalMiddleNames + " "
+                    : "") +
+                  student.data[0].legalLastName
+              );
+              this.$refs["dob" + id + valueIndex][0].updateValue(
+                student.data[0].dob
+              );
+              this.$refs["school" + id + valueIndex][0].updateValue(
+                student.data[0].schoolOfRecordName
+              );
+              this.$refs["student-status" + id + valueIndex][0].updateValue(
+                student.data[0].studentStatus
+              );
+              this.$forceUpdate();
+
+              this.validating = false;
+            } else {
+              this.validationMessage = value + " is not a valid PEN in GRAD";
+            }
           }
+        } else {
+          this.makeToast("ERROR Please enter a valid PEN", "danger");
         }
         this.validating = false;
       }
       if (type == "districts") {
         //remove duplicates
         this.validating = true;
-        TRAXService.getDistrict(value)
-          .then((response) => {
-            if (response.data) {
-              this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
-                id,
-                type,
-                value,
-              });
-              this.$refs["districtName" + id + valueIndex][0].updateValue(
-                response.data.districtName
-              );
-              this.$refs["districtCity" + id + valueIndex][0].updateValue(
-                response.data.city
-              );
-            } else {
-              this.validationMessage = value + " is not a valid District";
-              this.deleteValueFromTypeInBatchId(id, type, value);
-              this.addTypeToBatchId(id, type);
-            }
-            this.$forceUpdate();
-            this.validating = false;
-          })
-          .catch((error) => {
-            // eslint-disable-next-line
-            console.log(error);
-            this.validating = false;
-          });
+        if (value) {
+          TRAXService.getDistrict(value)
+            .then((response) => {
+              if (response.data) {
+                this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
+                  id,
+                  type,
+                  value,
+                });
+                this.$refs["districtName" + id + valueIndex][0].updateValue(
+                  response.data.districtName
+                );
+                this.$refs["districtCity" + id + valueIndex][0].updateValue(
+                  response.data.city
+                );
+              } else {
+                this.validationMessage = value + " is not a valid District";
+                this.deleteValueFromTypeInBatchId(id, type, value);
+                this.addTypeToBatchId(id, type);
+              }
+              this.$forceUpdate();
+              this.validating = false;
+            })
+            .catch((error) => {
+              // eslint-disable-next-line
+              console.log(error);
+              this.validating = false;
+            });
+        } else {
+          this.makeToast("ERROR Please enter a valid District", "danger");
+        }
+        this.validating = false;
       }
       if (type == "psi") {
         //remove duplicates
         this.validating = true;
-        TRAXService.getPSIByAdvanceSearch("psiCode=" + value)
-          .then((response) => {
-            if (response.data) {
-              this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
-                id,
-                type,
-                value,
-              });
-              this.$refs["psiName" + id + valueIndex][0].updateValue(
-                response.data[0].psiName
-              );
-              this.$refs["psiCity" + id + valueIndex][0].updateValue(
-                response.data[0].city
-              );
-            } else {
-              this.validationMessage = value + " is not a valid District";
-              this.deleteValueFromTypeInBatchId(id, type, value);
-              this.addTypeToBatchId(id, type);
-            }
-            this.$forceUpdate();
-            this.validating = false;
-          })
-          .catch((error) => {
-            if (error.response.statusText) {
-              this.makeToast("ERROR " + error.response.statusText, "danger");
-            } else {
-              this.makeToast("ERROR " + "error with webservervice", "danger");
-            }
-            this.validating = false;
-          });
+        if (value) {
+          TRAXService.getPSIByAdvanceSearch("psiCode=" + value)
+            .then((response) => {
+              if (response.data) {
+                this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
+                  id,
+                  type,
+                  value,
+                });
+                this.$refs["psiName" + id + valueIndex][0].updateValue(
+                  response.data[0].psiName
+                );
+                this.$refs["psiCity" + id + valueIndex][0].updateValue(
+                  response.data[0].city
+                );
+              } else {
+                this.validationMessage = value + " is not a valid District";
+                this.deleteValueFromTypeInBatchId(id, type, value);
+                this.addTypeToBatchId(id, type);
+              }
+              this.$forceUpdate();
+              this.validating = false;
+            })
+            .catch((error) => {
+              if (error.response.statusText) {
+                this.makeToast("ERROR " + error.response.statusText, "danger");
+              } else {
+                this.makeToast("ERROR " + "error with webservervice", "danger");
+              }
+              this.validating = false;
+            });
+        } else {
+          this.makeToast("ERROR Please enter a valid PSI", "danger");
+        }
       }
       if (type == "programs") {
         this.validating = true;
@@ -1597,6 +1633,15 @@ export default {
       GraduationReportService.getTranscriptTypes()
         .then((response) => {
           this.transcriptTypes = response.data;
+          for (let transcriptType of this.transcriptTypes) {
+            if (
+              !["SCCP-FR", "BC1996-IND", "BC1986-IND"].includes(
+                transcriptType.code
+              )
+            ) {
+              this.blankTranscriptTypes.push(transcriptType);
+            }
+          }
         })
         // eslint-disable-next-line
         .catch((error) => {

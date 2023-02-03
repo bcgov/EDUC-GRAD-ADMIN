@@ -46,15 +46,30 @@
                                   pagination="true"
                                 >
                                   <template #cell(jobExecutionId)="row">
-                                    <a
-                                      href="#"
-                                      @click="
-                                        downloadDISTRUNUSER(
-                                          row.item.jobExecutionId
-                                        )
-                                      "
-                                      ><i class="fas fa-download"></i
-                                    ></a>
+                                    <div
+                                      class="float-left downloadIcon"
+                                      v-if="row.item.jobParameters"
+                                    >
+                                      <div class="float-left">
+                                        <a
+                                          v-if="
+                                            row.item.jobParameters.payload
+                                              .localDownload == 'Y'
+                                          "
+                                          href="#"
+                                          @click="
+                                            downloadDISTRUNUSER(
+                                              row.item.jobExecutionId
+                                            )
+                                          "
+                                          ><i class="fas fa-download"></i
+                                        ></a>
+                                        <div v-else>&nbsp;&nbsp;</div>
+                                      </div>
+                                    </div>
+                                    <div v-else class="float-left downloadIcon">
+                                      &nbsp;&nbsp;
+                                    </div>
 
                                     <b-btn
                                       v-if="row.item.status == 'COMPLETED'"
@@ -783,6 +798,12 @@ export default {
         link.download = "download";
         link.click();
         URL.revokeObjectURL(link.href);
+
+        this.$bvToast.toast("Download Completed", {
+          title: "DOWNLOAD",
+          variant: "success",
+          noAutoHide: true,
+        });
       });
     },
     removeEmpty(obj) {
@@ -891,10 +912,10 @@ export default {
             timeZone: "PST",
           });
           //parameters
-          for (const [batch] in this.batchInfoListData) {
-            this.batchInfoListData[batch].jobParameters = this.removeEmpty(
-              JSON.parse(this.batchInfoListData[batch].jobParameters)
-            );
+          for (let batchData of this.batchInfoListData) {
+            if (batchData.jobParameters) {
+              batchData.jobParameters = JSON.parse(batchData.jobParameters);
+            }
           }
           //Expected
           this.expected = this.dashboardData.lastExpectedStudentsProcessed;
@@ -1520,6 +1541,9 @@ export default {
 };
 </script>
 <style scoped>
+.downloadIcon {
+  min-width: 25px;
+}
 .alert,
 .card,
 .btn.btn-primary {
