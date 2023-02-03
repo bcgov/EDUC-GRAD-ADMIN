@@ -46,15 +46,14 @@
                                   pagination="true"
                                 >
                                   <template #cell(jobExecutionId)="row">
-                                    <!-- <div v-if="row.item.jobParameters">
-                                      <div
-                                        v-if="
-                                          row.item.jobParameters.localDownload
-                                        "
-                                      >
+                                    <div
+                                      class="float-left downloadIcon"
+                                      v-if="row.item.jobParameters"
+                                    >
+                                      <div class="float-left">
                                         <a
                                           v-if="
-                                            row.item.jobParameters
+                                            row.item.jobParameters.payload
                                               .localDownload == 'Y'
                                           "
                                           href="#"
@@ -65,9 +64,12 @@
                                           "
                                           ><i class="fas fa-download"></i
                                         ></a>
-                                        <span v-else class="px-2"></span>
+                                        <div v-else>&nbsp;&nbsp;</div>
                                       </div>
-                                    </div> -->
+                                    </div>
+                                    <div v-else class="float-left downloadIcon">
+                                      &nbsp;&nbsp;
+                                    </div>
 
                                     <b-btn
                                       v-if="row.item.status == 'COMPLETED'"
@@ -764,11 +766,41 @@ export default {
   },
   methods: {
     ...mapActions("batchprocessing", ["setScheduledBatchJobs"]),
+
     downloadDISTRUNUSER(bid) {
-      DistributionService.downloadDISTRUNUSER(bid).then((res) => {
-        this.$bvToast.toast("Download (.zip)", {
-          title: "FILE SUCCESSFULLY CREATED",
-          href: "data:application/zip;base64," + res.data,
+      DistributionService.downloadDISTRUNUSER(bid).then((response) => {
+        let b64Data = response.data;
+        let sliceSize = 512;
+        let contentType = "application/zip";
+
+        const byteCharacters = atob(b64Data);
+        const byteArrays = [];
+
+        for (
+          let offset = 0;
+          offset < byteCharacters.length;
+          offset += sliceSize
+        ) {
+          const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+          const byteNumbers = new Array(slice.length);
+          for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+          }
+
+          const byteArray = new Uint8Array(byteNumbers);
+          byteArrays.push(byteArray);
+        }
+
+        const blob = new Blob(byteArrays, { type: contentType });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "download";
+        link.click();
+        URL.revokeObjectURL(link.href);
+
+        this.$bvToast.toast("Download Completed", {
+          title: "DOWNLOAD",
           variant: "success",
           noAutoHide: true,
         });
@@ -1498,6 +1530,9 @@ export default {
 };
 </script>
 <style scoped>
+.downloadIcon {
+  min-width: 25px;
+}
 .alert,
 .card,
 .btn.btn-primary {
