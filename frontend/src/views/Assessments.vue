@@ -11,7 +11,6 @@
                 v-bind:items="assessments"
                 v-bind:fields="assessmentFields"
                 id="assessmentCode"
-                v-bind:role="role"
                 showFilter="true"
               >
               </DisplayTable>
@@ -36,7 +35,6 @@
 </template>
 
 <script>
-
 import AssessmentService from "@/services/AssessmentService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 export default {
@@ -110,7 +108,6 @@ export default {
           key: "requirementName",
           label: "Requirement name",
           sortable: true,
-
         },
         {
           key: "requirementProgram",
@@ -158,7 +155,7 @@ export default {
 </script>
 
 <style scoped>
-.assessments-view{
+.assessments-view {
   padding-left: 25px;
   padding-right: 25px;
 }

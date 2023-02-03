@@ -7,7 +7,6 @@
       v-bind:fields="specialCasesFields"
       id="specialCase"
       showFilter="true"
-      v-bind:role="role"
     >
     </DisplayTable>
   </div>

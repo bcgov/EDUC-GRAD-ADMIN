@@ -100,7 +100,7 @@
                                       :ref="
                                         'popover-' + row.item.jobExecutionId
                                       "
-                                      class="w-50"
+                                      class="w-40"
                                     >
                                       <template #title
                                         >Batch Job #{{
@@ -508,7 +508,7 @@
                     ></b-spinner>
                     Request {{ i | jobIdLabel }}
                   </template>
-                  <b-alert v-if="validationMessage" show>{{
+                  <b-alert variant="warning" v-if="validationMessage" show>{{
                     validationMessage
                   }}</b-alert>
                   <b-overlay :show="spinners[i]">
@@ -937,13 +937,32 @@ export default {
       batch.validationMessage = "";
       //check for what
       if (!batch.details["what"]) {
-        batch.validationMessage = "Type of batch Not Specified";
+        this.validationMessage = "Type of batch Not Specified";
         return true;
       }
       //check for who
       if (!batch.details["who"]) {
-        batch.validationMessage = "Group not specified";
+        this.validationMessage = "Group not specified";
         return true;
+      }
+      //check for local download
+      if (batch.details["where"] == "localDownload") {
+        if (batch.details["what"] == "DISTRUNUSER") {
+          if (batch.details["credential"] == "Blank certificate print") {
+            if (!batch.details["blankCertificateDetails"].length) {
+              this.validationMessage =
+                "Please choose at least one certificate type";
+              return true;
+            }
+          }
+          if (batch.details["credential"] == "Blank transcript print") {
+            if (!batch.details["blankTranscriptDetails"].length) {
+              this.validationMessage =
+                "Please choose at least one transcript type";
+              return true;
+            }
+          }
+        }
       }
       return false;
     },
@@ -979,16 +998,11 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            this.$bvToast.toast(
-              "Batch run is still in progress for request" +
-                requestId +
-                " and will run in the background",
-              {
-                title: "BATCH PROCESSING UPDATE",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
           }
         });
     },
@@ -1027,16 +1041,11 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            this.$bvToast.toast(
-              "Batch run is still in progress for request" +
-                requestId +
-                " and will run in the background",
-              {
-                title: "BATCH PROCESSING UPDATE",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
           }
         });
     },
@@ -1074,16 +1083,11 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            this.$bvToast.toast(
-              "Batch run is still in progress for request" +
-                requestId +
-                " and will run in the background",
-              {
-                title: "BATCH PROCESSING UPDATE",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
           }
         });
     },
@@ -1116,16 +1120,11 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            this.$bvToast.toast(
-              "Batch run is still in progress for request" +
-                requestId +
-                " and will run in the background",
-              {
-                title: "BATCH PROCESSING UPDATE",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
           }
         });
     },
@@ -1158,16 +1157,11 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            this.$bvToast.toast(
-              "Batch run is still in progress for request" +
-                requestId +
-                " and will run in the background",
-              {
-                title: "BATCH PROCESSING UPDATE",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
           }
         });
     },
@@ -1200,16 +1194,11 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            this.$bvToast.toast(
-              "Batch run is still in progress for request" +
-                requestId +
-                " and will run in the background",
-              {
-                title: "BATCH PROCESSING UPDATE",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
           }
         });
     },
