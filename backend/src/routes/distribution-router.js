@@ -30,34 +30,7 @@ async function getDistributionAPI(req, res) {
     const url =
       `${config.get("server:distributionAPIURL")}/distribute` + req.url;
     const data = await getData(token, url, req.session?.correlationID);
-    // console.log(data);
-    // res.set('Content-Type','application/zip');
-    // res.set('Content-Disposition','attachment; filename="download.zip"');
-    // res.set('Content-Length', data.length);
-    // //res.pipe(data, 'binary')
-    // //return res.end();
-    // return res.send(data).status(200)
-
-    // let zip = Buffer.from(data, 'base64');
-
-    //  res.writeHead(200, {
-    //    'Content-Type': 'application/zip',
-    //    'Content-Disposition': 'attachment; filename=test.zip',
-    //    'Content-Length': zip.length
-    // });
-    // res.end(zip); 
-
-// console.log(data)
-  var zip = Buffer.from(data, 'base64');
-
-   res.writeHead(200, {
-     'Content-Type': 'application/zip',
-     'Content-Disposition': 'attachment; filename=test.zip',
-     'Content-Length': zip.length
-   });
-   res.end(zip); 
-
-
+    res.send(data)
   } catch (e) {
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);

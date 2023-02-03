@@ -751,10 +751,33 @@ export default {
   },
   methods: {
     ...mapActions("batchprocessing", ["setScheduledBatchJobs"]),
+
     downloadDISTRUNUSER(bid) {
       DistributionService.downloadDISTRUNUSER(bid).then((response) => {
-        console.log(response);
-        const blob = new Blob([response.data], { type: "application/zip" });
+        let b64Data = response.data;
+        let sliceSize = 512;
+        let contentType = "application/zip";
+
+        const byteCharacters = atob(b64Data);
+        const byteArrays = [];
+
+        for (
+          let offset = 0;
+          offset < byteCharacters.length;
+          offset += sliceSize
+        ) {
+          const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+          const byteNumbers = new Array(slice.length);
+          for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+          }
+
+          const byteArray = new Uint8Array(byteNumbers);
+          byteArrays.push(byteArray);
+        }
+
+        const blob = new Blob(byteArrays, { type: contentType });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "download";
