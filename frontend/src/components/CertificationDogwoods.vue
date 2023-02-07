@@ -71,8 +71,8 @@ export default {
   props: {},
   computed: {
     ...mapGetters({
-      certificates: "getStudentCertificates",
-      studentGradStatus: "getStudentGradStatus",
+      certificates: "student/getStudentCertificates",
+      studentGradStatus: "student/getStudentGradStatus",
     }),
   },
 

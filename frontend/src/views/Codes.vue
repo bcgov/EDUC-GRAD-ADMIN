@@ -242,7 +242,6 @@ export default {
   computed: {
     ...mapGetters({
       token: "auth/getToken",
-      role: "getRoles"
     }),
   },
   created() {
