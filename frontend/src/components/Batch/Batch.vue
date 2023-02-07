@@ -816,16 +816,7 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
           Cancel
         </b-button>
         <b-button
-          v-if="batch.details['what'] == 'DISTRUN_YE'"
-          v-b-modal="'DISTRUN_YE-modal-' + jobId"
-          size="sm"
-          variant="primary"
-          class="btn btn-primary w-100 float-right col-2 p-2"
-        >
-          Run
-        </b-button>
-        <b-button
-          v-else-if="batch.details['where'] == 'localDownload'"
+          v-if="batch.details['where'] == 'localDownload'"
           @click="runBatch(jobId)"
           size="sm"
           variant="primary"
@@ -1157,13 +1148,16 @@ export default {
 
   methods: {
     validBatch() {
-      if (
-        this.batch.details["who"] == "" ||
-        this.batch.details["who"] == null
-      ) {
-        this.batchIsValid = false;
-        return;
+      if (this.batch.details["what"] != "DISTRUN_YE") {
+        if (
+          this.batch.details["who"] == "" ||
+          this.batch.details["who"] == null
+        ) {
+          this.batchIsValid = false;
+          return;
+        }
       }
+
       if (
         this.batch.details["who"] == "District" &&
         !this.batch.details["categoryCode"]
