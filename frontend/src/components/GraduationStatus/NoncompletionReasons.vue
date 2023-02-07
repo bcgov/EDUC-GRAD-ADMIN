@@ -63,9 +63,9 @@ export default {
   props: {},
   computed: {
     ...mapGetters({
-      studentGradStatus: "getStudentGradStatus",
-      requirementsMet: "getRequirementsMet",
-      nongradReasons: "getNongradReasons",
+      studentGradStatus: "student/getStudentGradStatus",
+      requirementsMet: "student/getRequirementsMet",
+      nongradReasons: "student/getNongradReasons",
     }),
   },
   methods: {},

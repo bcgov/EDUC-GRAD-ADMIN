@@ -21,7 +21,7 @@ export default {
   props: {},
   computed: {
     ...mapGetters({
-      exams: "getStudentExams",
+      exams: "student/getStudentExams",
     }),
   },
   components: {

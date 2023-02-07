@@ -149,11 +149,11 @@ export default {
   props: {},
   computed: {
     ...mapGetters({
-      studentId: "getStudentId",
-      studentHistory: "getStudentAuditHistory",
-      optionalProgramHistory: "getStudentOptionalProgramAuditHistory",
-      studentUngradReasons: "getStudentUngradReasons",
-      studentNotes: "getStudentNotes",
+      studentId: "student/getStudentId",
+      studentHistory: "student/getStudentAuditHistory",
+      optionalProgramHistory: "student/getStudentOptionalProgramAuditHistory",
+      studentUngradReasons: "student/getStudentUngradReasons",
+      studentNotes: "student/getStudentNotes",
     }),
   },
   data: function () {

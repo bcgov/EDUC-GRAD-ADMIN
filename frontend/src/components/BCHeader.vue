@@ -228,7 +228,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      profile: "getStudentProfile",
+      profile: "student/getStudentProfile",
     }),
   },
   methods: {
@@ -237,7 +237,7 @@ export default {
         localStorage.removeItem("jwt");
         localStorage.removeItem("refresh");
       }
-      this.$store.commit("unsetStudent");
+      this.$store.commit("student/unsetStudent");
       this.$store.commit("logout");
       this.$router.push("/logout");
     },
@@ -257,7 +257,7 @@ export default {
           StudentService.getStudentByPen(this.penInput)
             .then((response) => {
               if (response.data) {
-                this.$store.commit("unsetStudent");
+                this.$store.commit("student/unsetStudent");
                 this.loadStudent(response.data);
                 this.$store.dispatch(
                   "setQuickSearchPen",

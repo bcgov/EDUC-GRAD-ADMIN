@@ -588,11 +588,6 @@ export default {
       tabs: "batchprocessing/getBatchProcessingTabs",
       spinners: "batchprocessing/getBatchTabsLoading",
       scheduledJobs: "batchprocessing/getScheduledBatchJobs",
-      courses: "getStudentCourses",
-      gradStatusCourses: "gradStatusCourses",
-      studentGradStatus: "getStudentGradStatus",
-      hasGradStatus: "studentHasGradStatus",
-      gradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
     }),
   },
   props: [

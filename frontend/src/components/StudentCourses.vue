@@ -180,11 +180,11 @@ export default {
   },
   computed: {
     ...mapGetters({
-      courses: "getStudentCourses",
-      gradStatusCourses: "gradStatusCourses",
-      studentGradStatus: "getStudentGradStatus",
-      hasGradStatus: "studentHasGradStatus",
-      hasGradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
+      courses: "student/getStudentCourses",
+      gradStatusCourses: "student/gradStatusCourses",
+      studentGradStatus: "student/getStudentGradStatus",
+      hasGradStatus: "student/studentHasGradStatus",
+      hasGradStatusPendingUpdates: "student/getHasGradStatusPendingUpdates",
     }),
   },
   data: function () {
@@ -318,9 +318,9 @@ export default {
           }
         }
         if (this.gradStatusPendingUpdates.length) {
-          this.$store.dispatch("setHasGradStatusPendingUpdates", true);
+          this.$store.dispatch("student/setHasGradStatusPendingUpdates", true);
         } else {
-          this.$store.dispatch("setHasGradStatusPendingUpdates", false);
+          this.$store.dispatch("student/setHasGradStatusPendingUpdates", false);
         }
       }
     },

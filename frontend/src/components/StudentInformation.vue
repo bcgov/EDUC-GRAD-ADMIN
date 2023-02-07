@@ -212,9 +212,8 @@ export default {
   components: {},
   computed: {
     ...mapGetters({
-      studentInfo: "getStudentProfile",
-      studentFullName: "getStudentFullName",
-      role: "getRoles",
+      studentInfo: "student/getStudentProfile",
+      studentFullName: "student/getStudentFullName",
     }),
   },
   data() {

@@ -63,12 +63,12 @@ export default {
   },
   computed: {
     ...mapGetters({
-      courses: "getStudentCourses",
-      gradStatusCourses: "gradStatusCourses",
-      gradStatusAssessments: "gradStatusAssessments",
-      studentRequirementDetailGRADStudentCoursess: "getStudentGradStatus",
-      hasGradStatus: "studentHasGradStatus",
-      hasGradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
+      courses: "student/getStudentCourses",
+      gradStatusCourses: "student/gradStatusCourses",
+      gradStatusAssessments: "student/gradStatusAssessments",
+      studentRequirementDetailGRADStudentCoursess: "student/getStudentGradStatus",
+      hasGradStatus: "student/studentHasGradStatus",
+      hasGradStatusPendingUpdates: "student/getHasGradStatusPendingUpdates",
     }),
   },
   data: function () {
