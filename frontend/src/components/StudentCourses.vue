@@ -258,7 +258,7 @@ export default {
         },
         {
           key: "courseName",
-          label: "Course title",
+          label: "Course Title",
           sortable: true,
           class: "text-left",
         },

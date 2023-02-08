@@ -31,7 +31,7 @@
 
     <div class="requirements-met pb-2">
       <b-card
-        header="Requirements met"
+        header="Requirements Met"
         v-if="
           studentGradStatus.studentGradData &&
           Object.keys(studentGradStatus.studentGradData).length > 0
