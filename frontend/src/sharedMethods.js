@@ -34,14 +34,14 @@ export default {
         });
     },
     base64ToFileTypeAndOpenWindow: function (data, mimeType) {
-      var byteCharacters = atob(data);
-      var byteNumbers = new Array(byteCharacters.length);
+      let byteCharacters = atob(data);
+      let byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
           byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
-      var byteArray = new Uint8Array(byteNumbers);
-      var file = new Blob([byteArray], { type: mimeType + ';base64' });
-      var fileURL = URL.createObjectURL(file);        
+      let byteArray = new Uint8Array(byteNumbers);
+      let file = new Blob([byteArray], { type: mimeType + ';base64' });
+      let fileURL = URL.createObjectURL(file);        
       window.open(fileURL);
     },    
     base64ToFileTypeAndDownload: function (data, mimeType, filename) {
