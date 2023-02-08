@@ -38,12 +38,12 @@
             <b-dropdown-item
               :disabled="studentGradStatus.studentStatus === 'MER'"
               v-on:click="projectedGradStatusWithFinalMarks"
-              >Projected final marks</b-dropdown-item
+              >Projected Final Marks</b-dropdown-item
             >
             <b-dropdown-item
               :disabled="studentGradStatus.studentStatus === 'MER'"
               v-on:click="projectedGradStatusWithFinalAndReg"
-              >Projected final marks and registrations</b-dropdown-item
+              >Projected Final Marks and Registrations</b-dropdown-item
             >
             <b-dropdown-item
               :disabled="
@@ -147,7 +147,7 @@
 
               <b-tab
                 v-if="exams != 'not loaded'"
-                :title="'Exams details (' + exams.length + ')'"
+                :title="'Exams Details (' + exams.length + ')'"
                 class="py-3 px-0 m-1"
               >
                 <b-card-text>
@@ -767,7 +767,10 @@ export default {
         .then(() => {
           StudentService.getStudentUngradReasons(this.studentId)
             .then((response) => {
-              this.$store.dispatch("student/setStudentUngradReasons", response.data);
+              this.$store.dispatch(
+                "student/setStudentUngradReasons",
+                response.data
+              );
             })
             .catch((error) => {
               if (error.response.status) {
@@ -779,7 +782,10 @@ export default {
             });
           StudentService.getGraduationStatus(this.studentId)
             .then((response) => {
-              this.$store.dispatch("student/setStudentGradStatus", response.data);
+              this.$store.dispatch(
+                "student/setStudentGradStatus",
+                response.data
+              );
               this.loadStudentHistory(this.studentId);
               this.loadStudentOptionalProgramHistory(this.studentId);
               this.loadStudentOptionalPrograms(this.studentId);
@@ -1135,7 +1141,10 @@ export default {
     loadCareerPrograms(studentIdFromURL) {
       StudentService.getStudentCareerPrograms(studentIdFromURL)
         .then((response) => {
-          this.$store.dispatch("student/setStudentCareerPrograms", response.data);
+          this.$store.dispatch(
+            "student/setStudentCareerPrograms",
+            response.data
+          );
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1195,7 +1204,10 @@ export default {
     loadStudentUngradReasons(studentIdFromURL) {
       StudentService.getStudentUngradReasons(studentIdFromURL)
         .then((response) => {
-          this.$store.dispatch("student/setStudentUngradReasons", response.data);
+          this.$store.dispatch(
+            "student/setStudentUngradReasons",
+            response.data
+          );
         })
         .catch((error) => {
           if (error.response.status) {
