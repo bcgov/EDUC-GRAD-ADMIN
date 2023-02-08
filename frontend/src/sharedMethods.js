@@ -33,6 +33,17 @@ export default {
             autoHideDelay: delay,
         });
     },
+    base64ToFileTypeAndOpenWindow: function (data, mimeType) {
+      let byteCharacters = atob(data);
+      let byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      let byteArray = new Uint8Array(byteNumbers);
+      let file = new Blob([byteArray], { type: mimeType + ';base64' });
+      let fileURL = URL.createObjectURL(file);        
+      window.open(fileURL);
+    },    
     base64ToFileTypeAndDownload: function (data, mimeType, filename) {
       let b64Data = data;
       let sliceSize = 512;

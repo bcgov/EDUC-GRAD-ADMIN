@@ -78,8 +78,7 @@ export default {
 
   methods: {
     downloadFile: function (data, mimeType, filename) {
-      sharedMethods.base64ToFileTypeAndDownload(data, mimeType, filename);
-      this.showNotification("success", "Download Completed");
+      sharedMethods.base64ToFileTypeAndOpenWindow(data, mimeType, filename);
     },
     isCertificateEligible: function () {
       return (
