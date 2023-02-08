@@ -23,6 +23,15 @@ export default {
       return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OC', request);
     }
   },     
+  runDISTRUN_MONTHLY(){
+    return ApiService.apiAxios.get('api/v1/batch/executemonthlydisrunbatchjob');
+  },
+  runDISTRUN_SUPP(){
+    return ApiService.apiAxios.get('api/v1/batch/executesupplementaldisrunbatchjob');
+  },
+  runDISTRUN_NONGRAD(){
+    return ApiService.apiAxios.get('api/v1/batch/executenongraddisrunbatchjob');
+  },  
   runDISTRUN_YE(){
     return ApiService.apiAxios.get('/api/v1/batch/executeyearlydisrunbatchjob');
   },
