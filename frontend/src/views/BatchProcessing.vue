@@ -46,10 +46,14 @@
                                   pagination="true"
                                 >
                                   <template #cell(jobExecutionId)="row">
-                                    <div
+                                    <!-- <div
                                       class="float-left downloadIcon"
                                       v-if="row.item.jobParameters"
                                     >
+                                      {{
+                                        row.item.jobParameters.payload
+                                          .localDownload
+                                      }}
                                       <div class="float-left">
                                         <a
                                           v-if="
@@ -69,7 +73,7 @@
                                     </div>
                                     <div v-else class="float-left downloadIcon">
                                       &nbsp;&nbsp;
-                                    </div>
+                                    </div> -->
 
                                     <b-btn
                                       v-if="row.item.status == 'COMPLETED'"
