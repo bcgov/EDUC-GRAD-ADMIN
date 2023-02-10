@@ -176,6 +176,7 @@
                                             <img
                                               width="35"
                                               src="../../src/assets/images/play_icon.png"
+                                              alt="Rerun batch job"
                                             />
                                           </b-btn>
                                         </div>
@@ -221,6 +222,7 @@
                                             <img
                                               width="35"
                                               src="../../src/assets/images/play_icon.png"
+                                              alt="Rerun batch job errors"
                                             />
                                           </b-btn>
                                         </div>
@@ -255,6 +257,7 @@
                                             <img
                                               width="35"
                                               src="../../src/assets/images/play_icon.png"
+                                              alt="Rerun batch job school reports"
                                             />
                                           </b-btn>
                                         </div>
