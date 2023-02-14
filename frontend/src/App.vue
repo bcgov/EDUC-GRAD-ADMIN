@@ -17,7 +17,7 @@
         <a :href="authRoutes.LOGOUT" class="text-white">Logout</a>
       </div>
       <div v-else-if="!isAuthenticated">
-        <a :href="authRoutes.LOGIN">Login</a>
+        <a :href="loginUrl">Login</a>
       </div>
     </Bcheader>
 
@@ -60,6 +60,9 @@ export default {
     ...mapState("app", ["pageTitle"]),
     dataReady: function () {
       return this.userInfo;
+    },
+    loginUrl: function () {
+      return this.authRoutes.LOGIN;
     },
   },
   methods: {
