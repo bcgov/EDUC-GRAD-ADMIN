@@ -1,6 +1,6 @@
 <template>
   <div class="graduation-status">
-    <b-card no-body header="GRAD status">
+    <b-card no-body header="GRAD Status">
       <b-card-text class="p-3">
         <b-button-group
           v-if="allowUpdateGradStatus"

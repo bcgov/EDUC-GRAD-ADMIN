@@ -16,18 +16,12 @@
             <b-dropdown-item
               :disabled="studentGradStatus.studentStatus === 'MER'"
               v-on:click="projectedGradStatusWithFinalMarks"
-              >Preview Final Marks</b-dropdown-item
+              >Projected Final Marks</b-dropdown-item
             >
             <b-dropdown-item
               :disabled="studentGradStatus.studentStatus === 'MER'"
               v-on:click="projectedGradStatusWithFinalAndReg"
-              >Update TVR</b-dropdown-item
-            >
-            <b-dropdown-item
-              :disabled="studentGradStatus.studentStatus === 'MER'"
-              v-on:click="graduateStudent"
-              v-if="!studentGradStatus.programCompletionDate"
-              >Update Grad Status</b-dropdown-item
+              >Projected Final Marks and Registrations</b-dropdown-item
             >
             <b-dropdown-item
               :disabled="
@@ -140,7 +134,7 @@
 
               <b-tab
                 v-if="exams != 'not loaded'"
-                :title="'Exams details (' + exams.length + ')'"
+                :title="'Exams Details (' + exams.length + ')'"
                 class="py-3 px-0 m-1"
               >
                 <b-card-text>

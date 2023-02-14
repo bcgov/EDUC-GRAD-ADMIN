@@ -45,7 +45,7 @@ export default {
       specialCasesFields: [
         {
           key: "spCase",
-          label: "Special case",
+          label: "Special Case",
           sortable: true,
           sortDirection: "desc",
         },

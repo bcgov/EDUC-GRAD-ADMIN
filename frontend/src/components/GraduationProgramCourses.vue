@@ -11,7 +11,7 @@
         v-bind:fields="fields"
         id="courseName"
         showFilter="true"
-        pagination=true
+        pagination="true"
       >
       </DisplayTable>
     </div>
@@ -47,7 +47,7 @@ export default {
         },
         {
           key: "courseLevel",
-          label: "Course level",
+          label: "Course Level",
           sortable: true,
           editable: true,
         },
@@ -59,13 +59,13 @@ export default {
         },
         {
           key: "startDate",
-          label: "TRAX Start date",
+          label: "TRAX Start Date",
           sortable: true,
           editable: true,
         },
         {
           key: "endDate",
-          label: "TRAX End date",
+          label: "TRAX End Date",
           sortable: true,
           editable: true,
         },
@@ -73,13 +73,13 @@ export default {
       assessmentFields: [
         {
           key: "assessmentCode",
-          label: "Assessment code",
+          label: "Assessment Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "assessmentName",
-          label: "Assessment name",
+          label: "Assessment Name",
           sortable: true,
           editable: true,
         },
