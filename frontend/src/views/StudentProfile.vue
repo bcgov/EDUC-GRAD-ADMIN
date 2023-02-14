@@ -10,31 +10,9 @@
             v-b-tooltip.hover.left
             id="actions"
             right
-            :text="smallScreen ? '' : 'Run Graduation Algorithm'"
+            :text="smallScreen ? '' : 'Transcripts & TVRs'"
             class="m-md-2 float-right admin-gear-w-text"
           >
-            <b-dropdown-item
-              :disabled="studentGradStatus.studentStatus === 'MER'"
-              v-on:click="graduateStudent"
-              v-if="!studentGradStatus.programCompletionDate"
-              >Graduate Student</b-dropdown-item
-            >
-            <b-dropdown-item
-              :disabled="studentGradStatus.studentStatus === 'MER'"
-              v-on:click="graduateStudent"
-              v-if="
-                studentGradStatus.programCompletionDate &&
-                studentGradStatus.program == ('SCCP' || 'NOPROG')
-              "
-              >Graduate Student</b-dropdown-item
-            >
-            <b-dropdown-item
-              :disabled="studentGradStatus.studentStatus === 'MER'"
-              v-if="studentGradStatus.programCompletionDate"
-              v-b-modal.ungraduate-student-modal
-              >Undo Completion</b-dropdown-item
-            >
-            <b-dropdown-divider></b-dropdown-divider>
             <b-dropdown-item
               :disabled="studentGradStatus.studentStatus === 'MER'"
               v-on:click="projectedGradStatusWithFinalMarks"
@@ -51,7 +29,16 @@
                 !studentGradStatus.programCompletionDate
               "
               v-on:click="updateStudentReports"
-              >Update Student Reports</b-dropdown-item
+              >Update Transcript</b-dropdown-item
+            >
+            <b-dropdown-divider
+              v-if="studentGradStatus.programCompletionDate"
+            ></b-dropdown-divider>
+            <b-dropdown-item
+              :disabled="studentGradStatus.studentStatus === 'MER'"
+              v-if="studentGradStatus.programCompletionDate"
+              v-b-modal.ungraduate-student-modal
+              >Undo Completion</b-dropdown-item
             >
           </b-dropdown>
         </div>
