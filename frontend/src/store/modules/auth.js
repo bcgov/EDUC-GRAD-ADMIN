@@ -86,7 +86,6 @@ export default {
     logout(context) {
       context.commit('setJwtToken');
       context.commit('setUserInfo');
-      // router.push(AuthRoutes.LOGOUT);
     },
 
     async getUserInfo(context) {
