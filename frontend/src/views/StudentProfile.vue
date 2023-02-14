@@ -10,40 +10,24 @@
             v-b-tooltip.hover.left
             id="actions"
             right
-            :text="smallScreen ? '' : 'Run Graduation Algorithm'"
+            :text="smallScreen ? '' : 'Transcripts & TVRs'"
             class="m-md-2 float-right admin-gear-w-text"
           >
             <b-dropdown-item
               :disabled="studentGradStatus.studentStatus === 'MER'"
-              v-on:click="graduateStudent"
-              v-if="!studentGradStatus.programCompletionDate"
-              >Graduate Student</b-dropdown-item
-            >
-            <b-dropdown-item
-              :disabled="studentGradStatus.studentStatus === 'MER'"
-              v-on:click="graduateStudent"
-              v-if="
-                studentGradStatus.programCompletionDate &&
-                studentGradStatus.program == ('SCCP' || 'NOPROG')
-              "
-              >Graduate Student</b-dropdown-item
-            >
-            <b-dropdown-item
-              :disabled="studentGradStatus.studentStatus === 'MER'"
-              v-if="studentGradStatus.programCompletionDate"
-              v-b-modal.ungraduate-student-modal
-              >Undo Completion</b-dropdown-item
-            >
-            <b-dropdown-divider></b-dropdown-divider>
-            <b-dropdown-item
-              :disabled="studentGradStatus.studentStatus === 'MER'"
               v-on:click="projectedGradStatusWithFinalMarks"
-              >Projected final marks</b-dropdown-item
+              >Preview Final Marks</b-dropdown-item
             >
             <b-dropdown-item
               :disabled="studentGradStatus.studentStatus === 'MER'"
               v-on:click="projectedGradStatusWithFinalAndReg"
-              >Projected final marks and registrations</b-dropdown-item
+              >Update TVR</b-dropdown-item
+            >
+            <b-dropdown-item
+              :disabled="studentGradStatus.studentStatus === 'MER'"
+              v-on:click="graduateStudent"
+              v-if="!studentGradStatus.programCompletionDate"
+              >Update Grad Status</b-dropdown-item
             >
             <b-dropdown-item
               :disabled="
@@ -51,7 +35,16 @@
                 !studentGradStatus.programCompletionDate
               "
               v-on:click="updateStudentReports"
-              >Update Student Reports</b-dropdown-item
+              >Update Transcript</b-dropdown-item
+            >
+            <b-dropdown-divider
+              v-if="studentGradStatus.programCompletionDate"
+            ></b-dropdown-divider>
+            <b-dropdown-item
+              :disabled="studentGradStatus.studentStatus === 'MER'"
+              v-if="studentGradStatus.programCompletionDate"
+              v-b-modal.ungraduate-student-modal
+              >Undo Completion</b-dropdown-item
             >
           </b-dropdown>
         </div>
@@ -767,7 +760,10 @@ export default {
         .then(() => {
           StudentService.getStudentUngradReasons(this.studentId)
             .then((response) => {
-              this.$store.dispatch("student/setStudentUngradReasons", response.data);
+              this.$store.dispatch(
+                "student/setStudentUngradReasons",
+                response.data
+              );
             })
             .catch((error) => {
               if (error.response.status) {
@@ -779,7 +775,10 @@ export default {
             });
           StudentService.getGraduationStatus(this.studentId)
             .then((response) => {
-              this.$store.dispatch("student/setStudentGradStatus", response.data);
+              this.$store.dispatch(
+                "student/setStudentGradStatus",
+                response.data
+              );
               this.loadStudentHistory(this.studentId);
               this.loadStudentOptionalProgramHistory(this.studentId);
               this.loadStudentOptionalPrograms(this.studentId);
@@ -1135,7 +1134,10 @@ export default {
     loadCareerPrograms(studentIdFromURL) {
       StudentService.getStudentCareerPrograms(studentIdFromURL)
         .then((response) => {
-          this.$store.dispatch("student/setStudentCareerPrograms", response.data);
+          this.$store.dispatch(
+            "student/setStudentCareerPrograms",
+            response.data
+          );
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1195,7 +1197,10 @@ export default {
     loadStudentUngradReasons(studentIdFromURL) {
       StudentService.getStudentUngradReasons(studentIdFromURL)
         .then((response) => {
-          this.$store.dispatch("student/setStudentUngradReasons", response.data);
+          this.$store.dispatch(
+            "student/setStudentUngradReasons",
+            response.data
+          );
         })
         .catch((error) => {
           if (error.response.status) {
