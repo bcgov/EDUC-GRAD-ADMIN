@@ -14,10 +14,10 @@
         </b-sidebar>
         (<a>{{ roles }}</a
         >) |
-        <a :href="userLogout" class="text-white">Logout</a>
+        <a :href="authRoutes.LOGOUT" class="text-white">Logout</a>
       </div>
       <div v-else-if="!isAuthenticated">
-        <a :href="login">Login</a>
+        <a :href="authRoutes.LOGIN">Login</a>
       </div>
     </Bcheader>
 
@@ -34,7 +34,6 @@ import { mapActions, mapMutations, mapGetters, mapState } from "vuex";
 
 import Bcheader from "@/components/BCHeader";
 import BCFooter from "@/components/BCFooter";
-import sanitizeUrl from "@braintree/sanitize-url";
 import EnvironmentBanner from "@/components/EnvironmentBanner";
 import { Routes } from "@/utils/constants";
 export default {
@@ -45,8 +44,7 @@ export default {
   },
   data() {
     return {
-      login: "",
-      userLogout: "",
+      authRoutes: Routes,
       host: location.protocol + "//" + location.host,
     };
   },
@@ -71,9 +69,6 @@ export default {
     ...mapActions("useraccess", ["userAccess"]),
   },
   async created() {
-    this.login = sanitizeUrl(Routes.LOGIN);
-    this.userLogout = sanitizeUrl(Routes.LOGOUT);
-
     this.getJwtToken()
       .then(() => this.setApplicationVariables())
       .catch((e) => {
