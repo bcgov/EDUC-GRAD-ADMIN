@@ -34,6 +34,7 @@ import { mapActions, mapMutations, mapGetters, mapState } from "vuex";
 
 import Bcheader from "@/components/BCHeader";
 import BCFooter from "@/components/BCFooter";
+import sanitizeUrl from "@braintree/sanitize-url";
 import EnvironmentBanner from "@/components/EnvironmentBanner";
 import { Routes } from "@/utils/constants";
 export default {
@@ -44,8 +45,8 @@ export default {
   },
   data() {
     return {
-      login: Routes.LOGIN,
-      userLogout: Routes.LOGOUT,
+      login: "",
+      userLogout: "",
       host: location.protocol + "//" + location.host,
     };
   },
@@ -70,6 +71,9 @@ export default {
     ...mapActions("useraccess", ["userAccess"]),
   },
   async created() {
+    this.login = sanitizeUrl(Routes.LOGIN);
+    this.userLogout = sanitizeUrl(Routes.LOGOUT);
+
     this.getJwtToken()
       .then(() => this.setApplicationVariables())
       .catch((e) => {
