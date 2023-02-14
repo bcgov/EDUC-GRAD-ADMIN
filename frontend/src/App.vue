@@ -17,7 +17,7 @@
         <a :href="authRoutes.LOGOUT" class="text-white">Logout</a>
       </div>
       <div v-else-if="!isAuthenticated">
-        <a :href="loginUrl">Login</a>
+        <a :href="authRoutes.LOGOUT">Login</a>
       </div>
     </Bcheader>
 
