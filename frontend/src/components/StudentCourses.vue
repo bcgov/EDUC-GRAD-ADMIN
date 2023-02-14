@@ -140,11 +140,11 @@
                 {{ row.item.relatedLevel }}
               </li>
               <li v-if="row.item.relatedCourseName">
-                <strong>Related Course name:</strong>
+                <strong>Related Course Name:</strong>
                 {{ row.item.relatedCourseName }}
               </li>
               <li v-if="row.item.alternateCourseName">
-                <strong>Alternate Course name:</strong>
+                <strong>Alternate Course Name:</strong>
                 {{ row.item.alternateCourseName }}
               </li>
               <li v-if="row.item.bestSchoolPercent">
@@ -160,7 +160,7 @@
                 {{ row.item.metLitNumRequirement }}
               </li>
               <li v-if="row.item.specialCase">
-                <strong>Special case:</strong> {{ row.item.specialCase }}
+                <strong>Special Case:</strong> {{ row.item.specialCase }}
               </li>
             </ul>
           </b-card>
