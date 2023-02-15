@@ -16,10 +16,10 @@
               </DisplayTable>
             </b-card-text>
           </b-tab>
-          <b-tab title="Assessment requirements">
+          <b-tab title="Assessment Requirements">
             <b-card-text v-if="assessmentRequirements">
               <DisplayTable
-                title="Assessment requirements"
+                title="Assessment Requirements"
                 v-bind:items="assessmentRequirements"
                 v-bind:fields="assessmentRequirementsFields"
                 id="assessmentCode"
@@ -50,14 +50,14 @@ export default {
       assessmentFields: [
         {
           key: "assessmentCode",
-          label: "Assessment code",
+          label: "Assessment Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-15",
         },
         {
           key: "assessmentName",
-          label: "Assessment name",
+          label: "Assessment Name",
           sortable: true,
           class: "w-40",
         },
@@ -70,13 +70,13 @@ export default {
         },
         {
           key: "startDate",
-          label: "Start date",
+          label: "Start Date",
           sortable: true,
           class: "w-20",
         },
         {
           key: "endDate",
-          label: "End date",
+          label: "End Date",
           sortable: true,
           class: "w-20",
         },
@@ -85,13 +85,13 @@ export default {
       assessmentRequirementsFields: [
         {
           key: "assessmentCode",
-          label: "Assessment code",
+          label: "Assessment Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "assessmentName",
-          label: "Assessment name",
+          label: "Assessment Name",
           sortable: true,
         },
         {
@@ -106,12 +106,12 @@ export default {
         },
         {
           key: "requirementName",
-          label: "Requirement name",
+          label: "Requirement Name",
           sortable: true,
         },
         {
           key: "requirementProgram",
-          label: "Requirement program",
+          label: "Requirement Program",
           sortable: true,
         },
       ],

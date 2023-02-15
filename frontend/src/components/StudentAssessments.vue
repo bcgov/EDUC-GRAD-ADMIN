@@ -122,20 +122,20 @@ export default {
         },
         {
           key: "specialCase",
-          label: "Special case",
+          label: "Special Case",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "exceededWriteFlag",
-          label: "Exceeded writes",
+          label: "Exceeded Writes",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
         },
         {
           key: "proficiencyScore",
-          label: "Proficiency score",
+          label: "Proficiency Score",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",

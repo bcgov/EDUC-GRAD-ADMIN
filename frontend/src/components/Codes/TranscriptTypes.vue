@@ -63,12 +63,12 @@ export default {
         },
         {
           key: "effectiveDate",
-          label: "Effective date",
+          label: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry date",
+          label: "Expiry Date",
           sortable: true,
         },
       ],

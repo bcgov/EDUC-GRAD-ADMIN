@@ -12,13 +12,13 @@
             <label>PEN</label>
           </th>
           <th class="align-top profile-name-header" scope="col">
-            <label>Legal surname</label>
+            <label>Legal Surname</label>
           </th>
           <th class="align-top profile-name-header" scope="col">
-            <label>Legal given</label>
+            <label>Legal Given</label>
           </th>
           <th class="align-top profile-name-header" scope="col">
-            <label>Legal middle</label>
+            <label>Legal Middle</label>
           </th>
           <th class="align-top profile-name-header" scope="col">
             <label>Birthdate (yyyy-mm-dd)</label>
@@ -169,14 +169,18 @@
                 <b-td class="px-2"
                   ><strong>True student ID:</strong>
                   <span
-                  v-if="studentInfo.trueStudentID && isValidPEN(studentInfo.trueStudentID)"
-                  :id="'pen'+ studentInfo.trueStudentID"
-                  > {{studentInfo.trueStudentID}}</span>
+                    v-if="
+                      studentInfo.trueStudentID &&
+                      isValidPEN(studentInfo.trueStudentID)
+                    "
+                    :id="'pen' + studentInfo.trueStudentID"
+                  >
+                    {{ studentInfo.trueStudentID }}</span
+                  >
                   <span v-else-if="studentInfo.trueStudentID">
                     Fetching PEN...
                   </span>
-                  </b-td
-                >
+                </b-td>
                 <b-td class="px-2"
                   ><strong>Local ID:</strong> {{ studentInfo.localID }}</b-td
                 >
@@ -205,7 +209,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import sharedMethods from '../sharedMethods';
+import sharedMethods from "../sharedMethods";
 
 export default {
   name: "StudentInformation",

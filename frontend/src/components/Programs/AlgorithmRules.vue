@@ -48,28 +48,28 @@ export default {
       algorithmRulesFields: [
         {
           key: "graduationProgramCode",
-          label: "Program code",
+          label: "Program Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "ruleName",
-          label: "Rule name",
+          label: "Rule Name",
           sortable: true,
         },
         {
           key: "ruleDescription",
-          label: "Rule description",
+          label: "Rule Description",
           sortable: true,
         },
         {
           key: "sortOrder",
-          label: "Sort order",
+          label: "Sort Order",
           sortable: true,
         },
         {
           key: "isActive",
-          label: "Active flag",
+          label: "Active Flag",
           sortable: true,
         },
       ],

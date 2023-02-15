@@ -21,7 +21,7 @@
                       }"
                       class="wild-card-button"
                       v-b-tooltip.hover
-                      title="Course code starts with"
+                      title="Course Code Starts With"
                     >
                       [.*]
                     </div>
@@ -172,10 +172,10 @@
               ></DisplayTable>
             </b-card-text>
           </b-tab>
-          <b-tab title="Course restrictions">
+          <b-tab title="Course Restrictions">
             <b-card-text>
               <DisplayTable
-                title="Course restrictions"
+                title="Course Restrictions"
                 v-bind:items="courseRestrictions"
                 v-bind:fields="courseRestrictionFields"
                 id="courseRestrictionId"
@@ -185,7 +185,7 @@
               </DisplayTable>
             </b-card-text>
           </b-tab>
-          <b-tab title="Course requirements">
+          <b-tab title="Course Requirements">
             <b-card-text>
               <form v-on:submit.prevent>
                 <div class="advanced-search-form">
@@ -203,7 +203,7 @@
                         }"
                         class="wild-card-button"
                         v-b-tooltip.hover
-                        title="Course code starts with"
+                        title="Course Code Starts With"
                       >
                         [.*]
                       </div>
@@ -484,21 +484,21 @@ export default {
       courseRequirementFields: [
         {
           key: "courseCode",
-          label: "Course code",
+          label: "Course Code",
           sortable: true,
           class: "text-left",
           editable: true,
         },
         {
           key: "courseLevel",
-          label: "Course level",
+          label: "Course Level",
           sortable: true,
           class: "text-left",
           editable: true,
         },
         {
           key: "courseName",
-          label: "Course name",
+          label: "Course Name",
           sortable: true,
           class: "text-left",
           sortDirection: "desc",
@@ -520,7 +520,7 @@ export default {
         },
         {
           key: "requirementName",
-          label: "Requirement name",
+          label: "Requirement Name",
           sortable: true,
           class: "text-left",
           sortDirection: "desc",
@@ -528,7 +528,7 @@ export default {
         },
         {
           key: "requirementProgram",
-          label: "Requirement program",
+          label: "Requirement Program",
           sortable: true,
           class: "text-left",
           editable: true,

@@ -1,6 +1,6 @@
 <template>
   <div class="studentlist">
-    <h1>Student search</h1>
+    <h1>Student Search</h1>
     <p>
       Search by Personal Education Number(PEN) or use the advanced search to
       look up students by other criteria.
@@ -9,7 +9,7 @@
       <div>
         <b-card no-body class="p-0">
           <b-tabs card>
-            <b-tab id="search-tab" title="PEN search" active>
+            <b-tab id="search-tab" title="PEN Search" active>
               <b-card-text>
                 <form v-on:submit.prevent>
                   <div class="form-group">
@@ -410,7 +410,7 @@
               </b-card-text>
             </b-tab>
 
-            <b-tab id="advanced-search-tab" title="Advanced search">
+            <b-tab id="advanced-search-tab" title="Advanced Search">
               <b-card-text>
                 <form v-on:submit.prevent>
                   <!-- advanced Search -->
@@ -429,7 +429,7 @@
                           }"
                           class="wild-card-button"
                           v-b-tooltip.hover
-                          title="Legal surname starts with"
+                          title="Legal Surname Starts With"
                         >
                           [.*]
                         </div>
@@ -455,7 +455,7 @@
                           }"
                           class="wild-card-button"
                           v-b-tooltip.hover
-                          title="Legal given starts with"
+                          title="Legal Given Starts With"
                         >
                           [.*]
                         </div>
@@ -482,7 +482,7 @@
                           }"
                           class="wild-card-button"
                           v-b-tooltip.hover
-                          title="Legal middle starts with"
+                          title="Legal Middle Starts With"
                         >
                           [.*]
                         </div>
@@ -560,7 +560,7 @@
                           }"
                           class="wild-card-button"
                           v-b-tooltip.hover
-                          title="Usual surname starts with"
+                          title="Usual Surname Starts With"
                         >
                           [.*]
                         </div>
@@ -585,7 +585,7 @@
                           }"
                           class="wild-card-button"
                           v-b-tooltip.hover
-                          title="Usual given starts with"
+                          title="Usual Given Starts With"
                         >
                           [.*]
                         </div>
@@ -611,7 +611,7 @@
                           }"
                           class="wild-card-button"
                           v-b-tooltip.hover
-                          title="Usual middle starts with"
+                          title="Usual Middle Starts With"
                         >
                           [.*]
                         </div>
@@ -692,7 +692,7 @@
                     <DisplayTable
                       v-if="studentSearchResults.length"
                       v-bind:items="studentSearchResults"
-                      title="Student search results"
+                      title="Student Search Results"
                       v-bind:fields="studentSearchResultsFields"
                       id="pen"
                       v-bind:showFilter="false"

@@ -14,10 +14,10 @@
         </b-sidebar>
         (<a>{{ roles }}</a
         >) |
-        <a :href="userLogout" class="text-white">Logout</a>
+        <a :href="authRoutes.LOGOUT" class="text-white">Logout</a>
       </div>
       <div v-else-if="!isAuthenticated">
-        <a :href="login">Login</a>
+        <a :href="authRoutes.LOGOUT">Login</a>
       </div>
     </Bcheader>
 
@@ -44,8 +44,7 @@ export default {
   },
   data() {
     return {
-      login: Routes.LOGIN,
-      userLogout: Routes.LOGOUT,
+      authRoutes: Routes,
       host: location.protocol + "//" + location.host,
     };
   },
@@ -61,6 +60,9 @@ export default {
     ...mapState("app", ["pageTitle"]),
     dataReady: function () {
       return this.userInfo;
+    },
+    loginUrl: function () {
+      return this.authRoutes.LOGIN;
     },
   },
   methods: {

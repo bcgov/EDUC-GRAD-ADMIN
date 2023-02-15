@@ -4,15 +4,15 @@
       <b-card-text class="py-4">
         <div v-if="studentGradStatus">
           <div v-if="studentGradStatus.studentGradData">
-            <div v-if="studentGradStatus.studentGradData.school">
+            <div v-if="studentGradStatus.studentGradData.schoolAtGrad">
               <div v-if="!isCertificateEligible()">
                 <b-alert show variant="info" class="p-3 mb-1 mx-3">
                   <h4 class="alert-heading">
                     Ineligible for Ministry certificates
                   </h4>
                   <p class="locked-message">
-                    This student's school is ineligible for Ministry
-                    certificates.
+                    This student's school at graduation is ineligible for
+                    Ministry certificates.
                   </p>
                 </b-alert>
               </div>
@@ -43,8 +43,8 @@
                   <strong>Status:</strong> {{ certificate.documentStatusLabel }}
                 </li>
                 <li>
-                  <strong>Last Updated:</strong>
-                  {{ certificate.updateDate | formatTime }}
+                  <strong>Created:</strong>
+                  {{ certificate.createDate | formatTime }}
                 </li>
                 <li>
                   <strong>Distributed:</strong>
@@ -78,8 +78,7 @@ export default {
 
   methods: {
     downloadFile: function (data, mimeType, filename) {
-      sharedMethods.base64ToFileTypeAndDownload(data, mimeType, filename);
-      this.showNotification("success", "Download Completed");
+      sharedMethods.base64ToFileTypeAndOpenWindow(data, mimeType, filename);
     },
     isCertificateEligible: function () {
       return (
