@@ -16,12 +16,20 @@
             <b-dropdown-item
               :disabled="studentGradStatus.studentStatus === 'MER'"
               v-on:click="projectedGradStatusWithFinalMarks"
-              >Projected Final Marks</b-dropdown-item
+              >Preview Final Marks</b-dropdown-item
             >
             <b-dropdown-item
               :disabled="studentGradStatus.studentStatus === 'MER'"
               v-on:click="projectedGradStatusWithFinalAndReg"
-              >Projected Final Marks and Registrations</b-dropdown-item
+              >Update TVR</b-dropdown-item
+            >
+            <b-dropdown-item
+              :disabled="
+                studentGradStatus.studentStatus === 'MER' ||
+                studentGradStatus.programCompletionDate
+              "
+              v-on:click="graduateStudent"
+              >Update Grad Status</b-dropdown-item
             >
             <b-dropdown-item
               :disabled="
@@ -31,12 +39,12 @@
               v-on:click="updateStudentReports"
               >Update Transcript</b-dropdown-item
             >
-            <b-dropdown-divider
-              v-if="studentGradStatus.programCompletionDate"
-            ></b-dropdown-divider>
+            <b-dropdown-divider></b-dropdown-divider>
             <b-dropdown-item
-              :disabled="studentGradStatus.studentStatus === 'MER'"
-              v-if="studentGradStatus.programCompletionDate"
+              :disabled="
+                studentGradStatus.studentStatus === 'MER' ||
+                !studentGradStatus.programCompletionDate
+              "
               v-b-modal.ungraduate-student-modal
               >Undo Completion</b-dropdown-item
             >
