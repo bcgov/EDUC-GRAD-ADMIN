@@ -911,7 +911,14 @@ export default {
         return true;
       }
       //check for who
-      if (!batch.details["who"]) {
+
+      if (
+        !batch.details["who"] &&
+        batch.details["what"] != "DISTRUN_SUPP" &&
+        batch.details["what"] != "DISTRUN" &&
+        batch.details["what"] != "DISTRUN_YE" &&
+        batch.details["what"] != "NONGRADRUN"
+      ) {
         this.validationMessage = "Group not specified";
         return true;
       }
@@ -1421,7 +1428,7 @@ export default {
             this.tabContent[id].details["psiTransmissionMode"]
           );
         }
-      } else if (this.tabContent[id].details["what"] == "DISTRUN_MONTHLY") {
+      } else if (this.tabContent[id].details["what"] == "DISTRUN") {
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;

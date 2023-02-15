@@ -24,7 +24,7 @@ export default {
     }
   },     
   runDISTRUN_MONTHLY(){
-    return ApiService.apiAxios.get('api/v1/batch/executemonthlydisrunbatchjob');
+    return ApiService.apiAxios.get('api/v1/batch/executedisrunbatchjob');
   },
   runDISTRUN_SUPP(){
     return ApiService.apiAxios.get('api/v1/batch/executesupplementaldisrunbatchjob');
