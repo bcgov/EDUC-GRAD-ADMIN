@@ -1184,8 +1184,6 @@ export default {
           return;
         }
       }
-      console.log(this.batch.details["who"]);
-      console.log(this.batch.students.length);
       if (
         (this.batch.students.length == 1 &&
           this.batch.details["who"] == "Student") ||
@@ -1196,8 +1194,7 @@ export default {
         (this.batch.districts.length == 1 &&
           this.batch.details["who"] == "District")
       ) {
-        console.log("BACH NOT VALID");
-        this.batch = false;
+        this.batchIsValid = false;
         return;
       }
       if (
@@ -1392,6 +1389,7 @@ export default {
                 this.addTypeToBatchId(id, type);
               }
               this.$forceUpdate();
+              this.validBatch();
               this.validating = false;
             })
             .catch((error) => {
@@ -1405,6 +1403,7 @@ export default {
         } else {
           this.makeToast("ERROR Please enter a valid School", "danger");
         }
+
         this.validating = false;
       }
       if (type == "students") {
@@ -1487,7 +1486,7 @@ export default {
                 student.data[0].studentStatus
               );
               this.$forceUpdate();
-
+              this.validBatch();
               this.validating = false;
             } else {
               this.validationMessage = value + " is not a valid PEN in GRAD";
@@ -1522,6 +1521,7 @@ export default {
                 this.addTypeToBatchId(id, type);
               }
               this.$forceUpdate();
+              this.validBatch();
               this.validating = false;
             })
             .catch((error) => {
@@ -1558,6 +1558,7 @@ export default {
                 this.addTypeToBatchId(id, type);
               }
               this.$forceUpdate();
+              this.validBatch();
               this.validating = false;
             })
             .catch((error) => {
@@ -1585,6 +1586,7 @@ export default {
           this.validationMessage = "Select a program";
         }
         this.$forceUpdate();
+        this.validBatch();
         this.validating = false;
       }
     },
@@ -1599,6 +1601,7 @@ export default {
         type,
         value,
       });
+      this.validBatch();
       this.$forceUpdate();
     },
     deleteBatch(id) {
@@ -1656,9 +1659,8 @@ export default {
           batchDetail,
           id,
         });
-
-        this.$forceUpdate();
         this.validBatch();
+        this.$forceUpdate();
       });
     },
     getCertificateTypes() {
