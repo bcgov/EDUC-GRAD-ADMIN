@@ -33,15 +33,15 @@
           >
             <div>
               <strong>Language:</strong>
-              {{ row.item.assessmentDetails.language }}
+              {{ row.item.language }}
             </div>
             <div>
               <strong>Start Date:</strong>
-              {{ row.item.assessmentDetails.startDate | formatSimpleDate }}
+              {{ row.item.startDate | formatSimpleDate }}
             </div>
             <div>
               <strong>End Date:</strong>
-              {{ row.item.assessmentDetails.endDate | formatSimpleDate }}
+              {{ row.item.endDate | formatSimpleDate }}
             </div>
           </b-popover>
         </div>
