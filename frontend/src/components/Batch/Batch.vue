@@ -1193,7 +1193,9 @@ export default {
           this.batch.details["who"] == "Program") ||
         (this.batch.districts.length == 1 &&
           this.batch.details["who"] == "District") ||
-        (this.batch.psi.length == 1 && this.batch.details["who"] == "PSI")
+        (this.batch.psi.length == 1 &&
+          this.batch.details["who"] == "PSI" &&
+          !this.batch.details["allPsi"])
       ) {
         this.batchIsValid = false;
         return;
