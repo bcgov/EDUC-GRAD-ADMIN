@@ -11,8 +11,13 @@
                   <label>PSI Code</label>
                   <div
                     href="#"
-                    v-on:click="advancedSearchInput.psiCode.contains = !advancedSearchInput.psiCode.contains"
-                    v-bind:class="{active: advancedSearchInput.psiCode.contains}"
+                    v-on:click="
+                      advancedSearchInput.psiCode.contains =
+                        !advancedSearchInput.psiCode.contains
+                    "
+                    v-bind:class="{
+                      active: advancedSearchInput.psiCode.contains,
+                    }"
                     class="wild-card-button"
                     v-b-tooltip.hover
                     title="PSI code starts with"
@@ -31,8 +36,13 @@
                   <label>PSI Name</label>
                   <div
                     href="#"
-                    v-on:click="advancedSearchInput.psiName.contains = !advancedSearchInput.psiName.contains"
-                    v-bind:class="{active: advancedSearchInput.psiName.contains}"
+                    v-on:click="
+                      advancedSearchInput.psiName.contains =
+                        !advancedSearchInput.psiName.contains
+                    "
+                    v-bind:class="{
+                      active: advancedSearchInput.psiName.contains,
+                    }"
                     class="wild-card-button"
                     v-b-tooltip.hover
                     title="PSI name starts with"
@@ -50,8 +60,13 @@
                   <label>CSL Code</label>
                   <div
                     href="#"
-                    v-on:click="advancedSearchInput.cslCode.contains = !advancedSearchInput.cslCode.contains"
-                    v-bind:class="{active: advancedSearchInput.cslCode.contains}"
+                    v-on:click="
+                      advancedSearchInput.cslCode.contains =
+                        !advancedSearchInput.cslCode.contains
+                    "
+                    v-bind:class="{
+                      active: advancedSearchInput.cslCode.contains,
+                    }"
                     class="wild-card-button"
                     v-b-tooltip.hover
                     title="CSL code starts with"
@@ -68,14 +83,23 @@
                 </div>
                 <div class="advanced-search-field col-12 col-md-2">
                   <label>Active</label>
-                  <b-form-select v-model="advancedSearchInput.openFlag.value" :options="options"  tabindex="4"></b-form-select>
+                  <b-form-select
+                    v-model="advancedSearchInput.openFlag.value"
+                    :options="options"
+                    tabindex="4"
+                  ></b-form-select>
                 </div>
                 <div class="advanced-search-field col-12 col-md-2">
                   <label>Transmission Mode</label>
                   <div
                     href="#"
-                    v-on:click="advancedSearchInput.transmissionMode.contains = !advancedSearchInput.transmissionMode.contains"
-                    v-bind:class="{active: advancedSearchInput.transmissionMode.contains}"
+                    v-on:click="
+                      advancedSearchInput.transmissionMode.contains =
+                        !advancedSearchInput.transmissionMode.contains
+                    "
+                    v-bind:class="{
+                      active: advancedSearchInput.transmissionMode.contains,
+                    }"
                     class="wild-card-button"
                     v-b-tooltip.hover
                     title="Transmission mode starts with"
@@ -122,7 +146,8 @@
               <div v-if="psiResults">
                 <div v-if="totalResults > 0" class="row">
                   <div class="search-results-message my-3 col-12 col-md-8">
-                    <strong>{{ totalResults }}</strong> Post Secondary Institutions found.
+                    <strong>{{ totalResults }}</strong> Post Secondary
+                    Institutions found.
                   </div>
                 </div>
                 <div v-if="advancedSearchMessage" class="row">
@@ -131,7 +156,6 @@
                   </div>
                 </div>
               </div>
-              
             </div>
           </form>
           <b-card-text>
@@ -150,8 +174,20 @@
                   @click="row.toggleDetails"
                   class="more-button"
                 >
-                  <img v-show="!row.detailsShowing" src="../assets/images/icon-right.svg" width="9px" aria-hidden="true" alt=""/>
-                  <img v-show="row.detailsShowing" src="../assets/images/icon-down.svg" height="5px" aria-hidden="true" alt=""/>
+                  <img
+                    v-show="!row.detailsShowing"
+                    src="../assets/images/icon-right.svg"
+                    width="9px"
+                    aria-hidden="true"
+                    alt=""
+                  />
+                  <img
+                    v-show="row.detailsShowing"
+                    src="../assets/images/icon-down.svg"
+                    height="5px"
+                    aria-hidden="true"
+                    alt=""
+                  />
                 </b-btn>
               </template>
               <template #row-details="row">
@@ -197,7 +233,7 @@
 <script>
 import TRAXService from "@/services/TRAXService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
-import sharedMethods from '../sharedMethods'
+import sharedMethods from "../sharedMethods";
 export default {
   name: "psi",
   components: {
@@ -206,49 +242,49 @@ export default {
   data() {
     return {
       advancedSearchLoading: false,
-      advancedSearchMessage:"",
+      advancedSearchMessage: "",
       totalResults: "",
       params: {},
       psi: {},
       options: [
-          { value: 'Y', text: 'Y' },
-          { value: 'N', text: 'N' },
+        { value: "Y", text: "Y" },
+        { value: "N", text: "N" },
       ],
       psiResults: [],
       psiFields: [
-        { key: "more", label: "",  sortable: true, },
+        { key: "more", label: "", sortable: true },
         {
-          key: 'psiCode',
-          label: 'PSI Code',
+          key: "psiCode",
+          label: "PSI Code",
           sortable: true,
-          class: 'text-left'
+          class: "text-left",
         },
         {
-          key: 'psiName',
-          label: 'PSI Name',
+          key: "psiName",
+          label: "PSI Name",
           sortable: true,
         },
         {
-          key: 'cslCode',
-          label: 'CSL Code',
+          key: "cslCode",
+          label: "CSL Code",
           sortable: true,
-          class: 'text-left'
+          class: "text-left",
         },
         {
-          key: 'psisCode',
-          label: 'PSIS Code',
+          key: "psisCode",
+          label: "PSIS Code",
           sortable: true,
-          class: 'text-center'
+          class: "text-center",
         },
         {
-          key: 'openFlag',
-          label: 'Active',
+          key: "openFlag",
+          label: "Active",
           sortable: true,
-          class: 'text-center'
+          class: "text-center",
         },
         {
-          key: 'transmissionMode',
-          label: 'Transmission Mode',
+          key: "transmissionMode",
+          label: "Transmission Mode",
           sortable: true,
         },
       ],
@@ -263,19 +299,19 @@ export default {
         },
         cslCode: {
           value: "",
-          contains: false,       
+          contains: false,
         },
         openFlag: {
           value: "",
-          contains: false,       
+          contains: false,
         },
         transmissionMode: {
           value: "",
-          contains: false        
+          contains: false,
         },
         psiGrouping: {
           value: "",
-          contains: false        
+          contains: false,
         },
       },
     };
@@ -300,18 +336,6 @@ export default {
         }
       }
     },
-    getAllPSI: function () {
-      TRAXService.getPSI()
-      .then((res) => {
-        this.psi = res.data;
-      })
-      .catch((error) => {
-        // eslint-disable-next-line
-        console.log(
-          "There was an error adding PSI information:" + error.response
-        );
-      });
-    },
     advancePSISearch() {
       this.totalResults = "";
       this.advancedSearchMessage = "";
@@ -322,85 +346,139 @@ export default {
       for (const key in this.advancedSearchInput) {
         if (this.advancedSearchInput.hasOwnProperty(key)) {
           if (this.advancedSearchInput[key].value != "") {
-            isEmpty = false;   
+            isEmpty = false;
           }
-        } 
+        }
       }
-      if(isEmpty){
-        this.totalResults = ""
+      if (isEmpty) {
+        this.totalResults = "";
         this.advancedSearchLoading = false;
-        this.advancedSearchMessage += "Enter at least one field to search."
-      }else if(!isEmpty){
+        this.advancedSearchMessage += "Enter at least one field to search.";
+      } else if (!isEmpty) {
         try {
-          if(this.advancedSearchInput){
-            if(this.advancedSearchInput.psiCode.value != ""){
-              if(this.advancedSearchInput.psiCode.contains && !this.advancedSearchInput.psiCode.value.includes("*")) {            
-                this.params.append('psiCode', this.advancedSearchInput.psiCode.value + "*");  
-              }else{
-                this.params.append('psiCode', this.advancedSearchInput.psiCode.value);
-              }                 
+          if (this.advancedSearchInput) {
+            if (this.advancedSearchInput.psiCode.value != "") {
+              if (
+                this.advancedSearchInput.psiCode.contains &&
+                !this.advancedSearchInput.psiCode.value.includes("*")
+              ) {
+                this.params.append(
+                  "psiCode",
+                  this.advancedSearchInput.psiCode.value + "*"
+                );
+              } else {
+                this.params.append(
+                  "psiCode",
+                  this.advancedSearchInput.psiCode.value
+                );
+              }
             }
-            if(this.advancedSearchInput.psiName.value != ""){
-              if(this.advancedSearchInput.psiName.contains && !this.advancedSearchInput.psiName.value.includes("*")) {            
-                this.params.append('psiName', this.advancedSearchInput.psiName.value + "*");  
-              }else{
-                this.params.append('psiName', this.advancedSearchInput.psiName.value);
-              }                
+            if (this.advancedSearchInput.psiName.value != "") {
+              if (
+                this.advancedSearchInput.psiName.contains &&
+                !this.advancedSearchInput.psiName.value.includes("*")
+              ) {
+                this.params.append(
+                  "psiName",
+                  this.advancedSearchInput.psiName.value + "*"
+                );
+              } else {
+                this.params.append(
+                  "psiName",
+                  this.advancedSearchInput.psiName.value
+                );
+              }
             }
-            if(this.advancedSearchInput.cslCode.value != ""){
-              if(this.advancedSearchInput.cslCode.contains && !this.advancedSearchInput.cslCode.value.includes("*")) {            
-                this.params.append('cslCode', this.advancedSearchInput.cslCode.value + "*");  
-              }else{
-                this.params.append('cslCode', this.advancedSearchInput.cslCode.value);
-              }   
+            if (this.advancedSearchInput.cslCode.value != "") {
+              if (
+                this.advancedSearchInput.cslCode.contains &&
+                !this.advancedSearchInput.cslCode.value.includes("*")
+              ) {
+                this.params.append(
+                  "cslCode",
+                  this.advancedSearchInput.cslCode.value + "*"
+                );
+              } else {
+                this.params.append(
+                  "cslCode",
+                  this.advancedSearchInput.cslCode.value
+                );
+              }
             }
-            if(this.advancedSearchInput.openFlag.value != ""){             
-                this.params.append('openFlag', this.advancedSearchInput.openFlag.value);   
-            }      
-            if(this.advancedSearchInput.transmissionMode.value != ""){
-              if(this.advancedSearchInput.transmissionMode.contains && !this.advancedSearchInput.transmissionMode.value.includes("*")) {            
-                this.params.append('transmissionMode', this.advancedSearchInput.transmissionMode.value + "*");  
-              }else{
-                this.params.append('transmissionMode', this.advancedSearchInput.transmissionMode.value);
-              }   
-            } 
-            if(this.advancedSearchInput.psiGrouping.value != ""){
-              if(this.advancedSearchInput.psiGrouping.contains && !this.advancedSearchInput.psiGrouping.value.includes("*")) {            
-                this.params.append('psiGrouping', this.advancedSearchInput.psiGrouping.value + "*");  
-              }else{
-                this.params.append('psiGrouping', this.advancedSearchInput.psiGrouping.value);
-              }   
-            }             
-          }//if this.advanceSearchInput
+            if (this.advancedSearchInput.openFlag.value != "") {
+              this.params.append(
+                "openFlag",
+                this.advancedSearchInput.openFlag.value
+              );
+            }
+            if (this.advancedSearchInput.transmissionMode.value != "") {
+              if (
+                this.advancedSearchInput.transmissionMode.contains &&
+                !this.advancedSearchInput.transmissionMode.value.includes("*")
+              ) {
+                this.params.append(
+                  "transmissionMode",
+                  this.advancedSearchInput.transmissionMode.value + "*"
+                );
+              } else {
+                this.params.append(
+                  "transmissionMode",
+                  this.advancedSearchInput.transmissionMode.value
+                );
+              }
+            }
+            if (this.advancedSearchInput.psiGrouping.value != "") {
+              if (
+                this.advancedSearchInput.psiGrouping.contains &&
+                !this.advancedSearchInput.psiGrouping.value.includes("*")
+              ) {
+                this.params.append(
+                  "psiGrouping",
+                  this.advancedSearchInput.psiGrouping.value + "*"
+                );
+              } else {
+                this.params.append(
+                  "psiGrouping",
+                  this.advancedSearchInput.psiGrouping.value
+                );
+              }
+            }
+          } //if this.advanceSearchInput
           TRAXService.getPSIByAdvanceSearch(this.params)
             .then((response) => {
               this.advancedSearchLoading = false;
               this.psiResults = response.data;
               this.totalResults = this.psiResults.length;
-              if(this.totalResults <= 0){
-                this.advancedSearchMessage = "No PSIs found.";      
+              if (this.totalResults <= 0) {
+                this.advancedSearchMessage = "No PSIs found.";
               }
-            })   
+            })
             .catch((error) => {
               this.advancedSearchLoading = false;
               this.advancedSearchMessage = "No PSIs found.";
               // eslint-disable-next-line
-              console.log('There was an error:' + error);
-              this.showNotification("danger", "There was an error with the web service.");
-          });//TRAXService
+              console.log("There was an error:" + error);
+              this.showNotification(
+                "danger",
+                "There was an error with the web service."
+              );
+            }); //TRAXService
         } catch (error) {
           this.advancedSearchLoading = false;
           this.advancedSearchMessage = "Search Error" + error;
-          this.showNotification("danger", "There was an error with the web service.");
-        }   
-      }   
+          this.showNotification(
+            "danger",
+            "There was an error with the web service."
+          );
+        }
+      }
     },
   },
 };
 </script>
 
 <style scoped>
-.psi-view{
+.psi-view {
   padding-left: 25px;
   padding-right: 25px;
 }
@@ -415,17 +493,17 @@ export default {
 .profile-name {
   padding-bottom: 10px;
 }
-.table-filter{
-  top: 0px !important
+.table-filter {
+  top: 0px !important;
 }
 .advanced-search-form {
   background-color: #fff;
 }
-.wild-card-button:hover{
+.wild-card-button:hover {
   cursor: pointer;
 }
 .wild-card-button {
-  color: #DEE2EB;
+  color: #dee2eb;
   position: absolute;
   right: 21px;
   top: 40px;
@@ -434,19 +512,18 @@ export default {
 }
 
 .wild-card-button:visited {
-  color: #DEE2EB;
+  color: #dee2eb;
   text-decoration: none;
 }
 
 .wild-card-button.active {
-  color: green
+  color: green;
 }
 .search-results-message {
   float: left;
-  clear: both; 
+  clear: both;
 }
 .advanced-search-button {
-  
   padding-left: 15px;
 }
 </style>

@@ -174,6 +174,12 @@
             <b-form-select
               id="inline-form-select-audience"
               class="mb-2 mr-sm-2 mb-sm-0 col-3"
+              :disabled="
+                batch.details['what'] == 'DISTRUN' ||
+                batch.details['what'] == 'DISTRUN_YE' ||
+                batch.details['what'] == 'DISTRUN_SUPP' ||
+                batch.details['what'] == 'NONGRADRUN'
+              "
               :options="[
                 { text: 'Current Students', value: 'Current Students' },
                 { text: 'Date Range', value: 'Date Range' },
@@ -256,7 +262,10 @@
             class="p-0 mt-3 col-3"
             v-if="
               batch.details['what'] == 'DISTRUNUSER' ||
-              batch.details['what'] == 'DISTRUN_YE'
+              batch.details['what'] == 'DISTRUN_YE' ||
+              batch.details['what'] == 'DISTRUN' ||
+              batch.details['what'] == 'DISTRUN_SUPP' ||
+              batch.details['what'] == 'NONGRADRUN'
             "
           >
             <label class="font-weight-bold">Copies</label>
@@ -272,7 +281,10 @@
             class="mt-1 col-3 p-0"
             v-if="
               batch.details['what'] == 'DISTRUNUSER' ||
-              batch.details['what'] == 'DISTRUN_YE'
+              batch.details['what'] == 'DISTRUN_YE' ||
+              batch.details['what'] == 'DISTRUN' ||
+              batch.details['what'] == 'DISTRUN_SUPP' ||
+              batch.details['what'] == 'NONGRADRUN'
             "
           >
             <label class="font-weight-bold">Where</label>
@@ -286,7 +298,11 @@
                 { text: 'User: ' + userFullName, value: 'User' },
               ]"
               :disabled="
-                batch.details['who'] == 'Ministry of Advanced Education'
+                batch.details['who'] == 'Ministry of Advanced Education' ||
+                batch.details['what'] == 'DISTRUN_YE' ||
+                batch.details['what'] == 'DISTRUN' ||
+                batch.details['what'] == 'DISTRUN_SUPP' ||
+                batch.details['what'] == 'NONGRADRUN'
               "
               @change="editBatchJob('where', $event)"
             ></b-form-select>
@@ -1044,11 +1060,17 @@ export default {
           psiYear: true,
           psiTransmissionMode: true,
         },
-        DISTRUN_SUPP: {},
-        NONGRADRUN: {},
+        DISTRUN_SUPP: {
+          copies: true,
+          where: true,
+        },
+        NONGRADRUN: {
+          copies: true,
+          where: true,
+        },
         DISTRUN: {
-          message:
-            "This is the monthly distribution run and is not currently available for Users to run manually.",
+          copies: true,
+          where: true,
         },
         DISTRUNUSER: {
           group: [
@@ -1148,7 +1170,12 @@ export default {
 
   methods: {
     validBatch() {
-      if (this.batch.details["what"] != "DISTRUN_YE") {
+      if (
+        this.batch.details["what"] != "DISTRUN_YE" &&
+        this.batch.details["what"] != "DISTRUN" &&
+        this.batch.details["what"] != "DISTRUN_SUPP" &&
+        this.batch.details["what"] != "NONGRADRUN"
+      ) {
         if (
           this.batch.details["who"] == "" ||
           this.batch.details["who"] == null
@@ -1157,7 +1184,22 @@ export default {
           return;
         }
       }
-
+      if (
+        (this.batch.students.length == 1 &&
+          this.batch.details["who"] == "Student") ||
+        (this.batch.schools.length == 1 &&
+          this.batch.details["who"] == "School") ||
+        (this.batch.programs.length == 1 &&
+          this.batch.details["who"] == "Program") ||
+        (this.batch.districts.length == 1 &&
+          this.batch.details["who"] == "District") ||
+        (this.batch.psi.length == 1 &&
+          this.batch.details["who"] == "PSI" &&
+          !this.batch.details["allPsi"])
+      ) {
+        this.batchIsValid = false;
+        return;
+      }
       if (
         this.batch.details["who"] == "District" &&
         !this.batch.details["categoryCode"]
@@ -1171,16 +1213,6 @@ export default {
         this.batch.details["where"] == "BC Mail" &&
         this.batch.details["credential"] == "Blank certificate print" &&
         this.batch.details["blankCertificateDetails"].length == 0
-      ) {
-        this.batchIsValid = false;
-        return;
-      }
-
-      if (
-        this.batch.details["what"] == "DISTRUNUSER" &&
-        this.batch.details["where"] == "BC Mail" &&
-        this.batch.details["credential"] == "Blank transcript print" &&
-        this.batch.details["blankTranscriptDetails"].length == 0
       ) {
         this.batchIsValid = false;
         return;
@@ -1360,6 +1392,7 @@ export default {
                 this.addTypeToBatchId(id, type);
               }
               this.$forceUpdate();
+              this.validBatch();
               this.validating = false;
             })
             .catch((error) => {
@@ -1373,6 +1406,7 @@ export default {
         } else {
           this.makeToast("ERROR Please enter a valid School", "danger");
         }
+
         this.validating = false;
       }
       if (type == "students") {
@@ -1455,7 +1489,7 @@ export default {
                 student.data[0].studentStatus
               );
               this.$forceUpdate();
-
+              this.validBatch();
               this.validating = false;
             } else {
               this.validationMessage = value + " is not a valid PEN in GRAD";
@@ -1490,6 +1524,7 @@ export default {
                 this.addTypeToBatchId(id, type);
               }
               this.$forceUpdate();
+              this.validBatch();
               this.validating = false;
             })
             .catch((error) => {
@@ -1526,6 +1561,7 @@ export default {
                 this.addTypeToBatchId(id, type);
               }
               this.$forceUpdate();
+              this.validBatch();
               this.validating = false;
             })
             .catch((error) => {
@@ -1553,6 +1589,7 @@ export default {
           this.validationMessage = "Select a program";
         }
         this.$forceUpdate();
+        this.validBatch();
         this.validating = false;
       }
     },
@@ -1567,6 +1604,7 @@ export default {
         type,
         value,
       });
+      this.validBatch();
       this.$forceUpdate();
     },
     deleteBatch(id) {
@@ -1624,9 +1662,8 @@ export default {
           batchDetail,
           id,
         });
-
-        this.$forceUpdate();
         this.validBatch();
+        this.$forceUpdate();
       });
     },
     getCertificateTypes() {

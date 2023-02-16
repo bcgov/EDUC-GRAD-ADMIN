@@ -911,7 +911,14 @@ export default {
         return true;
       }
       //check for who
-      if (!batch.details["who"]) {
+
+      if (
+        !batch.details["who"] &&
+        batch.details["what"] != "DISTRUN_SUPP" &&
+        batch.details["what"] != "DISTRUN" &&
+        batch.details["what"] != "DISTRUN_YE" &&
+        batch.details["what"] != "NONGRADRUN"
+      ) {
         this.validationMessage = "Group not specified";
         return true;
       }
@@ -942,6 +949,39 @@ export default {
       } else {
         return item;
       }
+    },
+    runDISTRUN_MONTHLY(id) {
+      let requestId = id.replace("job-", "");
+      this.$set(this.spinners, id, true);
+      let index = id.replace("job-", "") - 1;
+      let value = true;
+      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      BatchProcessingService.runDISTRUN_MONTHLY()
+        .then((response) => {
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.cancelBatchJob(id);
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
+          }
+        });
     },
     runDISTRUN_YE(id) {
       let requestId = id.replace("job-", "");
@@ -1387,6 +1427,17 @@ export default {
             id,
             this.tabContent[id].details["psiTransmissionMode"]
           );
+        }
+      } else if (this.tabContent[id].details["what"] == "DISTRUN") {
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "MDBJ";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runDISTRUN_MONTHLY(id);
         }
       } else if (this.tabContent[id].details["what"] == "DISTRUN_YE") {
         if (cronTime) {
