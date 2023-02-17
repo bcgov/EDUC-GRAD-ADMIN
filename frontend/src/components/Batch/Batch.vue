@@ -817,8 +817,6 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
               </div>
             </div>
           </b-card>
-          <!-- <BatchGroupInput :jobId="this.jobId" label="Schools" group="schools" :fields="[{key:'mincode', label: 'Mincode', isInput: true}, {key:'schoolName', label: 'School Name'}, {key: 'districtName', label: 'District Name'}, {key:'address1', label: 'Address'}]" :items="batch['schools']">
-      </BatchGroupInput> -->
         </div>
       </div>
       <div class="my-2">
@@ -1240,7 +1238,17 @@ export default {
         this.batch.details["credential"] != "Blank certificate print" &&
         this.batch.details["credential"] != "Blank transcript print"
       ) {
-        return this.formElements[runType].group;
+        if (this.allowSelectCategoryCodeGroup) {
+          return this.formElements[runType].group;
+        } else {
+          return [
+            { text: "School", value: "School" },
+            {
+              text: "Student",
+              value: "Student",
+            },
+          ];
+        }
       } else if (
         this.batch.details["credential"] == "Blank certificate print" &&
         this.batch.details["blankCertificateDetails"] &&
@@ -1720,6 +1728,10 @@ export default {
       tabContent: "batchprocessing/getBatchDetails",
       programOptions: "app/getProgramOptions",
       userFullName: "auth/userFullName",
+      allowRunDistrunYE: "access/allowRunDistrunYE",
+      allowRunDistrunMonthly: "access/allowRunDistrunMonthly",
+      allowSelectProgramGroup: "access/allowSelectProgramGroup",
+      allowSelectCategoryCodeGroup: "access/allowSelectCategoryCodeGroup",
     }),
 
     batch() {

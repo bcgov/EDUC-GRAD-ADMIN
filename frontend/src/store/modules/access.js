@@ -9,8 +9,10 @@ export default {
     CreateStudentNotes: RoleAccess.CREATE_GRAD_STUDENT_NOTES_DATA,
     RunGradAlgorithm: RoleAccess.RUN_GRAD_ALGORITHM,
     CreateBatchJob: RoleAccess.CREATE_GRAD_BATCH_JOB_CODE_DATA,
+    role: "GRAD_SYSTEM_COORDINATOR",
   },
   getters: {
+    
     userAccess: (state) => state.userAccess,
     allowUpdateGradStatus: (state) =>
       state.userAccess.includes(state.UpdateGradStatus),
@@ -20,6 +22,17 @@ export default {
       state.userAccess.includes(state.RunGradAlgorithm),
     allowCreateBatchJob: (state) =>
       state.userAccess.includes(state.CreateBatchJob),
+    allowRunDistrunYE: (state) =>
+      state.role == "GRAD_SYSTEM_COORDINATOR",
+    allowRunDistrunMonthly: (state) =>
+      state.role == "GRAD_SYSTEM_COORDINATOR",
+    allowSelectCategoryCodeGroup: (state) =>
+      state.role == "GRAD_SYSTEM_COORDINATOR",
+    allowSelectProgramGroup: (state) =>
+      state.role == "GRAD_SYSTEM_COORDINATOR",            
+    
+      
+      
   },
   mutations: {
     setUserAccess: (state, userAccess) => {
