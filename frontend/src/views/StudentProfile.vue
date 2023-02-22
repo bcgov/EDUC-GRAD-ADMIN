@@ -26,7 +26,8 @@
             <b-dropdown-item
               :disabled="
                 studentGradStatus.studentStatus === 'MER' ||
-                !!studentGradStatus.programCompletionDate
+                (!!studentGradStatus.programCompletionDate &&
+                  studentGradStatus.program !== 'SCCP')
               "
               v-on:click="graduateStudent"
               >Update Grad Status</b-dropdown-item
