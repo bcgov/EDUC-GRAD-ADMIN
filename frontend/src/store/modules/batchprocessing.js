@@ -49,12 +49,21 @@ export default {
       state.batchDetails[payload['id']]=payload['batchDetail'];
     },
     clearBatchDetails(state,payload){
+
+
+        
+        let date = new Date();
+        let psiCurrentYear = date.getFullYear();
+        if (date.getMonth() + 1 > 8) {
+          psiCurrentYear = date.getFullYear() + 1;
+        }
+    
       state.batchDetails[payload]['details'].who="";
       state.batchDetails[payload]['details'].where="BC Mail";
       state.batchDetails[payload]['details'].gradDate="Current Students";
       state.batchDetails[payload]['details'].gradDateFrom="";
       state.batchDetails[payload]['details'].gradDateTo="";
-      state.batchDetails[payload]['details'].psiYear="";
+      state.batchDetails[payload]['details'].psiYear=psiCurrentYear;
       state.batchDetails[payload]['details'].psiTransmissionMode="";      
       state.batchDetails[payload].schools=[{}];
       state.batchDetails[payload].districts=[{}];
