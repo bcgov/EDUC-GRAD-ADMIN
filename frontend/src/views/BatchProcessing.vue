@@ -137,7 +137,10 @@
                                       </div>
                                       <div
                                         class="row border-bottom p-2"
-                                        v-if="row.item.jobType != 'DISTRUNUSER'"
+                                        v-if="
+                                          row.item.jobType != 'DISTRUNUSER' &&
+                                          row.item.jobType != 'PSIRUN'
+                                        "
                                       >
                                         <div class="col-10 p-2">
                                           Rerun this batch for <br />{{
@@ -230,7 +233,10 @@
 
                                       <div
                                         class="row p-2 border-bottom"
-                                        v-if="row.item.jobType != 'DISTRUNUSER'"
+                                        v-if="
+                                          row.item.jobType != 'DISTRUNUSER' &&
+                                          row.item.jobType != 'PSIRUN'
+                                        "
                                       >
                                         <div class="col-10 p-2">
                                           Rerun school reports
