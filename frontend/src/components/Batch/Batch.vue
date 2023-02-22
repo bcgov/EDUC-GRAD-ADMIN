@@ -482,13 +482,6 @@
                       :ref="'psiName' + jobId + index"
                       class="col-4"
                     />
-                    <b-form-input
-                      show="false"
-                      disabled
-                      v-model="psi.city"
-                      :ref="'psiCity' + jobId + index"
-                      class="col-4"
-                    />
                     <div v-if="index == batch.psi.length - 1" class="col-2">
                       <b-button
                         class="btn btn-primary w-100"
@@ -510,7 +503,6 @@
                     <div v-if="psi.psiName" class="col-4">
                       {{ psi.psiName }}
                     </div>
-                    <div v-if="psi.city" class="col-4">{{ psi.city }}</div>
 
                     <div v-if="index != batch.psi.length - 1" class="col-2">
                       <b-button
@@ -810,8 +802,6 @@
               </div>
             </div>
           </b-card>
-          <!-- <BatchGroupInput :jobId="this.jobId" label="Schools" group="schools" :fields="[{key:'mincode', label: 'Mincode', isInput: true}, {key:'schoolName', label: 'School Name'}, {key: 'districtName', label: 'District Name'}, {key:'address1', label: 'Address'}]" :items="batch['schools']">
-      </BatchGroupInput> -->
         </div>
       </div>
       <div class="my-2">
@@ -1164,7 +1154,6 @@ export default {
   methods: {
     validBatch() {
       if (this.batch.details["what"] == "PSIRUN") {
-        console.log(this.batch.details.psiYear);
         if (
           this.batch.details.psiTransmissionMode == "" ||
           this.batch.details.psiYear == ""
@@ -1547,7 +1536,7 @@ export default {
         if (value && value.length == 3) {
           TRAXService.getPSIByAdvanceSearch("psiCode=" + value)
             .then((response) => {
-              if (response.data) {
+              if (response.data.length) {
                 this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
                   id,
                   type,
@@ -1555,9 +1544,6 @@ export default {
                 });
                 this.$refs["psiName" + id + valueIndex][0].updateValue(
                   response.data[0].psiName
-                );
-                this.$refs["psiCity" + id + valueIndex][0].updateValue(
-                  response.data[0].city
                 );
               } else {
                 this.validationMessage = value + " is not a valid PSI";
@@ -1653,7 +1639,7 @@ export default {
           batchDetail.details["blankTranscriptDetails"] = [];
         }
         if (type == "allPsi" && event) {
-          batchDetail.psi = [{ value: "all", psiName: "ALL", city: "ALL" }];
+          batchDetail.psi = [{ value: "all", psiName: "ALL" }];
           this.$store.commit("batchprocessing/editBatchDetails", {
             batchDetail,
             id,
