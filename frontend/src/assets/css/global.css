@@ -108,3 +108,12 @@ option:disabled {
 .disabled {
   color: rgb(201 197 197) !important;
 }
+.list-item-comma{
+  list-style: none;
+	margin-left: 0;
+	padding-left: 0;
+}
+.list-item-comma > li + li::before {
+  content: ",";
+  display: inline-block;
+}

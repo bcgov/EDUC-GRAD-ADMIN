@@ -14,8 +14,24 @@
         <strong>Credential Type: </strong>{{ details.credential }}
       </li>
       <ul>
-        <li v-if="details.gradDate">
+        <li
+          v-if="
+            details.gradDate && details.who != 'PSI' && details.who != 'Student'
+          "
+        >
           <strong>Grad Date: </strong>{{ details.gradDate }}
+        </li>
+        <li v-if="details.who == 'PSI'">
+          <strong>PSI: </strong>
+          <ul>
+            <li
+              class="list-item-comma"
+              v-for="item in items.psi"
+              :key="item.value"
+            >
+              {{ item.value }}
+            </li>
+          </ul>
         </li>
         <ul>
           <li v-if="details.gradDateFrom">
@@ -31,7 +47,7 @@
         <li v-if="details.psiTransmissionMode">
           <strong>Transmission Mode: </strong>{{ details.psiTransmissionMode }}
         </li>
-        <li v-if="details.psiYear">
+        <li v-if="details.psiYear && details.who == 'PSI'">
           <strong>PSI Year: </strong>{{ details.psiYear }}
         </li>
       </ul>
@@ -85,14 +101,17 @@ export default {
         (this.typeLabel == "User Request Distribution Run" ||
           this.typeLabel == "Distribution Run Year-End") &&
         (this.details.who == "School" ||
-        this.details.who == "District" ||
-        this.details.who == "Program") 
+          this.details.who == "District" ||
+          this.details.who == "Program")
       ) {
         this.docWarning = true;
       } else {
         this.docWarning = false;
       }
-      if (this.typeLabel == "PSI Run FTP / Paper" && this.details.psiTransmissionMode == "PAPER"){
+      if (
+        this.typeLabel == "PSI Run FTP / Paper" &&
+        this.details.psiTransmissionMode == "PAPER"
+      ) {
         this.paperWarning = true;
       } else {
         this.paperWarning = false;
