@@ -708,13 +708,6 @@
             <tr></tr>
           </tbody>
         </table>
-        <b-alert show variant="info" class="p-3 mb-1">
-          <p>
-            <strong>DEBUG</strong><br />&nbsp;recalc grad:
-            {{ String(recalculateFlag) }}<br />&nbsp;recalc projected grad:
-            {{ String(recalculateProjectedGradFlag) }}
-          </p>
-        </b-alert>
       </b-card-text>
     </b-card>
   </div>
