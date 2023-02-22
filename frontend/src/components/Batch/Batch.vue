@@ -1171,6 +1171,14 @@ export default {
   methods: {
     validBatch() {
       if (
+        this.batch.details["what"] == "PSIRUN" &&
+        this.batch.details.psiTransmissionMode == ""
+      ) {
+        console.log("HUG");
+        this.batchIsValid = false;
+        return;
+      }
+      if (
         this.batch.details["what"] != "DISTRUN_YE" &&
         this.batch.details["what"] != "DISTRUN" &&
         this.batch.details["what"] != "DISTRUN_SUPP" &&
