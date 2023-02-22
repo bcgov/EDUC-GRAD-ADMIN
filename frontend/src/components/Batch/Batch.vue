@@ -413,7 +413,6 @@
                   </div>
                 </div>
               </div>
-              <pre>TEST districts: 061 062 063</pre>
             </b-card>
           </div>
           <div
@@ -435,7 +434,6 @@
               @change="editBatchJob('psiTransmissionMode', $event)"
             ></b-form-select>
             <label class="font-weight-bold row mt-3 ml-0 px-0">PSI Year</label>
-
             <b-form-input
               type="number"
               :value="currentPSIYear"
@@ -464,7 +462,6 @@
                 <div class="row col-12">
                   <div class="col-2 p-2"><strong>Code</strong></div>
                   <div class="col-4 p-2"><strong>Name</strong></div>
-                  <div class="col-4 p-2"><strong>City</strong></div>
                 </div>
 
                 <div
@@ -509,7 +506,7 @@
                     </div>
                   </div>
                   <div class="row col-12">
-                    <div v-if="psi.value" class="col-2">{{ psi.value }}</div>
+                    <div v-if="psi.psiName" class="col-2">{{ psi.value }}</div>
                     <div v-if="psi.psiName" class="col-4">
                       {{ psi.psiName }}
                     </div>
@@ -527,7 +524,6 @@
                     </div>
                   </div>
                 </div>
-                <pre>TEST PSI: 201, 002</pre>
               </div>
             </b-card>
           </div>
@@ -733,9 +729,6 @@
                 </div>
               </div>
             </div>
-            <pre class="mt-5">
-TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
-            >
           </b-card>
           <b-card
             v-if="batch.details['who'] == 'Program'"
@@ -1171,6 +1164,7 @@ export default {
   methods: {
     validBatch() {
       if (this.batch.details["what"] == "PSIRUN") {
+        console.log(this.batch.details.psiYear);
         if (
           this.batch.details.psiTransmissionMode == "" ||
           this.batch.details.psiYear == ""
@@ -1549,7 +1543,8 @@ export default {
       if (type == "psi") {
         //remove duplicates
         this.validating = true;
-        if (value) {
+
+        if (value && value.length == 3) {
           TRAXService.getPSIByAdvanceSearch("psiCode=" + value)
             .then((response) => {
               if (response.data) {
@@ -1565,7 +1560,7 @@ export default {
                   response.data[0].city
                 );
               } else {
-                this.validationMessage = value + " is not a valid District";
+                this.validationMessage = value + " is not a valid PSI";
                 this.deleteValueFromTypeInBatchId(id, type, value);
                 this.addTypeToBatchId(id, type);
               }
@@ -1582,7 +1577,11 @@ export default {
               this.validating = false;
             });
         } else {
-          this.makeToast("ERROR Please enter a valid PSI", "danger");
+          this.makeToast(
+            "ERROR Please enter a valid 3 digit PSI code",
+            "danger"
+          );
+          this.validating = false;
         }
       }
       if (type == "programs") {
@@ -1722,7 +1721,7 @@ export default {
   },
   props: {
     jobId: String,
-    currentPSIYear: Number,
+    currentPSIYear: String,
   },
   computed: {
     ...mapGetters({

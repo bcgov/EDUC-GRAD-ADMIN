@@ -821,7 +821,7 @@ export default {
         blankTranscriptDetails: [{}],
         blankCertificateDetails: [{}],
       };
-
+      console.log(batchDetail);
       let id = "job-" + this.tabCounter;
       this.$set(this.spinners, id, false);
       this.$store.commit("batchprocessing/editBatchDetails", {
