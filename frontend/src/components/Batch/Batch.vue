@@ -1170,12 +1170,14 @@ export default {
 
   methods: {
     validBatch() {
-      if (
-        this.batch.details["what"] == "PSIRUN" &&
-        this.batch.details.psiTransmissionMode == ""
-      ) {
-        this.batchIsValid = false;
-        return;
+      if (this.batch.details["what"] == "PSIRUN") {
+        if (
+          this.batch.details.psiTransmissionMode == "" ||
+          this.batch.details.psiYear == ""
+        ) {
+          this.batchIsValid = false;
+          return;
+        }
       }
       if (
         this.batch.details["what"] != "DISTRUN_YE" &&
