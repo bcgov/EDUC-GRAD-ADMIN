@@ -1207,7 +1207,10 @@ export default {
         this.batchIsValid = false;
         return;
       }
-
+      if (this.batch.details["credential"] == "") {
+        this.batchIsValid = false;
+        return;
+      }
       if (
         this.batch.details["what"] == "DISTRUNUSER" &&
         this.batch.details["where"] == "BC Mail" &&
