@@ -1174,7 +1174,6 @@ export default {
         this.batch.details["what"] == "PSIRUN" &&
         this.batch.details.psiTransmissionMode == ""
       ) {
-        console.log("HUG");
         this.batchIsValid = false;
         return;
       }
