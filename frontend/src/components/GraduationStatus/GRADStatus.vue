@@ -1105,7 +1105,7 @@ export default {
 
     validCompletionDate(date) {
       // format date to valid SCCP date
-      if (this.editedGradStatus === "SCCP") {
+      if (this.editedGradStatus.program === "SCCP") {
         this.editedGradStatus.programCompletionDate =
           this.dateFormatYYYYMMDD(date);
       }
