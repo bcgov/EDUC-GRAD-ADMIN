@@ -5,23 +5,35 @@ export default {
   namespaced: true,
   state: {
     userAccess: "",
-    role: "GRAD_SYSTEM_INFO",
+    roles: [],
   },
   getters: {
     userAccess: (state) => state.userAccess,
-    role: (state) => state.role,
-    allowRunDistrunYE: (state) => {
-      return state.role === roleAcess.GRAD_SYSTEM_COORDINATOR 
+    roles: (state) => state.roles,
+    allowUpdateGradStatus: (state) =>{
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
     },
-    allowRunDistrunMonthly: (state) => {
-      return state.role === roleAcess.GRAD_SYSTEM_COORDINATOR 
+    allowCreateStudentNotes: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
+    },
+    allowRunGradAlgorithm: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
+    },
+    allowCreateBatchJob: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
     },
     allowSelectCategoryCodeGroup: (state) => {
-      return state.role === roleAcess.GRAD_SYSTEM_COORDINATOR || state.role === roleAcess.GRAD_SYSTEM_GRAD_INFO_OFFICER
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
     },
     allowSelectProgramGroup: (state) => {
-      return state.role === roleAcess.GRAD_SYSTEM_COORDINATOR || state.role === roleAcess.GRAD_SYSTEM_GRAD_INFO_OFFICER
-    }
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
+    },
+    allowRunDistrunYE: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+    },
+    allowRunDistrunMonthly: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+    }   
   },
   mutations: {
     setUserAccess: (state, userAccess) => {
@@ -31,7 +43,13 @@ export default {
         state.userAccess = null;
       }
     },
-
+    setUserRoles: (state, role) => {
+      if (role) {
+        state.roles = role;
+      } else {
+        state.roles = "unauthorized";
+      }
+    },
     //sets the token required for refreshing expired json web tokens
     logoutState: (state) => {
       localStorage.removeItem("jwtToken");
@@ -46,6 +64,7 @@ export default {
           .get(Routes.USER)
           .then((response) => {
             context.commit("setUserAccess", response.data.userAccess);
+            context.commit("setUserRoles", response.data.userRoles);
           })
           .catch((e) => {
             throw e;

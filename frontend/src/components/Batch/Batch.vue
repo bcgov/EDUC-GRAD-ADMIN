@@ -1235,7 +1235,7 @@ export default {
         this.batch.details["credential"] != "Blank certificate print" &&
         this.batch.details["credential"] != "Blank transcript print"
       ) {
-        if (this.allowSelectCategoryCodeGroup) {
+        if (this.allowSelectCategoryCodeGroup && this.allowSelectProgramGroup) {
           return this.formElements[runType].group;
         } else {
           return [
@@ -1727,10 +1727,10 @@ export default {
       tabContent: "batchprocessing/getBatchDetails",
       programOptions: "app/getProgramOptions",
       userFullName: "auth/userFullName",
-      allowRunDistrunYE: "access/allowRunDistrunYE",
-      allowRunDistrunMonthly: "access/allowRunDistrunMonthly",
-      allowSelectProgramGroup: "access/allowSelectProgramGroup",
-      allowSelectCategoryCodeGroup: "access/allowSelectCategoryCodeGroup",
+      allowRunDistrunYE: "useraccess/allowRunDistrunYE",
+      allowRunDistrunMonthly: "useraccess/allowRunDistrunMonthly",
+      allowSelectProgramGroup: "useraccess/allowSelectProgramGroup",
+      allowSelectCategoryCodeGroup: "useraccess/allowSelectCategoryCodeGroup",
     }),
 
     batch() {
