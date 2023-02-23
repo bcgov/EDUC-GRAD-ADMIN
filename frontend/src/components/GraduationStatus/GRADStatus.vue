@@ -260,15 +260,6 @@
             <tr v-if="showEdit">
               <td v-if="editedGradStatus.program != 'SCCP'">
                 <strong>Program completion date: (YYYY/MM)</strong><br />
-                <div
-                  v-if="programCompletionDateRangeError"
-                  class="form-validation-message text-danger"
-                >
-                  The program completion date is out of date range&nbsp;&nbsp;<i
-                    class="fas fa-exclamation-triangle"
-                    aria-hidden="true"
-                  ></i>
-                </div>
               </td>
               <td v-else-if="editedGradStatus.program == 'SCCP'">
                 <strong>Program completion date: (YYYY/MM/DD)</strong><br />
@@ -292,7 +283,6 @@
                   size="sm"
                   type="text"
                   maxLength="10"
-                  @keyup="validCompletionDate()"
                   v-model="editedGradStatus.programCompletionDate"
                 ></b-input>
               </td>
@@ -708,13 +698,6 @@
             <tr></tr>
           </tbody>
         </table>
-        <b-alert show variant="info" class="p-3 mb-1">
-          <p>
-            <strong>DEBUG</strong><br />&nbsp;recalc grad:
-            {{ String(recalculateFlag) }}<br />&nbsp;recalc projected grad:
-            {{ String(recalculateProjectedGradFlag) }}
-          </p>
-        </b-alert>
       </b-card-text>
     </b-card>
   </div>
@@ -1135,9 +1118,10 @@ export default {
         : null;
       let compareDate = date ? new Date(date) : null;
 
-      return (!start || compareDate > start) && (!end || compareDate < end);
-      //return (!start || date < end) && (!end || date > start);
-      // how to handle null
+      let inRange =
+        (!start || compareDate > start) && (!end || compareDate < end);
+      this.programCompletionDateRangeError = !inRange;
+      return inRange;
     },
     validAdultStartDate(date) {
       // format date to valid adult start date
