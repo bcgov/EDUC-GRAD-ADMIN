@@ -1,38 +1,27 @@
 import ApiService from "@/common/apiService";
-import { Routes, RoleAccess } from "@/utils/constants";
+import { Routes, Roles } from "@/utils/constants";
 
 export default {
   namespaced: true,
   state: {
     userAccess: "",
-    UpdateGradStatus: RoleAccess.UPDATE_GRAD_GRADUATION_STATUS,
-    CreateStudentNotes: RoleAccess.CREATE_GRAD_STUDENT_NOTES_DATA,
-    RunGradAlgorithm: RoleAccess.RUN_GRAD_ALGORITHM,
-    CreateBatchJob: RoleAccess.CREATE_GRAD_BATCH_JOB_CODE_DATA,
-    role: "GRAD_SYSTEM_COORDINATOR",
+    role: "GRAD_SYSTEM_INFO",
   },
   getters: {
-    
     userAccess: (state) => state.userAccess,
-    allowUpdateGradStatus: (state) =>
-      state.userAccess.includes(state.UpdateGradStatus),
-    allowCreateStudentNotes: (state) =>
-      state.userAccess.includes(state.CreateStudentNotes),
-    allowRunGradAlgorithm: (state) =>
-      state.userAccess.includes(state.RunGradAlgorithm),
-    allowCreateBatchJob: (state) =>
-      state.userAccess.includes(state.CreateBatchJob),
-    allowRunDistrunYE: (state) =>
-      state.role == "GRAD_SYSTEM_COORDINATOR",
-    allowRunDistrunMonthly: (state) =>
-      state.role == "GRAD_SYSTEM_COORDINATOR",
-    allowSelectCategoryCodeGroup: (state) =>
-      state.role == "GRAD_SYSTEM_COORDINATOR",
-    allowSelectProgramGroup: (state) =>
-      state.role == "GRAD_SYSTEM_COORDINATOR",            
-    
-      
-      
+    role: (state) => state.role,
+    allowRunDistrunYE: (state) => {
+      return state.role === roleAcess.GRAD_SYSTEM_COORDINATOR 
+    },
+    allowRunDistrunMonthly: (state) => {
+      return state.role === roleAcess.GRAD_SYSTEM_COORDINATOR 
+    },
+    allowSelectCategoryCodeGroup: (state) => {
+      return state.role === roleAcess.GRAD_SYSTEM_COORDINATOR || state.role === roleAcess.GRAD_SYSTEM_GRAD_INFO_OFFICER
+    },
+    allowSelectProgramGroup: (state) => {
+      return state.role === roleAcess.GRAD_SYSTEM_COORDINATOR || state.role === roleAcess.GRAD_SYSTEM_GRAD_INFO_OFFICER
+    }
   },
   mutations: {
     setUserAccess: (state, userAccess) => {
