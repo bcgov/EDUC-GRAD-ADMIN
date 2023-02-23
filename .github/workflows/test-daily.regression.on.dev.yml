@@ -4,38 +4,10 @@ on:
   schedule:
     - cron: '0 11 * * 1-5'
 
-env:
-  OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
-  OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
-  RUNNER_DEPLOYMENT_NAMESPACE: ${{ secrets.RUNNER_DEPLOYMENT_NAMESPACE }}
-  GITHUB_REPO: ${{ github.event.repository.name }}
-  ORGANIZATION: bcgov
-  GITHUB_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
-
 jobs:
-  DeployRunner:
-    runs-on: ubuntu-20.04
-    outputs:
-      runner_name: ${{ steps.deploy_runner.outputs.runner_name }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: 4
-      - uses: ./.github/actions/deploy-os-runner
-        id: deploy_runner
-        with:
-          runner-deployment-namespace: ${{ env.RUNNER_DEPLOYMENT_NAMESPACE }}
-          openshift-token: ${{ env.OPENSHIFT_TOKEN }}
-          openshift-server: ${{ env.OPENSHIFT_SERVER }}
-          github-repo: ${{ env.GITHUB_REPO }}
-          gh-access-token: ${{ env.GITHUB_ACCESS_TOKEN }}
-          secret-ref: test-runner-dev-secrets
-  # run test on the github runner
   DailyRegression:
-    runs-on: ${{ needs.DeployRunner.outputs.runner_name }}
+    runs-on: ubuntu-latest
     environment: dev
-    needs: [DeployRunner]
     defaults:
       run:
         working-directory: test
@@ -63,20 +35,4 @@ jobs:
           icon_emoji: ":bell:"
           channel: "grad-project"
           url: ${{ secrets.ROCKETCHAT_WEBHOOK_FAILURES }}
-  # now burn it all down!!
-  TearDown:
-    runs-on: ubuntu-20.04
-    if: ${{ always() }}
-    needs: [DeployRunner, DailyRegression]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: 4
-      - uses: ./.github/actions/teardown-os-runner
-        with:
-          runner-deployment-namespace: ${{ env.RUNNER_DEPLOYMENT_NAMESPACE }}
-          runner-deployment-name: ${{ needs.DeployRunner.outputs.runner_name }}
-          openshift-token: ${{ env.OPENSHIFT_TOKEN }}
-          openshift-server: ${{ env.OPENSHIFT_SERVER }}
 
