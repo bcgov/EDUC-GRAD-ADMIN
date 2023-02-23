@@ -1117,18 +1117,10 @@ export default {
         ? new Date(this.programExpiryDate)
         : null;
       let compareDate = date ? new Date(date) : null;
-      console.log("before: ", this.programCompletionDateRangeError);
 
       let inRange =
         (!start || compareDate > start) && (!end || compareDate < end);
       this.programCompletionDateRangeError = !inRange;
-
-      console.log(
-        "range: ",
-        (!start || compareDate > start) && (!end || compareDate < end)
-      );
-
-      console.log("after: ", this.programCompletionDateRangeError);
       return inRange;
     },
     validAdultStartDate(date) {
