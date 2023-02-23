@@ -413,7 +413,6 @@
                   </div>
                 </div>
               </div>
-              <pre>TEST districts: 061 062 063</pre>
             </b-card>
           </div>
           <div
@@ -435,7 +434,6 @@
               @change="editBatchJob('psiTransmissionMode', $event)"
             ></b-form-select>
             <label class="font-weight-bold row mt-3 ml-0 px-0">PSI Year</label>
-
             <b-form-input
               type="number"
               :value="currentPSIYear"
@@ -464,7 +462,6 @@
                 <div class="row col-12">
                   <div class="col-2 p-2"><strong>Code</strong></div>
                   <div class="col-4 p-2"><strong>Name</strong></div>
-                  <div class="col-4 p-2"><strong>City</strong></div>
                 </div>
 
                 <div
@@ -485,13 +482,6 @@
                       :ref="'psiName' + jobId + index"
                       class="col-4"
                     />
-                    <b-form-input
-                      show="false"
-                      disabled
-                      v-model="psi.city"
-                      :ref="'psiCity' + jobId + index"
-                      class="col-4"
-                    />
                     <div v-if="index == batch.psi.length - 1" class="col-2">
                       <b-button
                         class="btn btn-primary w-100"
@@ -509,11 +499,10 @@
                     </div>
                   </div>
                   <div class="row col-12">
-                    <div v-if="psi.value" class="col-2">{{ psi.value }}</div>
+                    <div v-if="psi.psiName" class="col-2">{{ psi.value }}</div>
                     <div v-if="psi.psiName" class="col-4">
                       {{ psi.psiName }}
                     </div>
-                    <div v-if="psi.city" class="col-4">{{ psi.city }}</div>
 
                     <div v-if="index != batch.psi.length - 1" class="col-2">
                       <b-button
@@ -527,7 +516,6 @@
                     </div>
                   </div>
                 </div>
-                <pre>TEST PSI: 201, 002</pre>
               </div>
             </b-card>
           </div>
@@ -733,9 +721,6 @@
                 </div>
               </div>
             </div>
-            <pre class="mt-5">
-TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
-            >
           </b-card>
           <b-card
             v-if="batch.details['who'] == 'Program'"
@@ -817,8 +802,6 @@ TEST Schools: 04343000 04399143 02222022 06161064 06161049 03596573</pre
               </div>
             </div>
           </b-card>
-          <!-- <BatchGroupInput :jobId="this.jobId" label="Schools" group="schools" :fields="[{key:'mincode', label: 'Mincode', isInput: true}, {key:'schoolName', label: 'School Name'}, {key: 'districtName', label: 'District Name'}, {key:'address1', label: 'Address'}]" :items="batch['schools']">
-      </BatchGroupInput> -->
         </div>
       </div>
       <div class="my-2">
@@ -1170,6 +1153,15 @@ export default {
 
   methods: {
     validBatch() {
+      if (this.batch.details["what"] == "PSIRUN") {
+        if (
+          this.batch.details.psiTransmissionMode == "" ||
+          this.batch.details.psiYear == ""
+        ) {
+          this.batchIsValid = false;
+          return;
+        }
+      }
       if (
         this.batch.details["what"] != "DISTRUN_YE" &&
         this.batch.details["what"] != "DISTRUN" &&
@@ -1207,7 +1199,10 @@ export default {
         this.batchIsValid = false;
         return;
       }
-
+      if (this.batch.details["credential"] == "") {
+        this.batchIsValid = false;
+        return;
+      }
       if (
         this.batch.details["what"] == "DISTRUNUSER" &&
         this.batch.details["where"] == "BC Mail" &&
@@ -1540,10 +1535,11 @@ export default {
       if (type == "psi") {
         //remove duplicates
         this.validating = true;
-        if (value) {
+
+        if (value && value.length == 3) {
           TRAXService.getPSIByAdvanceSearch("psiCode=" + value)
             .then((response) => {
-              if (response.data) {
+              if (response.data.length) {
                 this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
                   id,
                   type,
@@ -1552,11 +1548,8 @@ export default {
                 this.$refs["psiName" + id + valueIndex][0].updateValue(
                   response.data[0].psiName
                 );
-                this.$refs["psiCity" + id + valueIndex][0].updateValue(
-                  response.data[0].city
-                );
               } else {
-                this.validationMessage = value + " is not a valid District";
+                this.validationMessage = value + " is not a valid PSI";
                 this.deleteValueFromTypeInBatchId(id, type, value);
                 this.addTypeToBatchId(id, type);
               }
@@ -1573,7 +1566,11 @@ export default {
               this.validating = false;
             });
         } else {
-          this.makeToast("ERROR Please enter a valid PSI", "danger");
+          this.makeToast(
+            "ERROR Please enter a valid 3 digit PSI code",
+            "danger"
+          );
+          this.validating = false;
         }
       }
       if (type == "programs") {
@@ -1645,7 +1642,7 @@ export default {
           batchDetail.details["blankTranscriptDetails"] = [];
         }
         if (type == "allPsi" && event) {
-          batchDetail.psi = [{ value: "all", psiName: "ALL", city: "ALL" }];
+          batchDetail.psi = [{ value: "all", psiName: "ALL" }];
           this.$store.commit("batchprocessing/editBatchDetails", {
             batchDetail,
             id,
@@ -1713,7 +1710,7 @@ export default {
   },
   props: {
     jobId: String,
-    currentPSIYear: Number,
+    currentPSIYear: String,
   },
   computed: {
     ...mapGetters({
