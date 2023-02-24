@@ -33,7 +33,17 @@ export default {
     },
     allowRunDistrunMonthly: (state) => {
       return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
-    }   
+    },   
+    allowRunNonGradRun: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+    },   
+    allowRunDistrunSupplemental: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+    },   
+    allowToggleRoutines: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+    }               
+    
   },
   mutations: {
     setUserAccess: (state, userAccess) => {

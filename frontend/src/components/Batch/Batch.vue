@@ -1221,6 +1221,29 @@ export default {
       BatchProcessingService.getBatchJobTypes()
         .then((response) => {
           this.batchTypes = response.data;
+          for (const [i] in this.batchTypes) {
+            if (
+              this.batchTypes[i].code == "DISTRUN_YE" &&
+              !this.allowRunDistrunYE
+            ) {
+              this.batchTypes.splice(i, 1);
+            } else if (
+              this.batchTypes[i].code == "DISTRUN" &&
+              !this.allowRunDistrunMonthly
+            ) {
+              this.batchTypes.splice(i, 1);
+            } else if (
+              this.batchTypes[i].code == "DISTRUN_SUPP" &&
+              !this.allowRunDistrunSupplemental
+            ) {
+              this.batchTypes.splice(i, 1);
+            } else if (
+              this.batchTypes[i].code == "NONGRADRUN" &&
+              !this.allowRunNonGradRun
+            ) {
+              this.batchTypes.splice(i, 1);
+            }
+          }
         })
         .catch((error) => {
           this.$bvToast.toast("ERROR " + error.response.statusText, {
@@ -1731,6 +1754,8 @@ export default {
       programOptions: "app/getProgramOptions",
       userFullName: "auth/userFullName",
       allowRunDistrunYE: "useraccess/allowRunDistrunYE",
+      allowRunDistrunSupplemental: "useraccess/allowRunDistrunSupplemental",
+      allowRunNonGradRun: "useraccess/allowRunNonGradRun",
       allowRunDistrunMonthly: "useraccess/allowRunDistrunMonthly",
       allowSelectProgramGroup: "useraccess/allowSelectProgramGroup",
       allowSelectCategoryCodeGroup: "useraccess/allowSelectCategoryCodeGroup",
