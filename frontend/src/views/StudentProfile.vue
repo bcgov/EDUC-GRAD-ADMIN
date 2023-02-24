@@ -527,6 +527,36 @@
             value-field="code"
             text-field="label"
           ></b-form-select>
+          <div class="mt-3" v-if="ungradReasonSelected">
+            <b-alert
+              class="m-0"
+              variant="warning"
+              v-if="ungradReasons.length > 0"
+              show
+              >{{
+                ungradReasons.find(
+                  (element) => element.code === ungradReasonSelected
+                ).description
+              }}</b-alert
+            >
+          </div>
+
+          <div v-if="ungradReasonSelected == 'OTH'" class="mt-3">
+            <label>Description</label>
+            <b-form-textarea
+              v-model="ungradReasonDesc"
+              placeholder="Reason for running undo completion on this student..."
+              :state="ungradReasonDesc.length > 0"
+            ></b-form-textarea>
+          </div>
+          <b-form-checkbox
+            v-if="ungradReasonSelected"
+            id="confirm-student-undo-completion"
+            v-model="confirmStudentUndoCompletion"
+            class="mt-3"
+          >
+            I confirm that I am authorized to undo completion for this student
+          </b-form-checkbox>
 
           <template #modal-footer="{ ok, cancel, hide }">
             <!-- Emulate built in modal footer ok and cancel button actions -->
@@ -541,7 +571,8 @@
               :disabled="
                 (ungradReasonSelected == 'OTH' &&
                   ungradReasonDesc.length == 0) ||
-                ungradReasonSelected == ''
+                ungradReasonSelected == '' ||
+                !confirmStudentUndoCompletion
               "
               @click="
                 hide('ungraduate-student-modal');
@@ -551,14 +582,6 @@
               Undo Completion
             </b-button>
           </template>
-          <div v-if="ungradReasonSelected == 'OTH'" class="mt=3">
-            <label class="pt-3">Description</label>
-            <b-form-textarea
-              v-model="ungradReasonDesc"
-              placeholder="Reason for running undo completion on this student..."
-              :state="ungradReasonDesc.length > 0"
-            ></b-form-textarea>
-          </div>
         </b-modal>
       </div>
     </div>
@@ -631,7 +654,8 @@ export default {
       nonGradReasons: "",
       projectedrequirementsMet: "",
       ungradReasonSelected: "",
-      ungradReasonDesc: "",
+      ungradReasonDesc: "", //do we need now that we do a .find in the template?
+      confirmStudentUndoCompletion: false,
       selectedTab: 0,
       projectedGradStatus: [],
       projectedGradStatusWithRegistrations: [],
@@ -694,6 +718,7 @@ export default {
     ]),
     ...mapGetters("useraccess", ["userAccess", "allowRunGradAlgorithm"]),
     ...mapGetters({
+      ungradReasons: "app/getUngradReasons",
       profile: "student/getStudentProfile",
       courses: "student/getStudentCourses",
       assessments: "student/getStudentAssessments",
@@ -707,7 +732,6 @@ export default {
       studentInfo: "student/getStudentProfile",
       studentNotes: "student/getStudentNotes",
       optionalPrograms: "student/getStudentOptionalPrograms",
-      ungradReasons: "app/getUngradReasons",
       studentUngradReasons: "student/getStudentUngradReasons",
       gradCourses: "student/gradStatusCourses",
       studentHistory: "student/getStudentAuditHistory",
