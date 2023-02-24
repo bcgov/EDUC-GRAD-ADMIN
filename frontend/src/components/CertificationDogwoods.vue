@@ -2,22 +2,16 @@
   <div class="certification-dogwoods pb-2">
     <b-card header="Student Certificates/Dogwoods" no-body>
       <b-card-text class="py-4">
-        <div v-if="studentGradStatus">
-          <div v-if="studentGradStatus.studentGradData">
-            <div v-if="studentGradStatus.studentGradData.schoolAtGrad">
-              <div v-if="!isCertificateEligible()">
-                <b-alert show variant="info" class="p-3 mb-1 mx-3">
-                  <h4 class="alert-heading">
-                    Ineligible for Ministry certificates
-                  </h4>
-                  <p class="locked-message">
-                    This student's school at graduation is ineligible for
-                    Ministry certificates.
-                  </p>
-                </b-alert>
-              </div>
-            </div>
-          </div>
+        <div
+          v-if="this.studentGradStatus.schoolAtGrad && !isCertificateEligible()"
+        >
+          <b-alert show variant="info" class="p-3 mb-1 mx-3">
+            <h4 class="alert-heading">Ineligible for Ministry certificates</h4>
+            <p class="locked-message">
+              This student's school at graduation is ineligible for Ministry
+              certificates.
+            </p>
+          </b-alert>
         </div>
         <div v-if="certificates">
           <div
@@ -62,11 +56,18 @@
 <script>
 import { mapGetters } from "vuex";
 import sharedMethods from "../sharedMethods";
+import SchoolService from "@/services/SchoolService.js";
 
 export default {
   name: "CertificationDogwoods",
   created() {
     this.showNotification = sharedMethods.showNotification;
+    this.isCertificateEligible();
+  },
+  data() {
+    return {
+      certificateEligible: true,
+    };
   },
   props: {},
   computed: {
@@ -81,10 +82,21 @@ export default {
       sharedMethods.base64ToFileTypeAndOpenWindow(data, mimeType, filename);
     },
     isCertificateEligible: function () {
-      return (
-        this.studentGradStatus.studentGradData.school.certificateEligibility ==
-        "Y"
-      );
+      // This is a bandaid solution to check school at grad instead of the school of record that is packaged with the student GRAD status; address in Vue 3
+      if (this.studentGradStatus.schoolAtGrad) {
+        SchoolService.getSchoolInfo(this.studentGradStatus.schoolAtGrad)
+          .then((response) => {
+            this.certificateEligible =
+              response.data.certificateEligibility == "Y";
+          })
+          .catch((error) => {
+            if (error.response.data.code == "404") {
+              this.showNotification("danger", "School at grad cannot be found");
+            }
+          });
+      }
+
+      return this.certificateEligible;
     },
   },
 };
