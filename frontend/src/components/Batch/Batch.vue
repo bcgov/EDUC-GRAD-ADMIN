@@ -471,7 +471,7 @@
                 >
                   <div v-if="!psi.psiName" class="row col-12">
                     <b-form-input
-                      type="number"
+                      type="text"
                       v-model="psi.value"
                       class="col-2"
                     />
