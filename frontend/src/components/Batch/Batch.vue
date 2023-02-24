@@ -1153,15 +1153,6 @@ export default {
 
   methods: {
     validBatch() {
-      if (this.batch.details["what"] == "PSIRUN") {
-        if (
-          this.batch.details.psiTransmissionMode == "" ||
-          this.batch.details.psiYear == ""
-        ) {
-          this.batchIsValid = false;
-          return;
-        }
-      }
       if (
         this.batch.details["what"] != "DISTRUN_YE" &&
         this.batch.details["what"] != "DISTRUN" &&
@@ -1199,7 +1190,19 @@ export default {
         this.batchIsValid = false;
         return;
       }
-      if (this.batch.details["credential"] == "") {
+      if (this.batch.details["what"] == "PSIRUN") {
+        if (
+          this.batch.details.psiTransmissionMode == "" ||
+          this.batch.details.psiYear == ""
+        ) {
+          this.batchIsValid = false;
+          return;
+        }
+      }
+      if (
+        this.batch.details["what"] == "DISTRUNUSER" &&
+        this.batch.details["credential"] == ""
+      ) {
         this.batchIsValid = false;
         return;
       }

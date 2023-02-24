@@ -23,10 +23,10 @@ export default {
       return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
     },
     allowSelectCategoryCodeGroup: (state) => {
-      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
     },
     allowSelectProgramGroup: (state) => {
-      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR)
     },
     allowRunDistrunYE: (state) => {
       return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
