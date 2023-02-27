@@ -59,7 +59,6 @@ export default {
       hasGradStatus: "student/studentHasGradStatus",
       studentGradRequirementCourses: "student/gradStatusCourses",
       studentPen: "student/getStudentPen",
-      studentFullName: "student/getStudentFullName",
       role: "getRoles",
       optionalPrograms: "student/getStudentOptionalPrograms",
       programOptions: "app/getProgramOptions",
