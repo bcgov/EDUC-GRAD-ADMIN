@@ -755,8 +755,6 @@ export default {
     window.removeEventListener("resize", this.handleResize);
   },
   beforeRouteUpdate(to, from, next) {
-    // react to route changes...
-    this.loadStudent(this.quickSearchPen);
     StudentService.getStudentPen(this.quickSearchPen)
       .then((response) => {
         this.pen = response.data.pen;
