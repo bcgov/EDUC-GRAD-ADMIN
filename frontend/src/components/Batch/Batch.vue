@@ -152,7 +152,7 @@
               class="p-0 mt-3 col-3"
               v-if="batch.details['who'] == 'District'"
             >
-              <label class="font-weight-bold">School Category</label>
+              <label class="font-weight-bold">Category</label>
               <b-form-select
                 id="inline-form-select-type"
                 class="col-12 my-2"
@@ -1033,7 +1033,7 @@ export default {
             { text: "Student - N/A", value: "Student", disabled: true },
             { text: "School - N/A", value: "School", disabled: true },
             {
-              text: "District - N/A",
+              text: "School Category - N/A",
               value: "Geographic District",
               disabled: true,
             },
@@ -1060,7 +1060,7 @@ export default {
             { text: "", value: null },
             "Student",
             "School",
-            { text: "Geographic District", value: "District" },
+            { text: "School Category", value: "District" },
             "Program",
           ],
           copies: true,
@@ -1071,7 +1071,7 @@ export default {
             { text: "", value: null },
             "Student",
             "School",
-            { text: "Geographic District", value: "District" },
+            { text: "School Category", value: "District" },
             "Program",
           ],
         },
@@ -1080,7 +1080,7 @@ export default {
             { text: "", value: null },
             "Student",
             "School",
-            { text: "Geographic District", value: "District" },
+            { text: "School Category", value: "District" },
             "Program",
           ],
         },
