@@ -692,7 +692,6 @@ export default {
       "isLoading",
       "userInfo",
     ]),
-    ...mapGetters("useraccess", ["userAccess", "allowRunGradAlgorithm"]),
     ...mapGetters({
       profile: "student/getStudentProfile",
       courses: "student/getStudentCourses",
@@ -713,6 +712,8 @@ export default {
       studentHistory: "student/getStudentAuditHistory",
       optionalProgramHistory: "student/getStudentOptionalProgramAuditHistory",
       quickSearchPen: "getQuickSearchPen",
+      allowUpdateGradStatus: "useraccess/allowUpdateGradStatus",
+      allowRunGradAlgorithm: "useraccess/allowRunGradAlgorithm",
     }),
   },
   mounted() {
