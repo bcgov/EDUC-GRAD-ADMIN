@@ -35,6 +35,9 @@ export default {
     getCareerPrograms() {
         return ApiService.apiAxios.get('/api/v1/program/careerprogram')
     },
+    getProgram(programCode){
+        return ApiService.apiAxios.get('/api/v1/program/programs/' + programCode)
+    }
     // //Program CRUD
     // createProgram(program, token){
     //     const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
