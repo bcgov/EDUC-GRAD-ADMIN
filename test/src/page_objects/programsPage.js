@@ -10,19 +10,19 @@ class ProgramsPage {
         this.testRowExists = Selector('tr[role="row"][aria-rowindex="2"]');
 
         //tabs
-        this.algorithmRulesTab = Selector('a.nav-link').withExactText('Algorithm rules');
+        this.algorithmRulesTab = Selector('a.nav-link').withExactText('Algorithm Rules');
 
         this.programsDropdown= Selector('#programs-dropdown__BV_toggle_');
         this.programsTab= Selector('#programs-dropdown__BV_toggle_menu_ a').withExactText('Programs');
-        this.programRulesTab= Selector('#programs-dropdown__BV_toggle_menu_ a').withExactText('Program rules');
-        this.transcriptMessageTab= Selector('#programs-dropdown__BV_toggle_menu_ a').withExactText('Transcript message');
+        this.programRulesTab= Selector('#programs-dropdown__BV_toggle_menu_ a').withExactText('Program Rules');
+        this.transcriptMessageTab= Selector('#programs-dropdown__BV_toggle_menu_ a').withExactText('Transcript Message');
         
         this.optionalProgramsDropdown= Selector('#optional-programs-dropdown__BV_toggle_');
-        this.optionalProgramsTab= Selector('optional-programs-dropdown__BV_toggle_menu_ a').withExactText('Optional programs');
-        this.optionalProgramRulesTab= Selector('optional-programs-dropdown__BV_toggle_menu_ a').withExactText('Optional program rules');
+        this.optionalProgramsTab= Selector('optional-programs-dropdown__BV_toggle_menu_ a').withExactText('Optional Programs');
+        this.optionalProgramRulesTab= Selector('optional-programs-dropdown__BV_toggle_menu_ a').withExactText('Optional Program Rules');
 
-        this.letterGradesTab = Selector('a.nav-link').withExactText('Letter grades');
-        this.specialCasesTab = Selector('a.nav-link').withExactText('Special cases');
+        this.letterGradesTab = Selector('a.nav-link').withExactText('Letter grades'); //TODO change back to Grades before you push Samara >:(
+        this.specialCasesTab = Selector('a.nav-link').withExactText('Special Cases');
         this.requirementTypeCodeTab = Selector('a.nav-link').withExactText('Requirement type code');
 
         // Other page elements
