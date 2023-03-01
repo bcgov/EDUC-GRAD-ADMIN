@@ -6,14 +6,15 @@
       style="margin-bottom: 15px; text-transform: capitalize"
     >
       <div v-if="isAuthenticated && dataReady">
-        <a v-b-toggle.sidebar-1>{{ userInfo.userName }} </a>
-        <b-sidebar id="sidebar-1" title="Permissions" shadow>
-          <div class="px-3 py-2">
-            {{ getProgramOptions }}
+        <a v-b-toggle.grad-drawer>{{ userInfo.userName }} </a>
+        <b-sidebar id="grad-drawer" title="Permissions" shadow>
+          <div class="px-3 py-2 mt-5">
+            <br />
+            {{ roles }}<br />
+            <a href="#" @click="changeRole">Change Role</a>
           </div>
         </b-sidebar>
-        (<a>{{ roles }}</a
-        >) |
+        |
         <a :href="authRoutes.LOGOUT" class="text-white">Logout</a>
       </div>
       <div v-else-if="!isAuthenticated">
@@ -50,14 +51,15 @@ export default {
   },
   computed: {
     ...mapGetters("auth", [
-      "roles",
       "isAuthenticated",
       "loginError",
       "isLoading",
       "userInfo",
     ]),
     ...mapGetters("app", ["getProgramOptions"]),
+    ...mapGetters("app", ["getProgramOptions"]),
     ...mapState("app", ["pageTitle"]),
+    ...mapGetters("useraccess", ["roles", "userAccess"]),
     dataReady: function () {
       return this.userInfo;
     },
@@ -67,9 +69,18 @@ export default {
   },
   methods: {
     ...mapMutations("auth", ["setLoading"]),
+    ...mapMutations("useraccess", ["setUserRoles"]),
     ...mapActions("auth", ["getJwtToken", "getUserInfo", "logout"]),
     ...mapActions("app", ["setApplicationVariables"]),
-    ...mapActions("useraccess", ["userAccess"]),
+    changeRole() {
+      if (this.roles.includes("GRAD_SYSTEM_COORDINATOR")) {
+        this.setUserRoles(["GRAD_INFO_OFFICER"]);
+      } else if (this.roles.includes("GRAD_INFO_OFFICER")) {
+        this.setUserRoles(["GRAD_PROGRAM_AREA_BA"]);
+      } else if (this.roles.includes("GRAD_PROGRAM_AREA_BA")) {
+        this.setUserRoles(["GRAD_SYSTEM_COORDINATOR"]);
+      }
+    },
   },
   async created() {
     this.getJwtToken()
@@ -107,6 +118,9 @@ export default {
   display: flex;
   justify-content: space-between;
   padding: 0.5rem 0.8rem;
+}
+#grad-drawer {
+  z-index: 200 !important;
 }
 ul.sidebar-panel-nav {
   list-style-type: none;
