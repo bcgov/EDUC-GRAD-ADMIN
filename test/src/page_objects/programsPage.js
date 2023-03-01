@@ -21,7 +21,7 @@ class ProgramsPage {
         this.optionalProgramsTab= Selector('optional-programs-dropdown__BV_toggle_menu_ a').withExactText('Optional Programs');
         this.optionalProgramRulesTab= Selector('optional-programs-dropdown__BV_toggle_menu_ a').withExactText('Optional Program Rules');
 
-        this.letterGradesTab = Selector('a.nav-link').withExactText('Letter grades'); //TODO change back to Grades before you push Samara >:(
+        this.letterGradesTab = Selector('a.nav-link').withExactText('Letter Grades');
         this.specialCasesTab = Selector('a.nav-link').withExactText('Special Cases');
         this.requirementTypeCodeTab = Selector('a.nav-link').withExactText('Requirement type code');
 
