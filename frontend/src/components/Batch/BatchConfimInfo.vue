@@ -19,7 +19,10 @@
       <ul>
         <li
           v-if="
-            details.gradDate && details.who != 'PSI' && details.who != 'Student'
+            details.gradDate &&
+            details.who != 'PSI' &&
+            details.who != 'Student' &&
+            details.who != 'District'
           "
         >
           <strong>Grad Date: </strong>{{ details.gradDate }}
