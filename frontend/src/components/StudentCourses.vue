@@ -62,38 +62,38 @@
               :title="row.item.courseName"
             >
               <div class="row py-1">
-                <div class="col-7">
+                <div class="col">
                   <strong>Instruction Language:</strong>
                 </div>
-                <div class="col-5">{{ row.item.courseDetails.language }}</div>
+                <div class="col">{{ row.item.courseDetails.language }}</div>
               </div>
               <div class="row py-1">
-                <div class="col-7"><strong>Start Date:</strong></div>
-                <div class="col-5">
+                <div class="col"><strong>Start Date:</strong></div>
+                <div class="col">
                   {{ row.item.courseDetails.startDate | formatSimpleDate }}
                 </div>
               </div>
               <div class="row py-1">
-                <div class="col-7"><strong>End Date:</strong></div>
-                <div class="col-5">
+                <div class="col"><strong>End Date:</strong></div>
+                <div class="col">
                   {{ row.item.courseDetails.endDate | formatSimpleDate }}
                 </div>
               </div>
               <div class="row py-1">
-                <div class="col-7"><strong>Credits:</strong></div>
-                <div class="col-5">{{ row.item.courseDetails.numCredits }}</div>
+                <div class="col"><strong>Credits:</strong></div>
+                <div class="col">{{ row.item.courseDetails.numCredits }}</div>
               </div>
               <div class="row py-1">
-                <div class="col-7"><strong>Work Experience:</strong></div>
-                <div class="col-5">
+                <div class="col"><strong>Work Experience:</strong></div>
+                <div class="col">
                   {{ row.item.courseDetails.workExpFlag }}
                 </div>
               </div>
               <div class="row py-1">
-                <div class="col-7">
+                <div class="col">
                   <strong>Generic Course Type:</strong>
                 </div>
-                <div class="col-5">
+                <div class="col">
                   {{ row.item.courseDetails.genericCourseType }}
                 </div>
               </div>
@@ -384,5 +384,13 @@ export default {
 
 .top-row {
   border-bottom-style: hidden;
+}
+
+.popover-body div {
+  min-width: fit-content;
+}
+
+.popover-body > div > div:nth-child(2) {
+  text-align: right;
 }
 </style>
