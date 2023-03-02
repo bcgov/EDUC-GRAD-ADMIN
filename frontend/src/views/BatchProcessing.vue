@@ -963,6 +963,9 @@ export default {
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
       BatchProcessingService.runDISTRUN_MONTHLY()
         .then((response) => {
+          this.getAdminDashboardData();
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
           if (response.data) {
             this.$bvToast.toast(
               "Batch run " +
@@ -996,6 +999,9 @@ export default {
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
       BatchProcessingService.runDISTRUN_YE()
         .then((response) => {
+          this.getAdminDashboardData();
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
           if (response.data) {
             this.$bvToast.toast(
               "Batch run " +
