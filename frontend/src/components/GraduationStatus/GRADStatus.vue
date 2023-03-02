@@ -6,7 +6,7 @@
           v-if="allowUpdateGradStatus"
           class="gradstatus-actions float-right"
         >
-          <div v-if="!showEdit">
+          <div v-if="!showEdit && allowUpdateGradStatus">
             <b-link
               href="#"
               class="edit"
@@ -713,14 +713,13 @@ import StudentService from "@/services/StudentService.js";
 export default {
   name: "GRADStatus",
   computed: {
-    ...mapGetters("auth", ["roles"]),
-    ...mapGetters("useraccess", ["allowUpdateGradStatus"]),
     ...mapGetters({
       optionalPrograms: "getStudentOptionalPrograms",
       programOptions: "app/getProgramOptions",
       studentStatusOptions: "app/getStudentStatusOptions",
       studentId: "getStudentId",
       studentGradStatus: "getStudentGradStatus",
+      allowUpdateGradStatus: "useraccess/allowUpdateGradStatus",
     }),
     studentGradeChange() {
       return this.editedGradStatus.studentGrade;

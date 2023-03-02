@@ -293,17 +293,17 @@ export default {
 <style scoped>
 .navbar,
 .nav {
-  z-index: 100;
+  z-index: 99;
 }
 .navbar-brand {
   padding-top: 0.5rem;
   padding-left: 65px;
 }
 #navbar {
-  z-index: 100;
+  z-index: 99;
 }
 header {
-  z-index: 100;
+  z-index: 99;
   background-color: var(--primary-nav);
   border-bottom: 2px solid var(--bcgold);
   padding: 0 30px 0 30px;

@@ -794,9 +794,9 @@ export default {
     getCurrentPSIYear() {
       let date = new Date();
       if (date.getMonth() + 1 > 8) {
-        return date.getFullYear() + 1;
+        return String(date.getFullYear() + 1);
       } else {
-        return date.getFullYear();
+        return String(date.getFullYear());
       }
     },
     cancelBatchJob(id) {
