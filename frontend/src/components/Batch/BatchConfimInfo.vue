@@ -9,14 +9,20 @@
       <li v-if="details.copies">
         <strong>Copies: </strong>{{ details.copies }}
       </li>
-      <li v-if="details.who"><strong>Group: </strong>{{ details.who }}</li>
+      <li v-if="details.who">
+        <strong>Group: </strong
+        >{{ details.who == "District" ? "School Category" : details.who }}
+      </li>
       <li v-if="details.credential">
         <strong>Credential Type: </strong>{{ details.credential }}
       </li>
       <ul>
         <li
           v-if="
-            details.gradDate && details.who != 'PSI' && details.who != 'Student'
+            details.gradDate &&
+            details.who != 'PSI' &&
+            details.who != 'Student' &&
+            details.who != 'District'
           "
         >
           <strong>Grad Date: </strong>{{ details.gradDate }}

@@ -152,7 +152,7 @@
               class="p-0 mt-3 col-3"
               v-if="batch.details['who'] == 'District'"
             >
-              <label class="font-weight-bold">School Category</label>
+              <label class="font-weight-bold">Category</label>
               <b-form-select
                 id="inline-form-select-type"
                 class="col-12 my-2"
@@ -339,9 +339,9 @@
               >
 
               <div class="row col-12">
-                <div class="col-2 p-2"><strong>Code</strong></div>
-                <div class="col-4 p-2"><strong>District</strong></div>
-                <div class="col-4 p-2"><strong>City</strong></div>
+                <div class="col-2 p-2"><strong>District Number</strong></div>
+                <div class="col-4 p-2"><strong>District Name</strong></div>
+                <div class="col-4 p-2"><strong>Active Flag</strong></div>
               </div>
               <div
                 v-for="(district, index) in batch.districts"
@@ -365,7 +365,7 @@
                     show="false"
                     disabled
                     v-model="district.city"
-                    :ref="'districtCity' + jobId + index"
+                    :ref="'districtActiveFlag' + jobId + index"
                     class="col-4"
                   />
                   <div v-if="index == batch.districts.length - 1" class="col-2">
@@ -530,9 +530,11 @@
             <div class="row col-12 border-bottom mb-3">
               <div class="col-2"><strong>PEN</strong></div>
               <div class="col-3"><strong>Name</strong></div>
-              <div class="col-2"><strong>Birthdate</strong></div>
+              <div class="col-1"><strong>Birthdate</strong></div>
               <div class="col-1"><strong>Status</strong></div>
-              <div class="col-2"><strong>School of Record</strong></div>
+              <div class="col-1"><strong>Program</strong></div>
+              <div class="col-1"><strong>School of Record</strong></div>
+              <div class="col-1"><strong>School at Grad</strong></div>
             </div>
             <div
               v-for="(pen, index) in batch.students"
@@ -553,7 +555,7 @@
                   disabled
                   v-model="pen.dob"
                   :ref="'dob' + jobId + index"
-                  class="col-2"
+                  class="col-1"
                 />
                 <b-form-input
                   show="false"
@@ -565,10 +567,25 @@
                 <b-form-input
                   show="false"
                   disabled
-                  v-model="pen.school"
-                  :ref="'school' + jobId + index"
-                  class="col-2"
+                  v-model="pen.program"
+                  :ref="'program' + jobId + index"
+                  class="col-1"
                 />
+                <b-form-input
+                  show="false"
+                  disabled
+                  v-model="pen.schoolOfRecord"
+                  :ref="'schoolOfRecord' + jobId + index"
+                  class="col-1"
+                />
+                <b-form-input
+                  show="false"
+                  disabled
+                  v-model="pen.schoolAtGraduation"
+                  :ref="'schoolAtGraduation' + jobId + index"
+                  class="col-1"
+                />
+
                 <div v-if="index == batch.students.length - 1" class="col-2">
                   <b-button
                     class="btn btn-primary w-100"
@@ -588,9 +605,13 @@
               <div class="row col-12">
                 <div v-if="pen.dob" class="col-2">{{ pen.value }}</div>
                 <div v-if="pen.dob" class="col-3">{{ pen.name }}</div>
-                <div v-if="pen.dob" class="col-2">{{ pen.dob }}</div>
+                <div v-if="pen.dob" class="col-1">{{ pen.dob }}</div>
                 <div v-if="pen.dob" class="col-1">{{ pen.studentStatus }}</div>
-                <div v-if="pen.dob" class="col-2">{{ pen.school }}</div>
+                <div v-if="pen.dob" class="col-1">{{ pen.program }}</div>
+                <div v-if="pen.dob" class="col-1">{{ pen.schoolOfRecord }}</div>
+                <div v-if="pen.dob" class="col-1">
+                  {{ pen.schoolAtGraduation }}
+                </div>
 
                 <div v-if="index != batch.students.length - 1" class="col-2">
                   <b-button
@@ -619,9 +640,15 @@
             >
             <div class="row col-12 border-bottom mb-3">
               <div class="col-2"><strong>Mincode</strong></div>
-              <div class="col-3"><strong>School Name</strong></div>
-              <div class="col-2"><strong>District Name</strong></div>
-              <div class="col-3"><strong>Address</strong></div>
+              <div class="col-4"><strong>School Name</strong></div>
+              <div class="col-1 p-2">
+                <strong>Transcript Eligibility</strong>
+              </div>
+              <div class="col-1 p-2">
+                <strong>Certificate Eligibility</strong>
+              </div>
+              <div class="col-1 p-2"><strong>School Category</strong></div>
+              <div class="col-1 p-2"><strong>TRAX reporting</strong></div>
             </div>
 
             <div v-for="(school, index) in batch.schools" :key="index" class="">
@@ -665,21 +692,35 @@
                       disabled
                       v-model="school.schoolName"
                       :ref="'schoolName' + jobId + index"
-                      class="col-3"
+                      class="col-4"
                     />
                     <b-form-input
                       show="false"
                       disabled
-                      v-model="school.districtName"
-                      :ref="'districtName' + jobId + index"
-                      class="col-2"
+                      v-model="school.transcriptEligibility"
+                      :ref="'transcriptEligibility' + jobId + index"
+                      class="col-1"
                     />
                     <b-form-input
                       show="false"
                       disabled
-                      v-model="school.address"
-                      :ref="'address' + jobId + index"
-                      class="col-3"
+                      v-model="school.certificateEligibility"
+                      :ref="'certificateEligibility' + jobId + index"
+                      class="col-1"
+                    />
+                    <b-form-input
+                      show="false"
+                      disabled
+                      v-model="school.schoolCategory"
+                      :ref="'schoolCategory' + jobId + index"
+                      class="col-1"
+                    />
+                    <b-form-input
+                      show="false"
+                      disabled
+                      v-model="school.reportingFlag"
+                      :ref="'reportingFlag' + jobId + index"
+                      class="col-1"
                     />
                     <div v-if="index == batch.schools.length - 1" class="col-2">
                       <button :disabled="invalid" class="btn btn-primary w-100">
@@ -693,14 +734,20 @@
                 <div v-if="school.schoolName" class="col-2">
                   {{ school.value }}
                 </div>
-                <div v-if="school.schoolName" class="col-3">
+                <div v-if="school.schoolName" class="col-4">
                   {{ school.schoolName }}
                 </div>
-                <div v-if="school.districtName" class="col-2">
-                  {{ school.districtName }}
+                <div v-if="school.schoolName" class="col-1">
+                  {{ school.transcriptEligibility }}
                 </div>
-                <div v-if="school.address" class="col-3">
-                  {{ school.address }}
+                <div v-if="school.schoolName" class="col-1">
+                  {{ school.certificateEligibility }}
+                </div>
+                <div v-if="school.schoolName" class="col-1">
+                  {{ school.schoolCategory }}
+                </div>
+                <div v-if="school.schoolName" class="col-1">
+                  {{ school.reportingFlag }}
                 </div>
 
                 <div v-if="index != batch.schools.length - 1" class="col-2">
@@ -1031,7 +1078,7 @@ export default {
             { text: "Student - N/A", value: "Student", disabled: true },
             { text: "School - N/A", value: "School", disabled: true },
             {
-              text: "District - N/A",
+              text: "School Category - N/A",
               value: "Geographic District",
               disabled: true,
             },
@@ -1058,7 +1105,7 @@ export default {
             { text: "", value: null },
             "Student",
             "School",
-            { text: "Geographic District", value: "District" },
+            { text: "School Category", value: "District" },
             "Program",
           ],
           copies: true,
@@ -1069,7 +1116,7 @@ export default {
             { text: "", value: null },
             "Student",
             "School",
-            { text: "Geographic District", value: "District" },
+            { text: "School Category", value: "District" },
             "Program",
           ],
         },
@@ -1078,7 +1125,7 @@ export default {
             { text: "", value: null },
             "Student",
             "School",
-            { text: "Geographic District", value: "District" },
+            { text: "School Category", value: "District" },
             "Program",
           ],
         },
@@ -1117,11 +1164,19 @@ export default {
                 "schoolName" + refValues[0] + refValues[1]
               ][0].placeholder = response.data.schoolName;
               this.$refs[
-                "districtName" + refValues[0] + refValues[1]
-              ][0].placeholder = response.data.districtName;
+                "transcriptEligibility" + refValues[0] + refValues[1]
+              ][0].placeholder = response.data.transcriptEligibility;
+
               this.$refs[
-                "address" + refValues[0] + refValues[1]
-              ][0].placeholder = response.data.address1;
+                "certificateEligibility" + refValues[0] + refValues[1]
+              ][0].placeholder = response.data.certificateEligibility;
+
+              this.$refs[
+                "schoolCategory" + refValues[0] + refValues[1]
+              ][0].placeholder = response.data.schoolCategory;
+              this.$refs[
+                "reportingFlag" + refValues[0] + refValues[1]
+              ][0].placeholder = response.data.reportingFlag;
               return { valid: true };
             } else {
               return {
@@ -1409,11 +1464,17 @@ export default {
                 this.$refs["schoolName" + id + valueIndex][0].updateValue(
                   response.data.schoolName
                 );
-                this.$refs["districtName" + id + valueIndex][0].updateValue(
-                  response.data.districtName
+                this.$refs[
+                  "transcriptEligibility" + id + valueIndex
+                ][0].updateValue(response.data.transcriptEligibility);
+                this.$refs[
+                  "certificateEligibility" + id + valueIndex
+                ][0].updateValue(response.data.certificateEligibility);
+                this.$refs["schoolCategory" + id + valueIndex][0].updateValue(
+                  response.data.schoolCategory
                 );
-                this.$refs["address" + id + valueIndex][0].updateValue(
-                  response.data.address1
+                this.$refs["reportingFlag" + id + valueIndex][0].updateValue(
+                  response.data.reportingFlag
                 );
               } else {
                 this.validationMessage = value + " is not a valid School.";
@@ -1501,21 +1562,28 @@ export default {
                 value,
               });
               this.$refs["pen" + id + valueIndex][0].updateValue(
-                student.data[0].legalFirstName +
+                student.data[0].legalLastName +
+                  ", " +
+                  student.data[0].legalFirstName +
                   " " +
                   (student.data[0].legalMiddleNames
                     ? student.data[0].legalMiddleNames + " "
-                    : "") +
-                  student.data[0].legalLastName
+                    : "")
               );
               this.$refs["dob" + id + valueIndex][0].updateValue(
                 student.data[0].dob
               );
-              this.$refs["school" + id + valueIndex][0].updateValue(
-                student.data[0].schoolOfRecordName
+              this.$refs["schoolOfRecord" + id + valueIndex][0].updateValue(
+                student.data[0].schoolOfRecord
               );
               this.$refs["student-status" + id + valueIndex][0].updateValue(
                 student.data[0].studentStatus
+              );
+              this.$refs["schoolAtGraduation" + id + valueIndex][0].updateValue(
+                student.data[0].schoolAtGrad
+              );
+              this.$refs["program" + id + valueIndex][0].updateValue(
+                student.data[0].program
               );
               this.$forceUpdate();
               this.validBatch();
@@ -1544,9 +1612,9 @@ export default {
                 this.$refs["districtName" + id + valueIndex][0].updateValue(
                   response.data.districtName
                 );
-                this.$refs["districtCity" + id + valueIndex][0].updateValue(
-                  response.data.city
-                );
+                this.$refs[
+                  "districtActiveFlag" + id + valueIndex
+                ][0].updateValue(response.data.activeFlag);
               } else {
                 this.validationMessage = value + " is not a valid District";
                 this.deleteValueFromTypeInBatchId(id, type, value);
@@ -1609,7 +1677,6 @@ export default {
       }
       if (type == "programs") {
         this.validating = true;
-
         if (value) {
           this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
             id,
