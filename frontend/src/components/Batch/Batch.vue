@@ -168,25 +168,29 @@
                 @change="editBatchJob('categoryCode', $event)"
               ></b-form-select>
             </div>
-
-            <label class="font-weight-bold p-0 m-0 row">Select Students</label>
-
-            <b-form-select
-              id="inline-form-select-audience"
-              class="mb-2 mr-sm-2 mb-sm-0 col-3"
-              :disabled="
-                batch.details['what'] == 'DISTRUN' ||
-                batch.details['what'] == 'DISTRUN_YE' ||
-                batch.details['what'] == 'DISTRUN_SUPP' ||
-                batch.details['what'] == 'NONGRADRUN'
+            <div
+              class="p-0 my-3 col-3"
+              v-if="
+                batch.details['what'] != 'DISTRUN' &&
+                batch.details['what'] != 'DISTRUN_YE' &&
+                batch.details['what'] != 'DISTRUN_SUPP' &&
+                batch.details['what'] != 'NONGRADRUN'
               "
-              :options="[
-                { text: 'Current Students', value: 'Current Students' },
-                { text: 'Date Range', value: 'Date Range' },
-              ]"
-              :value="batch.details['gradDate']"
-              @change="editBatchJob('gradDate', $event)"
-            ></b-form-select>
+            >
+              <label class="font-weight-bold p-0 m-0 row"
+                >Select Students</label
+              >
+              <b-form-select
+                id="inline-form-select-audience"
+                class="mb-2 mr-sm-2 mb-sm-0 col-12"
+                :options="[
+                  { text: 'Current Students', value: 'Current Students' },
+                  { text: 'Date Range', value: 'Date Range' },
+                ]"
+                :value="batch.details['gradDate']"
+                @change="editBatchJob('gradDate', $event)"
+              ></b-form-select>
+            </div>
             <div
               class="date-ranges col-12 row"
               v-if="batch.details['gradDate'] == 'Date Range'"
@@ -260,12 +264,7 @@
           </div>
           <div
             class="p-0 mt-3 col-3"
-            v-if="
-              batch.details['what'] == 'DISTRUNUSER' ||
-              batch.details['what'] == 'DISTRUN' ||
-              batch.details['what'] == 'DISTRUN_SUPP' ||
-              batch.details['what'] == 'NONGRADRUN'
-            "
+            v-if="batch.details['what'] == 'DISTRUNUSER'"
           >
             <label class="font-weight-bold">Copies</label>
             <b-form-input
@@ -278,12 +277,7 @@
           </div>
           <div
             class="mt-1 col-3 p-0"
-            v-if="
-              batch.details['what'] == 'DISTRUNUSER' ||
-              batch.details['what'] == 'DISTRUN' ||
-              batch.details['what'] == 'DISTRUN_SUPP' ||
-              batch.details['what'] == 'NONGRADRUN'
-            "
+            v-if="batch.details['what'] == 'DISTRUNUSER'"
           >
             <label class="font-weight-bold">Where</label>
             <b-form-select
