@@ -257,14 +257,16 @@ export default {
           StudentService.getStudentByPen(this.penInput)
             .then((response) => {
               if (response.data) {
+                if (response.data.length == 0) {
+                  throw new Error("Student not found");
+                }
                 this.$store.commit("student/unsetStudent");
-                this.loadStudent(response.data);
                 this.$store.dispatch(
                   "setQuickSearchPen",
                   response.data[0].studentID
                 );
+                this.loadStudent(response.data);
                 this.searchLoading = false;
-                this.penInput = "";
               }
             })
             .catch((error) => {
@@ -273,8 +275,11 @@ export default {
               this.searchLoading = false;
               this.showNotification(
                 "danger",
-                "Student cannot be found on the GRAD or PEN database"
+                `Student ${this.penInput} cannot be found on the GRAD or PEN database`
               );
+            })
+            .finally(() => {
+              this.penInput = "";
             });
         }
       }
