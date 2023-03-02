@@ -120,6 +120,7 @@
               filter="null"
               :filter-function="filterGradReqCourses"
               thead-class="d-none"
+              v-if="row.item.studentOptionalProgramData.optionalStudentCourses"
             >
               <template #cell(gradReqMetDetail)="row2">
                 <div class="p-2">
@@ -141,6 +142,9 @@
               filter="null"
               :filter-function="filterGradReqCourses"
               thead-class="d-none"
+              v-if="
+                row.item.studentOptionalProgramData.optionalStudentAssessments
+              "
             >
               <template #cell(gradReqMetDetail)="row2">
                 <div class="p-2">
