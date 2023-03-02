@@ -262,7 +262,6 @@
             class="p-0 mt-3 col-3"
             v-if="
               batch.details['what'] == 'DISTRUNUSER' ||
-              batch.details['what'] == 'DISTRUN_YE' ||
               batch.details['what'] == 'DISTRUN' ||
               batch.details['what'] == 'DISTRUN_SUPP' ||
               batch.details['what'] == 'NONGRADRUN'
@@ -281,7 +280,6 @@
             class="mt-1 col-3 p-0"
             v-if="
               batch.details['what'] == 'DISTRUNUSER' ||
-              batch.details['what'] == 'DISTRUN_YE' ||
               batch.details['what'] == 'DISTRUN' ||
               batch.details['what'] == 'DISTRUN_SUPP' ||
               batch.details['what'] == 'NONGRADRUN'
