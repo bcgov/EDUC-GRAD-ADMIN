@@ -532,7 +532,7 @@
             <div class="row col-12 border-bottom mb-3">
               <div class="col-2"><strong>PEN</strong></div>
               <div class="col-3"><strong>Name</strong></div>
-              <div class="col-1"><strong>D.O.B</strong></div>
+              <div class="col-1"><strong>Birthdate</strong></div>
               <div class="col-1"><strong>Status</strong></div>
               <div class="col-1"><strong>Program</strong></div>
               <div class="col-1"><strong>School of Record</strong></div>
@@ -1531,12 +1531,13 @@ export default {
                 value,
               });
               this.$refs["pen" + id + valueIndex][0].updateValue(
-                student.data[0].legalMiddleNames +
+                student.data[0].legalLastName +
+                  ", " +
+                  student.data[0].legalFirstName +
                   " " +
-                  (student.data[0].legalFirstName
+                  (student.data[0].legalMiddleNames
                     ? student.data[0].legalMiddleNames + " "
-                    : "") +
-                  student.data[0].legalLastName
+                    : "")
               );
               this.$refs["dob" + id + valueIndex][0].updateValue(
                 student.data[0].dob
