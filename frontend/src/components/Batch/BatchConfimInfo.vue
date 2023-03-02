@@ -25,7 +25,7 @@
             details.who != 'District'
           "
         >
-          <strong>Grad Date: </strong>{{ details.gradDate }}
+          <strong>Select Students: </strong>{{ details.gradDate }}
         </li>
         <li v-if="details.who == 'PSI'">
           <strong>PSI: </strong>
