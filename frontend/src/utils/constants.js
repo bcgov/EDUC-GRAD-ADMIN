@@ -21,11 +21,10 @@ export const RolePermissions = Object.freeze({
 });
 
 //role access
-export const RoleAccess = Object.freeze({
-  UPDATE_GRAD_GRADUATION_STATUS: "UPDATE_GRAD_GRADUATION_STATUS",
-  CREATE_GRAD_STUDENT_NOTES_DATA: "CREATE_GRAD_STUDENT_NOTES_DATA",
-  RUN_GRAD_ALGORITHM: "RUN_GRAD_ALGORITHM ",
-  CREATE_GRAD_BATCH_JOB_CODE_DATA: "CREATE_GRAD_BATCH_JOB_CODE_DATA",
+export const Roles = Object.freeze({
+  GRAD_PROGRAM_AREA_BA: "GRAD_PROGRAM_AREA_BA",
+  GRAD_INFO_OFFICER: "GRAD_INFO_OFFICER",
+  GRAD_SYSTEM_COORDINATOR: "GRAD_SYSTEM_COORDINATOR"
 });
 
 export const MinistryAddressLabel = Object.freeze({

@@ -8,7 +8,7 @@ class AssessmentsPage {
         this.assessmentTab = Selector('a.nav-link').withExactText('Assessment');
         this.assessmentTable = Selector('#assessment-table');
 
-        this.assessmentRequirementsTab = Selector('a.nav-link').withExactText('Assessment requirements');
+        this.assessmentRequirementsTab = Selector('a.nav-link').withExactText('Assessment Requirements');
 
     }
 }

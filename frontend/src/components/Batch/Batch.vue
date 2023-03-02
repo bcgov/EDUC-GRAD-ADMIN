@@ -262,7 +262,6 @@
             class="p-0 mt-3 col-3"
             v-if="
               batch.details['what'] == 'DISTRUNUSER' ||
-              batch.details['what'] == 'DISTRUN_YE' ||
               batch.details['what'] == 'DISTRUN' ||
               batch.details['what'] == 'DISTRUN_SUPP' ||
               batch.details['what'] == 'NONGRADRUN'
@@ -281,7 +280,6 @@
             class="mt-1 col-3 p-0"
             v-if="
               batch.details['what'] == 'DISTRUNUSER' ||
-              batch.details['what'] == 'DISTRUN_YE' ||
               batch.details['what'] == 'DISTRUN' ||
               batch.details['what'] == 'DISTRUN_SUPP' ||
               batch.details['what'] == 'NONGRADRUN'
@@ -1276,6 +1274,29 @@ export default {
       BatchProcessingService.getBatchJobTypes()
         .then((response) => {
           this.batchTypes = response.data;
+          for (const [i] in this.batchTypes) {
+            if (
+              this.batchTypes[i].code == "DISTRUN_YE" &&
+              !this.allowRunDistrunYE
+            ) {
+              this.batchTypes.splice(i, 1);
+            } else if (
+              this.batchTypes[i].code == "DISTRUN" &&
+              !this.allowRunDistrunMonthly
+            ) {
+              this.batchTypes.splice(i, 1);
+            } else if (
+              this.batchTypes[i].code == "DISTRUN_SUPP" &&
+              !this.allowRunDistrunSupplemental
+            ) {
+              this.batchTypes.splice(i, 1);
+            } else if (
+              this.batchTypes[i].code == "NONGRADRUN" &&
+              !this.allowRunNonGradRun
+            ) {
+              this.batchTypes.splice(i, 1);
+            }
+          }
         })
         .catch((error) => {
           this.$bvToast.toast("ERROR " + error.response.statusText, {
@@ -1293,7 +1314,17 @@ export default {
         this.batch.details["credential"] != "Blank certificate print" &&
         this.batch.details["credential"] != "Blank transcript print"
       ) {
-        return this.formElements[runType].group;
+        if (this.allowSelectCategoryCodeGroup && this.allowSelectProgramGroup) {
+          return this.formElements[runType].group;
+        } else {
+          return [
+            { text: "School", value: "School" },
+            {
+              text: "Student",
+              value: "Student",
+            },
+          ];
+        }
       } else if (
         this.batch.details["credential"] == "Blank certificate print" &&
         this.batch.details["blankCertificateDetails"] &&
@@ -1787,6 +1818,12 @@ export default {
       tabContent: "batchprocessing/getBatchDetails",
       programOptions: "app/getProgramOptions",
       userFullName: "auth/userFullName",
+      allowRunDistrunYE: "useraccess/allowRunDistrunYE",
+      allowRunDistrunSupplemental: "useraccess/allowRunDistrunSupplemental",
+      allowRunNonGradRun: "useraccess/allowRunNonGradRun",
+      allowRunDistrunMonthly: "useraccess/allowRunDistrunMonthly",
+      allowSelectProgramGroup: "useraccess/allowSelectProgramGroup",
+      allowSelectCategoryCodeGroup: "useraccess/allowSelectCategoryCodeGroup",
     }),
 
     batch() {

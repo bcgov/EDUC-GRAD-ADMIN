@@ -79,7 +79,7 @@
               to="/programs/letter-grades"
               :active="tab === 4"
               @click="tab = 4"
-              >Letter grades</b-nav-item
+              >Letter Grades</b-nav-item
             >
             <b-nav-item
               to="/programs/special-cases"

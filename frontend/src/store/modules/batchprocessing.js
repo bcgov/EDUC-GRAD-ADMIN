@@ -53,9 +53,9 @@ export default {
 
         
         let date = new Date();
-        let psiCurrentYear = date.getFullYear();
+        let psiCurrentYear = String(date.getFullYear());
         if (date.getMonth() + 1 > 8) {
-          psiCurrentYear = date.getFullYear() + 1;
+          psiCurrentYear = String(date.getFullYear() + 1);
         }
     
       state.batchDetails[payload]['details'].who="";

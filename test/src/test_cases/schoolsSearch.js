@@ -79,7 +79,7 @@ fixture `schools-page`
 
         await t
         .expect(await schoolsPage.searchMessage.textContent)
-        .contains('1');
+        .contains('School cannot be found');
 
         await t
         .expect(await schoolsPage.spmCode.textContent)

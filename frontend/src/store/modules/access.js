@@ -1,25 +1,49 @@
 import ApiService from "@/common/apiService";
-import { Routes, RoleAccess } from "@/utils/constants";
+import { Routes, Roles } from "@/utils/constants";
 
 export default {
   namespaced: true,
   state: {
     userAccess: "",
-    UpdateGradStatus: RoleAccess.UPDATE_GRAD_GRADUATION_STATUS,
-    CreateStudentNotes: RoleAccess.CREATE_GRAD_STUDENT_NOTES_DATA,
-    RunGradAlgorithm: RoleAccess.RUN_GRAD_ALGORITHM,
-    CreateBatchJob: RoleAccess.CREATE_GRAD_BATCH_JOB_CODE_DATA,
+    roles: [],
   },
   getters: {
     userAccess: (state) => state.userAccess,
-    allowUpdateGradStatus: (state) =>
-      state.userAccess.includes(state.UpdateGradStatus),
-    allowCreateStudentNotes: (state) =>
-      state.userAccess.includes(state.CreateStudentNotes),
-    allowRunGradAlgorithm: (state) =>
-      state.userAccess.includes(state.RunGradAlgorithm),
-    allowCreateBatchJob: (state) =>
-      state.userAccess.includes(state.CreateBatchJob),
+    roles: (state) => state.roles,
+    allowUpdateGradStatus: (state) =>{
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
+    },
+    allowCreateStudentNotes: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
+    },
+    allowRunGradAlgorithm: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
+    },
+    allowCreateBatchJob: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
+    },
+    allowSelectCategoryCodeGroup: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+    },
+    allowSelectProgramGroup: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR)
+    },
+    allowRunDistrunYE: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+    },
+    allowRunDistrunMonthly: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+    },   
+    allowRunNonGradRun: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+    },   
+    allowRunDistrunSupplemental: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+    },   
+    allowToggleRoutines: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+    }               
+    
   },
   mutations: {
     setUserAccess: (state, userAccess) => {
@@ -29,7 +53,13 @@ export default {
         state.userAccess = null;
       }
     },
-
+    setUserRoles: (state, role) => {
+      if (role) {
+        state.roles = role;
+      } else {
+        state.roles = "unauthorized";
+      }
+    },
     //sets the token required for refreshing expired json web tokens
     logoutState: (state) => {
       localStorage.removeItem("jwtToken");
@@ -44,6 +74,7 @@ export default {
           .get(Routes.USER)
           .then((response) => {
             context.commit("setUserAccess", response.data.userAccess);
+            context.commit("setUserRoles", response.data.userRoles);
           })
           .catch((e) => {
             throw e;

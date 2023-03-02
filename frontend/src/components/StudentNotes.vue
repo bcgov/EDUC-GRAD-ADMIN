@@ -111,6 +111,7 @@ export default {
       profile: "student/getStudentProfile",
       username: "getUsername",
       userInfo: "auth/userInfo",
+      allowCreateStudentNotes: "useraccess/allowCreateStudentNotes",
     }),
     ...mapGetters("useraccess", ["allowCreateStudentNotes"]),
   },
