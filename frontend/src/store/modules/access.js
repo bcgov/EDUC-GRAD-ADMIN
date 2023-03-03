@@ -10,40 +10,54 @@ export default {
   getters: {
     userAccess: (state) => state.userAccess,
     roles: (state) => state.roles,
-    allowUpdateGradStatus: (state) =>{
-      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
+    allowUpdateGradStatus: (state) => {
+      return (
+        state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) ||
+        state.roles.includes(Roles.GRAD_INFO_OFFICER)
+      );
     },
     allowCreateStudentNotes: (state) => {
-      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
+      return (
+        state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) ||
+        state.roles.includes(Roles.GRAD_INFO_OFFICER)
+      );
     },
     allowRunGradAlgorithm: (state) => {
-      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
+      return (
+        state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) ||
+        state.roles.includes(Roles.GRAD_INFO_OFFICER)
+      );
     },
     allowCreateBatchJob: (state) => {
-      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) || state.roles.includes(Roles.GRAD_INFO_OFFICER)
+      return (
+        state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) ||
+        state.roles.includes(Roles.GRAD_INFO_OFFICER)
+      );
     },
     allowSelectCategoryCodeGroup: (state) => {
-      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
     },
     allowSelectProgramGroup: (state) => {
-      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR)
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
     },
     allowRunDistrunYE: (state) => {
-      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
     },
     allowRunDistrunMonthly: (state) => {
-      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
-    },   
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
+    },
     allowRunNonGradRun: (state) => {
-      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
-    },   
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
+    },
     allowRunDistrunSupplemental: (state) => {
-      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
-    },   
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
+    },
+    allowRunPSI: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
+    },
     allowToggleRoutines: (state) => {
-      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
-    }               
-    
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
+    },
   },
   mutations: {
     setUserAccess: (state, userAccess) => {
