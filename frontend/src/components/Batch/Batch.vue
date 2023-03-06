@@ -1268,29 +1268,26 @@ export default {
       BatchProcessingService.getBatchJobTypes()
         .then((response) => {
           this.batchTypes = response.data;
-          for (const [i] in this.batchTypes) {
-            if (
-              this.batchTypes[i].code == "DISTRUN_YE" &&
-              !this.allowRunDistrunYE
-            ) {
-              this.batchTypes.splice(i, 1);
-            } else if (
-              this.batchTypes[i].code == "DISTRUN" &&
-              !this.allowRunDistrunMonthly
-            ) {
-              this.batchTypes.splice(i, 1);
-            } else if (
-              this.batchTypes[i].code == "DISTRUN_SUPP" &&
-              !this.allowRunDistrunSupplemental
-            ) {
-              this.batchTypes.splice(i, 1);
-            } else if (
-              this.batchTypes[i].code == "NONGRADRUN" &&
-              !this.allowRunNonGradRun
-            ) {
-              this.batchTypes.splice(i, 1);
-            }
-          }
+          if (!this.allowRunDistrunYE)
+            this.batchTypes = this.batchTypes.filter(
+              (type) => type.code != "DISTRUN_YE"
+            );
+          if (!this.allowRunDistrunMonthly)
+            this.batchTypes = this.batchTypes.filter(
+              (type) => type.code != "DISTRUN"
+            );
+          if (!this.allowRunPSI)
+            this.batchTypes = this.batchTypes.filter(
+              (type) => type.code != "PSIRUN"
+            );
+          if (!this.allowRunDistrunSupplemental)
+            this.batchTypes = this.batchTypes.filter(
+              (type) => type.code != "DISTRUN_SUPP"
+            );
+          if (!this.allowRunNonGradRun)
+            this.batchTypes = this.batchTypes.filter(
+              (type) => type.code != "NONGRADRUN"
+            );
         })
         .catch((error) => {
           this.$bvToast.toast("ERROR " + error.response.statusText, {
@@ -1818,6 +1815,7 @@ export default {
       allowRunDistrunMonthly: "useraccess/allowRunDistrunMonthly",
       allowSelectProgramGroup: "useraccess/allowSelectProgramGroup",
       allowSelectCategoryCodeGroup: "useraccess/allowSelectCategoryCodeGroup",
+      allowRunPSI: "useraccess/allowRunPSI",
     }),
 
     batch() {
