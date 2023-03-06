@@ -7,6 +7,9 @@ export default {
   getAllAssesmentRequirements() {
     return ApiService.apiAxios.get('/api/v1/assessment/requirement')
   },
+  getRuleCourseRequirements(rule) {
+    return ApiService.apiAxios.get('/api/v1/assessment/requirement/rule?rule=' + rule)
+  },
   getStudentAssessment(pen) {
     return ApiService.apiAxios.get('/api/v1/assessment/pen/'+ pen + '?sortForUI=true')
   }
