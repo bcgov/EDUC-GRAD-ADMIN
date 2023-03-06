@@ -19,7 +19,7 @@
               name: 'programRuleCourses',
               params: {
                 isOptionalProgram: true,
-                programCode: row.item.optionalProgramID,
+                programCode: row.item.optionalProgramID.optionalProgramID,
                 category:
                   row.item.optionalProgramRequirementCode.requirementCategory,
                 rule: row.item.optionalProgramRequirementCode.optProReqCode,

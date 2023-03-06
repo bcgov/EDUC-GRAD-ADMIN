@@ -258,11 +258,8 @@
               <td>{{ studentGradStatus.programCompletionDate }}</td>
             </tr>
             <tr v-if="showEdit">
-              <td v-if="editedGradStatus.program != 'SCCP'">
+              <td>
                 <strong>Program completion date: (YYYY/MM)</strong><br />
-              </td>
-              <td v-else-if="editedGradStatus.program == 'SCCP'">
-                <strong>Program completion date: (YYYY/MM/DD)</strong><br />
                 <div
                   v-if="programCompletionDateRangeError"
                   class="form-validation-message text-danger"
@@ -1106,7 +1103,7 @@ export default {
       // format date to valid SCCP date
       if (this.editedGradStatus.program === "SCCP") {
         this.editedGradStatus.programCompletionDate =
-          this.dateFormatYYYYMMDD(date);
+          this.dateFormatYYYYMM(date);
       }
 
       let start = this.programEffectiveDate
