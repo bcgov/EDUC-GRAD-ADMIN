@@ -36,7 +36,7 @@
                   value: 'RC',
                 },
                 {
-                  text: 'Original certificate – with principal signature block',
+                  text: 'Original certificate (includes transcript) – with principal signature block',
                   value: 'OC',
                 },
                 {
