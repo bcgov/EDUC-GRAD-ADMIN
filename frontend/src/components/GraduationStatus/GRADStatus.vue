@@ -279,7 +279,7 @@
                   "
                   size="sm"
                   type="text"
-                  maxLength="10"
+                  maxLength="7"
                   v-model="editedGradStatus.programCompletionDate"
                 ></b-input>
               </td>
@@ -1086,24 +1086,11 @@ export default {
     getStudentStatus(code) {
       return sharedMethods.getStudentStatus(code, this.studentStatusOptions);
     },
-
-    dateFormatYYYYMM() {
-      let value = this.editedGradStatus.programCompletionDate;
-      this.editedGradStatus.programCompletionDate = value.replace(
-        /^([\d]{4})([\d]{2})$/,
-        "$1/$2"
-      );
-    },
-
-    dateFormatYYYYMMDD(value) {
-      return value.replace(/^([\d]{4})([\d]{2})([\d]{2})$/, "$1/$2/$3");
-    },
-
     validCompletionDate(date) {
       // format date to valid SCCP date
       if (this.editedGradStatus.program === "SCCP") {
         this.editedGradStatus.programCompletionDate =
-          this.dateFormatYYYYMM(date);
+          sharedMethods.dateFormatYYYYMM(date);
       }
 
       let start = this.programEffectiveDate
@@ -1121,7 +1108,8 @@ export default {
     },
     validAdultStartDate(date) {
       // format date to valid adult start date
-      this.editedGradStatus.adultStart = this.dateFormatYYYYMMDD(date);
+      this.editedGradStatus.adultStartDate =
+        sharedMethods.dateFormatYYYYMMDD(date);
 
       return true;
     },
