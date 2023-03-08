@@ -46,7 +46,7 @@ export default {
         return ApiService.apiAxios.get('/api/v1/student/studentnotes/studentid/' + id)
     },
     addStudentNotes(json) {
-        return ApiService.apiAxios.post('/api/v1/student/studentnotes/',json)
+        return ApiService.apiAxios.post('/api/v1/student/studentnotes',json)
     },
     deleteStudentNotes(noteID) {
         return ApiService.apiAxios.delete('/api/v1/student/studentnotes/' + noteID)

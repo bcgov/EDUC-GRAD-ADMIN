@@ -188,7 +188,7 @@ export default {
         let current = new Date().toISOString().slice(0, 10);
         this.newNote.studentID = this.$route.params.studentId;
         this.newNote.createUser = this.userInfo.userName;
-        this.newNote.createdTimestamp = current;
+        this.newNote.createDate = current;
         StudentService.addStudentNotes(this.newNote)
           .then((response) => {
             if (response.data && response.data.value) {
