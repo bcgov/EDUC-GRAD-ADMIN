@@ -10,7 +10,7 @@
     <header>
       <div class="container">
         <div class="banner">
-          <a class="navbar-brand" href="https://www2.gov.bc.ca">
+          <a class="navbar-brand" href="/">
             <img
               class="img-fluid d-md-block"
               src="../assets/images/bcid-logo-rev-en.svg"
@@ -163,7 +163,6 @@
                     v-model="penInput"
                     placeholder="PEN"
                     ref="penSearch"
-                    v-on:keyup="keyHandler"
                     class="w-75 float-left m-1"
                   >
                   </b-form-input>
@@ -281,14 +280,6 @@ export default {
             .finally(() => {
               this.penInput = "";
             });
-        }
-      }
-    },
-    keyHandler: function (e) {
-      if (e.keyCode === 13) {
-        this.studentSearchResults = [];
-        if (this.penInput) {
-          this.findStudentByPen();
         }
       }
     },
