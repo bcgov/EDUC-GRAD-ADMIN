@@ -759,12 +759,6 @@ export default {
       this.loadStudentHistory(this.studentId);
       this.loadStudentOptionalProgramHistory(this.studentId);
     });
-    // TODO figure your life out here
-    // this.$root.$on("bv::modal::hide", () => {
-    //   this.confirmStudentUndoCompletion = "";
-    //   this.studentUngradReasonSelected = "";
-    //   this.studentUngradReasonDescription = "";
-    // });
   },
   destroyed() {
     window.removeEventListener("resize", this.handleResize);
