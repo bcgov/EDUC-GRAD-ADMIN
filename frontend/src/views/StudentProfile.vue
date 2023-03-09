@@ -522,12 +522,12 @@
         <b-modal id="ungraduate-student-modal" title="Undo Completion">
           <p>Undo Completion Reason</p>
           <b-form-select
-            v-model="ungradReasonSelected"
+            v-model="studentUngradReasonSelected"
             :options="ungradReasons"
             value-field="code"
             text-field="label"
           ></b-form-select>
-          <div class="mt-3" v-if="ungradReasonSelected">
+          <div class="mt-3" v-if="studentUngradReasonSelected">
             <b-alert
               class="m-0"
               variant="warning"
@@ -535,22 +535,22 @@
               show
               >{{
                 ungradReasons.find(
-                  (element) => element.code === ungradReasonSelected
+                  (element) => element.code === studentUngradReasonSelected
                 ).description
               }}</b-alert
             >
           </div>
 
-          <div v-if="ungradReasonSelected == 'OTH'" class="mt-3">
+          <div v-if="studentUngradReasonSelected == 'OTH'" class="mt-3">
             <label>Description</label>
             <b-form-textarea
-              v-model="ungradReasonDesc"
+              v-model="studentUngradReasonDescription"
               placeholder="Reason for running undo completion on this student..."
-              :state="ungradReasonDesc.length > 0"
+              :state="studentUngradReasonDescription.length > 0"
             ></b-form-textarea>
           </div>
           <b-form-checkbox
-            v-if="ungradReasonSelected"
+            v-if="studentUngradReasonSelected"
             id="confirm-student-undo-completion"
             v-model="confirmStudentUndoCompletion"
             class="mt-3"
@@ -560,7 +560,14 @@
 
           <template #modal-footer="{ ok, cancel, hide }">
             <!-- Emulate built in modal footer ok and cancel button actions -->
-            <b-button size="sm" variant="outline-secondary" @click="cancel">
+            <b-button
+              size="sm"
+              variant="outline-secondary"
+              @click="
+                cancel();
+                resetUndoCompletionValues();
+              "
+            >
               Cancel
             </b-button>
             <!-- Button with custom close trigger value -->
@@ -569,14 +576,15 @@
               size="sm"
               variant="primary"
               :disabled="
-                (ungradReasonSelected == 'OTH' &&
-                  ungradReasonDesc.length == 0) ||
-                ungradReasonSelected == '' ||
+                (studentUngradReasonSelected == 'OTH' &&
+                  studentUngradReasonDescription.length == 0) ||
+                studentUngradReasonSelected == '' ||
                 !confirmStudentUndoCompletion
               "
               @click="
                 hide('ungraduate-student-modal');
                 ungraduateStudent();
+                resetUndoCompletionValues();
               "
             >
               Undo Completion
@@ -653,8 +661,8 @@ export default {
       projectedOptionalGradStatus: "",
       nonGradReasons: "",
       projectedrequirementsMet: "",
-      ungradReasonSelected: "",
-      ungradReasonDesc: "", //do we need now that we do a .find in the template?
+      studentUngradReasonSelected: "",
+      studentUngradReasonDescription: "",
       confirmStudentUndoCompletion: false,
       selectedTab: 0,
       projectedGradStatus: [],
@@ -751,6 +759,12 @@ export default {
       this.loadStudentHistory(this.studentId);
       this.loadStudentOptionalProgramHistory(this.studentId);
     });
+    // TODO figure your life out here
+    // this.$root.$on("bv::modal::hide", () => {
+    //   this.confirmStudentUndoCompletion = "";
+    //   this.studentUngradReasonSelected = "";
+    //   this.studentUngradReasonDescription = "";
+    // });
   },
   destroyed() {
     window.removeEventListener("resize", this.handleResize);
@@ -774,8 +788,9 @@ export default {
   methods: {
     ungraduateStudent() {
       this.tabLoading = true;
-      let ungradCode = this.ungradReasonSelected;
-      let ungradDesc = this.ungradReasonDesc;
+      this.confirmStudentUndoCompletion = "";
+      let ungradCode = this.studentUngradReasonSelected;
+      let ungradDesc = this.studentUngradReasonDescription;
       if (ungradCode != "OTH") {
         ungradDesc = this.ungradReasons.filter(function (reason) {
           return reason.code == ungradCode;
@@ -833,9 +848,10 @@ export default {
           );
         });
     },
-    resetUngraduateStudent() {
-      this.ungradReasonSelected = "";
-      this.ungradReasonDesc = "";
+    resetUndoCompletionValues() {
+      this.confirmStudentUndoCompletion = "";
+      this.studentUngradReasonSelected = "";
+      this.studentUngradReasonDescription = "";
     },
     getStudentReportsAndCertificates(id, pen) {
       GraduationReportService.getStudentCertificates(id)
