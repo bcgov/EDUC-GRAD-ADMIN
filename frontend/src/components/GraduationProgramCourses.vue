@@ -103,8 +103,7 @@ export default {
           }
         }
       );
-    }
-    if (this.$route.params.category == "C") {
+    } else if (this.$route.params.category == "C") {
       CourseService.getRuleCourseRequirements(this.$route.params.rule).then(
         (response) => {
           this.fields = this.courseFields;
@@ -115,6 +114,8 @@ export default {
           }
         }
       );
+    } else {
+      this.graduationProgramRuleCourses = "not applicable";
     }
   },
   methods: {},
