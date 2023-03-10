@@ -12,6 +12,7 @@
           variant="outline primary"
           style="color: #666"
           size="xs"
+          class="p-0"
           @click="row.toggleDetails"
         >
           <router-link

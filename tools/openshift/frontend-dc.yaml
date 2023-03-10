@@ -120,7 +120,7 @@ objects:
       name: "${APP_NAME}-frontend"
       weight: 100
     wildcardPolicy: None
-- apiVersion: autoscaling/v2beta1
+- apiVersion: autoscaling/v2
   kind: HorizontalPodAutoscaler
   metadata:
     name: "${APP_NAME}-frontend-cpu-autoscaler"
@@ -136,7 +136,15 @@ objects:
       - type: Resource
         resource:
           name: cpu
-          targetAverageUtilization: 90
+          target:
+            averageUtilization: 150
+            type: Utilization
+      - type: Resource
+        resource:
+          name: memory
+          target:
+            averageUtilization: 100
+            type: Utilization
 parameters:
 - name: REPO_NAME
   description: Application repository name

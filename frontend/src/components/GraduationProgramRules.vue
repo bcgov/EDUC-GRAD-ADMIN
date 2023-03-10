@@ -17,6 +17,7 @@
             style="color: #666"
             size="xs"
             @click="row.toggleDetails"
+            class="p-0"
           >
             <router-link
               :to="{
