@@ -55,7 +55,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import sharedMethods from "../sharedMethods";
+import sharedMethods from "../../sharedMethods";
 import SchoolService from "@/services/SchoolService.js";
 
 export default {

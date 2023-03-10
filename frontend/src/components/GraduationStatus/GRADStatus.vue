@@ -1062,7 +1062,7 @@ export default {
     adultStartDateChange: function () {
       if (this.editedGradStatus.adultStartDate) {
         if (this.containsAnyLetters(this.editedGradStatus.adultStartDate)) {
-          this.notANumberWarning = true;
+          this.notANumberWarning = true; //TODO this needs to be fixed and should also align with the rest of the form messaging (ie red text under label)
           this.disableSave = true;
         } else {
           this.notANumberWarning = false;

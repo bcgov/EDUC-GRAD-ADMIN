@@ -108,7 +108,7 @@
               </template>
 
               <template #cell(updateDate)="row">
-                {{ row.item.updateDate | formatSimpleDate }}
+                {{ row.item.updateDate | formatTime }}
               </template>
             </DisplayTable>
           </b-card-text>
