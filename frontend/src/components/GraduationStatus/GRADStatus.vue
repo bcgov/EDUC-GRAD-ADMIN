@@ -94,6 +94,7 @@
           </div>  
         </div> -->
 
+        <!-- Info callout in edit form when student status is MER/Merged -->
         <div
           v-if="studentGradStatus && studentGradStatus.studentStatus == 'MER'"
         >
@@ -105,6 +106,7 @@
             </p>
           </b-alert>
         </div>
+        <!-- Warning callout in edit form when student status is N/Not Active -->
         <div
           v-if="
             studentGradStatus &&
@@ -121,6 +123,7 @@
             </p>
           </b-alert>
         </div>
+        <!-- Warning callout in edit form when student status is TER/Terminated -->
         <div
           v-else-if="
             studentGradStatus &&
@@ -137,6 +140,7 @@
             </p>
           </b-alert>
         </div>
+        <!-- Warning callout in edit form when student status is ARC/Archived -->
         <div
           v-else-if="
             studentGradStatus &&
@@ -152,6 +156,7 @@
             </p>
           </b-alert>
         </div>
+        <!-- Warning callout in edit form when student status is DEC/Deceased -->
         <div
           v-else-if="
             studentGradStatus &&
@@ -166,6 +171,7 @@
             </p>
           </b-alert>
         </div>
+
         <table
           role="presentation"
           aria-label="edit grad status"
@@ -184,6 +190,7 @@
               <td class="w-50">
                 <strong>Program: </strong>
                 <div v-if="editedGradStatus.program == '1950'">
+                  <!-- Warning if student grade is not AN or AD when on 1950 program -->
                   <div
                     class="form-validation-message text-danger"
                     v-if="
@@ -197,6 +204,8 @@
                     the student program is 1950
                   </div>
                 </div>
+
+                <!-- Warnig if program changes that optional programs will be dropped from the student -->
                 <div
                   v-if="editedGradStatus.program != studentGradStatus.program"
                 >
@@ -210,6 +219,7 @@
                     changes to Program.
                   </div>
                 </div>
+                <!-- Warning if student is moved to a program that is closed-->
                 <div
                   v-if="messagingFlags.closedProgramWarning"
                   class="form-validation-message text-warning"
@@ -303,6 +313,8 @@
             <tr v-if="showEdit">
               <td>
                 <strong>Student grade: </strong>
+                <!-- Warning if student is not on 1950 program and grade is AN/AD.
+                *Note that we have existing SCCP students with AD/AN, but future students on SCCP program should not have a grade of AN/AD -->
                 <div v-if="editedGradStatus.program != '1950'">
                   <div
                     class="form-validation-message text-danger"
@@ -405,6 +417,7 @@
             <tr v-if="showEdit">
               <td>
                 <strong>School of record:</strong><br />
+                <!-- Warning if school of record missing; Samara to investigate if we use this since msg is same as scoolOfRecordWarning -->
                 <div
                   v-if="schoolOfRecordMissing"
                   class="form-validation-message text-warning"
@@ -415,6 +428,7 @@
                     aria-hidden="true"
                   ></i>
                 </div>
+                <!-- Warning if school of record is closed -->
                 <div
                   v-if="schoolOfRecordWarning"
                   class="form-validation-message text-warning"
@@ -425,6 +439,7 @@
                     aria-hidden="true"
                   ></i>
                 </div>
+                <!-- Warning if school does not exist/school not found -->
                 <div
                   v-if="schoolNotFoundWarning"
                   class="form-validation-message text-danger"
@@ -435,6 +450,7 @@
                     aria-hidden="true"
                   ></i>
                 </div>
+                <!-- Warning if school code for school of record is not 8 digits -->
                 <div
                   v-if="schoolOfRecordInputWarning"
                   class="form-validation-message text-danger"
