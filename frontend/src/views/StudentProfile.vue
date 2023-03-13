@@ -526,7 +526,13 @@
             :options="ungradReasons"
             value-field="code"
             text-field="label"
-          ></b-form-select>
+          >
+            <template #first>
+              <b-form-select-option value="" disabled
+                >-- Select an Undo Completion Reason --</b-form-select-option
+              >
+            </template>
+          </b-form-select>
           <div class="mt-3" v-if="studentUngradReasonSelected">
             <b-alert
               class="m-0"
@@ -747,6 +753,14 @@ export default {
       allowUpdateGradStatus: "useraccess/allowUpdateGradStatus",
       allowRunGradAlgorithm: "useraccess/allowRunGradAlgorithm",
     }),
+    userUndoCompletionReasonChange() {
+      return this.studentUngradReasonSelected;
+    },
+  },
+  watch: {
+    userUndoCompletionReasonChange: function () {
+      this.confirmStudentUndoCompletion = false; //clear confirm if they change options
+    },
   },
   mounted() {
     this.$root.$on("studentProfile", () => {
@@ -843,7 +857,7 @@ export default {
         });
     },
     resetUndoCompletionValues() {
-      this.confirmStudentUndoCompletion = "";
+      this.confirmStudentUndoCompletion = false;
       this.studentUngradReasonSelected = "";
       this.studentUngradReasonDescription = "";
     },

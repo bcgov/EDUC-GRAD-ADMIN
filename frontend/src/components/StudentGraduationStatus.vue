@@ -42,7 +42,7 @@ import { mapGetters } from "vuex";
 import sharedMethods from "../sharedMethods";
 import NoncompletionReasons from "@/components/GraduationStatus/NoncompletionReasons";
 import StudentGraduationReports from "@/components/GraduationStatus/StudentGraduationReports";
-import CertificationDogwoods from "@/components/CertificationDogwoods";
+import CertificationDogwoods from "@/components/GraduationStatus/CertificationDogwoods";
 import GRADStatus from "@/components/GraduationStatus/GRADStatus";
 
 export default {

@@ -94,6 +94,7 @@
           </div>  
         </div> -->
 
+        <!-- Info callout in edit form when student status is MER/Merged -->
         <div
           v-if="studentGradStatus && studentGradStatus.studentStatus == 'MER'"
         >
@@ -105,6 +106,7 @@
             </p>
           </b-alert>
         </div>
+        <!-- Warning callout in edit form when student status is N/Not Active -->
         <div
           v-if="
             studentGradStatus &&
@@ -121,6 +123,7 @@
             </p>
           </b-alert>
         </div>
+        <!-- Warning callout in edit form when student status is TER/Terminated -->
         <div
           v-else-if="
             studentGradStatus &&
@@ -137,6 +140,7 @@
             </p>
           </b-alert>
         </div>
+        <!-- Warning callout in edit form when student status is ARC/Archived -->
         <div
           v-else-if="
             studentGradStatus &&
@@ -152,6 +156,7 @@
             </p>
           </b-alert>
         </div>
+        <!-- Warning callout in edit form when student status is DEC/Deceased -->
         <div
           v-else-if="
             studentGradStatus &&
@@ -166,30 +171,7 @@
             </p>
           </b-alert>
         </div>
-        <div v-if="dateInFutureWarning">
-          <b-alert show variant="warning" class="p-3 mb-1">
-            <p class="locked-message">
-              Program Completion date cannot be in the future if a student has
-              completed SCCP.
-            </p>
-          </b-alert>
-        </div>
-        <div v-if="dateBlankWarning">
-          <b-alert show variant="warning" class="p-3 mb-1">
-            <p class="locked-message">
-              Program Completion date cannot be blank. Please use Undo
-              Completion from the Run Graduation Algorithm dropdown.
-            </p>
-          </b-alert>
-        </div>
-        <div v-if="notANumberWarning">
-          <b-alert show variant="warning" class="p-3 mb-1">
-            <p class="locked-message">
-              Program Completion format invalid. Please follow date format
-              YYYY/MM/DD for SCCP or YYYY/MM for other Programs.
-            </p>
-          </b-alert>
-        </div>
+
         <table
           role="presentation"
           aria-label="edit grad status"
@@ -208,6 +190,7 @@
               <td class="w-50">
                 <strong>Program: </strong>
                 <div v-if="editedGradStatus.program == '1950'">
+                  <!-- Warning if student grade is not AN or AD when on 1950 program -->
                   <div
                     class="form-validation-message text-danger"
                     v-if="
@@ -221,11 +204,13 @@
                     the student program is 1950
                   </div>
                 </div>
+
+                <!-- Warnig if program changes that optional programs will be dropped from the student -->
                 <div
                   v-if="editedGradStatus.program != studentGradStatus.program"
                 >
                   <div
-                    v-if="programChangeWarning"
+                    v-if="messagingFlags.programChangeWarning"
                     class="form-validation-message text-danger"
                   >
                     Warning, any optional programs associated with the original
@@ -234,8 +219,9 @@
                     changes to Program.
                   </div>
                 </div>
+                <!-- Warning if student is moved to a program that is closed-->
                 <div
-                  v-if="closedProgramWarning"
+                  v-if="messagingFlags.closedProgramWarning"
                   class="form-validation-message text-warning"
                 >
                   Warning: This program is closed.
@@ -260,14 +246,23 @@
             <tr v-if="showEdit">
               <td>
                 <strong>Program completion date: (YYYY/MM)</strong><br />
+                <!-- Warning if program completion date for SCCP is out of range -->
                 <div
-                  v-if="programCompletionDateRangeError"
+                  v-if="messagingFlags.rangeError.programCompletionDate"
                   class="form-validation-message text-danger"
                 >
                   The program completion date is out of date range&nbsp;&nbsp;<i
                     class="fas fa-exclamation-triangle"
                     aria-hidden="true"
                   ></i>
+                </div>
+                <!-- Warning if program completion date contains non-numeric values -->
+                <div
+                  v-if="messagingFlags.numberError.programCompletionDate"
+                  class="form-validation-message text-danger"
+                >
+                  The program completion date format is invalid. Please follow
+                  the date format <strong>YYYY/MM</strong>
                 </div>
               </td>
               <td>
@@ -318,6 +313,8 @@
             <tr v-if="showEdit">
               <td>
                 <strong>Student grade: </strong>
+                <!-- Warning if student is not on 1950 program and grade is AN/AD.
+                *Note that we have existing SCCP students with AD/AN, but future students on SCCP program should not have a grade of AN/AD -->
                 <div v-if="editedGradStatus.program != '1950'">
                   <div
                     class="form-validation-message text-danger"
@@ -420,6 +417,7 @@
             <tr v-if="showEdit">
               <td>
                 <strong>School of record:</strong><br />
+                <!-- Warning if school of record missing; Samara to investigate if we use this since msg is same as scoolOfRecordWarning -->
                 <div
                   v-if="schoolOfRecordMissing"
                   class="form-validation-message text-warning"
@@ -430,6 +428,7 @@
                     aria-hidden="true"
                   ></i>
                 </div>
+                <!-- Warning if school of record is closed -->
                 <div
                   v-if="schoolOfRecordWarning"
                   class="form-validation-message text-warning"
@@ -440,6 +439,7 @@
                     aria-hidden="true"
                   ></i>
                 </div>
+                <!-- Warning if school does not exist/school not found -->
                 <div
                   v-if="schoolNotFoundWarning"
                   class="form-validation-message text-danger"
@@ -450,6 +450,7 @@
                     aria-hidden="true"
                   ></i>
                 </div>
+                <!-- Warning if school code for school of record is not 8 digits -->
                 <div
                   v-if="schoolOfRecordInputWarning"
                   class="form-validation-message text-danger"
@@ -654,13 +655,21 @@
               <td><strong>Adult start date: </strong></td>
               <td>
                 <span v-if="studentGradStatus.adultStartDate">{{
-                  studentGradStatus.adultStartDate
+                  studentGradStatus.adultStartDate | formatSimpleDate
                 }}</span>
               </td>
             </tr>
             <tr v-if="showEdit">
               <td>
                 <strong>Adult start date: </strong>
+                <!-- Warning if adult start date contains non-numeric values -->
+                <div
+                  v-if="messagingFlags.numberError.adultStartDate"
+                  class="form-validation-message text-danger"
+                >
+                  The adult start date format is invalid. Please follow the date
+                  format <strong>YYYY/MM/DD</strong>
+                </div>
               </td>
               <td>
                 <b-input
@@ -756,17 +765,26 @@ export default {
   data() {
     return {
       programCompletionEffectiveDateList: [],
-      programCompletionDateRangeError: false,
-      programChangeWarning: false,
       programEffectiveDate: "",
       programExpiryDate: "",
-      errorMessage: "",
-      dismissSecs: 3,
-      dismissCountDown: 0,
+      dismissSecs: 3, // remove?
+      dismissCountDown: 0, // remove?
       showModal: false,
       showTop: false,
       showEdit: false,
       show: false,
+      notificationMessage: "",
+      messagingFlags: {
+        numberError: {
+          programCompletionDate: false,
+          adultStartDate: false,
+        },
+        rangeError: {
+          programCompletionDate: false,
+        },
+        closedProgramWarning: false,
+        programChangeWarning: false,
+      },
       projectedStudentGradStatus: [],
       updateStatus: [],
       schoolOfRecord: "",
@@ -775,9 +793,8 @@ export default {
       schoolOfRecordWarning: false,
       schoolNotFoundWarning: false,
       schoolOfRecordInputWarning: false,
-      dateBlankWarning: false,
       schoolFound: false,
-      schoolAtGradProgramCompletionDateMessage: false,
+      schoolAtGradProgramCompletionDateMessage: false, //can this join messagingFlags{} ?
       schoolAtGraduation: "",
       schoolAtGraduationStatus: "",
       schoolAtGraduationWarning: false,
@@ -787,13 +804,10 @@ export default {
       editedGradStatus: {},
       studentUngradReason: "",
       disableSave: false,
-      notANumberWarning: false,
       disableSchoolAtGrad: false,
       disableProgramInput: false,
       disableConsumerEdReqMet: false,
       disableStudentStatus: false,
-      dateInFutureWarning: false,
-      closedProgramWarning: false,
       gradeOptions: [
         { text: "08", value: "8" },
         { text: "09", value: "9" },
@@ -866,7 +880,7 @@ export default {
     },
     programChange: function () {
       // Samara to look at cleaning this up
-      this.programChangeWarning = true;
+      this.messagingFlags.programChangeWarning = true;
       if (
         this.studentGradStatus.programCompletionDate &&
         this.studentGradStatus.program != "SCCP"
@@ -897,9 +911,9 @@ export default {
         }
       }
       if (this.ifProgramsWithExpiry(this.editedGradStatus.program)) {
-        this.closedProgramWarning = true;
+        this.messagingFlags.closedProgramWarning = true;
       } else {
-        this.closedProgramWarning = false;
+        this.messagingFlags.closedProgramWarning = false;
       }
 
       //clear out whatever the user had for the program completion date
@@ -933,10 +947,10 @@ export default {
         if (
           this.containsAnyLetters(this.editedGradStatus.programCompletionDate)
         ) {
-          this.notANumberWarning = true;
+          this.messagingFlags.numberError.programCompletionDate = true;
           this.disableSave = true;
         } else {
-          this.notANumberWarning = false;
+          this.messagingFlags.numberError.programCompletionDate = false;
           this.disableSave = !this.validCompletionDate(
             this.editedGradStatus.programCompletionDate
           );
@@ -1062,10 +1076,10 @@ export default {
     adultStartDateChange: function () {
       if (this.editedGradStatus.adultStartDate) {
         if (this.containsAnyLetters(this.editedGradStatus.adultStartDate)) {
-          this.notANumberWarning = true;
+          this.messagingFlags.numberError.adultStartDate = true;
           this.disableSave = true;
         } else {
-          this.notANumberWarning = false;
+          this.messagingFlags.numberError.adultStartDate = false;
           this.disableSave = !this.validAdultStartDate(
             this.editedGradStatus.adultStartDate
           );
@@ -1103,7 +1117,7 @@ export default {
 
       let inRange =
         (!start || compareDate > start) && (!end || compareDate < end);
-      this.programCompletionDateRangeError = !inRange;
+      this.messagingFlags.rangeError.programCompletionDate = !inRange;
       return inRange;
     },
     validAdultStartDate(date) {
@@ -1213,11 +1227,10 @@ export default {
 
     cancelGradStatus() {
       this.showEdit = false;
-      this.studentUngradReason = "";
       this.schoolOfRecordWarning = false;
       this.schoolNotFoundWarning = false;
-      this.dateBlankWarning = false;
-      this.dateInFutureWarning = false;
+      this.messagingFlags.numberError.adultStartDate = false;
+      this.messagingFlags.numberError.programCompletionDate = false;
     },
     saveGraduationStatus(id) {
       //add the user info
@@ -1294,10 +1307,10 @@ export default {
           }
           if (error.response) {
             if (error.response.data) {
-              this.errorMessage = error.response.data.message;
+              this.notificationMessage = error.response.data.message;
             }
           }
-          this.showNotification("danger", this.errorMessage);
+          this.showNotification("danger", this.notificationMessage);
         });
     },
 
