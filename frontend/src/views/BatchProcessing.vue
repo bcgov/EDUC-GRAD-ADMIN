@@ -994,10 +994,12 @@ export default {
         })
         .catch((error) => {
           if (error) {
+            this.getAdminDashboardData();
             this.cancelBatchJob(id);
-            this.$bvToast.toast("There was an error processing " + requestId, {
+            this.selectedTab = 0;
+            this.$bvToast.toast("This request is running in the background", {
               title: "BATCH PROCESSING UPDATE",
-              variant: "error",
+              variant: "success",
               noAutoHide: true,
             });
           }
@@ -1030,10 +1032,12 @@ export default {
         })
         .catch((error) => {
           if (error) {
+            this.getAdminDashboardData();
             this.cancelBatchJob(id);
-            this.$bvToast.toast("There was an error processing " + requestId, {
+            this.selectedTab = 0;
+            this.$bvToast.toast("This request is running in the background", {
               title: "BATCH PROCESSING UPDATE",
-              variant: "error",
+              variant: "success",
               noAutoHide: true,
             });
           }
