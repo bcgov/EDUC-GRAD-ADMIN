@@ -139,10 +139,14 @@
                                         class="row border-bottom p-2"
                                         v-if="
                                           row.item.jobType != 'DISTRUNUSER' &&
+                                          row.item.jobType != 'DISTRUN' &&
+                                          row.item.jobType != 'DISTRUN_YE' &&
+                                          row.item.jobType != 'DISTRUN_SUPP' &&
+                                          row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'PSIRUN'
                                         "
                                       >
-                                        <div class="col-10 p-2">
+                                        <div class="col-9 p-2">
                                           Rerun this batch for <br />{{
                                             row.item
                                               .expectedStudentsProcessed != 0
@@ -188,10 +192,14 @@
                                         class="row border-bottom p-2"
                                         v-if="
                                           row.item.jobType != 'DISTRUNUSER' &&
+                                          row.item.jobType != 'DISTRUN' &&
+                                          row.item.jobType != 'DISTRUN_YE' &&
+                                          row.item.jobType != 'NONGRADRUN' &&
+                                          row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.failedStudentsProcessed != 0
                                         "
                                       >
-                                        <div class="col-10 p-2">
+                                        <div class="col-9 p-2">
                                           Rerun
                                           {{
                                             row.item.failedStudentsProcessed !=
@@ -235,10 +243,14 @@
                                         class="row p-2 border-bottom"
                                         v-if="
                                           row.item.jobType != 'DISTRUNUSER' &&
+                                          row.item.jobType != 'DISTRUN' &&
+                                          row.item.jobType != 'DISTRUN_YE' &&
+                                          row.item.jobType != 'NONGRADRUN' &&
+                                          row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'PSIRUN'
                                         "
                                       >
-                                        <div class="col-10 p-2">
+                                        <div class="col-9 p-2">
                                           Rerun school reports
                                         </div>
                                         <div class="col-2 px-2 m-0">
