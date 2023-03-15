@@ -45,8 +45,12 @@ router.get(
 );
 
 function logout(req) {
-  req.logout();
-  req.session.destroy();
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    req.session.destroy();
+  });
+
+  
 }
 
 //removes tokens and destroys session
