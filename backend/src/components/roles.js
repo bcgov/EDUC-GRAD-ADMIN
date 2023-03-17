@@ -13,7 +13,7 @@ const roles = {
     //Help functions created in auth module: isValidStudentSearchAdmin
     StudentSearch: config.get('server:studentSearch:roleAdmin'),
     //Help functions created in auth module: isValidStaffAdministrationAdmin
-    StaffAdministration: config.get('server:administration:roleAdmin') || 'GRAD_SYSTEM_COORDINATOR'
+    StaffAdministration: config.get('server:administration:roleAdmin') || 'GRAD_SYSTEM_COORDINATOR' || 'GRAD_INFO_OFFICER' || 'GRAD_PROGRAM_AREA_BA'
   }
 };
 
