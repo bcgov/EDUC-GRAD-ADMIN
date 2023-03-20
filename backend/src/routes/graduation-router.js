@@ -5,7 +5,7 @@ const config = require('../config/index');
 const auth = require('../components/auth');
 const roles = require("../components/roles");
 const { errorResponse, getBackendToken, getData, postData, putData, deleteData} = require('../components/utils');
-const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles('GRAD_SYSTEM_COORDINATOR', [roles.Admin.StaffAdministration]);
+const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles('GRAD_SYSTEM_COORDINATOR', [roles.Admin.StaffInfoOfficer, roles.Admin.StaffAdministration, roles.Admin.StaffGradProgramBA]);
 
 //Program Routes
 router.get('/*',passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getGraduationAPI);

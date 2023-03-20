@@ -34,6 +34,8 @@ function createRoleHelpers(roles) {
   // create object { isValidGMPUser: ture, isValidUMPUser: true, isValidStudentSearchUser: false, ...}
   const isValidUsers = (req) => fromPairs(userHelpers.map(([roleType, verifyRole]) => [roleType, verifyRole(req)]));
   const isValidAdminUsers = (req) => fromPairs(adminHelpersFE.map(([roleType, verifyRole]) => [roleType, verifyRole(req)]));
+  console.log("HELPERS")
+  console.log(({...fromPairs([...userTokenHelpers, ...userHelpers, ...adminHelpers]), isValidUsers, isValidAdminUsers}))
   return ({...fromPairs([...userTokenHelpers, ...userHelpers, ...adminHelpers]), isValidUsers, isValidAdminUsers});
 }
 
@@ -44,9 +46,19 @@ function isUserHasAdminRole(roleType, roleName, roles) {
 }
 
 function isUserHasRoles(roleType, roleNames, roles) {
+  console.log("roleType")
+  console.log(roleType)
+  console.log("roles")
+  console.log(roles)
   const validRoles = roleNames || [];
+  console.log("VALID ROLES")
+  console.log(validRoles)
   log.silly(`valid ${roleType} Roles from environment variable are ${safeStringify(validRoles)}`);
+  console.log("ISVALIDUSERROLE")
+
+
   const isValidUserRole = (element) => Array.isArray(validRoles) ? validRoles.includes(element) : false;
+  console.log(isValidUserRole)
   return !!(Array.isArray(roles) && roles.some(isValidUserRole));
 }
 
@@ -83,15 +95,19 @@ function isValidUiToken(isUserHasRole, roleType, roleNames) {
 
 function isValidUser(isUserHasRole, roleType, roleNames) {
   return function isValidUserHandler(req) {
+    
     try {
       const thisSession = req['session'];
       if (thisSession && thisSession['passport'] && thisSession['passport'].user && thisSession['passport'].user.jwt) {
         const userToken = jsonwebtoken.verify(thisSession['passport'].user.jwt, config.get('oidc:publicKey'));
         if (userToken && userToken.realm_access && userToken.realm_access.roles
           && (isUserHasRole(roleType, roleNames, userToken.realm_access.roles))) {
+            console.log("VALID USER")
           return true;
         }
+        console.log("FALSE")
       }
+      console.log("INVALID USER")
       return false;
     } catch (e) {
       log.error(e);
