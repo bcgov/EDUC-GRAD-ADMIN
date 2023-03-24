@@ -34,8 +34,6 @@ function createRoleHelpers(roles) {
   // create object { isValidGMPUser: ture, isValidUMPUser: true, isValidStudentSearchUser: false, ...}
   const isValidUsers = (req) => fromPairs(userHelpers.map(([roleType, verifyRole]) => [roleType, verifyRole(req)]));
   const isValidAdminUsers = (req) => fromPairs(adminHelpersFE.map(([roleType, verifyRole]) => [roleType, verifyRole(req)]));
-  console.log("HELPERS")
-  console.log(({...fromPairs([...userTokenHelpers, ...userHelpers, ...adminHelpers]), isValidUsers, isValidAdminUsers}))
   return ({...fromPairs([...userTokenHelpers, ...userHelpers, ...adminHelpers]), isValidUsers, isValidAdminUsers});
 }
 
@@ -46,19 +44,9 @@ function isUserHasAdminRole(roleType, roleName, roles) {
 }
 
 function isUserHasRoles(roleType, roleNames, roles) {
-  console.log("roleType")
-  console.log(roleType)
-  console.log("roles")
-  console.log(roles)
   const validRoles = roleNames || [];
-  console.log("VALID ROLES")
-  console.log(validRoles)
   log.silly(`valid ${roleType} Roles from environment variable are ${safeStringify(validRoles)}`);
-  console.log("ISVALIDUSERROLE")
-
-
   const isValidUserRole = (element) => Array.isArray(validRoles) ? validRoles.includes(element) : false;
-  console.log(isValidUserRole)
   return !!(Array.isArray(roles) && roles.some(isValidUserRole));
 }
 
