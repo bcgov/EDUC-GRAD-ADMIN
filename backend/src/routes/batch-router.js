@@ -5,7 +5,6 @@ const config = require('../config/index');
 const auth = require('../components/auth');
 const roles = require("../components/roles");
 const { errorResponse, getBackendToken, getData, postData, deleteData, putData} = require('../components/utils');
-const { request } = require('../app');
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles('GRAD_SYSTEM_COORDINATOR', [roles.Admin.StaffAdministration]);
 
 //Batch Routes
