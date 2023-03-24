@@ -12,8 +12,8 @@ const { v4: uuidv4 } = require("uuid");
 const { body, validationResult } = require("express-validator");
 
 const isValidStaffUserWithRoles = auth.isValidUserWithRoles(
-  "GRAD_SYSTEM_COORDINATOR",
-  [roles.Admin.StaffAdministration]
+  "GRAD_INFO_OFFICER",
+  [roles.Admin.StaffInfoOfficer, roles.Admin.StaffAdministration, roles.Admin.StaffGradProgramBA]
 );
 
 const router = express.Router();

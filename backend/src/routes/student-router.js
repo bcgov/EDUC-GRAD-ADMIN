@@ -15,7 +15,7 @@ const {
 
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
-  [roles.Admin.StaffAdministration]
+  [roles.Admin.StaffInfoOfficer, roles.Admin.StaffAdministration, roles.Admin.StaffGradProgramBA]
 );
 
 //Program Routes
