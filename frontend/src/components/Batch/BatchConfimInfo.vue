@@ -4,8 +4,6 @@
       >Warning: You have selected a large volume of documents to be
       printed</b-alert
     >
-    {{ details }} <br />
-    {{ details.what != "REGALG" && details.what != "TVRRUN" }}
     <ul>
       <li v-if="typeLabel"><strong>Run Type: </strong>{{ typeLabel }}</li>
       <li v-if="details.copies">
