@@ -4,6 +4,8 @@
       >Warning: You have selected a large volume of documents to be
       printed</b-alert
     >
+    {{ details }} <br />
+    {{ details.what != "REGALG" && details.what != "TVRRUN" }}
     <ul>
       <li v-if="typeLabel"><strong>Run Type: </strong>{{ typeLabel }}</li>
       <li v-if="details.copies">
@@ -57,7 +59,13 @@
           <strong>PSI Year: </strong>{{ details.psiYear }}
         </li>
       </ul>
-      <li v-if="details.where"><strong>Where: </strong>{{ details.where }}</li>
+      <li
+        v-if="
+          details.where && details.what != 'REGALG' && details.what != 'TVRRUN'
+        "
+      >
+        <strong>Where: </strong>{{ details.where }}
+      </li>
     </ul>
   </div>
 </template>
