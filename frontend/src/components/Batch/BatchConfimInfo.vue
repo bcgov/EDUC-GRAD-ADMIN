@@ -57,7 +57,13 @@
           <strong>PSI Year: </strong>{{ details.psiYear }}
         </li>
       </ul>
-      <li v-if="details.where"><strong>Where: </strong>{{ details.where }}</li>
+      <li
+        v-if="
+          details.where && details.what != 'REGALG' && details.what != 'TVRRUN'
+        "
+      >
+        <strong>Where: </strong>{{ details.where }}
+      </li>
     </ul>
   </div>
 </template>
