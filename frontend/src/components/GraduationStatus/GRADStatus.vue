@@ -251,7 +251,8 @@
                   v-if="messagingFlags.rangeError.programCompletionDate"
                   class="form-validation-message text-danger"
                 >
-                  The program completion date is out of date range&nbsp;&nbsp;<i
+                  The program completion date cannot be prior to the start of
+                  the program&nbsp;&nbsp;<i
                     class="fas fa-exclamation-triangle"
                     aria-hidden="true"
                   ></i>
@@ -953,8 +954,11 @@ export default {
           this.messagingFlags.numberError.programCompletionDate = false;
           this.disableSave = !this.validCompletionDate(
             this.editedGradStatus.programCompletionDate
+            // should we reset any messaging flags for program completion date here?
           );
         }
+      } else {
+        this.disableSave = false;
       }
     },
     schoolOfRecordChange: function () {
@@ -1114,11 +1118,12 @@ export default {
         ? new Date(this.programExpiryDate)
         : null;
       let compareDate = date ? new Date(date) : null;
+      this.messagingFlags.numberError.programCompletionDate = !compareDate;
 
       let inRange =
         (!start || compareDate > start) && (!end || compareDate < end);
       this.messagingFlags.rangeError.programCompletionDate = !inRange;
-      return inRange;
+      return inRange && compareDate;
     },
     validAdultStartDate(date) {
       // format date to valid adult start date
