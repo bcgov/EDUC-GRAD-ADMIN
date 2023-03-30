@@ -437,9 +437,9 @@
               header="Include Post Secondary Institutions"
             >
               <b-alert
+                show
                 dismissible
                 v-if="validationMessage"
-                :show="validationMessage"
                 variant="warning"
                 >{{ validationMessage }}</b-alert
               >
@@ -1644,7 +1644,6 @@ export default {
               } else {
                 this.validationMessage = value + " is not a valid PSI";
                 this.deleteValueFromTypeInBatchId(id, type, value);
-                this.addTypeToBatchId(id, type);
               }
               this.$forceUpdate();
               this.validBatch();
