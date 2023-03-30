@@ -29,15 +29,19 @@ export default {
       state.batchDetails[payload].students.push({})
     },
     //id, type, value
-    deleteValueFromTypeInBatchId(state,payload){
-      let items = state.batchDetails[payload['id']][payload['type']];
-
-      for( var i = 0; i < items.length; i++){    
-        if ( items[i].value === payload['value']) { 
-          items.splice(i--, 1); 
+      deleteValueFromTypeInBatchId(state, payload) {
+        
+        const { id, type, value, valid } = payload;
+        const items = state.batchDetails[id][type];
+  
+        for (const item of items) {
+          if (item.value === value) {
+            const index = items.indexOf(item);
+            items.splice(index, 1);
+          }
         }
-      }
-      if(items.length == 0){
+      
+      if(items.length == 0 || !valid){
         items.push({});
       }
     },  

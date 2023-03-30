@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ validationMessage }}
     <b-alert :show="batchTypeDesc != ''" variant="info">
       {{ batchTypeDesc }}
     </b-alert>
@@ -1469,8 +1468,7 @@ export default {
                 );
               } else {
                 this.validationMessage = value + " is not a valid School.";
-                this.deleteValueFromTypeInBatchId(id, type, value);
-                this.addTypeToBatchId(id, type);
+                this.deleteValueFromTypeInBatchId(id, type, value, false);
               }
               this.$forceUpdate();
               this.validBatch();
@@ -1497,7 +1495,7 @@ export default {
           let student = await StudentService.getStudentByPen(value);
           if (student.data.length == 0) {
             this.validationMessage = value + " is not a valid PEN";
-            this.deleteValueFromTypeInBatchId(id, type, value);
+            this.deleteValueFromTypeInBatchId(id, type, value, false);
           } else if (student.data[0].studentStatus == "MER") {
             this.validationMessage =
               value + " is a merged student and not permitted";
@@ -1607,7 +1605,7 @@ export default {
                 ][0].updateValue(response.data.activeFlag);
               } else {
                 this.validationMessage = value + " is not a valid District";
-                this.deleteValueFromTypeInBatchId(id, type, value);
+                this.deleteValueFromTypeInBatchId(id, type, value, false);
               }
               this.$forceUpdate();
               this.validBatch();
@@ -1641,7 +1639,7 @@ export default {
                 );
               } else {
                 this.validationMessage = value + " is not a valid PSI";
-                this.deleteValueFromTypeInBatchId(id, type, value);
+                this.deleteValueFromTypeInBatchId(id, type, value, false);
               }
               this.$forceUpdate();
               this.validBatch();
@@ -1684,11 +1682,12 @@ export default {
       this.$forceUpdate();
     },
 
-    deleteValueFromTypeInBatchId(id, type, value) {
+    deleteValueFromTypeInBatchId(id, type, value, valid = true) {
       this.$store.commit("batchprocessing/deleteValueFromTypeInBatchId", {
         id,
         type,
         value,
+        valid,
       });
       this.validBatch();
       this.$forceUpdate();
