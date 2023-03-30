@@ -1498,7 +1498,6 @@ export default {
           if (student.data.length == 0) {
             this.validationMessage = value + " is not a valid PEN";
             this.deleteValueFromTypeInBatchId(id, type, value);
-            this.addTypeToBatchId(id, type);
           } else if (student.data[0].studentStatus == "MER") {
             this.validationMessage =
               value + " is a merged student and not permitted";
@@ -1609,7 +1608,6 @@ export default {
               } else {
                 this.validationMessage = value + " is not a valid District";
                 this.deleteValueFromTypeInBatchId(id, type, value);
-                this.addTypeToBatchId(id, type);
               }
               this.$forceUpdate();
               this.validBatch();
