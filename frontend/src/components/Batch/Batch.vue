@@ -1262,6 +1262,15 @@ export default {
         this.batchIsValid = false;
         return;
       }
+      if (
+        this.batch.details["what"] == "DISTRUNUSER" &&
+        this.batch.details["where"] == "BC Mail" &&
+        this.batch.details["credential"] == "Blank transcript print" &&
+        this.batch.details["blankTranscriptDetails"].length == 0
+      ) {
+        this.batchIsValid = false;
+        return;
+      }
       this.batchIsValid = true;
     },
     getBatchJobTypes() {
