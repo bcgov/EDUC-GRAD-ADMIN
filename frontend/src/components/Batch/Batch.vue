@@ -1731,6 +1731,22 @@ export default {
             batchDetail.details["who"] = "PSI";
           }
         }
+        if (type == "categoryCode") {
+          if (event != "04" || event != "09") {
+            this.clearBatchGroupDetails(id);
+          }
+          if (event == "04") {
+            this.batch.districts = [
+              { value: "098", districtName: "YUKON TERRITORIES", city: "Y" },
+              {},
+            ];
+          } else if (event == "09") {
+            this.batch.districts = [
+              { value: "103", districtName: "OFFSHORE INDEPENDENT", city: "Y" },
+              {},
+            ];
+          }
+        }
         if (type == "who" && batchDetail.details[type] != event) {
           this.clearBatchGroupDetails(id);
         }
