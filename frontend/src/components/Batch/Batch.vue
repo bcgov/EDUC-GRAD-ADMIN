@@ -1755,7 +1755,7 @@ export default {
           batchDetail.details["blankTranscriptDetails"] = [];
         }
         if (type == "allPsi" && event) {
-          batchDetail.psi = [{ value: "all", psiName: "ALL" }];
+          batchDetail.psi = [{ value: "all", psiName: "ALL" }, {}];
           this.$store.commit("batchprocessing/editBatchDetails", {
             batchDetail,
             id,
