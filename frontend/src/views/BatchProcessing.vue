@@ -1313,6 +1313,7 @@ export default {
           return;
         }
       } else if (this.tabContent[id].details["who"] == "PSI") {
+        console.log(this.tabContent[id].psi);
         psi = this.tabContent[id].psi.map(this.getBatchData);
         psi.pop();
         if (!psi.length) {
