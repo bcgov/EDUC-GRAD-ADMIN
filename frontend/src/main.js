@@ -48,21 +48,28 @@ Vue.filter('jobIdLabel', function(value) {
   
 });
 
-//Date time filter
+//Date time filter - YYYY-MM-DD, hr:mm:ss AM/PM
 Vue.filter('formatTime', function(value) {
   if(value){
-    var date = new Date(value);
-    return date.toLocaleString();  
+    return new Date(value).toLocaleString('en-CA', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).replace( /\./g, '').toUpperCase() ;
   }else{
-    return "";
+    return '';
   }
   
 });
 //Format simple Date
 Vue.filter('formatSimpleDate', function(value) {
   if(value){
-    var date = new Date(value);
-    return date.toISOString().split('T')[0];
+    return new Date(value).toISOString().split('T')[0].replace(/\//g, '-');
+  }else{
+    return "";
+  }
+});
+
+//Format YYYY-MM Date
+Vue.filter('formatYYYYMMDate', function(value) {
+  if(value){
+    return new Date(value).toLocaleString('en-CA', {year: 'numeric', month: '2-digit'}).split('/').reverse().join('-');
   }else{
     return "";
   }
