@@ -53,7 +53,7 @@ Vue.filter('formatTime', function(value) {
   if(value){
     return new Date(value).toLocaleString('en-CA', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).replace( /\./g, '').toUpperCase() ;
   }else{
-    return '';
+    return "";
   }
   
 });

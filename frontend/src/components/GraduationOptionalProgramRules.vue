@@ -1,6 +1,5 @@
 <template>
   <div class="">
-    <b-modal>HELLO WORLD</b-modal>
     <DisplayTable
       v-bind:items="optionalProgramRules"
       v-bind:fields="optionalOptionalProgramRulesFields"
