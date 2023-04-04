@@ -29,6 +29,9 @@
             <b-th colspan="1">Fa</b-th>
           </b-tr>
         </template>
+        <template #cell(sessionDate)="row">
+          {{ row.value | formatYYYYMMDate }}
+        </template>
         <template #cell(courseName)="row">
           <div class="d-flex flex-column text-md-left">
             <div class="">
