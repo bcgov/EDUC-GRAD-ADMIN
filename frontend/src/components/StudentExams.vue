@@ -9,6 +9,9 @@
       showFilter="true"
       title="Assessments"
     >
+      <template #cell(sessionDate)="row">
+        {{ row.value | formatYYYYMMDate }}
+      </template>
     </DisplayTable>
   </div>
 </template>

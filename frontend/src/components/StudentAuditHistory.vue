@@ -51,6 +51,10 @@
               </b-card>
             </template>
 
+            <template #cell(programCompletionDate)="row">
+              {{ row.value.value | formatYYYYMMDate }}
+            </template>
+
             <template #cell(createDate)="row">
               {{ row.value.value | formatTime }}
             </template>

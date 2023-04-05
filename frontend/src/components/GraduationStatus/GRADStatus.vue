@@ -241,11 +241,13 @@
             <!-- END program edit -->
             <tr v-if="!showEdit">
               <td><strong>Program completion date: </strong></td>
-              <td>{{ studentGradStatus.programCompletionDate }}</td>
+              <td>
+                {{ studentGradStatus.programCompletionDate | formatYYYYMMDate }}
+              </td>
             </tr>
             <tr v-if="showEdit">
               <td>
-                <strong>Program completion date: (YYYY/MM)</strong><br />
+                <strong>Program completion date: (YYYY-MM)</strong><br />
                 <!-- Warning if program completion date for SCCP is out of range -->
                 <div
                   v-if="messagingFlags.rangeError.programCompletionDate"

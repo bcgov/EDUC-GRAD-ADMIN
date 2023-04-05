@@ -6,6 +6,9 @@
       showFilter="true"
       title="Assessments"
     >
+      <template #cell(sessionDate)="row">
+        {{ row.value | formatYYYYMMDate }}
+      </template>
       <template #cell(assessmentName)="row">
         <div class="d-flex flex-column text-md-left">
           <div class="">

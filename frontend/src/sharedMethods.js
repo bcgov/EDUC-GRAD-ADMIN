@@ -102,10 +102,10 @@ export default {
       });
     },
     dateFormatYYYYMM(value) {
-      return value.replace(/^([\d]{4})([\d]{2})$/, "$1/$2");
+      return value.replace(/^([\d]{4})([\d]{2})$/, "$1-$2");
     },
     dateFormatYYYYMMDD(value) {
-      return value.replace(/^([\d]{4})([\d]{2})([\d]{2})$/, "$1/$2/$3");
+      return value.replace(/^([\d]{4})([\d]{2})([\d]{2})$/, "$1-$2-$3");
     },
 
 }
