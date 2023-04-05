@@ -27,10 +27,11 @@ export default {
     return ApiService.apiAxios.get('/api/v1/batch/executedisrunbatchjob');
   },
   runDISTRUN_SUPP(){
-    return ApiService.apiAxios.get('/api/v1/batch/executesupplementaldisrunbatchjob');
+    return ApiService.apiAxios.get('executesuppdisrunbatchjob');
+    
   },
   runDISTRUN_NONGRAD(){
-    return ApiService.apiAxios.get('/api/v1/batch/executenongraddisrunbatchjob');
+    return ApiService.apiAxios.get('/api/v1/batch/executeyearlynongraddisrunbatchjob');
   },  
   runDISTRUN_YE(){
     return ApiService.apiAxios.get('/api/v1/batch/executeyearlydisrunbatchjob');
