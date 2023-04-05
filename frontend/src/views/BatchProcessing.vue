@@ -53,11 +53,15 @@
                                         row.item.jobParameters.payload
                                       "
                                     >
-                                      <div class="float-left">
+                                      <div class="float-left py-2 px-0">
                                         <a
                                           v-if="
                                             row.item.jobParameters.payload
-                                              .localDownload == 'Y'
+                                              .localDownload == 'Y' ||
+                                            (row.item.jobParameters
+                                              .transmissionType &&
+                                              row.item.jobParameters
+                                                .transmissionType == 'FTP')
                                           "
                                           href="#"
                                           @click="
