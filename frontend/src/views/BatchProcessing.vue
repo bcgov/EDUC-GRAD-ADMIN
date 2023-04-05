@@ -54,11 +54,13 @@
                                       "
                                     >
                                       <div class="float-left py-2 px-0">
-                                        <a
+                                        <b-link
+                                          :disabled="
+                                            row.item.status != 'COMPLETED'
+                                          "
                                           v-if="
-                                            (row.item.status == 'COMPLETED' &&
-                                              row.item.jobParameters.payload
-                                                .localDownload == 'Y') ||
+                                            row.item.jobParameters.payload
+                                              .localDownload == 'Y' ||
                                             (row.item.jobParameters
                                               .transmissionType &&
                                               row.item.jobParameters
@@ -71,7 +73,7 @@
                                             )
                                           "
                                           ><i class="fas fa-download"></i
-                                        ></a>
+                                        ></b-link>
                                         <div v-else>&nbsp;&nbsp;</div>
                                       </div>
                                     </div>
