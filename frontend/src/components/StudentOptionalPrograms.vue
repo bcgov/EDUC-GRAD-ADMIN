@@ -153,7 +153,7 @@
                   <strong>{{ row2.item.gradReqMetDetail }}</strong
                   ><br />
                   {{ row2.item.assessmentCode }} -
-                  {{ row2.item.sessionDate | formatSimpleDate }} ({{
+                  {{ row2.item.sessionDate | formatYYYYMMDate }} ({{
                     row2.item.assessmentName
                   }})
                 </div>
