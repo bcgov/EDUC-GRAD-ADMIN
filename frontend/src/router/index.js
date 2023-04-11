@@ -80,35 +80,98 @@ const routes = [
     path: "/programs",
     component: AdminGraduationPrograms,
     children: [
-      { path: "", component: AlgorithmRules },
-      { path: "programs/", component: GraduationPrograms },
-      { path: "program-rules/", component: GraduationProgramRules },
+      {
+        path: "",
+        component: AlgorithmRules,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "programs/",
+        component: GraduationPrograms,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "program-rules/",
+        component: GraduationProgramRules,
+        meta: {
+          requiresAuth: true,
+        },
+      },
       {
         path: "program/:programCode/:category/:rule",
         component: GraduationProgramCourses,
         name: "programRuleCourses",
+        meta: {
+          requiresAuth: true,
+        },
       },
-      { path: "optional-programs/", component: GraduationOptionalPrograms },
+      {
+        path: "optional-programs/",
+        component: GraduationOptionalPrograms,
+        meta: {
+          requiresAuth: true,
+        },
+      },
       {
         path: "optional-program-rules/",
         component: GraduationOptionalProgramRules,
+        meta: {
+          requiresAuth: true,
+        },
       },
       {
         path: "optional-programs/:programCode/:optionalProgramCode",
         component: GraduationOptionalProgramRules,
+        meta: {
+          requiresAuth: true,
+        },
       },
       {
         path: "optional-programs/:programCode/:category/:rule",
         component: GraduationProgramCourses,
         name: "optionalProgramRuleCourses",
+        meta: {
+          requiresAuth: true,
+        },
       },
-      { path: "letter-grades/", component: LetterGrades },
-      { path: "special-cases/", component: SpecialCases },
-      { path: "algorithm-rules/", component: AlgorithmRules },
-      { path: "requirement-types/", component: RequirementTypes },
+      {
+        path: "letter-grades/",
+        component: LetterGrades,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "special-cases/",
+        component: SpecialCases,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "algorithm-rules/",
+        component: AlgorithmRules,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "requirement-types/",
+        component: RequirementTypes,
+        meta: {
+          requiresAuth: true,
+        },
+      },
       {
         path: "transcript-message/",
         component: GraduationProgramTranscriptMessage,
+        meta: {
+          requiresAuth: true,
+        },
       },
     ],
     meta: {
@@ -127,30 +190,99 @@ const routes = [
     path: "/codes",
     component: AdminCodes,
     children: [
-      { path: "", component: CareerPrograms },
-      { path: "/codes/career-programs", component: CareerPrograms },
-      { path: "/codes/certificates-types", component: CertificateTypes },
+      {
+        path: "",
+        component: CareerPrograms,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "/codes/career-programs",
+        component: CareerPrograms,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "/codes/certificates-types",
+        component: CertificateTypes,
+        meta: {
+          requiresAuth: true,
+        },
+      },
       {
         path: "/codes/digital-signatures",
         component: DigitialSignatures,
         name: "digitalSignatures",
+        meta: {
+          requiresAuth: true,
+        },
       },
-      { path: "/codes/signature-blocks", component: SignatureBlockType },
-      { path: "/codes/transcript-types", component: TranscriptTypes },
+      {
+        path: "/codes/signature-blocks",
+        component: SignatureBlockType,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "/codes/transcript-types",
+        component: TranscriptTypes,
+        meta: {
+          requiresAuth: true,
+        },
+      },
       {
         path: "/codes/program-certificate-transcript",
         component: ProgramCertificateTranscripts,
+        meta: {
+          requiresAuth: true,
+        },
       },
       {
         path: "/codes/report-types",
         component: ReportTypes,
         name: "reportTypes",
+        meta: {
+          requiresAuth: true,
+        },
       },
-      { path: "/codes/student-status-codes", component: StatusCodes },
-      { path: "/codes/ungrad-reasons", component: UngradReasons },
-      { path: "/codes/history-activity", component: HistoryActivityCodes },
-      { path: "/codes/document-status-codes", component: DocumentStatusCode },
-      { path: "/codes/batch-types", component: BatchTypes },
+      {
+        path: "/codes/student-status-codes",
+        component: StatusCodes,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "/codes/ungrad-reasons",
+        component: UngradReasons,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "/codes/history-activity",
+        component: HistoryActivityCodes,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "/codes/document-status-codes",
+        component: DocumentStatusCode,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "/codes/batch-types",
+        component: BatchTypes,
+        meta: {
+          requiresAuth: true,
+        },
+      },
     ],
     meta: {
       requiresAuth: true,
