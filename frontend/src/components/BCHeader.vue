@@ -20,7 +20,7 @@
             />
           </a>
           <h1>Graduation Records and Achievement Data</h1>
-          <span>v1.9.7</span>
+          <span>v1.9.8</span>
         </div>
         <div class="float-right user-profile">
           <slot></slot>
