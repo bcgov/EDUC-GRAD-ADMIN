@@ -12,14 +12,50 @@
         pagination="true"
       >
         <template #cell(ruleCode)="row">
+          {{ row.value }}
+          <b-modal
+            :id="
+              'modal-' +
+              row.item.graduationProgramCode +
+              row.item.programRequirementCode.proReqCode
+            "
+            :title="
+              row.item.programRequirementCode.requirementCategory == 'C'
+                ? 'Courses that match the rule #'
+                : 'Assessments that match rule #'
+            "
+          >
+            <div v-if="!ruleMatchList.length">Not applicable</div>
+            <div v-else>
+              <DisplayTable
+                v-bind:items="ruleMatchList"
+                title="Grad Program Courses TODO better title"
+                v-bind:fields="ruleMatchFields"
+                id="ruleMatch"
+                showFilter="false"
+                pagination="false"
+              >
+              </DisplayTable>
+            </div>
+          </b-modal>
           <b-btn
             variant="outline primary"
             style="color: #666"
             size="xs"
-            @click="row.toggleDetails"
             class="p-0"
-          >
-            <router-link
+            @click="
+              ruleNumberClicked(
+                row.item.programRequirementCode.requirementCategory,
+                row.item.programRequirementCode.proReqCode
+              )
+            "
+            v-b-modal="
+              'modal-' +
+              row.item.graduationProgramCode +
+              row.item.programRequirementCode.proReqCode
+            "
+            >{{ row.item.programRequirementCode.proReqCode }}
+            <!-- <router-link
               :to="{
                 name: 'programRuleCourses',
                 params: {
@@ -30,7 +66,7 @@
                 },
               }"
               >{{ row.item.programRequirementCode.proReqCode }}</router-link
-            >
+            > -->
           </b-btn>
         </template>
 
@@ -49,16 +85,17 @@
       </DisplayTable>
     </div>
 
-    <router-view v-bind:key="$route.fullPath"></router-view>
+    <!-- <router-view v-bind:key="$route.fullPath"></router-view> -->
   </div>
 </template>
 
 <script>
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import DisplayTable from "@/components/DisplayTable";
+import CourseService from "@/services/CourseService.js";
 import { mapGetters } from "vuex";
 export default {
-  name: "GraduationPrograms",
+  name: "GraduationProgramRules",
   components: {
     DisplayTable: DisplayTable,
   },
@@ -171,6 +208,54 @@ export default {
           class: "",
         },
       ],
+      ruleMatchFields: [
+        {
+          key: "courseCode",
+          label: "Course",
+          sortable: true,
+          sortDirection: "desc",
+          editable: false,
+        },
+        {
+          key: "courseLevel",
+          label: "Course Level",
+          sortable: true,
+          editable: false,
+        },
+        {
+          key: "courseName",
+          label: "Course Title",
+          sortable: true,
+          editable: false,
+        },
+        {
+          key: "startDate",
+          label: "TRAX Start Date",
+          sortable: true,
+          editable: false,
+        },
+        {
+          key: "endDate",
+          label: "TRAX End Date",
+          sortable: true,
+          editable: false,
+        },
+      ],
+      assessmentFields: [
+        {
+          key: "assessmentCode",
+          label: "Assessment Code",
+          sortable: true,
+          sortDirection: "desc",
+        },
+        {
+          key: "assessmentName",
+          label: "Assessment Name",
+          sortable: true,
+          editable: true,
+        },
+      ],
+      ruleMatchList: [],
       selectedProgramCode: "",
       selectedProgramId: "",
     };
@@ -186,6 +271,24 @@ export default {
       });
   },
   methods: {
+    ruleNumberClicked(categoryCode, ruleNum) {
+      switch (categoryCode) {
+        case "A":
+        case "C":
+          this.getCourseRules(ruleNum);
+          break;
+      }
+    },
+    getCourseRules(ruleNum) {
+      CourseService.getRuleCourseRequirements(ruleNum).then((response) => {
+        this.ruleMatchFields = this.courseFields;
+        this.ruleMatchList = response.data;
+
+        if (!this.ruleMatchList.length) {
+          this.ruleMatchList = [];
+        }
+      });
+    },
     onClickChild(value) {
       this.selectedProgramId = value;
     },
