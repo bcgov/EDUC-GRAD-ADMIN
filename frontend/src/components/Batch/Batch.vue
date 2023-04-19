@@ -1741,6 +1741,9 @@ export default {
           if (event == "PSIRUN") {
             batchDetail.details["who"] = "PSI";
           }
+          if (event == "DISTRUN_YE") {
+            batchDetail.details["who"] = "District";
+          }
         }
         if (type == "categoryCode") {
           if (event != "04" || event != "09") {
