@@ -79,6 +79,8 @@ export default {
       state.batchDetails[payload]['details'].credential="";
       state.batchDetails[payload]['details'].categoryCode="";
       state.batchDetails[payload]['details'].copies="1";
+      state.batchDetails[payload]['details'].allPsi=false;
+      state.batchDetails[payload]['details'].allDistricts=false;
     },
     clearBatchGroupDetails(state,payload){
       state.batchDetails[payload].schools=[{}];

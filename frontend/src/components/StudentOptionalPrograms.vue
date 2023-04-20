@@ -127,7 +127,9 @@
                   <strong>{{ row2.item.gradReqMetDetail }}</strong
                   ><br />
                   {{ row2.item.courseCode }} {{ row2.item.courseLevel }} -
-                  {{ row2.item.sessionDate }} ({{ row2.item.courseName }})
+                  {{ row2.item.sessionDate | formatYYYYMMDate }} ({{
+                    row2.item.courseName
+                  }})
                 </div>
               </template>
             </b-table>
@@ -151,7 +153,7 @@
                   <strong>{{ row2.item.gradReqMetDetail }}</strong
                   ><br />
                   {{ row2.item.assessmentCode }} -
-                  {{ row2.item.sessionDate | formatSimpleDate }} ({{
+                  {{ row2.item.sessionDate | formatYYYYMMDate }} ({{
                     row2.item.assessmentName
                   }})
                 </div>
@@ -209,7 +211,7 @@
 import { mapGetters } from "vuex";
 import DisplayTable from "@/components/DisplayTable.vue";
 export default {
-  name: "GRADRequirementDetails",
+  name: "StudentOptionalPrograms",
   components: {
     DisplayTable: DisplayTable,
   },

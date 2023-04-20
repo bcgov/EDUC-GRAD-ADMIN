@@ -39,6 +39,18 @@
             </li>
           </ul>
         </li>
+        <li v-if="details.who == 'District'">
+          <strong>District(s): </strong>
+          <ul>
+            <li
+              class="list-item-comma"
+              v-for="item in items.districts"
+              :key="item.value"
+            >
+              {{ item.value }}
+            </li>
+          </ul>
+        </li>
         <ul>
           <li v-if="details.gradDateFrom">
             <strong>Grad Start Date: </strong>{{ details.gradDateFrom }}

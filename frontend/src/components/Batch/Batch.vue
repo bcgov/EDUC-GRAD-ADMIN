@@ -139,7 +139,6 @@
             v-if="
               batch.details['what'] != '' &&
               batch.details['who'] != 'Student' &&
-              batch.details['what'] != 'DISTRUN_YE' &&
               batch.details['what'] != 'DISTRUN' &&
               batch.details['who'] != 'PSI' &&
               batch.details['credential'] != 'Blank transcript print' &&
@@ -330,77 +329,92 @@
                 variant="warning"
                 >{{ validationMessage }}</b-alert
               >
-
-              <div class="row col-12">
-                <div class="col-2 p-2"><strong>District Number</strong></div>
-                <div class="col-4 p-2"><strong>District Name</strong></div>
-                <div class="col-4 p-2"><strong>Active Flag</strong></div>
-              </div>
-              <div
-                v-for="(district, index) in batch.districts"
-                :key="index"
-                class="row pl-3 mb-1"
+              <b-form-checkbox
+                v-if="batch.details['what'] == 'DISTRUN_YE'"
+                name="allDistrict"
+                :checked="batch.details['allDistricts']"
+                @change="editBatchJob('allDistricts', $event)"
               >
-                <div v-if="!district.districtName" class="row col-12">
-                  <b-form-input
-                    type="number"
-                    v-model="district.value"
-                    class="col-2"
-                  />
-                  <b-form-input
-                    show="false"
-                    disabled
-                    v-model="district.districtName"
-                    :ref="'districtName' + jobId + index"
-                    class="col-4"
-                  />
-                  <b-form-input
-                    show="false"
-                    disabled
-                    v-model="district.city"
-                    :ref="'districtActiveFlag' + jobId + index"
-                    class="col-4"
-                  />
-                  <div v-if="index == batch.districts.length - 1" class="col-2">
-                    <b-button
-                      class="btn btn-primary w-100"
-                      @click="
-                        addValueToTypeInBatchId(
-                          jobId,
-                          'districts',
-                          district.value,
-                          index
-                        )
-                      "
-                    >
-                      <b-spinner small v-if="validating"></b-spinner> Add
-                    </b-button>
-                  </div>
-                </div>
+                All Districts
+              </b-form-checkbox>
+              <div v-if="!batch.details['allDistricts']">
                 <div class="row col-12">
-                  <div v-if="district.districtName" class="col-2">
-                    {{ district.value }}
-                  </div>
-                  <div v-if="district.districtName" class="col-4">
-                    {{ district.districtName }}
-                  </div>
-                  <div v-if="district.districtName" class="col-4">
-                    {{ district.city }}
-                  </div>
-
-                  <div v-if="index != batch.districts.length - 1" class="col-2">
-                    <b-button
-                      class="btn btn-primary w-100"
-                      @click="
-                        deleteValueFromTypeInBatchId(
-                          jobId,
-                          'districts',
-                          district.value
-                        )
-                      "
+                  <div class="col-2 p-2"><strong>District Number</strong></div>
+                  <div class="col-4 p-2"><strong>District Name</strong></div>
+                  <div class="col-4 p-2"><strong>Active Flag</strong></div>
+                </div>
+                <div
+                  v-for="(district, index) in batch.districts"
+                  :key="index"
+                  class="row pl-3 mb-1"
+                >
+                  <div v-if="!district.districtName" class="row col-12">
+                    <b-form-input
+                      type="number"
+                      v-model="district.value"
+                      class="col-2"
+                    />
+                    <b-form-input
+                      show="false"
+                      disabled
+                      v-model="district.districtName"
+                      :ref="'districtName' + jobId + index"
+                      class="col-4"
+                    />
+                    <b-form-input
+                      show="false"
+                      disabled
+                      v-model="district.city"
+                      :ref="'districtActiveFlag' + jobId + index"
+                      class="col-4"
+                    />
+                    <div
+                      v-if="index == batch.districts.length - 1"
+                      class="col-2"
                     >
-                      Remove
-                    </b-button>
+                      <b-button
+                        class="btn btn-primary w-100"
+                        @click="
+                          addValueToTypeInBatchId(
+                            jobId,
+                            'districts',
+                            district.value,
+                            index
+                          )
+                        "
+                      >
+                        <b-spinner small v-if="validating"></b-spinner> Add
+                      </b-button>
+                    </div>
+                  </div>
+                  <div class="row col-12">
+                    <div v-if="district.districtName" class="col-2">
+                      {{ district.value }}
+                    </div>
+                    <div v-if="district.districtName" class="col-4">
+                      {{ district.districtName }}
+                    </div>
+                    <div v-if="district.districtName" class="col-4">
+                      {{ district.city }}
+                    </div>
+
+                    <div
+                      v-if="index != batch.districts.length - 1"
+                      class="col-2"
+                    >
+                      <b-button
+                        class="btn btn-primary w-100"
+                        @click="
+                          deleteValueFromTypeInBatchId(
+                            jobId,
+                            'districts',
+                            district.value
+                          )
+                        "
+                      >
+                        Remove
+                      </b-button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1123,6 +1137,7 @@ export default {
           ],
         },
         DISTRUN_YE: {
+          group: [{ text: "School Category", value: "District" }],
           copies: true,
           where: true,
           message:
@@ -1726,6 +1741,9 @@ export default {
           if (event == "PSIRUN") {
             batchDetail.details["who"] = "PSI";
           }
+          if (event == "DISTRUN_YE") {
+            batchDetail.details["who"] = "District";
+          }
         }
         if (type == "categoryCode") {
           if (event != "04" || event != "09") {
@@ -1762,6 +1780,19 @@ export default {
           });
         } else if (type == "allPsi" && !event) {
           batchDetail.psi = [{}];
+          this.$store.commit("batchprocessing/editBatchDetails", {
+            batchDetail,
+            id,
+          });
+        }
+        if (type == "allDistricts" && event) {
+          batchDetail.districts = [{ value: "all", districtName: "ALL" }, {}];
+          this.$store.commit("batchprocessing/editBatchDetails", {
+            batchDetail,
+            id,
+          });
+        } else if (type == "allDistricts" && !event) {
+          batchDetail.districts = [{}];
           this.$store.commit("batchprocessing/editBatchDetails", {
             batchDetail,
             id,

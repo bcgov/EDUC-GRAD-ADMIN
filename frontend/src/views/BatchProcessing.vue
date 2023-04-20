@@ -1147,12 +1147,9 @@ export default {
           this.getAdminDashboardData();
           this.cancelBatchJob(id);
           this.selectedTab = 0;
-          if (response.data) {
+          if (response) {
             this.$bvToast.toast(
-              "Batch run " +
-                response.data.batchId +
-                " has started for request " +
-                requestId,
+              "Batch run has started for request " + requestId,
               {
                 title: "BATCH PROCESSING STARTED",
                 variant: "success",

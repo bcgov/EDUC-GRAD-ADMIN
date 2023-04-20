@@ -13,11 +13,11 @@
       id="code"
       showFilter="true"
     >
-      <template #cell(effectiveDate)="row">
-        {{ row.item.effectiveDate | formatSimpleDate }}
+      <template #cell(startDate)="row">
+        {{ row.item.startDate | formatYYYYMMDate }}
       </template>
-      <template #cell(expiryDate)="row">
-        {{ row.item.expiryDate | formatSimpleDate }}
+      <template #cell(endDate)="row">
+        {{ row.item.endDate | formatYYYYMMDate }}
       </template>
     </DisplayTable>
   </div>
