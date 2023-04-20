@@ -1268,6 +1268,13 @@ export default {
       if (this.editedGradStatus.schoolAtGrad == "") {
         this.editedGradStatus.schoolAtGrad = null;
       }
+      if (
+        this.studentGradStatus.program == "1950" &&
+        this.editedGradStatus.program != "1950"
+      ) {
+        this.editedGradStatus.adultStartDate = "";
+        this.studentGradStatus.adultStartDate = "";
+      }
       StudentService.editGraduationStatus(id, this.editedGradStatus)
         .then((response) => {
           this.updateStatus = response.data;
