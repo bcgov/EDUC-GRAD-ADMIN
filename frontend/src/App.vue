@@ -11,7 +11,6 @@
           <div class="px-3 py-2 mt-5">
             <br />
             {{ roles }}<br />
-            <a href="#" @click="changeRole">Change Role</a>
           </div>
         </b-sidebar>
         |
