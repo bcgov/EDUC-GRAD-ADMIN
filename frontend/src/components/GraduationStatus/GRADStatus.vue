@@ -1270,11 +1270,10 @@ export default {
       }
       if (
         this.studentGradStatus.program == "1950" &&
-        this.editGradStatus.program != "1950"
+        this.editedGradStatus.program != "1950"
       ) {
         this.editedGradStatus.adultStartDate = "";
         this.studentGradStatus.adultStartDate = "";
-        console.log(this.editGradStatus.adultStartDate);
       }
       StudentService.editGraduationStatus(id, this.editedGradStatus)
         .then((response) => {
