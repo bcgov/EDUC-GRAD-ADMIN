@@ -1458,6 +1458,17 @@ export default {
           );
         }
         this.validationMessage = "";
+      } else if (this.tabContent[id].details["what"] == "DISTRUN_SUPP") {
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "SDBJ";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runDISTRUN_SUPP(id);
+        }
       }
     },
     rerunBatchSchoolReports(bid) {
