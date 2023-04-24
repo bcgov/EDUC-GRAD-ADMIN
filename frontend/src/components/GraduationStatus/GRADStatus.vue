@@ -1099,8 +1099,8 @@ export default {
       this.validationFlags.emptyError.adultStartDate =
         this.editedGradStatus.program == "1950" &&
         !this.editedGradStatus.adultStartDate;
+
       if (this.editedGradStatus.adultStartDate) {
-        //this.validationFlags.emptyError.adultStartDate = false;
         if (this.containsAnyLetters(this.editedGradStatus.adultStartDate)) {
           this.validationFlags.numberError.adultStartDate = true;
           this.disableSave = true;
@@ -1110,8 +1110,6 @@ export default {
             this.editedGradStatus.adultStartDate
           );
         }
-      } else {
-        //this.validationFlags.emptyError.adultStartDate = true;
       }
     },
   },
