@@ -24,16 +24,18 @@
                 ? 'Courses that match the rule #'
                 : 'Assessments that match rule #'
             "
+            size="xl"
           >
-            <div v-if="!ruleMatchList.length">Not applicable</div>
+            <b-spinner v-if="loadingRuleMatch" class="px-1 my-2"></b-spinner>
+            <div v-else-if="!ruleMatchList.length">Not applicable</div>
             <div v-else>
               <DisplayTable
                 v-bind:items="ruleMatchList"
                 title="Grad Program Courses TODO better title"
-                v-bind:fields="ruleMatchFields"
+                v-bind:fields="ruleMatchFields ? ruleMatchFields : []"
                 id="ruleMatch"
-                showFilter="false"
-                pagination="false"
+                :showFilter="false"
+                :pagination="false"
               >
               </DisplayTable>
             </div>
@@ -256,6 +258,7 @@ export default {
         },
       ],
       ruleMatchList: [],
+      loadingRuleMatch: false,
       selectedProgramCode: "",
       selectedProgramId: "",
     };
@@ -280,10 +283,11 @@ export default {
       }
     },
     getCourseRules(ruleNum) {
+      this.loadingRuleMatch = true;
       CourseService.getRuleCourseRequirements(ruleNum).then((response) => {
-        this.ruleMatchFields = this.courseFields;
+        //this.ruleMatchFields = this.courseFields;
         this.ruleMatchList = response.data;
-
+        this.loadingRuleMatch = false;
         if (!this.ruleMatchList.length) {
           this.ruleMatchList = [];
         }
