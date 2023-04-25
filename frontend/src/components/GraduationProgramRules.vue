@@ -20,9 +20,11 @@
               row.item.programRequirementCode.proReqCode
             "
             :title="
-              row.item.programRequirementCode.requirementCategory == 'C'
-                ? 'Courses that match the rule #'
-                : 'Assessments that match rule #'
+              (row.item.programRequirementCode.requirementCategory == 'C'
+                ? 'Courses'
+                : 'Assessments') +
+              ' that match rule #' +
+              row.item.programRequirementCode.proReqCode
             "
             size="xl"
           >
@@ -31,7 +33,7 @@
             <div v-else>
               <DisplayTable
                 v-bind:items="ruleMatchList"
-                title="Grad Program Courses TODO better title"
+                title="GradProgramRuleMatch"
                 v-bind:fields="ruleMatchFields ? ruleMatchFields : []"
                 id="ruleMatch"
                 :showFilter="false"
@@ -41,7 +43,7 @@
             </div>
           </b-modal>
           <b-btn
-            variant="outline primary"
+            variant="link"
             style="color: #666"
             size="xs"
             class="p-0"
