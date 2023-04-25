@@ -25,6 +25,7 @@
             >
             <b-dropdown-item
               :disabled="
+                studentGradStatus.recalculateProjectedGrad !== 'Y' ||
                 studentGradStatus.studentStatus === 'MER' ||
                 (!!studentGradStatus.programCompletionDate &&
                   studentGradStatus.program !== 'SCCP')

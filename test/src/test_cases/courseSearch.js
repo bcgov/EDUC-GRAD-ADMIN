@@ -139,7 +139,7 @@ test('good data - course language', async t => {
     await coursesPage.courseSearch('', '', '', 'FR', '', '');
 
     await t
-    .expect(searchMessage.textContent).contains('866');
+    .expect(searchMessage.textContent).contains('867');
 })
 .meta({
     testSuites: {
