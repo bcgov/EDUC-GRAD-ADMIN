@@ -809,7 +809,7 @@ export default {
         programChangeWarning: false,
         schoolOfRecordWarning: false,
         schoolNotFoundWarning: false,
-        schoolOfRecordInputWarning: false,
+        schoolOfRecordInputWarning: false, //look at moving to error flags, but fine for now since backend prevents submission
         schoolAtGraduationWarning: false,
         schoolAtGraduationNotFoundWarning: false,
         schoolAtGraduationInputWarning: false,
