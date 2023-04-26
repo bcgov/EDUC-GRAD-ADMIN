@@ -350,6 +350,10 @@
                 >
                   <div v-if="!district.districtName" class="row col-12">
                     <b-form-input
+                      :disabled="
+                        batch.details['categoryCode'] == '09' ||
+                        batch.details['categoryCode'] == '04'
+                      "
                       type="number"
                       v-model="district.value"
                       class="col-2"
