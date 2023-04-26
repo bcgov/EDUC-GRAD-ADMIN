@@ -12,7 +12,6 @@
         pagination="true"
       >
         <template #cell(ruleCode)="row">
-          {{ row.value }}
           <b-modal
             :id="
               'modal-' +
@@ -20,11 +19,10 @@
               row.item.programRequirementCode.proReqCode
             "
             :title="
-              (row.item.programRequirementCode.requirementCategory == 'C'
-                ? 'Courses'
-                : 'Assessments') +
-              ' that match rule #' +
-              row.item.programRequirementCode.proReqCode
+              'Rule # ' +
+              row.item.programRequirementCode.proReqCode +
+              ' - ' +
+              ruleMatchType
             "
             size="xl"
           >
@@ -34,8 +32,8 @@
               <DisplayTable
                 v-bind:items="ruleMatchList"
                 title="GradProgramRuleMatch"
-                v-bind:fields="ruleMatchFields ? ruleMatchFields : []"
-                id="ruleMatch"
+                v-bind:fields="ruleMatchFields"
+                id="gradProgramRuleMatch"
                 :showFilter="false"
                 :pagination="false"
               >
@@ -44,7 +42,6 @@
           </b-modal>
           <b-btn
             variant="link"
-            style="color: #666"
             size="xs"
             class="p-0"
             @click="
@@ -59,18 +56,6 @@
               row.item.programRequirementCode.proReqCode
             "
             >{{ row.item.programRequirementCode.proReqCode }}
-            <!-- <router-link
-              :to="{
-                name: 'programRuleCourses',
-                params: {
-                  programCode: row.item.programRequirementCode.programReqCode,
-                  category: row.item.programRequirementCode.requirementCategory,
-                  rule: row.item.programRequirementCode.proReqCode,
-                  ruleName: row.item.programRequirementCode.label,
-                },
-              }"
-              >{{ row.item.programRequirementCode.proReqCode }}</router-link
-            > -->
           </b-btn>
         </template>
 
@@ -97,6 +82,7 @@
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import DisplayTable from "@/components/DisplayTable";
 import CourseService from "@/services/CourseService.js";
+import AssessmentService from "@/services/AssessmentService.js";
 import { mapGetters } from "vuex";
 export default {
   name: "GraduationProgramRules",
@@ -212,7 +198,7 @@ export default {
           class: "",
         },
       ],
-      ruleMatchFields: [
+      courseFields: [
         {
           key: "courseCode",
           label: "Course",
@@ -260,6 +246,8 @@ export default {
         },
       ],
       ruleMatchList: [],
+      ruleMatchFields: [],
+      ruleMatchType: "",
       loadingRuleMatch: false,
       selectedProgramCode: "",
       selectedProgramId: "",
@@ -279,15 +267,34 @@ export default {
     ruleNumberClicked(categoryCode, ruleNum) {
       switch (categoryCode) {
         case "A":
+          this.ruleMatchFields = this.assessmentFields;
+          this.ruleMatchType = "Assessments";
+          this.getAssessmentRules(ruleNum);
+          break;
         case "C":
+          this.ruleMatchFields = this.courseFields;
+          this.ruleMatchType = "Courses";
           this.getCourseRules(ruleNum);
           break;
+        default:
+          this.ruleMatchType = "No Courses/Assessments Associated With Rule";
+          this.ruleMatchFields = [];
+          this.ruleMatchList = [];
       }
     },
     getCourseRules(ruleNum) {
       this.loadingRuleMatch = true;
       CourseService.getRuleCourseRequirements(ruleNum).then((response) => {
-        //this.ruleMatchFields = this.courseFields;
+        this.ruleMatchList = response.data;
+        this.loadingRuleMatch = false;
+        if (!this.ruleMatchList.length) {
+          this.ruleMatchList = [];
+        }
+      });
+    },
+    getAssessmentRules(ruleNum) {
+      this.loadingRuleMatch = true;
+      AssessmentService.getRuleCourseRequirements(ruleNum).then((response) => {
         this.ruleMatchList = response.data;
         this.loadingRuleMatch = false;
         if (!this.ruleMatchList.length) {
