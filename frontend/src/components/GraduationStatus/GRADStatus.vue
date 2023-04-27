@@ -210,7 +210,7 @@
                   v-if="editedGradStatus.program != studentGradStatus.program"
                 >
                   <div
-                    v-if="messagingFlags.programChangeWarning"
+                    v-if="warningFlags.programChangeWarning"
                     class="form-validation-message text-danger"
                   >
                     Warning, any optional programs associated with the original
@@ -221,7 +221,7 @@
                 </div>
                 <!-- Warning if student is moved to a program that is closed-->
                 <div
-                  v-if="messagingFlags.closedProgramWarning"
+                  v-if="warningFlags.closedProgramWarning"
                   class="form-validation-message text-warning"
                 >
                   Warning: This program is closed.
@@ -250,7 +250,7 @@
                 <strong>Program completion date: (YYYY-MM)</strong><br />
                 <!-- Warning if program completion date for SCCP is out of range -->
                 <div
-                  v-if="messagingFlags.rangeError.programCompletionDate"
+                  v-if="errorFlags.rangeError.programCompletionDate"
                   class="form-validation-message text-danger"
                 >
                   The program completion date cannot be prior to the start of
@@ -261,7 +261,7 @@
                 </div>
                 <!-- Warning if program completion date contains non-numeric values -->
                 <div
-                  v-if="messagingFlags.numberError.programCompletionDate"
+                  v-if="errorFlags.numberError.programCompletionDate"
                   class="form-validation-message text-danger"
                 >
                   The program completion date format is invalid. Please follow
@@ -422,18 +422,18 @@
                 <strong>School of record:</strong><br />
                 <!-- Warning if school of record missing; Samara to investigate if we use this since msg is same as scoolOfRecordWarning -->
                 <div
-                  v-if="schoolOfRecordMissing"
+                  v-if="errorFlags.emptyError.schoolOfRecordMissing"
                   class="form-validation-message text-warning"
                 >
-                  This School is closed, changes should be to historical
-                  activity only&nbsp;&nbsp;<i
+                  A student <strong>must</strong> have a school of record.
+                  Please enter a school code &nbsp;&nbsp;<i
                     class="fas fa-exclamation-triangle"
                     aria-hidden="true"
                   ></i>
                 </div>
                 <!-- Warning if school of record is closed -->
                 <div
-                  v-if="schoolOfRecordWarning"
+                  v-if="warningFlags.schoolOfRecordWarning"
                   class="form-validation-message text-warning"
                 >
                   This School is closed, changes should be to historical
@@ -444,7 +444,7 @@
                 </div>
                 <!-- Warning if school does not exist/school not found -->
                 <div
-                  v-if="schoolNotFoundWarning"
+                  v-if="warningFlags.schoolNotFoundWarning"
                   class="form-validation-message text-danger"
                 >
                   Invalid school entered, school does not exist on the school
@@ -455,7 +455,7 @@
                 </div>
                 <!-- Warning if school code for school of record is not 8 digits -->
                 <div
-                  v-if="schoolOfRecordInputWarning"
+                  v-if="warningFlags.schoolOfRecordInputWarning"
                   class="form-validation-message text-danger"
                 >
                   Please enter at least 8 digits&nbsp;&nbsp;<i
@@ -562,7 +562,7 @@
               <td>
                 <strong>School at graduation:</strong><br />
                 <div
-                  v-if="schoolAtGraduationWarning"
+                  v-if="warningFlags.schoolAtGraduationWarning"
                   class="form-validation-message text-warning"
                 >
                   Warning: This School is closed, changes should be to
@@ -572,7 +572,7 @@
                   ></i>
                 </div>
                 <div
-                  v-if="schoolAtGradProgramCompletionDateMessage"
+                  v-if="errorFlags.emptyError.schoolAtGraduation"
                   class="form-validation-message text-danger"
                 >
                   If program completion date is not blank, school at graduation
@@ -582,7 +582,7 @@
                   ></i>
                 </div>
                 <div
-                  v-if="schoolAtGraduationNotFoundWarning"
+                  v-if="warningFlags.schoolAtGraduationNotFoundWarning"
                   class="form-validation-message text-warning"
                 >
                   Invalid school entered, school does not exist on the school
@@ -592,7 +592,7 @@
                   ></i>
                 </div>
                 <div
-                  v-if="schoolAtGraduationInputWarning"
+                  v-if="warningFlags.schoolAtGraduationInputWarning"
                   class="form-validation-message text-danger"
                 >
                   Please enter at least 8 digits&nbsp;&nbsp;<i
@@ -664,14 +664,21 @@
             </tr>
             <tr v-if="showEdit">
               <td>
-                <strong>Adult start date: </strong>
+                <strong>Adult start date: (YYYY-MM-DD)</strong>
                 <!-- Warning if adult start date contains non-numeric values -->
                 <div
-                  v-if="messagingFlags.numberError.adultStartDate"
+                  v-if="errorFlags.numberError.adultStartDate"
                   class="form-validation-message text-danger"
                 >
                   The adult start date format is invalid. Please follow the date
-                  format <strong>YYYY/MM/DD</strong>
+                  format <strong>YYYY-MM-DD</strong>
+                </div>
+                <div
+                  v-if="errorFlags.emptyError.adultStartDate"
+                  class="form-validation-message text-danger"
+                >
+                  Students on the 1950 Program <strong>must</strong> have an
+                  adult start date. Please enter a valid date.
                 </div>
               </td>
               <td>
@@ -777,7 +784,8 @@ export default {
       showEdit: false,
       show: false,
       notificationMessage: "",
-      messagingFlags: {
+      // Validation flags that PREVENT submission of GRAD Status form
+      errorFlags: {
         numberError: {
           programCompletionDate: false,
           adultStartDate: false,
@@ -785,24 +793,34 @@ export default {
         rangeError: {
           programCompletionDate: false,
         },
+        emptyError: {
+          adultStartDate: false,
+          schoolOfRecordMissing: false,
+          schoolAtGraduation: false,
+        },
+        other: {
+          programGrade: false,
+          programComplete: false,
+        },
+      },
+      // Validation flags that do NOT prevent submission of GRAD status form
+      warningFlags: {
         closedProgramWarning: false,
         programChangeWarning: false,
+        schoolOfRecordWarning: false,
+        schoolNotFoundWarning: false,
+        schoolOfRecordInputWarning: false,
+        schoolAtGraduationWarning: false,
+        schoolAtGraduationNotFoundWarning: false,
+        schoolAtGraduationInputWarning: false,
       },
       projectedStudentGradStatus: [],
       updateStatus: [],
       schoolOfRecord: "",
       schoolOfRecordStatus: "",
-      schoolOfRecordMissing: false,
-      schoolOfRecordWarning: false,
-      schoolNotFoundWarning: false,
-      schoolOfRecordInputWarning: false,
       schoolFound: false,
-      schoolAtGradProgramCompletionDateMessage: false, //can this join messagingFlags{} ?
       schoolAtGraduation: "",
       schoolAtGraduationStatus: "",
-      schoolAtGraduationWarning: false,
-      schoolAtGraduationNotFoundWarning: false,
-      schoolAtGraduationInputWarning: false,
       schoolAtGraduationFound: false,
       editedGradStatus: {},
       studentUngradReason: "",
@@ -846,77 +864,77 @@ export default {
         this.editedGradStatus.studentGrade == "AN"
       ) {
         if (this.editedGradStatus.program == "1950") {
+          this.errorFlags.other.programGrade = false;
           if (this.editedGradStatus.schoolOfRecord == "") {
-            this.schoolOfRecordMissing = true;
-            this.disableSave = true;
+            this.errorFlags.emptyError.schoolOfRecordMissing = true;
           } else {
-            this.schoolOfRecordMissing = false;
-            this.disableSave = false;
+            this.errorFlags.emptyError.schoolOfRecordMissing = false;
           }
         } else {
-          this.disableSave = true;
+          this.errorFlags.other.programGrade = true;
         }
       }
       if (
         this.editedGradStatus.studentGrade != "AD" &&
         this.editedGradStatus.studentGrade != "AN"
       ) {
-        if (this.editedGradStatus.program == "1950") {
-          this.disableSave = true;
+        if (this.editedGradStatus.program !== "1950") {
+          this.errorFlags.other.programGrade = false;
+          if (this.editedGradStatus.schoolOfRecord == "") {
+            this.errorFlags.emptyError.schoolOfRecordMissing = true;
+          } else {
+            this.errorFlags.emptyError.schoolOfRecordMissing = false;
+          }
         } else {
-          if (this.editedGradStatus.schoolOfRecord == "") {
-            this.schoolOfRecordMissing = true;
-            this.disableSave = true;
-          } else {
-            this.schoolOfRecordMissing = false;
-            this.disableSave = false;
-          }
-          if (this.editedGradStatus.schoolOfRecord == "") {
-            this.schoolOfRecordMissing = true;
-            this.disableSave = true;
-          } else {
-            this.schoolOfRecordMissing = false;
-            this.disableSave = false;
-          }
+          this.errorFlags.other.programGrade = true;
         }
       }
+      this.validateFields();
     },
     programChange: function () {
       // Samara to look at cleaning this up
-      this.messagingFlags.programChangeWarning = true;
+      this.warningFlags.programChangeWarning = true;
       if (
         this.studentGradStatus.programCompletionDate &&
         this.studentGradStatus.program != "SCCP"
       ) {
         this.disableProgramInput = true;
-        this.disableSave = true;
+        this.errorFlags.other.programComplete = true;
       } else {
         this.disableProgramInput = false;
-        this.disableSave = false;
+        this.errorFlags.other.programComplete = false;
       }
       if (this.editedGradStatus.program == "1950") {
+        // check adult start date
+        if (this.editedGradStatus.adultStartDate) {
+          this.errorFlags.emptyError.adultStartDate = false;
+        } else {
+          this.errorFlags.emptyError.adultStartDate = true;
+        }
+        // check that grade is AN or AD for 1950 program
         if (
           this.editedGradStatus.studentGrade == "AD" ||
           this.editedGradStatus.studentGrade == "AN"
         ) {
-          this.disableSave = false;
+          this.errorFlags.other.programGrade = false;
         } else {
-          this.disableSave = true;
+          this.errorFlags.other.programGrade = true;
         }
       } else {
+        this.errorFlags.emptyError.adultStartDate = false;
         if (
           this.editedGradStatus.studentGrade == "AD" ||
           this.editedGradStatus.studentGrade == "AN"
         ) {
-          this.disableSave = true;
+          this.errorFlags.other.programGrade = true;
         } else {
-          this.disableSave = false;
+          this.errorFlags.other.programGrade = false;
         }
       }
       if (this.ifProgramsWithExpiry(this.editedGradStatus.program)) {
-        this.messagingFlags.closedProgramWarning = true;
+        this.warningFlags.closedProgramWarning = true;
       } else {
-        this.messagingFlags.closedProgramWarning = false;
+        this.warningFlags.closedProgramWarning = false;
       }
 
       //clear out whatever the user had for the program completion date
@@ -936,6 +954,7 @@ export default {
         this.editedGradStatus.adultStartDate =
           this.studentGradStatus.adultStartDate;
       }
+      this.validateFields();
     },
     programCompletionDateChange: function () {
       let programNameSearch = this.editedGradStatus.program;
@@ -950,55 +969,52 @@ export default {
         if (
           this.containsAnyLetters(this.editedGradStatus.programCompletionDate)
         ) {
-          this.messagingFlags.numberError.programCompletionDate = true;
-          this.disableSave = true;
+          this.errorFlags.numberError.programCompletionDate = true;
         } else {
-          this.messagingFlags.numberError.programCompletionDate = false;
-          this.disableSave = !this.validCompletionDate(
-            this.editedGradStatus.programCompletionDate
-            // should we reset any messaging flags for program completion date here?
-          );
+          this.errorFlags.numberError.programCompletionDate = false;
+          this.validCompletionDate(this.editedGradStatus.programCompletionDate);
         }
       } else {
-        this.disableSave = false;
+        this.errorFlags.numberError.programCompletionDate = false;
       }
+      this.validateFields();
     },
     schoolOfRecordChange: function () {
-      if (this.editedGradStatus.schoolOfRecord.length == "") {
-        this.disableSave = true;
+      if (this.editedGradStatus.schoolOfRecord == "") {
+        this.errorFlags.emptyError.schoolOfRecordMissing = true;
       } else {
-        this.schoolOfRecordMissing = false;
-        this.disableSave = false;
+        this.errorFlags.emptyError.schoolOfRecordMissing = false;
       }
       if (this.editedGradStatus.schoolOfRecord.length < 8) {
-        this.schoolOfRecordWarning = false;
-        this.schoolNotFoundWarning = false;
-        this.schoolOfRecordInputWarning = true;
+        this.warningFlags.schoolOfRecordWarning = false;
+        this.warningFlags.schoolNotFoundWarning = false;
+        this.warningFlags.schoolOfRecordInputWarning = true;
+        this.validateFields();
         return;
       }
       if (
         this.editedGradStatus.schoolOfRecord ==
         this.studentGradStatus.schoolOfRecord
       ) {
-        this.schoolOfRecordWarning = false;
-        this.schoolNotFoundWarning = false;
-        this.schoolOfRecordInputWarning = false;
+        this.warningFlags.schoolOfRecordWarning = false;
+        this.warningFlags.schoolNotFoundWarning = false;
+        this.warningFlags.schoolOfRecordInputWarning = false;
         this.schoolFound = false;
       } else {
         if (this.editedGradStatus.schoolOfRecord.length == 8) {
-          this.schoolNotFoundWarning = false;
-          this.schoolOfRecordWarning = false;
-          this.schoolOfRecordInputWarning = false;
+          this.warningFlags.schoolNotFoundWarning = false;
+          this.warningFlags.schoolOfRecordWarning = false;
+          this.warningFlags.schoolOfRecordInputWarning = false;
           this.schoolFound = false;
           SchoolService.getSchoolInfo(this.editedGradStatus.schoolOfRecord)
             .then((response) => {
               this.schoolOfRecordStatus = response.data.openFlag;
               if (response.statusText == "No Content") {
-                this.schoolNotFoundWarning = true;
+                this.warningFlags.schoolNotFoundWarning = true;
               } else {
-                this.schoolNotFoundWarning = false;
+                this.warningFlags.schoolNotFoundWarning = false;
                 if (this.schoolOfRecordStatus == "N") {
-                  this.schoolOfRecordWarning = true;
+                  this.warningFlags.schoolOfRecordWarning = true;
                 }
                 this.schoolFound = true;
                 this.editedGradStatus.schoolName = response.data.schoolName;
@@ -1010,59 +1026,57 @@ export default {
               }
             });
         } else {
-          this.schoolNotFoundWarning = true;
+          this.warningFlags.schoolNotFoundWarning = true;
         }
       }
+      this.validateFields();
     },
     schoolAtGradChange: function () {
       if (this.editedGradStatus.schoolAtGrad == "") {
         if (this.editedGradStatus.programCompletionDate != "") {
-          this.disableSave = true;
-          this.schoolAtGradProgramCompletionDateMessage = true;
+          this.errorFlags.emptyError.schoolAtGraduation = true;
         } else {
-          this.disableSave = false;
-          this.schoolAtGradProgramCompletionDateMessage = false;
+          this.errorFlags.emptyError.schoolAtGraduation = false;
         }
       } else {
-        this.disableSave = false;
-        this.schoolAtGradProgramCompletionDateMessage = false;
+        this.errorFlags.emptyError.schoolAtGraduation = false;
       }
 
       if (
         this.editedGradStatus.schoolAtGrad &&
         this.editedGradStatus.schoolAtGrad.length < 8
       ) {
-        this.schoolAtGraduationWarning = false;
-        this.schoolAtGraduationNotFoundWarning = false;
-        this.schoolAtGraduationInputWarning = true;
+        this.warningFlags.schoolAtGraduationWarning = false;
+        this.warningFlags.schoolAtGraduationNotFoundWarning = false;
+        this.warningFlags.schoolAtGraduationInputWarning = true;
         this.schoolAtGraduationFound = false;
         return;
       } else {
-        this.schoolAtGraduationInputWarning = false;
+        this.warningFlags.schoolAtGraduationInputWarning = false;
       }
       if (
         this.editedGradStatus.schoolAtGrad ==
         this.studentGradStatus.schoolAtGrad
       ) {
-        this.schoolAtGraduationWarning = false;
-        this.schoolAtGraduationNotFoundWarning = false;
-        this.schoolAtGraduationInputWarning = false;
+        this.warningFlags.schoolAtGraduationWarning = false;
+        this.warningFlags.schoolAtGraduationNotFoundWarning = false;
+        this.warningFlags.schoolAtGraduationInputWarning = false;
         this.schoolAtGraduationFound = false;
       } else {
         if (this.editedGradStatus.schoolAtGrad.length == 8) {
-          this.schoolAtGraduationNotFoundWarning = false;
-          this.schoolAtGraduationWarning = false;
-          this.schoolAtGraduationInputWarning = false;
+          this.warningFlags.schoolAtGraduationNotFoundWarning = false;
+          this.warningFlags.schoolAtGraduationWarning = false;
+          this.warningFlags.schoolAtGraduationInputWarning = false;
           this.schoolAtGraduationFound = false;
           SchoolService.getSchoolInfo(this.editedGradStatus.schoolAtGrad)
             .then((response) => {
               this.schoolAtGraduationStatus = response.data.openFlag;
               if (response.statusText == "No Content") {
-                this.schoolAtGraduationNotFoundWarning = true;
+                this.warningFlags.schoolAtGraduationNotFoundWarning = true;
               } else {
-                this.schoolAtGraduationNotFoundWarning = false;
+                this.warningFlags.schoolAtGraduationNotFoundWarning = false;
                 if (this.schoolAtGraduationStatus == "N") {
-                  this.schoolAtGraduationWarning = true;
+                  this.warningFlags.schoolAtGraduationWarning = true;
                 }
                 this.schoolAtGraduationFound = true;
                 this.editedGradStatus.schoolAtGradName =
@@ -1075,22 +1089,33 @@ export default {
               }
             });
         } else {
-          this.schoolAtGraduationInputWarning = true;
+          this.warningFlags.schoolAtGraduationInputWarning = true;
         }
       }
+      this.validateFields();
     },
     adultStartDateChange: function () {
+      if (
+        this.editedGradStatus.program == "1950" &&
+        !this.editedGradStatus.adultStartDate
+      ) {
+        this.errorFlags.emptyError.adultStartDate = true;
+      } else {
+        this.errorFlags.emptyError.adultStartDate = false;
+      }
+
       if (this.editedGradStatus.adultStartDate) {
-        if (this.containsAnyLetters(this.editedGradStatus.adultStartDate)) {
-          this.messagingFlags.numberError.adultStartDate = true;
-          this.disableSave = true;
+        if (
+          this.containsAnyLetters(this.editedGradStatus.adultStartDate) ||
+          this.editedGradStatus.adultStartDate.length < 8
+        ) {
+          this.errorFlags.numberError.adultStartDate = true;
         } else {
-          this.messagingFlags.numberError.adultStartDate = false;
-          this.disableSave = !this.validAdultStartDate(
-            this.editedGradStatus.adultStartDate
-          );
+          this.errorFlags.numberError.adultStartDate = false;
+          this.validAdultStartDate(this.editedGradStatus.adultStartDate);
         }
       }
+      this.validateFields();
     },
   },
   methods: {
@@ -1120,24 +1145,38 @@ export default {
         ? new Date(this.programExpiryDate)
         : null;
       let compareDate = date ? new Date(date) : null;
-      this.messagingFlags.numberError.programCompletionDate = !compareDate;
+      this.errorFlags.numberError.programCompletionDate = !compareDate;
 
       let inRange =
         (!start || compareDate > start) && (!end || compareDate < end);
-      this.messagingFlags.rangeError.programCompletionDate = !inRange;
+      this.errorFlags.rangeError.programCompletionDate = !inRange;
       return inRange && compareDate;
     },
     validAdultStartDate(date) {
       // format date to valid adult start date
       this.editedGradStatus.adultStartDate =
         sharedMethods.dateFormatYYYYMMDD(date);
+    },
+    validateFields() {
+      // assume able to save until positive error flag
+      this.disableSave = false;
 
-      return true;
+      for (let errorType in this.errorFlags) {
+        for (let flag in this.errorFlags[errorType]) {
+          if (this.errorFlags[errorType][flag] === true) {
+            this.disableSave = true;
+            return;
+          }
+        }
+        if (this.disableSave) {
+          return;
+        }
+      }
     },
     editGradStatus() {
       //If the student has a programCompletionDate disable input fields
-      this.schoolOfRecordWarning = false;
-      this.schoolNotFoundWarning = false;
+      this.warningFlags.schoolOfRecordWarning = false;
+      this.warningFlags.schoolNotFoundWarning = false;
       if (this.studentGradStatus.program != "1986-EN") {
         this.disableConsumerEdReqMet = true;
       } else {
@@ -1230,14 +1269,15 @@ export default {
         "consumerEducationRequirementMet",
         this.studentGradStatus.consumerEducationRequirementMet
       );
+      this.validateFields();
     },
 
     cancelGradStatus() {
       this.showEdit = false;
-      this.schoolOfRecordWarning = false;
-      this.schoolNotFoundWarning = false;
-      this.messagingFlags.numberError.adultStartDate = false;
-      this.messagingFlags.numberError.programCompletionDate = false;
+      this.warningFlags.schoolOfRecordWarning = false;
+      this.warningFlags.schoolNotFoundWarning = false;
+      this.errorFlags.numberError.adultStartDate = false;
+      this.errorFlags.numberError.programCompletionDate = false;
     },
     saveGraduationStatus(id) {
       //add the user info
