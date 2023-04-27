@@ -241,7 +241,7 @@
                       :fields="[
                         {
                           key: 'createDate',
-                          label: 'Undo Completion Date',
+                          label: 'Undo Completion Date1',
                           class: 'px-0 py-2 w-15',
                         },
                         {
@@ -261,6 +261,9 @@
                         },
                       ]"
                     >
+                      <template #cell(createDate)="row">
+                        {{ row.value | formatTime }}
+                      </template>
                     </DisplayTable>
                   </div>
                   <b-overlay

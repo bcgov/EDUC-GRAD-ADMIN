@@ -1050,6 +1050,44 @@ export default {
           }
         });
     },
+    runDISTRUN_SUPP(id) {
+      let requestId = id.replace("job-", "");
+      this.$set(this.spinners, id, true);
+      let index = id.replace("job-", "") - 1;
+      let value = true;
+      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      BatchProcessingService.runDISTRUN_SUPP()
+        .then((response) => {
+          this.getAdminDashboardData();
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.getAdminDashboardData();
+            this.cancelBatchJob(id);
+            this.selectedTab = 0;
+            this.$bvToast.toast("This request is running in the background", {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "success",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
     runBlankDISTRUNUSERUserRequest(request, id, credentialType) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
@@ -1465,6 +1503,17 @@ export default {
           );
         }
         this.validationMessage = "";
+      } else if (this.tabContent[id].details["what"] == "DISTRUN_SUPP") {
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "SDBJ";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runDISTRUN_SUPP(id);
+        }
       }
     },
     rerunBatchSchoolReports(bid) {
