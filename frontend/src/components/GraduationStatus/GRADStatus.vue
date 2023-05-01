@@ -333,6 +333,7 @@
               <td>
                 <b-form-select
                   size="sm"
+                  :disabled="disableStudentGrade"
                   v-model="editedGradStatus.studentGrade"
                   :options="gradeOptions"
                 >
@@ -476,6 +477,7 @@
                   type="text"
                   maxlength="8"
                   minength="8"
+                  :disabled="disableSchoolOfRecord"
                   v-model="editedGradStatus.schoolOfRecord"
                 ></b-input>
               </td>
@@ -809,7 +811,7 @@ export default {
         programChangeWarning: false,
         schoolOfRecordWarning: false,
         schoolNotFoundWarning: false,
-        schoolOfRecordInputWarning: false,
+        schoolOfRecordInputWarning: false, //look at moving to error flags, but fine for now since backend prevents submission
         schoolAtGraduationWarning: false,
         schoolAtGraduationNotFoundWarning: false,
         schoolAtGraduationInputWarning: false,
@@ -826,9 +828,11 @@ export default {
       studentUngradReason: "",
       disableSave: false,
       disableSchoolAtGrad: false,
+      disableStudentGrade: false,
       disableProgramInput: false,
       disableConsumerEdReqMet: false,
       disableStudentStatus: false,
+      disableSchoolOfRecord: false,
       gradeOptions: [
         { text: "08", value: "8" },
         { text: "09", value: "9" },
@@ -899,10 +903,14 @@ export default {
         this.studentGradStatus.program != "SCCP"
       ) {
         this.disableProgramInput = true;
-        this.errorFlags.other.programComplete = true;
+        this.disableStudentGrade = true;
+        this.disableConsumerEdReqMet = true;
+        this.disableSchoolAtGrad = false;
       } else {
         this.disableProgramInput = false;
-        this.errorFlags.other.programComplete = false;
+        this.disableStudentGrade = false;
+        this.disableConsumerEdReqMet = false;
+        this.disableSchoolAtGrad = true;
       }
       if (this.editedGradStatus.program == "1950") {
         // check adult start date
@@ -1187,12 +1195,10 @@ export default {
         this.studentGradStatus.program !== "SCCP"
       ) {
         this.disableProgramInput = true;
-        this.disableSchoolAtGrad = false;
         this.disableStudentStatus = false;
       } else {
         this.disableProgramInput = false;
         this.disableStudentStatus = false;
-        this.disableSchoolAtGrad = true;
       }
 
       if (
