@@ -63,7 +63,15 @@ Vue.filter("formatSimpleDate", function (value) {
     return "";
   }
 });
-
+//Format to simple locale Date
+Vue.filter("formatSimpleLocaleDate", function (value) {
+  if (value) {
+    return new Date(value)
+    .toLocaleDateString("en-CA", { day: "2-digit", month: "2-digit", year: "numeric"});
+  } else {
+    return "";
+  }
+});
 //Format YYYY-MM Date
 Vue.filter("formatYYYYMMDate", function (value) {
   if (value) {
