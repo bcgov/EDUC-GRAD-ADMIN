@@ -16,6 +16,7 @@ const oauthUtils = {
 
         const data = 'grant_type=client_credentials&client_id=' + tokenData.token_client_id + '&client_secret=' + tokenData.token_client_secret;
         const response = await axios.post(tokenData.token_endpoint, data, params);
+
         return response.data;
     }
 }

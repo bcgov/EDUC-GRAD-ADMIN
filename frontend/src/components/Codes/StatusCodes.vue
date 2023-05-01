@@ -22,27 +22,26 @@
 import DisplayTable from "@/components/DisplayTable";
 import StudentService from "@/services/StudentService.js";
 
-
 export default {
-  name: 'StatusCodes',
+  name: "StatusCodes",
   components: {
     DisplayTable: DisplayTable,
   },
   created() {
-       StudentService.getStudentStatusCodes()
-        .then((response) => {
-          this.studentStatusCodes = response.data;
-        })
-        // eslint-disable-next-line
-        .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+    StudentService.getStudentStatusCodes()
+      .then((response) => {
+        this.studentStatusCodes = response.data;
+      })
+      // eslint-disable-next-line
+      .catch((error) => {
+        this.$bvToast.toast("ERROR " + error.response.statusText, {
+          title: "ERROR" + error.response.status,
+          variant: "danger",
+          noAutoHide: true,
         });
+      });
   },
-  data: function() {
+  data: function () {
     return {
       studentStatusCodes: [],
       studentStatusCodesFields: [
@@ -51,9 +50,9 @@ export default {
           label: "Code",
           sortable: true,
           sortDirection: "desc",
-          class: "w-15"
+          class: "w-15",
         },
-{
+        {
           key: "label",
           label: "Label",
           sortable: true,
@@ -72,19 +71,18 @@ export default {
           key: "expiryDate",
           label: "Expiry Date",
           sortable: true,
-        }
-      ],    
+        },
+      ],
     };
   },
-  computed: {
-  },
-  methods: {
-  },
+  computed: {},
+  methods: {},
 };
 </script>
 
 <style>
-.table th, .table td{
+.table th,
+.table td {
   border-top: none !important;
-
-}</style>
+}
+</style>

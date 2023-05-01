@@ -64,7 +64,8 @@ export default {
     try{
       return await apiAxios.get(Routes.USER);
     } catch(e) {
-      console.log(`Failed to get from Nodejs getUserInfo API - ${e}`);
+      
+      console.log(`Failed to get from Nodejs getUserInfo API - ${e}`);// eslint-disable-line no-console
       throw e;
     }
   },

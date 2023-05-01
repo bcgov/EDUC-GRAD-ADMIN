@@ -2,7 +2,7 @@ import ApiService from '../common/apiService';
 
 export default {
   getCoursesByAdvanceSearch(params) {
-    return ApiService.apiAxios.get('/api/v1/course/coursesearch/?' + params);
+    return ApiService.apiAxios.get('/api/v1/course/coursesearch?' + params);
   },
   getCourses(courseCode){
     return ApiService.apiAxios.get('/api/v1/course/' + courseCode);

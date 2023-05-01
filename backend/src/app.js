@@ -33,13 +33,14 @@ const studentGraduationRouter = require('./routes/student-graduation-router');
 const studentRouter = require('./routes/student-router');
 const graduationReportsRouter = require('./routes/graduation-reports-router');
 const batchRouter = require('./routes/batch-router');
+const distributionRouter = require('./routes/distribution-router');
 const graduationRouter = require('./routes/graduation-router');
 const reportsRouter = require('./routes/reports-router');
 
 //initialize app
 const app = express();
 app.set('trust proxy', 1);
-//sets security measures (headers, etc)
+//sets security measures (headers, etc) 
 app.use(cors());
 app.use(helmet());
 app.use(noCache());
@@ -150,6 +151,7 @@ app.use(/(\/api)?/, apiRouter);
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/v1/batch', batchRouter);
+apiRouter.use('/v1/distribute', distributionRouter);
 apiRouter.use('/v1/program', programsRouter); 
 apiRouter.use('/v1/course', coursesRouter);
 apiRouter.use('/v1/studentgraduation', studentGraduationRouter);

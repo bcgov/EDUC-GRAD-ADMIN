@@ -1,47 +1,55 @@
 <template>
   <div>
-    <p>A student's Transcript, Student Achievement Report (TVR) and Certificate(s) will show a status as the student progresses through the system.  The list of document statuses are maintained in this table.  Documents will show In Progress until the student graduates, once a student graduates and the final documents are created, the documents will show a status of Completed. If, and only if, the student has completed the SCCP program and the User moves the SCCP student to a graduation program will the students existing documents get Archived.</p>
+    <p>
+      A student's Transcript, Student Achievement Report (TVR) and
+      Certificate(s) will show a status as the student progresses through the
+      system. The list of document statuses are maintained in this table.
+      Documents will show In Progress until the student graduates, once a
+      student graduates and the final documents are created, the documents will
+      show a status of Completed. If, and only if, the student has completed the
+      SCCP program and the User moves the SCCP student to a graduation program
+      will the students existing documents get Archived.
+    </p>
     <DisplayTable
-        title="Program Certificate Transcripts"
-        v-bind:items="documentStatusCodes"
-        v-bind:fields="documentStatusCodesFields"
-        id="code"
-        showFilter="true"
+      title="Program Certificate Transcripts"
+      v-bind:items="documentStatusCodes"
+      v-bind:fields="documentStatusCodesFields"
+      id="code"
+      showFilter="true"
     >
-        <template #cell(effectiveDate)="row">
+      <template #cell(effectiveDate)="row">
         {{ row.item.effectiveDate | formatSimpleDate }}
-        </template>
-        <template #cell(expiryDate)="row">
+      </template>
+      <template #cell(expiryDate)="row">
         {{ row.item.expiryDate | formatSimpleDate }}
-        </template>
+      </template>
     </DisplayTable>
   </div>
 </template>
 
 <script>
-
 import DisplayTable from "@/components/DisplayTable";
 import GraduationReportService from "@/services/GraduationReportService.js";
 
 export default {
-  name: 'DocumentStatusCode',
+  name: "DocumentStatusCode",
   components: {
     DisplayTable: DisplayTable,
   },
   created() {
     GraduationReportService.getDocumentStatusCodes()
-    .then((response) => {
-      this.documentStatusCodes = response.data;
-    })
-    .catch((error) => {
-      this.$bvToast.toast("ERROR " + error.response.statusText, {
-        title: "ERROR" + error.response.status,
-        variant: "danger",
-        noAutoHide: true,
+      .then((response) => {
+        this.documentStatusCodes = response.data;
+      })
+      .catch((error) => {
+        this.$bvToast.toast("ERROR " + error.response.statusText, {
+          title: "ERROR" + error.response.status,
+          variant: "danger",
+          noAutoHide: true,
+        });
       });
-    });
   },
-  data: function() {
+  data: function () {
     return {
       documentStatusCodes: [],
       documentStatusCodesFields: [
@@ -50,7 +58,7 @@ export default {
           label: "Code",
           sortable: true,
           sortDirection: "desc",
-          class: "w-15"
+          class: "w-15",
         },
         {
           key: "label",
@@ -71,17 +79,17 @@ export default {
           key: "expiryDate",
           label: "Expiry Date",
           sortable: true,
-        }
+        },
       ],
     };
   },
-  methods: {
-  },
+  methods: {},
 };
 </script>
 
 <style>
-.table th, .table td{
+.table th,
+.table td {
   border-top: none !important;
-
-}</style>
+}
+</style>

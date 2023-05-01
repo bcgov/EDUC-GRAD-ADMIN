@@ -10,10 +10,13 @@ const roles = {
     StaffAdministration: config.get('server:administration:roleAdmin'),
   },
   Admin: {
-    //Help functions created in auth module: isValidStudentSearchAdmin
-    StudentSearch: config.get('server:studentSearch:roleAdmin'),
-    //Help functions created in auth module: isValidStaffAdministrationAdmin
-    StaffAdministration: config.get('server:administration:roleAdmin') || 'GRAD_SYSTEM_COORDINATOR'
+      //Help functions created in auth module: isValidStudentSearchAdmin
+      StudentSearch: config.get('server:studentSearch:roleAdmin'),
+      //Help functions created in auth module: isValidStaffAdministrationAdmin
+      StaffAdministration: config.get('server:administration:roleAdmin'),
+      StaffInfoOfficer: config.get('server:administration:roleInfoOfficer'),
+      StaffGradProgramBA: config.get('server:administration:roleGradProgramAreaBA'),
+      
   }
 };
 

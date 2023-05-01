@@ -1,8 +1,9 @@
-import StudentService from '@/services/StudentService.js';
+import BatchProcessingService from '@/services/BatchProcessingService.js';
 export default {
   namespaced: true,
   state: {
     batchDetails: [],
+    scheduledBatchJobs: [],
     batchAutoIncrement: 1,
     batchTabsLoading: [],
     tabs: [],
@@ -28,15 +29,19 @@ export default {
       state.batchDetails[payload].students.push({})
     },
     //id, type, value
-    deleteValueFromTypeInBatchId(state,payload){
-      let items = state.batchDetails[payload['id']][payload['type']];
-
-      for( var i = 0; i < items.length; i++){    
-        if ( items[i].value === payload['value']) { 
-          items.splice(i--, 1); 
+      deleteValueFromTypeInBatchId(state, payload) {
+        
+        const { id, type, value, valid } = payload;
+        const items = state.batchDetails[id][type];
+  
+        for (const item of items) {
+          if (item.value === value) {
+            const index = items.indexOf(item);
+            items.splice(index, 1);
+          }
         }
-      }
-      if(items.length == 0){
+      
+      if(items.length == 0 || !valid){
         items.push({});
       }
     },  
@@ -48,42 +53,69 @@ export default {
       state.batchDetails[payload['id']]=payload['batchDetail'];
     },
     clearBatchDetails(state,payload){
-      state.batchDetails[payload]['details'].who="Choose...";
-      state.batchDetails[payload]['details'].groupRange="Current Students";
+
+
+        
+        let date = new Date();
+        let psiCurrentYear = String(date.getFullYear());
+        if (date.getMonth() + 1 > 8) {
+          psiCurrentYear = String(date.getFullYear() + 1);
+        }
+    
+      state.batchDetails[payload]['details'].who="";
+      state.batchDetails[payload]['details'].where="BC Mail";
+      state.batchDetails[payload]['details'].gradDate="Current Students";
+      state.batchDetails[payload]['details'].gradDateFrom="";
+      state.batchDetails[payload]['details'].gradDateTo="";
+      state.batchDetails[payload]['details'].psiYear=psiCurrentYear;
+      state.batchDetails[payload]['details'].psiTransmissionMode="";      
       state.batchDetails[payload].schools=[{}];
       state.batchDetails[payload].districts=[{}];
       state.batchDetails[payload].programs=[{}];
       state.batchDetails[payload].students=[{}];
+      state.batchDetails[payload].psi=[{}];
       state.batchDetails[payload]['details'].blankCertificateDetails=[{}];
       state.batchDetails[payload]['details'].blankTranscriptDetails=[{}];
       state.batchDetails[payload]['details'].credential="";
       state.batchDetails[payload]['details'].categoryCode="";
-      state.batchDetails[payload]['details'].copies="";
+      state.batchDetails[payload]['details'].copies="1";
+      state.batchDetails[payload]['details'].allPsi=false;
+      state.batchDetails[payload]['details'].allDistricts=false;
     },
     clearBatchGroupDetails(state,payload){
       state.batchDetails[payload].schools=[{}];
       state.batchDetails[payload].districts=[{}];
       state.batchDetails[payload].programs=[{}];
       state.batchDetails[payload].students=[{}];
+      state.batchDetails[payload].psi=[{}];
+      
     },     
     clearBatchCredentialsDetails(state,payload){
       state.batchDetails[payload].details['blankCertificateDetails']=[{}];
       state.batchDetails[payload].details['blankTranscriptDetails']=[{}];
-    }             
+    },     
+    setScheduledBatchJobs(state, payload){
+      state.scheduledBatchJobs = payload;
+
+      for (let value of state.scheduledBatchJobs) {
+        value.jobParameters = JSON.parse(value.jobParameters); 
+      }
+    }        
   },
   actions: {
-    validateStudentInGrad(payload){
-        
-      StudentService.getStudentByPen(payload['pen']).then(
-        (response) => {
-          this.$store.commit("batchprocessing/addValueToTypeInBatchId", payload);
-          return response;
-        }
-      ).catch((error) => {
-        // eslint-disable-next-line
-        console.log(error.response.status);
-      });
+    
+    addValueToTypeInBatchId({commit}, payload) {
+      commit('addValueToTypeInBatchId', payload);
     },
+    
+    setScheduledBatchJobs({commit}, payload) {
+      commit('setScheduledBatchJobs', payload);
+    },
+    removeScheduledJobs({state}, payload) {
+      if(state.scheduledBatchJobs)
+       return BatchProcessingService.removeScheduledJobs(payload['id']);
+      
+    },    
     addStudentToBatch({commit}, payload){
       commit('addStudentToBatch', payload);
     },
@@ -107,5 +139,20 @@ export default {
     getBatchProcessingTabs(state){
       return state.tabs;
     },    
+    getScheduledBatchJobs(state){
+      return state.scheduledBatchJobs;
+    },     
+    getBatchDetailsTypeById(state){
+    
+      return function(args){
+        return state.batchDetails[args].details['what']
+        
+      }
+    },
+    getbatchDetailsGroupById(state){
+      return function(args){
+        return state.batchDetails[args].details['who']    
+      }
+    }
   },  
 };

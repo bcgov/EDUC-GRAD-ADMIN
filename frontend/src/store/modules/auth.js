@@ -1,6 +1,6 @@
 import ApiService from '@/common/apiService';
 import AuthService from '@/common/authService';
-import { Routes } from '@/utils/constants';
+import { Routes, RolePermissions } from '@/utils/constants';
 
 export default {
   namespaced: true,
@@ -20,8 +20,9 @@ export default {
     getToken: state => state.jwtToken,
     jwtToken: () => localStorage.getItem('jwtToken'),
     userInfo: state => state.userInfo,
-    roles: state => {
-      if (state.userInfo.userRoles && state.userInfo.userRoles.includes("GRAD_SYSTEM_COORDINATOR")){
+    userFullName: state => state.userInfo.userFullName,
+    roles: state => { 
+      if (state.userInfo.userRoles && state.userInfo.userRoles.includes(RolePermissions.ADMINISTRATOR)){
         return "Administrator"
       }else if (state.userInfo.userRoles){
         return "Authenticated"
@@ -85,7 +86,6 @@ export default {
     logout(context) {
       context.commit('setJwtToken');
       context.commit('setUserInfo');
-      // router.push(AuthRoutes.LOGOUT);
     },
 
     async getUserInfo(context) {

@@ -8,7 +8,7 @@ inputs:
   runner-is-name:
     description: The name of the imagestream to be created
     required: false
-    default: "gh-runner-ubuntu-18"
+    default: "gh-runner-ubuntu-20"
   image-tags:
     description: Any tag for the image
     required: false
@@ -33,6 +33,9 @@ inputs:
   gh-access-token:
     description: A Github personal access token with admin rights on the repo
     required: true
+  secret-ref:
+    description: A secretRef for injecting OS env vars from OS secret
+    required: true
 outputs:
   runner_name:
     description: The name of the runner that is created.
@@ -43,7 +46,7 @@ runs:
     - name: Deploy runner
       id: deploy_runner
       env:
-        RUNNER_IS_NAME: gh-runner-ubuntu-18
+        RUNNER_IS_NAME: gh-runner-ubuntu-20
         IMAGE_TAGS: latest
         REGISTRY_PATH: ghcr.io/bcgov/gh-runner:latest
       run: |
@@ -51,7 +54,7 @@ runs:
         # set the necessary env vars
         # create a random runner id, etc
         # note: export used for these vars for envsubst to pick up later on
-        export RUNNER_ID=gh-runner-$(echo $RANDOM | md5sum | head -c 20) OPENSHIFT_NAMESPACE=${{ inputs.runner-deployment-namespace }} GITHUB_REPO=${{ inputs.github-repo }} ORGANIZATION=${{ inputs.organization }} GITHUB_ACCESS_TOKEN=${{ inputs.gh-access-token }}
+        export SECRET_REF=${{inputs.secret-ref}} RUNNER_ID=gh-runner-$(echo $RANDOM | md5sum | head -c 20) OPENSHIFT_NAMESPACE=${{ inputs.runner-deployment-namespace }} GITHUB_REPO=${{ inputs.github-repo }} ORGANIZATION=${{ inputs.organization }} GITHUB_ACCESS_TOKEN=${{ inputs.gh-access-token }}
         # exporting runner id to the labels below. One test = one runner.
         # add more labels if you like in csv format (label1,label2,label3,etc.)
         export LABELS=$RUNNER_ID
@@ -59,9 +62,9 @@ runs:
         echo ::set-output name=runner_name::"$RUNNER_ID"
         DEPLOYMENT_CONFIG_FILE=os-deployment.yaml
         # get config
-        wget https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/github-self-hosted-runner/os-deployment-gh-runner.yaml
+        wget https://raw.githubusercontent.com/bcgov/EDUC-GRAD-ADMIN/main/tools/openshift/test-runner.dc.yaml
         # replace vars
-        envsubst < os-deployment-gh-runner.yaml > $DEPLOYMENT_CONFIG_FILE
+        envsubst < test-runner.dc.yaml > $DEPLOYMENT_CONFIG_FILE
         # Login to OpenShift and select project
         oc login --token=${{ inputs.openshift-token }} --server=${{ inputs.openshift-server }}
         oc project ${{ inputs.runner-deployment-namespace }}
@@ -69,6 +72,8 @@ runs:
         oc create imagestream ${{ inputs.registry-path }} 2> /dev/null || true && echo "Runner image stream in place"
         # Tag it
         oc tag ${{ inputs.registry-path }} ${{ inputs.runner-is-name }}:${{ inputs.image-tags }}
+        echo "here is the config:"
+        cat $DEPLOYMENT_CONFIG_FILE
         # Deploy runner
         oc apply -f $DEPLOYMENT_CONFIG_FILE
       shell: bash

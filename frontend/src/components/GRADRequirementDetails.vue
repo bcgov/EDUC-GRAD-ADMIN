@@ -2,62 +2,50 @@
   <div>
     <slot></slot>
     <div>
-      <b-card
-            no-body
-            header="Assessment Requirements"
+      <b-card no-body header="Assessment Requirements">
+        <b-card-text class="p-3">
+          <DisplayTable
+            v-if="hasGradStatus"
+            :items="gradStatusAssessments"
+            :fields="fields2"
+            showFilter="true"
+            title="RequirementDetailsAssessments"
           >
-        <b-card-text class="p-3">    
-          <DisplayTable v-if="hasGradStatus" :items="gradStatusAssessments" :fields="fields2" showFilter="true" title="RequirementDetailsAssessments">
-            <template #cell(gradReqMet)="row">            
-              <div class="d-flex flex-column text-md-left">
-                  <div class="gradReqsMet">
-                    <span v-if="row.item.used">
-                      {{row.item.gradReqMet ? row.item.gradReqMet : "" }}
-                    </span>                            
-                    <span v-if="!row.item.used">Not Used</span>
-                    <span v-if="row.item.notCompleted">Not Completed</span>     
-                    <span v-if="row.item.projected">Registration</span>   
-                    <span v-if="row.item.failed">Failed</span>   
-                    <span v-if="row.item.duplicate">Duplicate</span>  
-                  </div>
-                </div>
-            </template>
-          </DisplayTable>
-        </b-card-text>
-      </b-card>  
-      <b-card
-            no-body
-            header="Course Requirements"
-          >
-        <b-card-text class="p-3">  
-          <DisplayTable v-if="hasGradStatus && gradStatusCourses" :items="gradStatusCourses" :fields="fields" showFilter="true" title="RequirementDetailsCourses">
             <template #cell(gradReqMet)="row">
               <div class="d-flex flex-column text-md-left">
                 <div class="gradReqsMet">
-                    <span v-if="row.item.used">{{row.item.gradReqMet ? row.item.gradReqMet : "" }}</span>   
-                    <span v-if="!row.item.used">Not Used</span>     
-                    <span v-if="row.item.notCompleted">Incomplete Course</span>     
-                    <span v-if="row.item.projected">Registration or Interim</span>   
-                    <span v-if="row.item.failed">Failed</span>   
-                    <span v-if="row.item.duplicate">Repeat</span>   
-                    <span v-if="row.item.careerPrep">Career Prep course</span>   
-                    <span v-if="row.item.locallyDeveloped">Locally Developed course</span>     
-                    <span v-if="row.item.boardAuthorityAuthorized">Board/Authority Authorized Course</span>
-                    <span v-if="row.item.independentDirectedStudies">Independent Directed Studies course</span>
-                    <span v-if="row.item.cutOffCourse">Course taken after Cut-off</span>
-                    <span v-if="row.item.grade10Course">Grade 10 ineligible (1995 program)</span>
-                    <span v-if="row.item.lessCreditCourse">Courses with credits &lt; 4 ineligible</span>
-                    <span v-if="row.item.restricted">Course restricted against another course</span>
-                  </div>
+                  {{ row.value }}
                 </div>
+              </div>
+            </template>
+          </DisplayTable>
+        </b-card-text>
+      </b-card>
+      <b-card no-body header="Course Requirements">
+        <b-card-text class="p-3">
+          <DisplayTable
+            v-if="hasGradStatus && gradStatusCourses"
+            :items="gradStatusCourses"
+            :fields="fields"
+            showFilter="true"
+            title="RequirementDetailsCourses"
+          >
+            <template #cell(gradReqMet)="row">
+              <div class="d-flex flex-column text-md-left">
+                <div class="gradReqsMet">
+                  {{ row.value }}
+                </div>
+              </div>
             </template>
             <template #cell(gradReqMetDetail)="row">
               <div class="d-flex flex-column text-md-left">
-                  <div class="">
-                      {{row.item.gradReqMetDetail ? row.item.gradReqMetDetail : " " }}
-                  </div>
+                <div class="">
+                  {{
+                    row.item.gradReqMetDetail ? row.item.gradReqMetDetail : " "
+                  }}
                 </div>
-            </template>        
+              </div>
+            </template>
           </DisplayTable>
         </b-card-text>
       </b-card>
@@ -75,17 +63,17 @@ export default {
   },
   computed: {
     ...mapGetters({
-      courses: "getStudentCourses",
-      gradStatusCourses: "gradStatusCourses",
-      gradStatusAssessments: "gradStatusAssessments",
-      studentRequirementDetailGRADStudentCoursess: "getStudentGradStatus",
-      hasGradStatus: "studentHasGradStatus",
-      hasGradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
+      courses: "student/getStudentCourses",
+      gradStatusCourses: "student/gradStatusCourses",
+      gradStatusAssessments: "student/gradStatusAssessments",
+      studentRequirementDetailGRADStudentCoursess: "student/getStudentGradStatus",
+      hasGradStatus: "student/studentHasGradStatus",
+      hasGradStatusPendingUpdates: "student/getHasGradStatusPendingUpdates",
     }),
   },
   data: function () {
     return {
-    fields2: [
+      fields2: [
         {
           key: "assessmentCode",
           label: "Code",
@@ -97,13 +85,13 @@ export default {
           label: "Name",
           sortable: true,
           class: "text-left",
-        },        
+        },
         {
           key: "sessionDate",
           label: "Session",
           sortable: true,
           sortDirection: "desc",
-        },     
+        },
         {
           key: "specialCase",
           label: "Special Case",
@@ -115,18 +103,40 @@ export default {
           label: "Exceeded Writes",
           sortable: true,
           class: "text-left",
-        },        
+        },
         {
           key: "proficiencyScore",
           label: "Proficiency Score",
           sortable: true,
           class: "text-left",
-        },                
+        },
         {
           key: "gradReqMet",
           label: "Reqts Met",
           sortable: true,
           class: "text-left",
+          sortByFormatted: true,
+          formatter: (value, key, item) => {
+            let formattedValue = value;
+
+            if (!item.used) {
+              formattedValue = "Not Used";
+            }
+            if (item.notCompleted) {
+              formattedValue += ", No Attempt";
+            }
+            if (item.projected) {
+              formattedValue += ", Registration";
+            }
+            if (item.failed) {
+              formattedValue += ", Not Completed";
+            }
+            if (item.duplicate) {
+              formattedValue += ", Repeat";
+            }
+
+            return formattedValue;
+          },
         },
         {
           key: "gradReqMetDetail",
@@ -134,7 +144,6 @@ export default {
           sortable: true,
           class: "text-left",
         },
-        
       ],
       fields: [
         { key: "more", label: "" },
@@ -163,13 +172,19 @@ export default {
           sortable: true,
           sortDirection: "desc",
         },
-        { key: "completedCoursePercentage", label: "Completed Course %",class: "text-md-center ",
+        {
+          key: "completedCoursePercentage",
+          label: "Completed Course %",
+          class: "text-md-center ",
           sortable: true,
-          sortDirection: "desc", 
+          sortDirection: "desc",
         },
-        { key: "completedCourseLetterGrade", label: "LG",class: "text-md-center",
+        {
+          key: "completedCourseLetterGrade",
+          label: "LG",
+          class: "text-md-center",
           sortable: true,
-          sortDirection: "desc", 
+          sortDirection: "desc",
         },
         {
           key: "credits",
@@ -182,6 +197,52 @@ export default {
           label: "Reqts Met",
           sortable: true,
           class: "text-left",
+          sortByFormatted: true,
+          formatter: (value, key, item) => {
+            let formattedValue = value;
+
+            if (!item.used) {
+              formattedValue = "Not Used";
+            }
+            if (item.notCompleted) {
+              formattedValue += ", Incomplete Course";
+            }
+            if (item.projected) {
+              formattedValue += ", Registration or Interim";
+            }
+            if (item.failed) {
+              formattedValue += ", Failed";
+            }
+            if (item.duplicate) {
+              formattedValue += ", Repeat";
+            }
+            if (item.careerPrep) {
+              formattedValue += ", Career Prep course";
+            }
+            if (item.locallyDeveloped) {
+              formattedValue += ", Locally Developed course";
+            }
+            if (item.boardAuthorityAuthorized) {
+              formattedValue += ", Board/Authority Authorized Course";
+            }
+            if (item.cutOffCourse) {
+              formattedValue += ", Course taken after Program Expiry Date";
+            }
+            if (item.grade10Course) {
+              formattedValue += ", Grade 10 ineligible (1995 program)";
+            }
+            if (item.lessCreditCourse) {
+              formattedValue += ", Courses with credits < 4 ineligible";
+            }
+            if (item.restricted) {
+              formattedValue += ", Course restricted against another course";
+            }
+            if (item.independentDirectedStudies) {
+              formattedValue += ", Independent Directed Studies course";
+            }
+
+            return formattedValue;
+          },
         },
         {
           key: "gradReqMetDetail",
@@ -195,7 +256,6 @@ export default {
           sortable: true,
           class: "text-left",
         },
-        
       ],
       gradStatusPendingUpdates: [],
       show: false,
@@ -211,7 +271,6 @@ export default {
           keys: ["courseCode"],
         },
       },
-
     };
   },
   methods: {
@@ -246,11 +305,10 @@ export default {
 .card-header {
   font-weight: 700 !important;
 }
-.gradReqsMet span + span::before{
-    content: ", "
-
+.gradReqsMet span + span::before {
+  content: ", ";
 }
-.gradstatus-tabs .card{
-  margin-top:70px;
+.gradstatus-tabs .card {
+  margin-top: 70px;
 }
 </style>

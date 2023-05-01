@@ -1,25 +1,28 @@
 <template>
   <div id="app">
-    <Bcheader class="bcheader" style="margin-bottom: 15px; text-transform: capitalize">
+    <EnvironmentBanner />
+    <Bcheader
+      class="bcheader"
+      style="margin-bottom: 15px; text-transform: capitalize"
+    >
       <div v-if="isAuthenticated && dataReady">
-        <a v-b-toggle.sidebar-1>{{ userInfo.userName }} </a>
-        <b-sidebar id="sidebar-1" title="Permissions" shadow>
-          <div class="px-3 py-2">
-              {{getProgramOptions}}
+        <a v-b-toggle.grad-drawer>{{ userInfo.userName }} </a>
+        <b-sidebar id="grad-drawer" title="Permissions" shadow>
+          <div class="px-3 py-2 mt-5">
+            <br />
+            {{ roles }}<br />
           </div>
         </b-sidebar>
-            (<a>{{ roles }}</a>) |
-            <a :href='routes.LOGOUT' class="text-white">Logout</a>
+        |
+        <a :href="authRoutes.LOGOUT" class="text-white">Logout</a>
       </div>
       <div v-else-if="!isAuthenticated">
-        <a :href='routes.LOGIN' class="text-white">Login</a>
+        <a :href="authRoutes.LOGOUT">Login</a>
       </div>
     </Bcheader>
-  
-    <div class="container" style="height: 100%;">
-        <transition
-          name="fade"
-        >
+
+    <div class="container" style="min-height: 100vh">
+      <transition name="fade">
         <router-view />
       </transition>
     </div>
@@ -27,59 +30,81 @@
   </div>
 </template>
 <script>
-import { mapActions, mapMutations, mapGetters,mapState } from 'vuex';
+import { mapActions, mapMutations, mapGetters, mapState } from "vuex";
 
 import Bcheader from "@/components/BCHeader";
 import BCFooter from "@/components/BCFooter";
-import { Routes } from '@/utils/constants';
+import EnvironmentBanner from "@/components/EnvironmentBanner";
+import { Routes } from "@/utils/constants";
 export default {
   components: {
     Bcheader,
-    BCFooter
+    BCFooter,
+    EnvironmentBanner,
   },
   data() {
-      return {
-        routes: Routes,
-        host: location.protocol + "//" + location.host,
-      }
+    return {
+      authRoutes: Routes,
+      host: location.protocol + "//" + location.host,
+    };
   },
   computed: {
-  
-    ...mapGetters('auth', ['roles','isAuthenticated', 'loginError', 'isLoading', 'userInfo']),
-    ...mapGetters('app', ['getProgramOptions']),
-    ...mapState('app', ['pageTitle']),
-    dataReady: function() {
+    ...mapGetters("auth", [
+      "isAuthenticated",
+      "loginError",
+      "isLoading",
+      "userInfo",
+    ]),
+    ...mapGetters("app", ["getProgramOptions"]),
+    ...mapGetters("app", ["getProgramOptions"]),
+    ...mapState("app", ["pageTitle"]),
+    ...mapGetters("useraccess", ["roles", "userAccess"]),
+    dataReady: function () {
       return this.userInfo;
-    }
+    },
+    loginUrl: function () {
+      return this.authRoutes.LOGIN;
+    },
   },
-  methods:{
-      
-      ...mapMutations('auth', ['setLoading']),
-      ...mapActions('auth', ['getJwtToken', 'getUserInfo', 'logout']),
-       ...mapActions('app', ['setApplicationVariables']),
+  methods: {
+    ...mapMutations("auth", ["setLoading"]),
+    ...mapMutations("useraccess", ["setUserRoles"]),
+    ...mapActions("auth", ["getJwtToken", "getUserInfo", "logout"]),
+    ...mapActions("app", ["setApplicationVariables"]),
+    changeRole() {
+      if (this.roles.includes("GRAD_SYSTEM_COORDINATOR")) {
+        this.setUserRoles(["GRAD_INFO_OFFICER"]);
+      } else if (this.roles.includes("GRAD_INFO_OFFICER")) {
+        this.setUserRoles(["GRAD_PROGRAM_AREA_BA"]);
+      } else if (this.roles.includes("GRAD_PROGRAM_AREA_BA")) {
+        this.setUserRoles(["GRAD_SYSTEM_COORDINATOR"]);
+      }
+    },
   },
   async created() {
-    this.getJwtToken().then(() =>
-        this.setApplicationVariables()
-    ).catch(e => {
-      if(! e.response) {
-        this.logout();
-        this.$router.replace({name: 'error', query: { message: `500_${e.data || 'ServerError'}` } });
-      }
-    }).finally(() => {
-      
-    });
-  }
-}
+    this.getJwtToken()
+      .then(() => this.setApplicationVariables())
+      .catch((e) => {
+        if (!e.response) {
+          this.userLogout();
+          this.$router.replace({
+            name: "error",
+            query: { message: `500_${e.data || "ServerError"}` },
+          });
+        }
+      })
+      .finally(() => {});
+  },
+};
 </script>
 
 <style>
 #app {
-  background: #F9F9FB;
+  background: #f9f9fb;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.main-container{
+.main-container {
   font-size: 14px;
   margin-top: 135px !important;
 }
@@ -93,6 +118,9 @@ export default {
   justify-content: space-between;
   padding: 0.5rem 0.8rem;
 }
+#grad-drawer {
+  z-index: 200 !important;
+}
 ul.sidebar-panel-nav {
   list-style-type: none;
 }
@@ -104,28 +132,28 @@ ul.sidebar-panel-nav > li > a {
   padding-bottom: 0.5em;
 }
 .fade-enter-active {
-  transition: opacity .5s;
+  transition: opacity 0.5s;
 }
 .fade-enter /* .fade-leave-active below version 2.1.8 */ {
-  opacity: .2;
+  opacity: 0.2;
 }
 .container {
-    max-width: 100% !important;
+  max-width: 100% !important;
 }
-@media (min-width: 1300px){
+@media (min-width: 1300px) {
   .container {
-      /* max-width: 1300px !important; */
-      max-width: 100%;
-      /* padding-right: 50px !important;
+    /* max-width: 1300px !important; */
+    max-width: 100%;
+    /* padding-right: 50px !important;
       padding-left: 50px !important; */
   }
 }
-  .bcheader{
-    height:115px;
-  }
-@media (max-width: 768px){
-  .bcheader{
-    height:75px;
+.bcheader {
+  height: 115px;
+}
+@media (max-width: 768px) {
+  .bcheader {
+    height: 75px;
   }
 }
 </style>

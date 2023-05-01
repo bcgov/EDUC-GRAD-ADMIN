@@ -9,14 +9,27 @@
             <b-container class="p-3">
               <b-row align-v="stretch" class="row-eq-height">
                 <b-col>
-                  <label class="col-6 p-0">Mincode</label>
+                  <label class="col-6 p-0">District</label>
                 </b-col>
+                <b-col>
+                  <label class="col-6 p-0">Mincode</label>
+                </b-col>             
                 <b-col>
                     <label class="col-6 p-0">School name</label>
                 </b-col>
-                
               </b-row>
               <b-row align-v="stretch" class="row-eq-height">
+                <b-col>
+                  <div href="#"
+                    v-on:click="search.district.contains = !search.district.contains"
+                    v-bind:class="{active: search.district.contains}"
+                    class="wild-card-button"
+                    v-b-tooltip.hover title="District contains"
+                  >
+                    [.*]
+                    </div>
+                  <b-input v-model="search.district.value" v-on:keyup="keyHandler" placeholder="" id="district" trim/> 
+                </b-col>
                 <b-col>
                   <div href="#"
                     v-on:click="search.mincode.contains = !search.mincode.contains"
@@ -26,8 +39,7 @@
                   >
                     [.*]
                     </div>
-                  <b-input v-model="search.mincode.value" v-on:keyup="keyHandler" placeholder="" id="mincode"/>
-                  
+                  <b-input v-model="search.mincode.value" v-on:keyup="keyHandler" placeholder="" minlength = 3 id="mincode" trim/> 
                 </b-col>
                 <b-col>
                   <div href="#"
@@ -61,9 +73,7 @@
                   <div class="search-results-message my-2 col-12 col-md-8"><strong>{{ searchMessage }}</strong></div>
                 </div>  
               </div>
-              
             </b-container> 
-
             <DisplayTable title="Results" v-bind:items="schools"
               v-bind:fields="schoolFields" sortKey="schoolName" id="mincode" v-bind:showFilter=true pagination="true"
             >advancedSchoolSearch
@@ -79,6 +89,7 @@
                     <img v-show="row.detailsShowing" src="../assets/images/icon-down.svg" height="5px" aria-hidden="true" alt=""/>
                   </b-btn>
                 </template>
+
                 <template #row-details="row">
                   <b-card class="px-0 col-12">
                     <div class="col-12 col-md-5 float-left p-0">
@@ -91,27 +102,17 @@
                             <li v-if="row.item.city">
                               <strong>City:</strong> {{ row.item.city }}
                             </li>                
-                            <li v-if="row.item.provinceCode">
+                            <li v-if="row.item.provCode">
                               <strong>Province Code:</strong> {{ row.item.provCode }}
                             </li>                      
-                            <li v-if="row.item.provinceName">
-                              <strong>Province Name:</strong> {{ row.item.provinceName}}
-                            </li>
-                            <li v-if="row.item.countryCode">
-                              <strong>Country Code:</strong> {{ row.item.countryCode }}
-                            </li>
-                            <li v-if="row.item.countryName">
-                              <strong>Country Name:</strong> {{ row.item.provinceName}}
-                            </li>
                             <li v-if="row.item.postal">
                               <strong>Postal Code:</strong> {{ row.item.postal }}
                             </li>
                             <li v-if="row.item.schoolEmail">
                               <strong>Email:</strong> {{ row.item.schoolEmail }}
-                            </li>
-                            
-                            <li v-if="row.item.ministryContact">
-                              <strong>Ministry Contact:</strong> {{ row.item.ministryContact }}
+                            </li> 
+                            <li v-if="row.item.principalName">
+                              <strong>Principal:</strong> {{ row.item.principalName }}
                             </li>
                             <li v-if="row.item.schoolPhone">
                               <strong>Phone:</strong> {{ row.item.schoolPhone }}
@@ -154,79 +155,36 @@ import sharedMethods from '../sharedMethods';
           },
           {
             key: 'minCode',
-            label: 'Mincode',
+            label: 'TRAX School Code',
             sortable: true,
             sortDirection: 'asc'
           },
           {
             key: 'schoolName',
-            label: 'School Name',
+            label: 'TRAX School Name',
             sortable: true,
-            //sortDirection: 'desc'
-          },
-          {
-            key: 'districtName',
-            label: 'District',
-            sortable: true,
-            class: 'text-center'
-          },
-          {
-            key: 'openFlag',
-            label: 'Open',
-            sortable: true,
-            class: 'text-center'
-          },
-          {
-            key: '',
-            label: 'Schl Org',
-            sortable: true,
-            class: 'text-center'
-          },
-          {
-            key: '',
-            label: 'Indep Type',
-            sortable: true,
-            class: 'text-center'
-          },
-          {
-            key: 'independentAffiliation',
-            label: 'Indep Affil',
-            sortable: true,
-            class: 'text-center'
-          },
+          },     
           {
             key: 'transcriptEligibility',
-            label: 'Tran Elig',
+            label: 'TRAX Transcript Eligible',
             sortable: true,
             class: 'text-center'
           },
           {
             key: 'certificateEligibility',
-            label: 'Cert Elig',
+            label: 'TRAX Certificate Eligible',
             sortable: true,
             class: 'text-center'
           },
           {
-            key: '',
-            label: 'Marks Display',
+            key: 'reportingFlag',
+            label: 'TRAX Reporting Flag',
             sortable: true,
             class: 'text-center'
           },
           {
-            key: '',
-            label: 'Append Trans',
-            sortable: true,
-            class: 'text-center'
-          },
-          {
-            key: 'signatureDistrict',
-            label: 'Sig Distno',
-            sortable: true,
-            class: 'text-center'
-          },
-          {
-            key: '',
-            label: 'New School Code',
+            key: 'schoolCategory',
+            label: 'SPM School Category',
             sortable: true,
             class: 'text-center'
           },
@@ -235,6 +193,10 @@ import sharedMethods from '../sharedMethods';
         searchMessage: "",
         searchLoading: false,
         search: {
+          district:{
+            value:"",
+            contains:false
+          },
           schoolName:{
             value:"",
             contains:false
@@ -242,7 +204,7 @@ import sharedMethods from '../sharedMethods';
           mincode:{
             value:"",
             contains:false
-          }
+          },
         },
       }
     },
@@ -264,7 +226,7 @@ import sharedMethods from '../sharedMethods';
         this.totalResults = "";
         this.searchMessage = "";
         let isEmpty = true;
-        for (var key in this.search) {
+        for (const key in this.search) {
           if (this.search.hasOwnProperty(key)) {
             if (this.search[key].value != "") {
               isEmpty = false;   
@@ -283,18 +245,18 @@ import sharedMethods from '../sharedMethods';
             this.searchLoading = false;
             this.totalResults = this.schools.length;
             if(this.schools.length == 0){
-              this.searchMessage = "School cannnot be found.";
+              this.searchMessage = "School cannot be found.";
             }
           }).catch((error) => {
             this.searchLoading = false;
-            this.searchMessage = "School cannnot be found.";
+            this.searchMessage = "School cannot be found.";
             this.showNotification("danger", "There was an error with the web service." + error.response);
           });  
         }
       },
       clearInput: function () {
         this.schools = "";
-        for (var key in this.search) {
+        for (const key in this.search) {
           if (this.search.hasOwnProperty(key)) {
             this.search[key].value = "";
             this.search[key].contains = false;

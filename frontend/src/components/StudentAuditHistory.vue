@@ -1,259 +1,415 @@
 <template>
   <div class="container">
-    <!-- Notes Section -->
-    <div>
-      <b-button v-b-toggle.note-collapse variant="link" v-on:click="showNotes = !showNotes" class="float-left">
-        <img v-show="!showNotes" src="../assets/images/icon-right.svg" width="14px" aria-hidden="true" alt=""/>
-        <img v-show="showNotes" src="../assets/images/icon-down.svg" height="8px" aria-hidden="true" alt=""/>
-      </b-button>
-      <h3 class="pt-2">{{'Notes ('  + studentNotes.length + ')'}}</h3>
-    </div>
-    <b-collapse id="note-collapse" class="py-2">
-      <StudentNotes />
-    </b-collapse>
-    <hr>
+    <b-card no-body>
+      <b-tabs card>
+        <b-tab title="Student Change History">
+          <DisplayTable
+            :items="studentChangeHighlight"
+            :fields="studentChangeFields"
+            showFilter="false"
+            title="Student Change History"
+            :sortDesc="sortDesc"
+            :sortBy="'createDate'"
+          >
+            <template #cell(more)="row">
+              <b-btn
+                variant="outline primary"
+                style="color: #666"
+                size="sm"
+                @click="row.toggleDetails"
+                class="more-button"
+              >
+                <img
+                  v-show="!row.detailsShowing"
+                  src="../assets/images/icon-right.svg"
+                  width="9px"
+                  aria-hidden="true"
+                  alt=""
+                />
+                <img
+                  v-show="row.detailsShowing"
+                  src="../assets/images/icon-down.svg"
+                  height="5px"
+                  aria-hidden="true"
+                  alt=""
+                />
+              </b-btn>
+            </template>
 
-    <!-- Undo Completion/Ungrad reasons section -->
-    <div>
-      <b-button v-b-toggle.ungrad-reasons-collapse variant="link" v-on:click="showUngradReasons = !showUngradReasons" class="float-left">
-        <img v-show="!showUngradReasons" src="../assets/images/icon-right.svg" width="14px" aria-hidden="true" alt=""/>
-        <img v-show="showUngradReasons" src="../assets/images/icon-down.svg" height="8px" aria-hidden="true" alt=""/>
-      </b-button>
-      <h3 class="pt-2">{{'Undo Completion Reasons ('  + studentUngradReasons.length + ')'}}</h3>
-    </div>
-    <b-collapse id="ungrad-reasons-collapse">
-      <div class="pb-3 px-3">
-        <DisplayTable striped :items="studentUngradReasons" :fields='[{ key: "createDate",label: "Undo Completion Date",class:"px-0 py-2 w-15"},{key: "ungradReasonCode",label: "Code",class:"px-0 py-2 w-10"},{key: "ungradReasonDescription",label: "Reason",class:"px-0 py-2 w-80"},{key: "createUser",label: "User",class:"px-0 py-2 w-80"}]'></DisplayTable>
-      </div>
-    </b-collapse>
-    <hr>
+            <template #row-details="row">
+              <b-card class="px-0 mt-0">
+                <p>
+                  <strong
+                    >Changed By {{ row.item.data.updateUser }} on
+                    {{ row.item.data.updateDate | formatTime }}</strong
+                  >
+                </p>
+                <pre>
+                    {{ JSON.stringify(row.item.data, null, "\t") }}
+                  </pre
+                >
+              </b-card>
+            </template>
 
-    <!-- Student audit -->
-    <div>
-      <b-button v-b-toggle.student-audit-collapse variant="link" v-on:click="showStudentAudit = !showStudentAudit" class="float-left">
-        <img v-show="!showStudentAudit" src="../assets/images/icon-right.svg" width="14px" aria-hidden="true" alt=""/>
-        <img v-show="showStudentAudit" src="../assets/images/icon-down.svg" height="8px" aria-hidden="true" alt=""/>
-      </b-button>
-      <h3 class="pt-2">Student Audit</h3>
-    </div>
-    
-    <b-collapse visible id="student-audit-collapse">
-      <!-- TODO: Remove counts on buttons; leaving in for debuggin purposes right now -->
-      <b-button class="mx-2" v-on:click="auditTab = 'studentHistory'" :variant="auditTab == 'studentHistory' ? 'primary' : 'outline-secondary'">Student change history [DEBUG: {{this.studentHistory.length}}]</b-button>
-      <b-button class="mx-2" v-on:click="auditTab = 'optionalProgramHistory'" :variant="auditTab == 'optionalProgramHistory' ? 'primary' : 'outline-secondary'">Optional program change history [DEBUG: {{this.optionalProgramHistory.length}}]</b-button>
+            <template #cell(programCompletionDate)="row">
+              {{ row.value.value | formatYYYYMMDate }}
+            </template>
 
-    <!-- Student change history -->
-      <div v-if="auditTab === 'studentHistory'">
-        <div class="col-12" v-for="(value, index) in changeHistory.slice().reverse()" :key="value.historyID">
-          <div class="row col-12 py-2" :header="studentHistory.slice().reverse()[index].historyID">
-            <div class="col-4 border-bottom">
-              <p><strong>Activity Code: </strong>{{studentHistory.slice().reverse()[index].activityCode}}</p>
-              <ul><li>{{studentHistory.slice().reverse()[index].activityCodeDescription}}</li></ul>
-              <p><strong>Update User: </strong>{{studentHistory.slice().reverse()[index].updateUser}}</p>
-              <p><strong>Updated: </strong>{{studentHistory.slice().reverse()[index].createDate | formatTime}}</p>
-            </div>
-            <div class="float-left col-8 border-bottom">
-              <div class="float-right w-25">
-                <b-button v-b-toggle="'collapse-'+ studentHistory.slice().reverse()[index].historyID" variant="primary">
-                  View
-                </b-button>
+            <template #cell(createDate)="row">
+              {{ row.value.value | formatTime }}
+            </template>
+
+            <template #cell(activityCode)="row">
+              {{ row.item.data.activityCodeDescription }}
+            </template>
+
+            <template #cell()="row">
+              <div :class="row.value.changed ? 'value-changed' : ''">
+                {{ row.value.value }}
               </div>
-              <div v-for="v in value" :key="v.historyID" class="">
-                <div class="" v-if="v.pathTo != 'updateDate' 
-                  && v.pathTo != 'createDate' 
-                  && v.pathTo != 'historyID'
-                  && v.pathTo != 'studentGradData'
-                  && v.pathTo != 'studentProjectedGradData'
-                  && v.pathTo != 'activityCode'
-                  && v.pathTo != 'activityCodeDescription'
-                  && v.pathTo != 'studentID'
-                  && v.pathTo != 'updateUser'
-                  && (v.kind != 'N' || v.rhs)
-                  ">
-                  <div class="w-25 float-left"> <strong>{{v.pathTo | formatSetenceCase}}</strong>:</div>
-                  <div class="w-50 float-left" v-if="v.kind != 'N'">
-                    {{v.lhs==null?"blank":v.lhs}}
-                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                    {{v.rhs == null?"blank":v.rhs}}
-                  </div>
-                  <div class="w-50 float-left" v-else-if="v.rhs != null">
-                    {{v.rhs}}
-                  </div>
-                  <!-- This empty div is just a temporary spacer; need to implement more elegant solution -->
-                  <div class="w-100 float-left"></div>
-                </div>  
-              </div> 
-              <div class="w-100 float-left">
-                <b-collapse :id="'collapse-' + studentHistory.slice().reverse()[index].historyID" class="mt-2">
-                  <pre>
-                    {{JSON.stringify(studentHistory.slice().reverse()[index], null, '\t')}}
-                  </pre>
-                </b-collapse>
+            </template>
+          </DisplayTable>
+        </b-tab>
+
+        <b-tab title="Optional Program Change History">
+          <DisplayTable
+            :items="optionalProgramChangeHighlight"
+            :fields="optionalProgramChangeFields"
+            showFilter="false"
+            title="Optional Program Change History"
+            :sort-desc="true"
+            :sortBy="'createDate'"
+          >
+            <template #cell(more)="row">
+              <b-btn
+                variant="outline primary"
+                style="color: #666"
+                size="sm"
+                @click="row.toggleDetails"
+                class="more-button"
+              >
+                <img
+                  v-show="!row.detailsShowing"
+                  src="../assets/images/icon-right.svg"
+                  width="9px"
+                  aria-hidden="true"
+                  alt=""
+                />
+                <img
+                  v-show="row.detailsShowing"
+                  src="../assets/images/icon-down.svg"
+                  height="5px"
+                  aria-hidden="true"
+                  alt=""
+                />
+              </b-btn>
+            </template>
+
+            <template #row-details="row">
+              <b-card class="px-0 mt-0">
+                <p>
+                  <strong
+                    >Changed By {{ row.item.data.updateUser }} on
+                    {{ row.item.data.updateDate | formatTime }}</strong
+                  >
+                </p>
+                <pre>
+                    {{ JSON.stringify(row.item.data, null, "\t") }}
+                  </pre
+                >
+              </b-card>
+            </template>
+
+            <template #cell(createDate)="row">
+              {{ row.value.value | formatTime }}
+            </template>
+
+            <template #cell(activityCode)="row">
+              {{ row.item.data.activityCodeDescription }}
+            </template>
+
+            <template #cell()="row">
+              <div :class="row.value.changed ? 'value-changed' : ''">
+                {{ row.value.value }}
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Optional Program history -->
-
-      <div v-if="auditTab === 'optionalProgramHistory'">
-        <div class="col-12" v-for="(value, index) in optionalProgramChangeHistory.slice().reverse()" :key="value.historyID">
-          <div class="row col-12 py-2" :header="optionalProgramHistory.slice().reverse()[index].historyID">
-            <div class="col-4 border-bottom">
-              <p><strong>Activity Code: </strong>{{optionalProgramHistory.slice().reverse()[index].activityCode}}</p>
-              <p><strong>Update User: </strong>{{optionalProgramHistory.slice().reverse()[index].updateUser}}</p>
-              <p><strong>Updated: </strong>{{optionalProgramHistory.slice().reverse()[index].createDate | formatTime}}</p>
-            </div>
-            <div class="float-left col-8 border-bottom">
-              <div class="float-right w-25">
-                <b-button v-b-toggle="'collapse-'+ optionalProgramHistory.slice().reverse()[index].historyId" variant="primary">View</b-button>
-              </div>
-              <div v-for="v in value" :key="v.historyId" class="">
-                <div class="" v-if="v.pathTo != 'updateDate' 
-                  && v.pathTo != 'createDate' 
-                  && v.pathTo != 'historyId'
-                  && v.pathTo != 'studentID'
-                  && v.pathTo != 'studentOptionalProgramId'
-                  && v.pathTo != 'optionalProgramID'
-                  && v.pathTo != 'studentOptionalProgramData'
-                  && v.pathTo != 'activityCode'
-                  && v.pathTo != 'recalculateGradStatus'
-                  && (v.kind != 'N' || v.rhs)
-                  ">
-                  <div class="w-25 float-left">
-                    <strong>{{v.pathTo | formatSetenceCase}}</strong>:
-                  </div>
-                  <div class="w-50 float-left" v-if="v.kind != 'N'">
-                    {{v.lhs==null?"blank":v.lhs}} <i class="fas fa-arrow-right" aria-hidden="true"></i> {{v.rhs == null?"blank":v.rhs}}
-                  </div>
-                  <div class="w-50 float-left"  v-else-if="v.rhs != null">
-                    {{v.rhs}}
-                  </div>
-                  <!-- This empty div is just a temporary spacer; need to implement more elegant solution -->
-                  <div class="w-100 float-left"></div>
-                </div>  
-              </div> 
-              <div class="w-100 float-left">
-                <b-collapse :id="'collapse-' + optionalProgramHistory.slice().reverse()[index].historyId" class="mt-2">
-                  <pre>{{JSON.stringify(optionalProgramHistory.slice().reverse()[index], null, '\t')}}</pre>
-                </b-collapse>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </b-collapse>
-    <hr>
-
-
+            </template>
+          </DisplayTable>
+        </b-tab>
+      </b-tabs>
+    </b-card>
   </div>
 </template>
 
-
 <script>
 import { mapGetters } from "vuex";
-import { DeepDiff } from 'deep-diff';
-import sharedMethods from '../sharedMethods';
-import StudentNotes from "@/components/StudentNotes";
+import sharedMethods from "../sharedMethods";
 import DisplayTable from "@/components/DisplayTable.vue";
 
 export default {
   name: "StudentAuditHistory",
   components: {
-    StudentNotes: StudentNotes,
     DisplayTable: DisplayTable,
   },
   props: {},
   computed: {
     ...mapGetters({
-        studentId: "getStudentId",
-        studentHistory: 'getStudentAuditHistory',
-        optionalProgramHistory: 'getStudentOptionalProgramAuditHistory',
-        studentUngradReasons: "getStudentUngradReasons",
-        studentNotes: "getStudentNotes",
+      studentId: "student/getStudentId",
+      studentHistory: "student/getStudentAuditHistory",
+      optionalProgramHistory: "student/getStudentOptionalProgramAuditHistory",
+      studentUngradReasons: "student/getStudentUngradReasons",
+      studentNotes: "student/getStudentNotes",
     }),
   },
   data: function () {
     return {
-        studentHistoryChangeCount:"",
-        optionalProgramHistoryChangeCount:"",
-        isEdit:false,
-        isDelete:false,
-        isAdd:false,
-        changeHistory:[],
-        optionalProgramChangeHistory:[],
-        testHistory:[],
-        fields: [
-          {
-            key: "change",
-            label: "Change",
-            sortable: true,
-            sortDirection: "desc"
-          },
-          {
-            key: "createDate",
-            label: "Create date",
-            sortable: true,
-            sortDirection: "desc"
-          },
-        ],
-        showNotes: false,
-        showUngradReasons: false,
-        showStudentAudit: true,
-        auditTab: "studentHistory",
+      isEdit: false,
+      isDelete: false,
+      isAdd: false,
+      changeHistory: [],
+      optionalProgramChangeHistory: [],
+      testHistory: [],
+      sortDesc: true,
+      smallScreen: false,
+      window: { width: 0, height: 0 },
+      studentChangeFields: [
+        {
+          key: "more",
+          label: "",
+          sortable: true,
+        },
+        {
+          key: "createDate",
+          label: "Date",
+          sortable: true,
+          sortDirection: "desc",
+        },
+        {
+          key: "activityCode",
+          label: "Change",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "updateUser",
+          label: "Update User",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "program",
+          label: "Program",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "programCompletionDate",
+          label: "Program Completion Date",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "studentStatus",
+          label: "Status",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "studentGrade",
+          label: "Grade",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "schoolOfRecord",
+          label: "School of Record",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "schoolAtGrad",
+          label: "School at Graduation",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "consumerEducationRequirementMet",
+          label: "Consumer Ed",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "honoursStanding",
+          label: "Honours",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "gpa",
+          label: "GPA",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "recalculateProjectedGrad",
+          label: "Recalc Projected Grad",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "recalculateGradStatus",
+          label: "Recalc Grad",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "batchId",
+          label: "Batch ID",
+          sortable: true,
+          sortDirection: "asc",
+        },
+      ],
+      studentChangeHighlight: [],
+      optionalProgramChangeFields: [
+        {
+          key: "more",
+          label: "",
+          sortable: true,
+        },
+        {
+          key: "createDate",
+          label: "Date",
+          sortable: true,
+          sortDirection: "desc",
+        },
+        {
+          key: "activityCode",
+          label: "Change",
+          sortable: true,
+        },
+        {
+          key: "updateUser",
+          label: "Update User",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "programCode",
+          label: "Program Code",
+          sortable: true,
+        },
+        {
+          key: "optionalProgramCode",
+          label: "Optional Program Code",
+          sortable: true,
+          sortDirection: "asc",
+        },
+        {
+          key: "optionalProgramName",
+          label: "Optional Program Name",
+          sortable: true,
+        },
+        {
+          key: "optionalProgramCompletionDate",
+          label: "Program Completion Date",
+          sortable: true,
+        },
+      ],
+      optionalProgramChangeHighlight: [],
+      showNotes: false,
+      showUngradReasons: false,
+      showStudentAudit: true,
+      auditTab: "studentHistory",
     };
   },
   mounted() {
-    this.showNotification = sharedMethods.showNotification
+    this.showNotification = sharedMethods.showNotification;
+    this.highlightStudentHistoryChanges();
+    this.highlightOptionalProgramHistoryChanges();
+  },
+  created() {
+    window.addEventListener("resize", this.handleResize);
+    this.handleResize();
   },
   watch: {
     studentHistory: function () {
-      this.loadStudentHistory();
+      this.highlightStudentHistoryChanges();
     },
     optionalProgramHistory: function () {
-      this.loadStudentOptionalProgramHistory();
-    }    
+      this.highlightOptionalProgramHistoryChanges();
+    },
   },
   methods: {
-    loadStudentHistory(){  
-      
-      this.studentHistoryChangeCount = this.studentHistory.length + 1
-      // need temp variable to avoid triggering an infinite loop w/ watchers
-      const tempHistory = this.studentHistory.slice();
-      tempHistory.unshift({});
-      // reset change history
-      this.changeHistory = [];
-
-      for (let i = 0; i < this.studentHistoryChangeCount - 1; i++) {
-          let x = DeepDiff(tempHistory[i], tempHistory[i + 1]);
-          this.changeHistory.push(x);  
+    handleResize() {
+      this.window.width = window.innerWidth;
+      this.window.height = window.innerHeight;
+      if (this.window.width < 992) {
+        this.smallScreen = true;
+      } else {
+        this.smallScreen = false;
       }
-      for (let j = 0; j < this.changeHistory.length ; j++) {  
-          for (let k = 0; k < this.changeHistory[j].length; k++) { 
-              this.changeHistory[j][k].pathTo = this.changeHistory[j][k].path[0]
-          }                 
-      }  
     },
-    loadStudentOptionalProgramHistory(){
+    highlightStudentHistoryChanges() {
+      const changes = [];
 
-      this.optionalProgramHistoryChangeCount = this.optionalProgramHistory.length + 1; 
-      // need temp variable to avoid triggering an infinite loop w/ watchers
-      const tempProgramHistory = this.optionalProgramHistory.slice();
-      tempProgramHistory.unshift({});
-      //reset optionalProgramChangeHistory
-      this.optionalProgramChangeHistory = [];
-      
-      for (let i = 0; i < this.optionalProgramHistoryChangeCount - 1; i++) {
-            let z = DeepDiff(tempProgramHistory[i], tempProgramHistory[i + 1]);
-            this.optionalProgramChangeHistory.push(z);
-      } 
-      for (let j = 0; j < this.optionalProgramChangeHistory.length ; j++) {  
-        for (let k = 0; k < this.optionalProgramChangeHistory[j].length; k++) { 
-            this.optionalProgramChangeHistory[j][k].pathTo = this.optionalProgramChangeHistory[j][k].path[0]
-        }                 
+      for (const [index, value] of this.studentHistory.entries()) {
+        // temp entry to build our change highlight
+        let tempEntry = {};
+        for (const field of this.studentChangeFields) {
+          if (
+            index > 0 &&
+            field.key != "createDate" &&
+            field.key != "activityCode"
+          ) {
+            tempEntry[field.key] = {
+              value: value[field.key],
+              changed:
+                value[field.key] !== this.studentHistory[index - 1][field.key],
+            };
+          } else {
+            tempEntry[field.key] = {
+              value: value[field.key],
+              changed: true,
+            };
+          }
+          tempEntry["data"] = value;
+        }
+        changes.push(tempEntry);
       }
-    },   
+
+      this.studentChangeHighlight = changes;
+    },
+    highlightOptionalProgramHistoryChanges() {
+      const changes = [];
+
+      for (const [index, value] of this.optionalProgramHistory.entries()) {
+        // temp entry to build our change highlight
+        let tempEntry = {};
+        for (const field of this.optionalProgramChangeFields) {
+          if (index === 0 || field.key == "createDate") {
+            tempEntry[field.key] = {
+              value: value[field.key],
+              changed: true,
+            };
+          } else if (field.key != "activityCode") {
+            tempEntry[field.key] = {
+              value: value[field.key],
+              changed:
+                value[field.key] !==
+                this.optionalProgramHistory[index - 1][field.key],
+            };
+          } else {
+            tempEntry[field.key] = {
+              value: value[field.key],
+              changed: false,
+            };
+          }
+          tempEntry["data"] = value;
+        }
+        changes.push(tempEntry);
+      }
+
+      this.optionalProgramChangeHighlight = changes;
+    },
   },
 };
 </script>
@@ -272,4 +428,15 @@ export default {
   background: aliceblue !important;
 }
 
+.audit-history-tabs .card {
+  margin-top: 70px;
+}
+
+.card-body p strong {
+  font-size: 87.5%;
+}
+
+.value-changed {
+  font-weight: bold;
+}
 </style>

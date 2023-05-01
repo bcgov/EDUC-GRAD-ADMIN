@@ -1,123 +1,212 @@
 <template>
-  <div class="">
-      <DisplayTable v-bind:items="optionalProgramRules" v-bind:fields="optionalOptionalProgramRulesFields" title="Program" id="programCode"
-        showFilter=true>
-          <template #cell(ruleCode)="row">
-            <b-btn variant='outline primary' style="color:#666" size="xs" @click="row.toggleDetails">
-            <router-link :to="{ name: 'programRuleCourses', params: { isOptionalProgram:true, programCode: row.item.optionalProgramID, category: row.item.optionalProgramRequirementCode.requirementCategory,  rule: row.item.optionalProgramRequirementCode.optProReqCode, ruleName: row.item.optionalProgramRequirementCode.label}}">{{row.item.optionalProgramRequirementCode.optProReqCode}}</router-link>
-          </b-btn>
-        </template>
-        </DisplayTable>
+  <div id="optional-graduation-program-rules">
+    <DisplayTable
+      v-bind:items="optionalProgramRules"
+      v-bind:fields="optionalOptionalProgramRulesFields"
+      title="Program"
+      id="programCode"
+      showFilter="true"
+    >
+      <template #cell(ruleCode)="row">
+        <b-modal
+          :id="'modal-' + row.item.optionalProgramRequirementID"
+          :title="
+            (row.item.optionalProgramRequirementCode.requirementCategory == 'C'
+              ? 'Courses'
+              : 'Assessments') +
+            ' that match rule #' +
+            row.item.optionalProgramRequirementCode.optProReqCode
+          "
+          size="xl"
+        >
+          <b-spinner v-if="loadingRuleMatch" class="px-1 my-2"></b-spinner>
+          <div v-else-if="!ruleMatchList.length">Not applicable</div>
+          <div v-else>
+            <DisplayTable
+              v-bind:items="ruleMatchList"
+              title="OptionalProgramRuleMatch"
+              v-bind:fields="ruleMatchFields"
+              id="optionalProgramRuleMatch"
+              :showFilter="false"
+              :pagination="false"
+            >
+            </DisplayTable>
+          </div>
+        </b-modal>
+        <b-btn
+          variant="link"
+          size="xs"
+          class="p-0"
+          @click="
+            ruleNumberClicked(
+              row.item.optionalProgramRequirementCode.requirementCategory,
+              row.item.optionalProgramRequirementCode.optProReqCode
+            )
+          "
+          v-b-modal="'modal-' + row.item.optionalProgramRequirementID"
+          >{{ row.item.optionalProgramRequirementCode.optProReqCode }}
+        </b-btn>
+      </template>
+    </DisplayTable>
   </div>
 </template>
 
 <script>
-
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import DisplayTable from "@/components/DisplayTable";
-import {
-    mapGetters
-} from "vuex";
+import CourseService from "@/services/CourseService.js";
+import AssessmentService from "@/services/AssessmentService.js";
+import { mapGetters } from "vuex";
 export default {
   name: "GraduationOptionalProgramRules",
   props: {},
-  computed: {...mapGetters({
-  })},
-  components:{
+  computed: { ...mapGetters({}) },
+  components: {
     DisplayTable: DisplayTable,
   },
   data: function () {
     return {
       opened: [],
-      optionalProgramRules:[],
+      optionalProgramRules: [],
       optionalOptionalProgramRulesFields: [
-          {
-            key: 'optionalProgramID.graduationProgramCode',
-            label: 'Program code',
-            sortable: true,
-            sortDirection: 'desc',
-            editable: true,
-            class: '',
-          },
-          {
-            key: 'optionalProgramID.optProgramCode',
-            label: 'Optional program code',
-            sortable: true,
-            sortDirection: 'desc',
-            editable: true,
-            class: '',
-          },          
-          {
-            key: 'ruleCode',
-            label: 'Rule #',
-            sortable: true,
-            editable: true,
-            class: '',
-          },
-          {
-            key: 'optionalProgramRequirementCode.requirementCategory',
-            label: 'Rule category (C-courses, A-Assessments)',
-            sortable: true,
-            editable: true,
-            class: '',
-          },
-          {
-            key: 'optionalProgramRequirementCode.label',
-            label: 'Requirement name',
-            sortable: true,
-            editable: true,
-            class: '',
-          },
-          {
-            key: 'optionalProgramRequirementCode.description',
-            label: 'Requirement description',
-            sortable: true,
-            editable: true,
-            class: '',
-          },
-          {
-            key: 'optionalProgramRequirementCode.requiredCredits',
-            label: 'Required credits',
-            sortable: true,
-            editable: true,
-            class: '',
-          },
-          {
-            key: 'optionalProgramRequirementCode.notMetDesc',
-            label: 'Not met description',
-            sortable: true,
-            editable: true,
-            class: '',
-          },
-          {
-            key: 'optionalProgramRequirementCode.requirementTypeCode.label',
-            label: 'Requirement type',
-            sortable: true,
-            editable: true,
-            class: '',
-          },
-          {
-            key: 'optionalProgramRequirementCode.requiredLevel',
-            label: 'Required level',
-            sortable: true,
-            editable: true,
-            class: '',
-          },
-          {
-            key: 'optionalProgramRequirementCode.languageOfInstruction',
-            label: 'Language',
-            sortable: true,
-            editable: true,
-            class: '',
-          },
-          {
-            key: 'optionalProgramRequirementCode.activeRequirement',
-            label: 'Active',
-            sortable: true,
-            editable: true,
-            class: '',
-          }
-        ],
+        {
+          key: "optionalProgramID.graduationProgramCode",
+          label: "Program Code",
+          sortable: true,
+          sortDirection: "desc",
+          editable: true,
+          class: "",
+        },
+        {
+          key: "optionalProgramID.optProgramCode",
+          label: "Optional Program Code",
+          sortable: true,
+          sortDirection: "desc",
+          editable: true,
+          class: "",
+        },
+        {
+          key: "ruleCode",
+          label: "Rule #",
+          sortable: true,
+          editable: true,
+          class: "",
+        },
+        {
+          key: "optionalProgramRequirementCode.requirementCategory",
+          label: "Rule Category (C-courses, A-Assessments)",
+          sortable: true,
+          editable: true,
+          class: "",
+        },
+        {
+          key: "optionalProgramRequirementCode.label",
+          label: "Requirement Name",
+          sortable: true,
+          editable: true,
+          class: "",
+        },
+        {
+          key: "optionalProgramRequirementCode.description",
+          label: "Requirement Description",
+          sortable: true,
+          editable: true,
+          class: "",
+        },
+        {
+          key: "optionalProgramRequirementCode.requiredCredits",
+          label: "Required Credits",
+          sortable: true,
+          editable: true,
+          class: "",
+        },
+        {
+          key: "optionalProgramRequirementCode.notMetDesc",
+          label: "Not Met Description",
+          sortable: true,
+          editable: true,
+          class: "",
+        },
+        {
+          key: "optionalProgramRequirementCode.requirementTypeCode.label",
+          label: "Requirement Type",
+          sortable: true,
+          editable: true,
+          class: "",
+        },
+        {
+          key: "optionalProgramRequirementCode.requiredLevel",
+          label: "Required Level",
+          sortable: true,
+          editable: true,
+          class: "",
+        },
+        {
+          key: "optionalProgramRequirementCode.languageOfInstruction",
+          label: "Required Language of Instruction",
+          sortable: true,
+          editable: true,
+          class: "",
+        },
+        {
+          key: "optionalProgramRequirementCode.activeRequirement",
+          label: "Active",
+          sortable: true,
+          editable: true,
+          class: "",
+        },
+      ],
+      courseFields: [
+        {
+          key: "courseCode",
+          label: "Course",
+          sortable: true,
+          sortDirection: "desc",
+          editable: false,
+        },
+        {
+          key: "courseLevel",
+          label: "Course Level",
+          sortable: true,
+          editable: false,
+        },
+        {
+          key: "courseName",
+          label: "Course Title",
+          sortable: true,
+          editable: false,
+        },
+        {
+          key: "startDate",
+          label: "TRAX Start Date",
+          sortable: true,
+          editable: false,
+        },
+        {
+          key: "endDate",
+          label: "TRAX End Date",
+          sortable: true,
+          editable: false,
+        },
+      ],
+      assessmentFields: [
+        {
+          key: "assessmentCode",
+          label: "Assessment Code",
+          sortable: true,
+          sortDirection: "desc",
+        },
+        {
+          key: "assessmentName",
+          label: "Assessment Name",
+          sortable: true,
+          editable: true,
+        },
+      ],
+      ruleMatchList: [],
+      ruleMatchFields: [],
+      ruleMatchType: "",
+      loadingRuleMatch: false,
     };
   },
   created() {
@@ -127,10 +216,48 @@ export default {
       })
       .catch((error) => {
         // eslint-disable-next-line
-        console.log('There was an error:' + error.response);
-    });
+        console.log("There was an error:" + error.response);
+      });
   },
   methods: {
+    ruleNumberClicked(categoryCode, ruleNum) {
+      switch (categoryCode) {
+        case "A":
+          this.ruleMatchFields = this.assessmentFields;
+          this.ruleMatchType = "Assessments";
+          this.getAssessmentRules(ruleNum);
+          break;
+        case "C":
+          this.ruleMatchFields = this.courseFields;
+          this.ruleMatchType = "Courses";
+          this.getCourseRules(ruleNum);
+          break;
+        default:
+          this.ruleMatchType = "No Courses/Assessments Associated With Rule";
+          this.ruleMatchFields = [];
+          this.ruleMatchList = [];
+      }
+    },
+    getCourseRules(ruleNum) {
+      this.loadingRuleMatch = true;
+      CourseService.getRuleCourseRequirements(ruleNum).then((response) => {
+        this.ruleMatchList = response.data;
+        this.loadingRuleMatch = false;
+        if (!this.ruleMatchList.length) {
+          this.ruleMatchList = [];
+        }
+      });
+    },
+    getAssessmentRules(ruleNum) {
+      this.loadingRuleMatch = true;
+      AssessmentService.getRuleCourseRequirements(ruleNum).then((response) => {
+        this.ruleMatchList = response.data;
+        this.loadingRuleMatch = false;
+        if (!this.ruleMatchList.length) {
+          this.ruleMatchList = [];
+        }
+      });
+    },
   },
 };
 </script>

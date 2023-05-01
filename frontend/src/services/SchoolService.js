@@ -7,7 +7,7 @@ export default {
     searchSchools(searchInput) {
         
         let queryString = ""
-        for (var key in searchInput) {
+        for (const key in searchInput) {
             if (searchInput.hasOwnProperty(key)) {
                 if(searchInput[key].value){
                     let contains = (searchInput[key].contains) ? "*":"";

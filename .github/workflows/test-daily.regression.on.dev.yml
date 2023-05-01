@@ -1,11 +1,11 @@
-name: Smoke Test Default Runner
+name: Daily Regression - DEV
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 11 * * 1-5'
 
 jobs:
-
-  # run test on the github runner
-  SmokeTestDefaultRunner:
+  DailyRegression:
     runs-on: ubuntu-latest
     environment: dev
     defaults:
@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v3
         name: Checkout
       - run: npm install
-      - run: npm run smoke-test
+      - run: npm run daily-regression
         if: ${{ always() }}
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
@@ -26,5 +26,13 @@ jobs:
           TOKEN_CLIENT_ID: ${{ secrets.TOKEN_CLIENT_ID }}
           TOKEN_CLIENT_SECRET: ${{ secrets.TOKEN_CLIENT_SECRET }}
           TOKEN_ENDPOINT: ${{ secrets.TOKEN_ENDPOINT }}
-
+      - name: Rocket.Chat Notification
+        uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+        if: failure()
+        with:
+          type: ${{ job.status }}
+          job_name: "Grad Daily Regression - DEV --->"
+          icon_emoji: ":bell:"
+          channel: "grad-project"
+          url: ${{ secrets.ROCKETCHAT_WEBHOOK_FAILURES }}
 

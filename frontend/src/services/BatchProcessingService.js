@@ -4,84 +4,75 @@ export default {
   getDashboardInfo() {
     return ApiService.apiAxios.get('/api/v1/batch/dashboard');
   },
-  runREGALG(users) {
-    return ApiService.apiAxios.post('/api/v1/batch/specialrun' + users);
+  runREGALG(request) {
+    return ApiService.apiAxios.post('/api/v1/batch/specialrun', request);
   },
-  runTVRRUN(users) {
-    return ApiService.apiAxios.post('/api/v1/batch/tvrspecialrun' + users);
+  runTVRRUN(request) {
+    return ApiService.apiAxios.post('/api/v1/batch/tvrspecialrun', request);
   },
-  runDISTRUN(users,credentialType) {
+  runDISTRUNUSER(request,credentialType) {
     if(credentialType == "OT"){
-      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT' + users);
+      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT', request);
     }else if(credentialType == "OC"){
-      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OC' + users);
+      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OC', request);
     }else if(credentialType == "RC"){
-      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/RC' + users);
+      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/RC', request);
+    }else if(credentialType == "Blank transcript print"){
+      return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OT', request);
+    }else if(credentialType == "Blank certificate print"){
+      return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OC', request);
     }
   },     
-  runOriginalCertificateDISTRUN(users) {
-    return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OC' + users);
-  },   
+  runDISTRUN_MONTHLY(){
+    return ApiService.apiAxios.get('/api/v1/batch/executedisrunbatchjob');
+  },
+  runDISTRUN_SUPP(){
+    return ApiService.apiAxios.get('/api/v1/batch/executesuppdisrunbatchjob');
+  },
+  runDISTRUN_NONGRAD(){
+    return ApiService.apiAxios.get('/api/v1/batch/executenongraddisrunbatchjob');
+  },  
+  runDISTRUN_YE(){
+    return ApiService.apiAxios.get('/api/v1/batch/executeyearlydisrunbatchjob');
+  },
+  runBlankDISTRUNUSERUserRequest(request, credentialType){
+    return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/'+ credentialType, request);
+  },
+  runPSIRUN(request, transmissionType){
+    return ApiService.apiAxios.post('/api/v1/batch/executepsireportbatchjob/' + transmissionType, request);
+  },
   getBatchErrors(id, page) {
     return ApiService.apiAxios.get('/api/v1/batch/dashboard/errors/'  + id + '?pageNumber=' + page);
   },
   getBatchSummary() {
     return ApiService.apiAxios.get('/api/v1/batch/dashboard/summary');
   },    
-    // getDashboardInfo(token) {
-    //   const headers = {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + token,
-    //   }
-    //   return apiClient.get("/api/v1/batch/dashboard", { headers });
-    // },
-    //Run Regualar Algorithm for users
-    // runREGALG(token,users) {
-    //   const headers = {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + token,
-    //   };
-    //   return apiClient.post("/api/v1/batch/specialrun", users, { headers });
-    // },
-    // runTVRRUN(token,users) {
-    //   const headers = {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + token,
-    //   };
-    //   return apiClient.post("/api/v1/batch/tvrspecialrun", users, { headers });
-    // },
-    // runDISTRUN(token,users,credentialType) {
-    //   const headers = {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + token,
-    //   };
-    //   if(credentialType == "OT"){
-    //     return apiClient.post("/api/v1/batch/userrequestdisrun/OT", users, { headers });
-    //   }else if(credentialType == "OC"){
-    //     return apiClient.post("/api/v1/batch/userrequestdisrun/OC", users, { headers });
-    //   }else if(credentialType == "RC"){
-    //     return apiClient.post("/api/v1/batch/userrequestdisrun/RC", users, { headers });
-    //   }
-    // },        
-    // runOriginalCertificateDISTRUN(token,users) {
-    //   const headers = {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + token,
-    //   };
-    //   return apiClient.post("/api/v1/batch/userrequestdisrun/OC", users, { headers });
-    // },            
-    // getBatchErrors(id, page, token) {
-    //   const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-    //   return apiClient.get('/api/v1/batch/dashboard/errors/' + id + '?pageNumber=' + page,{ headers });
-    // },
-    // getBatchSummary(token) {
-    //   const headers = { Accept: 'application/json','Content-Type': 'application/json','Authorization': 'Bearer '+ token }
-    //   return apiClient.get('/api/v1/batch/dashboard/summary',{ headers });
-    // },
-    
+  getScheduledBatchJobs() {
+    return ApiService.apiAxios.get('/api/v1/batch/schedule/listjobs');
+  },
+  addScheduledJob(scheduledJob) {
+    return ApiService.apiAxios.post('/api/v1/batch/schedule/add?batchJobTypeCode=' + scheduledJob.jobName, scheduledJob);
+  },
+  removeScheduledJobs(id) {
+    return ApiService.apiAxios.delete('/api/v1/batch/schedule/remove/' + id);
+  },
+  batchProcessingRoutines() {
+    return ApiService.apiAxios.get('/api/v1/batch/processing/all/');
+  },
+  batchProcessingToggleRoutine(jobType){
+    return ApiService.apiAxios.put('/api/v1/batch/processing/toggle/' + jobType );
+  },
+  getBatchJobTypes(){
+    return ApiService.apiAxios.get('/api/v1/batch/batchjobtype');
+  }, 
+  rerunBatchSchoolReports(bid){
+    return ApiService.apiAxios.get('/api/v1/batch/regenerate/school-report/' + bid);
+  },
+  rerunBatch(bid){
+    return ApiService.apiAxios.get('/api/v1/batch/rerun/all/' + bid);
+  },
+  rerunBatchStudentErrors(bid){
+    return ApiService.apiAxios.get('/api/v1/batch/rerun/failed/' + bid);
+  },    
+   
 }

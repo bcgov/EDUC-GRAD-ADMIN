@@ -1,14 +1,14 @@
 <template>
   <div>
     <p>Signature block(s) used on students' certificates and transcript.</p>
-  <DisplayTable
-    title="Signature Block"
-    v-bind:items="signatureBlock"
-    v-bind:fields="signatureBlockFields"
-    id=""
-    showFilter="true"
-  >
-  </DisplayTable>
+    <DisplayTable
+      title="Signature Block"
+      v-bind:items="signatureBlock"
+      v-bind:fields="signatureBlockFields"
+      id=""
+      showFilter="true"
+    >
+    </DisplayTable>
   </div>
 </template>
 
@@ -16,16 +16,14 @@
 import DisplayTable from "@/components/DisplayTable";
 import GraduationReportService from "@/services/GraduationReportService.js";
 
-
 export default {
-  name: 'SignatureBlockType',
+  name: "SignatureBlockType",
   components: {
     DisplayTable: DisplayTable,
   },
   created() {
-      GraduationReportService.getDigitalSignaturesBlockTypes()
+    GraduationReportService.getDigitalSignaturesBlockTypes()
       .then((response) => {
-      
         this.signatureBlock = response.data;
       })
       // eslint-disable-next-line
@@ -37,7 +35,7 @@ export default {
         });
       });
   },
-  data: function() {
+  data: function () {
     return {
       signatureBlock: [],
       signatureBlockFields: [
@@ -70,15 +68,14 @@ export default {
       ],
     };
   },
-  computed: {
-  },
-  methods: {
-  },
+  computed: {},
+  methods: {},
 };
 </script>
 
 <style>
-.table th, .table td{
+.table th,
+.table td {
   border-top: none !important;
-
-}</style>
+}
+</style>

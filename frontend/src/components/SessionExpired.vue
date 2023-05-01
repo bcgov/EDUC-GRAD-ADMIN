@@ -11,7 +11,7 @@
             </b-card-title>
             <b-card-text id="session-expired-descriptor">
               <b-row style="margin: .3rem">Your secure session has ended as a result of inactivity.</b-row>
-              <a id="login-button" @click="clearStorage" :href="routes.LOGIN" class="ma-1" dark color='#003366'>Log In</a><span>&nbsp;again to continue.</span>
+              <a id="login-button" @click="clearStorage" :href="loginUrl" class="ma-1" dark color='#003366'>Log In</a><span>&nbsp;again to continue.</span>
             </b-card-text>
           </b-card>
         </b-col>
@@ -28,7 +28,8 @@ export default {
 
   data() {
     return {
-      routes: Routes
+      loginUrl: Routes.LOGIN,
+      logoutUrl: Routes.LOGOUT,
     };
   },
   mounted() {

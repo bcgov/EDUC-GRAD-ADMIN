@@ -1,7 +1,13 @@
 <template>
   <div>
-  <DisplayTable v-bind:items="specialCases" title="Program" v-bind:filterOn="toFilterItem" v-bind:fields="specialCasesFields" id="specialCase" showFilter="true"
-        v-bind:role="role">
+    <DisplayTable
+      v-bind:items="specialCases"
+      title="Program"
+      v-bind:filterOn="toFilterItem"
+      v-bind:fields="specialCasesFields"
+      id="specialCase"
+      showFilter="true"
+    >
     </DisplayTable>
   </div>
 </template>
@@ -9,15 +15,15 @@
 <script>
 import DisplayTable from "@/components/DisplayTable";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
-import sharedMethods from '../../sharedMethods';
+import sharedMethods from "../../sharedMethods";
 export default {
-  name: 'SpecialCases',
+  name: "SpecialCases",
   components: {
     DisplayTable: DisplayTable,
   },
   created() {
-     this.showNotification = sharedMethods.showNotification; 
-     ProgramManagementService.getSpecialCases()
+    this.showNotification = sharedMethods.showNotification;
+    ProgramManagementService.getSpecialCases()
       .then((response) => {
         this.specialCases = response.data;
       })
@@ -25,37 +31,37 @@ export default {
         this.showNotification("danger", "There was an error: " + error);
       });
   },
-  data: function() {
+  data: function () {
     return {
       specialCases: [],
-      toFilterItem:[
-        'spCase',
-        'label',
-        'description',
-        'passFlag',
+      toFilterItem: [
+        "spCase",
+        "label",
+        "description",
+        "passFlag",
         "effectiveDate",
-        "expiryDate"
+        "expiryDate",
       ],
       specialCasesFields: [
         {
-          key: 'spCase',
-          label: 'Special case',
+          key: "spCase",
+          label: "Special Case",
           sortable: true,
-          sortDirection: 'desc',
+          sortDirection: "desc",
         },
         {
-          key: 'label',
-          label: 'Label',
-          sortable: true,
-        },
-        {
-          key: 'description',
-          label: 'Description',
+          key: "label",
+          label: "Label",
           sortable: true,
         },
         {
-          key: 'passFlag',
-          label: 'Pass',
+          key: "description",
+          label: "Description",
+          sortable: true,
+        },
+        {
+          key: "passFlag",
+          label: "Pass",
           sortable: true,
         },
         {
@@ -67,17 +73,17 @@ export default {
           key: "expiryDate",
           label: "Expiry Date",
           sortable: true,
-        }                
+        },
       ],
     };
   },
-  methods: {
-  },
+  methods: {},
 };
 </script>
 
 <style>
-.table th, .table td{
+.table th,
+.table td {
   border-top: none !important;
-
-}</style>
+}
+</style>

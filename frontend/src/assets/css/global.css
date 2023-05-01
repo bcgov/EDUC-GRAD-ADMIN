@@ -94,3 +94,26 @@
 button.collapsed, button.not-collapsed, button.more-button {
   box-shadow: none !important;
 }
+
+.form-validation-message{
+  font-size: 11px;
+}
+option:disabled {
+  color: rgb(201 197 197) !important;
+}
+.dropdown-item.disabled, .dropdown-item:disabled {
+  color: rgb(201 197 197) !important;
+  pointer-events: none;
+}
+.disabled {
+  color: rgb(201 197 197) !important;
+}
+.list-item-comma{
+  list-style: none;
+	margin-left: 0;
+	padding-left: 0;
+}
+.list-item-comma > li + li::before {
+  content: ",";
+  display: inline-block;
+}

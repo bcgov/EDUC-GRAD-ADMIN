@@ -1,20 +1,20 @@
 <template>
   <div>
     <p>A list of transcript types used by the GRAD system.</p>
-  <DisplayTable
-    title="Transcript Type Codes"
-    v-bind:items="transcriptTypes"
-    v-bind:fields="transcriptTypesFields"
-    id=""
-    showFilter="true"
-  >
-    <template #cell(effectiveDate)="row">
-      {{ row.item.effectiveDate | formatSimpleDate }}
-    </template>
-    <template #cell(expiryDate)="row">
-      {{ row.item.expiryDate | formatSimpleDate }}
-    </template>              
-  </DisplayTable>
+    <DisplayTable
+      title="Transcript Type Codes"
+      v-bind:items="transcriptTypes"
+      v-bind:fields="transcriptTypesFields"
+      id=""
+      showFilter="true"
+    >
+      <template #cell(effectiveDate)="row">
+        {{ row.item.effectiveDate | formatSimpleDate }}
+      </template>
+      <template #cell(expiryDate)="row">
+        {{ row.item.expiryDate | formatSimpleDate }}
+      </template>
+    </DisplayTable>
   </div>
 </template>
 
@@ -22,14 +22,13 @@
 import DisplayTable from "@/components/DisplayTable";
 import GraduationReportService from "@/services/GraduationReportService.js";
 
-
 export default {
-  name: 'TranscriptsTypes',
+  name: "TranscriptsTypes",
   components: {
     DisplayTable: DisplayTable,
   },
   created() {
-      GraduationReportService.getTranscriptTypes()
+    GraduationReportService.getTranscriptTypes()
       .then((response) => {
         this.transcriptTypes = response.data;
       })
@@ -42,7 +41,7 @@ export default {
         });
       });
   },
-  data: function() {
+  data: function () {
     return {
       transcriptTypes: [],
       transcriptTypesFields: [
@@ -64,24 +63,24 @@ export default {
         },
         {
           key: "effectiveDate",
-          label: "Effective date",
+          label: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry date",
+          label: "Expiry Date",
           sortable: true,
         },
       ],
     };
   },
-  methods: {
-  },
+  methods: {},
 };
 </script>
 
 <style>
-.table th, .table td{
+.table th,
+.table td {
   border-top: none !important;
-
-}</style>
+}
+</style>

@@ -1,23 +1,23 @@
 <template>
   <div>
     <p>A list of certificate types used by the GRAD system.</p>
-  <DisplayTable
-    title="Certificate Types"
-    v-bind:items="certificateTypes"
-    v-bind:fields="certificateTypesFields"
-    id="code"
-    showFilter="true"
-  >
-    <template #cell(effectiveDate)="row">
-      {{ row.item.effectiveDate | formatSimpleDate }}
-    </template>
-    <template #cell(expiryDate)="row">
-      {{ row.item.expiryDate | formatSimpleDate }}
-    </template>
-    <template #cell(language)="row">
+    <DisplayTable
+      title="Certificate Types"
+      v-bind:items="certificateTypes"
+      v-bind:fields="certificateTypesFields"
+      id="code"
+      showFilter="true"
+    >
+      <template #cell(effectiveDate)="row">
+        {{ row.item.effectiveDate | formatSimpleDate }}
+      </template>
+      <template #cell(expiryDate)="row">
+        {{ row.item.expiryDate | formatSimpleDate }}
+      </template>
+      <template #cell(language)="row">
         {{ row.item.language }}
-    </template>
-  </DisplayTable>
+      </template>
+    </DisplayTable>
   </div>
 </template>
 
@@ -25,28 +25,26 @@
 import DisplayTable from "@/components/DisplayTable";
 import GraduationReportService from "@/services/GraduationReportService.js";
 
-
 export default {
-  name: 'CertificateTypes',
+  name: "CertificateTypes",
   components: {
     DisplayTable: DisplayTable,
   },
   created() {
     GraduationReportService.getCertificateTypes()
-    .then((response) => {
-    
-      this.certificateTypes = response.data;
-    })
-    // eslint-disable-next-line
-    .catch((error) => {
-      this.$bvToast.toast("ERROR " + error.response.statusText, {
-        title: "ERROR" + error.response.status,
-        variant: "danger",
-        noAutoHide: true,
+      .then((response) => {
+        this.certificateTypes = response.data;
+      })
+      // eslint-disable-next-line
+      .catch((error) => {
+        this.$bvToast.toast("ERROR " + error.response.statusText, {
+          title: "ERROR" + error.response.status,
+          variant: "danger",
+          noAutoHide: true,
+        });
       });
-    });
   },
-  data: function() {
+  data: function () {
     return {
       certificateTypes: [],
       certificateTypesFields: [
@@ -55,7 +53,7 @@ export default {
           label: "Code",
           sortable: true,
           sortDirection: "desc",
-          class: "w-10"
+          class: "w-10",
         },
         {
           key: "label",
@@ -82,17 +80,17 @@ export default {
           key: "expiryDate",
           label: "Expiry Date",
           sortable: true,
-        }
+        },
       ],
     };
   },
-  methods: {
-  },
+  methods: {},
 };
 </script>
 
 <style>
-.table th, .table td{
+.table th,
+.table td {
   border-top: none !important;
-
-}</style>
+}
+</style>

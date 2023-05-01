@@ -1,6 +1,11 @@
 <template>
   <div>
-    <p>The optional program Career Program in GRAD can be broken down further by specific career program code.  A Student on the optional program CP, Career Program,  would also be assigned a Career Program code(s) to identify what career program(s) they are on.</p>
+    <p>
+      The optional program Career Program in GRAD can be broken down further by
+      specific career program code. A Student on the optional program CP, Career
+      Program, would also be assigned a Career Program code(s) to identify what
+      career program(s) they are on.
+    </p>
     <DisplayTable
       title="Career Programs"
       v-bind:items="careerPrograms"
@@ -8,11 +13,11 @@
       id="code"
       showFilter="true"
     >
-      <template #cell(effectiveDate)="row">
-        {{ row.item.effectiveDate | formatTime }}
+      <template #cell(startDate)="row">
+        {{ row.item.startDate | formatYYYYMMDate }}
       </template>
-      <template #cell(expiryDate)="row">
-        {{ row.item.expiryDate | formatTime }}
+      <template #cell(endDate)="row">
+        {{ row.item.endDate | formatYYYYMMDate }}
       </template>
     </DisplayTable>
   </div>
@@ -22,27 +27,26 @@
 import DisplayTable from "@/components/DisplayTable";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 
-
 export default {
-  name: 'CareerPrograms',
+  name: "CareerPrograms",
   components: {
     DisplayTable: DisplayTable,
   },
   created() {
-      ProgramManagementService.getCareerPrograms()
-        .then((response) => {
-          this.careerPrograms = response.data;
-        })
-        // eslint-disable-next-line
-        .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+    ProgramManagementService.getCareerPrograms()
+      .then((response) => {
+        this.careerPrograms = response.data;
+      })
+      // eslint-disable-next-line
+      .catch((error) => {
+        this.$bvToast.toast("ERROR " + error.response.statusText, {
+          title: "ERROR" + error.response.status,
+          variant: "danger",
+          noAutoHide: true,
         });
+      });
   },
-  data: function() {
+  data: function () {
     return {
       careerPrograms: [],
       careerProgramFields: [
@@ -51,7 +55,7 @@ export default {
           label: "Code",
           sortable: true,
           sortDirection: "desc",
-          class: "w-15"
+          class: "w-15",
         },
         {
           key: "description",
@@ -68,16 +72,16 @@ export default {
           label: "End Date",
           sortable: true,
         },
-      ]
+      ],
     };
   },
-  methods: {
-  },
+  methods: {},
 };
 </script>
 
 <style>
-.table th, .table td{
+.table th,
+.table td {
   border-top: none !important;
-
-}</style>
+}
+</style>

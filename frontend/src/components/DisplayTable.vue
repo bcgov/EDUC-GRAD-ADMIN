@@ -8,7 +8,7 @@
     >
       <b-button-group class="mx-1">
         <b-button
-          v-if="role == 'administrator' && createAllowed"
+          v-if="roles == 'Administrator' && createAllowed"
           variant="success"
           size="sm"
           @click="addMode = !addMode"
@@ -26,9 +26,13 @@
       </b-button-group>
     </b-button-toolbar>
     <b-row>
-      <b-col lg="8" class="px-0 float-left">
-      </b-col>
-      <b-col sm="12" lg="4" class="my-1 table-filter p-0" v-if="this.showFilter">
+      <b-col lg="8" class="px-0 float-left"> </b-col>
+      <b-col
+        sm="12"
+        lg="4"
+        class="my-1 table-filter p-0"
+        v-if="this.showFilter"
+      >
         <b-form-group
           label-for="filter-input"
           label-cols-sm="3"
@@ -37,12 +41,10 @@
           class="mb-0 form-group-label"
         >
           <b-input-group>
-            <div class="filter-icon p-2 text-secondary">
-              Filter: 
-            </div>
+            <div class="filter-icon p-2 text-secondary">Filter:</div>
             <b-form-input
               debounce="500"
-              :id='"filter-input-" + title.replace(" ","-").toLowerCase()' 
+              :id="'filter-input-' + title.replace(' ', '-').toLowerCase()"
               size="md"
               v-model="filter"
               type="search"
@@ -106,7 +108,7 @@
           </div>
         </b-card-text>
       </b-card>
-    </b-row>   
+    </b-row>
     <b-table
       v-if="items && items.length"
       :responsive="responsive"
@@ -116,7 +118,7 @@
       :per-page="perPage"
       :filter="filter"
       :filter-included-fields="filterOn"
-      :sort-by.sync="sortBy"
+      :sort-by="sortBy"
       :sort-desc.sync="sortDesc"
       :sort-direction="sortDirection"
       :sort-compare-options="{ numeric: true, sensitivity: 'base' }"
@@ -181,16 +183,17 @@
         <slot :name="slotName" v-bind="scope" />
       </template>
       <template v-slot:cell(delete)="{ item }">
-        <b-button-group
-          v-if="itemRow && itemRow[id] === item[id] && deleteMode"
+        <b-btn
+          v-if="deleteMode && item[disableDeletefield] != disableDeleteIfValue"
+          variant="danger"
+          size="sm"
+          @click="deleteItem(item)"
         >
-          <b-btn variant="danger" size="sm" @click="deleteItem(item)">
-            Delete
-          </b-btn>
-        </b-button-group>
+          {{ deleteLabel ? deleteLabel : "Delete" }}
+        </b-btn>
 
         <b-btn
-          v-else-if="role == 'administrator' && quickEdit"
+          v-else-if="roles == 'administrator' && quickEdit"
           variant="danger"
           size="sm"
           @click="confirmDelete(item)"
@@ -230,10 +233,16 @@ export default {
     "create",
     "update",
     "delete",
+    "deleteLabel",
+    "disableDeletefield",
+    "disableDeleteIfValue",
     "slots",
     "showFilter",
     "pagination",
-    "filterOn"
+    "filterOn",
+    "sortBy",
+    "sortByField",
+    "sortDesc",
   ],
   data() {
     return {
@@ -263,8 +272,6 @@ export default {
           text: "Show a lot",
         },
       ],
-      sortBy: "",
-      sortDesc: false,
       sortDirection: "asc",
       filter: null,
       totalRows: 0,
@@ -276,9 +283,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({
-      role: "getRoles",
-    }),
+    ...mapGetters("auth", ["roles"]),
     editableFields() {
       return this.fields.filter((field) => field.editable);
     },
@@ -300,7 +305,7 @@ export default {
   },
   created() {
     window.addEventListener("keyup", this.validateInput);
-    this.setAdmin(this.role);
+    this.setAdmin();
     if (this.pagination) {
       this.perPage = 25;
     }
@@ -311,21 +316,22 @@ export default {
       this.updateAllowed = true;
       this.fields.push({
         key: "actions",
-        class: "d-none",
+        class: "d-block",
         label: "Edit",
       });
     }
-    if (this.delete && this.isAdmin) {
+    if (this.delete && this.roles == "Administrator") {
       this.deleteAllowed = true;
+
       this.fields.push({
         key: "delete",
-        class: "d-none",
+        class: "d-block",
         label: "Delete",
       });
     }
     this.itemToAdd = { ...this.items[0] };
-    for (var i = 0; i < this.fields.length; i++) {
-      this.itemToAdd[this.fields[i].key] = "";
+    for (let field of this.fields) {
+      this.itemToAdd[field.key] = "";
     }
   },
   methods: {
@@ -353,8 +359,8 @@ export default {
         }
       }
     },
-    setAdmin(role) {
-      if (role == "administrator") {
+    setAdmin() {
+      if (this.roles == "Administrator") {
         this.isAdmin = true;
       } else {
         this.isAdmin = false;
@@ -369,21 +375,36 @@ export default {
       this.$bvToast.toast("Record was Added", {
         title: "Success",
         variant: "success",
-      }); 
+      });
       this.$store.dispatch(this.create, this.itemToAdd);
     },
     cancelAddItem() {
       this.addMode = false;
     },
     deleteItem(item) {
-      this.$store.dispatch(this.delete, item[this.id]);
-      this.items.splice(this.items.indexOf(item), 1);
-      this.$bvToast.toast("Record was deleted", {
-        title: "Success",
-        variant: "success",
-      });
-      this.cancelDelete();
-      this.deleteMode = false;
+      let id = item[this.id];
+      this.$store
+        .dispatch(this.delete, { id })
+        .then((result) => {
+          if (result.status && result.status == "200") {
+            this.items.splice(this.items.indexOf(item), 1);
+            this.$bvToast.toast("Record was deleted", {
+              title: "Success",
+              variant: "success",
+            });
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.$bvToast.toast(
+              "There was an issue when trying to delete this record",
+              {
+                title: "Error",
+                variant: "danger",
+              }
+            );
+          }
+        });
     },
     confirmDelete(item) {
       this.deleteMode = true;

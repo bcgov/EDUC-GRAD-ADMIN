@@ -9,8 +9,8 @@ createTestCafe('localhost', 1337, 1338)
         const runner = testcafe.createRunner();
         return runner
             // list multiple test files
-            .src(["src/test_cases/studentSearch.js"])
-            //.browsers(["chrome:headless", "firefox:headless"])
+            .src(["./src/test_cases"])
+            .filter(async(testName, fixtureName, fixturePath, testMeta, fixtureMeta) =>  testMeta.testSuites?.smoke)
             .run();
     })
     .then(failedCount => {
@@ -21,3 +21,4 @@ createTestCafe('localhost', 1337, 1338)
         }
         testcafe.close();
     });
+    

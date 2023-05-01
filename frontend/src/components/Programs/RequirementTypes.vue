@@ -1,6 +1,9 @@
 <template>
   <div>
-    <p>Requirement type codes support how the algorithm runs program rules and optional program rules.</p>
+    <p>
+      Requirement type codes support how the algorithm runs program rules and
+      optional program rules.
+    </p>
     <DisplayTable
       title="Requirement Types"
       v-bind:items="requirementTypes"
@@ -22,28 +25,26 @@
 import DisplayTable from "@/components/DisplayTable";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 
-
 export default {
-  name: 'RequirementTypes',
+  name: "RequirementTypes",
   components: {
     DisplayTable: DisplayTable,
   },
   created() {
-        ProgramManagementService.getRequirementTypes()
-        .then((response) => {
-        
-          this.requirementTypes = response.data;
-        })
-        // eslint-disable-next-line
-        .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+    ProgramManagementService.getRequirementTypes()
+      .then((response) => {
+        this.requirementTypes = response.data;
+      })
+      // eslint-disable-next-line
+      .catch((error) => {
+        this.$bvToast.toast("ERROR " + error.response.statusText, {
+          title: "ERROR" + error.response.status,
+          variant: "danger",
+          noAutoHide: true,
         });
+      });
   },
-  data: function() {
+  data: function () {
     return {
       requirementTypes: [],
       requirementTypesFields: [
@@ -52,7 +53,7 @@ export default {
           label: "Code",
           sortable: true,
           sortDirection: "desc",
-          class: "w-15"
+          class: "w-15",
         },
         {
           key: "label",
@@ -73,17 +74,17 @@ export default {
           key: "expiryDate",
           label: "Expiry Date",
           sortable: true,
-        }
+        },
       ],
     };
   },
-  methods: {
-  },
+  methods: {},
 };
 </script>
 
 <style>
-.table th, .table td{
+.table th,
+.table td {
   border-top: none !important;
-
-}</style>
+}
+</style>

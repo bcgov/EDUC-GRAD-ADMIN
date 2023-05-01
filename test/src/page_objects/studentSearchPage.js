@@ -4,8 +4,8 @@ class StudentSearchPage {
 
     constructor() {
         // search elements
-        this.searchTab = Selector('a[role=tab]').withExactText('PEN search');
-        this.advSearchTab = Selector('a[role=tab]').withExactText('Advanced search');
+        this.searchTab = Selector('a[role=tab]').withExactText('PEN Search');
+        this.advSearchTab = Selector('a[role=tab]').withExactText('Advanced Search');
         this.searchInput = Selector('.search > input');
         this.searchSubmit = Selector('.search > button');
         this.searchMessage = Selector('#search-results-message');

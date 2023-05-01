@@ -4,95 +4,204 @@
       <div v-if="!optionalPrograms" class="container">
         This student does not have any optional programs.
       </div>
-    <DisplayTable v-if="optionalPrograms" :items="optionalPrograms" :striped=false :fields="optionalProgramsfields" showFilter="true" title="Optional Programs">
+      <DisplayTable
+        v-if="optionalPrograms"
+        :items="optionalPrograms"
+        :striped="false"
+        :fields="optionalProgramsfields"
+        showFilter="true"
+        title="Optional Programs"
+      >
         <template #cell(optionalNonGradReasons)="row">
           <div v-if="row.item.studentOptionalProgramData">
-            <div v-if="row.item.studentOptionalProgramData.optionalNonGradReasons == null && 
-                       row.item.studentOptionalProgramData.optionalRequirementsMet != null"
+            <div
+              v-if="
+                row.item.studentOptionalProgramData.optionalNonGradReasons ==
+                  null &&
+                row.item.studentOptionalProgramData.optionalRequirementsMet !=
+                  null
+              "
             >
-              <span v-if="row.item.studentOptionalProgramData.optionalRequirementsMet.length != 0">All requirements have been met</span>
+              <span
+                v-if="
+                  row.item.studentOptionalProgramData.optionalRequirementsMet
+                    .length != 0
+                "
+                >All requirements have been met</span
+              >
             </div>
             <div v-else>
-              <div class="p-2" v-if="row.item.studentOptionalProgramData.optionalNonGradReasons.length == 0 && 
-                                     row.item.studentOptionalProgramData.optionalRequirementsMet.length > 0"
-              >All requirements have been met</div>
+              <div
+                class="p-2"
+                v-if="
+                  row.item.studentOptionalProgramData.optionalNonGradReasons &&
+                  row.item.studentOptionalProgramData.optionalNonGradReasons
+                    .length == 0 &&
+                  row.item.studentOptionalProgramData.optionalRequirementsMet
+                    .length > 0
+                "
+              >
+                All requirements have been met
+              </div>
             </div>
-            <span v-if="row.item.studentOptionalProgramData.optionalNonGradReasons && row.item.studentOptionalProgramData.optionalNonGradReasons.length == 0 && 
-                        row.item.studentOptionalProgramData.optionalRequirementsMet && row.item.studentOptionalProgramData.optionalRequirementsMet.length == 0">n/a</span>
-          </div> 
-          <ul v-if="row.item.studentOptionalProgramData.optionalNonGradReasons != null" id="optionalNonGradReasons">
-            <li v-for="optionalNonGradReasons in row.item.studentOptionalProgramData.optionalNonGradReasons" :key="optionalNonGradReasons.rule">
-              <strong>{{ optionalNonGradReasons.rule }} - {{ optionalNonGradReasons.description }}</strong>
+            <span
+              v-if="
+                row.item.studentOptionalProgramData.optionalNonGradReasons &&
+                row.item.studentOptionalProgramData.optionalNonGradReasons
+                  .length == 0 &&
+                row.item.studentOptionalProgramData.optionalRequirementsMet &&
+                row.item.studentOptionalProgramData.optionalRequirementsMet
+                  .length == 0
+              "
+              >n/a</span
+            >
+          </div>
+          <ul
+            v-if="
+              row.item.studentOptionalProgramData &&
+              row.item.studentOptionalProgramData.optionalNonGradReasons != null
+            "
+            id="optionalNonGradReasons"
+          >
+            <li
+              v-for="optionalNonGradReasons in row.item
+                .studentOptionalProgramData.optionalNonGradReasons"
+              :key="optionalNonGradReasons.rule"
+            >
+              <strong
+                >{{ optionalNonGradReasons.rule }} -
+                {{ optionalNonGradReasons.description }}</strong
+              >
             </li>
           </ul>
           <div v-else>n/a</div>
-        </template>   
+        </template>
         <template #cell(optionalProgramName)="row">
           <div class="pt-2">
-            {{row.item.optionalProgramName}} ({{row.item.optionalProgramCode}}) <br> {{row.item.OptionalProgramCompletionDate | formatTime}}
+            {{ row.item.optionalProgramName }} ({{
+              row.item.optionalProgramCode
+            }}) <br />
+            {{ row.item.OptionalProgramCompletionDate | formatTime }}
           </div>
-        </template>   
-        <template #cell(optionalReqMet)="row">  
-          <div v-if="row.item.studentOptionalProgramData">   
-              <b-table v-if="row.item.optionalProgramCode == 'BC' || 
-                             row.item.optionalProgramCode == 'BD' || 
-                             row.item.optionalProgramCode == 'AN' || 
-                             row.item.optionalProgramCode == 'AD' || 
-                             row.item.programCode == 'SCCP'"
-                        :bordered=false small 
-                        :items="row.item.studentOptionalProgramData.optionalRequirementsMet" 
-                        :fields="fields" 
-                        thead-class="d-none"
-              >
-                <template #cell(gradReqMetDetail)="row2">
-                  <div class="p-2">
-                    <strong>{{row2.item.rule}}</strong> - {{row2.item.description}}
-                  </div>
-                </template>
-              </b-table>
-            <b-table :bordered=false small :items="row.item.studentOptionalProgramData.optionalStudentCourses.studentCourseList" :fields="fields" filter=null :filter-function="filterGradReqCourses" thead-class="d-none" >
+        </template>
+        <template #cell(optionalReqMet)="row">
+          <div v-if="row.item.studentOptionalProgramData">
+            <b-table
+              v-if="
+                row.item.optionalProgramCode == 'BC' ||
+                row.item.optionalProgramCode == 'BD' ||
+                row.item.optionalProgramCode == 'AN' ||
+                row.item.optionalProgramCode == 'AD' ||
+                row.item.programCode == 'SCCP'
+              "
+              :bordered="false"
+              small
+              :items="
+                row.item.studentOptionalProgramData.optionalRequirementsMet
+              "
+              :fields="fields"
+              thead-class="d-none"
+            >
               <template #cell(gradReqMetDetail)="row2">
                 <div class="p-2">
-                  <strong>{{row2.item.gradReqMetDetail}}</strong><br/>
-                   {{row2.item.courseCode}} {{row2.item.courseLevel}} - {{row2.item.sessionDate}} ({{row2.item.courseName}})
-                </div>    
+                  <strong>{{ row2.item.rule }}</strong> -
+                  {{ row2.item.description }}
+                </div>
               </template>
             </b-table>
-            <b-table :bordered=false small :items="row.item.studentOptionalProgramData.optionalStudentAssessments.studentAssessmentList" :fields="fields" filter=null :filter-function="filterGradReqCourses" thead-class="d-none" >
+            <b-table
+              :bordered="false"
+              small
+              :items="
+                row.item.studentOptionalProgramData.optionalStudentCourses
+                  .studentCourseList
+              "
+              :fields="fields"
+              filter="null"
+              :filter-function="filterGradReqCourses"
+              thead-class="d-none"
+              v-if="row.item.studentOptionalProgramData.optionalStudentCourses"
+            >
               <template #cell(gradReqMetDetail)="row2">
-                    <div class="p-2">
-                      <strong>{{row2.item.gradReqMetDetail}}</strong><br/>
-                      {{row2.item.assessmentCode}} - {{row2.item.sessionDate | formatTime}} ({{row2.item.assessmentName}})
-                    </div>
-                    
+                <div class="p-2">
+                  <strong>{{ row2.item.gradReqMetDetail }}</strong
+                  ><br />
+                  {{ row2.item.courseCode }} {{ row2.item.courseLevel }} -
+                  {{ row2.item.sessionDate | formatYYYYMMDate }} ({{
+                    row2.item.courseName
+                  }})
+                </div>
               </template>
             </b-table>
-            
-          </div>       
-        </template> 
-        <template #cell(more)="row">         
+            <b-table
+              :bordered="false"
+              small
+              :items="
+                row.item.studentOptionalProgramData.optionalStudentAssessments
+                  .studentAssessmentList
+              "
+              :fields="fields"
+              filter="null"
+              :filter-function="filterGradReqCourses"
+              thead-class="d-none"
+              v-if="
+                row.item.studentOptionalProgramData.optionalStudentAssessments
+              "
+            >
+              <template #cell(gradReqMetDetail)="row2">
+                <div class="p-2">
+                  <strong>{{ row2.item.gradReqMetDetail }}</strong
+                  ><br />
+                  {{ row2.item.assessmentCode }} -
+                  {{ row2.item.sessionDate | formatYYYYMMDate }} ({{
+                    row2.item.assessmentName
+                  }})
+                </div>
+              </template>
+            </b-table>
+          </div>
+        </template>
+        <template #cell(more)="row">
           <b-btn
-            v-if="row.item.optionalProgramName == '2018 Graduation Program Career Program' || row.item.optionalProgramName == 'Adult Career Program' || row.item.optionalProgramName == 'Career Program'"
+            v-if="
+              row.item.optionalProgramName ==
+                '2018 Graduation Program Career Program' ||
+              row.item.optionalProgramName == 'Adult Career Program' ||
+              row.item.optionalProgramName == 'Career Program'
+            "
             variant="outline primary"
             style="color: #666"
             size="sm"
             @click="row.toggleDetails"
             class="more-button"
           >
-            <img v-show="!row.detailsShowing" src="../assets/images/icon-right.svg" width="9px" aria-hidden="true" alt=""/>
-            <img v-show="row.detailsShowing" src="../assets/images/icon-down.svg" height="5px" aria-hidden="true" alt=""/>
+            <img
+              v-show="!row.detailsShowing"
+              src="../assets/images/icon-right.svg"
+              width="9px"
+              aria-hidden="true"
+              alt=""
+            />
+            <img
+              v-show="row.detailsShowing"
+              src="../assets/images/icon-down.svg"
+              height="5px"
+              aria-hidden="true"
+              alt=""
+            />
           </b-btn>
         </template>
-        <template #row-details="">   
+        <template #row-details="">
           <b-card class="px-0">
-            <strong>Career Programs</strong><hr/>
+            <strong>Career Programs</strong>
+            <hr />
             <ul id="student-career-programs">
               <li v-for="item in careerPrograms" :key="item.careerProgramName">
                 {{ item.careerProgramName }} ({{ item.careerProgramCode }})
               </li>
             </ul>
           </b-card>
-        </template>                                 
+        </template>
       </DisplayTable>
     </div>
   </div>
@@ -102,22 +211,25 @@
 import { mapGetters } from "vuex";
 import DisplayTable from "@/components/DisplayTable.vue";
 export default {
-  name: "GRADRequirementDetails",
+  name: "StudentOptionalPrograms",
   components: {
     DisplayTable: DisplayTable,
   },
 
   computed: {
     ...mapGetters({
-      optionalPrograms: "getStudentOptionalPrograms",
-      careerPrograms: "getStudentCareerPrograms"
+      optionalPrograms: "student/getStudentOptionalPrograms",
+      careerPrograms: "student/getStudentCareerPrograms",
     }),
   },
   data: function () {
     return {
-      
       fields: [
-        { key: "gradReqMetDetail", label: "Grad Requirement Met", class: "text-left"}
+        {
+          key: "gradReqMetDetail",
+          label: "Grad Requirement Met",
+          class: "text-left",
+        },
       ],
       optionalProgramsfields: [
         { key: "more", label: "" },
@@ -128,8 +240,7 @@ export default {
       careerProgramsFields: [
         { key: "careerProgramCode", label: "" },
         { key: "careerProgramName", label: "" },
-      ],      
-      
+      ],
     };
   },
   methods: {
@@ -169,7 +280,7 @@ export default {
 .card-header {
   font-weight: 700 !important;
 }
-.gradReqsMet span + span::before{
-    content: ", "
+.gradReqsMet span + span::before {
+  content: ", ";
 }
 </style>

@@ -4,9 +4,12 @@ export default {
     getStudentByPen(pen) {
         return ApiService.apiAxios.get('/api/v1/student/pen/' + pen)
     },
+    getStudentByID(studentID) {
+        return ApiService.apiAxios.get('/api/v1/student/stdid/' + studentID)
+    },
     getStudentsByAdvancedSearch(advancedSearchInput){
         let queryString = ""
-        for (var key in advancedSearchInput) {
+        for (const key in advancedSearchInput) {
             if (advancedSearchInput.hasOwnProperty(key)) {
                 if(advancedSearchInput[key].value){
                     let contains = (advancedSearchInput[key].contains) ? "*":"";
@@ -43,7 +46,7 @@ export default {
         return ApiService.apiAxios.get('/api/v1/student/studentnotes/studentid/' + id)
     },
     addStudentNotes(json) {
-        return ApiService.apiAxios.post('/api/v1/student/studentnotes/',json)
+        return ApiService.apiAxios.post('/api/v1/student/studentnotes',json)
     },
     deleteStudentNotes(noteID) {
         return ApiService.apiAxios.delete('/api/v1/student/studentnotes/' + noteID)

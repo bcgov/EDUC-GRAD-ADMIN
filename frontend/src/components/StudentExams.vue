@@ -1,11 +1,19 @@
 <template>
-<div>
-  <div v-if="!exams" class="container">
-    This student does not have any exams.
-  </div> 
-  <DisplayTable :items="exams" :fields="fields" showFilter=true title="Assessments">
-  </DisplayTable>
-</div>  
+  <div>
+    <div v-if="!exams" class="container">
+      This student does not have any exams.
+    </div>
+    <DisplayTable
+      :items="exams"
+      :fields="fields"
+      showFilter="true"
+      title="Assessments"
+    >
+      <template #cell(sessionDate)="row">
+        {{ row.value | formatYYYYMMDate }}
+      </template>
+    </DisplayTable>
+  </div>
 </template>
 
 <script>
@@ -16,13 +24,13 @@ export default {
   props: {},
   computed: {
     ...mapGetters({
-      exams: "getStudentExams",
+      exams: "student/getStudentExams",
     }),
   },
   components: {
-    DisplayTable: DisplayTable
+    DisplayTable: DisplayTable,
   },
-  data: function() {
+  data: function () {
     return {
       // show: false,
       // opened: [],
@@ -54,7 +62,7 @@ export default {
       // displayMessage: null,
       // modalVisible: null,
       // inputPenMissing: false,
-       fields: [
+      fields: [
         { key: "more", label: "" },
         {
           key: "courseCode",
@@ -80,65 +88,65 @@ export default {
           label: "School %",
           sortable: true,
           sortDirection: "desc",
-          class: "text-md-center"
+          class: "text-md-center",
         },
         {
           key: "bestSchoolPercentage",
-          label: "Best school %",
+          label: "Best School %",
           sortable: true,
           sortDirection: "desc",
-          class: "text-md-center"
-        },        
+          class: "text-md-center",
+        },
         {
           key: "optIn",
-          label: "opt in",
+          label: "Opt In",
           sortable: true,
           sortDirection: "desc",
-          class: "text-md-center"
+          class: "text-md-center",
         },
         {
           key: "specialCase",
-          label: "Special case",
+          label: "Special Case",
           sortable: true,
           sortDirection: "desc",
-          class: "text-md-center"
-        }, 
+          class: "text-md-center",
+        },
         {
           key: "wroteFlag",
-          label: "Wrote exam",
+          label: "Wrote Exam",
           sortable: true,
           sortDirection: "desc",
-          class: "text-md-center"
-        }, 
+          class: "text-md-center",
+        },
         {
           key: "completedCourseExamPercentage",
           label: "Exam %",
           sortable: true,
           sortDirection: "desc",
-          class: "text-md-center"
-        }, 
+          class: "text-md-center",
+        },
         {
           key: "bestExamPercentage",
-          label: "Best exam %",
+          label: "Best Exam %",
           sortable: true,
           sortDirection: "desc",
-          class: "text-md-center"
-        }, 
+          class: "text-md-center",
+        },
         {
           key: "completedCourseFinalPercentage",
           label: "Final %",
           sortable: true,
           sortDirection: "desc",
-          class: "text-md-center"
-        }, 
+          class: "text-md-center",
+        },
         {
           key: "completedCourseLetterGrade",
           label: "Final LG",
           sortable: true,
           sortDirection: "desc",
-          class: "text-md-center"
-        }, 
-      ]
+          class: "text-md-center",
+        },
+      ],
     };
   },
   methods: {
@@ -168,7 +176,8 @@ export default {
 </script>
 
 <style>
-.table th, .table td{
+.table th,
+.table td {
   border-top: none !important;
-
-}</style>
+}
+</style>

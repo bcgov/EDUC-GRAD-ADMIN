@@ -37,7 +37,9 @@ nconf.defaults({
       maxAge: +process.env.SESSION_MAX_AGE
     },
     administration: {
-      roleAdmin: process.env.GRAD_ROLE_ADMIN
+      roleAdmin: process.env.GRAD_ROLE_ADMIN,
+      roleInfoOfficer: process.env.GRAD_ROLE_INFO_OFFICER,
+      roleGradProgramAreaBA: process.env.GRAD_PROGRAM_AREA_BA      
     },
     idirIDPHint: process.env.IDIR_IDP_HINT,
     assessmentAPIURL: process.env.ASSESSMENT_API_URL,
@@ -48,8 +50,9 @@ nconf.defaults({
     programAPIURL: process.env.PROGRAM_API_URL,
     studentAPIURL: process.env.GRAD_STUDENT_API_URL,
     studentGraduationAPIURL: process.env.STUDENT_GRADUATION_API_URL,
-    gradTraxURL: process.env.GRAD_TRAX_API_URL,
-    reportAPIURL: process.env.GRAD_REPORT_API_URL
+    gradTraxAPIURL: process.env.GRAD_TRAX_API_URL,
+    reportAPIURL: process.env.GRAD_REPORT_API_URL,
+    distributionAPIURL: process.env.DISTRIBUTION_API_URL
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,

@@ -1,36 +1,43 @@
 <template>
-  <div>
+  <div id="graduation-programs">
     <div v-if="!selectedProgramCode">
-      <DisplayTable v-bind:items="graduationPrograms" title="Program" v-bind:fields="graduationProgramsFields" id="programCode" showFilter="true"
-        v-bind:role="roles" pagination="true">
+      <DisplayTable
+        v-bind:items="graduationPrograms"
+        title="Program"
+        v-bind:fields="graduationProgramsFields"
+        id="programCode"
+        showFilter="true"
+        v-bind:role="roles"
+        pagination="true"
+      >
         <template #cell(effectiveDate)="row">
-            {{ row.item.effectiveDate | formatSimpleDate }}
+          {{ row.item.effectiveDate | formatSimpleDate }}
         </template>
         <template #cell(expiryDate)="row">
-            {{ row.item.expiryDate| formatSimpleDate }}
+          {{ row.item.expiryDate | formatSimpleDate }}
         </template>
       </DisplayTable>
     </div>
-    <router-view v-bind:key="$route.fullPath"></router-view>    
+    <router-view v-bind:key="$route.fullPath"></router-view>
   </div>
 </template>
 
 <script>
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import DisplayTable from "@/components/DisplayTable";
-import sharedMethods from '../sharedMethods';
+import sharedMethods from "../sharedMethods";
 import { mapGetters } from "vuex";
 export default {
   name: "GraduationPrograms",
   components: {
-     DisplayTable: DisplayTable,
+    DisplayTable: DisplayTable,
   },
   props: {},
   computed: {
-    ...mapGetters('auth', ['roles'])
+    ...mapGetters("auth", ["roles"]),
   },
   data: function () {
-    return {   
+    return {
       show: false,
       isHidden: false,
       opened: [],
@@ -38,20 +45,20 @@ export default {
       templates: [
         {
           name: "programCode",
-          field: "programCode"
-        }
+          field: "programCode",
+        },
       ],
       graduationProgramsFields: [
         {
-          key: 'programCode',
-          label: 'Program code',
+          key: "programCode",
+          label: "Program code",
           sortable: true,
-          sortDirection: 'desc',
+          sortDirection: "desc",
           editable: true,
         },
         {
-          key: 'programName',
-          label: 'Program name',
+          key: "programName",
+          label: "Program name",
           sortable: true,
           editable: true,
         },
@@ -61,12 +68,12 @@ export default {
           sortable: true,
         },
         {
-          key: 'associatedCredential',
-          label: 'Associated Credential',
+          key: "associatedCredential",
+          label: "Associated Credential",
           sortable: true,
-          sortDirection: 'desc',
+          sortDirection: "desc",
           editable: true,
-        },   
+        },
         {
           key: "effectiveDate",
           label: "Effective Date",
@@ -76,21 +83,28 @@ export default {
           key: "expiryDate",
           label: "Expiry Date",
           sortable: true,
-        }        
+        },
       ],
       selectedProgramCode: "",
       selectedProgramId: "",
     };
   },
-  created() {  
-    this.showNotification = sharedMethods.showNotification 
+  created() {
+    this.showNotification = sharedMethods.showNotification;
     ProgramManagementService.getGraduationPrograms()
       .then((response) => {
-        this.graduationPrograms = response.data;
+        // filters out the "No Program" option until business is ready to implement
+        const gradPrograms = response.data.filter((obj) => {
+          return obj.programCode !== "NOPROG";
+        });
+        this.graduationPrograms = gradPrograms;
       })
       .catch((error) => {
-        this.showNotification("danger", "There was an error: "+ error.response);
-      });    
+        this.showNotification(
+          "danger",
+          "There was an error: " + error.response
+        );
+      });
   },
   methods: {
     onClickChild(value) {
@@ -99,8 +113,8 @@ export default {
     selectGradRule(programCode) {
       this.selectedProgramCode = programCode;
     },
-    resetProgramCode(){
-      this.selectedProgramCode = '';
+    resetProgramCode() {
+      this.selectedProgramCode = "";
     },
     getCourseName: function (cid) {
       let result = "";
