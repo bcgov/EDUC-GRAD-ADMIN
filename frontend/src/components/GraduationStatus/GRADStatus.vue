@@ -660,7 +660,7 @@
               <td><strong>Adult start date: </strong></td>
               <td>
                 <span v-if="studentGradStatus.adultStartDate">{{
-                  studentGradStatus.adultStartDate | formatSimpleDate
+                  studentGradStatus.adultStartDate | formatSimpleLocaleDate
                 }}</span>
               </td>
             </tr>
