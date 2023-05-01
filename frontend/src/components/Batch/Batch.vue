@@ -445,7 +445,7 @@
               :options="[
                 { text: 'Choose...', value: '' },
                 { text: 'Paper', value: 'PAPER' },
-                { text: 'FTP', value: 'FTP' },
+                { text: 'FTP', value: 'FTP', disabled: true },
               ]"
               :value="batch.details['psiTransmissionMode']"
               @change="editBatchJob('psiTransmissionMode', $event)"
