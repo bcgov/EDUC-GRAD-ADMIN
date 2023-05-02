@@ -782,7 +782,6 @@ export default {
       dismissSecs: 3, // remove?
       dismissCountDown: 0, // remove?
       showModal: false,
-      showTop: false,
       showEdit: false,
       show: false,
       notificationMessage: "",
@@ -947,8 +946,9 @@ export default {
 
       //clear out whatever the user had for the program completion date
       if (
+        this.editedGradStatus.hasOwnProperty("programCompletionDate") &&
         this.studentGradStatus.programCompletionDate !=
-        this.editedGradStatus.programCompletionDate
+          this.editedGradStatus.programCompletionDate
       ) {
         this.editedGradStatus.programCompletionDate =
           this.studentGradStatus.programCompletionDate;
@@ -956,8 +956,9 @@ export default {
 
       // clear out whatever the user had for the adult start date
       if (
+        this.editedGradStatus.hasOwnProperty("adultStartDate") &&
         this.studentGradStatus.adultStartDate !=
-        this.editedGradStatus.adultStartDate
+          this.editedGradStatus.adultStartDate
       ) {
         this.editedGradStatus.adultStartDate =
           this.studentGradStatus.adultStartDate;
@@ -1280,6 +1281,8 @@ export default {
 
     cancelGradStatus() {
       this.showEdit = false;
+      this.editedGradStatus = {};
+
       this.warningFlags.schoolOfRecordWarning = false;
       this.warningFlags.schoolNotFoundWarning = false;
       this.errorFlags.numberError.adultStartDate = false;
@@ -1331,8 +1334,8 @@ export default {
           this.studentGradStatus.studentStatusName = this.getStudentStatus(
             response.data.studentStatus
           );
-          this.showTop = !this.showTop;
           this.showEdit = false;
+          this.editedGradStatus = {};
 
           this.showNotification("success", "GRAD Status Saved");
         })
