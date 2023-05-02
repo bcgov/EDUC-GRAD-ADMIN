@@ -1580,6 +1580,8 @@ export default {
 <style scoped>
 .downloadIcon {
   min-width: 25px;
+  margin-left: 5px;
+  margin-top: 5px;
 }
 .alert,
 .card,

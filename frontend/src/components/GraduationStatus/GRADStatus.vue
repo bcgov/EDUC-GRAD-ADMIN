@@ -333,6 +333,7 @@
               <td>
                 <b-form-select
                   size="sm"
+                  :disabled="disableStudentGrade"
                   v-model="editedGradStatus.studentGrade"
                   :options="gradeOptions"
                 >
@@ -480,6 +481,7 @@
                   type="text"
                   maxlength="8"
                   minength="8"
+                  :disabled="disableSchoolOfRecord"
                   v-model="editedGradStatus.schoolOfRecord"
                 ></b-input>
               </td>
@@ -788,7 +790,6 @@ export default {
       dismissSecs: 3, // remove?
       dismissCountDown: 0, // remove?
       showModal: false,
-      showTop: false,
       showEdit: false,
       show: false,
       notificationMessage: "",
@@ -817,7 +818,7 @@ export default {
         programChangeWarning: false,
         schoolOfRecordWarning: false,
         schoolNotFoundWarning: false,
-        schoolOfRecordInputWarning: false,
+        schoolOfRecordInputWarning: false, //look at moving to error flags, but fine for now since backend prevents submission
         schoolAtGraduationWarning: false,
         schoolAtGraduationNotFoundWarning: false,
         schoolAtGraduationInputWarning: false,
@@ -834,9 +835,11 @@ export default {
       studentUngradReason: "",
       disableSave: false,
       disableSchoolAtGrad: false,
+      disableStudentGrade: false,
       disableProgramInput: false,
       disableConsumerEdReqMet: false,
       disableStudentStatus: false,
+      disableSchoolOfRecord: false,
       gradeOptions: [
         { text: "08", value: "8" },
         { text: "09", value: "9" },
@@ -907,10 +910,14 @@ export default {
         this.studentGradStatus.program != "SCCP"
       ) {
         this.disableProgramInput = true;
-        this.errorFlags.other.programComplete = true;
+        this.disableStudentGrade = true;
+        this.disableConsumerEdReqMet = true;
+        this.disableSchoolAtGrad = false;
       } else {
         this.disableProgramInput = false;
-        this.errorFlags.other.programComplete = false;
+        this.disableStudentGrade = false;
+        this.disableConsumerEdReqMet = false;
+        this.disableSchoolAtGrad = true;
       }
       if (this.editedGradStatus.program == "1950") {
         // check adult start date
@@ -947,8 +954,9 @@ export default {
 
       //clear out whatever the user had for the program completion date
       if (
+        this.editedGradStatus.hasOwnProperty("programCompletionDate") &&
         this.studentGradStatus.programCompletionDate !=
-        this.editedGradStatus.programCompletionDate
+          this.editedGradStatus.programCompletionDate
       ) {
         this.editedGradStatus.programCompletionDate =
           this.studentGradStatus.programCompletionDate;
@@ -956,8 +964,9 @@ export default {
 
       // clear out whatever the user had for the adult start date
       if (
+        this.editedGradStatus.hasOwnProperty("adultStartDate") &&
         this.studentGradStatus.adultStartDate !=
-        this.editedGradStatus.adultStartDate
+          this.editedGradStatus.adultStartDate
       ) {
         this.editedGradStatus.adultStartDate =
           this.studentGradStatus.adultStartDate;
@@ -1195,12 +1204,10 @@ export default {
         this.studentGradStatus.program !== "SCCP"
       ) {
         this.disableProgramInput = true;
-        this.disableSchoolAtGrad = false;
         this.disableStudentStatus = false;
       } else {
         this.disableProgramInput = false;
         this.disableStudentStatus = false;
-        this.disableSchoolAtGrad = true;
       }
 
       if (
@@ -1282,6 +1289,8 @@ export default {
 
     cancelGradStatus() {
       this.showEdit = false;
+      this.editedGradStatus = {};
+
       this.warningFlags.schoolOfRecordWarning = false;
       this.warningFlags.schoolNotFoundWarning = false;
       this.errorFlags.numberError.adultStartDate = false;
@@ -1326,35 +1335,15 @@ export default {
       StudentService.editGraduationStatus(id, this.editedGradStatus)
         .then((response) => {
           this.updateStatus = response.data;
+          this.$store.dispatch("student/setStudentGradStatus", response.data);
           this.getStudentReportsAndCertificates();
-          this.studentGradStatus.pen = response.data.pen;
-          this.studentGradStatus.program = response.data.program;
-          this.studentGradStatus.programCompletionDate =
-            response.data.programCompletionDate;
-          this.studentGradStatus.honoursStanding =
-            response.data.honoursStanding;
-          this.studentGradStatus.gpa = response.data.gpa;
-          this.studentGradStatus.studentGrade = response.data.studentGrade;
-          this.studentGradStatus.schoolName = this.editedGradStatus.schoolName;
-          this.studentGradStatus.schoolOfRecord = response.data.schoolOfRecord;
-          this.studentGradStatus.schoolAtGradName =
-            this.editedGradStatus.schoolAtGradName;
-          this.studentGradStatus.schoolAtGrad = response.data.schoolAtGrad;
-          this.studentGradStatus.studentStatus = response.data.studentStatus;
-          this.studentGradStatus.recalculateGradStatus =
-            response.data.recalculateGradStatus;
-          this.studentGradStatus.updatedTimestamp =
-            response.data.updatedTimestamp;
-          this.studentGradStatus.adultStartDate = response.data.adultStartDate;
-          this.studentGradStatus.consumerEducationRequirementMet =
-            response.data.consumerEducationRequirementMet;
           this.getStudentGraduationOptionalPrograms();
           this.refreshStudentHistory();
           this.studentGradStatus.studentStatusName = this.getStudentStatus(
             response.data.studentStatus
           );
-          this.showTop = !this.showTop;
           this.showEdit = false;
+          this.editedGradStatus = {};
 
           this.showNotification("success", "GRAD Status Saved");
         })
