@@ -377,8 +377,12 @@
                       </tr>
                       <tr>
                         <td>
-                          <strong>School name:</strong> <br />
-                          {{ schoolOfRecord.schoolName }}
+                          <strong>School Code and Name:</strong> <br />
+                          {{
+                            schoolOfRecord.minCode +
+                            " " +
+                            schoolOfRecord.schoolName
+                          }}
                         </td>
                       </tr>
                       <tr>
@@ -520,8 +524,12 @@
                     </tr>
                     <tr>
                       <td>
-                        <strong>School name:</strong> <br />
-                        {{ schoolAtGraduation.schoolName }}
+                        <strong>School Code and Name:</strong> <br />
+                        {{
+                          schoolAtGraduation.minCode +
+                          " " +
+                          schoolAtGraduation.schoolName
+                        }}
                       </td>
                     </tr>
                     <tr>
