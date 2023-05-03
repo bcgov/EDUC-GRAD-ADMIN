@@ -273,12 +273,14 @@
                   :disabled="
                     editedGradStatus.program != 'SCCP' ||
                     (studentGradStatus.programCompletionDate &&
-                      studentGradStatus.programCompletionDate.length > 0)
+                      new Date(studentGradStatus.programCompletionDate) <=
+                        new Date())
                   "
                   size="sm"
                   type="text"
                   maxLength="7"
                   v-model="editedGradStatus.programCompletionDate"
+                  :formatter="formatYYYYMMDate"
                 ></b-input>
               </td>
             </tr>
