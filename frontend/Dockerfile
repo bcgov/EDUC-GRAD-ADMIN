@@ -6,7 +6,8 @@ COPY ./ .
 RUN npm run build
 
 FROM artifacts.developer.gov.bc.ca/docker-remote/caddy:2.4.6-alpine as caddy-stage
-
+RUN apk add --no-cache tzdata
+ENV TZ=America/Vancouver
 EXPOSE 2015
 COPY Caddyfile /etc/caddy/Caddyfile
 COPY --from=build-stage /frontend/dist /srv
