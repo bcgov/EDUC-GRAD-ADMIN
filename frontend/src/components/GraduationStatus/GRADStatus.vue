@@ -356,7 +356,11 @@
                     )
                   "
                 >
-                  {{ studentGradStatus.schoolName }}<br />
+                  {{
+                    studentGradStatus.schoolName
+                      ? studentGradStatus.schoolName
+                      : schoolOfRecord.schoolName
+                  }}<br />
                   {{ studentGradStatus.schoolOfRecord }}
                 </b-button>
                 <b-popover
@@ -501,7 +505,11 @@
                     )
                   "
                 >
-                  {{ studentGradStatus.schoolAtGradName }}<br />
+                  {{
+                    studentGradStatus.schoolAtGradName
+                      ? studentGradStatus.schoolAtGradName
+                      : schoolAtGraduation.schoolName
+                  }}<br />
                   {{ studentGradStatus.schoolAtGrad }}
                 </b-button>
                 <b-popover
@@ -1342,6 +1350,8 @@ export default {
           this.studentGradStatus.studentStatusName = this.getStudentStatus(
             response.data.studentStatus
           );
+          this.getSchoolInfo(response.data.schoolOfRecord, "schoolOfRecord");
+          this.getSchoolInfo(response.data.schoolAtGrad, "schoolAtGrad");
           this.showEdit = false;
           this.editedGradStatus = {};
 
