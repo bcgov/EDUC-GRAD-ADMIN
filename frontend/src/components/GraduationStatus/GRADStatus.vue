@@ -377,8 +377,12 @@
                       </tr>
                       <tr>
                         <td>
-                          <strong>School name:</strong> <br />
-                          {{ schoolOfRecord.schoolName }}
+                          <strong>School Code and Name:</strong> <br />
+                          {{
+                            schoolOfRecord.minCode +
+                            " " +
+                            schoolOfRecord.schoolName
+                          }}
                         </td>
                       </tr>
                       <tr>
@@ -520,8 +524,12 @@
                     </tr>
                     <tr>
                       <td>
-                        <strong>School name:</strong> <br />
-                        {{ schoolAtGraduation.schoolName }}
+                        <strong>School Code and Name:</strong> <br />
+                        {{
+                          schoolAtGraduation.minCode +
+                          " " +
+                          schoolAtGraduation.schoolName
+                        }}
                       </td>
                     </tr>
                     <tr>
@@ -782,7 +790,6 @@ export default {
       dismissSecs: 3, // remove?
       dismissCountDown: 0, // remove?
       showModal: false,
-      showTop: false,
       showEdit: false,
       show: false,
       notificationMessage: "",
@@ -947,8 +954,9 @@ export default {
 
       //clear out whatever the user had for the program completion date
       if (
+        this.editedGradStatus.hasOwnProperty("programCompletionDate") &&
         this.studentGradStatus.programCompletionDate !=
-        this.editedGradStatus.programCompletionDate
+          this.editedGradStatus.programCompletionDate
       ) {
         this.editedGradStatus.programCompletionDate =
           this.studentGradStatus.programCompletionDate;
@@ -956,8 +964,9 @@ export default {
 
       // clear out whatever the user had for the adult start date
       if (
+        this.editedGradStatus.hasOwnProperty("adultStartDate") &&
         this.studentGradStatus.adultStartDate !=
-        this.editedGradStatus.adultStartDate
+          this.editedGradStatus.adultStartDate
       ) {
         this.editedGradStatus.adultStartDate =
           this.studentGradStatus.adultStartDate;
@@ -1280,6 +1289,8 @@ export default {
 
     cancelGradStatus() {
       this.showEdit = false;
+      this.editedGradStatus = {};
+
       this.warningFlags.schoolOfRecordWarning = false;
       this.warningFlags.schoolNotFoundWarning = false;
       this.errorFlags.numberError.adultStartDate = false;
@@ -1324,35 +1335,15 @@ export default {
       StudentService.editGraduationStatus(id, this.editedGradStatus)
         .then((response) => {
           this.updateStatus = response.data;
+          this.$store.dispatch("student/setStudentGradStatus", response.data);
           this.getStudentReportsAndCertificates();
-          this.studentGradStatus.pen = response.data.pen;
-          this.studentGradStatus.program = response.data.program;
-          this.studentGradStatus.programCompletionDate =
-            response.data.programCompletionDate;
-          this.studentGradStatus.honoursStanding =
-            response.data.honoursStanding;
-          this.studentGradStatus.gpa = response.data.gpa;
-          this.studentGradStatus.studentGrade = response.data.studentGrade;
-          this.studentGradStatus.schoolName = this.editedGradStatus.schoolName;
-          this.studentGradStatus.schoolOfRecord = response.data.schoolOfRecord;
-          this.studentGradStatus.schoolAtGradName =
-            this.editedGradStatus.schoolAtGradName;
-          this.studentGradStatus.schoolAtGrad = response.data.schoolAtGrad;
-          this.studentGradStatus.studentStatus = response.data.studentStatus;
-          this.studentGradStatus.recalculateGradStatus =
-            response.data.recalculateGradStatus;
-          this.studentGradStatus.updatedTimestamp =
-            response.data.updatedTimestamp;
-          this.studentGradStatus.adultStartDate = response.data.adultStartDate;
-          this.studentGradStatus.consumerEducationRequirementMet =
-            response.data.consumerEducationRequirementMet;
           this.getStudentGraduationOptionalPrograms();
           this.refreshStudentHistory();
           this.studentGradStatus.studentStatusName = this.getStudentStatus(
             response.data.studentStatus
           );
-          this.showTop = !this.showTop;
           this.showEdit = false;
+          this.editedGradStatus = {};
 
           this.showNotification("success", "GRAD Status Saved");
         })

@@ -32,6 +32,12 @@
             >
             </DisplayTable>
           </div>
+          <template #modal-footer="{ cancel }">
+            <!-- Emulate built in modal footer ok and cancel button actions -->
+            <b-button size="sm" variant="outline-secondary" v-on:click="cancel">
+              Close
+            </b-button>
+          </template>
         </b-modal>
         <b-btn
           variant="link"
