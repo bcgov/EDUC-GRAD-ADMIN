@@ -241,7 +241,7 @@
                       :fields="[
                         {
                           key: 'createDate',
-                          label: 'Undo Completion Date1',
+                          label: 'Undo Completion Date',
                           class: 'px-0 py-2 w-15',
                         },
                         {
