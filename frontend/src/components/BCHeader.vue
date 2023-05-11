@@ -20,7 +20,7 @@
             />
           </a>
           <h1>Graduation Records and Achievement Data</h1>
-          <span>v2.0.5</span>
+          <span v-if="version">v{{ version }}</span>
         </div>
         <div class="float-right user-profile">
           <slot></slot>
@@ -220,6 +220,7 @@ export default {
         schoolReports: "/school-reports",
         batchProcessing: "/batch-processing",
       },
+      version: process.env.EDUC_GRAD_VERSION,
     };
   },
   created() {
