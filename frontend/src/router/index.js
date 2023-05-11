@@ -292,7 +292,7 @@ const routes = [
     path: "/school-reports",
     name: "schoolReports",
     component: SchoolReports,
-    meat: {
+    meta: {
       requiresAuth: true,
     },
   },
