@@ -220,7 +220,7 @@ export default {
         schoolReports: "/school-reports",
         batchProcessing: "/batch-processing",
       },
-      version: process.env.EDUC_GRAD_VERSION,
+      version: process.env.VUE_APP_EDUC_GRAD_VERSION,
     };
   },
   created() {
