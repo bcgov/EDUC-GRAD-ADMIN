@@ -1,8 +1,7 @@
 FROM artifacts.developer.gov.bc.ca/docker-remote/node:16.17.1 as build-stage
 WORKDIR /frontend
 
-RUN echo "GRAD_VERSION=${GRAD_VERSION}"
-RUN echo "const version = '${process.env.EDUC_GRAD_VERSION}';\n\nmodule.exports = { version };" > ./src/config/config.js
+RUN printenv
 
 COPY package*.json ./
 RUN npm install
