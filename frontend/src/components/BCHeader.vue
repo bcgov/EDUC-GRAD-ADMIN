@@ -200,6 +200,7 @@
 import StudentService from "@/services/StudentService.js";
 import sharedMethods from "../sharedMethods";
 import { mapGetters } from "vuex";
+import { version } from "../config/config.js";
 export default {
   data() {
     return {
@@ -220,7 +221,7 @@ export default {
         schoolReports: "/school-reports",
         batchProcessing: "/batch-processing",
       },
-      version: process.env.VUE_APP_EDUC_GRAD_VERSION,
+      version: version,
     };
   },
   created() {
