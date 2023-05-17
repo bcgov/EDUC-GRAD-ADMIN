@@ -36,9 +36,15 @@ const batchRouter = require('./routes/batch-router');
 const distributionRouter = require('./routes/distribution-router');
 const graduationRouter = require('./routes/graduation-router');
 const reportsRouter = require('./routes/reports-router');
+const commonRouter = require('./routes/common-router');
 
 //initialize app
 const app = express();
+app.get("/version", function (req, res) {
+
+    res.send("Hello World");
+  
+  });
 app.set('trust proxy', 1);
 //sets security measures (headers, etc) 
 app.use(cors());
@@ -162,6 +168,7 @@ apiRouter.use('/v1/graduationreports', graduationReportsRouter);
 apiRouter.use('/v1/graduate', graduationRouter);
 apiRouter.use('/v1/reports', reportsRouter);
 apiRouter.use('/v1/school', TRAXRouter);
+apiRouter.use('/v1/version', commonRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

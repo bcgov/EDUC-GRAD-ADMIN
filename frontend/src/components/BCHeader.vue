@@ -198,6 +198,7 @@
 </template>
 <script>
 import StudentService from "@/services/StudentService.js";
+import CommonService from "@/services/CommonService.js";
 import sharedMethods from "../sharedMethods";
 import { mapGetters } from "vuex";
 export default {
@@ -220,12 +221,14 @@ export default {
         schoolReports: "/school-reports",
         batchProcessing: "/batch-processing",
       },
-      version: process.env.VUE_APP_VERSION,
+      version: "",
     };
   },
-  created() {
+  async created() {
     this.loadStudent = sharedMethods.loadStudent;
     this.showNotification = sharedMethods.showNotification;
+    let versionResponse = await CommonService.getVersion();
+    this.version = versionResponse.data;
   },
   computed: {
     ...mapGetters({
