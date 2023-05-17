@@ -40,11 +40,6 @@ const commonRouter = require('./routes/common-router');
 
 //initialize app
 const app = express();
-app.get("/version", function (req, res) {
-
-    res.send("Hello World");
-  
-  });
 app.set('trust proxy', 1);
 //sets security measures (headers, etc) 
 app.use(cors());
