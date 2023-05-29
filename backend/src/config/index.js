@@ -5,7 +5,8 @@ const path = require('path');
 dotenv.config();
 
 const env = process.env.NODE_ENV || 'local';
-
+const environment = process.env.EDUC_GRAD_ENV;
+console.log(process.env.NODE_ENV)
 nconf.argv()
   .env()
   .file({ file: path.join(__dirname, `${env}.json`) });
