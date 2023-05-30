@@ -14,7 +14,6 @@ router.get('/*', (req, res) => {
 
       const environtmentVersions = response.data.version;
   
-      console.log()
       let environment = req.get('host');
       if (environment === 'dev.grad.gov.bc.ca') {
         version = environtmentVersions.dev
