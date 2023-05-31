@@ -27,7 +27,6 @@
         </div>
       </div>
     </header>
-
     <b-navbar
       toggleable
       aria-label="Menu"
