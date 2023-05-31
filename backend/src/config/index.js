@@ -5,7 +5,6 @@ const path = require('path');
 dotenv.config();
 
 const env = process.env.NODE_ENV || 'local';
-
 nconf.argv()
   .env()
   .file({ file: path.join(__dirname, `${env}.json`) });
