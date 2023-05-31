@@ -49,7 +49,7 @@ Vue.filter("jobIdLabel", function (value) {
 Vue.filter("formatTime", function (value) {
   if (value) {
     return new Date(value).toLocaleString("en-CA", {
-      hourCycle: "h24",
+      hourCycle: "h23",
     });
   } else {
     return "";
