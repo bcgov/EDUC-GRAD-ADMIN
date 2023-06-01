@@ -30,7 +30,8 @@ export default {
       //simple solution to display banner to UI that indicates what environment the user is in;
       //currently determined via browser URL since this is a simple visual aid for devs and testers
       if (location.host.includes(this.environments.local)) {
-        this.environment = "local";
+        //this.environment = "local";
+        this.environment = "test";
       } else if (location.host.includes(this.environments.dev)) {
         this.environment = "dev";
       } else if (location.host.includes(this.environments.test)) {
@@ -49,7 +50,7 @@ export default {
   display: block;
   position: fixed;
   z-index: 101;
-  top: 0;
+  top: 106px;
   width: 100%;
   text-align: center;
 }
@@ -69,7 +70,9 @@ export default {
   background-color: #ffa6009d;
 }
 #env-banner .test-env {
-  background-color: #00000080;
+  background-color: #ff4b00;
   color: #fff;
+  width: 100%;
+  float: none;
 }
 </style>
