@@ -7,21 +7,29 @@ const axios = require('axios');
 
 router.get('/*', (req, res) => {
   // Handle GET request to /api/data
-  const fileUrl = "https://raw.githubusercontent.com/bcgov/EDUC-GRAD-ADMIN/main/version"
-  axios.get(fileUrl, { responseType: 'arraybuffer' })
-  .then((response) => {
-    const fileData = response.data;
-    const contentType = response.headers['content-type'];
-    const contentDisposition = `attachment; filename="external-file.pdf"`;
+  
+  const fileUrl = "https://raw.githubusercontent.com/bcgov/EDUC-GRAD-ADMIN/main/version2";
+  axios.get(fileUrl, { responseType: 'json' })
+    .then((response) => {
 
-    res.set('Content-Type', contentType);
-    res.set('Content-Disposition', contentDisposition);
-    res.send(fileData);
-  })
-  .catch((error) => {
-    console.error('Error retrieving file:', error);
-    res.status(500).send('Internal Server Error');
-  });
+      const environtmentVersions = response.data.version;
+  
+      let environment = req.get('host');
+      if (environment === 'dev.grad.gov.bc.ca') {
+        version = environtmentVersions.dev
+      } else if (environment === 'test.grad.gov.bc.ca') {
+        version = environtmentVersions.test
+      } else if (environment === 'grad.gov.bc.ca') {
+        version = environtmentVersions.prod
+      } else if (environment === 'localhost:8080') {
+        version = environtmentVersions.dev
+      }
+      res.send(version);
+    })
+    .catch((error) => {
+      console.error('Error retrieving file:', error);
+      res.status(500).send('Internal Server Error');
+    });
 
 
 });
