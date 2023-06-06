@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "The backend portion of the GRAD Administration web app",
   "scripts": {
-    "serve": "npm run setlocal && npm run servecmd",
+    "serve": "npm run setlocal && npm run setEnvironment && npm run servecmd",
+    "setEnvironment": "set EDUC_GRAD_ENV=DEV",
     "setlocal": "set NODE_ENV=local",
     "servecmd": "nodemon --max-old-space-size=250 ./src/server.js",
     "serve-linux": "export NODE_ENV=local && nodemon ./src/server.js",
