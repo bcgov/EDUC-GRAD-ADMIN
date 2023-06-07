@@ -20,14 +20,13 @@
             />
           </a>
           <h1>Graduation Records and Achievement Data</h1>
-          <span>v2.0.1</span>
+          <span v-if="version">v{{ version }}</span>
         </div>
         <div class="float-right user-profile">
           <slot></slot>
         </div>
       </div>
     </header>
-
     <b-navbar
       toggleable
       aria-label="Menu"
@@ -198,6 +197,7 @@
 </template>
 <script>
 import StudentService from "@/services/StudentService.js";
+import CommonService from "@/services/CommonService.js";
 import sharedMethods from "../sharedMethods";
 import { mapGetters } from "vuex";
 export default {
@@ -220,11 +220,14 @@ export default {
         schoolReports: "/school-reports",
         batchProcessing: "/batch-processing",
       },
+      version: "",
     };
   },
-  created() {
+  async created() {
     this.loadStudent = sharedMethods.loadStudent;
     this.showNotification = sharedMethods.showNotification;
+    let versionResponse = await CommonService.getVersion();
+    this.version = versionResponse.data;
   },
   computed: {
     ...mapGetters({

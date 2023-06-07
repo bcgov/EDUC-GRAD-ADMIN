@@ -97,7 +97,10 @@
                     downloadFile(
                       row.item.report,
                       'application/pdf',
-                      'school-report'
+                      'school-report_' +
+                        row.item.reportTypeCode +
+                        '_' +
+                        row.item.schoolOfRecord
                     )
                   "
                   href="#"
@@ -239,7 +242,7 @@ export default {
       this.mincode.contains = false;
     },
     downloadFile: function (data, mimeType, filename) {
-      sharedMethods.base64ToFileTypeAndOpenWindow(data, mimeType, filename);
+      sharedMethods.base64ToFileTypeAndDownload(data, mimeType, filename);
     },
   },
 };

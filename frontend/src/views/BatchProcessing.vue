@@ -743,7 +743,7 @@ export default {
           sortDirection: "desc",
           formatter: (value) => {
             let newValue = new Date(value);
-            value = newValue.toLocaleString("en-CA", { timeZone: "PST" });
+            value = newValue.toLocaleString("en-CA", { hourCycle: "h23" });
             return value;
           },
         },
