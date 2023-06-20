@@ -74,7 +74,9 @@
           details.where && details.what != 'REGALG' && details.what != 'TVRRUN'
         "
       >
-        <strong>Where: </strong>{{ details.where }}
+        <strong>Where: </strong>
+        <span v-if="details.psiTransmissionMode == 'FTP'">Download</span>
+        <span v-else>{{ details.where }}</span>
       </li>
     </ul>
   </div>
