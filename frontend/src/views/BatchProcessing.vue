@@ -69,7 +69,9 @@
                                           href="#"
                                           @click="
                                             downloadDISTRUNUSER(
-                                              row.item.jobExecutionId
+                                              row.item.jobExecutionId,
+                                              row.item.jobParameters
+                                                .transmissionType
                                             )
                                           "
                                           ><i class="fas fa-download"></i
@@ -794,15 +796,17 @@ export default {
   methods: {
     ...mapActions("batchprocessing", ["setScheduledBatchJobs"]),
 
-    downloadDISTRUNUSER(bid) {
-      DistributionService.downloadDISTRUNUSER(bid).then((response) => {
-        sharedMethods.base64ToFileTypeAndDownload(
-          response.data,
-          "application/zip",
-          bid
-        );
-        this.showNotification("success", "Download Completed");
-      });
+    downloadDISTRUNUSER(bid, transmissionMode = null) {
+      DistributionService.downloadDISTRUNUSER(bid, transmissionMode).then(
+        (response) => {
+          sharedMethods.base64ToFileTypeAndDownload(
+            response.data,
+            "application/zip",
+            bid
+          );
+          this.showNotification("success", "Download Completed");
+        }
+      );
     },
     removeEmpty(obj) {
       Object.keys(obj).forEach(
