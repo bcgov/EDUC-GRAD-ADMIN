@@ -318,7 +318,10 @@
           </div>
 
           <div
-            v-if="batch.details['who'] == 'District'"
+            v-if="
+              batch.details['who'] == 'District' &&
+              batch.details['what'] != 'DISTRUN_YE'
+            "
             class="float-left col-12 px-0"
           >
             <b-card class="mt-3 px-0" header="Include Geographic Districts">
@@ -445,7 +448,7 @@
               :options="[
                 { text: 'Choose...', value: '' },
                 { text: 'Paper', value: 'PAPER' },
-                { text: 'FTP', value: 'FTP', disabled: true },
+                { text: 'FTP', value: 'FTP' },
               ]"
               :value="batch.details['psiTransmissionMode']"
               @change="editBatchJob('psiTransmissionMode', $event)"
@@ -1152,8 +1155,6 @@ export default {
           group: [{ text: "School Category", value: "District" }],
           copies: true,
           where: true,
-          message:
-            "You are running a year end distribution run. Click the run button and confirm.",
         },
       },
     };
@@ -1761,6 +1762,7 @@ export default {
           if (event != "04" || event != "09") {
             this.clearBatchGroupDetails(id);
           }
+
           if (event == "04") {
             this.batch.districts = [
               { value: "098", districtName: "YUKON TERRITORIES", city: "Y" },
@@ -1771,6 +1773,17 @@ export default {
               { value: "103", districtName: "OFFSHORE INDEPENDENT", city: "Y" },
               {},
             ];
+          } else if (this.batch.details["what"] == "DISTRUN_YE") {
+            if (event == "01" || event == "02" || event == "03") {
+              this.batch.districts = [
+                {
+                  value: "all",
+                  districtName: "ALL DISTRICTS IN SCHOOL CATEGORY",
+                  city: "Y",
+                },
+                {},
+              ];
+            }
           }
         }
         if (type == "who" && batchDetail.details[type] != event) {

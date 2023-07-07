@@ -53,20 +53,29 @@
                                         row.item.jobParameters.payload
                                       "
                                     >
-                                      <div class="float-left">
-                                        <a
+                                      <div class="float-left py-2 px-0">
+                                        <b-link
+                                          :disabled="
+                                            row.item.status != 'COMPLETED'
+                                          "
                                           v-if="
                                             row.item.jobParameters.payload
-                                              .localDownload == 'Y'
+                                              .localDownload == 'Y' ||
+                                            (row.item.jobParameters
+                                              .transmissionType &&
+                                              row.item.jobParameters
+                                                .transmissionType == 'FTP')
                                           "
                                           href="#"
                                           @click="
                                             downloadDISTRUNUSER(
-                                              row.item.jobExecutionId
+                                              row.item.jobExecutionId,
+                                              row.item.jobParameters
+                                                .transmissionType
                                             )
                                           "
                                           ><i class="fas fa-download"></i
-                                        ></a>
+                                        ></b-link>
                                         <div v-else>&nbsp;&nbsp;</div>
                                       </div>
                                     </div>
@@ -787,15 +796,17 @@ export default {
   methods: {
     ...mapActions("batchprocessing", ["setScheduledBatchJobs"]),
 
-    downloadDISTRUNUSER(bid) {
-      DistributionService.downloadDISTRUNUSER(bid).then((response) => {
-        sharedMethods.base64ToFileTypeAndDownload(
-          response.data,
-          "application/zip",
-          bid
-        );
-        this.showNotification("success", "Download Completed");
-      });
+    downloadDISTRUNUSER(bid, transmissionMode = null) {
+      DistributionService.downloadDISTRUNUSER(bid, transmissionMode).then(
+        (response) => {
+          sharedMethods.base64ToFileTypeAndDownload(
+            response.data,
+            "application/zip",
+            bid
+          );
+          this.showNotification("success", "Download Completed");
+        }
+      );
     },
     removeEmpty(obj) {
       Object.keys(obj).forEach(
