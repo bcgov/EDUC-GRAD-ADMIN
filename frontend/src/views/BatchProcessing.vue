@@ -1016,13 +1016,13 @@ export default {
           }
         });
     },
-    runDISTRUN_YE(id) {
+    runDISTRUN_YE(request, id) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
-      BatchProcessingService.runDISTRUN_YE()
+      BatchProcessingService.runDISTRUN_YE(request)
         .then((response) => {
           this.getAdminDashboardData();
           this.cancelBatchJob(id);
@@ -1054,13 +1054,51 @@ export default {
           }
         });
     },
-    runDISTRUN_SUPP(id) {
+    runDISTRUN_SUPP(request, id) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
       BatchProcessingService.runDISTRUN_SUPP()
+        .then((response) => {
+          this.getAdminDashboardData();
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.getAdminDashboardData();
+            this.cancelBatchJob(id);
+            this.selectedTab = 0;
+            this.$bvToast.toast("This request is running in the background", {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "success",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
+    runNONGRADRUN(request, id) {
+      let requestId = id.replace("job-", "");
+      this.$set(this.spinners, id, true);
+      let index = id.replace("job-", "") - 1;
+      let value = true;
+      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      BatchProcessingService.runNONGRADRUN(request)
         .then((response) => {
           this.getAdminDashboardData();
           this.cancelBatchJob(id);
@@ -1457,6 +1495,17 @@ export default {
         } else {
           this.runDISTRUN_MONTHLY(id);
         }
+      } else if (this.tabContent[id].details["what"] == "NONGRADRUN") {
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "NDBJ";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runNONGRADRUN(request, id);
+        }
       } else if (this.tabContent[id].details["what"] == "DISTRUN_YE") {
         if (cronTime) {
           let scheduledRequest = {};
@@ -1466,7 +1515,7 @@ export default {
           scheduledRequest.payload = request;
           this.addScheduledJob(scheduledRequest, id);
         } else {
-          this.runDISTRUN_YE(id);
+          this.runDISTRUN_YE(request, id);
         }
       } else if (this.tabContent[id].details["what"] == "DISTRUNUSER") {
         if (cronTime) {

@@ -29,11 +29,11 @@ export default {
   runDISTRUN_SUPP(){
     return ApiService.apiAxios.get('/api/v1/batch/executesuppdisrunbatchjob');
   },
-  runDISTRUN_NONGRAD(){
-    return ApiService.apiAxios.get('/api/v1/batch/executenongraddisrunbatchjob');
+  runNONGRADRUN(request){
+    return ApiService.apiAxios.post('/api/v1/batch/executeyearlynongraddisrunbatchjob',request);
   },  
-  runDISTRUN_YE(){
-    return ApiService.apiAxios.get('/api/v1/batch/executeyearlydisrunbatchjob');
+  runDISTRUN_YE(request){
+    return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
   },
   runBlankDISTRUNUSERUserRequest(request, credentialType){
     return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/'+ credentialType, request);
