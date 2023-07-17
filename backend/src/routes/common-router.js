@@ -8,7 +8,7 @@ const axios = require('axios');
 router.get('/*', (req, res) => {
   // Handle GET request to /api/data
   
-  const fileUrl = "https://raw.githubusercontent.com/bcgov/EDUC-GRAD-ADMIN/main/version2";
+  const fileUrl = "https://raw.githubusercontent.com/bcgov/EDUC-GRAD-ADMIN/main/grad-version";
   axios.get(fileUrl, { responseType: 'json' })
     .then((response) => {
 
