@@ -7,7 +7,7 @@
       <strong>DEV</strong> environment
     </div>
     <div v-if="environment == 'test'" class="test-env">
-      <strong>UAT</strong> environment
+      <strong>TEST</strong> environment
     </div>
   </div>
 </template>
