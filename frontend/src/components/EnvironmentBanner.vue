@@ -7,7 +7,7 @@
       <strong>DEV</strong> environment
     </div>
     <div v-if="environment == 'test'" class="test-env">
-      <strong>UAT</strong> environment
+      <strong>TEST</strong> environment
     </div>
   </div>
 </template>
@@ -49,7 +49,7 @@ export default {
   display: block;
   position: fixed;
   z-index: 101;
-  top: 0;
+  top: 106px;
   width: 100%;
   text-align: center;
 }
@@ -60,16 +60,20 @@ export default {
   margin-right: 40px;
 }
 #env-banner .local-env {
-  background-color: #ffffff52;
+  background-color: #c1c1c152;
   color: #000;
   text-align: left;
   width: fit-content;
 }
 #env-banner .dev-env {
-  background-color: #ffa6009d;
+  background-color: #ffa60080;
+  width: 100%;
+  float: none;
 }
 #env-banner .test-env {
-  background-color: #00000080;
+  background-color: #ff4b00;
   color: #fff;
+  width: 100%;
+  float: none;
 }
 </style>
