@@ -42,9 +42,8 @@
         <li
           v-if="
             details.who == 'District' &&
-            details.categoryCode != '01' &&
-            details.categoryCode != '02' &&
-            details.categoryCode != '03'
+            details.what != 'DISTRUN_YE' &&
+            details.what != 'NONGRADRUN'
           "
         >
           <strong>District(s): </strong>
