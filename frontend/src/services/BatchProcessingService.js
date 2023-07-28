@@ -34,7 +34,7 @@ export default {
       // If the condition is true, set districts to an empty array
       request.districts = [];
     }
-    return ApiService.apiAxios.post('/api/v1/batch/executeyearlynongraddisrunbatchjob',request);
+    return ApiService.apiAxios.post('/api/v1/batch/executenongraddisrunbatchjob',request);
   },  
   runDISTRUN_YE(request){
     if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
