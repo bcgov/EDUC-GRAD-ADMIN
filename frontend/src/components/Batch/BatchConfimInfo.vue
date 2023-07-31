@@ -39,7 +39,13 @@
             </li>
           </ul>
         </li>
-        <li v-if="details.who == 'District'">
+        <li
+          v-if="
+            details.who == 'District' &&
+            details.what != 'DISTRUN_YE' &&
+            details.what != 'NONGRADRUN'
+          "
+        >
           <strong>District(s): </strong>
           <ul>
             <li
