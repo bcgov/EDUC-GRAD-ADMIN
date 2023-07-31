@@ -320,7 +320,9 @@
           <div
             v-if="
               batch.details['who'] == 'District' &&
-              batch.details['what'] != 'DISTRUN_YE'
+              batch.details['what'] != 'DISTRUN_YE' &&
+              batch.details['what'] != 'DISTRUN_SUPP' &&
+              batch.details['what'] != 'NONGRADRUN'
             "
             class="float-left col-12 px-0"
           >
@@ -333,7 +335,11 @@
                 >{{ validationMessage }}</b-alert
               >
               <b-form-checkbox
-                v-if="batch.details['what'] == 'DISTRUN_YE'"
+                v-if="
+                  batch.details['what'] == 'DISTRUN_YE' ||
+                  batch.details['what'] == 'DISTRUN_SUPP' ||
+                  batch.details['what'] == 'NONGRADRUN'
+                "
                 name="allDistrict"
                 :checked="batch.details['allDistricts']"
                 @change="editBatchJob('allDistricts', $event)"
@@ -1111,10 +1117,12 @@ export default {
           psiTransmissionMode: true,
         },
         DISTRUN_SUPP: {
+          group: [{ text: "School Category", value: "District" }],
           copies: true,
           where: true,
         },
         NONGRADRUN: {
+          group: [{ text: "School Category", value: "District" }],
           copies: true,
           where: true,
         },
@@ -1757,6 +1765,12 @@ export default {
           if (event == "DISTRUN_YE") {
             batchDetail.details["who"] = "District";
           }
+          if (event == "DISTRUN_SUPP") {
+            batchDetail.details["who"] = "District";
+          }
+          if (event == "NONGRADRUN") {
+            batchDetail.details["who"] = "District";
+          }
         }
         if (type == "categoryCode") {
           if (event != "04" || event != "09") {
@@ -1773,7 +1787,11 @@ export default {
               { value: "103", districtName: "OFFSHORE INDEPENDENT", city: "Y" },
               {},
             ];
-          } else if (this.batch.details["what"] == "DISTRUN_YE") {
+          } else if (
+            this.batch.details["what"] == "DISTRUN_YE" ||
+            this.batch.details["what"] == "DISTRUN_SUPP" ||
+            this.batch.details["what"] == "NONGRADRUN"
+          ) {
             if (event == "01" || event == "02" || event == "03") {
               this.batch.districts = [
                 {

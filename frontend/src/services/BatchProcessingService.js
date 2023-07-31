@@ -29,11 +29,19 @@ export default {
   runDISTRUN_SUPP(){
     return ApiService.apiAxios.get('/api/v1/batch/executesuppdisrunbatchjob');
   },
-  runDISTRUN_NONGRAD(){
-    return ApiService.apiAxios.get('/api/v1/batch/executenongraddisrunbatchjob');
+  runNONGRADRUN(request){
+    if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
+      // If the condition is true, set districts to an empty array
+      request.districts = [];
+    }
+    return ApiService.apiAxios.post('/api/v1/batch/executenongraddisrunbatchjob',request);
   },  
-  runDISTRUN_YE(){
-    return ApiService.apiAxios.get('/api/v1/batch/executeyearlydisrunbatchjob');
+  runDISTRUN_YE(request){
+    if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
+      // If the condition is true, set districts to an empty array
+      request.districts = [];
+    }
+    return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
   },
   runBlankDISTRUNUSERUserRequest(request, credentialType){
     return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/'+ credentialType, request);
