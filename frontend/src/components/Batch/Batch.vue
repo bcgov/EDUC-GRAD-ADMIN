@@ -320,12 +320,23 @@
           <div
             v-if="
               batch.details['who'] == 'District' &&
-              batch.details['what'] != 'DISTRUN_SUPP' &&
-              batch.details['categoryCode'] == '01'
+              batch.details['what'] != 'DISTRUN_SUPP'
             "
             class="float-left col-12 px-0"
           >
-            <b-card class="mt-3 px-0" header="Include Geographic Districts">
+            <div
+              v-if="
+                (batch.details['categoryCode'] != '01' &&
+                  batch.details['what'] == 'DISTRUN_YE') ||
+                (batch.details['categoryCode'] != '01' &&
+                  batch.details['what'] == 'NONGRADRUN')
+              "
+            ></div>
+            <b-card
+              v-else
+              class="mt-3 px-0"
+              header="Include Geographic Districts"
+            >
               <b-alert
                 dismissible
                 v-if="validationMessage"

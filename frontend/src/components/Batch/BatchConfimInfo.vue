@@ -40,11 +40,7 @@
           </ul>
         </li>
         <li
-          v-if="
-            details.who == 'District' &&
-            details.what != 'DISTRUN_YE' &&
-            details.what != 'NONGRADRUN'
-          "
+          v-if="details.who == 'District' && details.schoolCategoryCode != '01'"
         >
           <strong>District(s): </strong>
           <ul>
