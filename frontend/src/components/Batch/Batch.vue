@@ -1791,6 +1791,13 @@ export default {
             batchDetail.details["who"] = "District";
           }
         }
+        if(type == "gradDate"){
+          if(event == "Current Students"){
+            console.log("CURRENT STUDENT")
+            this.editBatchJob('gradDateFrom', '')
+            this.editBatchJob('gradDateTo', '')
+          }
+        }
         if (type == "categoryCode") {
           if (event != "04" || event != "09") {
             this.clearBatchGroupDetails(id);
