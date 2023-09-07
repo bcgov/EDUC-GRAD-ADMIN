@@ -1793,7 +1793,6 @@ export default {
         }
         if(type == "gradDate"){
           if(event == "Current Students"){
-            console.log("CURRENT STUDENT")
             this.editBatchJob('gradDateFrom', '')
             this.editBatchJob('gradDateTo', '')
           }
