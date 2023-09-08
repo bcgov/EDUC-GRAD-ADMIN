@@ -34,6 +34,7 @@ nconf.defaults({
     port: 8080,
     session: {
       maxAge: +process.env.SESSION_MAX_AGE
+      
     },
     administration: {
       roleAdmin: process.env.GRAD_ROLE_ADMIN,
@@ -63,7 +64,8 @@ nconf.defaults({
     privateKey: process.env.UI_PRIVATE_KEY,
     publicKey: process.env.UI_PUBLIC_KEY,
     audience: process.env.SERVER_FRONTEND,
-    issuer: process.env.ISSUER
+    issuer: process.env.ISSUER,
+    expiresIn: process.env.TOKEN_EXPIRES_IN
   },
   redis:{
     host:process.env.REDIS_HOST,
