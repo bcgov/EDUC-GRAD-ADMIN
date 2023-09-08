@@ -34,7 +34,6 @@ nconf.defaults({
     port: 8080,
     session: {
       maxAge: +process.env.SESSION_MAX_AGE
-      
     },
     administration: {
       roleAdmin: process.env.GRAD_ROLE_ADMIN,
