@@ -621,6 +621,7 @@ export default {
       tabs: "batchprocessing/getBatchProcessingTabs",
       spinners: "batchprocessing/getBatchTabsLoading",
       scheduledJobs: "batchprocessing/getScheduledBatchJobs",
+      userFullName: "auth/userFullName",
     }),
   },
   props: [
@@ -1543,6 +1544,7 @@ export default {
           }
           this.addScheduledJob(scheduledRequest, id);
         } else if (this.tabContent[id].details["where"] == "User") {
+          request.user = this.userFullName;
           this.runBlankDISTRUNUSERUserRequest(
             request,
             id,

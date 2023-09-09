@@ -11,17 +11,19 @@ export default {
     return ApiService.apiAxios.post('/api/v1/batch/tvrspecialrun', request);
   },
   runDISTRUNUSER(request,credentialType) {
-    if(credentialType == "OT"){
-      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT', request);
-    }else if(credentialType == "OC"){
-      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OC', request);
-    }else if(credentialType == "RC"){
-      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/RC', request);
-    }else if(credentialType == "Blank transcript print"){
-      return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OT', request);
-    }else if(credentialType == "Blank certificate print"){
-      return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OC', request);
-    }
+    console.log(request)
+    console.log(credentialType)
+    // if(credentialType == "OT"){
+    //   return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT', request);
+    // }else if(credentialType == "OC"){
+    //   return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OC', request);
+    // }else if(credentialType == "RC"){
+    //   return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/RC', request);
+    // }else if(credentialType == "Blank transcript print"){
+    //   return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OT', request);
+    // }else if(credentialType == "Blank certificate print"){
+    //   return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OC', request);
+    // }
   },     
   runDISTRUN_MONTHLY(){
     return ApiService.apiAxios.get('/api/v1/batch/executedisrunbatchjob');
