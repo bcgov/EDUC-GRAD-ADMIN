@@ -63,7 +63,8 @@ nconf.defaults({
     privateKey: process.env.UI_PRIVATE_KEY,
     publicKey: process.env.UI_PUBLIC_KEY,
     audience: process.env.SERVER_FRONTEND,
-    issuer: process.env.ISSUER
+    issuer: process.env.ISSUER,
+    expiresIn: process.env.TOKEN_EXPIRES_IN
   },
   redis:{
     host:process.env.REDIS_HOST,
