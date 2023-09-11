@@ -731,6 +731,18 @@
                 >
               </td>
             </tr>
+            <tr v-if="!showEdit">
+              <td><strong>Recalculate Grad Status:</strong></td>
+              <td>
+                {{ studentGradStatus.recalculateGradStatus ? "Y" : "N" }}
+              </td>
+            </tr>
+            <tr v-if="!showEdit">
+              <td><strong>Recalculate Projected Grad:</strong></td>
+              <td>
+                {{ studentGradStatus.recalculateProjectedGrad ? "Y" : "N" }}
+              </td>
+            </tr>
             <tr></tr>
           </tbody>
         </table>
