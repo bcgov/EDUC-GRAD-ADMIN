@@ -734,13 +734,13 @@
             <tr v-if="!showEdit">
               <td><strong>Recalculate Grad Status:</strong></td>
               <td>
-                {{ studentGradStatus.recalculateGradStatus ? "Y" : "N" }}
+                {{ String(studentGradStatus.recalculateGradStatus) }}
               </td>
             </tr>
             <tr v-if="!showEdit">
               <td><strong>Recalculate Projected Grad:</strong></td>
               <td>
-                {{ studentGradStatus.recalculateProjectedGrad ? "Y" : "N" }}
+                {{ String(studentGradStatus.recalculateProjectedGrad) }}
               </td>
             </tr>
             <tr></tr>
