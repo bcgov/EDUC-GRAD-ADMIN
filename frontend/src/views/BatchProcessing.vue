@@ -1061,7 +1061,7 @@ export default {
       let index = id.replace("job-", "") - 1;
       let value = true;
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
-      BatchProcessingService.runDISTRUN_SUPP()
+      BatchProcessingService.runDISTRUN_SUPP(request)
         .then((response) => {
           this.getAdminDashboardData();
           this.cancelBatchJob(id);
@@ -1567,7 +1567,7 @@ export default {
           scheduledRequest.payload = request;
           this.addScheduledJob(scheduledRequest, id);
         } else {
-          this.runDISTRUN_SUPP(id);
+          this.runDISTRUN_SUPP(request, id);
         }
       }
     },
