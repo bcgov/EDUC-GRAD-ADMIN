@@ -67,7 +67,7 @@ export default {
     return ApiService.apiAxios.delete('/api/v1/batch/schedule/remove/' + id);
   },
   batchProcessingRoutines() {
-    return ApiService.apiAxios.get('/api/v1/batch/processing/all/');
+    return ApiService.apiAxios.get('/api/v1/batch/processing/all');
   },
   batchProcessingToggleRoutine(jobType){
     return ApiService.apiAxios.put('/api/v1/batch/processing/toggle/' + jobType );
