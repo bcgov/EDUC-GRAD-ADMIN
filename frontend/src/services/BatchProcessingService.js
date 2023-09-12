@@ -11,25 +11,27 @@ export default {
     return ApiService.apiAxios.post('/api/v1/batch/tvrspecialrun', request);
   },
   runDISTRUNUSER(request,credentialType) {
-    console.log(request)
-    console.log(credentialType)
-    // if(credentialType == "OT"){
-    //   return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT', request);
-    // }else if(credentialType == "OC"){
-    //   return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OC', request);
-    // }else if(credentialType == "RC"){
-    //   return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/RC', request);
-    // }else if(credentialType == "Blank transcript print"){
-    //   return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OT', request);
-    // }else if(credentialType == "Blank certificate print"){
-    //   return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OC', request);
-    // }
+    if(credentialType == "OT"){
+      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT', request);
+    }else if(credentialType == "OC"){
+      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OC', request);
+    }else if(credentialType == "RC"){
+      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/RC', request);
+    }else if(credentialType == "Blank transcript print"){
+      return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OT', request);
+    }else if(credentialType == "Blank certificate print"){
+      return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OC', request);
+    }
   },     
   runDISTRUN_MONTHLY(){
     return ApiService.apiAxios.get('/api/v1/batch/executedisrunbatchjob');
   },
-  runDISTRUN_SUPP(){
-    return ApiService.apiAxios.get('/api/v1/batch/executesuppdisrunbatchjob');
+  runDISTRUN_SUPP(request){
+    if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
+      // If the condition is true, set districts to an empty array
+      request.districts = [];
+    }    
+    return ApiService.apiAxios.post('/api/v1/batch/executesuppdisrunbatchjob',request);
   },
   runNONGRADRUN(request){
     if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
