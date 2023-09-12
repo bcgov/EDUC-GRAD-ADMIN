@@ -621,6 +621,7 @@ export default {
       tabs: "batchprocessing/getBatchProcessingTabs",
       spinners: "batchprocessing/getBatchTabsLoading",
       scheduledJobs: "batchprocessing/getScheduledBatchJobs",
+      userFullName: "auth/userFullName",
     }),
   },
   props: [
@@ -1060,7 +1061,7 @@ export default {
       let index = id.replace("job-", "") - 1;
       let value = true;
       this.$store.commit("batchprocessing/setTabLoading", { index, value });
-      BatchProcessingService.runDISTRUN_SUPP()
+      BatchProcessingService.runDISTRUN_SUPP(request)
         .then((response) => {
           this.getAdminDashboardData();
           this.cancelBatchJob(id);
@@ -1543,6 +1544,7 @@ export default {
           }
           this.addScheduledJob(scheduledRequest, id);
         } else if (this.tabContent[id].details["where"] == "User") {
+          request.user = this.userFullName;
           this.runBlankDISTRUNUSERUserRequest(
             request,
             id,
@@ -1565,7 +1567,7 @@ export default {
           scheduledRequest.payload = request;
           this.addScheduledJob(scheduledRequest, id);
         } else {
-          this.runDISTRUN_SUPP(id);
+          this.runDISTRUN_SUPP(request, id);
         }
       }
     },

@@ -26,8 +26,12 @@ export default {
   runDISTRUN_MONTHLY(){
     return ApiService.apiAxios.get('/api/v1/batch/executedisrunbatchjob');
   },
-  runDISTRUN_SUPP(){
-    return ApiService.apiAxios.get('/api/v1/batch/executesuppdisrunbatchjob');
+  runDISTRUN_SUPP(request){
+    if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
+      // If the condition is true, set districts to an empty array
+      request.districts = [];
+    }    
+    return ApiService.apiAxios.post('/api/v1/batch/executesuppdisrunbatchjob',request);
   },
   runNONGRADRUN(request){
     if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
