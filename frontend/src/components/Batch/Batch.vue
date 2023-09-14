@@ -169,7 +169,7 @@
             <div
               class="p-0 my-3 col-3"
               v-if="
-                batch.details['what'] != 'DISTRUN' ||
+                (batch.details['what'] != 'DISTRUN' && batch.details['what'] != 'NONGRADRUN' && batch.details['what'] != 'DISTRUN_YE' && batch.details['what'] != 'DISTRUN_SUPP' )||
                 batch.details['categoryCode'] == '01'
               "
             >
