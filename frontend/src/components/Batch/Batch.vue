@@ -169,7 +169,10 @@
             <div
               class="p-0 my-3 col-3"
               v-if="
-                (batch.details['what'] != 'DISTRUN' && batch.details['what'] != 'NONGRADRUN' && batch.details['what'] != 'DISTRUN_YE' && batch.details['what'] != 'DISTRUN_SUPP' )||
+                (batch.details['what'] != 'DISTRUN' &&
+                  batch.details['what'] != 'NONGRADRUN' &&
+                  batch.details['what'] != 'DISTRUN_YE' &&
+                  batch.details['what'] != 'DISTRUN_SUPP') ||
                 batch.details['categoryCode'] == '01'
               "
             >
@@ -1335,6 +1338,15 @@ export default {
             this.batchTypes = this.batchTypes.filter(
               (type) => type.code != "DISTRUN_SUPP"
             );
+          //disable code for release 1.6.0
+          if (this.allowRunDistrunSupplemental) {
+            this.batchTypes = this.batchTypes.map((type) => {
+              if (type.code === "DISTRUN_SUPP") {
+                type.disabled = true;
+              }
+              return type;
+            });
+          }
           if (!this.allowRunNonGradRun)
             this.batchTypes = this.batchTypes.filter(
               (type) => type.code != "NONGRADRUN"
