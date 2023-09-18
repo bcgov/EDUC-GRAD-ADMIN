@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ batch }}
     <b-alert :show="batchTypeDesc != ''" variant="info">
       {{ batchTypeDesc }}
     </b-alert>
@@ -19,11 +20,12 @@
             >
             </b-form-select>
           </div>
+
           <div class="mt-2" v-if="batch.details['what'] == 'DISTRUNUSER'">
             <label class="font-weight-bold">Credential Type</label>
             <b-form-select
               id="inline-form-select-audience"
-              class="mb-2 mr-sm-2 mb-sm-0"
+              class="mb-2 mr-sm-2 mb-sm-0 col-3"
               :options="[
                 { text: 'Choose...', value: '' },
                 {
@@ -47,6 +49,7 @@
               :value="batch.details['credential']"
               @change="editBatchJob('credential', $event)"
             ></b-form-select>
+
             <b-card
               v-if="batch.details['credential'] == 'Blank transcript print'"
               class="mt-3 px-0"
@@ -132,6 +135,17 @@
               :options="groupFormValues(batch.details['what'])"
               :value="batch.details['who']"
               @change="editBatchJob('who', $event)"
+            ></b-form-select>
+          </div>
+          <div class="mt-2" v-if="batch.details['what'] == 'ARCHIVE_STUDENTS'">
+            <b-form-select
+              id="inline-form-select-audience"
+              class="mb-2 mr-sm-2 mb-sm-0"
+              :options="reportTypes"
+              value-field="code"
+              text-field="label"
+              :value="batch.details['reportType']"
+              @change="editBatchJob('reportType', $event)"
             ></b-form-select>
           </div>
 
@@ -1087,6 +1101,8 @@ export default {
   },
   data: function () {
     return {
+      reportTypes: [],
+      reportType: "",
       batchIsValid: false,
       batchTypes: [],
       batchRunDetails: "",
@@ -1171,6 +1187,21 @@ export default {
           copies: true,
           where: true,
         },
+        ARCHIVE_STUDENTS: {
+          group: [
+            {
+              text: "School of Record (All students with a School of Record matching the entered school and with a student status of CUR or TER will have their status changed to ARC)",
+              value: "School",
+            },
+            {
+              text: "All Students (All students with a student status of CUR or TER will have their student status changed to ARC)",
+              value: "All Students",
+            },
+          ],
+
+          copies: true,
+          where: true,
+        },
       },
     };
   },
@@ -1238,6 +1269,26 @@ export default {
     this.transcriptTypes = this.getTranscriptTypes();
     this.certificateTypes = this.getCertificateTypes();
     this.batchTypes = this.getBatchJobTypes();
+    this.reportTypes = [
+      {
+        code: "GRADREGARC",
+        label: "GRAD REG ARC",
+        description:
+          "The final daily, cumulative list of student in the current cycle who have graduated, based on the latest",
+      },
+      {
+        code: "NONGRADREGARC",
+        label: "NONGRAD REG ARCHIVE",
+        description:
+          "The final daily, cumulative list of student in the current cycle who have not-yet graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
+      },
+      {
+        code: "NONGRADPRJARC",
+        label: "NON GRAD PRJ ARC",
+        description:
+          "The final list of grade 12 or AD students on a graduation program who were not projected to graduate based on missing course registrations or assessment registrations submitted by the school in the reporting cycle.",
+      },
+    ];
   },
 
   methods: {
@@ -1339,6 +1390,19 @@ export default {
             this.batchTypes = this.batchTypes.filter(
               (type) => type.code != "NONGRADRUN"
             );
+
+          this.batchTypes.push({
+            code: "ARCHIVE_STUDENTS",
+            label: "Archive Students",
+            description:
+              "Archive students. This process will NOT update any of the students recalculation flags, i.e. the students should not get re-run through the graduation algorithm nor the TVR process.",
+          });
+          this.batchTypes.push({
+            code: "MANAGESCHOOLREPORTS",
+            label: "Manage School Reports",
+            description:
+              "User will select what type of run they wish to initiate via a drop-down list of the available types of batch run.  For this year-end process the run type will be Manage School Reports.",
+          });
         })
         .catch((error) => {
           this.$bvToast.toast("ERROR " + error.response.statusText, {
@@ -1760,6 +1824,7 @@ export default {
         let batchDetail = this.batch;
         //change the value
         if (type == "what" && batchDetail.details[type] != event) {
+          console.log(event);
           for (const batchType of this.batchTypes) {
             if (batchType.code == event) {
               this.batchTypeDesc = batchType.description;
@@ -1777,6 +1842,9 @@ export default {
           }
           if (event == "NONGRADRUN") {
             batchDetail.details["who"] = "District";
+          }
+          if (event == "ARCHIVE_STUDENTS") {
+            batchDetail.details["who"] = "School";
           }
         }
         if (type == "gradDate") {
@@ -1854,6 +1922,7 @@ export default {
             id,
           });
         }
+
         batchDetail.details[type] = event;
         this.$store.commit("batchprocessing/editBatchDetails", {
           batchDetail,

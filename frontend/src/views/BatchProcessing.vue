@@ -843,6 +843,7 @@ export default {
           where: "",
           copies: "1",
           psiYear: this.getCurrentPSIYear(),
+          reportType: "",
         },
         students: [{}],
         schools: [{}],
@@ -1216,6 +1217,16 @@ export default {
           }
         });
     },
+    runArchiveStudents(request, id) {
+      console.log("Running Archive");
+      console.log(request);
+      console.log(id);
+    },
+    runManageStudents(request, id) {
+      console.log("Running Archive");
+      console.log(request);
+      console.log(id);
+    },
     runPSIRUN(request, id, transmissionType) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
@@ -1568,6 +1579,17 @@ export default {
           this.addScheduledJob(scheduledRequest, id);
         } else {
           this.runDISTRUN_SUPP(request, id);
+        }
+      } else if (this.tabContent[id].details["what"] == "ARCHIVE_STUDENTS") {
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "ARCS";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runArchiveStudents(request, id);
         }
       }
     },
