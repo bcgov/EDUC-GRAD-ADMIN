@@ -731,6 +731,18 @@
                 >
               </td>
             </tr>
+            <tr v-if="!showEdit">
+              <td><strong>Recalculate Grad Status:</strong></td>
+              <td>
+                {{ String(studentGradStatus.recalculateGradStatus) }}
+              </td>
+            </tr>
+            <tr v-if="!showEdit">
+              <td><strong>Recalculate Projected Grad:</strong></td>
+              <td>
+                {{ String(studentGradStatus.recalculateProjectedGrad) }}
+              </td>
+            </tr>
             <tr></tr>
           </tbody>
         </table>

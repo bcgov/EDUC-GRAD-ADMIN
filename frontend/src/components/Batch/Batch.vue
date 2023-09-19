@@ -140,7 +140,6 @@
               batch.details['what'] != '' &&
               batch.details['who'] != 'Student' &&
               batch.details['what'] != 'DISTRUN' &&
-              batch.details['what'] != 'DISTRUN_SUPP' &&
               batch.details['who'] != 'PSI' &&
               batch.details['credential'] != 'Blank transcript print' &&
               batch.details['credential'] != 'Blank certificate print'
@@ -170,8 +169,10 @@
             <div
               class="p-0 my-3 col-3"
               v-if="
-                batch.details['what'] != 'DISTRUN' &&
-                batch.details['what'] != 'DISTRUN_SUPP' &&
+                (batch.details['what'] != 'DISTRUN' &&
+                  batch.details['what'] != 'NONGRADRUN' &&
+                  batch.details['what'] != 'DISTRUN_YE' &&
+                  batch.details['what'] != 'DISTRUN_SUPP') ||
                 batch.details['categoryCode'] == '01'
               "
             >
@@ -285,7 +286,11 @@
               :options="[
                 { text: 'Download', value: 'localDownload' },
                 'BC Mail',
-                { text: 'User: ' + userFullName, value: 'User' },
+                {
+                  text: 'User: ' + userFullName,
+                  value: 'User',
+                  disabled: true,
+                },
               ]"
               :disabled="
                 batch.details['who'] == 'Ministry of Advanced Education' ||
@@ -318,10 +323,7 @@
           </div>
 
           <div
-            v-if="
-              batch.details['who'] == 'District' &&
-              batch.details['what'] != 'DISTRUN_SUPP'
-            "
+            v-if="batch.details['who'] == 'District'"
             class="float-left col-12 px-0"
           >
             <div
@@ -329,7 +331,9 @@
                 (batch.details['categoryCode'] != '01' &&
                   batch.details['what'] == 'DISTRUN_YE') ||
                 (batch.details['categoryCode'] != '01' &&
-                  batch.details['what'] == 'NONGRADRUN')
+                  batch.details['what'] == 'NONGRADRUN') ||
+                (batch.details['categoryCode'] != '01' &&
+                  batch.details['what'] == 'DISTRUN_SUPP')
               "
             ></div>
             <b-card
@@ -1127,6 +1131,7 @@ export default {
           psiTransmissionMode: true,
         },
         DISTRUN_SUPP: {
+          group: [{ text: "School Category", value: "District" }],
           copies: true,
           where: true,
         },
@@ -1337,6 +1342,15 @@ export default {
             this.batchTypes = this.batchTypes.filter(
               (type) => type.code != "DISTRUN_SUPP"
             );
+          //disable code for release 1.6.0
+          if (this.allowRunDistrunSupplemental) {
+            this.batchTypes = this.batchTypes.map((type) => {
+              if (type.code === "DISTRUN_SUPP") {
+                type.disabled = true;
+              }
+              return type;
+            });
+          }
           if (!this.allowRunNonGradRun)
             this.batchTypes = this.batchTypes.filter(
               (type) => type.code != "NONGRADRUN"
@@ -1776,19 +1790,15 @@ export default {
           }
           if (event == "DISTRUN_SUPP") {
             batchDetail.details["who"] = "District";
-            batchDetail.details["categoryCode"] = "all";
-
-            this.batch.districts = [
-              {
-                value: "all",
-                districtName: "ALL DISTRICTS IN SCHOOL CATEGORY",
-                city: "Y",
-              },
-              {},
-            ];
           }
           if (event == "NONGRADRUN") {
             batchDetail.details["who"] = "District";
+          }
+        }
+        if (type == "gradDate") {
+          if (event == "Current Students") {
+            this.editBatchJob("gradDateFrom", "");
+            this.editBatchJob("gradDateTo", "");
           }
         }
         if (type == "categoryCode") {
@@ -1808,7 +1818,8 @@ export default {
             ];
           } else if (
             this.batch.details["what"] == "DISTRUN_YE" ||
-            this.batch.details["what"] == "NONGRADRUN"
+            this.batch.details["what"] == "NONGRADRUN" ||
+            this.batch.details["what"] == "DISTRUN_SUPP"
           ) {
             if (event == "02" || event == "03") {
               this.batch.districts = [
