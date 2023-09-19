@@ -286,7 +286,11 @@
               :options="[
                 { text: 'Download', value: 'localDownload' },
                 'BC Mail',
-                { text: 'User: ' + userFullName, value: 'User' },
+                {
+                  text: 'User: ' + userFullName,
+                  value: 'User',
+                  disabled: true,
+                },
               ]"
               :disabled="
                 batch.details['who'] == 'Ministry of Advanced Education' ||
