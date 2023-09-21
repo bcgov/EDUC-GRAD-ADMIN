@@ -63,7 +63,8 @@ export default {
   runYearlyArchiveBatchJobSchools(request){
     // console.log("RUNNING ARCHIVE SCHOOL REPORTS")
     // console.log("/api/v1/batch/executeyearlyarchivebatchjobstudents")
-   //eslint-disable-next-line
+   
+    //eslint-disable-next-line
     console.log(request)
 
     return {}
