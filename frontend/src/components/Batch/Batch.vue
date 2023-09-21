@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ batch }}
     <b-alert :show="batchTypeDesc != ''" variant="info">
       {{ batchTypeDesc }}
     </b-alert>
@@ -211,7 +210,6 @@
                   batch.details['what'] != 'NONGRADRUN' &&
                   batch.details['what'] != 'DISTRUN_YE' &&
                   batch.details['what'] != 'DISTRUN_SUPP' &&
-                  batch.details['what'] != 'MANAGE_SCHOOL_REPORTS' &&
                   batch.details['what'] != 'ARCHIVE_STUDENTS') ||
                 batch.details['categoryCode'] == '01'
               "
@@ -1244,8 +1242,8 @@ export default {
                 "All students with a School of Record matching the entered school and with a student status of CUR or TER will have their status changed to ARC",
             },
             {
-              text: "All Students (All students with a student status of CUR or TER will have their student status changed to ARC)",
-              value: "All Students",
+              text: "All Schools",
+              value: "All Schools",
             },
           ],
 
@@ -1321,20 +1319,20 @@ export default {
     this.batchTypes = this.getBatchJobTypes();
     this.reportTypes = [
       {
-        code: "GRADREGARC",
-        label: "GRAD REG ARC",
-        description:
-          "The final daily, cumulative list of student in the current cycle who have graduated, based on the latest",
-      },
-      {
         code: "NONGRADREGARC",
-        label: "NONGRAD REG ARCHIVE",
+        label: "Archived Not-Yet Graduated Students (MM YYYY to MM YYYY) Report",
         description:
           "The final daily, cumulative list of student in the current cycle who have not-yet graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
       },
       {
+        code: "GRADREGARC",
+        label: "Archived Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
+        description:
+          "The final daily, cumulative list of student in the current cycle who have graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
+      },
+      {
         code: "NONGRADPRJARC",
-        label: "NON GRAD PRJ ARC",
+        label: "Archived Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
         description:
           "The final list of grade 12 or AD students on a graduation program who were not projected to graduate based on missing course registrations or assessment registrations submitted by the school in the reporting cycle.",
       },
@@ -1891,7 +1889,6 @@ export default {
         let batchDetail = this.batch;
         //change the value
         if (type == "what" && batchDetail.details[type] != event) {
-          console.log(event);
           for (const batchType of this.batchTypes) {
             if (batchType.code == event) {
               this.batchTypeDesc = batchType.description;

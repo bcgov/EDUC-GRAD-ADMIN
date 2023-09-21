@@ -50,9 +50,6 @@ export default {
       state.tabs.push(id);
     }, 
     editBatchDetails(state,payload){
-      console.log("XX")
-      console.log(payload['batchDetail'])
-      console.log("YY")
       state.batchDetails[payload['id']]=payload['batchDetail'];
     },
     clearBatchDetails(state,payload){

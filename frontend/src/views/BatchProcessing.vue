@@ -1218,10 +1218,73 @@ export default {
         });
     },
     runArchiveStudents(request, id) {
-      console.log("Running Archive");
-      console.log(request);
-      console.log(id);
+      let requestId = id.replace("job-", "");
+      this.$set(this.spinners, id, true);
+      let index = id.replace("job-", "") - 1;
+      let value = true;
+      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      BatchProcessingService.runYearlyArchiveBatchJobStudents(request)
+        .then((response) => {
+          //update the admin dashboard
+          this.getAdminDashboardData();
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
+          if (response) {
+            this.$bvToast.toast(
+              "Batch run has started for request " + requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.cancelBatchJob(id);
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
+          }
+        });
     },
+    runManageSchoolReports(request, id) {
+      let requestId = id.replace("job-", "");
+      this.$set(this.spinners, id, true);
+      let index = id.replace("job-", "") - 1;
+      let value = true;
+      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      BatchProcessingService.runYearlyArchiveBatchJobSchools(request)
+        .then((response) => {
+          //update the admin dashboard
+          this.getAdminDashboardData();
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
+          if (response) {
+            this.$bvToast.toast(
+              "Batch run has started for request " + requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.cancelBatchJob(id);
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
+          }
+        });
+    },    
     runManageStudents(request, id) {
       console.log("Running Archive");
       console.log(request);
@@ -1591,6 +1654,17 @@ export default {
           this.addScheduledJob(scheduledRequest, id);
         } else {
           this.runArchiveStudents(request, id);
+        }
+      }  else if (this.tabContent[id].details["what"] == "MANAGE_SCHOOL_REPORTS") {
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "ARCS";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runManageSchoolReports(request, id);
         }
       }
     },
