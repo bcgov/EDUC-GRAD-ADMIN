@@ -1446,6 +1446,7 @@ export default {
         schoolCategoryCodes: [this.tabContent[id].details["categoryCode"]],
         programs: programs,
         psiCodes: psi,
+        reportType: [this.tabContent[id].details["reportType"]],
         gradDateFrom: gradDateFrom,
         gradDateTo: gradDateTo,
         validateInput: false,

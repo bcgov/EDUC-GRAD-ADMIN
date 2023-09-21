@@ -20,6 +20,21 @@
             >
             </b-form-select>
           </div>
+          <div
+            class="mt-2"
+            v-if="batch.details['what'] == 'MANAGE_SCHOOL_REPORTS'"
+          >
+            <label class="font-weight-bold">Report Type</label>
+            <b-form-select
+              id="inline-form-select-audience"
+              class="mb-2 mr-sm-2 mb-sm-0"
+              :options="reportTypes"
+              value-field="code"
+              text-field="label"
+              :value="batch.details['reportType']"
+              @change="editBatchJob('reportType', $event)"
+            ></b-form-select>
+          </div>
 
           <div class="mt-2" v-if="batch.details['what'] == 'DISTRUNUSER'">
             <label class="font-weight-bold">Credential Type</label>
@@ -137,18 +152,27 @@
               @change="editBatchJob('who', $event)"
             ></b-form-select>
           </div>
-          <div class="mt-2" v-if="batch.details['what'] == 'ARCHIVE_STUDENTS'">
-            <b-form-select
-              id="inline-form-select-audience"
-              class="mb-2 mr-sm-2 mb-sm-0"
-              :options="reportTypes"
-              value-field="code"
-              text-field="label"
-              :value="batch.details['reportType']"
-              @change="editBatchJob('reportType', $event)"
-            ></b-form-select>
+          <div v-if="batch.details['what'] == 'ARCHIVE_STUDENTS'">
+            <b-alert
+              :show="
+                batch.details['what'] == 'ARCHIVE_STUDENTS' &&
+                batch.details['who'] == 'School'
+              "
+            >
+              All students with a School of Record matching the entered school
+              and with a student status of CUR or TER will have their status
+              changed to ARC
+            </b-alert>
+            <b-alert
+              :show="
+                batch.details['what'] == 'ARCHIVE_STUDENTS' &&
+                batch.details['who'] == 'All Students'
+              "
+            >
+              All students with a student status of CUR or TER will have their
+              student status changed to ARC
+            </b-alert>
           </div>
-
           <div
             v-if="
               batch.details['what'] != '' &&
@@ -186,7 +210,9 @@
                 (batch.details['what'] != 'DISTRUN' &&
                   batch.details['what'] != 'NONGRADRUN' &&
                   batch.details['what'] != 'DISTRUN_YE' &&
-                  batch.details['what'] != 'DISTRUN_SUPP') ||
+                  batch.details['what'] != 'DISTRUN_SUPP' &&
+                  batch.details['what'] != 'MANAGE_SCHOOL_REPORTS' &&
+                  batch.details['what'] != 'ARCHIVE_STUDENTS') ||
                 batch.details['categoryCode'] == '01'
               "
             >
@@ -1197,8 +1223,25 @@ export default {
         ARCHIVE_STUDENTS: {
           group: [
             {
-              text: "School of Record (All students with a School of Record matching the entered school and with a student status of CUR or TER will have their status changed to ARC)",
+              text: "School",
               value: "School",
+            },
+            {
+              text: "All Students",
+              value: "All Students",
+            },
+          ],
+
+          copies: true,
+          where: true,
+        },
+        MANAGE_SCHOOL_REPORTS: {
+          group: [
+            {
+              text: "School",
+              value: "School",
+              description:
+                "All students with a School of Record matching the entered school and with a student status of CUR or TER will have their status changed to ARC",
             },
             {
               text: "All Students (All students with a student status of CUR or TER will have their student status changed to ARC)",
@@ -1330,6 +1373,7 @@ export default {
         this.batchIsValid = false;
         return;
       }
+
       if (
         this.batch.details["who"] == "District" &&
         !this.batch.details["categoryCode"]
@@ -1345,6 +1389,13 @@ export default {
           this.batchIsValid = false;
           return;
         }
+      }
+      if (
+        this.batch.details["what"] == "MANAGE_SCHOOL_REPORTS" &&
+        this.batch.details["reportType"] == ""
+      ) {
+        this.batchIsValid = false;
+        return;
       }
       if (
         this.batch.details["what"] == "DISTRUNUSER" &&
@@ -1414,7 +1465,7 @@ export default {
               "Archive students. This process will NOT update any of the students recalculation flags, i.e. the students should not get re-run through the graduation algorithm nor the TVR process.",
           });
           this.batchTypes.push({
-            code: "MANAGESCHOOLREPORTS",
+            code: "MANAGE_SCHOOL_REPORTS",
             label: "Manage School Reports",
             description:
               "User will select what type of run they wish to initiate via a drop-down list of the available types of batch run.  For this year-end process the run type will be Manage School Reports.",
