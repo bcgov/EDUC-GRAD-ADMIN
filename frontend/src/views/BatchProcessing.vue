@@ -1285,11 +1285,6 @@ export default {
           }
         });
     },    
-    runManageStudents(request, id) {
-      console.log("Running Archive");
-      console.log(request);
-      console.log(id);
-    },
     runPSIRUN(request, id, transmissionType) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
