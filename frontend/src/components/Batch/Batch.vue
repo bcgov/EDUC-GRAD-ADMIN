@@ -26,7 +26,7 @@
             <label class="font-weight-bold">Report Type</label>
             <b-form-select
               id="inline-form-select-audience"
-              class="mb-2 mr-sm-2 mb-sm-0"
+              class="mb-2 mr-sm-2 mb-sm-0 col-12"
               :options="reportTypes"
               value-field="code"
               text-field="label"
@@ -39,7 +39,7 @@
             <label class="font-weight-bold">Credential Type</label>
             <b-form-select
               id="inline-form-select-audience"
-              class="mb-2 mr-sm-2 mb-sm-0 col-3"
+              class="mb-2 mr-sm-2 mb-sm-0 col-12"
               :options="[
                 { text: 'Choose...', value: '' },
                 {
@@ -1320,19 +1320,22 @@ export default {
     this.reportTypes = [
       {
         code: "NONGRADREGARC",
-        label: "Archived Not-Yet Graduated Students (MM YYYY to MM YYYY) Report",
+        label:
+          "Archived Not-Yet Graduated Students (MM YYYY to MM YYYY) Report",
         description:
           "The final daily, cumulative list of student in the current cycle who have not-yet graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
       },
       {
         code: "GRADREGARC",
-        label: "Archived Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
+        label:
+          "Archived Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
         description:
           "The final daily, cumulative list of student in the current cycle who have graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
       },
       {
         code: "NONGRADPRJARC",
-        label: "Archived Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
+        label:
+          "Archived Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
         description:
           "The final list of grade 12 or AD students on a graduation program who were not projected to graduate based on missing course registrations or assessment registrations submitted by the school in the reporting cycle.",
       },
