@@ -159,8 +159,8 @@
               "
             >
               All students with a School of Record matching the entered school
-              and with a student status of CUR or TER will have their status
-              changed to ARC
+              and with a student status of CUR will have their status changed to
+              ARC
             </b-alert>
             <b-alert
               :show="
@@ -168,8 +168,8 @@
                 batch.details['who'] == 'All Students'
               "
             >
-              All students with a student status of CUR or TER will have their
-              student status changed to ARC
+              All students with a student status of CUR will have their student
+              status changed to ARC
             </b-alert>
           </div>
           <div
