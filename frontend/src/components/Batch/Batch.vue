@@ -19,10 +19,7 @@
             >
             </b-form-select>
           </div>
-          <div
-            class="mt-2"
-            v-if="batch.details['what'] == 'MANAGE_SCHOOL_REPORTS'"
-          >
+          <div class="mt-2" v-if="batch.details['what'] == 'ARC_SCH_REPORTS'">
             <label class="font-weight-bold">Report Type</label>
             <b-form-select
               id="inline-form-select-audience"
@@ -151,10 +148,10 @@
               @change="editBatchJob('who', $event)"
             ></b-form-select>
           </div>
-          <div v-if="batch.details['what'] == 'ARCHIVE_STUDENTS'">
+          <div v-if="batch.details['what'] == 'ARC_STUDENTS'">
             <b-alert
               :show="
-                batch.details['what'] == 'ARCHIVE_STUDENTS' &&
+                batch.details['what'] == 'ARC_STUDENTS' &&
                 batch.details['who'] == 'School'
               "
             >
@@ -164,7 +161,7 @@
             </b-alert>
             <b-alert
               :show="
-                batch.details['what'] == 'ARCHIVE_STUDENTS' &&
+                batch.details['what'] == 'ARC_STUDENTS' &&
                 batch.details['who'] == 'All Students'
               "
             >
@@ -210,7 +207,7 @@
                   batch.details['what'] != 'NONGRADRUN' &&
                   batch.details['what'] != 'DISTRUN_YE' &&
                   batch.details['what'] != 'DISTRUN_SUPP' &&
-                  batch.details['what'] != 'ARCHIVE_STUDENTS') ||
+                  batch.details['what'] != 'ARC_STUDENTS') ||
                 batch.details['categoryCode'] == '01'
               "
             >
@@ -1218,7 +1215,7 @@ export default {
           copies: true,
           where: true,
         },
-        ARCHIVE_STUDENTS: {
+        ARC_STUDENTS: {
           group: [
             {
               text: "School",
@@ -1233,7 +1230,7 @@ export default {
           copies: true,
           where: true,
         },
-        MANAGE_SCHOOL_REPORTS: {
+        ARC_SCH_REPORTS: {
           group: [
             {
               text: "School",
@@ -1392,7 +1389,7 @@ export default {
         }
       }
       if (
-        this.batch.details["what"] == "MANAGE_SCHOOL_REPORTS" &&
+        this.batch.details["what"] == "ARC_SCH_REPORTS" &&
         this.batch.details["reportType"] == ""
       ) {
         this.batchIsValid = false;
@@ -1458,19 +1455,6 @@ export default {
             this.batchTypes = this.batchTypes.filter(
               (type) => type.code != "NONGRADRUN"
             );
-
-          this.batchTypes.push({
-            code: "ARCHIVE_STUDENTS",
-            label: "Archive Students",
-            description:
-              "Archive students. This process will NOT update any of the students recalculation flags, i.e. the students should not get re-run through the graduation algorithm nor the TVR process.",
-          });
-          this.batchTypes.push({
-            code: "MANAGE_SCHOOL_REPORTS",
-            label: "Manage School Reports",
-            description:
-              "User will select what type of run they wish to initiate via a drop-down list of the available types of batch run.  For this year-end process the run type will be Manage School Reports.",
-          });
         })
         .catch((error) => {
           this.$bvToast.toast("ERROR " + error.response.statusText, {
@@ -1910,7 +1894,7 @@ export default {
           if (event == "NONGRADRUN") {
             batchDetail.details["who"] = "District";
           }
-          if (event == "ARCHIVE_STUDENTS") {
+          if (event == "ARC_STUDENTS") {
             batchDetail.details["who"] = "School";
           }
         }
