@@ -1452,6 +1452,14 @@ export default {
               return type;
             });
           }
+          //disable code for release 1.7.0
+          this.batchTypes = this.batchTypes.map((type) => {
+            if (type.code === "ARC_STUDENTS" || type.code === "ARC_SCH_REPORTS") {
+              type.disabled = true;
+            }
+            return type;
+          });         
+                  
           if (!this.allowRunNonGradRun)
             this.batchTypes = this.batchTypes.filter(
               (type) => type.code != "NONGRADRUN"
