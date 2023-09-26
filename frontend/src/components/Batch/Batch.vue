@@ -19,11 +19,24 @@
             >
             </b-form-select>
           </div>
+          <div class="mt-2" v-if="batch.details['what'] == 'ARC_SCH_REPORTS'">
+            <label class="font-weight-bold">Report Type</label>
+            <b-form-select
+              id="inline-form-select-audience"
+              class="mb-2 mr-sm-2 mb-sm-0 col-12"
+              :options="reportTypes"
+              value-field="code"
+              text-field="label"
+              :value="batch.details['reportType']"
+              @change="editBatchJob('reportType', $event)"
+            ></b-form-select>
+          </div>
+
           <div class="mt-2" v-if="batch.details['what'] == 'DISTRUNUSER'">
             <label class="font-weight-bold">Credential Type</label>
             <b-form-select
               id="inline-form-select-audience"
-              class="mb-2 mr-sm-2 mb-sm-0"
+              class="mb-2 mr-sm-2 mb-sm-0 col-12"
               :options="[
                 { text: 'Choose...', value: '' },
                 {
@@ -47,6 +60,7 @@
               :value="batch.details['credential']"
               @change="editBatchJob('credential', $event)"
             ></b-form-select>
+
             <b-card
               v-if="batch.details['credential'] == 'Blank transcript print'"
               class="mt-3 px-0"
@@ -134,7 +148,27 @@
               @change="editBatchJob('who', $event)"
             ></b-form-select>
           </div>
-
+          <div v-if="batch.details['what'] == 'ARC_STUDENTS'">
+            <b-alert
+              :show="
+                batch.details['what'] == 'ARC_STUDENTS' &&
+                batch.details['who'] == 'School'
+              "
+            >
+              All students with a School of Record matching the entered school
+              and with a student status of CUR will have their status changed to
+              ARC
+            </b-alert>
+            <b-alert
+              :show="
+                batch.details['what'] == 'ARC_STUDENTS' &&
+                batch.details['who'] == 'All Students'
+              "
+            >
+              All students with a student status of CUR will have their student
+              status changed to ARC
+            </b-alert>
+          </div>
           <div
             v-if="
               batch.details['what'] != '' &&
@@ -172,7 +206,8 @@
                 (batch.details['what'] != 'DISTRUN' &&
                   batch.details['what'] != 'NONGRADRUN' &&
                   batch.details['what'] != 'DISTRUN_YE' &&
-                  batch.details['what'] != 'DISTRUN_SUPP') ||
+                  batch.details['what'] != 'DISTRUN_SUPP' &&
+                  batch.details['what'] != 'ARC_STUDENTS') ||
                 batch.details['categoryCode'] == '01'
               "
             >
@@ -1027,6 +1062,7 @@ import GraduationReportService from "@/services/GraduationReportService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import BatchConfirmInfo from "@/components/Batch/BatchConfimInfo.vue";
 import { mapGetters } from "vuex";
+import SharedMethods from "@/sharedMethods.js";
 
 extend("minmax", {
   validate(value, { min, max }) {
@@ -1094,6 +1130,8 @@ export default {
   },
   data: function () {
     return {
+      reportTypes: [],
+      reportType: "",
       batchIsValid: false,
       batchTypes: [],
       batchRunDetails: "",
@@ -1178,6 +1216,38 @@ export default {
           copies: true,
           where: true,
         },
+        ARC_STUDENTS: {
+          group: [
+            {
+              text: "School",
+              value: "School",
+            },
+            {
+              text: "All Students",
+              value: "All Students",
+            },
+          ],
+
+          copies: true,
+          where: true,
+        },
+        ARC_SCH_REPORTS: {
+          group: [
+            {
+              text: "School",
+              value: "School",
+              description:
+                "All students with a School of Record matching the entered school and with a student status of CUR or TER will have their status changed to ARC",
+            },
+            {
+              text: "All Schools",
+              value: "All Schools",
+            },
+          ],
+
+          copies: true,
+          where: true,
+        },
       },
     };
   },
@@ -1245,6 +1315,29 @@ export default {
     this.transcriptTypes = this.getTranscriptTypes();
     this.certificateTypes = this.getCertificateTypes();
     this.batchTypes = this.getBatchJobTypes();
+    this.reportTypes = [
+      {
+        code: "NONGRADREGARC",
+        label:
+          "Archived Not-Yet Graduated Students (MM YYYY to MM YYYY) Report",
+        description:
+          "The final daily, cumulative list of student in the current cycle who have not-yet graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
+      },
+      {
+        code: "GRADREGARC",
+        label:
+          "Archived Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
+        description:
+          "The final daily, cumulative list of student in the current cycle who have graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
+      },
+      {
+        code: "NONGRADPRJARC",
+        label:
+          "Archived Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
+        description:
+          "The final list of grade 12 or AD students on a graduation program who were not projected to graduate based on missing course registrations or assessment registrations submitted by the school in the reporting cycle.",
+      },
+    ];
   },
 
   methods: {
@@ -1279,6 +1372,7 @@ export default {
         this.batchIsValid = false;
         return;
       }
+
       if (
         this.batch.details["who"] == "District" &&
         !this.batch.details["categoryCode"]
@@ -1294,6 +1388,13 @@ export default {
           this.batchIsValid = false;
           return;
         }
+      }
+      if (
+        this.batch.details["what"] == "ARC_SCH_REPORTS" &&
+        this.batch.details["reportType"] == ""
+      ) {
+        this.batchIsValid = false;
+        return;
       }
       if (
         this.batch.details["what"] == "DISTRUNUSER" &&
@@ -1325,7 +1426,7 @@ export default {
     getBatchJobTypes() {
       BatchProcessingService.getBatchJobTypes()
         .then((response) => {
-          this.batchTypes = response.data;
+          this.batchTypes = SharedMethods.applyDisplayOrder(response.data); // sorts response array by displayOrder property before assigning
           if (!this.allowRunDistrunYE)
             this.batchTypes = this.batchTypes.filter(
               (type) => type.code != "DISTRUN_YE"
@@ -1351,6 +1452,14 @@ export default {
               return type;
             });
           }
+          //disable code for release 1.7.0
+          this.batchTypes = this.batchTypes.map((type) => {
+            if (type.code === "ARC_STUDENTS" || type.code === "ARC_SCH_REPORTS") {
+              type.disabled = true;
+            }
+            return type;
+          });         
+                  
           if (!this.allowRunNonGradRun)
             this.batchTypes = this.batchTypes.filter(
               (type) => type.code != "NONGRADRUN"
@@ -1794,6 +1903,9 @@ export default {
           if (event == "NONGRADRUN") {
             batchDetail.details["who"] = "District";
           }
+          if (event == "ARC_STUDENTS") {
+            batchDetail.details["who"] = "School";
+          }
         }
         if (type == "gradDate") {
           if (event == "Current Students") {
@@ -1870,6 +1982,7 @@ export default {
             id,
           });
         }
+
         batchDetail.details[type] = event;
         this.$store.commit("batchprocessing/editBatchDetails", {
           batchDetail,

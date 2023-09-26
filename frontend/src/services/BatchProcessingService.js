@@ -50,6 +50,26 @@ export default {
   runBlankDISTRUNUSERUserRequest(request, credentialType){
     return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/'+ credentialType, request);
   },
+  runYearlyArchiveBatchJobStudents(request){
+    //eslint-disable-next-line
+    // console.log("RUNNING ARCHIVE STUDENTS")
+    // console.log("/api/v1/batch/executeyearlyarchivebatchjobstudents")
+    //eslint-disable-next-line
+    console.log(request)
+
+    return {}
+    //return ApiService.apiAxios.post('/api/v1/batch/executeyearlyarchivebatchjobstudents', request);
+  },
+  runYearlyArchiveBatchJobSchools(request){
+    // console.log("RUNNING ARCHIVE SCHOOL REPORTS")
+    // console.log("/api/v1/batch/executeyearlyarchivebatchjobstudents")
+   
+    //eslint-disable-next-line
+    console.log(request)
+
+    return {}
+    //return ApiService.apiAxios.post('/api/v1/batch/executeyearlyarchivebatchjobschools', request);
+  },  
   runPSIRUN(request, transmissionType){
     return ApiService.apiAxios.post('/api/v1/batch/executepsireportbatchjob/' + transmissionType, request);
   },
