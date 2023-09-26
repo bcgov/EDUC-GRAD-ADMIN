@@ -1062,6 +1062,7 @@ import GraduationReportService from "@/services/GraduationReportService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import BatchConfirmInfo from "@/components/Batch/BatchConfimInfo.vue";
 import { mapGetters } from "vuex";
+import SharedMethods from "@/sharedMethods.js";
 
 extend("minmax", {
   validate(value, { min, max }) {
@@ -1425,7 +1426,7 @@ export default {
     getBatchJobTypes() {
       BatchProcessingService.getBatchJobTypes()
         .then((response) => {
-          this.batchTypes = response.data;
+          this.batchTypes = SharedMethods.applyDisplayOrder(response.data); // sorts response array by displayOrder property before assigning
           if (!this.allowRunDistrunYE)
             this.batchTypes = this.batchTypes.filter(
               (type) => type.code != "DISTRUN_YE"
