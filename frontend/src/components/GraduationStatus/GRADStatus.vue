@@ -1049,11 +1049,7 @@ export default {
         this.warningFlags.schoolOfRecordInputWarning = true;
         this.validateFields();
         return;
-      }
-
-      //mincode.search(/^103.*/)
-      //test with 10396831
-      else if (
+      } else if (
         this.studentGradStatus.program == "1950" &&
         this.editedGradStatus.schoolOfRecord.search(/^103.*/) >= 0
       ) {
