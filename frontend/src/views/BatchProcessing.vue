@@ -1639,7 +1639,7 @@ export default {
         } else {
           this.runDISTRUN_SUPP(request, id);
         }
-      } else if (this.tabContent[id].details["what"] == "ARCHIVE_STUDENTS") {
+      } else if (this.tabContent[id].details["what"] == "ARC_STUDENTS") {
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;
@@ -1650,7 +1650,7 @@ export default {
         } else {
           this.runArchiveStudents(request, id);
         }
-      }  else if (this.tabContent[id].details["what"] == "MANAGE_SCHOOL_REPORTS") {
+      }  else if (this.tabContent[id].details["what"] == "ARC_SCH_REPORTS") {
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;
