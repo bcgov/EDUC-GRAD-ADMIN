@@ -485,7 +485,7 @@
                   v-if="errorFlags.other.offshore1950"
                   class="form-validation-message text-danger"
                 >
-                  Offshore schools do not suppor the Adult Graduation
+                  Offshore schools do not support the Adult Graduation
                   Program&nbsp;&nbsp;<i
                     class="fas fa-exclamation-triangle"
                     aria-hidden="true"
