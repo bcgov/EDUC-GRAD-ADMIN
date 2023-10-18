@@ -1720,11 +1720,11 @@ export default {
                   //student has a gradstatus but does not have a certificate
                   if (this.batch.details["credential"] == "RC") {
                     this.validationMessage =
-                      "Cannot reprint certificate for this student.";
+                      "Cannot reprint certificate for this student as they have not yet earned one. They may need to be run through the grad algorithm first.";
                   }
                   if (this.batch.details["credential"] == "OC") {
                     this.validationMessage =
-                      "Cannot print certificate for this student,this student does not have a certificate.";
+                      "Cannot print certificate for this student, this student does not have a certificate.";
                   }
                   this.$forceUpdate();
                   this.validating = false;
