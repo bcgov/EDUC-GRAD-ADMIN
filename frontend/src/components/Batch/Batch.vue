@@ -1701,8 +1701,15 @@ export default {
                   if (this.batch.details["credential"] == "RC") {
                     for (let cert of certificate.data) {
                       if (!cert.distributionDate) {
-                        this.validationMessage =
-                          "Warning: This students' certificate distribution date is null.  Their original certificate has not been distributed.";
+                        if (this.batch.details["where"] == "localDownload") {
+                          // warning for download request if certificate has null distribution date
+                          this.validationMessage =
+                            "This students' certificate distribution date is null. Their original certificate has not been distributed. You may still download the requested document by clicking on the link below.";
+                        } else {
+                          // warning message for print requests to BC Mail or User if certificate has null distribution date
+                          this.validationMessage =
+                            "This students' certificate distribution date is null. Their original certificate has not been distributed. You may still submit a print request by clicking on the link below";
+                        }
                         this.validating = false;
                       } else {
                         this.validationMessage = "";
@@ -1712,19 +1719,12 @@ export default {
                 } else {
                   //student has a gradstatus but does not have a certificate
                   if (this.batch.details["credential"] == "RC") {
-                    if (this.batch.details["where"] == "localDownload") {
-                      this.validationMessage =
-                        "This students' certificate distribution date is null. Their original certificate has not been distributed. You may still download the requested document by clicking on the link below.";
-                    } else {
-                      // NOTE - When users can eventually select the BC Mail or User:[name] options for reprint certificate - no principal signature block, the warning below should be updated to:
-                      // This students' certificate distribution date is null. Their original certificate has not been distributed. You may still submit a print request by clicking on the link below.
-                      this.validationMessage =
-                        "Cannot reprint certificate for this student.";
-                    }
+                    this.validationMessage =
+                      "Cannot reprint certificate for this student as they have not yet earned one. They may need to be run through the grad algorithm first.";
                   }
                   if (this.batch.details["credential"] == "OC") {
                     this.validationMessage =
-                      "Cannot print certificate for this student,this student does not have a certificate.";
+                      "Cannot print certificate for this student, this student does not have a certificate.";
                   }
                   this.$forceUpdate();
                   this.validating = false;
