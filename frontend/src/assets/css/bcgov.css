@@ -1,0 +1,99 @@
+/* Updates BC Gov Bootstrap theme with new design system https://developer.gov.bc.ca/Design-System */
+
+body {
+  color:#313132;
+  size: 16px;
+}
+
+#app {
+  background: #fff;
+}
+
+form {
+  font-family: ‘BCSans’, ‘Noto Sans’, Verdana, Arial, sans-serif;
+
+}
+.form-control{border: 1px solid #212529;}
+.custom-select{border: 1px solid #212529;}
+
+.text_input {
+  
+  border: 2px solid #606060;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  padding: 5px 5px 5px 7px;
+}
+
+.text_input[type="text"]:focus {
+    outline: 4px solid #3B99FC;
+    outline-offset: 1px;
+}
+
+.text_label {
+  display: flex;
+}
+
+
+.BC-Gov-PrimaryButton {
+  background-color: #003366;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  padding: 10px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  font-size: 16px;
+  font-family: ‘BCSans’, ‘Noto Sans’, Verdana, Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.BC-Gov-PrimaryButton:hover {
+text-decoration: underline;
+opacity: 0.80;
+}
+
+.text_input:focus {
+outline: 4px solid #3B99FC;
+outline-offset: 1px;
+}
+
+.BC-Gov-PrimaryButton:active {
+opacity: 1;
+}
+
+.btn-primary.disabled, btn-secondary:disabled{
+  background-color: #003366;
+  opacity: 0.3;
+}
+.btn-secondary.disabled, .btn-secondary:disabled{
+    background:#38598a;
+}
+.btn-secondary:hover {
+  color: #fff;
+  background-color: #2d476f;
+  border-color: #294266;
+}
+.btn-secondary.disabled:hover{
+  background:#38598a
+}
+.input-errors{
+  color:red;
+}
+/* Buttons */
+.gov-btn{
+  color: #fff;
+  background-color: #38598a;
+  border-color: #38598a;
+  font-size: 1.3rem;
+}
+.gov-btn:hover {
+  color: #fff;
+  background-color: #2d476f;
+  border-color: #294266;
+  font-size: 1.3rem;
+}
+

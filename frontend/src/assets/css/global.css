@@ -1,0 +1,100 @@
+/* DisplayTable Component Style*/
+.table-row-header-group{
+  border-bottom: none;
+  line-height: 0.5;
+}
+.table-row-header-group th{
+  border-bottom: none !important;
+}
+.table.b-table > thead > tr > [aria-sort="none"], .table.b-table > tfoot > tr > [aria-sort="none"]{
+  background: none !important;
+}
+.table.b-table > thead > tr > [aria-sort="descending"], .table.b-table > tfoot > tr > [aria-sort="descending"]{ 
+  background: none !important;
+}
+.table.b-table > thead > tr > [aria-sort="ascending"], .table.b-table > tfoot > tr > [aria-sort="ascending"]{ 
+  background: none !important;
+}
+.input-group>.form-control:not(:first-child), .input-group>.custom-select:not(:first-child) {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+.form-control{
+  height: auto !important;
+}
+.w-5{
+  width: 5% !important;
+}
+.w-10{
+  width: 10% !important;
+}
+.w-15{
+  width: 15% !important;
+}
+.w-20{
+  width: 20% !important;
+}
+.w-70{
+  width: 70% !important;
+}
+.w-85{
+  width: 85% !important;
+}
+.w-90{
+  width: 90% !important;
+}
+
+.text-warning{
+  color:#FCBA19 !important;
+}
+.nav-link{
+  cursor: pointer;
+}
+  .admin-gear .dropdown-toggle::after {
+
+    display: inline-block;
+    vertical-align: .255em;
+    content: "\f19d" !important;
+    border-top: none;
+    font-size: 20px;
+    color: #666;
+    
+  }
+  .admin-gear-w-text .dropdown-toggle::before {
+    display: inline-block;
+    font-family: "Font Awesome 5 Free", Sans-serif;
+    font-weight: 900;
+    content: "\f19d" !important;
+    font-size: 20px;
+    color: #fff;
+    padding-right: 10px;
+    
+  }  
+ .admin-gear .btn{
+    background: #fff !important;
+    border: none !important;
+  }
+  #optional-programs-dd button{
+    padding: 0px !important;
+    line-height: 1em;
+    color: #1a5a96;
+  }
+  #optional-programs-dd button:hover{
+    color: #0000f3
+  }
+  #optional-programs-dd button:focus{
+    box-shadow: none;
+    color: #495057;
+  }
+  .nav-item a{
+    border-radius: 0px !important;
+  }
+
+/* disable button borders on collapsible arrows*/
+button.collapsed, button.not-collapsed, button.more-button {
+  box-shadow: none !important;
+}
+
+.form-validation-message{
+  font-size: 11px;
+}

@@ -1,0 +1,18 @@
+{
+    "_comment": "browsers should accept: edge -private, firefox -private-window, chrome -incognito",
+    "browsers": ["chrome:headless --disable-dev-shm-usage --incognito"],
+    "reporter": "list",
+    "quarantineMode": true,
+    "developmentMode": false,
+    "skipJsErrors": true,
+    "color": true,
+    "stopOnFirstFail": false,
+    "disablePageCaching": true,
+    "speed": 1,
+    "retryTestPages": true,
+    "hostname": "localhost",
+    "selectorTimeout": 20000,
+    "assertionTimeout": 20000,
+    "pageLoadTimeout": 20000,
+    "disableMultipleWindows": true
+}
