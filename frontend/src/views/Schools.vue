@@ -143,14 +143,14 @@
                 >
                   <img
                     v-show="!row.detailsShowing"
-                    src="../../assets/images/icon-right.svg"
+                    src="../../src/assets/images/icon-right.svg"
                     width="9px"
                     aria-hidden="true"
                     alt=""
                   />
                   <img
                     v-show="row.detailsShowing"
-                    src="../../assets/images/icon-down.svg"
+                    src="../../src/assets/images/icon-down.svg"
                     height="5px"
                     aria-hidden="true"
                     alt=""
