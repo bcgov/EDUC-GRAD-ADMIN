@@ -1,0 +1,7 @@
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: caddy
+  namespace: 77c02f-tools
+  labels:
+    build: educ-grad-admin-frontend-static
