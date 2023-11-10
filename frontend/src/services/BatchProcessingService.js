@@ -49,10 +49,7 @@ export default {
     return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
   },
   runBlankDISTRUNUSERUserRequest(request, credentialType){
-    console.log(credentialType)
-    console.log(request)
-    return;
-    //return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/'+ credentialType, request);
+    return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/'+ credentialType, request);
   },
   runYearlyArchiveBatchJobStudents(request){
     //eslint-disable-next-line
