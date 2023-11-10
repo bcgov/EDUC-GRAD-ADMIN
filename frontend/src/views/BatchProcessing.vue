@@ -1167,6 +1167,7 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
+            console.log(error.status);
             this.$bvToast.toast("There was an error processing " + requestId, {
               title: "BATCH PROCESSING UPDATE",
               variant: "error",
@@ -1209,6 +1210,7 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
+            console.log("error 1");
             this.$bvToast.toast("There was an error processing " + requestId, {
               title: "BATCH PROCESSING UPDATE",
               variant: "error",
@@ -1284,7 +1286,7 @@ export default {
             });
           }
         });
-    },    
+    },
     runPSIRUN(request, id, transmissionType) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
@@ -1488,6 +1490,7 @@ export default {
         this.tabContent[id].details["where"] == "localDownload" ? "Y" : "N";
       let credentialTypeCode = [];
       let quantity = this.tabContent[id].details["copies"];
+
       if (this.tabContent[id].details["blankCertificateDetails"].length) {
         credentialTypeCode =
           this.tabContent[id].details["blankCertificateDetails"];
@@ -1511,6 +1514,7 @@ export default {
         quantity: quantity,
         localDownload: localDownload,
       };
+
       if (this.batchHasErrors(this.tabContent[id])) {
         return;
       }
@@ -1615,6 +1619,15 @@ export default {
           this.addScheduledJob(scheduledRequest, id);
         } else if (this.tabContent[id].details["where"] == "User") {
           request.user = this.userFullName;
+          request.address = {
+            streetLine1: "4TH FLOOR 620 SUPERIOR",
+            streetLine2: "PO BOX 9886 STN PROV GOVT",
+            city: "VICTORIA",
+            region: "BRITISH COLUMBIA",
+            country: "CANADA",
+            code: "V8W9T6",
+          };
+
           this.runBlankDISTRUNUSERUserRequest(
             request,
             id,
@@ -1650,7 +1663,7 @@ export default {
         } else {
           this.runArchiveStudents(request, id);
         }
-      }  else if (this.tabContent[id].details["what"] == "ARC_SCH_REPORTS") {
+      } else if (this.tabContent[id].details["what"] == "ARC_SCH_REPORTS") {
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;

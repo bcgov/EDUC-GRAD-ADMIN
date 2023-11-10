@@ -324,7 +324,6 @@
                 {
                   text: 'User: ' + userFullName,
                   value: 'User',
-                  disabled: true,
                 },
               ]"
               :disabled="
@@ -1456,7 +1455,9 @@ export default {
           this.batchTypes = this.batchTypes.map((type) => {
             if (
               type.code === "ARC_STUDENTS" ||
-              type.code === "ARC_SCH_REPORTS"
+              type.code === "ARC_SCH_REPORTS" ||
+              type.code === "EDW_SNAPSHOT" ||
+              type.code === "CERT_REGEN"
             ) {
               type.disabled = true;
             }
