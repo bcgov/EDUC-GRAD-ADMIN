@@ -11,7 +11,7 @@ export default {
     return ApiService.apiAxios.post('/api/v1/batch/tvrspecialrun', request);
   },
   runDISTRUNUSER(request,credentialType) {
-    console.log(request)
+
     if(credentialType == "OT"){
       return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT', request);
     }else if(credentialType == "OC"){
