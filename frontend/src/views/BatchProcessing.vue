@@ -1167,7 +1167,6 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            console.log(error.status);
             this.$bvToast.toast("There was an error processing " + requestId, {
               title: "BATCH PROCESSING UPDATE",
               variant: "error",
@@ -1210,7 +1209,6 @@ export default {
         .catch((error) => {
           if (error) {
             this.cancelBatchJob(id);
-            console.log("error 1");
             this.$bvToast.toast("There was an error processing " + requestId, {
               title: "BATCH PROCESSING UPDATE",
               variant: "error",
