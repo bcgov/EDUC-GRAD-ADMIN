@@ -753,7 +753,7 @@
               <td>
                 <b-form-select
                   size="sm"
-                  v-model="editedGradStatus.recalculateProjectedGrad"
+                  v-model="editedGradStatus.recalculateGradStatus"
                   :options="recalcFlags"
                 />
               </td>
@@ -769,7 +769,7 @@
               <td>
                 <b-form-select
                   size="sm"
-                  v-model="editedGradStatus.recalculateGradStatus"
+                  v-model="editedGradStatus.recalculateProjectedGrad"
                   :options="recalcFlags"
                 />
               </td>
