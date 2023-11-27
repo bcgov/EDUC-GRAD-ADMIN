@@ -29,7 +29,7 @@
                       report.gradReportTypeLabel
                     )
                   "
-                  href="#"
+                  href="javascript:void(0)"
                   class="pdf-link float-left mt-2"
                   >{{ report.gradReportTypeLabel }} (PDF)</a
                 >
@@ -57,7 +57,7 @@
                       transcript.transcriptTypeLabel
                     )
                   "
-                  href="#"
+                  href="javascript:void(0)"
                   class="pdf-link float-left"
                   >{{ transcript.transcriptTypeLabel }} (PDF)</a
                 >
