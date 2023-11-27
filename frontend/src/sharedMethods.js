@@ -1,6 +1,9 @@
 import StudentService from "@/services/StudentService.js";
 
 export default {
+  applyDisplayOrder(unsorted) {
+    return unsorted.sort((a, b) => a.displayOrder - b.displayOrder);
+  },
   isEnvLocalHost() {
     return location.host.includes("localhost");
   },
@@ -104,5 +107,8 @@ export default {
   },
   dateFormatYYYYMMDD(value) {
     return value.replace(/^([\d]{4})([\d]{2})([\d]{2})$/, "$1-$2-$3");
+  },
+  jobLabel(jobId) {
+    return this.jobId.replace("job-", "");
   },
 };

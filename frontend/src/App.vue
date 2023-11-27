@@ -29,7 +29,7 @@
 </template>
 <script>
 // Vue Store
-
+import { configureCompat } from "vue";
 import { useAppStore } from "./store/modules/app";
 import { useAuthStore } from "./store/modules/auth";
 import { useAccessStore } from "./store/modules/access";

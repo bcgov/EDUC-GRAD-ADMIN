@@ -32,6 +32,7 @@ export const useAuthStore = defineStore('auth', {
     loginErrorGet: state => state.loginError,
     errorGet: state => state.error,
     isLoadingGet: state => state.isLoading,
+    userFullName: state => state.userInfo.userFullName
   },
   actions: {
     //sets Json web token and determines whether user is authenticated

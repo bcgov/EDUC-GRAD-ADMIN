@@ -50,6 +50,9 @@
 .nav-link{
   cursor: pointer;
 }
+option:disabled{
+  color: #ccc !important;
+}
   .admin-gear .dropdown-toggle::after {
 
     display: inline-block;

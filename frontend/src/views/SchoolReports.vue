@@ -126,7 +126,6 @@ import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import sharedMethods from "../sharedMethods";
 import { showNotification } from "../utils/common.js";
-import { mapGetters } from "vuex";
 
 export default {
   name: "SchoolReports",
@@ -189,11 +188,7 @@ export default {
       ],
     };
   },
-  computed: {
-    ...mapGetters({
-      token: "auth/getToken",
-    }),
-  },
+  computed: {},
   created() {
     this.showNotification = showNotification;
   },
@@ -216,8 +211,7 @@ export default {
         this.searchMessage = "Enter a school mincode to view reports.";
       } else {
         GraduationReportService.getAllReportsForSchool(
-          this.mincode.value + (this.mincode.contains ? "*" : ""),
-          this.token
+          this.mincode.value + (this.mincode.contains ? "*" : "")
         )
           .then((response) => {
             this.reports = response.data;

@@ -22,8 +22,10 @@
     "http-status-codes": "^1.4.0",
     "npm": "^10.2.1",
     "pinia": "^2.0.32",
-    "query-string": "^8.1.0",
-    "vue": "^3.3.0",
+    "popper": "^1.0.1",
+    "query-string": "^6.14.1",
+    "vee-validate": "^4.11.8",
+    "vue": "^3.3.4",
     "vue-router": "^4.1.6",
     "vuejs-logger": "^1.5.5",
     "vuex": "^4.1.0"
