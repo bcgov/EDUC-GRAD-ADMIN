@@ -302,7 +302,7 @@ export default {
       return this.fields.filter((field) => field.editable);
     },
     totalRows: function () {
-      if (this.totalRows) {
+      if (this.items?.length) {
         return this.items.length;
       } else return this.totalRows;
     },
@@ -334,7 +334,6 @@ export default {
       const itemRaw = toRaw(item);
       const store = this.stores[this.store];
       const id = toRaw(item).id;
-      console.log(id);
       if (store) {
         store[this.delete](id);
       } else {
