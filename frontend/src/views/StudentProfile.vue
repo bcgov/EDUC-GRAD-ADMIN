@@ -785,7 +785,6 @@ export default {
     window.removeEventListener("resize", this.handleResize);
   },
   beforeRouteUpdate(to, from, next) {
-    console.log("ROUTE UPDATE");
     StudentService.getStudentPen(this.quickSearchPen)
       .then((response) => {
         this.pen = response.data.pen;

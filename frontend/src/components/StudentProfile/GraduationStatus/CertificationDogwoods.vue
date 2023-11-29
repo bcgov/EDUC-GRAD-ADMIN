@@ -27,7 +27,7 @@
                   certificate.gradCertificateTypeLabel
                 )
               "
-              href="#"
+              href="javascript:void(0)"
               class="pdf-link float-left mt-2"
               >{{ certificate.gradCertificateTypeLabel }} (PDF)</a
             >

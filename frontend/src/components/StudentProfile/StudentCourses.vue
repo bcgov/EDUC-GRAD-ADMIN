@@ -33,79 +33,67 @@
           {{ $filters.formatYYYYMMDate(row.value) }}
         </template>
         <template #cell(courseName)="row">
-          <div v-if="!!courseDetail" class="d-flex flex-column text-md-left">
-            <div class="">
-              <b-button
-                :id="
-                  'popover-button-event' +
-                  row.item.courseCode +
-                  row.item.courseLevel +
-                  row.item.sessionDate
-                "
-                variant="link"
-                class="m-0 p-0 text-left"
-              >
-                {{ row.item.courseName }}
-              </b-button>
+          <b-btn
+            v-b-modal="
+              row.item.courseCode +
+              row.item.courseLevel +
+              row.item.sessionDate +
+              'modal'
+            "
+            variant="link"
+            >{{ row.item.courseName }}</b-btn
+          >
+
+          <b-modal
+            :id="
+              row.item.courseCode +
+              row.item.courseLevel +
+              row.item.sessionDate +
+              'modal'
+            "
+            :title="row.item.courseName"
+            ok-title="Close"
+            ok-only
+          >
+            <div class="row py-1">
+              <div class="col">
+                <strong>Instruction Language:</strong>
+              </div>
+              <div class="col">{{ row.item.courseDetails.language }}</div>
             </div>
-            <b-popover
-              :ref="
-                'popover' +
-                row.item.courseCode +
-                row.item.courseLevel +
-                row.item.sessionDate
-              "
-              triggers="focus"
-              :target="
-                'popover-button-event' +
-                row.item.courseCode +
-                row.item.courseLevel +
-                row.item.sessionDate
-              "
-              :title="row.item.courseName"
-            >
-              <div class="row py-1">
-                <div class="col">
-                  <strong>Instruction Language:</strong>
-                </div>
-                <div class="col">{{ row.item.courseDetails.language }}</div>
+            <div class="row py-1">
+              <div class="col"><strong>Start Date:</strong></div>
+              <div class="col">
+                {{
+                  $filters.formatSimpleDate(row.item.courseDetails.startDate)
+                }}
               </div>
-              <div class="row py-1">
-                <div class="col"><strong>Start Date:</strong></div>
-                <div class="col">
-                  {{
-                    $filters.formatSimpleDate(row.item.courseDetails.startDate)
-                  }}
-                </div>
+            </div>
+            <div class="row py-1">
+              <div class="col"><strong>End Date:</strong></div>
+              <div class="col">
+                {{ $filters.formatSimpleDate(row.item.courseDetails.endDate) }}
               </div>
-              <div class="row py-1">
-                <div class="col"><strong>End Date:</strong></div>
-                <div class="col">
-                  {{
-                    $filters.formatSimpleDate(row.item.courseDetails.endDate)
-                  }}
-                </div>
+            </div>
+            <div class="row py-1">
+              <div class="col"><strong>Credits:</strong></div>
+              <div class="col">{{ row.item.courseDetails.numCredits }}</div>
+            </div>
+            <div class="row py-1">
+              <div class="col"><strong>Work Experience:</strong></div>
+              <div class="col">
+                {{ row.item.courseDetails.workExpFlag }}
               </div>
-              <div class="row py-1">
-                <div class="col"><strong>Credits:</strong></div>
-                <div class="col">{{ row.item.courseDetails.numCredits }}</div>
+            </div>
+            <div class="row py-1">
+              <div class="col">
+                <strong>Generic Course Type:</strong>
               </div>
-              <div class="row py-1">
-                <div class="col"><strong>Work Experience:</strong></div>
-                <div class="col">
-                  {{ row.item.courseDetails.workExpFlag }}
-                </div>
+              <div class="col">
+                {{ row.item.courseDetails.genericCourseType }}
               </div>
-              <div class="row py-1">
-                <div class="col">
-                  <strong>Generic Course Type:</strong>
-                </div>
-                <div class="col">
-                  {{ row.item.courseDetails.genericCourseType }}
-                </div>
-              </div>
-            </b-popover>
-          </div>
+            </div>
+          </b-modal>
         </template>
         <template #cell(more)="row">
           <b-btn
@@ -279,6 +267,7 @@ export default {
       InputCourse: "",
       student: [],
       InputPen: "",
+      modalState: false,
       filters: {
         name: {
           value: "",
@@ -292,6 +281,15 @@ export default {
       "setHasGradStatusPendingUpdates",
       "setHasGradStatusPendingUpdates",
     ]),
+    openModal(courseCode) {
+      // Set the data property to true to show the modal
+      this.modalState = true;
+      // You can do something with courseCode if needed
+    },
+    closeModal() {
+      // Set the data property to false to close the modal
+      this.modalState = false;
+    },
     toggle(id) {
       const index = this.opened.indexOf(id);
       if (index > -1) {
