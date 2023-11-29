@@ -47,7 +47,7 @@ jobs:
     name: VUE3 Build & Deploy Backend to DEV
     # ubuntu-latest can also be used.
     runs-on: ubuntu-20.04
-    environment: vue3-dev
+    environment: dev-vue3
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
