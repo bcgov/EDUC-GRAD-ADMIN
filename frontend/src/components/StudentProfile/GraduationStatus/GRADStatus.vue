@@ -305,9 +305,8 @@
               <td><strong>School of record: </strong></td>
               <td>
                 <b-button
-                  v-if="studentGradStatus.schoolOfRecord"
                   class="p-0 text-left"
-                  id="school-of-record-popover"
+                  v-b-modal.modal-1
                   variant="link"
                   @click="
                     getSchoolInfo(
@@ -321,18 +320,17 @@
                       ? studentGradStatus.schoolName
                       : schoolOfRecord.schoolName
                   }}<br />
-                  {{ studentGradStatus.schoolOfRecord }}
-                </b-button>
-                <b-popover
-                  :boundary-padding="50"
-                  delay="800"
-                  target="school-of-record-popover"
+                  {{ studentGradStatus.schoolOfRecord }}</b-button
+                >
+
+                <b-modal
+                  id="modal-1"
                   title="School Information"
-                  triggers="focus"
-                  v-if="studentGradStatus.schoolOfRecord"
+                  ok-title="Close"
+                  ok-only
                 >
                   <table role="presentation" aria-label="grad status">
-                    <tbody>
+                    <tbody v-if="schoolOfRecord.districtName">
                       <tr>
                         <td>
                           <strong>District:</strong>
@@ -383,7 +381,7 @@
                       </tr>
                     </tbody>
                   </table>
-                </b-popover>
+                </b-modal>
               </td>
             </tr>
             <tr v-if="showEdit">
@@ -456,11 +454,11 @@
                 <b-button
                   v-if="studentGradStatus && studentGradStatus.schoolAtGrad"
                   class="p-0 text-left"
-                  id="school-at-graduation-popover"
+                  v-b-modal.modal-2
                   variant="link"
                   @click="
                     getSchoolInfo(
-                      studentGradStatus.schoolAtGrad,
+                      studentGradStatus.schoolOfRecord,
                       'schoolAtGrad'
                     )
                   "
@@ -472,68 +470,70 @@
                   }}<br />
                   {{ studentGradStatus.schoolAtGrad }}
                 </b-button>
-                <b-popover
-                  v-if="studentGradStatus && studentGradStatus.schoolAtGrad"
-                  :boundary-padding="50"
-                  delay="800"
-                  target="school-at-graduation-popover"
+                <b-modal
+                  id="modal-2"
                   title="School Information"
-                  triggers="focus"
+                  ok-title="Close"
+                  ok-only
                 >
                   <table
                     role="presentation"
                     aria-label="edit graduation status"
                   >
-                    <tr>
-                      <td>
-                        <strong>District:</strong>
-                        {{ schoolAtGraduation.districtName }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <strong>School Code and Name:</strong> <br />
-                        {{
-                          schoolAtGraduation.minCode +
-                          " " +
-                          schoolAtGraduation.schoolName
-                        }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <strong>Status:</strong>
-                        {{
-                          schoolAtGraduation.openFlag == "Y" ? "Open" : "Closed"
-                        }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <strong>Independent type:</strong>
-                        {{ schoolAtGraduation.independentDesignation }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <strong>Independent affiliation:</strong>
-                        {{ schoolAtGraduation.independentAffiliation }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <strong>Transcript eligible:</strong>
-                        {{ schoolAtGraduation.transcriptEligibility }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <strong>Dogwood eligibility:</strong>
-                        {{ schoolAtGraduation.certificateEligibility }}
-                      </td>
-                    </tr>
+                    <tbody v-if="schoolAtGraduation.districtName">
+                      <tr>
+                        <td>
+                          <strong>District:</strong>
+                          {{ schoolAtGraduation.districtName }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <strong>School Code and Name:</strong> <br />
+                          {{
+                            schoolAtGraduation.minCode +
+                            " " +
+                            schoolAtGraduation.schoolName
+                          }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <strong>Status:</strong>
+                          {{
+                            schoolAtGraduation.openFlag == "Y"
+                              ? "Open"
+                              : "Closed"
+                          }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <strong>Independent type:</strong>
+                          {{ schoolAtGraduation.independentDesignation }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <strong>Independent affiliation:</strong>
+                          {{ schoolAtGraduation.independentAffiliation }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <strong>Transcript eligible:</strong>
+                          {{ schoolAtGraduation.transcriptEligibility }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <strong>Dogwood eligibility:</strong>
+                          {{ schoolAtGraduation.certificateEligibility }}
+                        </td>
+                      </tr>
+                    </tbody>
                   </table>
-                </b-popover>
+                </b-modal>
               </td>
             </tr>
             <tr v-if="showEdit">
@@ -699,6 +699,7 @@
 
 <script>
 import { mapState, mapActions } from "pinia";
+import { onUpdated, onMounted } from "vue";
 import { useAppStore } from "../../../store/modules/app";
 import { useStudentStore } from "../../../store/modules/student";
 import { useAccessStore } from "../../../store/modules/access";
