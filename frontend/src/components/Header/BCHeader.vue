@@ -1,6 +1,5 @@
 <template>
   <div>
-    <EnvironmentBanner />
     <header>
       <div class="container">
         <div class="banner">
@@ -197,12 +196,9 @@ import CommonService from "@/services/CommonService.js";
 import { loadStudent, showNotification } from "../../utils/common.js";
 import { useStudentStore } from "@/store/modules/student";
 import { mapState } from "pinia";
-import EnvironmentBanner from "@/components/Header/EnvironmentBanner.vue";
 
 export default {
-  components: {
-    EnvironmentBanner: EnvironmentBanner,
-  },
+  components: {},
   setup() {
     const studentStore = useStudentStore();
     return { studentStore };
