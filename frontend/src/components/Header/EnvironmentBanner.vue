@@ -75,8 +75,8 @@ export default {
   float: none;
 }
 #env-banner .test-env {
-  background-color: #ff4b00;
-  color: #fff;
+  background-color: #80ff00;
+  color: #000;
   width: 100%;
   float: none;
 }
