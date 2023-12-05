@@ -1,13 +1,16 @@
 <template>
   <div id="env-banner">
     <div v-if="environment == 'local'" class="local-env">
-      <strong>localhost</strong> environment
+      Vue 3 - <strong>localhost</strong> environment
     </div>
     <div v-else-if="environment == 'dev'" class="dev-env">
       <strong>DEV</strong> environment
     </div>
+    <div v-else-if="environment == 'v3-dev'" class="v3-dev-env">
+      Vue 3 - <strong>DEV</strong> environment
+    </div>
     <div v-if="environment == 'test'" class="test-env">
-      <strong>TEST</strong> environment
+      Vue 3 - <strong>TEST</strong> environment
     </div>
   </div>
 </template>
@@ -35,6 +38,8 @@ export default {
         this.environment = "dev";
       } else if (location.host.includes(this.environments.test)) {
         this.environment = "test";
+      } else {
+        this.environment = "v3-dev";
       }
     },
   },
@@ -67,6 +72,12 @@ export default {
 }
 #env-banner .dev-env {
   background-color: #ffa60080;
+  width: 100%;
+  float: none;
+}
+
+#env-banner .v3-dev-env {
+  background-color: #850eb480;
   width: 100%;
   float: none;
 }
