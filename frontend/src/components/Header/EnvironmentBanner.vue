@@ -1,6 +1,7 @@
 <template>
   <div id="env-banner">
     {{ environment }}
+    {{ host }}
     <div v-if="environment == 'local'" class="local-env">
       Vue 3 - <strong>localhost</strong> environment
     </div>
@@ -25,6 +26,7 @@ export default {
         dev: "educ-grad-admin",
         test: "test.grad.gov.bc.ca",
       },
+      host: location.host,
     };
   },
   methods: {
