@@ -1,5 +1,6 @@
 <template>
   <div id="env-banner">
+    {{ environment }}
     <div v-if="environment == 'local'" class="local-env">
       Vue 3 - <strong>localhost</strong> environment
     </div>
@@ -28,6 +29,7 @@ export default {
   },
   methods: {
     getEnv() {
+      console.log(location);
       //simple solution to display banner to UI that indicates what environment the user is in;
       //currently determined via browser URL since this is a simple visual aid for devs and testers
       if (
