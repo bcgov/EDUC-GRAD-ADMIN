@@ -755,6 +755,7 @@
                   size="sm"
                   v-model="editedGradStatus.recalculateGradStatus"
                   :options="recalcFlags"
+                  :disabled="!allowUpdateRecalcFlags"
                 />
               </td>
             </tr>
@@ -771,6 +772,7 @@
                   size="sm"
                   v-model="editedGradStatus.recalculateProjectedGrad"
                   :options="recalcFlags"
+                  :disabled="!allowUpdateRecalcFlags"
                 />
               </td>
             </tr>
@@ -799,6 +801,7 @@ export default {
       studentId: "getStudentId",
       studentGradStatus: "getStudentGradStatus",
       allowUpdateGradStatus: "useraccess/allowUpdateGradStatus",
+      allowUpdateRecalcFlags: "useraccess/allowUpdateRecalcFlags",
     }),
     studentGradeChange() {
       return this.editedGradStatus.studentGrade;

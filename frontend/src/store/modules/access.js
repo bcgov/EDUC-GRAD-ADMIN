@@ -58,6 +58,9 @@ export default {
     allowToggleRoutines: (state) => {
       return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
     },
+    allowUpdateRecalcFlags: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
+    },
   },
   mutations: {
     setUserAccess: (state, userAccess) => {
