@@ -584,6 +584,18 @@
                 >
                   {{ editedGradStatus.schoolAtGradName }} found.
                 </div>
+
+                <!-- Warning if school code for school of record is Offshore and program is 1950 -->
+                <div
+                  v-if="errorFlags.other.offshore1950"
+                  class="form-validation-message text-danger"
+                >
+                  Offshore schools do not support the Adult Graduation
+                  Program&nbsp;&nbsp;<i
+                    class="fas fa-exclamation-triangle"
+                    aria-hidden="true"
+                  ></i>
+                </div>
               </td>
               <td>
                 <b-input
@@ -689,6 +701,18 @@
                 >
               </td>
             </tr>
+            <tr v-if="!showEdit">
+              <td><strong>Recalculate Grad Status:</strong></td>
+              <td>
+                {{ String(studentGradStatus.recalculateGradStatus) }}
+              </td>
+            </tr>
+            <tr v-if="!showEdit">
+              <td><strong>Recalculate Projected Grad:</strong></td>
+              <td>
+                {{ String(studentGradStatus.recalculateProjectedGrad) }}
+              </td>
+            </tr>
             <tr></tr>
           </tbody>
         </table>
@@ -792,6 +816,7 @@ export default {
         other: {
           programGrade: false,
           programComplete: false,
+          offshore1950: false,
         },
       },
       // Validation flags that do NOT prevent submission of GRAD status form
@@ -914,6 +939,12 @@ export default {
         } else {
           this.errorFlags.other.programGrade = true;
         }
+        // check that school of record is NOT offshore
+        if (this.editedGradStatus.schoolOfRecord.search(/^103.*/) >= 0) {
+          this.errorFlags.other.offshore1950 = true;
+        } else {
+          this.errorFlags.other.offshore1950 = false;
+        }
       } else {
         this.errorFlags.emptyError.adultStartDate = false;
         if (
@@ -987,7 +1018,15 @@ export default {
         this.warningFlags.schoolOfRecordInputWarning = true;
         this.validateFields();
         return;
+      } else if (
+        this.studentGradStatus.program == "1950" &&
+        this.editedGradStatus.schoolOfRecord.search(/^103.*/) >= 0
+      ) {
+        this.errorFlags.other.offshore1950 = true;
+      } else {
+        this.errorFlags.other.offshore1950 = false;
       }
+
       if (
         this.editedGradStatus.schoolOfRecord ==
         this.studentGradStatus.schoolOfRecord
@@ -1269,12 +1308,13 @@ export default {
 
     cancelGradStatus() {
       this.showEdit = false;
-      this.editedGradStatus = {};
 
       this.warningFlags.schoolOfRecordWarning = false;
       this.warningFlags.schoolNotFoundWarning = false;
       this.errorFlags.numberError.adultStartDate = false;
       this.errorFlags.numberError.programCompletionDate = false;
+
+      this.editedGradStatus = {};
     },
     saveGraduationStatus(id) {
       //add the user info
