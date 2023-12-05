@@ -1210,6 +1210,9 @@ export default {
       }
     },
     editGradStatus() {
+      // reset object
+      this.editedGradStatus = {};
+
       //If the student has a programCompletionDate disable input fields
       this.warningFlags.schoolOfRecordWarning = false;
       this.warningFlags.schoolNotFoundWarning = false;
@@ -1313,8 +1316,6 @@ export default {
       this.warningFlags.schoolNotFoundWarning = false;
       this.errorFlags.numberError.adultStartDate = false;
       this.errorFlags.numberError.programCompletionDate = false;
-
-      this.editedGradStatus = {};
     },
     saveGraduationStatus(id) {
       //add the user info
