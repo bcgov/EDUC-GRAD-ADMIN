@@ -32,6 +32,7 @@ export default {
   methods: {
     getEnv() {
       console.log(location);
+      console.log(location.host.includes(this.environments.dev));
       //simple solution to display banner to UI that indicates what environment the user is in;
       //currently determined via browser URL since this is a simple visual aid for devs and testers
       if (
