@@ -748,10 +748,32 @@
                 {{ String(studentGradStatus.recalculateGradStatus) }}
               </td>
             </tr>
+            <tr v-else>
+              <td><strong>Recalculate Grad Status:</strong></td>
+              <td>
+                <b-form-select
+                  size="sm"
+                  v-model="editedGradStatus.recalculateGradStatus"
+                  :options="recalcFlags"
+                  :disabled="!allowUpdateRecalcFlags"
+                />
+              </td>
+            </tr>
             <tr v-if="!showEdit">
               <td><strong>Recalculate Projected Grad:</strong></td>
               <td>
                 {{ String(studentGradStatus.recalculateProjectedGrad) }}
+              </td>
+            </tr>
+            <tr v-else>
+              <td><strong>Recalculate Projected Grad:</strong></td>
+              <td>
+                <b-form-select
+                  size="sm"
+                  v-model="editedGradStatus.recalculateProjectedGrad"
+                  :options="recalcFlags"
+                  :disabled="!allowUpdateRecalcFlags"
+                />
               </td>
             </tr>
             <tr></tr>
@@ -779,6 +801,7 @@ export default {
       studentId: "getStudentId",
       studentGradStatus: "getStudentGradStatus",
       allowUpdateGradStatus: "useraccess/allowUpdateGradStatus",
+      allowUpdateRecalcFlags: "useraccess/allowUpdateRecalcFlags",
     }),
     studentGradeChange() {
       return this.editedGradStatus.studentGrade;
@@ -888,6 +911,10 @@ export default {
       consumerEducRecMet: [
         { text: "Y", value: "Y" },
         { text: "N", value: "N" },
+      ],
+      recalcFlags: [
+        { text: "Y", value: "Y" },
+        { text: "null", value: null },
       ],
       programsWithExpiry: [
         "1986-EN",
@@ -1332,6 +1359,16 @@ export default {
         this.editedGradStatus,
         "consumerEducationRequirementMet",
         this.studentGradStatus.consumerEducationRequirementMet
+      );
+      this.$set(
+        this.editedGradStatus,
+        "recalculateGradStatus",
+        this.studentGradStatus.recalculateGradStatus
+      );
+      this.$set(
+        this.editedGradStatus,
+        "recalculateProjectedGrad",
+        this.studentGradStatus.recalculateProjectedGrad
       );
       this.validateFields();
     },
