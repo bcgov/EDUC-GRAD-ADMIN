@@ -1154,10 +1154,13 @@ export default {
     },
   },
   methods: {
-    ...mapActions(useStudentStore, ["setStudentGradStatus"]),
-    getStudentReportsAndCertificates: function () {
-      this.$root.$emit("studentProfile");
-    },
+    ...mapActions(useStudentStore, [
+      "setStudentGradStatus",
+      "loadStudentReportsAndCertificates",
+    ]),
+    // getStudentReportsAndCertificates: function () {
+    //   this.$root.$emit("studentProfile");
+    // },
     getStudentGraduationOptionalPrograms: function () {
       this.$root.$emit("refreshStudentGraduationOptionalPrograms");
     },
@@ -1357,7 +1360,8 @@ export default {
         .then((response) => {
           this.updateStatus = response.data;
           this.setStudentGradStatus(response.data);
-          this.getStudentReportsAndCertificates();
+          this.loadStudentReportsAndCertificates();
+          // this.getStudentReportsAndCertificates();
           this.getStudentGraduationOptionalPrograms();
           this.refreshStudentHistory();
           this.studentGradStatus.studentStatusName = this.sortStudentStatus(

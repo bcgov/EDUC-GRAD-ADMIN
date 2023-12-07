@@ -266,7 +266,7 @@ export default {
                   throw new Error("Student not found");
                 }
                 this.studentStore.unsetStudent();
-                this.studentStore.setQuickSearchPen(response.data[0].studentID);
+                this.studentStore.setQuickSearchId(response.data[0].studentID);
                 this.loadStudent(response.data);
                 this.searchLoading = false;
               }
