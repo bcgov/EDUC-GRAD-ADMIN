@@ -1,17 +1,16 @@
 <template>
   <div id="env-banner">
-    {{ environment }}
-    {{ host }}
+    env - {{ environment }} | host - {{ host }}
     <div v-if="environment == 'local'" class="local-env">
       Vue 3 - <strong>localhost</strong> environment
     </div>
-    <div v-if="environment == 'dev'" class="dev-env">
+    <div v-else-if="environment == 'dev'" class="dev-env">
       Vue 3 - <strong>DEV</strong> environment
     </div>
-    <div v-else>Dev banner not working - check logic</div>
-    <div v-if="environment == 'test'" class="test-env">
+    <div v-else-if="environment == 'test'" class="test-env">
       Vue 3 - <strong>TEST</strong> environment
     </div>
+    <div v-else>Vue 3 - <strong>Environment not recognized</strong></div>
   </div>
 </template>
 
