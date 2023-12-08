@@ -1154,13 +1154,19 @@ export default {
     },
   },
   methods: {
-    ...mapActions(useStudentStore, ["setStudentGradStatus"]),
-    getStudentReportsAndCertificates: function () {
-      this.$root.$emit("studentProfile");
-    },
-    getStudentGraduationOptionalPrograms: function () {
-      this.$root.$emit("refreshStudentGraduationOptionalPrograms");
-    },
+    ...mapActions(useStudentStore, [
+      "setStudentGradStatus",
+      "loadStudentReportsAndCertificates",
+      "loadStudentOptionalPrograms",
+      "loadStudentHistory",
+      "loadStudentOptionalProgramHistory",
+    ]),
+    // getStudentReportsAndCertificates: function () {
+    //   this.$root.$emit("studentProfile");
+    // },
+    // getStudentGraduationOptionalPrograms: function () {
+    //   this.$root.$emit("refreshStudentGraduationOptionalPrograms");
+    // },
     refreshStudentHistory: function () {
       this.$root.$emit("refreshStudentHistory");
     },
@@ -1357,9 +1363,12 @@ export default {
         .then((response) => {
           this.updateStatus = response.data;
           this.setStudentGradStatus(response.data);
-          this.getStudentReportsAndCertificates();
-          this.getStudentGraduationOptionalPrograms();
-          this.refreshStudentHistory();
+          this.loadStudentReportsAndCertificates();
+          // this.getStudentReportsAndCertificates();
+          this.loadStudentOptionalPrograms(id);
+          // this.refreshStudentHistory();
+          this.loadStudentHistory(id);
+          this.loadStudentOptionalProgramHistory(id);
           this.studentGradStatus.studentStatusName = this.sortStudentStatus(
             response.data.studentStatus
           );
@@ -1389,19 +1398,21 @@ export default {
     },
 
     getSchoolInfo(mincode, type) {
-      SchoolService.getSchoolInfo(mincode)
-        .then((response) => {
-          if (type == "schoolOfRecord") {
-            this.schoolOfRecord = response.data;
-          }
-          if (type == "schoolAtGrad") {
-            this.schoolAtGraduation = response.data;
-          }
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.log("There was an error:" + error.response);
-        });
+      if (mincode != null) {
+        SchoolService.getSchoolInfo(mincode)
+          .then((response) => {
+            if (type == "schoolOfRecord") {
+              this.schoolOfRecord = response.data;
+            }
+            if (type == "schoolAtGrad") {
+              this.schoolAtGraduation = response.data;
+            }
+          })
+          .catch((error) => {
+            // eslint-disable-next-line
+            console.log("There was an error:" + error.response);
+          });
+      }
     },
     ifProgramsWithExpiry(program) {
       for (let p of this.programsWithExpiry) {
