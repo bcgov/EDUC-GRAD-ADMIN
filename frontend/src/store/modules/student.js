@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
+import StudentService from "@/services/StudentService.js";
 export const useStudentStore = defineStore("student", {
   namespaced: true,
   state: () => ({
@@ -123,6 +124,57 @@ export const useStudentStore = defineStore("student", {
                 noAutoHide: true,
               });
             }
+          }
+        });
+    },
+    loadStudentOptionalPrograms(studentId) {
+      StudentService.getGraduationStatusOptionalPrograms(studentId)
+        .then((response) => {
+          this.setStudentGradStatusOptionalPrograms(response.data);
+        })
+        .catch((error) => {
+          if (error.response.status) {
+            this.$bvToast.toast("ERROR " + error.response.statusText, {
+              title:
+                "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
+                error.response.status,
+              variant: "danger",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
+    loadStudentHistory(studentId) {
+      StudentService.getStudentHistory(studentId)
+        .then((response) => {
+          this.setStudentAuditHistory(response.data);
+        })
+        .catch((error) => {
+          if (error.response.status) {
+            this.$bvToast.toast("ERROR " + error.response.statusText, {
+              title:
+                "There was an error with the Student Service (getting the Student History): " +
+                error.response.status,
+              variant: "danger",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
+    loadStudentOptionalProgramHistory(studentId) {
+      StudentService.getStudentOptionalProgramHistory(studentId)
+        .then((response) => {
+          this.setStudentOptionalProgramsAuditHistory(response.data);
+        })
+        .catch((error) => {
+          if (error.response.status) {
+            this.$bvToast.toast("ERROR " + error.response.statusText, {
+              title:
+                "There was an error with the Student Service (getting the Student Optional Program History): " +
+                error.response.status,
+              variant: "danger",
+              noAutoHide: true,
+            });
           }
         });
     },

@@ -609,7 +609,6 @@
 <script>
 import { showNotification } from "../utils/common.js";
 import AssessmentService from "@/services/AssessmentService.js";
-import GraduationReportService from "@/services/GraduationReportService.js";
 import CourseService from "@/services/CourseService.js";
 import StudentService from "@/services/StudentService.js";
 import GraduationService from "@/services/GraduationService.js";
@@ -771,15 +770,6 @@ export default {
       this.confirmStudentUndoCompletion = false; //clear confirm if they change options
     },
   },
-  mounted() {
-    this.$root.$on("refreshStudentGraduationOptionalPrograms", () => {
-      this.loadStudentOptionalPrograms(this.studentId);
-    });
-    this.$root.$on("refreshStudentHistory", () => {
-      this.loadStudentHistory(this.studentId);
-      this.loadStudentOptionalProgramHistory(this.studentId);
-    });
-  },
   destroyed() {
     window.removeEventListener("resize", this.handleResize);
   },
@@ -804,6 +794,9 @@ export default {
   methods: {
     ...mapActions(useStudentStore, [
       "loadStudentReportsAndCertificates",
+      "loadStudentOptionalPrograms",
+      "loadStudentHistory",
+      "loadStudentOptionalProgramHistory",
       "setStudentCertificates",
       "setStudentReports",
       "setStudentTranscripts",
@@ -881,78 +874,6 @@ export default {
       this.studentUngradReasonSelected = "";
       this.studentUngradReasonDescription = "";
     },
-    // getStudentReportsAndCertificates(id, pen) {
-    //   GraduationReportService.getStudentCertificates(id)
-    //     .then((response) => {
-    //       this.setStudentCertificates(response.data);
-    //     })
-    //     .catch((error) => {
-    //       if (error.response.data.code == "404") {
-    //         // eslint-disable-next-line
-    //         console.log(error);
-    //       } else {
-    //         if (error.response.status) {
-    //           this.$bvToast.toast("ERROR " + error.response.statusText, {
-    //             title: "ERROR" + error.response.status,
-    //             variant: "danger",
-    //             noAutoHide: true,
-    //           });
-    //         }
-    //       }
-    //     });
-    //   GraduationReportService.getStudentReports(id)
-    //     .then((response) => {
-    //       this.setStudentReports(response.data);
-    //     })
-    //     .catch((error) => {
-    //       if (error.response.data.code == "404") {
-    //         // eslint-disable-next-line
-    //         console.log(error);
-    //       } else {
-    //         if (error.response.status) {
-    //           this.$bvToast.toast("ERROR " + error.response.statusText, {
-    //             title: "ERROR" + error.response.status,
-    //             variant: "danger",
-    //             noAutoHide: true,
-    //           });
-    //         }
-    //       }
-    //     });
-    //   GraduationReportService.getStudentTranscripts(id)
-    //     .then((response) => {
-    //       this.setStudentTranscripts(response.data);
-    //     })
-    //     .catch((error) => {
-    //       if (error.response.data.code == "404") {
-    //         // eslint-disable-next-line
-    //         console.log(error);
-    //       } else {
-    //         if (error.response.status) {
-    //           this.$bvToast.toast("ERROR " + error.response.statusText, {
-    //             title: "Service ERROR" + error.response.status,
-    //             variant: "danger",
-    //             noAutoHide: true,
-    //           });
-    //         }
-    //       }
-    //     });
-    //   GraduationReportService.getStudentXmlReport(pen)
-    //     .then((response) => {
-    //       this.setStudentXmlReport(response.data);
-    //     })
-    //     .catch((error) => {
-    //       if (error.response.status == 404) {
-    //         // eslint-disable-next-line
-    //         console.log(error);
-    //       } else {
-    //         this.$bvToast.toast("ERROR " + error.response.statusText, {
-    //           title: "Service ERROR" + error.response.status,
-    //           variant: "danger",
-    //           noAutoHide: true,
-    //         });
-    //       }
-    //     });
-    // },
     reloadGradStatus() {
       StudentService.getGraduationStatus(this.studentId)
         .then((res) => {
@@ -1174,21 +1095,6 @@ export default {
           }
         });
     },
-    loadStudentOptionalPrograms(studentIdFromURL) {
-      StudentService.getGraduationStatusOptionalPrograms(studentIdFromURL)
-        .then((response) => {
-          this.setStudentGradStatusOptionalPrograms(response.data);
-        })
-        .catch((error) => {
-          if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
-                error.response.status
-            );
-          }
-        });
-    },
     loadCareerPrograms(studentIdFromURL) {
       StudentService.getStudentCareerPrograms(studentIdFromURL)
         .then((response) => {
@@ -1259,36 +1165,6 @@ export default {
             this.showNotification(
               "danger",
               "There was an error with the Student Service (getting the Undo Completion Reasons): " +
-                error.response.status
-            );
-          }
-        });
-    },
-    loadStudentHistory(studentIdFromURL) {
-      StudentService.getStudentHistory(studentIdFromURL)
-        .then((response) => {
-          this.setStudentAuditHistory(response.data);
-        })
-        .catch((error) => {
-          if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student History): " +
-                error.response.status
-            );
-          }
-        });
-    },
-    loadStudentOptionalProgramHistory(studentIdFromURL) {
-      StudentService.getStudentOptionalProgramHistory(studentIdFromURL)
-        .then((response) => {
-          this.setStudentOptionalProgramsAuditHistory(response.data);
-        })
-        .catch((error) => {
-          if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student Optional Program History): " +
                 error.response.status
             );
           }
