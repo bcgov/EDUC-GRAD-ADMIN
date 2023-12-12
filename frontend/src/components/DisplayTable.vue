@@ -201,7 +201,6 @@
       :total-rows="totalRows"
       :per-page="perPage"
       aria-controls="my-table"
-      v-if="totalRows > perPage"
     ></b-pagination>
     <b-modal
       :id="infoModal.id"
@@ -215,13 +214,12 @@
 </template>
 
 <script>
-import { toRaw, onBeforeMount } from "vue";
+import { toRaw } from "vue";
 import { useAccessStore } from "../store/modules/access.js";
 import { useAppStore } from "../store/modules/app.js";
-import { useAuthStore } from "../store/modules/auth.js";
 import { useBatchProcessingStore } from "../store/modules/batchprocessing.js";
 import { useStudentStore } from "../store/modules/student.js";
-import { mapState, mapActions } from "pinia";
+import { mapState } from "pinia";
 export default {
   name: "DisplayTable",
   props: [
@@ -245,7 +243,10 @@ export default {
     "sortByField",
     "sortDesc",
   ],
-
+  onMounted() {
+    // Set the initial number of items
+    this.totalRows = this.items.length;
+  },
   data() {
     return {
       actionNames: ["removeScheduledJobs"],
@@ -301,11 +302,11 @@ export default {
     editableFields() {
       return this.fields.filter((field) => field.editable);
     },
-    totalRows: function () {
-      if (this.items?.length) {
-        return this.items.length;
-      } else return this.totalRows;
-    },
+    // totalRows: function () {
+    //   if (this.items?.length) {
+    //     return this.items.length;
+    //   } else return this.totalRows;
+    // },
     sortOptions() {
       return this.fields
         .filter((f) => f.sortable)
@@ -322,6 +323,7 @@ export default {
     if (this.pagination) {
       this.perPage = 25;
     }
+    this.totalRows = this.items.length;
   },
   onBeforeMount() {
     // Now, you can use the mapped actions in the hook
@@ -339,6 +341,11 @@ export default {
       } else {
         console.error("Store not found.");
       }
+    },
+    onFiltered(filteredItems) {
+      // Trigger pagination to update the number of buttons/pages due to filtering
+      this.totalRows = filteredItems.length;
+      this.currentPage = 1;
     },
   },
 };
