@@ -71,14 +71,14 @@
             <img
               v-show="!row.detailsShowing"
               src="../../assets/images/icon-right.svg"
-              width="9px"
+              width="9"
               aria-hidden="true"
               alt=""
             />
             <img
               v-show="row.detailsShowing"
               src="../../assets/images/icon-down.svg"
-              height="5px"
+              height="5"
               aria-hidden="true"
               alt=""
             />

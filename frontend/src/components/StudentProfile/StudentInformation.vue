@@ -35,14 +35,14 @@
               <img
                 v-show="!moreStudentInfo"
                 src="../../assets/images/icon-right.svg"
-                width="14px"
+                width="14"
                 aria-hidden="true"
                 alt=""
               />
               <img
                 v-show="moreStudentInfo"
                 src="../../assets/images/icon-down.svg"
-                height="8px"
+                height="8"
                 aria-hidden="true"
                 alt=""
               />
@@ -121,14 +121,14 @@
           <img
             v-show="!moreStudentInfo"
             src="../../assets/images/icon-right.svg"
-            height="14px"
+            height="14"
             aria-hidden="true"
             alt=""
           />
           <img
             v-show="moreStudentInfo"
             src="../../assets/images/icon-down.svg"
-            height="8px"
+            height="8"
             aria-hidden="true"
             alt=""
           />

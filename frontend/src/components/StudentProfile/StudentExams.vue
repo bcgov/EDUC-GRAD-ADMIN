@@ -25,7 +25,7 @@ export default {
   props: {},
   computed: {
     ...mapState(useStudentStore, {
-      exams: "student/getStudentExams",
+      exams: "getStudentExams",
     }),
   },
   components: {
