@@ -1,9 +1,12 @@
 import { defineStore } from "pinia";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
-
+import GraduationReportService from "@/services/GraduationReportService.js";
+import StudentService from "@/services/StudentService.js";
 export const useStudentStore = defineStore("student", {
   namespaced: true,
   state: () => ({
+    pen: "",
+    id: "",
     advancedSearchProps: "",
     tokenTimeout: "",
     isAuthenticated: localStorage.getItem("jwtToken") !== null,
@@ -14,7 +17,7 @@ export const useStudentStore = defineStore("student", {
     permissions: "",
     username: "",
     pageTitle: null,
-    quickSearchPen: "",
+    quickSearchId: "",
     student: {
       profile: {},
       courses: "not loaded",
@@ -40,6 +43,141 @@ export const useStudentStore = defineStore("student", {
     },
   }),
   actions: {
+    loadStudentReportsAndCertificates() {
+      this.loadStudentXmlReport(this.pen);
+      this.loadStudentTranscripts(this.id);
+      this.loadStudentCertificates(this.id);
+      this.loadStudentReports(this.id);
+    },
+    loadStudentXmlReport(pen) {
+      GraduationReportService.getStudentXmlReport(pen)
+        .then((response) => {
+          this.setStudentXmlReport(response.data);
+        })
+        .catch((error) => {
+          if (error.response.status == 404) {
+            // eslint-disable-next-line
+            console.log(error);
+          } else {
+            this.$bvToast.toast("ERROR " + error.response.statusText, {
+              title: "Service ERROR" + error.response.status,
+              variant: "danger",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
+    loadStudentCertificates(id) {
+      GraduationReportService.getStudentCertificates(id)
+        .then((response) => {
+          this.setStudentCertificates(response.data);
+        })
+        .catch((error) => {
+          if (error.response.data.code == "404") {
+            // eslint-disable-next-line
+            console.log(error);
+          } else {
+            if (error.response.status) {
+              this.$bvToast.toast("ERROR " + error.response.statusText, {
+                title: "ERROR" + error.response.status,
+                variant: "danger",
+                noAutoHide: true,
+              });
+            }
+          }
+        });
+    },
+    loadStudentReports(id) {
+      GraduationReportService.getStudentReports(id)
+        .then((response) => {
+          this.setStudentReports(response.data);
+        })
+        .catch((error) => {
+          if (error.response.data.code == "404") {
+            // eslint-disable-next-line
+            console.log(error);
+          } else {
+            if (error.response.status) {
+              this.$bvToast.toast("ERROR " + error.response.statusText, {
+                title: "ERROR" + error.response.status,
+                variant: "danger",
+                noAutoHide: true,
+              });
+            }
+          }
+        });
+    },
+    loadStudentTranscripts(id) {
+      GraduationReportService.getStudentTranscripts(id)
+        .then((response) => {
+          this.setStudentTranscripts(response.data);
+        })
+        .catch((error) => {
+          if (error.response.data.code == "404") {
+            // eslint-disable-next-line
+            console.log(error);
+          } else {
+            if (error.response.status) {
+              this.$bvToast.toast("ERROR " + error.response.statusText, {
+                title: "Service ERROR" + error.response.status,
+                variant: "danger",
+                noAutoHide: true,
+              });
+            }
+          }
+        });
+    },
+    loadStudentOptionalPrograms(studentId) {
+      StudentService.getGraduationStatusOptionalPrograms(studentId)
+        .then((response) => {
+          this.setStudentGradStatusOptionalPrograms(response.data);
+        })
+        .catch((error) => {
+          if (error.response.status) {
+            this.$bvToast.toast("ERROR " + error.response.statusText, {
+              title:
+                "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
+                error.response.status,
+              variant: "danger",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
+    loadStudentHistory(studentId) {
+      StudentService.getStudentHistory(studentId)
+        .then((response) => {
+          this.setStudentAuditHistory(response.data);
+        })
+        .catch((error) => {
+          if (error.response.status) {
+            this.$bvToast.toast("ERROR " + error.response.statusText, {
+              title:
+                "There was an error with the Student Service (getting the Student History): " +
+                error.response.status,
+              variant: "danger",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
+    loadStudentOptionalProgramHistory(studentId) {
+      StudentService.getStudentOptionalProgramHistory(studentId)
+        .then((response) => {
+          this.setStudentOptionalProgramsAuditHistory(response.data);
+        })
+        .catch((error) => {
+          if (error.response.status) {
+            this.$bvToast.toast("ERROR " + error.response.statusText, {
+              title:
+                "There was an error with the Student Service (getting the Student Optional Program History): " +
+                error.response.status,
+              variant: "danger",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
     unsetStudent() {
       this.student.profile = {};
       this.student.notes = [];
@@ -65,8 +203,8 @@ export const useStudentStore = defineStore("student", {
     setUsername(payload) {
       this.username = payload;
     },
-    setQuickSearchPen(payload) {
-      this.quickSearchPen = payload;
+    setQuickSearchId(payload) {
+      this.quickSearchId = payload;
     },
     setPermissions(payload) {
       this.permissions = payload;
@@ -81,6 +219,12 @@ export const useStudentStore = defineStore("student", {
           // eslint-disable-next-line
           console.log(error.response.status);
         });
+    },
+    setStudentPen(payload) {
+      this.pen = payload;
+    },
+    setStudentId(payload) {
+      this.id = payload;
     },
     setStudentAuditHistory(payload) {
       this.student.auditHistory = payload;
@@ -294,8 +438,8 @@ export const useStudentStore = defineStore("student", {
     getUsername() {
       return this.username;
     },
-    getQuickSearchPen() {
-      return this.quickSearchPen;
+    getQuickSearchId() {
+      return this.quickSearchId;
     },
     getRequirementsMet() {
       if (this.student.gradStatus.studentGradData) {

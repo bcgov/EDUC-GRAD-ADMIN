@@ -609,7 +609,6 @@
 <script>
 import { showNotification } from "../utils/common.js";
 import AssessmentService from "@/services/AssessmentService.js";
-import GraduationReportService from "@/services/GraduationReportService.js";
 import CourseService from "@/services/CourseService.js";
 import StudentService from "@/services/StudentService.js";
 import GraduationService from "@/services/GraduationService.js";
@@ -640,7 +639,9 @@ export default {
     StudentService.getStudentPen(this.$route.params.studentId)
       .then((response) => {
         this.pen = response.data.pen;
+        this.setStudentPen(this.pen);
         const studentIdFromURL = this.$route.params.studentId;
+        this.setStudentId(studentIdFromURL);
         this.loadStudent(studentIdFromURL);
       })
       .catch((error) => {
@@ -761,7 +762,7 @@ export default {
       gradCourses: "gradStatusCourses",
       studentHistory: "getStudentAuditHistory",
       optionalProgramHistory: "getStudentOptionalProgramAuditHistory",
-      quickSearchPen: "getQuickSearchPen",
+      quickSearchId: "getQuickSearchId",
     }),
   },
   watch: {
@@ -769,26 +770,16 @@ export default {
       this.confirmStudentUndoCompletion = false; //clear confirm if they change options
     },
   },
-  mounted() {
-    this.$root.$on("studentProfile", () => {
-      this.getStudentReportsAndCertificates(this.studentId, this.pen);
-    });
-    this.$root.$on("refreshStudentGraduationOptionalPrograms", () => {
-      this.loadStudentOptionalPrograms(this.studentId);
-    });
-    this.$root.$on("refreshStudentHistory", () => {
-      this.loadStudentHistory(this.studentId);
-      this.loadStudentOptionalProgramHistory(this.studentId);
-    });
-  },
   destroyed() {
     window.removeEventListener("resize", this.handleResize);
   },
   beforeRouteUpdate(to, from, next) {
-    StudentService.getStudentPen(this.quickSearchPen)
+    StudentService.getStudentPen(this.quickSearchId)
       .then((response) => {
         this.pen = response.data.pen;
-        this.loadStudent(this.quickSearchPen);
+        this.setStudentPen(this.pen);
+        this.setStudentId(this.quickSearchId);
+        this.loadStudent(this.quickSearchId);
       })
       .catch((error) => {
         if (error.response.status) {
@@ -802,6 +793,10 @@ export default {
   },
   methods: {
     ...mapActions(useStudentStore, [
+      "loadStudentReportsAndCertificates",
+      "loadStudentOptionalPrograms",
+      "loadStudentHistory",
+      "loadStudentOptionalProgramHistory",
       "setStudentCertificates",
       "setStudentReports",
       "setStudentTranscripts",
@@ -818,6 +813,8 @@ export default {
       "setStudentCareerPrograms",
       "setStudentUngradReasons",
       "setStudentOptionalProgramsAuditHistory",
+      "setStudentPen",
+      "setStudentId",
     ]),
     ungraduateStudent() {
       this.tabLoading = true;
@@ -862,10 +859,7 @@ export default {
                 });
               }
             });
-          this.getStudentReportsAndCertificates(
-            this.studentId,
-            this.studentPen
-          );
+          this.loadStudentReportsAndCertificates();
         })
         .catch((error) => {
           this.tabLoading = false;
@@ -879,78 +873,6 @@ export default {
       this.confirmStudentUndoCompletion = false;
       this.studentUngradReasonSelected = "";
       this.studentUngradReasonDescription = "";
-    },
-    getStudentReportsAndCertificates(id, pen) {
-      GraduationReportService.getStudentCertificates(id)
-        .then((response) => {
-          this.setStudentCertificates(response.data);
-        })
-        .catch((error) => {
-          if (error.response.data.code == "404") {
-            // eslint-disable-next-line
-            console.log(error);
-          } else {
-            if (error.response.status) {
-              this.$bvToast.toast("ERROR " + error.response.statusText, {
-                title: "ERROR" + error.response.status,
-                variant: "danger",
-                noAutoHide: true,
-              });
-            }
-          }
-        });
-      GraduationReportService.getStudentReports(id)
-        .then((response) => {
-          this.setStudentReports(response.data);
-        })
-        .catch((error) => {
-          if (error.response.data.code == "404") {
-            // eslint-disable-next-line
-            console.log(error);
-          } else {
-            if (error.response.status) {
-              this.$bvToast.toast("ERROR " + error.response.statusText, {
-                title: "ERROR" + error.response.status,
-                variant: "danger",
-                noAutoHide: true,
-              });
-            }
-          }
-        });
-      GraduationReportService.getStudentTranscripts(id)
-        .then((response) => {
-          this.setStudentTranscripts(response.data);
-        })
-        .catch((error) => {
-          if (error.response.data.code == "404") {
-            // eslint-disable-next-line
-            console.log(error);
-          } else {
-            if (error.response.status) {
-              this.$bvToast.toast("ERROR " + error.response.statusText, {
-                title: "Service ERROR" + error.response.status,
-                variant: "danger",
-                noAutoHide: true,
-              });
-            }
-          }
-        });
-      GraduationReportService.getStudentXmlReport(pen)
-        .then((response) => {
-          this.setStudentXmlReport(response.data);
-        })
-        .catch((error) => {
-          if (error.response.status == 404) {
-            // eslint-disable-next-line
-            console.log(error);
-          } else {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title: "Service ERROR" + error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
-          }
-        });
     },
     reloadGradStatus() {
       StudentService.getGraduationStatus(this.studentId)
@@ -966,7 +888,7 @@ export default {
             });
           }
         });
-      this.getStudentReportsAndCertificates(this.studentId, this.studentPen);
+      this.loadStudentReportsAndCertificates();
       this.tabLoading = false;
     },
     graduateStudent() {
@@ -992,10 +914,7 @@ export default {
       this.tabLoading = true;
       GraduationService.updateStudentReports(this.studentId)
         .then(() => {
-          this.getStudentReportsAndCertificates(
-            this.studentId,
-            this.studentPen
-          );
+          this.loadStudentReportsAndCertificates();
           StudentService.getGraduationStatus(this.studentId)
             .then((res) => {
               this.setStudentGradStatus(res.data);
@@ -1038,10 +957,7 @@ export default {
           }
           this.$refs["projectedGradStatusWithFinalMarks"].show();
           this.tabLoading = false;
-          this.getStudentReportsAndCertificates(
-            this.studentId,
-            this.studentPen
-          );
+          this.loadStudentReportsAndCertificates();
         })
         .catch((error) => {
           this.tabLoading = false;
@@ -1076,10 +992,7 @@ export default {
             this.projectedGradStatusWithRegistrations.requirementsMet;
           this.$refs["projectedGradStatusWithFinalAndReg"].show();
           this.tabLoading = false;
-          this.getStudentReportsAndCertificates(
-            this.studentId,
-            this.studentPen
-          );
+          this.loadStudentReportsAndCertificates();
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1113,7 +1026,7 @@ export default {
       this.loadStudentCourseAchievements();
       this.loadStudentExamDetails();
       this.loadStudentNotes(studentIdFromURL);
-      this.getStudentReportsAndCertificates(studentIdFromURL, this.pen);
+      this.loadStudentReportsAndCertificates();
       this.loadStudentUngradReasons(studentIdFromURL);
       this.loadStudentHistory(studentIdFromURL);
       this.loadStudentOptionalProgramHistory(studentIdFromURL);
@@ -1177,21 +1090,6 @@ export default {
             this.showNotification(
               "danger",
               "There was an error with the Student Service (getting the Graduation Status): " +
-                error.response.status
-            );
-          }
-        });
-    },
-    loadStudentOptionalPrograms(studentIdFromURL) {
-      StudentService.getGraduationStatusOptionalPrograms(studentIdFromURL)
-        .then((response) => {
-          this.setStudentGradStatusOptionalPrograms(response.data);
-        })
-        .catch((error) => {
-          if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
                 error.response.status
             );
           }
@@ -1267,36 +1165,6 @@ export default {
             this.showNotification(
               "danger",
               "There was an error with the Student Service (getting the Undo Completion Reasons): " +
-                error.response.status
-            );
-          }
-        });
-    },
-    loadStudentHistory(studentIdFromURL) {
-      StudentService.getStudentHistory(studentIdFromURL)
-        .then((response) => {
-          this.setStudentAuditHistory(response.data);
-        })
-        .catch((error) => {
-          if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student History): " +
-                error.response.status
-            );
-          }
-        });
-    },
-    loadStudentOptionalProgramHistory(studentIdFromURL) {
-      StudentService.getStudentOptionalProgramHistory(studentIdFromURL)
-        .then((response) => {
-          this.setStudentOptionalProgramsAuditHistory(response.data);
-        })
-        .catch((error) => {
-          if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student Optional Program History): " +
                 error.response.status
             );
           }
