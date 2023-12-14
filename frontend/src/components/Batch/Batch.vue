@@ -876,38 +876,40 @@
             <div
               v-for="(program, index) in batch.programs"
               :key="index"
-              class="row pl-3 mb-1"
+              class="row pl-3 mb-1 col-12"
             >
-              <div class="row col-10" v-if="index == batch.programs.length - 1">
-                <b-form-select
-                  id="inline-form-select-type"
-                  class="col-2"
-                  :options="programOptions"
-                  value-field="programCode"
-                  text-field="programCode"
-                  v-model="program.value"
-                ></b-form-select>
-              </div>
-              <div v-if="index == batch.programs.length - 1" class="col-2">
-                <b-button
-                  :disabled="validating"
-                  class="btn btn-primary w-100"
-                  @click="
-                    addValueToTypeInBatchIdHandle(
-                      jobId,
-                      'programs',
-                      program.value,
-                      index
-                    )
-                  "
-                >
-                  <b-spinner small v-if="validating"></b-spinner> Add
-                </b-button>
+              <div class="row col-12">
+                <div class="col-2" v-if="index == batch.programs.length - 1">
+                  <b-form-select
+                    id="inline-form-select-type"
+                    class="w-100"
+                    :options="programOptions"
+                    value-field="programCode"
+                    text-field="programCode"
+                    v-model="program.value"
+                  ></b-form-select>
+                </div>
+                <div v-if="index == batch.programs.length - 1" class="col-2">
+                  <b-button
+                    :disabled="validating"
+                    class="btn btn-primary w-100"
+                    @click="
+                      addValueToTypeInBatchIdHandle(
+                        jobId,
+                        'programs',
+                        program.value,
+                        index
+                      )
+                    "
+                  >
+                    <b-spinner small v-if="validating"></b-spinner> Add
+                  </b-button>
+                </div>
               </div>
               <div class="row col-12">
                 <div
                   v-if="program.value && index != batch.programs.length - 1"
-                  class="col-2"
+                  class="col-2 pl-4"
                 >
                   {{ program.value }}
                 </div>
@@ -923,7 +925,7 @@
 
                 <div v-if="index != batch.programs.length - 1" class="col-2">
                   <b-button
-                    class="btn btn-primary w-100 w-100"
+                    class="btn btn-primary w-100"
                     @click="
                       deleteValueFromTypeInBatchIdHandle(
                         jobId,

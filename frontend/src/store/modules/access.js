@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 import ApiService from "@/common/apiService";
 import { Routes, Roles } from "@/utils/constants";
 
-export const useAccessStore = defineStore('access',{
+export const useAccessStore = defineStore("access", {
   namespaced: true,
   state: () => ({
     userAccess: "",
@@ -58,17 +58,20 @@ export const useAccessStore = defineStore('access',{
     allowToggleRoutines: (state) => {
       return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
     },
+    allowUpdateRecalcFlags: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
+    },
   },
 
   actions: {
-    setUserAccess(userAccess){
+    setUserAccess(userAccess) {
       if (userAccess) {
         this.userAccess = userAccess;
       } else {
         this.userAccess = null;
       }
     },
-    setUserRoles(role){
+    setUserRoles(role) {
       if (role) {
         this.roles = role;
       } else {
@@ -76,20 +79,19 @@ export const useAccessStore = defineStore('access',{
       }
     },
     //sets the token required for refreshing expired json web tokens
-    logoutState(){
+    logoutState() {
       localStorage.removeItem("jwtToken");
       this.userAccess = null;
       this.isAuthenticated = false;
     },
 
     async setAccess() {
-      
       if (localStorage.getItem("jwtToken")) {
         await ApiService.apiAxios
           .get(Routes.USER)
           .then((response) => {
-            this.setUserAccess(response.data.userAccess)
-            this.setUserRoles(response.data.userRoles)
+            this.setUserAccess(response.data.userAccess);
+            this.setUserRoles(response.data.userRoles);
           })
           .catch((e) => {
             throw e;

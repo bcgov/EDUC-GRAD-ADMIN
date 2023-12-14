@@ -20,7 +20,7 @@
                 color="#003366"
                 @click="clearStorage"
                 >Log In</a
-              ><span>again to continue.</span>
+              ><span>&nbsp;again to continue.</span>
             </v-card-text>
           </v-card>
         </v-col>

@@ -1,14 +1,16 @@
 <template>
   <div id="env-banner">
+    env - {{ environment }} | host - {{ host }}
     <div v-if="environment == 'local'" class="local-env">
       Vue 3 - <strong>localhost</strong> environment
     </div>
     <div v-else-if="environment == 'dev'" class="dev-env">
       Vue 3 - <strong>DEV</strong> environment
     </div>
-    <div v-if="environment == 'test'" class="test-env">
+    <div v-else-if="environment == 'test'" class="test-env">
       Vue 3 - <strong>TEST</strong> environment
     </div>
+    <div v-else>Vue 3 - <strong>Environment not recognized</strong></div>
   </div>
 </template>
 
@@ -23,10 +25,13 @@ export default {
         dev: "educ-grad-admin",
         test: "test.grad.gov.bc.ca",
       },
+      host: location.host,
     };
   },
   methods: {
     getEnv() {
+      console.log(location);
+      console.log(location.host.includes(this.environments.dev));
       //simple solution to display banner to UI that indicates what environment the user is in;
       //currently determined via browser URL since this is a simple visual aid for devs and testers
       if (
@@ -41,7 +46,7 @@ export default {
       }
     },
   },
-  created() {
+  mounted() {
     this.getEnv();
   },
 };
