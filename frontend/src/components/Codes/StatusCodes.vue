@@ -12,7 +12,7 @@
         {{ $filters.formatSimpleDate(row.item.effectiveDate) }}
       </template>
       <template #cell(expiryDate)="row">
-        {{ $filters.formatSimpleDate(row.item.effectiveDate) }}
+        {{ $filters.formatSimpleDate(row.item.expiryDate) }}
       </template>
     </DisplayTable>
   </div>
