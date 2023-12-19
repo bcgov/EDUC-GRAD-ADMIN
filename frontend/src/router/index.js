@@ -266,6 +266,13 @@ const router = createRouter({
           },
         },
         {
+          path: "/codes/career-programs",
+          component: CareerPrograms,
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
           path: "/codes/certificates-types",
           component: CertificateTypes,
           meta: {
@@ -367,7 +374,7 @@ router.beforeEach((to, _from, next) => {
     aStore
       .getJwtToken()
       .then(() => {
-        console.log("AUTHENTICATED" + aStore.isAuthenticated)
+        console.log("AUTHENTICATED" + aStore.isAuthenticated);
         if (!aStore.isAuthenticated) {
           next("/token-expired");
         } else {
