@@ -1,8 +1,7 @@
-import axios from 'axios';
-import { Routes } from '../utils/constants';
+import axios from "axios";
+import { Routes } from "../utils/constants";
 
 export default {
-
   //Retrieves an auth token from the API endpoint
   async getAuthToken() {
     try {
@@ -18,17 +17,18 @@ export default {
   async refreshAuthToken(token) {
     try {
       const response = await axios.post(Routes.REFRESH, {
-        refreshToken: token
+        refreshToken: token,
       });
 
-      if(response.data.error){
-        return {error: response.data.error_description};
+      if (response.data.error) {
+        return { error: response.data.error_description };
       }
-      
+
       return response.data;
     } catch (e) {
       console.log(`Failed to refresh JWT token - ${e}`); // eslint-disable-line no-console
+      window.location.href = "/token-expired";
       throw e;
     }
-  }
+  },
 };
