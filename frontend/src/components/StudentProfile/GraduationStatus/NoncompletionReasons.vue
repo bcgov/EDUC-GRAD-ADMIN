@@ -73,22 +73,22 @@ export default {
 </script>
 
 <style scoped>
-ul.requirements-met,
-ul.non-grad-reasons {
+:deep(ul.requirements-met),
+:deep(ul.non-grad-reasons) {
   list-style: none;
 }
-ul.requirements-met li,
-ul.non-grad-reasons li {
+:deep(ul.requirements-met) li,
+:deep(ul.non-grad-reasons) li {
   border-bottom: 1px solid #ccc;
 }
-.card-body {
+:deep(.card-body) {
   border-bottom: 1px solid #ccc;
 }
-.card {
+:deep(.card) {
   margin-bottom: 10px;
 }
 
-.card-header {
+:deep(.card-header) {
   font-weight: 700;
 }
 </style>

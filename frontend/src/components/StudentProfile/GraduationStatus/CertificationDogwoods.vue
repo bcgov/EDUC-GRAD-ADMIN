@@ -108,14 +108,14 @@ export default {
 </script>
 
 <style scoped>
-.card-body {
+:deep(.card-body) {
   border-bottom: 1px solid #ccc;
 }
-.card {
+:deep(.card) {
   margin-bottom: 10px;
 }
 
-.card-header {
+:deep(.card-header) {
   font-weight: 700;
 }
 </style>

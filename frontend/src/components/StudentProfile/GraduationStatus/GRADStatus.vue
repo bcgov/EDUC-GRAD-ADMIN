@@ -1463,35 +1463,35 @@ export default {
 </script>
 
 <style scoped>
-.graduation-status table tr td {
+:deep(.graduation-status) table tr td {
   vertical-align: top;
   height: 42px !important;
 }
-.card-body {
+:deep(.card-body) {
   border-bottom: 1px solid #ccc;
 }
-.card {
+:deep(.card) {
   margin-bottom: 10px;
 }
-.card-header {
+:deep(.card-header) {
   font-weight: 700;
 }
-.gradstatus-actions {
+:deep(.gradstatus-actions) {
   position: absolute;
   top: 10px;
   right: 10px;
 }
-.edit {
+:deep(.edit) {
   padding: 10px;
 }
-.form-validation-message {
+:deep(.form-validation-message) {
   font-size: 11px;
 }
-.form-control:disabled {
+:deep(.form-control:disabled) {
   color: #6c757d;
   background-color: #e9ecef;
 }
-a.disabled {
+:deep(a.disabled) {
   color: #6c757d;
   pointer-events: none;
 }
