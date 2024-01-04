@@ -144,7 +144,7 @@ export default {
         },
         {
           key: "programRequirementCode.requirementCategory",
-          label: "Rule category (C-courses, A-Assessments)",
+          label: "Rule category (C-Courses, A-Assessments)",
           sortable: true,
           editable: true,
           class: "",
