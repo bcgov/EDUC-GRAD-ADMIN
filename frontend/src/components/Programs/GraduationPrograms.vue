@@ -51,14 +51,14 @@ export default {
       graduationProgramsFields: [
         {
           key: "programCode",
-          label: "Program code",
+          label: "Program Code",
           sortable: true,
           sortDirection: "desc",
           editable: true,
         },
         {
           key: "programName",
-          label: "Program name",
+          label: "Program Name",
           sortable: true,
           editable: true,
         },

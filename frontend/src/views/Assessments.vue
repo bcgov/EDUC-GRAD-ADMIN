@@ -17,10 +17,10 @@
               </DisplayTable>
             </b-card-text>
           </b-tab>
-          <b-tab title="Assessment requirements">
+          <b-tab title="Assessment Requirements">
             <b-card-text v-if="assessmentRequirements">
               <DisplayTable
-                title="Assessment requirements"
+                title="Assessment Requirements"
                 v-bind:items="assessmentRequirements"
                 v-bind:fields="assessmentRequirementsFields"
                 id="assessmentCode"
@@ -36,7 +36,6 @@
 </template>
 
 <script>
-
 import AssessmentService from "@/services/AssessmentService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 export default {
@@ -52,14 +51,14 @@ export default {
       assessmentFields: [
         {
           key: "assessmentCode",
-          label: "Assessment code",
+          label: "Assessment Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-15",
         },
         {
           key: "assessmentName",
-          label: "Assessment name",
+          label: "Assessment Name",
           sortable: true,
           class: "w-40",
         },
@@ -72,13 +71,13 @@ export default {
         },
         {
           key: "startDate",
-          label: "Start date",
+          label: "Start Date",
           sortable: true,
           class: "w-20",
         },
         {
           key: "endDate",
-          label: "End date",
+          label: "End Date",
           sortable: true,
           class: "w-20",
         },
@@ -87,13 +86,13 @@ export default {
       assessmentRequirementsFields: [
         {
           key: "assessmentCode",
-          label: "Assessment code",
+          label: "Assessment Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "assessmentName",
-          label: "Assessment name",
+          label: "Assessment Name",
           sortable: true,
         },
         {
@@ -108,13 +107,12 @@ export default {
         },
         {
           key: "requirementName",
-          label: "Requirement name",
+          label: "Requirement Name",
           sortable: true,
-
         },
         {
           key: "requirementProgram",
-          label: "Requirement program",
+          label: "Requirement Program",
           sortable: true,
         },
       ],
@@ -158,7 +156,7 @@ export default {
 </script>
 
 <style scoped>
-.assessments-view{
+.assessments-view {
   padding-left: 25px;
   padding-right: 25px;
 }

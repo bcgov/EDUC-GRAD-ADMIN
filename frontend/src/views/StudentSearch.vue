@@ -416,7 +416,7 @@
                   <div class="advanced-search-form">
                     <div class="row my-3">
                       <div class="advanced-search-field col-12 col-md-2">
-                        <label>Legal surname</label>
+                        <label>Legal Surname</label>
                         <div
                           href="#"
                           v-on:click="
@@ -442,7 +442,7 @@
                         />
                       </div>
                       <div class="advanced-search-field col-12 col-md-2">
-                        <label>Legal given</label>
+                        <label>Legal Given</label>
                         <div
                           href="#"
                           v-on:click="
@@ -468,7 +468,7 @@
                       </div>
 
                       <div class="advanced-search-field col-12 col-md-2">
-                        <label>Legal middle</label>
+                        <label>Legal Middle</label>
                         <div
                           href="#"
                           v-on:click="
@@ -506,7 +506,7 @@
                         class="form-group advanced-search-field col-12 col-md-2"
                       >
                         <label for="datepicker-birthdate-from"
-                          >Birthdate from</label
+                          >Birthdate From</label
                         >
                         <b-input-group class="mb-3">
                           <b-form-input
@@ -546,7 +546,7 @@
                     </div>
                     <div class="row">
                       <div class="advanced-search-field col-12 col-md-2">
-                        <label>Usual surname</label>
+                        <label>Usual Surname</label>
                         <div
                           href="#"
                           v-on:click="
@@ -571,7 +571,7 @@
                         />
                       </div>
                       <div class="advanced-search-field col-12 col-md-2">
-                        <label>Usual given</label>
+                        <label>Usual Given</label>
                         <div
                           href="#"
                           v-on:click="
@@ -596,7 +596,7 @@
                         />
                       </div>
                       <div class="advanced-search-field col-12 col-md-2">
-                        <label>Usual middle</label>
+                        <label>Usual Middle</label>
                         <div
                           href="#"
                           v-on:click="
@@ -806,21 +806,21 @@ export default {
         },
         {
           key: "legalLastName",
-          label: "Legal surname",
+          label: "Legal Surname",
           sortable: true,
           editable: false,
           class: "w-1",
         },
         {
           key: "legalFirstName",
-          label: "Legal given",
+          label: "Legal Given",
           sortable: true,
           editable: false,
           class: "w-1",
         },
         {
           key: "legalMiddleNames",
-          label: "Legal middle",
+          label: "Legal Middle",
           sortable: true,
           editable: false,
           class: "w-1",
@@ -862,7 +862,7 @@ export default {
         },
         {
           key: "schoolOfRecordName",
-          label: "School of Record name (GRAD)",
+          label: "School of Record Name (GRAD)",
           sortable: true,
           editable: false,
           class: "w-1",
@@ -876,7 +876,7 @@ export default {
         },
         {
           key: "schoolOfRecordindependentAffiliation",
-          label: "School independent affiliation (GRAD)",
+          label: "School Independent Affiliation (GRAD)",
           sortable: true,
           editable: false,
           class: "w-1",

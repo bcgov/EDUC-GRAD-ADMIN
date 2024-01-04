@@ -4,7 +4,7 @@
     <div v-if="environment == 'local'" class="local-env">
       Vue 3 - <strong>localhost</strong> environment
     </div>
-    <div v-else-if="environment == 'dev'" class="dev-env">
+    <div v-else-if="environment === 'dev'" class="dev-env">
       Vue 3 - <strong>DEV</strong> environment
     </div>
     <div v-else-if="environment == 'test'" class="test-env">

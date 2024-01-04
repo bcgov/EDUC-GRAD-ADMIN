@@ -66,7 +66,7 @@
             id="profile-route"
             class="text-decoration-none text-disabled"
             :disabled="true"
-            >Profile (Student not loaded)</a
+            >Profile (Student Not Loaded)</a
           ></b-nav-item
         >
         <b-nav-item v-else
@@ -74,7 +74,7 @@
             :to="`/student-profile/${this.profile.studentID}`"
             id="profile-route"
             >Profile ({{
-              profile.pen ? profile.pen : "Student not loaded"
+              profile.pen ? profile.pen : "Student Not Loaded"
             }})</router-link
           ></b-nav-item
         >
@@ -131,7 +131,7 @@
               id="profile-route"
               class="text-decoration-none text-disabled"
               :disabled="true"
-              >Profile (Student not loaded)</a
+              >Profile (Student Not Loaded)</a
             >
           </li>
           <li v-else>
@@ -139,7 +139,7 @@
               :to="`/student-profile/${this.profile.studentID}`"
               id="profile-route"
               >Profile ({{
-                profile.pen ? profile.pen : "Student not loaded"
+                profile.pen ? profile.pen : "Student Not Loaded"
               }})</router-link
             >
           </li>

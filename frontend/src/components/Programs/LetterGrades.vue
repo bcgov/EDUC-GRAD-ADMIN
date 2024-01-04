@@ -50,7 +50,7 @@ export default {
       letterGradesFields: [
         {
           key: "grade",
-          label: "Letter grade",
+          label: "Letter Grade",
           sortable: true,
           sortDirection: "desc",
           class: "text-center",
@@ -75,7 +75,7 @@ export default {
         },
         {
           key: "gpaMarkValue",
-          label: "GPA mark value",
+          label: "GPA Mark Value",
           sortable: true,
           class: "text-center",
         },
