@@ -75,7 +75,7 @@ export default {
           editable: true,
         },
         {
-          key: "programCadre",
+          key: "frenchImmersionMessage",
           label: "French Immersion",
           sortable: true,
           editable: true,
