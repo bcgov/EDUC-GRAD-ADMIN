@@ -39,7 +39,7 @@ export default {
         location.got.includes("127.0.0.1")
       ) {
         this.environment = "local";
-      } else if (location.host.includes(this.environments.dev)) {
+      } else if (location.host.contains(this.environments.dev)) {
         this.environment = "dev";
       } else if (location.host.includes(this.environments.test)) {
         this.environment = "test";
