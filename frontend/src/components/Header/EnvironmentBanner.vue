@@ -22,7 +22,7 @@ export default {
       environment: "",
       environments: {
         local: "localhost",
-        dev: "educ-grad-admin",
+        dev: "dev.grad.gov.bc.ca",
         test: "test.grad.gov.bc.ca",
       },
       host: location.host,
