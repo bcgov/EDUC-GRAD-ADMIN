@@ -76,7 +76,7 @@ export default {
         },
         {
           key: "frenchImmersionMessage",
-          label: "French Immersion",
+          label: "French Immersion Message",
           sortable: true,
           editable: true,
         },
