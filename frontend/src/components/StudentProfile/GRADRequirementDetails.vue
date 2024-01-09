@@ -291,22 +291,22 @@ export default {
 </script>
 
 <style scoped>
-.table th,
-.table td {
+.table :deep(th),
+.table :deep(td) {
   border-top: none !important;
 }
 
-.table th svg {
+.table :deep(th) svg {
   display: none !important;
 }
 
-.highlight {
+:deep(.highlight) {
   background: aliceblue !important;
 }
-.card-header {
+:deep(.card-header) {
   font-weight: 700 !important;
 }
-.gradReqsMet span + span::before {
+.gradReqsMet :deep(span + span::before) {
   content: ", ";
 }
 .gradstatus-tabs .card {
