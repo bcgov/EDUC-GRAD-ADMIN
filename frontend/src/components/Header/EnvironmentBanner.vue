@@ -1,6 +1,5 @@
 <template>
   <div id="env-banner">
-    env - {{ environment }} | host - {{ host }}
     <div v-if="environment == 'local'" class="local-env">
       Vue 3 - <strong>localhost</strong> environment
     </div>
@@ -22,26 +21,26 @@ export default {
       environment: "",
       environments: {
         local: "localhost",
-        dev: "educ-grad-admin",
+        dev: "dev.grad.gov.bc.ca",
         test: "test.grad.gov.bc.ca",
       },
-      host: location.host,
+      host: "",
     };
   },
   methods: {
     getEnv() {
-      console.log(location);
-      console.log(location.host.includes(this.environments.dev));
       //simple solution to display banner to UI that indicates what environment the user is in;
       //currently determined via browser URL since this is a simple visual aid for devs and testers
+      this.host = location.host;
+
       if (
-        location.host.includes(this.environments.local) ||
-        location.got.includes("127.0.0.1")
+        this.host.includes(this.environments.local) ||
+        this.host.includes("127.0.0.1")
       ) {
         this.environment = "local";
-      } else if (location.host.includes(this.environments.dev)) {
+      } else if (this.host.includes(this.environments.dev)) {
         this.environment = "dev";
-      } else if (location.host.includes(this.environments.test)) {
+      } else if (this.host.includes(this.environments.test)) {
         this.environment = "test";
       }
     },
