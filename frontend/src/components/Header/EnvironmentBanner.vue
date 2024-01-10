@@ -38,7 +38,10 @@ export default {
         this.host.includes("127.0.0.1")
       ) {
         this.environment = "local";
-      } else if (this.host.includes(this.environments.dev)) {
+      } else if (
+        this.host.includes(this.environments.dev) ||
+        this.host.includes("educ-grad-admin")
+      ) {
         this.environment = "dev";
       } else if (this.host.includes(this.environments.test)) {
         this.environment = "test";
