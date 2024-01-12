@@ -458,7 +458,7 @@
                   variant="link"
                   @click="
                     getSchoolInfo(
-                      studentGradStatus.schoolOfRecord,
+                      studentGradStatus.schoolAtGrad,
                       'schoolAtGrad'
                     )
                   "
@@ -1044,6 +1044,7 @@ export default {
         this.warningFlags.schoolNotFoundWarning = false;
         this.warningFlags.schoolOfRecordInputWarning = true;
         this.validateFields();
+        this.disableSave = true;
         return;
       } else if (
         this.studentGradStatus.program == "1950" &&
@@ -1052,6 +1053,7 @@ export default {
         this.errorFlags.other.offshore1950 = true;
       } else {
         this.errorFlags.other.offshore1950 = false;
+        this.disableSave = false;
       }
 
       if (
@@ -1080,11 +1082,13 @@ export default {
                 }
                 this.schoolFound = true;
                 this.editedGradStatus.schoolName = response.data.schoolName;
+                this.disableSave = false;
               }
             })
             .catch((error) => {
               if (error.response.data.code == "404") {
                 this.showNotification("danger", "School cannot be found");
+                this.disableSave = true;
               }
             });
         } else {
@@ -1112,9 +1116,11 @@ export default {
         this.warningFlags.schoolAtGraduationNotFoundWarning = false;
         this.warningFlags.schoolAtGraduationInputWarning = true;
         this.schoolAtGraduationFound = false;
+        this.disableSave = true;
         return;
       } else {
         this.warningFlags.schoolAtGraduationInputWarning = false;
+        this.disableSave = false;
       }
       if (
         this.editedGradStatus.schoolAtGrad ==
@@ -1130,6 +1136,7 @@ export default {
           this.warningFlags.schoolAtGraduationWarning = false;
           this.warningFlags.schoolAtGraduationInputWarning = false;
           this.schoolAtGraduationFound = false;
+          this.disableSave = false;
           SchoolService.getSchoolInfo(this.editedGradStatus.schoolAtGrad)
             .then((response) => {
               this.schoolAtGraduationStatus = response.data.openFlag;
@@ -1148,6 +1155,7 @@ export default {
             .catch((error) => {
               if (error.response.data.code == "404") {
                 this.showNotification("danger", "School cannot be found");
+                this.disableSave = true;
               }
             });
         } else {
