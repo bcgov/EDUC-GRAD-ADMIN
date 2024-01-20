@@ -12,7 +12,6 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=bcgov_EDUC-GRAD-ADMIN&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=bcgov_EDUC-GRAD-ADMIN) &nbsp;
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=bcgov_EDUC-GRAD-ADMIN&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=bcgov_EDUC-GRAD-ADMIN) &nbsp;
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=bcgov_EDUC-GRAD-ADMIN&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=bcgov_EDUC-GRAD-ADMIN) &nbsp;
-![GitHub repo size](https://img.shields.io/github/repo-size/bcgov/EDUC-GRAD-ADMIN)
 
-# EDUC-GRAD-ADMIN
+# EDUC-GRAD-ADMIN &nbsp; &nbsp; ![GitHub repo size](https://img.shields.io/github/repo-size/bcgov/EDUC-GRAD-ADMIN)
 Admin UI for Graduation Records and Assessment Data (GRAD)
