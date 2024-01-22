@@ -22,7 +22,8 @@
 </template>
 
 <script>
-import DisplayTable from "@/components/DisplayTable";
+import { showNotification } from "../../utils/common.js";
+import DisplayTable from "../DisplayTable.vue";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import sharedMethods from "../../sharedMethods";
 
@@ -32,7 +33,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    this.showNotification = sharedMethods.showNotification;
+    this.showNotification = showNotification;
     ProgramManagementService.getAlgorithmRules()
       .then((response) => {
         this.algorithmRules = response.data;

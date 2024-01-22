@@ -12,7 +12,7 @@ createTestCafe('localhost', 1337, 1338)
             .src(["./src/test_cases"])
             .filter(async(testName, fixtureName, fixturePath, testMeta, fixtureMeta) =>  testMeta.testSuites?.regression)
             //.browsers(["chrome:headless", "firefox:headless"])
-            .concurrency(1)
+            .concurrency(5)
             .run();
     })
     .then(failedCount => {

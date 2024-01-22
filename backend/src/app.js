@@ -182,4 +182,5 @@ app.use((_req, res) => {
 process.on('unhandledRejection', err => {
   log.error('Unhandled Rejection at:', err?.stack || err);
 });
+const date = new Date();
 module.exports = app;

@@ -1,12 +1,10 @@
 <template>
   <div id="app">
     <EnvironmentBanner />
-    <Bcheader
-      class="bcheader"
-      style="margin-bottom: 15px; text-transform: capitalize"
-    >
-      <div v-if="isAuthenticated && dataReady">
-        <a v-b-toggle.grad-drawer>{{ userInfo.userName }} </a>
+
+    <Bcheader class="bcheader" style="margin-bottom: 15px">
+      <div v-if="isAuthenticatedGet && dataReady">
+        <a v-b-toggle.grad-drawer>{{ userInfoGet.userName }} </a>
         <b-sidebar id="grad-drawer" title="Permissions" shadow>
           <div class="px-3 py-2 mt-5">
             <br />
@@ -16,70 +14,42 @@
         |
         <a :href="authRoutes.LOGOUT" class="text-white">Logout</a>
       </div>
-      <div v-else-if="!isAuthenticated">
-        <a :href="authRoutes.LOGOUT">Login</a>
+      <div v-else-if="!isAuthenticatedGet">
+        <a :href="authRoutes.LOGIN">Login</a>
       </div>
     </Bcheader>
-
     <div class="container" style="min-height: 100vh">
       <transition name="fade">
         <router-view />
       </transition>
     </div>
+
     <BCFooter></BCFooter>
   </div>
 </template>
 <script>
-import { mapActions, mapMutations, mapGetters, mapState } from "vuex";
-
-import Bcheader from "@/components/BCHeader";
-import BCFooter from "@/components/BCFooter";
-import EnvironmentBanner from "@/components/EnvironmentBanner";
-import { Routes } from "@/utils/constants";
+// Vue Store
+import { configureCompat } from "vue";
+import { useAppStore } from "./store/modules/app";
+import { useAuthStore } from "./store/modules/auth";
+import { useAccessStore } from "./store/modules/access";
+import { mapState, mapActions } from "pinia";
+import Bcheader from "@/components/Header/BCHeader.vue";
+import BCFooter from "@/components/BCFooter.vue";
+import EnvironmentBanner from "@/components/Header/EnvironmentBanner.vue";
+import { Routes } from "@/utils/constants.js";
 export default {
+  name: "App",
   components: {
     Bcheader,
     BCFooter,
     EnvironmentBanner,
   },
-  data() {
-    return {
-      authRoutes: Routes,
-      host: location.protocol + "//" + location.host,
-    };
-  },
-  computed: {
-    ...mapGetters("auth", [
-      "isAuthenticated",
-      "loginError",
-      "isLoading",
-      "userInfo",
-    ]),
-    ...mapGetters("app", ["getProgramOptions"]),
-    ...mapGetters("app", ["getProgramOptions"]),
-    ...mapState("app", ["pageTitle"]),
-    ...mapGetters("useraccess", ["roles", "userAccess"]),
-    dataReady: function () {
-      return this.userInfo;
-    },
-    loginUrl: function () {
-      return this.authRoutes.LOGIN;
-    },
-  },
-  methods: {
-    ...mapMutations("auth", ["setLoading"]),
-    ...mapMutations("useraccess", ["setUserRoles"]),
-    ...mapActions("auth", ["getJwtToken", "getUserInfo", "logout"]),
-    ...mapActions("app", ["setApplicationVariables"]),
-    changeRole() {
-      if (this.roles.includes("GRAD_SYSTEM_COORDINATOR")) {
-        this.setUserRoles(["GRAD_INFO_OFFICER"]);
-      } else if (this.roles.includes("GRAD_INFO_OFFICER")) {
-        this.setUserRoles(["GRAD_PROGRAM_AREA_BA"]);
-      } else if (this.roles.includes("GRAD_PROGRAM_AREA_BA")) {
-        this.setUserRoles(["GRAD_SYSTEM_COORDINATOR"]);
-      }
-    },
+  setup() {
+    const appStore = useAppStore();
+    const authStore = useAuthStore();
+    const accessStore = useAccessStore();
+    return { appStore, authStore, accessStore };
   },
   async created() {
     this.getJwtToken()
@@ -94,6 +64,31 @@ export default {
         }
       })
       .finally(() => {});
+  },
+  data() {
+    return {
+      authRoutes: Routes,
+      host: location.protocol + "//" + location.host,
+    };
+  },
+  computed: {
+    ...mapState(useAccessStore, ["roles", "userAccess"]),
+    ...mapState(useAuthStore, ["userInfoGet", "isAuthenticatedGet"]),
+    dataReady: function () {
+      return this.userInfoGet;
+    },
+    loginUrl: function () {
+      return this.authRoutes.LOGIN;
+    },
+  },
+  methods: {
+    ...mapActions(useAuthStore, [
+      "setLoading",
+      "getJwtToken",
+      "getUserInfo",
+      "logout",
+    ]),
+    ...mapActions(useAppStore, ["setApplicationVariables"]),
   },
 };
 </script>

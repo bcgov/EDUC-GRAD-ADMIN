@@ -14,17 +14,17 @@
       showFilter="true"
     >
       <template #cell(startDate)="row">
-        {{ row.item.startDate | formatYYYYMMDate }}
+        {{ $filters.formatYYYYMMDate(row.item.startDate) }}
       </template>
       <template #cell(endDate)="row">
-        {{ row.item.endDate | formatYYYYMMDate }}
+        {{ $filters.formatYYYYMMDate(row.item.endDate) }}
       </template>
     </DisplayTable>
   </div>
 </template>
 
 <script>
-import DisplayTable from "@/components/DisplayTable";
+import DisplayTable from "@/components/DisplayTable.vue";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 
 export default {

@@ -416,7 +416,8 @@
                               disableDeletefield="status"
                               disableDeleteIfValue="COMPLETED"
                               deleteLabel="Cancel"
-                              delete="batchprocessing/removeScheduledJobs"
+                              store="batchprocessing"
+                              delete="removeScheduledJobs"
                             >
                               <template #cell(jobExecutionId)="row">
                                 <b-btn
@@ -487,14 +488,14 @@
                                     <img
                                       v-show="!row.detailsShowing"
                                       src="../assets/images/icon-right.svg"
-                                      width="9px"
+                                      width="9"
                                       aria-hidden="true"
                                       alt=""
                                     />
                                     <img
                                       v-show="row.detailsShowing"
                                       src="../assets/images/icon-down.svg"
-                                      height="5px"
+                                      height="5"
                                       aria-hidden="true"
                                       alt=""
                                     />
@@ -539,7 +540,7 @@
                       type="border"
                       small
                     ></b-spinner>
-                    Request {{ i | jobIdLabel }}
+                    Request {{ jobLabel(i) }}
                   </template>
                   <b-alert variant="warning" v-if="validationMessage" show>{{
                     validationMessage
@@ -592,11 +593,31 @@ import BatchJobForm from "@/components/Batch/Batch.vue";
 import BatchRoutines from "@/components/Batch/Routines.vue";
 import sharedMethods from "../sharedMethods";
 
-import { mapGetters, mapActions } from "vuex";
+import { useAccessStore } from "../store/modules/access";
+import { useBatchProcessingStore } from "../store/modules/batchprocessing";
+import { useAuthStore } from "../store/modules/auth";
+import { mapState, mapActions } from "pinia";
 import { nextTick } from "vue";
+
 export default {
-  name: "test",
+  name: "Batch Processing",
+
   computed: {
+    ...mapState(useAccessStore, [
+      "allowUpdateGradStatus",
+      "allowRunGradAlgorithm",
+      "allowCreateBatchJob",
+    ]),
+    ...mapState(useBatchProcessingStore, {
+      tabCounter: "getBatchCounter",
+      tabContent: "getBatchDetails",
+      tabs: "getBatchProcessingTabs",
+      spinners: "getBatchTabsLoading",
+      scheduledJobs: "getScheduledBatchJobs",
+    }),
+    ...mapState(useAuthStore, {
+      userFullName: "userFullName",
+    }),
     queueScheduledJobs() {
       let queuedJobs = this.scheduledJobs;
       if (queuedJobs) {
@@ -614,15 +635,6 @@ export default {
     batchInfoListDataChange() {
       return this.batchInfoListData;
     },
-    ...mapGetters("useraccess", ["allowCreateBatchJob"]),
-    ...mapGetters({
-      tabCounter: "batchprocessing/getBatchCounter",
-      tabContent: "batchprocessing/getBatchDetails",
-      tabs: "batchprocessing/getBatchProcessingTabs",
-      spinners: "batchprocessing/getBatchTabsLoading",
-      scheduledJobs: "batchprocessing/getScheduledBatchJobs",
-      userFullName: "auth/userFullName",
-    }),
   },
   props: [
     //'adminSelectedBatchId',
@@ -795,7 +807,16 @@ export default {
     this.getScheduledJobs();
   },
   methods: {
-    ...mapActions("batchprocessing", ["setScheduledBatchJobs"]),
+    jobLabel(jobId) {
+      return jobId.replace("job-", "");
+    },
+    ...mapActions(useBatchProcessingStore, [
+      "clearBatchDetails",
+      "editBatchDetails",
+      "addBatchJob",
+      "setTabLoading",
+      "setScheduledBatchJobs",
+    ]),
 
     downloadDISTRUNUSER(bid, transmissionMode = null) {
       DistributionService.downloadDISTRUNUSER(bid, transmissionMode).then(
@@ -828,7 +849,7 @@ export default {
         if (this.tabs[i] == id) {
           this.tabs.splice(i, 1);
           this.spinners.splice(i, 1);
-          this.$store.commit("batchprocessing/clearBatchDetails", id);
+          this.clearBatchDetails(id);
           return;
         }
       }
@@ -854,14 +875,11 @@ export default {
       };
       let id = "job-" + this.tabCounter;
       this.$set(this.spinners, id, false);
-      this.$store.commit("batchprocessing/editBatchDetails", {
+      this.editBatchDetails({
         batchDetail,
         id,
       });
-      this.$store.commit(
-        "batchprocessing/addBatchJob",
-        "job-" + this.tabCounter
-      );
+      this.addBatchJob("job-" + this.tabCounter);
       nextTick(() => {
         nextTick(() => {
           requestAnimationFrame(() => {
@@ -985,7 +1003,7 @@ export default {
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
-      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      this.setTabLoading({ index, value });
       BatchProcessingService.runDISTRUN_MONTHLY()
         .then((response) => {
           this.getAdminDashboardData();
@@ -1023,7 +1041,7 @@ export default {
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
-      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      this.setTabLoading({ index, value });
       BatchProcessingService.runDISTRUN_YE(request)
         .then((response) => {
           this.getAdminDashboardData();
@@ -1061,7 +1079,7 @@ export default {
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
-      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      this.setTabLoading({ index, value });
       BatchProcessingService.runDISTRUN_SUPP(request)
         .then((response) => {
           this.getAdminDashboardData();
@@ -1099,7 +1117,7 @@ export default {
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
-      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      this.setTabLoading({ index, value });
       BatchProcessingService.runNONGRADRUN(request)
         .then((response) => {
           this.getAdminDashboardData();
@@ -1137,7 +1155,7 @@ export default {
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
-      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      this.setTabLoading({ index, value });
       BatchProcessingService.runDISTRUNUSER(request, credentialType)
         .then((response) => {
           //update the admin dashboard
@@ -1180,7 +1198,7 @@ export default {
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
-      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      this.setTabLoading({ index, value });
       BatchProcessingService.runDISTRUNUSER(request, credentialType)
         .then((response) => {
           //update the admin dashboard
@@ -1222,7 +1240,7 @@ export default {
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
-      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      this.setTabLoading({ index, value });
       BatchProcessingService.runYearlyArchiveBatchJobStudents(request)
         .then((response) => {
           //update the admin dashboard
@@ -1256,7 +1274,7 @@ export default {
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
-      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      this.setTabLoading({ index, value });
       BatchProcessingService.runYearlyArchiveBatchJobSchools(request)
         .then((response) => {
           //update the admin dashboard
@@ -1284,13 +1302,13 @@ export default {
             });
           }
         });
-    },    
+    },
     runPSIRUN(request, id, transmissionType) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
-      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      this.setTabLoading({ index, value });
       BatchProcessingService.runPSIRUN(request, transmissionType)
         .then((response) => {
           //update the admin dashboard
@@ -1324,7 +1342,7 @@ export default {
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
-      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      this.setTabLoading({ index, value });
       BatchProcessingService.runTVRRUN(request)
         .then((response) => {
           //update the admin dashboard
@@ -1361,7 +1379,7 @@ export default {
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
-      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      this.setTabLoading({ index, value });
       BatchProcessingService.runREGALG(request)
         .then((response) => {
           //update the admin dashboard
@@ -1398,7 +1416,7 @@ export default {
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
-      this.$store.commit("batchprocessing/setTabLoading", { index, value });
+      this.setTabLoading({ index, value });
       BatchProcessingService.addScheduledJob(request)
         .then(() => {
           //update the admin dashboard
@@ -1488,6 +1506,7 @@ export default {
         this.tabContent[id].details["where"] == "localDownload" ? "Y" : "N";
       let credentialTypeCode = [];
       let quantity = this.tabContent[id].details["copies"];
+
       if (this.tabContent[id].details["blankCertificateDetails"].length) {
         credentialTypeCode =
           this.tabContent[id].details["blankCertificateDetails"];
@@ -1511,6 +1530,7 @@ export default {
         quantity: quantity,
         localDownload: localDownload,
       };
+
       if (this.batchHasErrors(this.tabContent[id])) {
         return;
       }
@@ -1614,7 +1634,17 @@ export default {
           }
           this.addScheduledJob(scheduledRequest, id);
         } else if (this.tabContent[id].details["where"] == "User") {
+          console.log("user");
           request.user = this.userFullName;
+          request.address = {
+            streetLine1: "4TH FLOOR 620 SUPERIOR",
+            streetLine2: "PO BOX 9886 STN PROV GOVT",
+            city: "VICTORIA",
+            region: "BRITISH COLUMBIA",
+            country: "CANADA",
+            code: "V8W9T6",
+          };
+
           this.runBlankDISTRUNUSERUserRequest(
             request,
             id,
@@ -1650,7 +1680,7 @@ export default {
         } else {
           this.runArchiveStudents(request, id);
         }
-      }  else if (this.tabContent[id].details["what"] == "ARC_SCH_REPORTS") {
+      } else if (this.tabContent[id].details["what"] == "ARC_SCH_REPORTS") {
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;

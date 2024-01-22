@@ -1,15 +1,15 @@
+import { defineStore } from "pinia";
 import ApiService from "@/common/apiService";
 import { Routes, Roles } from "@/utils/constants";
 
-export default {
+export const useAccessStore = defineStore("access", {
   namespaced: true,
-  state: {
+  state: () => ({
     userAccess: "",
     roles: [],
-  },
+  }),
   getters: {
-    userAccess: (state) => state.userAccess,
-    roles: (state) => state.roles,
+    getRoles: (state) => state.roles,
     allowUpdateGradStatus: (state) => {
       return (
         state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) ||
@@ -62,36 +62,36 @@ export default {
       return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
     },
   },
-  mutations: {
-    setUserAccess: (state, userAccess) => {
+
+  actions: {
+    setUserAccess(userAccess) {
       if (userAccess) {
-        state.userAccess = userAccess;
+        this.userAccess = userAccess;
       } else {
-        state.userAccess = null;
+        this.userAccess = null;
       }
     },
-    setUserRoles: (state, role) => {
+    setUserRoles(role) {
       if (role) {
-        state.roles = role;
+        this.roles = role;
       } else {
-        state.roles = "unauthorized";
+        this.roles = "unauthorized";
       }
     },
     //sets the token required for refreshing expired json web tokens
-    logoutState: (state) => {
+    logoutState() {
       localStorage.removeItem("jwtToken");
-      state.userAccess = null;
-      state.isAuthenticated = false;
+      this.userAccess = null;
+      this.isAuthenticated = false;
     },
-  },
-  actions: {
-    async getUserAccess(context) {
+
+    async setAccess() {
       if (localStorage.getItem("jwtToken")) {
         await ApiService.apiAxios
           .get(Routes.USER)
           .then((response) => {
-            context.commit("setUserAccess", response.data.userAccess);
-            context.commit("setUserRoles", response.data.userRoles);
+            this.setUserAccess(response.data.userAccess);
+            this.setUserRoles(response.data.userRoles);
           })
           .catch((e) => {
             throw e;
@@ -99,4 +99,4 @@ export default {
       }
     },
   },
-};
+});

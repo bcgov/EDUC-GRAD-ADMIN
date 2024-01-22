@@ -15,17 +15,17 @@
       showFilter="true"
     >
       <template #cell(effectiveDate)="row">
-        {{ row.item.effectiveDate | formatSimpleDate }}
+        {{ $filters.formatSimpleDate(row.item.effectiveDate) }}
       </template>
       <template #cell(expiryDate)="row">
-        {{ row.item.expiryDate | formatSimpleDate }}
+        {{ $filters.formatSimpleDate(row.item.expiryDate) }}
       </template>
     </DisplayTable>
   </div>
 </template>
 
 <script>
-import DisplayTable from "@/components/DisplayTable";
+import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
 
 export default {

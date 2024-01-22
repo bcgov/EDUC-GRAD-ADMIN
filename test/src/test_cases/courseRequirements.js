@@ -46,7 +46,7 @@ fixture `course-requirements`
 
         await t
         .expect(coursesPage.searchMessage.textContent)
-        .contains('11');
+        .contains('7');
     })
     .meta({
         testSuites: {
@@ -64,7 +64,7 @@ fixture `course-requirements`
 
         await t
         .expect(coursesPage.searchMessage.textContent)
-        .contains('18');
+        .contains('19');
     })
     .meta({
         testSuites: {

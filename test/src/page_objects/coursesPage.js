@@ -6,8 +6,8 @@ class CoursesPage {
         this.view = Selector('#courses-route');
         // tabs
         this.courseTab = Selector('a[role=tab]').withExactText('Course');
-        this.restrictionsTab = Selector('a[role=tab]').withExactText('Course Restrictions');
-        this.requirementsTab = Selector('a[role=tab]').withExactText('Course Requirements');
+        this.restrictionsTab = Selector('a[role=tab]').withExactText('Course restrictions');
+        this.requirementsTab = Selector('a[role=tab]').withExactText('Course requirements');
 
         this.searchMessage = Selector('.active .search-results-message > strong');
 

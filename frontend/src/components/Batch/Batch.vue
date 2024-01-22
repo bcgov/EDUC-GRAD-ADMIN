@@ -8,13 +8,14 @@
         <div class="col-12 col-md-3 border-right">
           <div class="m-0">
             <label class="font-weight-bold">Run Type</label>
+
             <b-form-select
               id="inline-form-select-type"
               class="mb-2 mr-sm-2 mb-sm-0"
               :options="batchTypes"
               value-field="code"
               text-field="label"
-              :value="batch.details['what']"
+              v-model="runType"
               @change="editBatchJob('what', $event)"
             >
             </b-form-select>
@@ -200,6 +201,7 @@
                 @change="editBatchJob('categoryCode', $event)"
               ></b-form-select>
             </div>
+
             <div
               class="p-0 my-3 col-3"
               v-if="
@@ -231,24 +233,24 @@
               <div class="float-left col-3 m-0 p-0">
                 <strong><label class="pt-1">Grad Start Date</label></strong>
                 <b-input-group class="mb-3">
-                  <ValidationProvider
+                  <!-- <ValidationProvider
                     :rules="'validDate|lessthangraddateto:' + gradDateTo"
                     v-slot="{ errors }"
+                  > -->
+                  <b-form-input
+                    id="gradDateFromInput"
+                    v-model="gradDateFrom"
+                    type="text"
+                    placeholder="YYYY-MM-DD"
+                    autocomplete="off"
+                    @input="editBatchJob('gradDateFrom', $event)"
+                  ></b-form-input>
+                  <!-- <ul
+                    class="position-absolute form-validation-message text-danger"
                   >
-                    <b-form-input
-                      id="gradDateFromInput"
-                      v-model="gradDateFrom"
-                      type="text"
-                      placeholder="YYYY-MM-DD"
-                      autocomplete="off"
-                      @input="editBatchJob('gradDateFrom', $event)"
-                    ></b-form-input>
-                    <ul
-                      class="position-absolute form-validation-message text-danger"
-                    >
-                      <li v-for="error in errors" :key="error">{{ error }}</li>
-                    </ul>
-                  </ValidationProvider>
+                    <li v-for="error in errors" :key="error">{{ error }}</li>
+                  </ul> -->
+                  <!-- </ValidationProvider> -->
                   <b-input-group-append>
                     <b-form-datepicker
                       v-model="gradDateFrom"
@@ -264,23 +266,23 @@
               <div class="float-left col-4">
                 <strong><label class="pt-1">Grad End Date</label></strong>
                 <b-input-group class="mb-3">
-                  <ValidationProvider
+                  <!-- <ValidationProvider
                     :rules="'validDate|greaterthangraddateFrom:' + gradDateFrom"
                     v-slot="{ errors }"
-                  >
-                    <b-form-input
-                      id="gradDateToInput"
-                      v-model="gradDateTo"
-                      type="text"
-                      placeholder="YYYY-MM-DD"
-                      autocomplete="off"
-                      @input="editBatchJob('gradDateTo', $event)"
-                    ></b-form-input>
-                    <span
-                      class="position-absolute form-validation-message text-danger"
-                      >{{ errors[0] }}</span
-                    >
-                  </ValidationProvider>
+                  > -->
+                  <b-form-input
+                    id="gradDateToInput"
+                    v-model="gradDateTo"
+                    type="text"
+                    placeholder="YYYY-MM-DD"
+                    autocomplete="off"
+                    @input="editBatchJob('gradDateTo', $event)"
+                  ></b-form-input>
+                  <!-- <span
+                    class="position-absolute form-validation-message text-danger"
+                    >{{ errors[0] }}</span
+                  > -->
+                  <!-- </ValidationProvider> -->
                   <b-input-group-append>
                     <b-form-datepicker
                       v-model="gradDateTo"
@@ -323,7 +325,6 @@
                 {
                   text: 'User: ' + userFullName,
                   value: 'User',
-                  disabled: true,
                 },
               ]"
               :disabled="
@@ -440,7 +441,7 @@
                         "
                         class="btn btn-primary w-100"
                         @click="
-                          addValueToTypeInBatchId(
+                          addValueToTypeInBatchIdHandle(
                             jobId,
                             'districts',
                             district.value,
@@ -474,7 +475,7 @@
                         "
                         class="btn btn-primary w-100"
                         @click="
-                          deleteValueFromTypeInBatchId(
+                          deleteValueFromTypeInBatchIdHandle(
                             jobId,
                             'districts',
                             district.value
@@ -560,7 +561,7 @@
                       <b-button
                         class="btn btn-primary w-100"
                         @click="
-                          addValueToTypeInBatchId(
+                          addValueToTypeInBatchIdHandle(
                             jobId,
                             'psi',
                             psi.value,
@@ -582,7 +583,11 @@
                       <b-button
                         class="btn btn-primary w-100"
                         @click="
-                          deleteValueFromTypeInBatchId(jobId, 'psi', psi.value)
+                          deleteValueFromTypeInBatchIdHandle(
+                            jobId,
+                            'psi',
+                            psi.value
+                          )
                         "
                       >
                         Remove
@@ -666,7 +671,7 @@
                   <b-button
                     class="btn btn-primary w-100"
                     @click="
-                      addValueToTypeInBatchId(
+                      addValueToTypeInBatchIdHandle(
                         jobId,
                         'students',
                         pen.value,
@@ -693,7 +698,11 @@
                   <b-button
                     class="btn btn-primary w-100"
                     @click="
-                      deleteValueFromTypeInBatchId(jobId, 'students', pen.value)
+                      deleteValueFromTypeInBatchIdHandle(
+                        jobId,
+                        'students',
+                        pen.value
+                      )
                     "
                   >
                     Remove
@@ -702,6 +711,7 @@
               </div>
             </div>
           </b-card>
+
           <b-card
             v-if="batch.details['who'] == 'School'"
             class="mt-3 px-0"
@@ -729,22 +739,20 @@
 
             <div v-for="(school, index) in batch.schools" :key="index" class="">
               <div v-if="!school.schoolName" class="mb-3">
-                <ValidationObserver v-slot="{ passes, invalid }">
-                  <form
-                    @submit.prevent="
-                      passes(
-                        addValueToTypeInBatchId(
-                          jobId,
-                          'schools',
-                          school.value,
-                          index
-                        )
-                      )
-                    "
-                    class="row col-12"
-                  >
-                    <div class="col-2 p-0 m-0">
-                      <ValidationProvider
+                <!-- <ValidationObserver v-slot="{ passes, invalid }"> -->
+                <form
+                  @submit.prevent="
+                    addValueToTypeInBatchIdHandle(
+                      jobId,
+                      'schools',
+                      school.value,
+                      index
+                    )
+                  "
+                  class="row col-12"
+                >
+                  <div class="col-2 p-0 m-0">
+                    <!-- <ValidationProvider
                         name="Mincode"
                         :rules="
                           'mincodelength|validateschool:' +
@@ -755,56 +763,60 @@
                           batch.details['credential']
                         "
                         v-slot="{ errors }"
-                      >
-                        <b-form-input type="number" v-model="school.value" />
-                        <span
-                          class="position-absolute w-100 form-validation-message text-danger"
-                          >{{ errors[0] }}</span
-                        >
-                      </ValidationProvider>
-                    </div>
+                      > -->
                     <b-form-input
-                      show="false"
-                      disabled
-                      v-model="school.schoolName"
-                      :ref="'schoolName' + jobId + index"
-                      class="col-4"
+                      type="number"
+                      v-model="school.value"
+                      maxLength="8"
                     />
-                    <b-form-input
-                      show="false"
-                      disabled
-                      v-model="school.transcriptEligibility"
-                      :ref="'transcriptEligibility' + jobId + index"
-                      class="col-1"
-                    />
-                    <b-form-input
-                      show="false"
-                      disabled
-                      v-model="school.certificateEligibility"
-                      :ref="'certificateEligibility' + jobId + index"
-                      class="col-1"
-                    />
-                    <b-form-input
-                      show="false"
-                      disabled
-                      v-model="school.schoolCategory"
-                      :ref="'schoolCategory' + jobId + index"
-                      class="col-1"
-                    />
-                    <b-form-input
-                      show="false"
-                      disabled
-                      v-model="school.reportingFlag"
-                      :ref="'reportingFlag' + jobId + index"
-                      class="col-1"
-                    />
-                    <div v-if="index == batch.schools.length - 1" class="col-2">
-                      <button :disabled="invalid" class="btn btn-primary w-100">
-                        <b-spinner small v-if="validating"></b-spinner> Add
-                      </button>
-                    </div>
-                  </form>
-                </ValidationObserver>
+                    <!-- <span
+                      class="position-absolute w-100 form-validation-message text-danger"
+                      >{{ errors[0] }}</span
+                    > -->
+                    <!-- </ValidationProvider> -->
+                  </div>
+                  <b-form-input
+                    show="false"
+                    disabled
+                    v-model="school.schoolName"
+                    :ref="'schoolName' + jobId + index"
+                    class="col-4"
+                  />
+                  <b-form-input
+                    show="false"
+                    disabled
+                    v-model="school.transcriptEligibility"
+                    :ref="'transcriptEligibility' + jobId + index"
+                    class="col-1"
+                  />
+                  <b-form-input
+                    show="false"
+                    disabled
+                    v-model="school.certificateEligibility"
+                    :ref="'certificateEligibility' + jobId + index"
+                    class="col-1"
+                  />
+                  <b-form-input
+                    show="false"
+                    disabled
+                    v-model="school.schoolCategory"
+                    :ref="'schoolCategory' + jobId + index"
+                    class="col-1"
+                  />
+                  <b-form-input
+                    show="false"
+                    disabled
+                    v-model="school.reportingFlag"
+                    :ref="'reportingFlag' + jobId + index"
+                    class="col-1"
+                  />
+                  <div v-if="index == batch.schools.length - 1" class="col-2">
+                    <button :disabled="invalid" class="btn btn-primary w-100">
+                      <b-spinner small v-if="validating"></b-spinner> Add
+                    </button>
+                  </div>
+                </form>
+                <!-- </ValidationObserver> -->
               </div>
               <div class="row col-12 mb-2">
                 <div v-if="school.schoolName" class="col-2">
@@ -830,7 +842,7 @@
                   <b-button
                     class="btn btn-primary w-100"
                     @click="
-                      deleteValueFromTypeInBatchId(
+                      deleteValueFromTypeInBatchIdHandle(
                         jobId,
                         'schools',
                         school.value
@@ -864,23 +876,25 @@
             <div
               v-for="(program, index) in batch.programs"
               :key="index"
-              class="row pl-3 mb-1"
+              class="row pl-3 mb-1 col-12"
             >
-              <div v-if="!program.value" class="row col-12">
-                <b-form-select
-                  id="inline-form-select-type"
-                  class="col-2"
-                  :options="programOptions"
-                  value-field="programCode"
-                  text-field="programCode"
-                  v-model="program.value"
-                ></b-form-select>
+              <div class="row col-12">
+                <div class="col-2" v-if="index == batch.programs.length - 1">
+                  <b-form-select
+                    id="inline-form-select-type"
+                    class="w-100"
+                    :options="programOptions"
+                    value-field="programCode"
+                    text-field="programCode"
+                    v-model="program.value"
+                  ></b-form-select>
+                </div>
                 <div v-if="index == batch.programs.length - 1" class="col-2">
                   <b-button
                     :disabled="validating"
                     class="btn btn-primary w-100"
                     @click="
-                      addValueToTypeInBatchId(
+                      addValueToTypeInBatchIdHandle(
                         jobId,
                         'programs',
                         program.value,
@@ -893,7 +907,10 @@
                 </div>
               </div>
               <div class="row col-12">
-                <div v-if="program.value" class="col-2">
+                <div
+                  v-if="program.value && index != batch.programs.length - 1"
+                  class="col-2 pl-4"
+                >
                   {{ program.value }}
                 </div>
                 <div v-if="program.programName" class="col-3">
@@ -908,9 +925,9 @@
 
                 <div v-if="index != batch.programs.length - 1" class="col-2">
                   <b-button
-                    class="btn btn-primary w-100 w-100"
+                    class="btn btn-primary w-100"
                     @click="
-                      deleteValueFromTypeInBatchId(
+                      deleteValueFromTypeInBatchIdHandle(
                         jobId,
                         'programs',
                         program.value
@@ -1053,82 +1070,89 @@
   </div>
 </template>
 <script>
-import { ValidationProvider, ValidationObserver, extend } from "vee-validate";
+//import { ValidationProvider, ValidationObserver, extend } from "vee-validate";
 import TRAXService from "@/services/TRAXService.js";
 import SchoolService from "@/services/SchoolService.js";
 import StudentService from "@/services/StudentService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import BatchConfirmInfo from "@/components/Batch/BatchConfimInfo.vue";
-import { mapGetters } from "vuex";
-import SharedMethods from "@/sharedMethods.js";
 
-extend("minmax", {
-  validate(value, { min, max }) {
-    return value.length >= min && value.length <= max;
-  },
-  params: ["min", "max"],
-  message:
-    "The {_field_} field must have at least {min} characters and {max} characters at most",
-});
-extend("validDate", {
-  validate(value) {
-    if ((value.match(/-/g) || []).length != 2) {
-      return false;
-    } else return true;
-  },
-  params: ["gradDateFrom"],
-  message: "Format: YYYY-MM-DD",
-});
-extend("mincodelength", {
-  validate(value) {
-    return value.length == 8;
-  },
-  message: "Minimum 8 characters",
-});
-extend("lessthangraddateto", {
-  validate(value, { gradDateTo }) {
-    const date1 = new Date(value);
-    const date2 = new Date(gradDateTo);
-    if (gradDateTo) {
-      return date1 < date2;
-    } else return true;
-  },
-  params: ["gradDateTo"],
-  message: "The Grad Start Date field must be less than {gradDateTo}",
-});
-extend("greaterthangraddateFrom", {
-  validate(value, { gradDateFrom }) {
-    const date1 = new Date(gradDateFrom);
-    const date2 = new Date(value);
-    if (gradDateFrom) {
-      return date1 < date2;
-    } else return true;
-  },
-  params: ["gradDateFrom"],
-  message: "The Grad End Date field must be less than {gradDateFrom}",
-});
-extend("adultdogwoodpublicrestrictedtoministryofadvancededgroup", {
-  validate(value, args) {
-    // eslint-disable-next-line
+import { useAccessStore } from "../../store/modules/access";
+import { useBatchProcessingStore } from "../../store/modules/batchprocessing";
+import { useAuthStore } from "../../store/modules/auth";
+import { useAppStore } from "../../store/modules/app";
+import { mapState, mapActions } from "pinia";
 
-    if (
-      value == "Ministry of Advanced Education" &&
-      args[0] == "Blank certificate print"
-    ) {
-      return "You can only print for public Adult Dogwood for Ministry of Advanced Education";
-    } else return true;
-  },
-});
+import SharedMethods from "../../sharedMethods";
+
+// extend("minmax", {
+//   validate(value, { min, max }) {
+//     return value.length >= min && value.length <= max;
+//   },
+//   params: ["min", "max"],
+//   message:
+//     "The {_field_} field must have at least {min} characters and {max} characters at most",
+// });
+// extend("validDate", {
+//   validate(value) {
+//     if ((value.match(/-/g) || []).length != 2) {
+//       return false;
+//     } else return true;
+//   },
+//   params: ["gradDateFrom"],
+//   message: "Format: YYYY-MM-DD",
+// });
+// extend("mincodelength", {
+//   validate(value) {
+//     return value.length == 8;
+//   },
+//   message: "Minimum 8 characters",
+// });
+// extend("lessthangraddateto", {
+//   validate(value, { gradDateTo }) {
+//     const date1 = new Date(value);
+//     const date2 = new Date(gradDateTo);
+//     if (gradDateTo) {
+//       return date1 < date2;
+//     } else return true;
+//   },
+//   params: ["gradDateTo"],
+//   message: "The Grad Start Date field must be less than {gradDateTo}",
+// });
+// extend("greaterthangraddateFrom", {
+//   validate(value, { gradDateFrom }) {
+//     const date1 = new Date(gradDateFrom);
+//     const date2 = new Date(value);
+//     if (gradDateFrom) {
+//       return date1 < date2;
+//     } else return true;
+//   },
+//   params: ["gradDateFrom"],
+//   message: "The Grad End Date field must be less than {gradDateFrom}",
+// });
+// extend("adultdogwoodpublicrestrictedtoministryofadvancededgroup", {
+//   validate(value, args) {
+//     // eslint-disable-next-line
+
+//     if (
+//       value == "Ministry of Advanced Education" &&
+//       args[0] == "Blank certificate print"
+//     ) {
+//       return "You can only print for public Adult Dogwood for Ministry of Advanced Education";
+//     } else return true;
+//   },
+// });
 
 export default {
   components: {
-    ValidationProvider: ValidationProvider,
-    ValidationObserver: ValidationObserver,
+    // ValidationProvider: ValidationProvider,
+    // ValidationObserver: ValidationObserver,
     BatchConfirmInfo: BatchConfirmInfo,
   },
   data: function () {
     return {
+      runType: "",
       reportTypes: [],
       reportType: "",
       batchIsValid: false,
@@ -1250,64 +1274,63 @@ export default {
       },
     };
   },
+
   mounted() {
-    extend(
-      "validateschool",
-      (value, refValues) => {
-        return SchoolService.getSchoolInfo(value)
-          .then((response) => {
-            let credential = refValues[2];
-            if (
-              (credential == "Blank certificate print" || credential == "OT") &&
-              response.data.transcriptEligibility == "N"
-            ) {
-              return "This school is not eligible for trasncripts.";
-            }
-            if (
-              (credential == "Blank certificate print" ||
-                credential == "OC" ||
-                credential == "RC") &&
-              response.data.certificateEligibility == "N"
-            ) {
-              return "This school is not eligible for certificates.";
-            }
-            if (response.data.minCode) {
-              this.$refs[
-                "schoolName" + refValues[0] + refValues[1]
-              ][0].placeholder = response.data.schoolName;
-              this.$refs[
-                "transcriptEligibility" + refValues[0] + refValues[1]
-              ][0].placeholder = response.data.transcriptEligibility;
-
-              this.$refs[
-                "certificateEligibility" + refValues[0] + refValues[1]
-              ][0].placeholder = response.data.certificateEligibility;
-
-              this.$refs[
-                "schoolCategory" + refValues[0] + refValues[1]
-              ][0].placeholder = response.data.schoolCategory;
-              this.$refs[
-                "reportingFlag" + refValues[0] + refValues[1]
-              ][0].placeholder = response.data.reportingFlag;
-              return { valid: true };
-            } else {
-              return {
-                valid: false,
-              };
-            }
-          })
-          .catch((error) => {
-            // eslint-disable-next-line
-            console.log(error);
-            return {
-              valid: false,
-            };
-          });
-      },
-      {
-        immediate: false,
-      }
-    );
+    // extend(
+    //   "validateschool",
+    //   (value, refValues) => {
+    //     return SchoolService.getSchoolInfo(value)
+    //       .then((response) => {
+    //         let credential = refValues[2];
+    //         if (
+    //           (credential == "Blank certificate print" || credential == "OT") &&
+    //           response.data.transcriptEligibility == "N"
+    //         ) {
+    //           return "This school is not eligible for trasncripts.";
+    //         }
+    //         if (
+    //           (credential == "Blank certificate print" ||
+    //             credential == "OC" ||
+    //             credential == "RC") &&
+    //           response.data.certificateEligibility == "N"
+    //         ) {
+    //           return "This school is not eligible for certificates.";
+    //         }
+    //         if (response.data.minCode) {
+    //           this.$refs[
+    //             "schoolName" + refValues[0] + refValues[1]
+    //           ][0].placeholder = response.data.schoolName;
+    //           this.$refs[
+    //             "transcriptEligibility" + refValues[0] + refValues[1]
+    //           ][0].placeholder = response.data.transcriptEligibility;
+    //           this.$refs[
+    //             "certificateEligibility" + refValues[0] + refValues[1]
+    //           ][0].placeholder = response.data.certificateEligibility;
+    //           this.$refs[
+    //             "schoolCategory" + refValues[0] + refValues[1]
+    //           ][0].placeholder = response.data.schoolCategory;
+    //           this.$refs[
+    //             "reportingFlag" + refValues[0] + refValues[1]
+    //           ][0].placeholder = response.data.reportingFlag;
+    //           return { valid: true };
+    //         } else {
+    //           return {
+    //             valid: false,
+    //           };
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         // eslint-disable-next-line
+    //         console.log(error);
+    //         return {
+    //           valid: false,
+    //         };
+    //       });
+    //   },
+    //   {
+    //     immediate: false,
+    //   }
+    // );
   },
   created() {
     this.formElements = Object.assign({}, this.formElements);
@@ -1340,6 +1363,15 @@ export default {
   },
 
   methods: {
+    ...mapActions(useBatchProcessingStore, [
+      "addValueToTypeInBatchId",
+      "deleteStudentBatch",
+      "deleteValueFromTypeInBatchId",
+      "clearBatchDetails",
+      "batchDetailsAction",
+      "clearBatchGroupDetails",
+      "editBatchDetails",
+    ]),
     validBatch() {
       if (
         this.batch.details["what"] != "DISTRUN_YE" &&
@@ -1425,7 +1457,8 @@ export default {
     getBatchJobTypes() {
       BatchProcessingService.getBatchJobTypes()
         .then((response) => {
-          this.batchTypes = SharedMethods.applyDisplayOrder(response.data); // sorts response array by displayOrder property before assigning
+          this.batchTypes = response.data;
+          this.batchTypes = SharedMethods.applyDisplayOrder(response.data);
           if (!this.allowRunDistrunYE)
             this.batchTypes = this.batchTypes.filter(
               (type) => type.code != "DISTRUN_YE"
@@ -1451,11 +1484,14 @@ export default {
               return type;
             });
           }
+
           //disable code for release 1.7.0
           this.batchTypes = this.batchTypes.map((type) => {
             if (
               type.code === "ARC_STUDENTS" ||
-              type.code === "ARC_SCH_REPORTS"
+              type.code === "ARC_SCH_REPORTS" ||
+              type.code === "EDW_SNAPSHOT" ||
+              type.code === "CERT_REGEN"
             ) {
               type.disabled = true;
             }
@@ -1617,15 +1653,16 @@ export default {
       //Use the parents method to close and clear a batch job by ID
       this.$emit("cancelBatchJob", id);
     },
-    async addValueToTypeInBatchId(id, type, value, valueIndex) {
+    async addValueToTypeInBatchIdHandle(id, type, value, valueIndex) {
       this.validationMessage = "";
       if (type == "schools") {
         this.validating = true;
         if (value) {
           SchoolService.getSchoolInfo(value)
             .then((response) => {
+              console.log(response);
               if (response.data.minCode) {
-                this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
+                this.addValueToTypeInBatchId({
                   id,
                   type,
                   value,
@@ -1655,7 +1692,8 @@ export default {
             })
             .catch((error) => {
               if (error.response.statusText) {
-                this.makeToast("ERROR " + error.response.statusText, "danger");
+                this.validationMessage = value + " is not a valid School.";
+                this.deleteValueFromTypeInBatchId(id, type, value, false);
               } else {
                 this.makeToast("ERROR " + "error with webservervice", "danger");
               }
@@ -1664,7 +1702,6 @@ export default {
         } else {
           this.makeToast("ERROR Please enter a valid School", "danger");
         }
-
         this.validating = false;
       }
       if (type == "students") {
@@ -1730,7 +1767,7 @@ export default {
                   return;
                 }
               }
-              this.$store.dispatch("batchprocessing/addValueToTypeInBatchId", {
+              this.addValueToTypeInBatchId({
                 id,
                 type,
                 value,
@@ -1778,7 +1815,7 @@ export default {
           TRAXService.getDistrict(value)
             .then((response) => {
               if (response.data) {
-                this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
+                this.addValueToTypeInBatchId({
                   id,
                   type,
                   value,
@@ -1812,10 +1849,10 @@ export default {
         this.validating = true;
 
         if (value && value.length == 3) {
-          TRAXService.getPSIByAdvanceSearch("psiCode=" + value)
+          TRAXService.getPSIByAdvancedSearch("psiCode=" + value)
             .then((response) => {
               if (response.data.length) {
-                this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
+                this.addValueToTypeInBatchId({
                   id,
                   type,
                   value,
@@ -1850,7 +1887,7 @@ export default {
       if (type == "programs") {
         this.validating = true;
         if (value) {
-          this.$store.commit("batchprocessing/addValueToTypeInBatchId", {
+          this.addValueToTypeInBatchId({
             id,
             type,
             value,
@@ -1863,13 +1900,9 @@ export default {
         this.validating = false;
       }
     },
-    addTypeToBatchId(id, type) {
-      this.$store.commit("batchprocessing/addTypeToBatchId", { type, id });
-      this.$forceUpdate();
-    },
 
-    deleteValueFromTypeInBatchId(id, type, value, valid = true) {
-      this.$store.commit("batchprocessing/deleteValueFromTypeInBatchId", {
+    deleteValueFromTypeInBatchIdHandle(id, type, value, valid = true) {
+      this.deleteValueFromTypeInBatchId({
         id,
         type,
         value,
@@ -1879,14 +1912,11 @@ export default {
       this.$forceUpdate();
     },
     deleteBatch(id) {
-      this.$store.commit("deleteStudentBatch", id);
+      this.deleteStudentBatch(id);
     },
-    clearBatchDetails: function (id) {
-      this.$store.commit("batchprocessing/clearBatchDetails", id);
+    clearBatchJobDetails: function (id) {
+      this.clearBatchDetails(id);
       this.batchIsValid = false;
-    },
-    clearBatchGroupDetails: function (id) {
-      this.$store.commit("batchprocessing/clearBatchGroupDetails", id);
     },
     editBatchJob(type, event) {
       this.$nextTick(() => {
@@ -1899,7 +1929,7 @@ export default {
               this.batchTypeDesc = batchType.description;
             }
           }
-          this.clearBatchDetails(id);
+          this.clearBatchJobDetails(id);
           if (event == "PSIRUN") {
             batchDetail.details["who"] = "PSI";
           }
@@ -1967,36 +1997,37 @@ export default {
         }
         if (type == "allPsi" && event) {
           batchDetail.psi = [{ value: "all", psiName: "ALL" }, {}];
-          this.$store.commit("batchprocessing/editBatchDetails", {
+          this.editBatchDetails({
             batchDetail,
             id,
           });
         } else if (type == "allPsi" && !event) {
           batchDetail.psi = [{}];
-          this.$store.commit("batchprocessing/editBatchDetails", {
+          this.editBatchDetails({
             batchDetail,
             id,
           });
         }
         if (type == "allDistricts" && event) {
           batchDetail.districts = [{ value: "all", districtName: "ALL" }, {}];
-          this.$store.commit("batchprocessing/editBatchDetails", {
+          this.editBatchDetails({
             batchDetail,
             id,
           });
         } else if (type == "allDistricts" && !event) {
           batchDetail.districts = [{}];
-          this.$store.commit("batchprocessing/editBatchDetails", {
+          this.editBatchDetails({
             batchDetail,
             id,
           });
         }
 
         batchDetail.details[type] = event;
-        this.$store.commit("batchprocessing/editBatchDetails", {
+        this.editBatchDetails({
           batchDetail,
           id,
         });
+        this.validationMessage = "";
         this.validBatch();
         this.$forceUpdate();
       });
@@ -2051,22 +2082,28 @@ export default {
     currentPSIYear: String,
   },
   computed: {
-    ...mapGetters({
-      tabContent: "batchprocessing/getBatchDetails",
-      programOptions: "app/getProgramOptions",
-      userFullName: "auth/userFullName",
-      allowRunDistrunYE: "useraccess/allowRunDistrunYE",
-      allowRunDistrunSupplemental: "useraccess/allowRunDistrunSupplemental",
-      allowRunNonGradRun: "useraccess/allowRunNonGradRun",
-      allowRunDistrunMonthly: "useraccess/allowRunDistrunMonthly",
-      allowSelectProgramGroup: "useraccess/allowSelectProgramGroup",
-      allowSelectCategoryCodeGroup: "useraccess/allowSelectCategoryCodeGroup",
-      allowRunPSI: "useraccess/allowRunPSI",
+    ...mapState(useBatchProcessingStore, {
+      tabContent: "getBatchDetails",
     }),
-
     batch() {
       return this.tabContent[this.jobId];
     },
+    ...mapState(useAccessStore, {
+      allowRunDistrunYE: "allowRunDistrunYE",
+      allowRunDistrunSupplemental: "allowRunDistrunSupplemental",
+      allowRunNonGradRun: "allowRunNonGradRun",
+      allowRunDistrunMonthly: "allowRunDistrunMonthly",
+      allowSelectProgramGroup: "allowSelectProgramGroup",
+      allowSelectCategoryCodeGroup: "allowSelectCategoryCodeGroup",
+      allowRunPSI: "allowRunPSI",
+    }),
+    ...mapState(useAppStore, {
+      programOptions: "getProgramOptions",
+    }),
+    ...mapState(useAuthStore, {
+      userFullName: "userFullName",
+    }),
+
     requestId() {
       return this.jobId.replace("job-", "");
     },

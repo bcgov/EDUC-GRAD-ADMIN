@@ -21,7 +21,7 @@
                       }"
                       class="wild-card-button"
                       v-b-tooltip.hover
-                      title="Course Code Starts With"
+                      title="Course code starts with"
                     >
                       [.*]
                     </div>
@@ -172,10 +172,10 @@
               ></DisplayTable>
             </b-card-text>
           </b-tab>
-          <b-tab title="Course Restrictions">
+          <b-tab title="Course restrictions">
             <b-card-text>
               <DisplayTable
-                title="Course Restrictions"
+                title="Course restrictions"
                 v-bind:items="courseRestrictions"
                 v-bind:fields="courseRestrictionFields"
                 id="courseRestrictionId"
@@ -185,7 +185,7 @@
               </DisplayTable>
             </b-card-text>
           </b-tab>
-          <b-tab title="Course Requirements">
+          <b-tab title="Course requirements">
             <b-card-text>
               <form v-on:submit.prevent>
                 <div class="advanced-search-form">
@@ -203,7 +203,7 @@
                         }"
                         class="wild-card-button"
                         v-b-tooltip.hover
-                        title="Course Code Starts With"
+                        title="Course code starts with"
                       >
                         [.*]
                       </div>
@@ -311,7 +311,7 @@
 </template>
 
 <script>
-import sharedMethods from "../sharedMethods";
+import { showNotification } from "../utils/common.js";
 import CourseService from "@/services/CourseService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 export default {
@@ -484,21 +484,21 @@ export default {
       courseRequirementFields: [
         {
           key: "courseCode",
-          label: "Course Code",
+          label: "Course code",
           sortable: true,
           class: "text-left",
           editable: true,
         },
         {
           key: "courseLevel",
-          label: "Course Level",
+          label: "Course level",
           sortable: true,
           class: "text-left",
           editable: true,
         },
         {
           key: "courseName",
-          label: "Course Name",
+          label: "Course name",
           sortable: true,
           class: "text-left",
           sortDirection: "desc",
@@ -520,7 +520,7 @@ export default {
         },
         {
           key: "requirementName",
-          label: "Requirement Name",
+          label: "Requirement name",
           sortable: true,
           class: "text-left",
           sortDirection: "desc",
@@ -528,7 +528,7 @@ export default {
         },
         {
           key: "requirementProgram",
-          label: "Requirement Program",
+          label: "Requirement program",
           sortable: true,
           class: "text-left",
           editable: true,
@@ -541,7 +541,7 @@ export default {
     };
   },
   created() {
-    this.showNotification = sharedMethods.showNotification;
+    this.showNotification = showNotification;
     this.getAllCourseRestrictions();
   },
   methods: {

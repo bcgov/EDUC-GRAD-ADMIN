@@ -65,9 +65,8 @@
                     </div>
                   </div>
                 </form>
-                <div v-if="isEnvLocalHost()" class="sample-pens m-3">
+                <div v-if="isEnvLocalHost" class="sample-pens m-3">
                   Samples: V0.1.2
-                  {{ isEnvLocalHost() }}
                   <div class="row col-12">
                     <div class="px-3 col-4">
                       <a
@@ -417,7 +416,7 @@
                   <div class="advanced-search-form">
                     <div class="row my-3">
                       <div class="advanced-search-field col-12 col-md-2">
-                        <label>Legal surname</label>
+                        <label>Legal Surname</label>
                         <div
                           href="#"
                           v-on:click="
@@ -443,7 +442,7 @@
                         />
                       </div>
                       <div class="advanced-search-field col-12 col-md-2">
-                        <label>Legal given</label>
+                        <label>Legal Given</label>
                         <div
                           href="#"
                           v-on:click="
@@ -469,7 +468,7 @@
                       </div>
 
                       <div class="advanced-search-field col-12 col-md-2">
-                        <label>Legal middle</label>
+                        <label>Legal Middle</label>
                         <div
                           href="#"
                           v-on:click="
@@ -506,14 +505,13 @@
                       <div
                         class="form-group advanced-search-field col-12 col-md-2"
                       >
-                        <label for="datepicker-birthdate-from form__label"
-                          >Birthdate from</label
+                        <label for="datepicker-birthdate-from"
+                          >Birthdate From</label
                         >
                         <b-input-group class="mb-3">
                           <b-form-input
                             class="form__input"
                             id="datepicker-birthdate-from"
-                            @input="$v.dateObject.$touch"
                             v-model="advancedSearchInput.birthdateFrom.value"
                             type="date"
                             placeholder="YYYY-MM-DD"
@@ -523,9 +521,9 @@
                             v-on:keyup="keyHandler"
                           ></b-form-input>
                         </b-input-group>
-                        <div class="error" v-if="!$v.dateObject.maxValue">
+                        <!-- <div class="error">
                           Birthdate from must not be greater than today.
-                        </div>
+                        </div> -->
                       </div>
                       <div class="advanced-search-field col-12 col-md-2">
                         <label for="datepicker-birthdate-to"
@@ -548,7 +546,7 @@
                     </div>
                     <div class="row">
                       <div class="advanced-search-field col-12 col-md-2">
-                        <label>Usual surname</label>
+                        <label>Usual Surname</label>
                         <div
                           href="#"
                           v-on:click="
@@ -573,7 +571,7 @@
                         />
                       </div>
                       <div class="advanced-search-field col-12 col-md-2">
-                        <label>Usual given</label>
+                        <label>Usual Given</label>
                         <div
                           href="#"
                           v-on:click="
@@ -598,7 +596,7 @@
                         />
                       </div>
                       <div class="advanced-search-field col-12 col-md-2">
-                        <label>Usual middle</label>
+                        <label>Usual Middle</label>
                         <div
                           href="#"
                           v-on:click="
@@ -630,13 +628,10 @@
                           id="adv-search-submit"
                           @click="findStudentsByAdvancedSearch()"
                           v-if="!advancedSearchLoading"
-                          :class="
-                            !this.$v.$invalid
-                              ? 'btn btn-primary'
-                              : 'btn btn-secondary'
-                          "
+                          class="btn btn-primary"
                           tabindex="12"
                         >
+                          <i class="fas fa-search" aria-hidden="true"></i>
                           Search
                         </button>
                         <button
@@ -646,6 +641,7 @@
                           class="btn btn-success"
                           tabindex="12"
                         >
+                          <i class="fas fa-search" aria-hidden="true"></i>
                           Search
                         </button>
                         <button
@@ -758,16 +754,24 @@
   </div>
 </template>
 <script>
-import { mapGetters } from "vuex";
+import { mapState, mapActions, mapWritableState, storeToRefs } from "pinia";
+import { useVuelidate } from "@vuelidate/core";
+import { isEnvLocalHost, showNotification } from "../utils/common.js";
+import { useStudentStore } from "@/store/modules/student";
 import StudentService from "@/services/StudentService.js";
-import DisplayTable from "@/components/DisplayTable";
-import { maxValue } from "vuelidate/lib/validators";
-import sharedMethods from "../sharedMethods";
+import DisplayTable from "@/components/DisplayTable.vue";
+const studentStore = useStudentStore();
 
 export default {
   name: "studentSearch",
+  setup() {
+    return {
+      v$: useVuelidate(),
+    };
+  },
   data() {
     return {
+      isEnvLocalHost: isEnvLocalHost(),
       penSystemMessage: "",
       advancedSearchAPIMessage: "",
       studentHasProgram: true,
@@ -802,21 +806,21 @@ export default {
         },
         {
           key: "legalLastName",
-          label: "Legal surname",
+          label: "Legal Surname",
           sortable: true,
           editable: false,
           class: "w-1",
         },
         {
           key: "legalFirstName",
-          label: "Legal given",
+          label: "Legal Given",
           sortable: true,
           editable: false,
           class: "w-1",
         },
         {
           key: "legalMiddleNames",
-          label: "Legal middle",
+          label: "Legal Middle",
           sortable: true,
           editable: false,
           class: "w-1",
@@ -858,7 +862,7 @@ export default {
         },
         {
           key: "schoolOfRecordName",
-          label: "School of Record name (GRAD)",
+          label: "School of Record Name (GRAD)",
           sortable: true,
           editable: false,
           class: "w-1",
@@ -872,7 +876,7 @@ export default {
         },
         {
           key: "schoolOfRecordindependentAffiliation",
-          label: "School independent affiliation (GRAD)",
+          label: "School Independent Affiliation (GRAD)",
           sortable: true,
           editable: false,
           class: "w-1",
@@ -937,13 +941,9 @@ export default {
       },
     };
   },
-  validations: {
-    dateObject: {
-      maxValue: maxValue(new Date()),
-    },
-  },
+  validations() {},
   created() {
-    this.showNotification = sharedMethods.showNotification;
+    this.showNotification = showNotification;
     if (this.savedAdvSearchInput != "") {
       this.advancedSearchInput = this.savedAdvSearchInput;
       this.findStudentsByAdvancedSearch();
@@ -953,21 +953,21 @@ export default {
     DisplayTable: DisplayTable,
   },
   computed: {
-    dateObject() {
-      let d = new Date(this.advancedSearchInput.birthdateFrom.value);
-      return this.advancedSearchInput.birthdateFrom.value ? d : null;
-    },
-    ...mapGetters({
+    ...mapState(useStudentStore, {
+      profile: "getStudentProfile",
+      courses: "getStudentCourses",
+      exams: "getStudentExams",
+      gradStatus: "getStudentGradStatus",
       savedAdvSearchInput: "getAdvancedSearchProps",
-      profile: "student/getStudentProfile",
-      courses: "student/getStudentCourses",
-      exams: "student/getStudentExams",
-      gradStatus: "student/getStudentGradStatus",
+    }),
+    ...mapWritableState(useStudentStore, {
+      savedAdvSearchInput: "advancedSearchProps",
     }),
   },
   methods: {
+    ...mapActions(useStudentStore, ["unsetStudent"]),
     closeRecord: function () {
-      this.$store.commit("student/unsetStudent");
+      this.unsetStudent();
     },
     keyHandler: function (e) {
       if (e.keyCode === 13) {
@@ -979,9 +979,6 @@ export default {
           this.findStudentBySurname();
         }
       }
-    },
-    isEnvLocalHost() {
-      return sharedMethods.isEnvLocalHost();
     },
     findStudentByStudentIdSample: function (studentId) {
       StudentService.getStudentPen(studentId)
@@ -1039,15 +1036,15 @@ export default {
       this.advancedSearchMessage = "";
       this.message = "";
       this.errorMessage = "";
-      this.$v.$touch();
 
-      if (this.$v.$invalid) {
+      if (this.v$.$invalid) {
         this.advancedSearchMessage +=
           "Form Validation Error: please correct the form input";
       } else if (
-        !this.$v.$invalid &&
+        !this.v$.$invalid &&
         this.advancedSearchValidate(this.advancedSearchInput)
       ) {
+        // this.advancedSearchValidate(this.advancedSearchInput);
         this.advancedSearchLoading = true;
         this.studentSearchResults = [];
         if (!this.advancedSearchInput.birthdateTo.value) {
@@ -1065,10 +1062,11 @@ export default {
                   this.searchResults.gradSearchStudents;
                 this.totalElements = this.studentSearchResults.length;
                 this.totalPages = this.searchResults.totalPages;
-                this.$store.dispatch(
-                  "setAdvancedSearchProps",
-                  this.advancedSearchInput
-                );
+                this.savedAdvSearchInput = this.advancedSearchInput;
+                // this.$store.dispatch(
+                //   "setAdvancedSearchProps",
+                //   this.advancedSearchInput
+                // );
                 if (this.totalElements > 0) {
                   if (this.searchResults.totalElements == 1) {
                     this.advancedSearchMessage = "1 student record found. ";
@@ -1139,7 +1137,7 @@ export default {
               let today = new Date();
               if (dateToCheck > today) {
                 this.advancedSearchMessage +=
-                  "The Birthdate From must be greater than today. ";
+                  "The Birthdate From must not be greater than today. ";
                 isValid = false;
               }
             }
