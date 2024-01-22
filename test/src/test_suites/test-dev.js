@@ -16,7 +16,7 @@ createTestCafe('localhost', 1337, 1338)
             // specify how many browser instances to run; queued tests will start in the next available instance
             .concurrency(1)
             //Enter the name of the test case(s) in the following array that you want to run
-            .src(["src/test_cases/schoolsSearch.js"])
+            .src(["src/test_cases/studentSearch.js"])
             .run();
     })
     .then(failedCount => {

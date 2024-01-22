@@ -192,17 +192,18 @@ const auth = {
   generateUiToken() {
     const i = config.get('tokenGenerate:issuer');
     const s = 'user@penrequest.ca';
-    const a = config.get('tokenGenerate:audience');
+    const a = config.get('server:frontend');
     const signOptions = {
       issuer: i,
       subject: s,
       audience: a,
-      expiresIn: config.get('tokenGenerate:expiresIn') || '30m',
+      expiresIn: '30m',
       algorithm: 'RS256'
     };
 
     const privateKey = config.get('tokenGenerate:privateKey');
     const uiToken = jsonwebtoken.sign({}, privateKey, signOptions);
+  
     return uiToken;
   },
   isValidUiTokenWithRoles: partial(isValidUiToken, isUserHasRoles),

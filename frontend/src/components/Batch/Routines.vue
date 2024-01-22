@@ -25,7 +25,10 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
-import { mapGetters } from "vuex";
+
+import { mapState } from "pinia";
+import { useBatchProcessingStore } from "../../store/modules/batchprocessing";
+import { useAccessStore } from "../../store/modules/access";
 export default {
   components: {
     DisplayTable: DisplayTable,
@@ -136,8 +139,8 @@ export default {
     jobId: String,
   },
   computed: {
-    ...mapGetters({
-      allowToggleRoutines: "useraccess/allowToggleRoutines",
+    ...mapState(useAccessStore, {
+      allowToggleRoutines: "allowToggleRoutines",
     }),
   },
 };

@@ -1,14 +1,40 @@
 import ApiService from '../common/apiService';
 
 export default {
+
   getDashboardInfo() {
     return ApiService.apiAxios.get('/api/v1/batch/dashboard');
   },
-  runREGALG(request) {
-    return ApiService.apiAxios.post('/api/v1/batch/specialrun', request);
+  runREGALG(request, cronTime="")
+   {
+    console.log(cronTime)
+    if(cronTime){
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime
+      scheduledRequest.jobName = "SGBJ";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      this.addScheduledJob(scheduledRequest);
+      return
+    }else{
+      console.log("REGALG SERVICE")
+      console.log(request)
+      return ApiService.apiAxios.post('/api/v1/batch/specialrun', request);
+    }
   },
-  runTVRRUN(request) {
-    return ApiService.apiAxios.post('/api/v1/batch/tvrspecialrun', request);
+  runTVRRUN(request, cronTime="") {
+    if(cronTime){
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime;
+      scheduledRequest.jobName = "STBJ";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      scheduledRequest.psiPayload = null;
+      this.addScheduledJob(scheduledRequest);
+      return
+    }else{
+      return ApiService.apiAxios.post('/api/v1/batch/tvrspecialrun', request);
+    }
   },
   runDISTRUNUSER(request,credentialType) {
     if(credentialType == "OT"){
@@ -26,50 +52,38 @@ export default {
   runDISTRUN_MONTHLY(){
     return ApiService.apiAxios.get('/api/v1/batch/executedisrunbatchjob');
   },
-  runDISTRUN_SUPP(request){
-    if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
-      // If the condition is true, set districts to an empty array
-      request.districts = [];
-    }    
-    return ApiService.apiAxios.post('/api/v1/batch/executesuppdisrunbatchjob',request);
+  runDISTRUN_SUPP(){
+    return ApiService.apiAxios.get('/api/v1/batch/executesuppdisrunbatchjob');
   },
-  runNONGRADRUN(request){
+  runNONGRADRUN(request, cronTime=""){
     if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
       // If the condition is true, set districts to an empty array
       request.districts = [];
     }
     return ApiService.apiAxios.post('/api/v1/batch/executenongraddisrunbatchjob',request);
   },  
-  runDISTRUN_YE(request){
+  runDISTRUN_YE(request, cronTime=""){
     if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
       // If the condition is true, set districts to an empty array
       request.districts = [];
     }
-    return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
+    if(cronTime){
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime;
+      scheduledRequest.jobName = "YDBJ";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      this.addScheduledJob(scheduledRequest);
+      return
+    }else{
+      console.log(request)
+      return
+      //return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
+    }
   },
   runBlankDISTRUNUSERUserRequest(request, credentialType){
     return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/'+ credentialType, request);
   },
-  runYearlyArchiveBatchJobStudents(request){
-    //eslint-disable-next-line
-    // console.log("RUNNING ARCHIVE STUDENTS")
-    // console.log("/api/v1/batch/executeyearlyarchivebatchjobstudents")
-    //eslint-disable-next-line
-    console.log(request)
-
-    return {}
-    //return ApiService.apiAxios.post('/api/v1/batch/executeyearlyarchivebatchjobstudents', request);
-  },
-  runYearlyArchiveBatchJobSchools(request){
-    // console.log("RUNNING ARCHIVE SCHOOL REPORTS")
-    // console.log("/api/v1/batch/executeyearlyarchivebatchjobstudents")
-   
-    //eslint-disable-next-line
-    console.log(request)
-
-    return {}
-    //return ApiService.apiAxios.post('/api/v1/batch/executeyearlyarchivebatchjobschools', request);
-  },  
   runPSIRUN(request, transmissionType){
     return ApiService.apiAxios.post('/api/v1/batch/executepsireportbatchjob/' + transmissionType, request);
   },
@@ -83,6 +97,8 @@ export default {
     return ApiService.apiAxios.get('/api/v1/batch/schedule/listjobs');
   },
   addScheduledJob(scheduledJob) {
+    console.log("SCHEDULE")
+    console.log(scheduledJob)
     return ApiService.apiAxios.post('/api/v1/batch/schedule/add?batchJobTypeCode=' + scheduledJob.jobName, scheduledJob);
   },
   removeScheduledJobs(id) {

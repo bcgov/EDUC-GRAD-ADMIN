@@ -116,7 +116,8 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapState } from "pinia";
+import { useAuthStore } from "../store/modules/auth";
 
 import GraduationReportService from "@/services/GraduationReportService.js";
 import StudentService from "@/services/StudentService.js";
@@ -315,8 +316,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({
-      token: "auth/getToken",
+    ...mapState(useAuthStore, {
+      token: "getToken",
     }),
   },
   created() {

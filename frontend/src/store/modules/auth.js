@@ -1,129 +1,106 @@
-import ApiService from '@/common/apiService';
-import AuthService from '@/common/authService';
-import { Routes, RolePermissions } from '@/utils/constants';
+import ApiService from '../../common/apiService';
+import AuthService from '../../common/authService';
+import { defineStore } from 'pinia';
 
-export default {
+function isFollowUpVisit(jwtToken) {
+  return !!jwtToken;
+}
+
+function isExpiredToken(jwtToken) {
+  const now = Date.now().valueOf() / 1000;
+  const jwtPayload = jwtToken.split('.')[1];
+  const payload = JSON.parse(window.atob(jwtPayload));
+  return payload.exp <= now;
+}
+
+export const useAuthStore = defineStore('auth', {
   namespaced: true,
-  state: {
+  state: () => ({
     acronyms: [],
-    isAuthenticated: localStorage.getItem('jwtToken') !== null,
-    isAuthorizedUser: localStorage.getItem('isAuthorizedUser') !== null,
+    isAuthenticated: false,
     userInfo: null,
     error: false,
     isLoading: true,
     loginError: false,
     jwtToken: localStorage.getItem('jwtToken'),
-  },
+  }),
   getters: {
-    acronyms: state => state.acronyms,
-    isAuthenticated: state => state.isAuthenticated,
-    getToken: state => state.jwtToken,
-    jwtToken: () => localStorage.getItem('jwtToken'),
-    userInfo: state => state.userInfo,
-    userFullName: state => state.userInfo.userFullName,
-    roles: state => { 
-      if (state.userInfo.userRoles && state.userInfo.userRoles.includes(RolePermissions.ADMINISTRATOR)){
-        return "Administrator"
-      }else if (state.userInfo.userRoles){
-        return "Authenticated"
-      }else return "Not Authenticated"
-    },
-    loginError: state => state.loginError,
-    error: state => state.error,
-    isLoading: state => state.isLoading
+    acronymsGet: state => state.acronyms,
+    isAuthenticatedGet: state => state.isAuthenticated,
+    jwtTokenGet: state => state.jwtToken,
+    userInfoGet: state => state.userInfo,
+    loginErrorGet: state => state.loginError,
+    errorGet: state => state.error,
+    isLoadingGet: state => state.isLoading,
+    userFullName: state => state.userInfo.userFullName
   },
-  mutations: {
+  actions: {
     //sets Json web token and determines whether user is authenticated
-    setJwtToken: (state, token = null) => {
+    async setJwtToken(token = null){
       if (token) {
-        state.isAuthenticated = true;
+        this.isAuthenticated = true;
+        this.jwtToken = token;
         localStorage.setItem('jwtToken', token);
       } else {
-        state.isAuthenticated = false;
+        this.isAuthenticated = false;
+        this.jwtToken = null;
         localStorage.removeItem('jwtToken');
       }
     },
-    setAuthorizedUser: (state, isAdminUser) => {
-      if (isAdminUser) {
-        state.isAuthorizedUser = true;
-        localStorage.setItem('isAuthorizedUser', 'true');
-      } else {
-        state.isAuthorizedUser = false;
-        localStorage.removeItem(('isAuthorizedUser'));
-      }
-    },
-    setUserInfo: (state, userInfo) => {
+    async setUserInfo(userInfo){
       if(userInfo){
-        state.userInfo = userInfo;
+        this.userInfo = userInfo;
       } else {
-        state.userInfo = null;
+        this.userInfo = null;
       }
     },
-
-    setLoginError: (state) => {
-      state.loginError = true;
+    async setLoginError(){
+      this.loginError = true;
     },
-
-    setError: (state, error) => {
-      state.error = error;
+    async setError(error){
+      this.error = error;
     },
-
-    setLoading: (state, isLoading) => {
-      state.isLoading = isLoading;
+    async setLoading(isLoading){
+      this.isLoading = isLoading;
     },
-
-    //sets the token required for refreshing expired json web tokens
-    logoutState: (state) => {
-      localStorage.removeItem('jwtToken');
-      state.userInfo = null;
-      state.isAuthenticated = false;
-    }
-  },
-  actions: {
-    loginErrorRedirect(context){
-      context.commit('setLoginError');
+    async loginErrorRedirect(){
+      this.loginError = true;
     },
-    logout(context) {
-      context.commit('setJwtToken');
-      context.commit('setUserInfo');
+    async logout() {
+      await this.setJwtToken();
+      await this.setUserInfo();
     },
-
-    async getUserInfo(context) {
-      if(localStorage.getItem('jwtToken')) {
-        await ApiService.apiAxios
-          .get(Routes.USER)
-          .then(response => {
-            context.commit('setUserInfo', response.data);
-          })
-          .catch((e) => {
-            throw e;
-          });
-      }
+    async getUserInfo(){
+      const userInfoRes = await ApiService.getUserInfo();
+      this.userInfo = userInfoRes.data;
     },
-
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API
-    async getJwtToken(context) {
-      try {
-        if (context.getters.isAuthenticated && !!context.getters.jwtToken) {
-          const response = await AuthService.refreshAuthToken(context.getters.jwtToken);
-          setAuthorizations(context, response);
-        } else {
-          const response = await AuthService.getAuthToken();
-          setAuthorizations(context, response);
+    async getJwtToken() {
+      await this.setError(false);
+      if (isFollowUpVisit(this.jwtToken)) {
+        if (isExpiredToken(this.jwtToken)) {
+
+          await this.logout();
+          return;
         }
-      } catch (e) {
-        // Remove tokens from localStorage and update state
-        context.commit('setJwtToken');
-        throw e;
+
+        const response = await AuthService.refreshAuthToken(this.jwtToken);
+        if (response.jwtFrontend) {
+          await this.setJwtToken(response.jwtFrontend);
+          ApiService.setAuthHeader(response.jwtFrontend);
+        } else {
+          throw 'No jwtFrontend';
+        }
+      } else {  //inital login and redirect
+        const response = await AuthService.getAuthToken();
+
+        if (response.jwtFrontend) {
+          await this.setJwtToken(response.jwtFrontend);
+          ApiService.setAuthHeader(response.jwtFrontend);
+        } else {
+          throw 'No jwtFrontend';
+        }
       }
     },
   }
-};
-
-function setAuthorizations(context, response) {
-  if (response.jwtFrontend) {
-    context.commit('setJwtToken', response.jwtFrontend);
-  }
-  context.commit('setAuthorizedUser', response.isAuthorizedUser);
-  ApiService.setAuthHeader(response.jwtFrontend);
-}
+});

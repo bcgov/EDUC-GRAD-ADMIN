@@ -16,13 +16,13 @@
 import { store, mutations } from "@/store.js";
 export default {
   methods: {
-    closeSidebarPanel: mutations.toggleNav
+    closeSidebarPanel: mutations.toggleNav,
   },
   computed: {
     isPanelOpen() {
       return store.isNavOpen;
-    }
-  }
+    },
+  },
 };
 </script>
 <style>

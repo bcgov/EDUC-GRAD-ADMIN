@@ -21,14 +21,14 @@
       </template>
 
       <template #cell(updatedTimestamp)="row">
-        {{ row.item.updatedTimestamp | formatTime }}
+        {{ $filters.formatTime(row.item.updatedTimestamp) }}
       </template>
     </DisplayTable>
   </div>
 </template>
 
 <script>
-import DisplayTable from "@/components/DisplayTable";
+import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
 
 export default {

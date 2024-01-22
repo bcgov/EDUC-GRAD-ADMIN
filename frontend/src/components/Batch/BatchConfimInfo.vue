@@ -29,29 +29,56 @@
         </li>
         <li v-if="details.who == 'PSI'">
           <strong>PSI: </strong>
-          <ul>
-            <li
-              class="list-item-comma"
-              v-for="item in items.psi"
-              :key="item.value"
-            >
-              {{ item.value }}
-            </li>
-          </ul>
+          <div
+            class="list-item-comma"
+            v-for="item in items.psi"
+            :key="item.value"
+          >
+            {{ item.value }}
+          </div>
+        </li>
+        <li v-if="details.who == 'School'">
+          <strong>School(s): </strong>
+
+          <div
+            class="list-item-comma"
+            v-for="item in items.schools"
+            :key="item.value"
+          >
+            {{ item.value }}
+          </div>
+        </li>
+        <li v-if="details.who == 'Program'">
+          <strong>Program(s): </strong>
+          <div
+            class="list-item-comma"
+            v-for="item in items.programs"
+            :key="item.value"
+          >
+            {{ item.value }}
+          </div>
+        </li>
+        <li v-if="details.who == 'Student'">
+          <strong>Student(s): </strong>
+          <div
+            class="list-item-comma"
+            v-for="item in items.students"
+            :key="item.value"
+          >
+            {{ item.value }}
+          </div>
         </li>
         <li
           v-if="details.who == 'District' && details.schoolCategoryCode != '01'"
         >
           <strong>District(s): </strong>
-          <ul>
-            <li
-              class="list-item-comma"
-              v-for="item in items.districts"
-              :key="item.value"
-            >
-              {{ item.value }}
-            </li>
-          </ul>
+          <div
+            class="list-item-comma"
+            v-for="item in items.districts"
+            :key="item.value"
+          >
+            {{ item.value }}
+          </div>
         </li>
         <ul>
           <li v-if="details.gradDateFrom">

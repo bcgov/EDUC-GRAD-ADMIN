@@ -111,7 +111,7 @@
               </template>
 
               <template #cell(updateDate)="row">
-                {{ row.item.updateDate | formatTime }}
+                {{ $filters.formatTime(row.item.updateDate) }}
               </template>
             </DisplayTable>
           </b-card-text>
@@ -125,7 +125,7 @@
 import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import sharedMethods from "../sharedMethods";
-import { mapGetters } from "vuex";
+import { showNotification } from "../utils/common.js";
 
 export default {
   name: "SchoolReports",
@@ -188,13 +188,9 @@ export default {
       ],
     };
   },
-  computed: {
-    ...mapGetters({
-      token: "auth/getToken",
-    }),
-  },
+  computed: {},
   created() {
-    this.showNotification = sharedMethods.showNotification;
+    this.showNotification = showNotification;
   },
   methods: {
     keyHandler: function (e) {
@@ -215,8 +211,7 @@ export default {
         this.searchMessage = "Enter a school mincode to view reports.";
       } else {
         GraduationReportService.getAllReportsForSchool(
-          this.mincode.value + (this.mincode.contains ? "*" : ""),
-          this.token
+          this.mincode.value + (this.mincode.contains ? "*" : "")
         )
           .then((response) => {
             this.reports = response.data;

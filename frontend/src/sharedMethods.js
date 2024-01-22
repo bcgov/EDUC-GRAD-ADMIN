@@ -1,6 +1,9 @@
 import StudentService from "@/services/StudentService.js";
 
 export default {
+  applyDisplayOrder(unsorted) {
+    return unsorted.sort((a, b) => a.displayOrder - b.displayOrder);
+  },
   isEnvLocalHost() {
     return location.host.includes("localhost");
   },
@@ -51,7 +54,6 @@ export default {
 
     const byteCharacters = atob(b64Data);
 
-    Buffer.from(data).toString("base64");
     const byteArrays = [];
 
     for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
@@ -106,7 +108,7 @@ export default {
   dateFormatYYYYMMDD(value) {
     return value.replace(/^([\d]{4})([\d]{2})([\d]{2})$/, "$1-$2-$3");
   },
-  applyDisplayOrder(unsorted) {
-    return unsorted.sort((a, b) => a.displayOrder - b.displayOrder);
+  jobLabel(jobId) {
+    return this.jobId.replace("job-", "");
   },
 };

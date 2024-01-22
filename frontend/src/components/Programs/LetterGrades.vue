@@ -10,7 +10,7 @@
     >
       <template #cell(expiryDate)="row">
         <div v-if="row.item.expiryDate">
-          {{ row.item.expiryDate | formatSimpleDate }}
+          {{ $filters.formatSimpleDate(row.item.expiryDate) }}
         </div>
       </template>
     </DisplayTable>
@@ -18,16 +18,16 @@
 </template>
 
 <script>
-import DisplayTable from "@/components/DisplayTable";
+import DisplayTable from "../DisplayTable.vue";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
-import sharedMethods from "../../sharedMethods";
+import { showNotification } from "../../utils/common.js";
 export default {
   name: "LetterGrades",
   components: {
     DisplayTable: DisplayTable,
   },
   created() {
-    this.showNotification = sharedMethods.showNotification;
+    this.showNotification = showNotification;
     ProgramManagementService.getLetterGrades()
       .then((response) => {
         this.letterGrades = response.data;
@@ -50,7 +50,7 @@ export default {
       letterGradesFields: [
         {
           key: "grade",
-          label: "Letter grade",
+          label: "Letter Grade",
           sortable: true,
           sortDirection: "desc",
           class: "text-center",
@@ -75,7 +75,7 @@ export default {
         },
         {
           key: "gpaMarkValue",
-          label: "GPA mark value",
+          label: "GPA Mark Value",
           sortable: true,
           class: "text-center",
         },

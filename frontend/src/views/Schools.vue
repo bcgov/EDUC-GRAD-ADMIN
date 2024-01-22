@@ -143,14 +143,14 @@
                 >
                   <img
                     v-show="!row.detailsShowing"
-                    src="../assets/images/icon-right.svg"
+                    src="../../src/assets/images/icon-right.svg"
                     width="9px"
                     aria-hidden="true"
                     alt=""
                   />
                   <img
                     v-show="row.detailsShowing"
-                    src="../assets/images/icon-down.svg"
+                    src="../../src/assets/images/icon-down.svg"
                     height="5px"
                     aria-hidden="true"
                     alt=""
@@ -207,7 +207,6 @@
 <script>
 import SchoolService from "@/services/SchoolService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
-import sharedMethods from "../sharedMethods";
 export default {
   name: "schools",
   components: {
@@ -258,12 +257,6 @@ export default {
           sortable: true,
           class: "text-center",
         },
-        {
-          key: "appendTrans",
-          label: "Append to Schools",
-          sortable: true,
-          class: "text-center",
-        },
       ],
       totalResults: "",
       searchMessage: "",
@@ -284,9 +277,7 @@ export default {
       },
     };
   },
-  created() {
-    this.showNotification = sharedMethods.showNotification;
-  },
+  created() {},
   methods: {
     keyHandler: function (e) {
       if (e.keyCode === 13) {
@@ -328,10 +319,7 @@ export default {
           .catch((error) => {
             this.searchLoading = false;
             this.searchMessage = "School cannot be found.";
-            this.showNotification(
-              "danger",
-              "There was an error with the web service." + error.response
-            );
+            console.log(error);
           });
       }
     },

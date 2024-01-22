@@ -1,17 +1,12 @@
 /* Updates BC Gov Bootstrap theme with new design system https://developer.gov.bc.ca/Design-System */
 
 body {
-  display: flex;
-  flex-direction: column;
-  min-height:100%;
   color:#313132;
   size: 16px;
-  
 }
 
 #app {
-  min-height: 100vh;
-  
+  background: #fff;
 }
 
 form {
@@ -85,8 +80,9 @@ opacity: 1;
 .btn-secondary.disabled:hover{
   background:#38598a
 }
-
-
+.input-errors{
+  color:red;
+}
 /* Buttons */
 .gov-btn{
   color: #fff;

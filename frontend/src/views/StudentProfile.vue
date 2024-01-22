@@ -88,7 +88,7 @@
                   </div>
                   <div class="pr-0 col-12 col-lg-8 col-md-7 text-right">
                     <strong>Updated:</strong>
-                    {{ studentGradStatus.updateDate | formatTime }} by
+                    {{ $filters.formatTime(studentGradStatus.updateDate) }} by
                     {{ studentGradStatus.updateUser }}
                   </div>
                 </div>
@@ -262,7 +262,7 @@
                       ]"
                     >
                       <template #cell(createDate)="row">
-                        {{ row.value | formatTime }}
+                        {{ $filters.formatTime(row.value) }}
                       </template>
                     </DisplayTable>
                   </div>
@@ -607,31 +607,41 @@
 </template>
 
 <script>
-import sharedMethods from "../sharedMethods";
+import { showNotification } from "../utils/common.js";
 import AssessmentService from "@/services/AssessmentService.js";
-import GraduationReportService from "@/services/GraduationReportService.js";
 import CourseService from "@/services/CourseService.js";
 import StudentService from "@/services/StudentService.js";
 import GraduationService from "@/services/GraduationService.js";
-import GRADRequirementDetails from "@/components/GRADRequirementDetails";
-import StudentInformation from "@/components/StudentInformation";
-import StudentCourses from "@/components/StudentCourses";
-import StudentAssessments from "@/components/StudentAssessments";
-import StudentExams from "@/components/StudentExams";
-import StudentGraduationStatus from "@/components/StudentGraduationStatus";
-import StudentOptionalPrograms from "@/components/StudentOptionalPrograms";
-import StudentAuditHistory from "@/components/StudentAuditHistory";
-import StudentNotes from "@/components/StudentNotes";
+import GRADRequirementDetails from "@/components/StudentProfile/GRADRequirementDetails.vue";
+import StudentInformation from "@/components/StudentProfile/StudentInformation.vue";
+import StudentCourses from "@/components/StudentProfile/StudentCourses.vue";
+import StudentAssessments from "@/components/StudentProfile/StudentAssessments.vue";
+import StudentExams from "@/components/StudentProfile/StudentExams.vue";
+import StudentGraduationStatus from "@/components/StudentProfile/StudentGraduationStatus.vue";
+import StudentOptionalPrograms from "@/components/StudentProfile/StudentOptionalPrograms.vue";
+import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/StudentAuditHistory.vue";
+import StudentNotes from "@/components/StudentProfile/AuditHistory/StudentNotes.vue";
 import DisplayTable from "@/components/DisplayTable.vue";
 
-import { mapGetters } from "vuex";
+import { useStudentStore } from "../store/modules/student";
+import { useAppStore } from "../store/modules/app";
+import { useAccessStore } from "../store/modules/access";
+import { mapState, mapActions } from "pinia";
 export default {
   name: "studentProfile",
+  setup() {
+    const studentStore = useStudentStore();
+    const appStore = useAppStore();
+    const accessStore = useAccessStore();
+    return { appStore, studentStore, accessStore };
+  },
   created() {
     StudentService.getStudentPen(this.$route.params.studentId)
       .then((response) => {
         this.pen = response.data.pen;
+        this.setStudentPen(this.pen);
         const studentIdFromURL = this.$route.params.studentId;
+        this.setStudentId(studentIdFromURL);
         this.loadStudent(studentIdFromURL);
       })
       .catch((error) => {
@@ -642,7 +652,7 @@ export default {
           );
         }
       });
-    this.showNotification = sharedMethods.showNotification;
+    this.showNotification = showNotification;
     this.window.width = window.innerWidth;
     this.window.height = window.innerHeight;
     if (this.window.width < 768) {
@@ -727,65 +737,49 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("auth", [
-      "roles",
-      "isAuthenticated",
-      "loginError",
-      "isLoading",
-      "userInfo",
-    ]),
-    ...mapGetters({
-      ungradReasons: "app/getUngradReasons",
-      profile: "student/getStudentProfile",
-      courses: "student/getStudentCourses",
-      assessments: "student/getStudentAssessments",
-      exams: "student/getStudentExams",
-      studentHasCourses: "student/studentHasCourses",
-      gradInfo: "student/getStudentGraduationCreationAndUpdate",
-      hasGradStatus: "student/studentHasGradStatus",
-      studentGradStatus: "student/getStudentGradStatus",
-      studentId: "student/getStudentId",
-      studentPen: "student/getStudentPen",
-      studentInfo: "student/getStudentProfile",
-      studentNotes: "student/getStudentNotes",
-      optionalPrograms: "student/getStudentOptionalPrograms",
-      studentUngradReasons: "student/getStudentUngradReasons",
-      gradCourses: "student/gradStatusCourses",
-      studentHistory: "student/getStudentAuditHistory",
-      optionalProgramHistory: "student/getStudentOptionalProgramAuditHistory",
-      quickSearchPen: "getQuickSearchPen",
-      allowUpdateGradStatus: "useraccess/allowUpdateGradStatus",
-      allowRunGradAlgorithm: "useraccess/allowRunGradAlgorithm",
+    ...mapState(useAccessStore, {
+      allowUpdateGradStatus: "allowUpdateGradStatus",
+      allowRunGradAlgorithm: "allowRunGradAlgorithm",
     }),
-    userUndoCompletionReasonChange() {
-      return this.studentUngradReasonSelected;
-    },
+    ...mapState(useAppStore, {
+      ungradReasons: "ungradReasons",
+    }),
+    ...mapState(useStudentStore, {
+      profile: "getStudentProfile",
+      courses: "getStudentCourses",
+      assessments: "getStudentAssessments",
+      exams: "getStudentExams",
+      studentHasCourses: "studentHasCourses",
+      gradInfo: "getStudentGraduationCreationAndUpdate",
+      hasGradStatus: "studentHasGradStatus",
+      studentGradStatus: "getStudentGradStatus",
+      studentId: "getStudentId",
+      studentPen: "getStudentPen",
+      studentInfo: "getStudentProfile",
+      studentNotes: "getStudentNotes",
+      optionalPrograms: "getStudentOptionalPrograms",
+      studentUngradReasons: "getStudentUngradReasons",
+      gradCourses: "gradStatusCourses",
+      studentHistory: "getStudentAuditHistory",
+      optionalProgramHistory: "getStudentOptionalProgramAuditHistory",
+      quickSearchId: "getQuickSearchId",
+    }),
   },
   watch: {
     userUndoCompletionReasonChange: function () {
       this.confirmStudentUndoCompletion = false; //clear confirm if they change options
     },
   },
-  mounted() {
-    this.$root.$on("studentProfile", () => {
-      this.getStudentReportsAndCertificates(this.studentId, this.pen);
-    });
-    this.$root.$on("refreshStudentGraduationOptionalPrograms", () => {
-      this.loadStudentOptionalPrograms(this.studentId);
-    });
-    this.$root.$on("refreshStudentHistory", () => {
-      this.loadStudentHistory(this.studentId);
-      this.loadStudentOptionalProgramHistory(this.studentId);
-    });
-  },
   destroyed() {
     window.removeEventListener("resize", this.handleResize);
   },
   beforeRouteUpdate(to, from, next) {
-    StudentService.getStudentPen(this.quickSearchPen)
+    StudentService.getStudentPen(this.quickSearchId)
       .then((response) => {
         this.pen = response.data.pen;
-        this.loadStudent(this.quickSearchPen);
+        this.setStudentPen(this.pen);
+        this.setStudentId(this.quickSearchId);
+        this.loadStudent(this.quickSearchId);
       })
       .catch((error) => {
         if (error.response.status) {
@@ -798,6 +792,30 @@ export default {
     next();
   },
   methods: {
+    ...mapActions(useStudentStore, [
+      "loadStudentReportsAndCertificates",
+      "loadStudentOptionalPrograms",
+      "loadStudentHistory",
+      "loadStudentOptionalProgramHistory",
+      "setStudentCertificates",
+      "setStudentReports",
+      "setStudentTranscripts",
+      "setStudentXmlReport",
+      "setStudentGradStatus",
+      "setStudentProfile",
+      "setStudentAssessments",
+      "setStudentGradStatusOptionalPrograms",
+      "setStudentCourses",
+      "setStudentExams",
+      "setStudentNotes",
+      "setStudentUngradReasons",
+      "setStudentAuditHistory",
+      "setStudentCareerPrograms",
+      "setStudentUngradReasons",
+      "setStudentOptionalProgramsAuditHistory",
+      "setStudentPen",
+      "setStudentId",
+    ]),
     ungraduateStudent() {
       this.tabLoading = true;
       this.confirmStudentUndoCompletion = "";
@@ -813,10 +831,7 @@ export default {
         .then(() => {
           StudentService.getStudentUngradReasons(this.studentId)
             .then((response) => {
-              this.$store.dispatch(
-                "student/setStudentUngradReasons",
-                response.data
-              );
+              this.setStudentUngradReasons(response.data);
             })
             .catch((error) => {
               if (error.response.status) {
@@ -828,10 +843,7 @@ export default {
             });
           StudentService.getGraduationStatus(this.studentId)
             .then((response) => {
-              this.$store.dispatch(
-                "student/setStudentGradStatus",
-                response.data
-              );
+              this.setStudentGradStatus(response.data);
               this.loadStudentHistory(this.studentId);
               this.loadStudentOptionalProgramHistory(this.studentId);
               this.loadStudentOptionalPrograms(this.studentId);
@@ -847,10 +859,7 @@ export default {
                 });
               }
             });
-          this.getStudentReportsAndCertificates(
-            this.studentId,
-            this.studentPen
-          );
+          this.loadStudentReportsAndCertificates();
         })
         .catch((error) => {
           this.tabLoading = false;
@@ -865,82 +874,10 @@ export default {
       this.studentUngradReasonSelected = "";
       this.studentUngradReasonDescription = "";
     },
-    getStudentReportsAndCertificates(id, pen) {
-      GraduationReportService.getStudentCertificates(id)
-        .then((response) => {
-          this.$store.dispatch("student/setStudentCertificates", response.data);
-        })
-        .catch((error) => {
-          if (error.response.data.code == "404") {
-            // eslint-disable-next-line
-            console.log(error);
-          } else {
-            if (error.response.status) {
-              this.$bvToast.toast("ERROR " + error.response.statusText, {
-                title: "ERROR" + error.response.status,
-                variant: "danger",
-                noAutoHide: true,
-              });
-            }
-          }
-        });
-      GraduationReportService.getStudentReports(id)
-        .then((response) => {
-          this.$store.dispatch("student/setStudentReports", response.data);
-        })
-        .catch((error) => {
-          if (error.response.data.code == "404") {
-            // eslint-disable-next-line
-            console.log(error);
-          } else {
-            if (error.response.status) {
-              this.$bvToast.toast("ERROR " + error.response.statusText, {
-                title: "ERROR" + error.response.status,
-                variant: "danger",
-                noAutoHide: true,
-              });
-            }
-          }
-        });
-      GraduationReportService.getStudentTranscripts(id)
-        .then((response) => {
-          this.$store.dispatch("student/setStudentTranscripts", response.data);
-        })
-        .catch((error) => {
-          if (error.response.data.code == "404") {
-            // eslint-disable-next-line
-            console.log(error);
-          } else {
-            if (error.response.status) {
-              this.$bvToast.toast("ERROR " + error.response.statusText, {
-                title: "Service ERROR" + error.response.status,
-                variant: "danger",
-                noAutoHide: true,
-              });
-            }
-          }
-        });
-      GraduationReportService.getStudentXmlReport(pen)
-        .then((response) => {
-          this.$store.dispatch("student/setStudentXmlReport", response.data);
-        })
-        .catch((error) => {
-          if (error.response.status == 404) {
-            // eslint-disable-next-line
-            console.log(error);
-          } else {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title: "Service ERROR" + error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
-          }
-        });
-    },
     reloadGradStatus() {
       StudentService.getGraduationStatus(this.studentId)
         .then((res) => {
-          this.$store.dispatch("student/setStudentGradStatus", res.data);
+          this.setStudentGradStatus(res.data);
         })
         .catch((error) => {
           if (error.res.status) {
@@ -951,7 +888,7 @@ export default {
             });
           }
         });
-      this.getStudentReportsAndCertificates(this.studentId, this.studentPen);
+      this.loadStudentReportsAndCertificates();
       this.tabLoading = false;
     },
     graduateStudent() {
@@ -977,13 +914,10 @@ export default {
       this.tabLoading = true;
       GraduationService.updateStudentReports(this.studentId)
         .then(() => {
-          this.getStudentReportsAndCertificates(
-            this.studentId,
-            this.studentPen
-          );
+          this.loadStudentReportsAndCertificates();
           StudentService.getGraduationStatus(this.studentId)
             .then((res) => {
-              this.$store.dispatch("student/setStudentGradStatus", res.data);
+              this.setStudentGradStatus(res.data);
               this.tabLoading = false;
             })
             .catch((error) => {
@@ -1023,10 +957,7 @@ export default {
           }
           this.$refs["projectedGradStatusWithFinalMarks"].show();
           this.tabLoading = false;
-          this.getStudentReportsAndCertificates(
-            this.studentId,
-            this.studentPen
-          );
+          this.loadStudentReportsAndCertificates();
         })
         .catch((error) => {
           this.tabLoading = false;
@@ -1061,10 +992,7 @@ export default {
             this.projectedGradStatusWithRegistrations.requirementsMet;
           this.$refs["projectedGradStatusWithFinalAndReg"].show();
           this.tabLoading = false;
-          this.getStudentReportsAndCertificates(
-            this.studentId,
-            this.studentPen
-          );
+          this.loadStudentReportsAndCertificates();
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1078,7 +1006,7 @@ export default {
         });
     },
     closeRecord: function () {
-      this.$store.commit("student/unsetStudent");
+      this.unsetStudent();
     },
     handleResize() {
       this.window.width = window.innerWidth;
@@ -1098,7 +1026,7 @@ export default {
       this.loadStudentCourseAchievements();
       this.loadStudentExamDetails();
       this.loadStudentNotes(studentIdFromURL);
-      this.getStudentReportsAndCertificates(studentIdFromURL, this.pen);
+      this.loadStudentReportsAndCertificates();
       this.loadStudentUngradReasons(studentIdFromURL);
       this.loadStudentHistory(studentIdFromURL);
       this.loadStudentOptionalProgramHistory(studentIdFromURL);
@@ -1125,7 +1053,7 @@ export default {
                 }
               });
           }
-          this.$store.dispatch("student/setStudentProfile", data);
+          this.setStudentProfile(data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1140,7 +1068,7 @@ export default {
     loadAssessments() {
       AssessmentService.getStudentAssessment(this.pen)
         .then((response) => {
-          this.$store.dispatch("student/setStudentAssessments", response.data);
+          this.setStudentAssessments(response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1155,7 +1083,7 @@ export default {
     loadGraduationStatus(studentIdFromURL) {
       StudentService.getGraduationStatus(studentIdFromURL)
         .then((response) => {
-          this.$store.dispatch("student/setStudentGradStatus", response.data);
+          this.setStudentGradStatus(response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1167,31 +1095,10 @@ export default {
           }
         });
     },
-    loadStudentOptionalPrograms(studentIdFromURL) {
-      StudentService.getGraduationStatusOptionalPrograms(studentIdFromURL)
-        .then((response) => {
-          this.$store.dispatch(
-            "student/setStudentGradStatusOptionalPrograms",
-            response.data
-          );
-        })
-        .catch((error) => {
-          if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
-                error.response.status
-            );
-          }
-        });
-    },
     loadCareerPrograms(studentIdFromURL) {
       StudentService.getStudentCareerPrograms(studentIdFromURL)
         .then((response) => {
-          this.$store.dispatch(
-            "student/setStudentCareerPrograms",
-            response.data
-          );
+          this.setStudentCareerPrograms(response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1206,7 +1113,7 @@ export default {
     loadStudentCourseAchievements() {
       CourseService.getStudentCourseAchievements(this.pen)
         .then((response) => {
-          this.$store.dispatch("student/setStudentCourses", response.data);
+          this.setStudentCourses(response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1221,7 +1128,7 @@ export default {
     loadStudentExamDetails() {
       CourseService.getStudentExamDetails(this.pen)
         .then((response) => {
-          this.$store.dispatch("student/setStudentExams", response.data);
+          this.setStudentExams(response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1236,7 +1143,7 @@ export default {
     loadStudentNotes(studentIdFromURL) {
       StudentService.getStudentNotes(studentIdFromURL)
         .then((response) => {
-          this.$store.dispatch("student/setStudentNotes", response.data);
+          this.setStudentNotes(response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1251,49 +1158,13 @@ export default {
     loadStudentUngradReasons(studentIdFromURL) {
       StudentService.getStudentUngradReasons(studentIdFromURL)
         .then((response) => {
-          this.$store.dispatch(
-            "student/setStudentUngradReasons",
-            response.data
-          );
+          this.setStudentUngradReasons(response.data);
         })
         .catch((error) => {
           if (error.response.status) {
             this.showNotification(
               "danger",
               "There was an error with the Student Service (getting the Undo Completion Reasons): " +
-                error.response.status
-            );
-          }
-        });
-    },
-    loadStudentHistory(studentIdFromURL) {
-      StudentService.getStudentHistory(studentIdFromURL)
-        .then((response) => {
-          this.$store.dispatch("student/setStudentAuditHistory", response.data);
-        })
-        .catch((error) => {
-          if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student History): " +
-                error.response.status
-            );
-          }
-        });
-    },
-    loadStudentOptionalProgramHistory(studentIdFromURL) {
-      StudentService.getStudentOptionalProgramHistory(studentIdFromURL)
-        .then((response) => {
-          this.$store.dispatch(
-            "student/setStudentOptionalProgramsAuditHistory",
-            response.data
-          );
-        })
-        .catch((error) => {
-          if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student Optional Program History): " +
                 error.response.status
             );
           }

@@ -8,7 +8,7 @@
     >
       <b-button-group class="mx-1">
         <b-button
-          v-if="roles == 'Administrator' && createAllowed"
+          v-if="allowUpdateGradStatus && updateAllowed"
           variant="success"
           size="sm"
           @click="addMode = !addMode"
@@ -16,7 +16,7 @@
           >{{ addMode ? "Cancel" : "Add " + title }}
         </b-button>
         <b-btn
-          v-if="isAdmin && updateAllowed"
+          v-if="allowUpdateGradStatus && updateAllowed"
           v-bind:class="this.quickEdit ? 'btn-primary' : 'btn-primary'"
           size="sm"
           class="float-right"
@@ -44,7 +44,9 @@
             <div class="filter-icon p-2 text-secondary">Filter:</div>
             <b-form-input
               debounce="500"
-              :id="'filter-input-' + title.replace(' ', '-').toLowerCase()"
+              :id="
+                'filter-input-' + title.replace(' ', 'import-').toLowerCase()
+              "
               size="md"
               v-model="filter"
               type="search"
@@ -191,22 +193,12 @@
         >
           {{ deleteLabel ? deleteLabel : "Delete" }}
         </b-btn>
-
-        <b-btn
-          v-else-if="roles == 'administrator' && quickEdit"
-          variant="danger"
-          size="sm"
-          @click="confirmDelete(item)"
-          class="square"
-        >
-          <i class="fas fa-lg fa-times" aria-hidden="true"></i>
-        </b-btn>
       </template>
     </b-table>
+
     <b-pagination
-      v-if="this.totalRowz && this.pagination"
       v-model="currentPage"
-      :total-rows="totalRowz"
+      :total-rows="totalRows"
       :per-page="perPage"
       aria-controls="my-table"
     ></b-pagination>
@@ -222,8 +214,14 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { toRaw } from "vue";
+import { useAccessStore } from "../store/modules/access.js";
+import { useAppStore } from "../store/modules/app.js";
+import { useBatchProcessingStore } from "../store/modules/batchprocessing.js";
+import { useStudentStore } from "../store/modules/student.js";
+import { mapState } from "pinia";
 export default {
+  name: "DisplayTable",
   props: [
     "items",
     "totalitems",
@@ -233,6 +231,7 @@ export default {
     "create",
     "update",
     "delete",
+    "store",
     "deleteLabel",
     "disableDeletefield",
     "disableDeleteIfValue",
@@ -244,8 +243,13 @@ export default {
     "sortByField",
     "sortDesc",
   ],
+  onMounted() {
+    // Set the initial number of items
+    this.totalRows = this.items.length;
+  },
   data() {
     return {
+      actionNames: ["removeScheduledJobs"],
       responsive: true,
       quickEdit: false,
       isAdmin: false,
@@ -263,6 +267,7 @@ export default {
       editItem: "notloaded",
       currentPage: 1,
       perPage: 1000,
+      striped: true,
       pageOptions: [
         10,
         20,
@@ -280,18 +285,28 @@ export default {
         title: "",
         content: "",
       },
+      stores: {
+        batchprocessing: useBatchProcessingStore(),
+        access: useAccessStore(),
+        app: useAppStore(),
+        student: useStudentStore(),
+        // Add more stores here
+      },
     };
   },
   computed: {
-    ...mapGetters("auth", ["roles"]),
+    ...mapState(useAccessStore, {
+      allowUpdateGradStatus: "allowUpdateGradStatus",
+    }),
+
     editableFields() {
       return this.fields.filter((field) => field.editable);
     },
-    totalRowz: function () {
-      if (this.totalRows == 0) {
-        return this.items.length;
-      } else return this.totalRows;
-    },
+    // totalRows: function () {
+    //   if (this.items?.length) {
+    //     return this.items.length;
+    //   } else return this.totalRows;
+    // },
     sortOptions() {
       return this.fields
         .filter((f) => f.sortable)
@@ -305,172 +320,30 @@ export default {
   },
   created() {
     window.addEventListener("keyup", this.validateInput);
-    this.setAdmin();
     if (this.pagination) {
       this.perPage = 25;
     }
-    if (this.create && this.isAdmin) {
-      this.createAllowed = true;
-    }
-    if (this.update && this.isAdmin) {
-      this.updateAllowed = true;
-      this.fields.push({
-        key: "actions",
-        class: "d-block",
-        label: "Edit",
-      });
-    }
-    if (this.delete && this.roles == "Administrator") {
-      this.deleteAllowed = true;
-
-      this.fields.push({
-        key: "delete",
-        class: "d-block",
-        label: "Delete",
-      });
-    }
-    this.itemToAdd = { ...this.items[0] };
-    for (let field of this.fields) {
-      this.itemToAdd[field.key] = "";
-    }
+    this.totalRows = this.items.length;
+  },
+  onBeforeMount() {
+    // Now, you can use the mapped actions in the hook
+    this.actionNames.forEach((actionName) => {
+      this[actionName]();
+    });
   },
   methods: {
-    toggleQuickEdit() {
-      this.quickEdit = !this.quickEdit;
-      this.resetEdit();
-      if (this.quickEdit) {
-        this.fields[this.fields.length - 1].class = "d-block";
-        this.fields[this.fields.length - 2].class = "d-block";
-      } else {
-        this.fields[this.fields.length - 1].class = "d-none";
-        this.fields[this.fields.length - 2].class = "d-none";
-      }
-    },
-    validateInput: function (e) {
-      if (e.keyCode === 27) {
-        if (this.editMode) {
-          this.resetEdit();
-        } else if (this.deleteMode) {
-          this.cancelDelete();
-        }
-      } else if (e.keyCode === 13) {
-        if (this.quickEdit && this.editMode) {
-          this.saveEdit();
-        }
-      }
-    },
-    setAdmin() {
-      if (this.roles == "Administrator") {
-        this.isAdmin = true;
-      } else {
-        this.isAdmin = false;
-      }
-    },
-    addItem() {
-      var newItem = this.itemToAdd;
-      this.items.push(newItem);
-
-      this.addMode = false;
-
-      this.$bvToast.toast("Record was Added", {
-        title: "Success",
-        variant: "success",
-      });
-      this.$store.dispatch(this.create, this.itemToAdd);
-    },
-    cancelAddItem() {
-      this.addMode = false;
-    },
     deleteItem(item) {
-      let id = item[this.id];
-      this.$store
-        .dispatch(this.delete, { id })
-        .then((result) => {
-          if (result.status && result.status == "200") {
-            this.items.splice(this.items.indexOf(item), 1);
-            this.$bvToast.toast("Record was deleted", {
-              title: "Success",
-              variant: "success",
-            });
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            this.$bvToast.toast(
-              "There was an issue when trying to delete this record",
-              {
-                title: "Error",
-                variant: "danger",
-              }
-            );
-          }
-        });
-    },
-    confirmDelete(item) {
-      this.deleteMode = true;
-      this.editMode = false;
-      let doDelete = true;
-      if (
-        this.itemRow &&
-        !confirm("You have unsaved changes, are you sure you want to continue?")
-      ) {
-        doDelete = false;
+      const itemRaw = toRaw(item);
+      const store = this.stores[this.store];
+      const id = toRaw(item).id;
+      if (store) {
+        store[this.delete](id);
+      } else {
+        console.error("Store not found.");
       }
-
-      if (doDelete) {
-        this.itemRow = {
-          ...item,
-        };
-      }
-    },
-    edit(item) {
-      this.editMode = true;
-      this.deleteMode = false;
-      let doEdit = true;
-      if (!this.quickEdit) {
-        if (
-          this.itemRow &&
-          !confirm(
-            "You have unsaved changes, are you sure you want to continue?"
-          )
-        ) {
-          doEdit = false;
-        }
-      }
-      if (doEdit) {
-        this.itemRow = {
-          ...item,
-        };
-      }
-    },
-    saveEdit() {
-      let item = this.items.find((u) => u[this.id] === this.itemRow[this.id]);
-      Object.assign(item, this.itemRow);
-      this.$store.dispatch(this.update, item);
-      this.resetEdit();
-      this.$bvToast.toast("Record was saved/updated", {
-        title: "Success",
-        variant: "success",
-      });
-    },
-    cancelDelete() {
-      this.itemRow = null;
-      this.deleteMode = false;
-    },
-    resetEdit() {
-      this.itemRow = null;
-      this.editMode = false;
-    },
-    info(item, index, button) {
-      this.infoModal.title = `Row index: ${index}`;
-      this.infoModal.content = JSON.stringify(item, null, 2);
-      this.$root.$emit("bv::show::modal", this.infoModal.id, button);
-    },
-    resetInfoModal() {
-      this.infoModal.title = "";
-      this.infoModal.content = "";
     },
     onFiltered(filteredItems) {
+      // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     },

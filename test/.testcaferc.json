@@ -1,6 +1,6 @@
 {
     "_comment": "browsers should accept: edge -private, firefox -private-window, chrome -incognito",
-    "browsers": ["firefox:headless --private-window"],
+    "browsers": ["chrome:headless --disable-dev-shm-usage --incognito"],
     "reporter": "list",
     "quarantineMode": true,
     "developmentMode": false,

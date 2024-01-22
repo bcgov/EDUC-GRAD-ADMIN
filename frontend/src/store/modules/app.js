@@ -1,51 +1,53 @@
-import ApiService from '../../common/apiService.js';
+import { defineStore } from 'pinia';
+import ApiService from '../../common/apiService.js'
 
-export default {
-    namespaced: true,
-    state: {
-      programOptions:[],
-      studentStatusOptions:[],
-      ungradReasons:[]
-    },
-    getters: {
-      getProgramOptions(state){
-        return state.programOptions;
-      },
-      getStudentStatusOptions(state){
-        return state.studentStatusOptions;
-      },
-      getUngradReasons(state){
-        return state.ungradReasons;
-      },
-    },
-    mutations: {
-      setProgramOptions(state, payload){
-        state.programOptions = payload;
-      },
-      setStudentStatusCodesOptions(state, payload){
-        state.studentStatusOptions = payload;
-      },
-      setUngradReasons(state, payload){
-        state.ungradReasons = payload;
-      },      
-    },
-    actions: {
-      setApplicationVariables({commit}) {
-        //ApiService.getGraduationProgram();
-        if(localStorage.getItem('jwtToken')){   
-          // uncomment after business is ready to implement the "No Program" option
-          //ApiService.apiAxios.get('/api/v1/program/programs').then(response => commit('setProgramOptions', response.data))
+export const useAppStore = defineStore('app',{
+  state: () => ({
+    programOptions: [],
+    studentStatusOptions: [],
+    ungradReasons: [],
+    pageTitle: "GRAD",
+  }),
+  getters: {
+    getProgramOptions: (state) => state.programOptions,
+    getStudentStatusOptions: (state)  => state.studentStatusOptions,
+    getUngradReasons: (state) => state.ungradReasons,
+  },
+  actions: {  
+    setApplicationVariables() {
+    
+      if (localStorage.getItem('jwtToken')) {
+        ApiService.apiAxios.get('/api/v1/program/programs').then(response => {
+          const programs = response.data.filter(obj => {
+            return obj.programCode !== "NOPROG";
+          });
+          this.programOptions = programs;
+        });
 
-          ApiService.apiAxios.get('/api/v1/program/programs').then(response => {
-            // filters out the "No Program" option until business is ready to implement
-            const programs = response.data.filter(obj => {
-              return obj.programCode !== "NOPROG";
-            })
-            commit('setProgramOptions', programs)
-          })
-          ApiService.apiAxios.get('/api/v1/student/studentstatus').then(response => commit('setStudentStatusCodesOptions', response.data))
-          ApiService.apiAxios.get('/api/v1/studentgraduation/undocompletion/undocompletionreason').then(response => commit('setUngradReasons', response.data))
-        }   
-      }, 
+        ApiService.apiAxios.get('/api/v1/student/studentstatus').then(response => {
+          try{
+            this.studentStatusOptions = response.data;
+          }catch(error){
+            console.log(error)
+          }
+        });
+
+        ApiService.apiAxios.get('/api/v1/studentgraduation/undocompletion/undocompletionreason').then(response => {
+          try{
+            this.ungradReasons = response.data;
+          }catch(error){
+            console.log(error)
+          }
+        });
+
+        ApiService.apiAxios.get('/api/v1/batch/batchjobtype').then(response => {
+          try{
+            this.batchTypeCodes = response.data;
+          }catch(error){
+            console.log(error)
+          }
+        });        
+      }
     },
-  };
+  },
+});
