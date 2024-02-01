@@ -1,5 +1,33 @@
 <template>
   <div id="optional-graduation-program-rules">
+    <DisplayModal
+      :header="ruleMatchType + ' Matching Rule # ' + ruleNumMatch"
+      :showModal="showModal"
+    >
+      <template v-slot:body>
+        <b-spinner v-if="loadingRuleMatch" class="px-1 my-2"></b-spinner>
+        <div v-else-if="!ruleMatchList.length">Not applicable</div>
+        <DisplayTable
+          v-else
+          v-bind:items="ruleMatchList"
+          title="OptionalProgramRuleMatch"
+          v-bind:fields="ruleMatchFields"
+          id="optionalProgramRuleMatch"
+          :showFilter="false"
+          :pagination="true"
+        >
+        </DisplayTable>
+      </template>
+      <template v-slot:footer>
+        <b-btn
+          variant="danger"
+          size="xs"
+          class="float-right"
+          @click="showModal = false"
+          >Close</b-btn
+        >
+      </template>
+    </DisplayModal>
     <DisplayTable
       v-bind:items="optionalProgramRules"
       v-bind:fields="optionalOptionalProgramRulesFields"
@@ -8,37 +36,6 @@
       showFilter="true"
     >
       <template #cell(ruleCode)="row">
-        <b-modal
-          :id="'modal-' + row.item.optionalProgramRequirementID"
-          :title="
-            (row.item.optionalProgramRequirementCode.requirementCategory == 'C'
-              ? 'Courses'
-              : 'Assessments') +
-            ' that match rule #' +
-            row.item.optionalProgramRequirementCode.optProReqCode
-          "
-          size="xl"
-        >
-          <b-spinner v-if="loadingRuleMatch" class="px-1 my-2"></b-spinner>
-          <div v-else-if="!ruleMatchList.length">Not applicable</div>
-          <div v-else>
-            <DisplayTable
-              v-bind:items="ruleMatchList"
-              title="OptionalProgramRuleMatch"
-              v-bind:fields="ruleMatchFields"
-              id="optionalProgramRuleMatch"
-              :showFilter="false"
-              :pagination="false"
-            >
-            </DisplayTable>
-          </div>
-          <template #modal-footer="{ cancel }">
-            <!-- Emulate built in modal footer ok and cancel button actions -->
-            <b-button size="sm" variant="outline-secondary" v-on:click="cancel">
-              Close
-            </b-button>
-          </template>
-        </b-modal>
         <b-btn
           variant="link"
           size="xs"
@@ -60,6 +57,7 @@
 <script>
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import DisplayTable from "../DisplayTable.vue";
+import DisplayModal from "../DisplayModal.vue";
 import CourseService from "@/services/CourseService.js";
 import AssessmentService from "@/services/AssessmentService.js";
 import { mapGetters } from "vuex";
@@ -69,6 +67,7 @@ export default {
   computed: { ...mapGetters({}) },
   components: {
     DisplayTable: DisplayTable,
+    DisplayModal: DisplayModal,
   },
   data: function () {
     return {
@@ -212,7 +211,9 @@ export default {
       ruleMatchList: [],
       ruleMatchFields: [],
       ruleMatchType: "",
+      ruleNumMatch: "",
       loadingRuleMatch: false,
+      showModal: false,
     };
   },
   created() {
@@ -227,6 +228,8 @@ export default {
   },
   methods: {
     ruleNumberClicked(categoryCode, ruleNum) {
+      this.showModal = true;
+      this.ruleNumMatch = ruleNum;
       switch (categoryCode) {
         case "A":
           this.ruleMatchFields = this.assessmentFields;
