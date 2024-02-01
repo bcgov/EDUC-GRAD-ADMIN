@@ -37,6 +37,12 @@ export default {
   margin: 5rem auto;
 }
 
+.modal-body .card-footer,
+.modal-body .card-header {
+  background-color: rgb(255, 255, 255);
+  background-color: rgba(255, 255, 255, 0);
+}
+
 .display-modal {
   position: fixed;
   z-index: 1000;
