@@ -14,7 +14,10 @@
           v-bind:fields="ruleMatchFields"
           id="gradProgramRuleMatch"
           :showFilter="false"
-          :pagination="false"
+          :pagination="true"
+          :sort-by="
+            (ruleMatchType = 'Courses' ? 'courseCode' : 'assessmentCode')
+          "
         >
         </DisplayTable>
       </template>
@@ -41,43 +44,6 @@
         pagination="true"
       >
         <template #cell(ruleCode)="row">
-          <!-- <b-modal
-            :id="
-              'modal-' +
-              row.item.graduationProgramCode +
-              row.item.programRequirementCode.proReqCode
-            "
-            :title="
-              'Rule # ' +
-              row.item.programRequirementCode.proReqCode +
-              ' - ' +
-              ruleMatchType
-            "
-            size="xl"
-          >
-            <b-spinner v-if="loadingRuleMatch" class="px-1 my-2"></b-spinner>
-            <div v-else-if="!ruleMatchList.length">Not applicable</div>
-            <div v-else>
-              <DisplayTable
-                v-bind:items="ruleMatchList"
-                title="GradProgramRuleMatch"
-                v-bind:fields="ruleMatchFields"
-                id="gradProgramRuleMatch"
-                :showFilter="false"
-                :pagination="false"
-              >
-              </DisplayTable>
-            </div>
-            <template #modal-footer="{ cancel }">
-              <b-button
-                size="sm"
-                variant="outline-secondary"
-                v-on:click="cancel"
-              >
-                Close
-              </b-button>
-            </template>
-          </b-modal> -->
           <b-btn
             variant="link"
             size="xs"
