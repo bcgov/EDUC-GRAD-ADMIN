@@ -16,7 +16,7 @@
           :showFilter="false"
           :pagination="true"
           :sort-by="
-            (ruleMatchType = 'Courses' ? 'courseCode' : 'assessmentCode')
+            ruleMatchType == 'Courses' ? 'courseCode' : 'assessmentCode'
           "
         >
         </DisplayTable>
