@@ -27,10 +27,6 @@ export default {
 </script>
 
 <style>
-.card-header {
-  font-weight: 700;
-}
-
 .modal-body {
   height: fit-content;
   width: fit-content;
@@ -53,5 +49,11 @@ export default {
   overflow: auto;
   background-color: rgb(0, 0, 0);
   background-color: rgba(0, 0, 0, 0.4);
+}
+</style>
+
+<style scoped>
+:deep(.card-header) {
+  font-weight: 700;
 }
 </style>
