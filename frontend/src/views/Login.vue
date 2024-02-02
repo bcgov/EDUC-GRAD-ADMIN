@@ -1,41 +1,37 @@
 <template>
-  <div class="d-flex justify-content-center">
-    <div class="col-sm-12 col-md-4 col-lg-4">
-      <div class="container pt-3 pb-4"> 
-        <b-card>
-          <b-card-title class="gov-header">
+  <v-container class="d-flex justify-center">
+    <v-row>
+      <v-col cols="12" md="4" lg="4">
+        <v-card class="pt-3 pb-4">
+          <v-card-title>
             <h4 id="login_text">Log In</h4>
-          </b-card-title>
-          <b-card-text id="login_descriptor">
-            To access the Graduation Administration Application, you must have a valid IDIR.
-          </b-card-text>
-          <b-card-body>
-            <b-row >
-              <b-button type="button" class="btn btn-primary btn-lg btn-block" :href="routes.LOGIN">
-                Login
-              </b-button>
-            </b-row>
-          </b-card-body>
-        </b-card>
-      </div>  
-    </div>
-  </div>  
+          </v-card-title>
+          <v-card-text id="login_descriptor">
+            To access the Graduation Administration Application, you must have a
+            valid IDIR.
+          </v-card-text>
+          <v-card-actions>
+            <button class="btn btn-primary">
+              <a :href="authRoutes.LOGIN">Login</a>
+            </button>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
-import { Routes } from '@/utils/constants';
+import { Routes } from "@/utils/constants";
 export default {
   name: "Login",
   data() {
     return {
       token: "",
-      routes: Routes
-    }
+      authRoutes: Routes,
+    };
   },
-  computed: {
-  },
-  methods: {
-
-  }
-}
+  computed: {},
+  methods: {},
+};
 </script>
