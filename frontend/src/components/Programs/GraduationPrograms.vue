@@ -51,37 +51,37 @@ export default {
       graduationProgramsFields: [
         {
           key: "programCode",
-          label: "Program Code",
+          title: "Program Code",
           sortable: true,
           sortDirection: "desc",
           editable: true,
         },
         {
           key: "programName",
-          label: "Program Name",
+          title: "Program Name",
           sortable: true,
           editable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "associatedCredential",
-          label: "Associated Credential",
+          title: "Associated Credential",
           sortable: true,
           sortDirection: "desc",
           editable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],

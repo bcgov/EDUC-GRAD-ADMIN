@@ -1,5 +1,6 @@
 <template>
   <div id="optional-graduation-program-rules">
+    
     <DisplayTable
       v-bind:items="optionalProgramRules"
       v-bind:fields="optionalOptionalProgramRulesFields"
@@ -7,51 +8,76 @@
       id="programCode"
       showFilter="true"
     >
-      <template #cell(ruleCode)="row">
-        <b-modal
-          :id="'modal-' + row.item.optionalProgramRequirementID"
-          :title="
-            (row.item.optionalProgramRequirementCode.requirementCategory == 'C'
-              ? 'Courses'
-              : 'Assessments') +
-            ' that match rule #' +
-            row.item.optionalProgramRequirementCode.optProReqCode
-          "
-          size="xl"
-        >
-          <b-spinner v-if="loadingRuleMatch" class="px-1 my-2"></b-spinner>
-          <div v-else-if="!ruleMatchList.length">Not applicable</div>
-          <div v-else>
-            <DisplayTable
-              v-bind:items="ruleMatchList"
-              title="OptionalProgramRuleMatch"
-              v-bind:fields="ruleMatchFields"
-              id="optionalProgramRuleMatch"
-              :showFilter="false"
-              :pagination="false"
-            >
-            </DisplayTable>
-          </div>
-          <template #modal-footer="{ cancel }">
-            <!-- Emulate built in modal footer ok and cancel button actions -->
-            <b-button size="sm" variant="outline-secondary" v-on:click="cancel">
-              Close
-            </b-button>
-          </template>
-        </b-modal>
-        <b-btn
-          variant="link"
-          size="xs"
-          class="p-0"
-          @click="
-            ruleNumberClicked(
-              row.item.optionalProgramRequirementCode.requirementCategory,
-              row.item.optionalProgramRequirementCode.optProReqCode
-            )
-          "
-          v-b-modal="'modal-' + row.item.optionalProgramRequirementID"
-          >{{ row.item.optionalProgramRequirementCode.optProReqCode }}
-        </b-btn>
+    <template v-slot:item.ruleCode="{ item }">
+      
+      <td>
+          <v-dialog max-width="600px">
+            <template v-slot:default="{ isActive }">
+            <v-card>
+              <v-card-title>
+                {{ (item.raw.optionalProgramRequirementCode.requirementCategory === 'C' ? 'Courses' : 'Assessments') +
+                  ' that match rule #' +
+                  item.raw.optionalProgramRequirementCode.optProReqCode }}
+              </v-card-title>
+        
+              <v-card-text>
+                <v-container>
+                  <v-row v-if="loadingRuleMatch">
+                    <v-col>
+                      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                    </v-col>
+                  </v-row>
+                  <v-row v-else-if="!ruleMatchList.length">
+                    <v-col>
+                      Not applicable
+                    </v-col>
+                  </v-row>
+                  <v-row v-else>
+                  
+                    <DisplayTable
+                      v-bind:items="ruleMatchList"
+                      title="OptionalProgramRuleMatch"
+                      :fields="ruleMatchFields"
+                      id="optionalProgramRuleMatch"
+                      :showFilter="false"
+                      :pagination="false"
+                    ></DisplayTable>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+        
+              <v-card-actions>
+                <v-btn @click="isActive.value = false" outlined color="secondary">
+                  Close
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+            </template>
+            <template v-slot:activator="{ props }">
+              <v-btn v-bind="props" @click="
+              ruleNumberClicked(
+                item.raw.optionalProgramRequirementCode.requirementCategory,
+                item.raw.optionalProgramRequirementCode.optProReqCode
+              )
+            " :text="item.raw.optionalProgramRequirementCode.optProReqCode"></v-btn>
+            </template>
+          </v-dialog>
+          
+
+          <!-- <v-btn
+            variant="link"
+            size="xs"
+            class="p-0"
+            @click="
+              ruleNumberClicked(
+                item.raw.optionalProgramRequirementCode.requirementCategory,
+                item.raw.optionalProgramRequirementCode.optProReqCode
+              )
+            "
+          >
+            {{ item.raw.optionalProgramRequirementCode.optProReqCode }}
+          </v-btn> -->
+        </td>
       </template>
     </DisplayTable>
   </div>
@@ -77,7 +103,7 @@ export default {
       optionalOptionalProgramRulesFields: [
         {
           key: "optionalProgramID.graduationProgramCode",
-          label: "Program Code",
+          title: "Program Code",
           sortable: true,
           sortDirection: "desc",
           editable: true,
@@ -85,7 +111,7 @@ export default {
         },
         {
           key: "optionalProgramID.optProgramCode",
-          label: "Optional Program Code",
+          title: "Optional Program Code",
           sortable: true,
           sortDirection: "desc",
           editable: true,
@@ -93,70 +119,69 @@ export default {
         },
         {
           key: "ruleCode",
-          label: "Rule #",
-          sortable: true,
-          editable: true,
+          value: "ruleCode",
+          title: "Rule #",
           class: "",
         },
         {
           key: "optionalProgramRequirementCode.requirementCategory",
-          label: "Rule Category (C-Courses, A-Assessments)",
+          title: "Rule Category (C-Courses, A-Assessments)",
           sortable: true,
           editable: true,
           class: "",
         },
         {
-          key: "optionalProgramRequirementCode.label",
-          label: "Requirement Name",
+          key: "optionalProgramRequirementCode.title",
+          title: "Requirement Name",
           sortable: true,
           editable: true,
           class: "",
         },
         {
           key: "optionalProgramRequirementCode.description",
-          label: "Requirement Description",
+          title: "Requirement Description",
           sortable: true,
           editable: true,
           class: "",
         },
         {
           key: "optionalProgramRequirementCode.requiredCredits",
-          label: "Required Credits",
+          title: "Required Credits",
           sortable: true,
           editable: true,
           class: "",
         },
         {
           key: "optionalProgramRequirementCode.notMetDesc",
-          label: "Not Met Description",
+          title: "Not Met Description",
           sortable: true,
           editable: true,
           class: "",
         },
         {
-          key: "optionalProgramRequirementCode.requirementTypeCode.label",
-          label: "Requirement Type",
+          key: "optionalProgramRequirementCode.requirementTypeCode.title",
+          title: "Requirement Type",
           sortable: true,
           editable: true,
           class: "",
         },
         {
           key: "optionalProgramRequirementCode.requiredLevel",
-          label: "Required Level",
+          title: "Required Level",
           sortable: true,
           editable: true,
           class: "",
         },
         {
           key: "optionalProgramRequirementCode.languageOfInstruction",
-          label: "Required Language of Instruction",
+          title: "Required Language of Instruction",
           sortable: true,
           editable: true,
           class: "",
         },
         {
           key: "optionalProgramRequirementCode.activeRequirement",
-          label: "Active",
+          title: "Active",
           sortable: true,
           editable: true,
           class: "",
@@ -165,32 +190,32 @@ export default {
       courseFields: [
         {
           key: "courseCode",
-          label: "Course",
+          title: "Course",
           sortable: true,
           sortDirection: "desc",
           editable: false,
         },
         {
           key: "courseLevel",
-          label: "Course Level",
+          title: "Course Level",
           sortable: true,
           editable: false,
         },
         {
           key: "courseName",
-          label: "Course Title",
+          title: "Course Title",
           sortable: true,
           editable: false,
         },
         {
           key: "startDate",
-          label: "TRAX Start Date",
+          title: "TRAX Start Date",
           sortable: true,
           editable: false,
         },
         {
           key: "endDate",
-          label: "TRAX End Date",
+          title: "TRAX End Date",
           sortable: true,
           editable: false,
         },
@@ -198,13 +223,13 @@ export default {
       assessmentFields: [
         {
           key: "assessmentCode",
-          label: "Assessment Code",
+          title: "Assessment Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "assessmentName",
-          label: "Assessment Name",
+          title: "Assessment Name",
           sortable: true,
           editable: true,
         },

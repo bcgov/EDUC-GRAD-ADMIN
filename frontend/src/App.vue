@@ -4,13 +4,8 @@
 
     <Bcheader class="bcheader" style="margin-bottom: 15px">
       <div v-if="isAuthenticatedGet && dataReady">
-        <a v-b-toggle.grad-drawer>{{ userInfoGet.userName }} </a>
-        <b-sidebar id="grad-drawer" title="Permissions" shadow>
-          <div class="px-3 py-2 mt-5">
-            <br />
-            {{ roles }}<br />
-          </div>
-        </b-sidebar>
+       {{ userInfoGet.userName }}
+
         |
         <a :href="authRoutes.LOGOUT" class="text-white">Logout</a>
       </div>
@@ -29,7 +24,6 @@
 </template>
 <script>
 // Vue Store
-import { configureCompat } from "vue";
 import { useAppStore } from "./store/modules/app";
 import { useAuthStore } from "./store/modules/auth";
 import { useAccessStore } from "./store/modules/access";

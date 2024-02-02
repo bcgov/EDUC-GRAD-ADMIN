@@ -22,13 +22,12 @@
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import DisplayTable from "../DisplayTable.vue";
 import { showNotification } from "../../utils/common.js";
-import { mapGetters } from "vuex";
+
 
 export default {
   name: "GraduationOptionalProgram",
   props: {},
   computed: {
-    ...mapGetters({}),
   },
   components: {
     DisplayTable: DisplayTable,
@@ -42,7 +41,7 @@ export default {
       graduationOptionalProgramsFields: [
         {
           key: "graduationProgramCode",
-          label: "Program Code",
+          title: "Program Code",
           sortable: true,
           sortDirection: "desc",
           editable: true,
@@ -50,7 +49,7 @@ export default {
         },
         {
           key: "optProgramCode",
-          label: "Optional Program Code",
+          title: "Optional Program Code",
           sortable: true,
           sortDirection: "desc",
           editable: true,
@@ -58,13 +57,13 @@ export default {
         },
         {
           key: "optionalProgramName",
-          label: "Optional Program Name",
+          title: "Optional Program Name",
           sortable: true,
           editable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
           sortDirection: "desc",
           editable: true,
@@ -72,19 +71,19 @@ export default {
         },
         {
           key: "associatedCredential",
-          label: "Associated Credential",
+          title: "Associated Credential",
           sortable: true,
           sortDirection: "desc",
           editable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],

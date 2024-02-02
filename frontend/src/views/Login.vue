@@ -11,7 +11,7 @@
           </b-card-text>
           <b-card-body>
             <b-row >
-              <b-button type="button" class="btn btn-primary btn-lg btn-block" @click="clearStorage" :href="routes.LOGIN">
+              <b-button type="button" class="btn btn-primary btn-lg btn-block" :href="routes.LOGIN">
                 Login
               </b-button>
             </b-row>
@@ -24,7 +24,6 @@
 
 <script>
 import { Routes } from '@/utils/constants';
-import { mapGetters } from "vuex";
 export default {
   name: "Login",
   data() {
@@ -34,12 +33,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('auth', ['isAuthenticated','jwtToken']),
   },
   methods: {
-    clearStorage(){
-      this.$store.dispatch('auth/setJwtToken', null);
-    }
+
   }
 }
 </script>

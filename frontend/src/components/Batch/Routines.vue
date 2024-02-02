@@ -1,39 +1,41 @@
 <template>
-  <div>
-    <DisplayTable
-      title="Routines"
-      :items="scheduledRoutines"
-      v-bind:fields="scheduledRoutinesFields"
-      id="id"
-      :showFilter="false"
-      pagination="true"
-    >
-      <template #cell(enabled)="row">
-        <b-form-checkbox
-          @change="toggleRoutine(row.item.jobType, row.item.id)"
-          :ref="'routine' + row.item.jobType + 'Enabled'"
-          :checked="row.item.enabled == 'Y' ? true : false"
-          name="check-button"
-          switch
-          :disabled="!allowToggleRoutines"
+  <v-container>
+    <v-row>
+      <v-col>
+        <display-table
+          :title="'Routines'"
+          :items="scheduledRoutines"
+          :fields="scheduledRoutinesFields"
+          :id="'id'"
+          :showFilter="false"
+          :pagination="true"
         >
-        </b-form-checkbox>
-      </template>
-    </DisplayTable>
-  </div>
+          <template v-slot:cell(enabled)="row">
+            <v-switch
+              v-model="row.item.enabled"
+              @change="toggleRoutine(row.item.jobType, row.item.id)"
+              :disabled="!allowToggleRoutines"
+              label="Enabled"
+            ></v-switch>
+          </template>
+        </display-table>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
+
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
-
 import { mapState } from "pinia";
 import { useBatchProcessingStore } from "../../store/modules/batchprocessing";
 import { useAccessStore } from "../../store/modules/access";
+
 export default {
   components: {
     DisplayTable: DisplayTable,
   },
-  data: function () {
+  data() {
     return {
       scheduledRoutines: [],
       scheduledRoutinesFields: [
@@ -118,13 +120,17 @@ export default {
                 this.makeToast("ERROR " + error.response.statusText, "danger");
               });
           } else {
-            let r = "routine" + jobType + "Enabled";
-            this.$refs[r].localChecked = !this.$refs[r].localChecked;
+            // Reset the switch if the user cancels
+            this.$set(
+              this.scheduledRoutines.find((item) => item.id === processingId),
+              "enabled",
+              !this.scheduledRoutines.find((item) => item.id === processingId)
+                .enabled
+            );
           }
         })
         .catch((err) => {
-          // eslint-disable-next-line
-          console.log(err);
+          console.error(err);
         });
     },
     makeToast(message, variant) {
@@ -145,8 +151,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
-input {
-  border-radius: 0px;
-}
+/* Your scoped styles here */
 </style>

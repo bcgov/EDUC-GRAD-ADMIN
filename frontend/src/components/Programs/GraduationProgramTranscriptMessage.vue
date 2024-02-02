@@ -1,6 +1,6 @@
 <template>
   <div id="transcript-message">
-    <DisplayTable
+    <!-- <DisplayTable
       v-bind:items="transcriptMessages"
       title="Transcript Message"
       v-bind:fields="transcriptMessageFields"
@@ -9,7 +9,7 @@
       showFilter="true"
       pagnation="true"
     >
-    </DisplayTable>
+    </DisplayTable> -->
   </div>
 </template>
 

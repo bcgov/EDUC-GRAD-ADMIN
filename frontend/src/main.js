@@ -1,33 +1,33 @@
-import Vue,{ createApp } from '@vue/compat'
+import  {createApp} from 'vue'
+import { createVuetify } from 'vuetify/dist/vuetify';
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
-import 'bootstrap-vue/dist/bootstrap-vue.css';
 import './assets/css/bcgov.css';
 import './assets/css/global.css';
 import '@bcgov/bootstrap-theme/dist/css/bootstrap-theme.min.css';
-import { BootstrapVue, BootstrapVueIcons, ToastPlugin } from "bootstrap-vue";
-import VueLogger from "vuejs-logger";
-import qs from "query-string";
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
-Vue.config.productionTip = false;
-const options = {
-  isEnabled: true,
-  logLevel: Vue.config.productionTip ? "error" : "debug",
-  stringifyArguments: false,
-  showLogLevel: true,
-  showMethodName: true,
-  separator: "|",
-  showConsoleColors: true,
-};
+import * as colors from 'vuetify/lib/util/colors';
+import styles from 'vuetify/styles?inline';
+import * as labs from 'vuetify/labs/components';
+import * as components from 'vuetify/components';
+import * as directives from 'vuetify/directives';
+import '@mdi/font/css/materialdesignicons.css';
 
-Vue.use(BootstrapVue);
+const vuetify = createVuetify({
+  icons: {
+    defaultSet: 'mdi'
+  },
+  components: {
+    ...labs,
+    ...components,
+    ...directives,
+    ...styles,
+    ...colors
+  },
+});
 
-Vue.use(VueLogger, options);
-Vue.use(qs);
-
-    
 const app = createApp(App)
 app.config.globalProperties.$filters = {
    //Format simple Date
@@ -74,6 +74,4 @@ app.config.globalProperties.$filters = {
     } 
   }
 
-app.use(createPinia());
-app.use(router)
-app.mount('#app')
+app.use(createPinia()).use(router).use(vuetify).mount('#app')
