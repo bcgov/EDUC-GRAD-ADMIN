@@ -9,6 +9,7 @@
     <div v-else-if="environment == 'test'" class="test-env">
       Vue 3 - <strong>TEST</strong> environment
     </div>
+    <div v-else>Vue 3 - <strong>Environment not recognized</strong></div>
   </div>
 </template>
 
