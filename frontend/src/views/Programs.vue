@@ -14,7 +14,9 @@
           >
             <v-tab to="/programs/programs">Programs</v-tab>
             <v-tab to="/programs/program-rules">Program Rules</v-tab>
-            <v-tab to="/programs/transcript-message">Transcript Messaging</v-tab>
+            <v-tab to="/programs/transcript-message"
+              >Transcript Messaging</v-tab
+            >
           </v-tab-item-dropdown>
 
           <v-tab-item-dropdown
@@ -29,7 +31,9 @@
           </v-tab-item-dropdown>
 
           <v-tab to="/programs/letter-grades">Letter Grades</v-tab>
-          <v-tab to="/programs/special-cases">Assessment Special Case Codes</v-tab>
+          <v-tab to="/programs/special-cases"
+            >Assessment Special Case Codes</v-tab
+          >
           <v-tab to="/programs/requirement-types">Requirement Type Code</v-tab>
         </v-tabs>
       </v-card-subtitle>

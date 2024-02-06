@@ -101,3 +101,11 @@ button.collapsed, button.not-collapsed, button.more-button {
 .form-validation-message{
   font-size: 11px;
 }
+.link-button {
+  color: #2196F3; /* Set the desired link color */
+  text-decoration: underline;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  padding: 0; /* Optional: Remove padding if needed */
+}
