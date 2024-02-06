@@ -1,6 +1,5 @@
 <template>
   <div id="optional-graduation-program-rules">
-    
     <DisplayTable
       v-bind:items="optionalProgramRules"
       v-bind:fields="optionalOptionalProgramRulesFields"
@@ -8,61 +7,75 @@
       id="programCode"
       showFilter="true"
     >
-    <template v-slot:item.ruleCode="{ item }">
-      
-      <td>
+      <template v-slot:item.ruleCode="{ item }">
+        <td>
           <v-dialog max-width="600px">
             <template v-slot:default="{ isActive }">
-            <v-card>
-              <v-card-title>
-                {{ (item.raw.optionalProgramRequirementCode.requirementCategory === 'C' ? 'Courses' : 'Assessments') +
-                  ' that match rule #' +
-                  item.raw.optionalProgramRequirementCode.optProReqCode }}
-              </v-card-title>
-        
-              <v-card-text>
-                <v-container>
-                  <v-row v-if="loadingRuleMatch">
-                    <v-col>
-                      <v-progress-circular indeterminate color="primary"></v-progress-circular>
-                    </v-col>
-                  </v-row>
-                  <v-row v-else-if="!ruleMatchList.length">
-                    <v-col>
-                      Not applicable
-                    </v-col>
-                  </v-row>
-                  <v-row v-else>
-                  
-                    <DisplayTable
-                      v-bind:items="ruleMatchList"
-                      title="OptionalProgramRuleMatch"
-                      :fields="ruleMatchFields"
-                      id="optionalProgramRuleMatch"
-                      :showFilter="false"
-                      :pagination="false"
-                    ></DisplayTable>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-        
-              <v-card-actions>
-                <v-btn @click="isActive.value = false" outlined color="secondary">
-                  Close
-                </v-btn>
-              </v-card-actions>
-            </v-card>
+              <v-card>
+                <v-card-title>
+                  {{
+                    (item.raw.optionalProgramRequirementCode
+                      .requirementCategory === "C"
+                      ? "Courses"
+                      : "Assessments") +
+                    " that match rule #" +
+                    item.raw.optionalProgramRequirementCode.optProReqCode
+                  }}
+                </v-card-title>
+
+                <v-card-text>
+                  <v-container>
+                    <v-row v-if="loadingRuleMatch">
+                      <v-col>
+                        <v-progress-circular
+                          indeterminate
+                          color="primary"
+                        ></v-progress-circular>
+                      </v-col>
+                    </v-row>
+                    <v-row v-else-if="!ruleMatchList.length">
+                      <v-col> Not applicable </v-col>
+                    </v-row>
+                    <v-row v-else>
+                      <DisplayTable
+                        v-bind:items="ruleMatchList"
+                        title="OptionalProgramRuleMatch"
+                        :fields="ruleMatchFields"
+                        id="optionalProgramRuleMatch"
+                        :showFilter="false"
+                        :pagination="false"
+                      ></DisplayTable>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+
+                <v-card-actions>
+                  <v-btn
+                    @click="isActive.value = false"
+                    outlined
+                    color="secondary"
+                  >
+                    Close
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
             </template>
             <template v-slot:activator="{ props }">
-              <v-btn v-bind="props" @click="
-              ruleNumberClicked(
-                item.raw.optionalProgramRequirementCode.requirementCategory,
-                item.raw.optionalProgramRequirementCode.optProReqCode
-              )
-            " :text="item.raw.optionalProgramRequirementCode.optProReqCode"></v-btn>
+              <v-btn
+                v-bind="props"
+                @click="
+                  ruleNumberClicked(
+                    item.raw.optionalProgramRequirementCode.requirementCategory,
+                    item.raw.optionalProgramRequirementCode.optProReqCode
+                  )
+                "
+                text
+                variant="plain"
+              >
+                {{ item.raw.optionalProgramRequirementCode.optProReqCode }}
+              </v-btn>
             </template>
           </v-dialog>
-          
 
           <!-- <v-btn
             variant="link"
@@ -119,8 +132,11 @@ export default {
         },
         {
           key: "ruleCode",
-          value: "ruleCode",
+          value: "optionalProgramRequirementCode.optProReqCode",
           title: "Rule #",
+          sortable: true,
+          sortDirection: "desc",
+          editable: true,
           class: "",
         },
         {

@@ -2,11 +2,18 @@
   <v-container fluid>
     <!-- User Interface controls -->
     <v-row>
-      <v-btn-toggle v-if="allowUpdateGradStatus && updateAllowed" class="float-left">
+      <v-btn-toggle
+        v-if="allowUpdateGradStatus && updateAllowed"
+        class="float-left"
+      >
         <v-btn @click="addMode = !addMode" color="success" small>
           {{ addMode ? "Cancel" : "Add " + title }}
         </v-btn>
-        <v-btn v-if="allowUpdateGradStatus && updateAllowed" @click="toggleQuickEdit" small>
+        <v-btn
+          v-if="allowUpdateGradStatus && updateAllowed"
+          @click="toggleQuickEdit"
+          small
+        >
           Edit
         </v-btn>
       </v-btn-toggle>
@@ -35,7 +42,13 @@
         <v-card :title="'Add ' + title" class="mb-1 mt-1">
           <v-card-text>
             <!-- ... Add form fields here ... -->
-            <v-btn @click="cancelAddItem" outlined color="primary" small class="float-left">
+            <v-btn
+              @click="cancelAddItem"
+              outlined
+              color="primary"
+              small
+              class="float-left"
+            >
               Cancel
             </v-btn>
             <v-btn @click="addItem" color="success" small class="float-left">
@@ -59,7 +72,7 @@
         }"
         @update:page="currentPage = $event"
       >
-      <!-- <template
+        <!-- <template
       v-for="field in editableFields"
       v-slot:[`cell(${field.key})`]="{ value, item }"
     >
@@ -75,7 +88,7 @@
       >
       </b-input> -->
 
-      <!-- <template v-else-if="itemRow && itemRow[id] === item[id] && deleteMode"
+        <!-- <template v-else-if="itemRow && itemRow[id] === item[id] && deleteMode"
         ><div :key="field.key">
           <del class="text-danger">{{ value }}</del>
         </div></template
@@ -95,7 +108,7 @@
       >
     </template> -->
 
-    <!-- <template v-slot:cell(actions)="{ item }">
+        <!-- <template v-slot:cell(actions)="{ item }">
       <b-button-group v-if="itemRow && itemRow[id] === item[id] && editMode">
         <b-btn
           style="width: 60px"
@@ -108,14 +121,14 @@
       </b-button-group>
     </template> -->
 
-    <template v-for="(_, slotName) in $slots" v-slot:[slotName]="scope">
-      <td>
-        <!-- Use the provided template for the specified slot name -->
-        <slot :name="slotName" v-bind="scope" />
-      </td>
-    </template>
+        <template v-for="(_, slotName) in $slots" v-slot:[slotName]="scope">
+          <td>
+            <!-- Use the provided template for the specified slot name -->
+            <slot :name="slotName" v-bind="scope" />
+          </td>
+        </template>
 
-    <!-- <template v-slot:cell(delete)="{ item }">
+        <!-- <template v-slot:cell(delete)="{ item }">
       <b-btn
         v-if="deleteMode && item[disableDeletefield] != disableDeleteIfValue"
         variant="danger"
@@ -280,10 +293,13 @@ export default {
       this.currentPage = 1;
     },
   },
-  
 };
 </script>
 
 <style scoped>
-/* Your scoped styles */
+.table-filter {
+  position: absolute;
+  top: -15px;
+  right: 0;
+}
 </style>
