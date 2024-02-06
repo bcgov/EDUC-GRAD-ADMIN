@@ -1,25 +1,27 @@
 <template>
   <div id="app">
-    <EnvironmentBanner />
+    <v-app>
+      <EnvironmentBanner />
 
-    <Bcheader class="bcheader" style="margin-bottom: 15px">
-      <div v-if="isAuthenticatedGet && dataReady">
-       {{ userInfoGet.userName }}
+      <Bcheader class="bcheader" style="margin-bottom: 15px">
+        <div v-if="isAuthenticatedGet && dataReady">
+          {{ userInfoGet.userName }}
 
-        |
-        <a :href="authRoutes.LOGOUT" class="text-white">Logout</a>
+          |
+          <a :href="authRoutes.LOGOUT" class="text-white">Logout</a>
+        </div>
+        <div v-else-if="!isAuthenticatedGet">
+          <a :href="authRoutes.LOGIN">Login</a>
+        </div>
+      </Bcheader>
+      <div class="container" style="min-height: 100vh">
+        <transition name="fade">
+          <router-view />
+        </transition>
       </div>
-      <div v-else-if="!isAuthenticatedGet">
-        <a :href="authRoutes.LOGIN">Login</a>
-      </div>
-    </Bcheader>
-    <div class="container" style="min-height: 100vh">
-      <transition name="fade">
-        <router-view />
-      </transition>
-    </div>
 
-    <BCFooter></BCFooter>
+      <BCFooter></BCFooter>
+    </v-app>
   </div>
 </template>
 <script>
