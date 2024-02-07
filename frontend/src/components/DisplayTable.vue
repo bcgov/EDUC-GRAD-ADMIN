@@ -62,14 +62,17 @@
         v-if="items && items.length"
         :headers="fields"
         :items="items"
+        item-key="id"
         :items-per-page="perPage"
         :search="filter"
         :sort-by="sortBy"
         :sort-desc="sortDesc"
+        show-expand
         :footer-props="{
           itemsPerPageOptions: [10, 20, 50, 100],
           showCurrentPage: true,
         }"
+        :expanded="expanded"
         @update:page="currentPage = $event"
       >
         <!-- <template
@@ -194,6 +197,7 @@ export default {
   ],
   data() {
     return {
+      expanded: [],
       actionNames: ["removeScheduledJobs"],
       responsive: true,
       quickEdit: false,
@@ -242,8 +246,8 @@ export default {
   computed: {
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
+      
     }),
-
     editableFields() {
       return this.fields.filter((field) => field.editable);
     },

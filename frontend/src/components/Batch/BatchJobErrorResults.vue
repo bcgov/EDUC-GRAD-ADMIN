@@ -24,13 +24,13 @@
     >
       <template v-slot:item.pen="{ item }">
         <v-btn
-          :id="'pen' + item.raw.pen"
-          text
-          small
-          @click="findStudentByPen(item.raw.pen)"
-        >
-          {{ item.raw.pen }}
-        </v-btn>
+        :id="'pen' + item.raw.pen"
+        text
+        small
+        @click="findStudentByPen(item.raw.pen)"
+      >
+        {{ item.raw.pen }}
+      </v-btn>
       </template>
       <template v-slot:item.schoolOfRecord="{ item }">
         <div v-if="item.raw.schoolOfRecord">{{ item.raw.schoolOfRecord }}</div>
@@ -151,11 +151,11 @@ export default {
           })
           .catch((error) => {
             // eslint-disable-next-line
-            console.log("Batch Admin Load: " + error);
-            this.showNotification(
-              "danger",
-              "Student cannot be found on the GRAD or PEN database"
-            );
+            // console.log("Batch Admin Load: " + error);
+            // this.showNotification(
+            //   "danger",
+            //   "Student cannot be found on the GRAD or PEN database"
+            // );
           });
       }
     },

@@ -3,6 +3,18 @@
     <h2>Batch Processing</h2>
     x {{ adminSelectedErrorId }} y {{ adminSelectedBatchId }}
     <div>
+      <v-btn
+      class="position-absolute"
+      style="z-index: 10; right: 0; margin-top: 10px; margin-right: 30px"
+      color="info"
+      small
+      @click="updateDashboards"
+    >
+      <v-icon left>
+        mdi-sync-alt
+      </v-icon>
+      Update
+    </v-btn>
       <v-card>
         <v-tabs v-model="selectedTab" bg-color="transparent">
           <v-tab value="batchRuns"
@@ -17,153 +29,9 @@
         <v-card-text>
           <v-window v-model="selectedTab">
             <v-window-item value="batchRuns">
-              <v-container fluid>
-                <v-row>
-                  <!-- First Column (col-5 for medium screens, col-12 for small screens) -->
-                  <v-col
-                    :cols="12"
-                    :md="isBatchShowing || isErrorShowing ? 7 : 12"
-                  >
-                    <v-card>
-                      <v-card-text>
-                        <DisplayTable
-                          title="Job/Runs"
-                          :items="batchInfoListData"
-                          :fields="jobRunFields"
-                          id="id"
-                          :showFilter="false"
-                          pagination="true"
-                        >
-                          <template v-slot:item.jobExecutionId="{ item }">
-                            <v-row>
-                              <v-col
-                                v-if="
-                                  item.raw.jobParameters &&
-                                  item.raw.jobParameters.payload
-                                "
-                                class="float-left downloadIcon py-2 px-0"
-                              >
-                                <v-btn
-                                  v-if="
-                                    (item.raw.jobParameters.payload
-                                      .localDownload === 'Y' ||
-                                      (item.raw.jobParameters
-                                        .transmissionType &&
-                                        item.raw.jobParameters
-                                          .transmissionType === 'FTP')) &&
-                                    item.raw.status === 'COMPLETED'
-                                  "
-                                  :disabled="item.raw.status !== 'COMPLETED'"
-                                  @click="
-                                    downloadDISTRUNUSER(
-                                      item.raw.jobExecutionId,
-                                      item.raw.jobParameters.transmissionType
-                                    )
-                                  "
-                                >
-                                  <v-icon>fas fa-download</v-icon>
-                                </v-btn>
-                                <v-btn v-else disabled variant="link" size="xs">
-                                  {{ item.raw.jobExecutionId }}
-                                </v-btn>
-                                <div v-else>&nbsp;&nbsp;</div>
-                              </v-col>
 
-                              <v-menu
-                                :close-on-content-click="true"
-                                location="end"
-                              >
-                                <template v-slot:activator="{ props }">
-                                  <v-btn color="indigo" v-bind="props">
-                                    {{ item.raw.jobExecutionId }}
-                                  </v-btn>
-                                </template>
-                                <v-card max-width="500">
-                                  <v-divider></v-divider>
-                                  <v-list>
-                                    <v-list-item
-                                      @click="
-                                        setBatchId(
-                                          item.raw.jobExecutionId,
-                                          'batch'
-                                        )
-                                      "
-                                      :title="item.raw.jobExecutionId"
-                                    >
-                                      <v-list-item-title>
-                                        View Batch Results</v-list-item-title
-                                      >
-                                    </v-list-item>
-                                  </v-list>
-                                  <v-divider></v-divider>
-                                  <pre
-                                    >{{
-                                      JSON.stringify(
-                                        item.raw.jobParameters,
-                                        null,
-                                        "\t"
-                                      )
-                                    }} </pre
-                                  >
-                                </v-card>
-                              </v-menu>
-
-                              <v-popover
-                                :target="
-                                  'batch-job-id-btn' + item.raw.jobExecutionId
-                                "
-                                triggers="focus"
-                                :ref="'popover-' + item.raw.jobExecutionId"
-                                class="w-40"
-                              >
-                              </v-popover>
-                            </v-row>
-                          </template>
-
-                          <template
-                            v-slot:item.failedStudentsProcessed="{ item }"
-                          >
-                            <v-btn
-                              v-if="item.raw.failedStudentsProcessed !== 0"
-                              text
-                              small
-                              class="v-btn v-btn--text v-btn--small v-btn--link"
-                              @click="
-                                setBatchId(item.raw.jobExecutionId, 'error')
-                              "
-                            >
-                              {{ item.raw.failedStudentsProcessed }}
-                            </v-btn>
-                            <div v-else>
-                              {{ item.raw.failedStudentsProcessed }}
-                            </div>
-                          </template>
-                        </DisplayTable>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                  <v-col cols="12" md="5" v-if="isBatchShowing">
-                    <v-card>
-                      <v-card-text>
-                        <BatchJobSearchResults
-                          :selectedBatchId="adminSelectedBatchId"
-                        ></BatchJobSearchResults>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                  <v-col cols="12" md="5" v-if="isErrorShowing">
-                    <v-card>
-                      <v-card-text>
-                        <BatchJobErrorResults
-                          :selectedErrorId="adminSelectedErrorId"
-                        ></BatchJobErrorResults>
-
-                        Close
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                </v-row>
-              </v-container>
+              <BatchRuns></BatchRuns>
+          
             </v-window-item>
 
             <v-window-item value="scheduledRuns">
@@ -171,16 +39,12 @@
                 <v-row v-if="!scheduledJobs.length">
                   <v-col> No Scheduled Jobs </v-col>
                 </v-row>
+                <v-row v-else>
+                  <v-col> <ScheduledBatchRuns></ScheduledBatchRuns></v-col>
+                </v-row>                
+                
 
-                <v-row>
-                  <DisplayTable
-                    :fields="scheduledJobFields"
-                    :items="scheduledJobs"
-                    id="id"
-                    :sort-desc="true"
-                  >
-                  </DisplayTable>
-                </v-row>
+               
               </v-container>
             </v-window-item>
 
@@ -198,9 +62,9 @@
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import DistributionService from "@/services/DistributionService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
-import BatchJobSearchResults from "@/components/Batch/BatchJobSearchResults.vue";
-import BatchJobErrorResults from "@/components/Batch/BatchJobErrorResults.vue";
 import BatchJobForm from "@/components/Batch/Batch.vue";
+import ScheduledBatchRuns from "@/components/Batch/ScheduledBatchRuns.vue";
+import BatchRuns from "@/components/Batch/BatchRuns.vue";
 import BatchRoutines from "@/components/Batch/Routines.vue";
 import sharedMethods from "../sharedMethods";
 
@@ -252,10 +116,10 @@ export default {
   ],
   components: {
     DisplayTable: DisplayTable,
-    BatchJobSearchResults: BatchJobSearchResults,
-    BatchJobErrorResults: BatchJobErrorResults,
+    BatchRuns: BatchRuns,
     BatchJobForm: BatchJobForm,
     BatchRoutines: BatchRoutines,
+    ScheduledBatchRuns: ScheduledBatchRuns,
   },
   data() {
     return {
@@ -286,124 +150,6 @@ export default {
       batchInfoListData: [],
       certificateTypes: [],
       transcriptTypes: [],
-      scheduledJobFields: [
-        {
-          key: "jobParameters",
-          title: "",
-          value: "batchId",
-          sortable: true,
-          class: "text-left",
-        },
-        {
-          key: "id",
-          title: "ID",
-          sortable: true,
-          class: "text-left",
-        },
-        {
-          key: "jobName",
-          title: "Job Name",
-          sortable: true,
-          class: "text-left",
-        },
-        {
-          key: "cronExpression",
-          title: "CRON (Sec Min Hr Date Month)",
-          sortable: true,
-          class: "text-left",
-        },
-
-        {
-          key: "createUser",
-          title: "Scheduled By",
-          sortable: true,
-          class: "text-left",
-        },
-        {
-          key: "status",
-          title: "Status",
-          sortable: true,
-          class: "text-left",
-        },
-        {
-          key: "delete",
-          title: "Delete",
-          sortable: true,
-          class: "text-left",
-        },
-      ],
-      jobRunFields: [
-        {
-          key: "jobExecutionId",
-          title: "Job Execution ID",
-          sortable: true,
-          class: "text-left",
-          editable: true,
-        },
-        {
-          key: "jobType",
-          title: "Batch Job Type Code",
-          sortable: true,
-          class: "text-left",
-          editable: true,
-        },
-        {
-          key: "triggerBy",
-          title: "Batch Job Trigger",
-          sortable: true,
-          class: "text-left",
-          editable: true,
-        },
-        {
-          key: "updateUser",
-          title: "Run By",
-          sortable: true,
-          class: "text-left",
-          editable: true,
-        },
-        {
-          key: "updateDate",
-          title: "Update date",
-          sortable: true,
-          class: "text-left",
-          editable: true,
-          sortDirection: "desc",
-          formatter: (value) => {
-            let newValue = new Date(value);
-            value = newValue.toLocaleString("en-CA", { hourCycle: "h23" });
-            return value;
-          },
-        },
-        {
-          key: "status",
-          title: "Status",
-          sortable: true,
-          class: "text-left",
-          editable: true,
-        },
-
-        {
-          key: "expectedStudentsProcessed",
-          title: "Expected",
-          sortable: true,
-          class: "text-left",
-          editable: true,
-        },
-        {
-          key: "actualStudentsProcessed",
-          title: "Actual",
-          sortable: true,
-          class: "text-left",
-          editable: true,
-        },
-        {
-          key: "failedStudentsProcessed",
-          title: "Error",
-          sortable: true,
-          class: "text-center",
-          editable: true,
-        },
-      ],
       fields: ["date", "program", "success", "view"],
       jobFields: ["date", "user", "success", "status"],
       items: [],
@@ -414,9 +160,10 @@ export default {
     };
   },
   created() {
-    this.showNotification = sharedMethods.showNotification;
-    this.getAdminDashboardData();
-    this.getScheduledJobs();
+    //this.showNotification = sharedMethods.showNotification;
+    this.updateAllDashboards();
+    //this.getAdminDashboardData();
+    //this.getScheduledJobs();
   },
   methods: {
     jobLabel(jobId) {
@@ -428,6 +175,11 @@ export default {
       "addBatchJob",
       "setTabLoading",
       "setScheduledBatchJobs",
+
+      "clearBatchGroupData",
+      "updateDashboards",
+      "updateScheduledBatchJobs",
+      "setGroup",
     ]),
 
     downloadDISTRUNUSER(bid, transmissionMode = null) {
@@ -504,64 +256,10 @@ export default {
       return value.toLocaleString("en-CA", { timeZone: "PST" });
     },
     getAdminDashboardData() {
-      this.adminDashboardLoading = true;
-      BatchProcessingService.getDashboardInfo()
-        .then((response) => {
-          this.dashboardData = response.data;
-          this.batchInfoListData = response.data.batchInfoList;
-          //Processed
-          this.processed = this.dashboardData.lastActualStudentsProcessed;
-          this.lastExpectedStudentsProcessed =
-            this.dashboardData.lastExpectedStudentsProcessed;
-          this.lastRunStatus = this.dashboardData.lastStatus;
-          //Errors
-          this.errors = this.dashboardData.lastFailedStudentsProcessed;
-          if (this.errors > 0) {
-            this.errorOn = true;
-          } else {
-            this.errorOn = false;
-          }
-          //Processing time bucket
-          this.lastJobendTime = new Date(this.dashboardData.lastJobendTime);
-          this.lastJobstartTime = new Date(this.dashboardData.lastJobstartTime);
-          var lastJobProcessTimeInMilli =
-            this.lastJobendTime.getTime() - this.lastJobstartTime.getTime();
-          this.processingTime = (
-            lastJobProcessTimeInMilli /
-            (1000 * 60 * 60)
-          ).toFixed(1);
-          this.processedLastJobstartTime = this.lastJobstartTime.toLocaleString(
-            "en-CA",
-            { timeZone: "PST" }
-          );
-          this.processedLastJobendTime = this.lastJobendTime.toLocaleString(
-            "en-CA",
-            { timeZone: "PST" }
-          );
-          this.processedLastRun = this.lastJobendTime.toLocaleString("en-CA", {
-            timeZone: "PST",
-          });
-          //parameters
-          for (let batchData of this.batchInfoListData) {
-            if (batchData.jobParameters) {
-              batchData.jobParameters = JSON.parse(batchData.jobParameters);
-            }
-          }
-          //Expected
-          this.expected = this.dashboardData.lastExpectedStudentsProcessed;
-          this.adminDashboardLoading = false;
-          window.scrollTo(0, 0);
-        })
-        .catch((error) => {
-          this.adminDashboardLoading = false;
-          if (error.response) {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title: "ERROR" + error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
-          }
-        });
+    
+    },
+    updateAllDashboards() {
+     this.updateDashboards();
     },
     batchHasErrors(batch) {
       batch.validationMessage = "";
@@ -622,16 +320,12 @@ export default {
           this.cancelBatchJob(id);
           this.selectedTab = 0;
           if (response.data) {
-            this.$bvToast.toast(
+            
+            alert(
               "Batch run " +
                 response.data.batchId +
                 " has started for request " +
-                requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
+                requestId + "BATCH PROCESSING STARTED"
             );
           }
         })
@@ -640,11 +334,7 @@ export default {
             this.getAdminDashboardData();
             this.cancelBatchJob(id);
             this.selectedTab = 0;
-            this.$bvToast.toast("This request is running in the background", {
-              title: "BATCH PROCESSING UPDATE",
-              variant: "success",
-              noAutoHide: true,
-            });
+            alert("This request is running in the background" + "BATCH PROCESSING UPDATE");
           }
         });
     },
