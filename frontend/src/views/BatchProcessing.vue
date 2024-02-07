@@ -1499,6 +1499,10 @@ export default {
           this.validationMessage = "Please select a program.";
           return;
         }
+      } else if (
+        this.tabContent[id].details["who"] == "Ministry of Advanced Education"
+      ) {
+        schools = ["00000000"];
       }
       let gradDateFrom = this.tabContent[id].details["gradDateFrom"];
       let gradDateTo = this.tabContent[id].details["gradDateTo"];
