@@ -1,20 +1,17 @@
 <template>
   <div class="container">
     <h2>Batch Processing</h2>
-    x {{ adminSelectedErrorId }} y {{ adminSelectedBatchId }}
     <div>
       <v-btn
-      class="position-absolute"
-      style="z-index: 10; right: 0; margin-top: 10px; margin-right: 30px"
-      color="info"
-      small
-      @click="updateDashboards"
-    >
-      <v-icon left>
-        mdi-sync-alt
-      </v-icon>
-      Update
-    </v-btn>
+        class="position-absolute"
+        style="z-index: 10; right: 0; margin-top: 10px; margin-right: 30px"
+        color="info"
+        small
+        @click="updateDashboards"
+      >
+        <v-icon left> mdi-sync-alt </v-icon>
+        Update
+      </v-btn>
       <v-card>
         <v-tabs v-model="selectedTab" bg-color="transparent">
           <v-tab value="batchRuns"
@@ -23,15 +20,15 @@
           <v-tab value="scheduledRuns"
             >User Scheduled ({{ queueScheduledJobs.length }} Queued)</v-tab
           >
-          <v-tab value="batchRoutines">Item Routines</v-tab>
+          <v-tab value="batchRoutines">Scheduled Routines</v-tab>
+          <v-tab value="newBatchRequest">New Batch Request</v-tab>
+          <v-tab value="administration">Administration</v-tab>
         </v-tabs>
 
         <v-card-text>
           <v-window v-model="selectedTab">
             <v-window-item value="batchRuns">
-
               <BatchRuns></BatchRuns>
-          
             </v-window-item>
 
             <v-window-item value="scheduledRuns">
@@ -41,14 +38,105 @@
                 </v-row>
                 <v-row v-else>
                   <v-col> <ScheduledBatchRuns></ScheduledBatchRuns></v-col>
-                </v-row>                
-                
-
-               
+                </v-row>
               </v-container>
             </v-window-item>
 
-            <v-window-item value="batchRoutines"> Routines </v-window-item>
+            <v-window-item value="batchRoutines">
+              <BatchRoutines></BatchRoutines>
+            </v-window-item>
+            <v-window-item value="newBatchRequest">
+              <v-container>
+                <v-row>
+                  <v-col sm="12" md="4">
+                    <v-data-table
+                      :items="batchRunGradOptions"
+                      :headers="batchFields"
+                      items-per-page="-1"
+                      :disable-pagination="true"
+                      :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                    >
+                      <template #bottom></template>
+                      <template v-slot:item.description="{ item }">
+                        <strong>{{ item.raw.label }}</strong>
+                        <br />
+                        {{ item.raw.description }}
+                      </template>
+                      <template v-slot:item.newRequest="{ item }">
+                        <v-btn
+                          :disabled="item.raw.disabled"
+                          @click="
+                            newBatchRequest(
+                              item.raw.code,
+                              item.raw.label,
+                              item.raw.description
+                            )
+                          "
+                          >+</v-btn
+                        ></template
+                      >
+                    </v-data-table>
+                    <Form></Form>
+                  </v-col>
+                  <v-col sm="12" md="4">
+                    <v-data-table
+                      :items="distributionBatchRunOptions"
+                      :headers="batchFields"
+                      items-per-page="-1"
+                      :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                    >
+                      <template #bottom></template>
+                      <template v-slot:item.description="{ item }">
+                        <strong>{{ item.raw.label }}</strong>
+                        <br />
+                        {{ item.raw.description }}
+                      </template>
+                      <template v-slot:item.newRequest="{ item }">
+                        <v-btn
+                          :disabled="item.raw.disabled"
+                          @click="
+                            newBatchRequest(
+                              item.raw.code,
+                              item.raw.label,
+                              item.raw.description
+                            )
+                          "
+                          >+</v-btn
+                        ></template
+                      >
+                    </v-data-table>
+                  </v-col>
+                  <v-col sm="12" md="4">
+                    <v-data-table
+                      :items="PSIBatchRunOptions"
+                      :headers="batchFields"
+                      items-per-page="-1"
+                      :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                    >
+                      <template #bottom></template>
+                      <template v-slot:item.description="{ item }">
+                        <strong>{{ item.raw.label }}</strong>
+                        <br />
+                        {{ item.raw.description }}
+                      </template>
+                      <template v-slot:item.newRequest="{ item }">
+                        <v-btn
+                          :disabled="item.raw.disabled"
+                          @click="
+                            newBatchRequest(
+                              item.raw.code,
+                              item.raw.label,
+                              item.raw.description
+                            )
+                          "
+                          >+</v-btn
+                        ></template
+                      >
+                    </v-data-table>
+                  </v-col></v-row
+                >
+              </v-container>
+            </v-window-item>
           </v-window>
         </v-card-text>
       </v-card>
@@ -64,8 +152,9 @@ import DistributionService from "@/services/DistributionService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 import BatchJobForm from "@/components/Batch/Batch.vue";
 import ScheduledBatchRuns from "@/components/Batch/ScheduledBatchRuns.vue";
+import Form from "@/components/Batch/Forms/Form.vue";
 import BatchRuns from "@/components/Batch/BatchRuns.vue";
-import BatchRoutines from "@/components/Batch/Routines.vue";
+import BatchRoutines from "@/components/Batch/BatchRoutines.vue";
 import sharedMethods from "../sharedMethods";
 
 import { useAccessStore } from "../store/modules/access";
@@ -115,6 +204,7 @@ export default {
     //'adminSelectedBatchId',
   ],
   components: {
+    Form: Form,
     DisplayTable: DisplayTable,
     BatchRuns: BatchRuns,
     BatchJobForm: BatchJobForm,
@@ -124,6 +214,24 @@ export default {
   data() {
     return {
       value: "",
+      batchTypes: [],
+      batchFields: [
+        {
+          key: "description",
+          title: "",
+          sortable: true,
+        },
+        {
+          key: "newRequest",
+          title: "",
+          sortable: true,
+        },
+        {
+          key: "displayOrder",
+          title: "",
+          sortable: true,
+        },
+      ],
       validationMessage: "",
       validating: false,
       adminSelectedBatchId: "",
@@ -157,15 +265,156 @@ export default {
       selectedTab: 0,
       searchResults: [],
       batchValid: false,
+      batchRunGradOptions: [],
+      distributionBatchRunOptions: [],
+      PSIBatchRunOptions: [],
+      adminBatchRunOptions: [
+        {
+          createUser: "API_GRAD_BATCH",
+          createDate: "2022-11-26T00:53:27.000+00:00",
+          updateUser: "API_GRAD_BATCH",
+          updateDate: "2022-11-26T00:53:27.000+00:00",
+          code: "ARCHIVE_PROCESS",
+          label: "Archive Process",
+          description:
+            "A Year-End Distribution Run that sends printed certificate and transcript packages (including distribution reports) to districts and schools. Includes students with new program completions where a certificate has not yet been distributed and students with updated transcripts after a previous completion.",
+          displayOrder: 50,
+          effectiveDate: "2021-09-27T07:00:00.000+00:00",
+          expiryDate: null,
+        },
+        {
+          createUser: "API_GRAD_BATCH",
+          createDate: "2022-11-26T00:53:27.000+00:00",
+          updateUser: "API_GRAD_BATCH",
+          updateDate: "2022-11-26T00:53:27.000+00:00",
+          code: "EDW_DOWNLOADS",
+          label: "EDW Downloads",
+          description:
+            "A Supplemental Year-End Distribution Run that sends printed certificate and transcript packages (including distribution reports) to schools only. Includes students with new program completions where a certificate has not yet been distributed and students with updated transcripts after a previous completion.",
+          displayOrder: 70,
+          effectiveDate: "2021-09-27T07:00:00.000+00:00",
+          expiryDate: null,
+        },
+        {
+          createUser: "API_GRAD_BATCH",
+          createDate: "2022-11-26T00:53:27.000+00:00",
+          updateUser: "API_GRAD_BATCH",
+          updateDate: "2022-11-26T00:53:27.000+00:00",
+          code: "Purge/Rollover/Delete School Reports",
+          label: "PURGE_ROLLOVER_DELETE_SCHOOL_REPORTS",
+          description:
+            "A Non-Graduate Transcript Distribution Run sends transcript packages (including distribution reports) to districts and schools for any current students in Grade 12 or AD who were on a graduation program but did not graduate.",
+          displayOrder: 80,
+          effectiveDate: "2021-09-27T07:00:00.000+00:00",
+          expiryDate: null,
+        },
+        {
+          createUser: "API_GRAD_BATCH",
+          createDate: "2022-04-05T16:26:11.000+00:00",
+          updateUser: "API_GRAD_BATCH",
+          updateDate: "2022-04-05T16:26:11.000+00:00",
+          code: "Challenges Report",
+          label: "CHALLENGES_REPORT",
+          description:
+            "A Credentials Distribution Run that sends printed certificate and transcript packages (including distribution reports) to schools only. Includes students with new program completions where a certificate has not yet been distributed.",
+          displayOrder: 60,
+          effectiveDate: "2021-09-27T07:00:00.000+00:00",
+          expiryDate: null,
+        },
+      ],
+      utilitiesBatchRunOptions: [
+        {
+          createUser: "API_GRAD_BATCH",
+          createDate: "2022-11-26T00:53:27.000+00:00",
+          updateUser: "API_GRAD_BATCH",
+          updateDate: "2022-11-26T00:53:27.000+00:00",
+          code: "ADOPT_STUDENT",
+          label: "Adopt Student",
+          description:
+            "A Year-End Distribution Run that sends printed certificate and transcript packages (including distribution reports) to districts and schools. Includes students with new program completions where a certificate has not yet been distributed and students with updated transcripts after a previous completion.",
+          displayOrder: 50,
+          effectiveDate: "2021-09-27T07:00:00.000+00:00",
+          expiryDate: null,
+        },
+        {
+          createUser: "API_GRAD_BATCH",
+          createDate: "2022-11-26T00:53:27.000+00:00",
+          updateUser: "API_GRAD_BATCH",
+          updateDate: "2022-11-26T00:53:27.000+00:00",
+          code: "MERGE_DEMERGE_STUDENT_DATA",
+          label: "Merge/Demerge Student Data",
+          description:
+            "A Supplemental Year-End Distribution Run that sends printed certificate and transcript packages (including distribution reports) to schools only. Includes students with new program completions where a certificate has not yet been distributed and students with updated transcripts after a previous completion.",
+          displayOrder: 70,
+          effectiveDate: "2021-09-27T07:00:00.000+00:00",
+          expiryDate: null,
+        },
+        {
+          createUser: "API_GRAD_BATCH",
+          createDate: "2022-11-26T00:53:27.000+00:00",
+          updateUser: "API_GRAD_BATCH",
+          updateDate: "2022-11-26T00:53:27.000+00:00",
+          code: "TRANSFER_STUDENT_ASSESSMENT_DATA",
+          label: "Transfer Student Course/Assessment Data",
+          description:
+            "A Non-Graduate Transcript Distribution Run sends transcript packages (including distribution reports) to districts and schools for any current students in Grade 12 or AD who were on a graduation program but did not graduate.",
+          displayOrder: 80,
+          effectiveDate: "2021-09-27T07:00:00.000+00:00",
+          expiryDate: null,
+        },
+      ],
     };
   },
   created() {
-    //this.showNotification = sharedMethods.showNotification;
     this.updateAllDashboards();
-    //this.getAdminDashboardData();
-    //this.getScheduledJobs();
+    BatchProcessingService.getBatchJobTypes()
+      .then((response) => {
+        this.batchTypes = response.data;
+        this.batchRunGradOptions = this.filterBatchTypes(this.batchTypes, [
+          "REGALG",
+          "TVRRUN",
+        ]);
+        this.distributionBatchRunOptions = this.filterBatchTypes(
+          this.batchTypes,
+          ["DISTRUN_YE", "DISTRUN_SUPP", "NONGRADRUN", "DISTRUN", "DISTRUNUSER"]
+        );
+
+        this.PSIBatchRunOptions = this.filterBatchTypes(this.batchTypes, [
+          "PSIRUN",
+        ]);
+
+        this.distributionBatchRunOptions = this.disableBatchRuns(
+          this.distributionBatchRunOptions,
+          ["DISTRUN_SUPP"]
+        );
+      })
+      .catch((error) => {
+        // Handle errors during the asynchronous call
+        console.error("Error fetching batch job types:", error);
+
+        // this.$bvToast.toast("ERROR " + error.response.statusText, {
+        //   title: "ERROR " + error.response.status,
+        //   variant: "danger",
+        //   noAutoHide: true,
+        // });
+      });
   },
   methods: {
+    disableBatchRuns(batchRunOptions, codeList) {
+      batchRunOptions.forEach((option, index, array) => {
+        if (codeList.includes(option.code)) {
+          array[index].disabled = false;
+        } else {
+          array[index].disabled = true;
+        }
+      });
+      return batchRunOptions;
+    },
+    filterBatchTypes(batchRunTypeCodes, batchCodes) {
+      return batchRunTypeCodes.filter((batchJob) =>
+        batchCodes.includes(batchJob.code)
+      );
+    },
     jobLabel(jobId) {
       return jobId.replace("job-", "");
     },
@@ -255,11 +504,9 @@ export default {
     formatDate(value) {
       return value.toLocaleString("en-CA", { timeZone: "PST" });
     },
-    getAdminDashboardData() {
-    
-    },
+    getAdminDashboardData() {},
     updateAllDashboards() {
-     this.updateDashboards();
+      this.updateDashboards();
     },
     batchHasErrors(batch) {
       batch.validationMessage = "";
@@ -320,12 +567,12 @@ export default {
           this.cancelBatchJob(id);
           this.selectedTab = 0;
           if (response.data) {
-            
             alert(
               "Batch run " +
                 response.data.batchId +
                 " has started for request " +
-                requestId + "BATCH PROCESSING STARTED"
+                requestId +
+                "BATCH PROCESSING STARTED"
             );
           }
         })
@@ -334,7 +581,10 @@ export default {
             this.getAdminDashboardData();
             this.cancelBatchJob(id);
             this.selectedTab = 0;
-            alert("This request is running in the background" + "BATCH PROCESSING UPDATE");
+            alert(
+              "This request is running in the background" +
+                "BATCH PROCESSING UPDATE"
+            );
           }
         });
     },

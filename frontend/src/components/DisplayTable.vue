@@ -17,7 +17,7 @@
           Edit
         </v-btn>
       </v-btn-toggle>
-
+      <slot name="create"></slot>
       <v-row v-if="showFilter">
         <v-col lg="8" class="px-0 float-left"></v-col>
         <v-col sm="12" lg="4" class="my-1 table-filter p-0">
@@ -65,8 +65,8 @@
         item-key="id"
         :items-per-page="perPage"
         :search="filter"
-        :sort-by="sortBy"
-        :sort-desc="sortDesc"
+        :sortBy="sortBy"
+        striped
         show-expand
         :footer-props="{
           itemsPerPageOptions: [10, 20, 50, 100],
@@ -131,16 +131,18 @@
           </td>
         </template>
 
-        <!-- <template v-slot:cell(delete)="{ item }">
-      <b-btn
-        v-if="deleteMode && item[disableDeletefield] != disableDeleteIfValue"
-        variant="danger"
-        size="sm"
-        @click="deleteItem(item)"
-      >
-        {{ deleteLabel ? deleteLabel : "Delete" }}
-      </b-btn>
-    </template> -->
+        <template v-slot:item.delete="{ item }">
+          {{ disableDelete(item.columns) }}
+
+          <v-btn
+            v-if="!disableDelete(item.columns)"
+            variant="danger"
+            size="sm"
+            @click="deleteItem(item.columns)"
+          >
+            {{ this.delete.label ? this.delete.label : "Delete" }}
+          </v-btn>
+        </template>
       </v-data-table>
 
       <v-pagination
@@ -192,13 +194,12 @@ export default {
     "pagination",
     "filterOn",
     "sortBy",
-    "sortByField",
     "sortDesc",
   ],
   data() {
     return {
       expanded: [],
-      actionNames: ["removeScheduledJobs"],
+      // actionNames: ["removeScheduledJobs"],
       responsive: true,
       quickEdit: false,
       isAdmin: false,
@@ -246,7 +247,6 @@ export default {
   computed: {
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
-      
     }),
     editableFields() {
       return this.fields.filter((field) => field.editable);
@@ -276,17 +276,56 @@ export default {
   },
   onBeforeMount() {
     // Now, you can use the mapped actions in the hook
-    this.actionNames.forEach((actionName) => {
-      this[actionName]();
-    });
+    // this.actionNames.forEach((actionName) => {
+    //   this[actionName]();
+    // });
   },
   methods: {
+    disableDelete(item) {
+      const { disable } = this.delete;
+
+      if (disable && disable.condition && disable.criteria) {
+        if (disable.condition === "AND") {
+          console.log("AND");
+          return this.checkAllCriteria(item, disable.criteria);
+        } else if (disable.condition === "OR") {
+          console.log("OR");
+          return this.checkAnyCriterion(item, disable.criteria);
+        }
+      }
+
+      return true; // Enable delete if no conditions are specified
+    },
+    checkAllCriteria(item, criteria) {
+      for (const criterion of criteria) {
+        if (!this.checkCriterion(item, criterion)) {
+          return false; // Disable delete if any criterion is not met
+        }
+      }
+      return true; // Enable delete if all criteria are met
+    },
+    checkAnyCriterion(item, criteria) {
+      let disable = false;
+      for (const criterion of criteria) {
+        if (this.checkCriterion(item, criterion)) {
+          disable = true; // Enable delete if any criterion is met
+        }
+      }
+      return disable; // Disable delete if none of the criteria are met
+    },
+    checkCriterion(item, criterion) {
+      const { field, value } = criterion;
+
+      // Implement logic to check the criterion for the given item
+      // For simplicity, assuming direct field comparison
+      return item[field] === value;
+    },
     deleteItem(item) {
       const itemRaw = toRaw(item);
       const store = this.stores[this.store];
       const id = toRaw(item).id;
       if (store) {
-        store[this.delete](id);
+        store[this.delete.action](id);
       } else {
         console.error("Store not found.");
       }

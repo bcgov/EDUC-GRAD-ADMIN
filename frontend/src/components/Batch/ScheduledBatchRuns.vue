@@ -9,15 +9,23 @@
       :fields="scheduledJobFields"
       id="id"
       :showFilter="false"
-      pagination="true"
-      disableDeletefield="status"
-      disableDeleteIfValue="COMPLETED"
-      deleteLabel="Cancel"
+      :sortBy="[{ key: 'status', order: 'desc' }]"
+      :delete="{
+        disable: {
+          condition: 'OR',
+          criteria: [
+            {
+              field: 'status',
+              value: 'COMPLETED',
+            },
+          ],
+        },
+        label: 'Cancel',
+        action: 'removeScheduledJobs',
+      }"
       store="batchprocessing"
-      delete="removeScheduledJobs"
     >
       <template v-slot:item.jobParameters="{ item, headers }">
-
         <v-btn
           v-if="item.raw.status == 'COMPLETED'"
           :id="'batch-job-id-btn' + item.raw.jobExecutionId"
@@ -28,31 +36,28 @@
         <v-btn v-else disabled size="xs">
           {{ item.raw.jobExecutionId }}
         </v-btn>
-    
       </template>
-    
-      <template v-slot:expanded-row="{columns, item, isExpanded}">
+
+      <template v-slot:expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length">
-            {{ isExpanded }}
-        <v-card>
-          <v-card-text>
-            
-            <div
-            v-for="(value, key) in item.raw.jobParameters.payload"
-            :key="key"
-          >
-            <span v-if="value != null"
-              ><span v-if="value.length != 0"
-                >{{ key }} : {{ value }}</span
-              ></span
-            >
-          </div>
-          
-          </v-card-text>
-        </v-card>
-      </td></tr>
-        
+            {{ columns.length }}
+            <v-card>
+              <v-card-text>
+                <div
+                  v-for="(value, key) in item.raw.jobParameters.payload"
+                  :key="key"
+                >
+                  <span v-if="value != null"
+                    ><span v-if="value.length != 0"
+                      >{{ key }} : {{ value }}</span
+                    ></span
+                  >
+                </div>
+              </v-card-text>
+            </v-card>
+          </td>
+        </tr>
       </template>
     </DisplayTable>
   </div>
@@ -77,8 +82,8 @@ export default {
 
           sortable: true,
           class: "text-left",
-        },  
-    
+        },
+
         {
           key: "id",
           title: "ID",
@@ -117,12 +122,9 @@ export default {
           class: "text-left",
         },
       ],
-
     };
   },
-  created() {
-    
-  },
+  created() {},
   computed: {
     ...mapState(useBatchProcessingStore, {
       scheduledJobs: "getScheduledBatchRuns",

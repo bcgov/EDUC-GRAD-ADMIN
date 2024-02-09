@@ -7,9 +7,13 @@ export const useAppStore = defineStore('app',{
     studentStatusOptions: [],
     ungradReasons: [],
     pageTitle: "GRAD",
+    districtsList: [],
+    schoolsList: [],
   }),
   getters: {
     getProgramOptions: (state) => state.programOptions,
+    getSchoolsList: (state) => state.schoolsList,
+    getDistrictList: (state) => state.districtsList,
     getStudentStatusOptions: (state)  => state.studentStatusOptions,
     getUngradReasons: (state) => state.ungradReasons,
   },
@@ -17,6 +21,7 @@ export const useAppStore = defineStore('app',{
     setApplicationVariables() {
     
       if (localStorage.getItem('jwtToken')) {
+       
         ApiService.apiAxios.get('/api/v1/program/programs').then(response => {
           const programs = response.data.filter(obj => {
             return obj.programCode !== "NOPROG";
@@ -46,6 +51,14 @@ export const useAppStore = defineStore('app',{
           }catch(error){
             console.log(error)
           }
+        });        
+        ApiService.apiAxios.get('/api/v1/institute/district/list').then(response => {
+          const districts = response.data;
+          this.districtsList = districts;
+        });
+        ApiService.apiAxios.get('/api/v1/institute/school/list').then(response => {
+          const schools = response.data;
+          this.schoolsList = schools;
         });        
       }
     },

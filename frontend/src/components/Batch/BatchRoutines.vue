@@ -8,15 +8,14 @@
       :showFilter="false"
       pagination="true"
     >
-      <template #cell(enabled)="row">
-        <b-form-checkbox
-          @change="toggleRoutine(row.item.jobType, row.item.id)"
-          :ref="'routine' + row.item.jobType + 'Enabled'"
-          :checked="row.item.enabled == 'Y' ? true : false"
-          name="check-button"
-          switch
-        >
-        </b-form-checkbox>
+      <template v-slot:item.enabled="{ item }">
+        {{ item.columns.enabled }}
+        {{ getSwitchValue(item) }}
+        <v-switch
+          :input-value="item.columns.enabled"
+          label="Enable"
+          @change="toggleRoutine(item.raw.jobType, item.raw.id)"
+        ></v-switch>
       </template>
     </DisplayTable>
   </div>
@@ -35,43 +34,43 @@ export default {
       scheduledRoutinesFields: [
         {
           key: "jobType",
-          label: "Type",
+          title: "Type",
           sortable: true,
           class: "text-left",
         },
         {
           key: "cronExpression",
-          label: "Cron Expression",
+          title: "Cron Expression",
           sortable: true,
           class: "text-left",
         },
         {
           key: "scheduleOccurrence",
-          label: "Scheduled Occurence",
+          title: "Scheduled Occurence",
           sortable: true,
           class: "text-left",
         },
         {
           key: "createUser",
-          label: "Created By",
+          title: "Created By",
           sortable: true,
           class: "text-left",
         },
         {
           key: "updateUser",
-          label: "Updated By",
+          title: "Updated By",
           sortable: true,
           class: "text-left",
         },
         {
           key: "updateDate",
-          label: "Updated Date/Time",
+          title: "Updated Date/Time",
           sortable: true,
           class: "text-left",
         },
         {
           key: "enabled",
-          label: "Enabled",
+          title: "Enabled",
           sortable: true,
           class: "text-left",
         },
@@ -89,6 +88,9 @@ export default {
   },
   methods: {
     ...mapActions(useBatchProcessingStore, ["setBatchRoutines"]),
+    getSwitchValue(item) {
+      return item.columns.enabled === "Y";
+    },
     toggleRoutine(jobType, processingId) {
       this.$bvModal
         .msgBoxConfirm("Please confirm that you want to update.", {

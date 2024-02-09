@@ -1,160 +1,133 @@
 <template>
-  <div>
-    {{ gradDateFrom }}
-    <b-card title="Include School(s)">
-      <b-card-text>
-        <label class="font-weight-bold p-2 m-0 row float-left"
-          >Select Schools</label
-        >
+  <v-container>
+    <v-row>
+      <v-col>
+        {{ gradDateFrom }}
+        <v-card title="Include School(s)">
+          <v-card-text>
+            <label class="font-weight-bold p-2 m-0 row float-left"
+              >Select Schools</label
+            >
 
-        <b-form-select
-          id="inline-form-select-audience"
-          class="mb-2 mr-sm-2 mb-sm-0 col-3 float-left"
-          :options="[
-            { text: 'Current Students', value: 'Current Students' },
-            { text: 'Date Range', value: 'Date Range' },
-          ]"
-          value="Current Students"
-          v-model="includeStudents"
-        ></b-form-select>
+            <v-select
+              v-model="includeStudents"
+              :items="['Current Students', 'Date Range']"
+              label="Include Students"
+              class="mb-2 mr-sm-2 mb-sm-0 col-3 float-left"
+            ></v-select>
 
-        <div
-          class="date-ranges col-12 row"
-          v-if="includeStudents == 'Date Range'"
-        >
-          <div class="row float-left col-3 m-0 p-0">
-            <strong><label class="pt-1">Grad Start Date</label></strong>
-            <b-input-group class="mb-3">
-              <b-form-input
-                id="gradDateFromInput"
-                v-model="gradDateFrom"
-                type="text"
-                placeholder="YYYY-MM-DD"
-                autocomplete="off"
-                @change="updateSchoolDateRange"
-              ></b-form-input>
-              <ul class="position-absolute form-validation-message text-danger">
-                <li v-for="error in errors" :key="error">{{ error }}</li>
-              </ul>
-              <b-input-group-append>
-                <b-form-datepicker
+            <v-row
+              v-if="includeStudents === 'Date Range'"
+              class="date-ranges col-12 row"
+            >
+              <v-col class="row float-left col-3 m-0 p-0">
+                <strong><label class="pt-1">Grad Start Date</label></strong>
+                <v-date-picker
                   v-model="gradDateFrom"
                   @change="updateSchoolDateRange"
-                  button-only
-                  right
-                  locale="en-US"
-                ></b-form-datepicker>
-              </b-input-group-append>
-            </b-input-group>
-          </div>
+                ></v-date-picker>
+              </v-col>
 
-          <div class="float-left col-4">
-            <strong><label class="pt-1">Grad End Date</label></strong>
-            <b-input-group class="mb-3">
-              <b-form-input
-                id="gradDateToInput"
-                v-model="gradDateTo"
-                type="text"
-                placeholder="YYYY-MM-DD"
-                autocomplete="off"
-                @change="updateSchoolDateRange"
-              ></b-form-input>
-
-              <b-input-group-append>
-                <b-form-datepicker
+              <v-col class="float-left col-4">
+                <strong><label class="pt-1">Grad End Date</label></strong>
+                <v-date-picker
                   v-model="gradDateTo"
                   @change="updateSchoolDateRange"
-                  button-only
-                  right
-                  locale="en-US"
-                  aria-controls="example-input"
-                ></b-form-datepicker>
-              </b-input-group-append>
-            </b-input-group>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-2 py-2">
-            <label class="font-weight-bold">Mincode</label>
-            <b-input type="number" v-model="mincode" @input="validateSchool" />
-            <div
-              class="input-errors"
-              v-for="error of v$.mincode.$errors"
-              :key="error.$uid"
-            >
-              <div class="error-msg">{{ error.$message }}</div>
-            </div>
-          </div>
-          <div class="col-md-10" v-if="mincodeSchoolInfo">
-            <b-card>
-              <b-card-text>
-                <b-spinner v-if="mincodeValidating"></b-spinner>
-                <b-overlay :show="mincodeValidating">
-                  <Transition :duration="{ enter: 500, leave: 800 }">
-                    <div v-if="!mincodeSchoolInfo">NOT VALID</div>
-                    <div v-else>
-                      <strong>School Name:</strong>
-                      {{ mincodeSchoolInfo.schoolName }}<br />
-                      <strong>Transcript Eligibility:</strong>
-                      {{ mincodeSchoolInfo.transcriptEligibility }}<br />
-                      <strong>Certificate Eligibility</strong>
-                      {{ mincodeSchoolInfo.certificateEligibility }}<br />
-                      <strong>School Category</strong>
-                      {{ mincodeSchoolInfo.transcriptEligibility }}<br />
-                      <strong>TRAX reporting</strong>
-                      {{ mincodeSchoolInfo.traxReporting }}<br />
-                    </div>
-                  </Transition>
-                </b-overlay>
-              </b-card-text>
-              <b-button @click="addSchool()" class="float-right"
-                >Add School</b-button
-              >
-            </b-card>
-          </div>
-        </div>
-        <b-table
-          v-if="schools.length"
-          :items="schools"
-          :fields="schoolInputFields"
-          striped="true"
-        >
-          <template #cell(remove)="row">
-            <b-button
-              class="btn btn-primary w-100"
-              @click="removeSchool(row.item.mincode)"
-            >
-              Remove
-            </b-button>
-          </template>
-          <template #cell(info)="row">
-            <div>
-              <strong>School Name:</strong>
-              {{ row.item.info.schoolName }}
-            </div>
-            <div>
-              <strong>Transcript Eligibility:</strong>
-              {{ row.item.info.transcriptEligibility }}
-            </div>
-            <div>
-              <strong>Certificate Eligibility</strong>
-              {{ row.item.info.certificateEligibility }}
-            </div>
-            <div>
-              <strong>School Category</strong>
-              {{ row.item.info.transcriptEligibility }}
-            </div>
-            <div>
-              <strong>TRAX reporting</strong>
-              {{ row.item.info.traxReporting }}
-            </div>
-          </template>
-        </b-table>
-      </b-card-text>
-    </b-card>
+                ></v-date-picker>
+              </v-col>
+            </v-row>
 
-    <!-- </b-card>             -->
-  </div>
+            <v-row>
+              <v-col>
+                <label class="font-weight-bold">Mincode</label>
+                {{ selectedSchool }}
+                <v-autocomplete
+                  v-model="mincode"
+                  label="Autocomplete"
+                  :items="getSchoolsList"
+                  item-title="displayName"
+                  item-value="mincode"
+                  :label="displayName + mincode"
+                >
+                  <template v-slot:label="label">
+                    {{ label.label }}
+                  </template>
+                </v-autocomplete>
+
+                <v-row v-for="error in v$.mincode.$errors" :key="error.$uid">
+                  <div class="error-msg">{{ error.$message }}</div>
+                </v-row>
+              </v-col>
+
+              <v-col md="10" v-if="mincodeSchoolInfo">
+                <v-card>
+                  <v-card-text>
+                    <v-spinner v-if="mincodeValidating"></v-spinner>
+                    <v-overlay :value="mincodeValidating">
+                      <transition :duration="{ enter: 500, leave: 800 }">
+                        <div v-if="!mincodeSchoolInfo">NOT VALID</div>
+                        <div v-else>
+                          <strong>School Name:</strong>
+                          {{ mincodeSchoolInfo.schoolName }}<br />
+                          <strong>Transcript Eligibility:</strong>
+                          {{ mincodeSchoolInfo.transcriptEligibility }}<br />
+                          <strong>Certificate Eligibility</strong>
+                          {{ mincodeSchoolInfo.certificateEligibility }}<br />
+                          <strong>School Category</strong>
+                          {{ mincodeSchoolInfo.transcriptEligibility }}<br />
+                          <strong>TRAX reporting</strong>
+                          {{ mincodeSchoolInfo.traxReporting }}<br />
+                        </div>
+                      </transition>
+                    </v-overlay>
+                  </v-card-text>
+                  <v-btn @click="addSchool()" class="float-right"
+                    >Add School</v-btn
+                  >
+                </v-card>
+              </v-col>
+            </v-row>
+            {{ schools }}
+            <v-data-table
+              v-if="schools.length"
+              :items="schools"
+              :headers="schoolInputFields"
+            >
+              <template v-slot:item.remove="{ item }">
+                <v-btn
+                  @click="removeSchool(item.raw.mincode)"
+                  class="btn btn-primary w-100"
+                  >Remove</v-btn
+                >
+              </template>
+              <template v-slot:item.info="{ item }">
+                <div>
+                  <strong>School Name:</strong>
+                  {{ item.raw.info.schoolName }}
+                </div>
+                <div>
+                  <strong>Transcript Eligibility:</strong>
+                  {{ item.raw.info.transcriptEligibility }}
+                </div>
+                <div>
+                  <strong>Certificate Eligibility</strong>
+                  {{ item.raw.info.certificateEligibility }}
+                </div>
+                <div>
+                  <strong>School Category</strong>
+                  {{ item.raw.info.transcriptEligibility }}
+                </div>
+                <div>
+                  <strong>TRAX reporting</strong>
+                  {{ item.raw.info.traxReporting }}
+                </div>
+              </template>
+            </v-data-table>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 <script>
 import { isProxy, toRaw } from "vue";
@@ -164,6 +137,7 @@ import StudentService from "@/services/StudentService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import { useVuelidate } from "@vuelidate/core";
 import { useBatchProcessingStore } from "../../../../store/modules/batchprocessing";
+import { useAppStore } from "../../../../store/modules/app";
 import { mapActions, mapState } from "pinia";
 import { required, minLength, helpers } from "@vuelidate/validators";
 
@@ -202,7 +176,7 @@ export default {
       includeStudents: "Current Students",
       gradDateFrom: "",
       gradDateTo: "",
-
+      selectedSchool: "",
       mincode: "",
       mincodeSchoolInfo: "",
       mincodeValidating: false,
@@ -210,19 +184,19 @@ export default {
       schoolInputFields: [
         {
           key: "mincode",
-          label: "Mincode",
+          title: "Mincode",
           sortable: true,
           class: "text-left",
         },
         {
           key: "info",
-          label: "School",
+          title: "School",
           sortable: true,
           class: "text-left",
         },
         {
           key: "remove",
-          label: "",
+          title: "",
           sortable: true,
           class: "text-left",
         },
@@ -284,6 +258,7 @@ export default {
 
   computed: {
     ...mapState(useBatchProcessingStore, ["getSchools"]),
+    ...mapState(useAppStore, ["getSchoolsList"]),
     isEmpty() {
       return this.students.length > 0;
     },

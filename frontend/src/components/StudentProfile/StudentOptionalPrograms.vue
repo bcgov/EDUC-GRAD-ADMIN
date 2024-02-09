@@ -11,7 +11,24 @@
         :fields="optionalProgramsfields"
         showFilter="true"
         title="Optional Programs"
+        :delete="{
+          disable: {
+            condition: 'OR',
+            criteria: [
+              {
+                field: 'status',
+                value: 'COMPLETED',
+              },
+            ],
+          },
+          label: 'Cancel',
+          action: 'removeScheduledJobs',
+        }"
       >
+        <template v-slot:create>
+          <OptionalProgramsForm></OptionalProgramsForm
+        ></template>
+
         <template #cell(optionalNonGradReasons)="row">
           <div v-if="row.item.studentOptionalProgramData">
             <div
@@ -211,10 +228,12 @@
 import { useStudentStore } from "../../store/modules/student";
 import { mapState } from "pinia";
 import DisplayTable from "@/components/DisplayTable.vue";
+import OptionalProgramsForm from "@/components/Forms/OptionalProgramsForm.vue";
 export default {
   name: "StudentOptionalPrograms",
   components: {
     DisplayTable: DisplayTable,
+    OptionalProgramsForm: OptionalProgramsForm,
   },
 
   computed: {
@@ -237,6 +256,7 @@ export default {
         { key: "optionalProgramName", label: "Optional Program" },
         { key: "optionalReqMet", label: "Requirements Met" },
         { key: "optionalNonGradReasons", label: "Requirements Not Met" },
+        { key: "delete", label: "delete" },
       ],
       careerProgramsFields: [
         { key: "careerProgramCode", label: "" },
