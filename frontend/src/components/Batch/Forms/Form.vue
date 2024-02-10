@@ -275,9 +275,9 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
-            Close
+            Cancel
           </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+          <v-btn color="blue-darken-1" variant="text" @click="submit">
             Save
           </v-btn>
         </v-card-actions>
@@ -310,5 +310,11 @@ export default {
       { title: "Transcript", value: "OT" },
     ],
   }),
+  methods: {
+    submit() {},
+    cancel() {
+      this.dialog = false;
+    },
+  },
 };
 </script>

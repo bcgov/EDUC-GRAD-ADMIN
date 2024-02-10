@@ -47,7 +47,6 @@
                   :items="getSchoolsList"
                   item-title="displayName"
                   item-value="mincode"
-                  :label="displayName + mincode"
                 >
                   <template v-slot:label="label">
                     {{ label.label }}

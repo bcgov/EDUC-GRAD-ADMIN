@@ -2,21 +2,6 @@
   <v-container fluid>
     <!-- User Interface controls -->
     <v-row>
-      <v-btn-toggle
-        v-if="allowUpdateGradStatus && updateAllowed"
-        class="float-left"
-      >
-        <v-btn @click="addMode = !addMode" color="success" small>
-          {{ addMode ? "Cancel" : "Add " + title }}
-        </v-btn>
-        <v-btn
-          v-if="allowUpdateGradStatus && updateAllowed"
-          @click="toggleQuickEdit"
-          small
-        >
-          Edit
-        </v-btn>
-      </v-btn-toggle>
       <slot name="create"></slot>
       <v-row v-if="showFilter">
         <v-col lg="8" class="px-0 float-left"></v-col>
@@ -36,26 +21,6 @@
             </v-col>
           </v-row>
         </v-col>
-      </v-row>
-
-      <v-row v-if="addMode" class="card my-4">
-        <v-card :title="'Add ' + title" class="mb-1 mt-1">
-          <v-card-text>
-            <!-- ... Add form fields here ... -->
-            <v-btn
-              @click="cancelAddItem"
-              outlined
-              color="primary"
-              small
-              class="float-left"
-            >
-              Cancel
-            </v-btn>
-            <v-btn @click="addItem" color="success" small class="float-left">
-              <v-icon>mdi-plus</v-icon> Add
-            </v-btn>
-          </v-card-text>
-        </v-card>
       </v-row>
 
       <v-data-table
@@ -138,13 +103,24 @@
             v-if="!disableDelete(item.columns)"
             variant="danger"
             size="sm"
-            @click="deleteItem(item.columns)"
+            @click="openDeleteConfirmationDialog(item.columns)"
           >
             {{ this.delete.label ? this.delete.label : "Delete" }}
           </v-btn>
         </template>
       </v-data-table>
-
+      <v-dialog v-model="deleteConfirmationDialog" max-width="400">
+        <v-card>
+          <v-card-title class="headline">Confirm Deletion</v-card-title>
+          <v-card-text>
+            Are you sure you want to delete this item?
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" @click="deleteItemAndCloseDialog">Yes</v-btn>
+            <v-btn @click="closeDeleteConfirmationDialog">Cancel</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <v-pagination
         v-model="currentPage"
         :length="Math.ceil(totalRows / perPage)"
@@ -198,6 +174,8 @@ export default {
   ],
   data() {
     return {
+      deleteConfirmationDialog: false,
+      itemToDelete: null,
       expanded: [],
       // actionNames: ["removeScheduledJobs"],
       responsive: true,
@@ -296,6 +274,7 @@ export default {
 
       return true; // Enable delete if no conditions are specified
     },
+
     checkAllCriteria(item, criteria) {
       for (const criterion of criteria) {
         if (!this.checkCriterion(item, criterion)) {
@@ -329,6 +308,20 @@ export default {
       } else {
         console.error("Store not found.");
       }
+    },
+    openDeleteConfirmationDialog(columns) {
+      this.itemToDelete = columns;
+      this.deleteConfirmationDialog = true;
+    },
+    closeDeleteConfirmationDialog() {
+      this.deleteConfirmationDialog = false;
+    },
+    deleteItemAndCloseDialog() {
+      // Call your deleteItem method here with this.itemToDelete
+      this.deleteItem(this.itemToDelete);
+
+      // Close the confirmation dialog
+      this.closeDeleteConfirmationDialog();
     },
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
