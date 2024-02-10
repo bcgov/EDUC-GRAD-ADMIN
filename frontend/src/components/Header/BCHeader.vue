@@ -1,6 +1,6 @@
 <template>
   <div>
-    <header>
+    <!-- <header>
       <div class="container">
         <div class="banner">
           <a class="navbar-brand" href="/">
@@ -19,16 +19,16 @@
           <slot></slot>
         </div>
       </div>
-    </header>
+    </header> -->
 
-    <b-navbar
+    <!-- <b-navbar
       toggleable
       aria-label="Menu"
       class="navbar navbar-expand-lg navbar-dark burgernav"
     >
       <b-navbar-toggle target="navbarSmallScreen"></b-navbar-toggle>
-    </b-navbar>
-    <b-collapse id="navbarSmallScreen" is-nav>
+    </b-navbar> -->
+    <!-- <b-collapse id="navbarSmallScreen" is-nav>
       <b-navbar-nav class="mr-auto">
         <b-nav-item>
           <router-link :to="routes.studentSearch">Student Search</router-link>
@@ -82,112 +82,120 @@
           <div><slot></slot></div>
         </b-nav-item>
       </b-navbar-nav>
-    </b-collapse>
-
-    <nav class="navigation-main" id="navbar" aria-label="aria-label">
-      <div class="container">
-        <ul>
-          <li>
-            <router-link :to="routes.studentSearch" id="select-student-route"
-              >Student Search</router-link
-            >
-          </li>
-          <li>
-            <router-link :to="routes.programs" id="programs-route"
-              >Programs</router-link
-            >
-          </li>
-          <li>
-            <router-link :to="routes.courses" id="courses-route"
-              >Courses</router-link
-            >
-          </li>
-          <li>
-            <router-link :to="routes.assessments" id="assessments-route"
-              >Assessments</router-link
-            >
-          </li>
-          <li>
-            <router-link :to="routes.schools" id="schools-route"
-              >Schools</router-link
-            >
-          </li>
-          <li>
-            <router-link :to="routes.psi" id="psi-route">PSI</router-link>
-          </li>
-          <li>
-            <router-link :to="routes.codes" id="codes-route">Codes</router-link>
-          </li>
-          <li>
-            <router-link :to="routes.schoolReports">School Reports</router-link>
-          </li>
-          <li>
-            <router-link :to="routes.batchProcessing"
-              >Batch Processing</router-link
-            >
-          </li>
-          <li v-if="!profile.pen" class="disabled">
-            <a
-              id="profile-route"
-              class="text-decoration-none text-disabled"
-              :disabled="true"
-              >Profile (Student Not Loaded)</a
-            >
-          </li>
-          <li v-else>
-            <router-link
-              :to="`/student-profile/${this.profile.studentID}`"
-              id="profile-route"
-              >Profile ({{
-                profile.pen ? profile.pen : "Student Not Loaded"
-              }})</router-link
-            >
-          </li>
-          <li>
-            <form v-on:submit.prevent>
-              <div class="form-group top-search">
-                <!-- Pen Input -->
-                <div>
-                  <b-form-input
-                    maxlength="9"
-                    minlength="9"
-                    size="sm"
-                    id="search-by-pen-header"
-                    type="search"
-                    v-model="penInput"
-                    placeholder="PEN"
-                    ref="penSearch"
-                    class="w-75 float-left m-1"
-                  >
-                  </b-form-input>
-                  <button
-                    v-if="!searchLoading"
-                    v-on:click="findStudentByPen"
-                    class="btn btn-primary float-left"
-                    style="padding: 0.35em 0.65em"
-                  >
-                    <!-- <img
-                      src="/src/assets/images/icon-search.svg"
-                      width="24px !important"
-                      aria-hidden="true"
-                      alt="search"
-                    /> -->
-                    <i class="fas fa-search" aria-hidden="true"></i>
-                  </button>
-                  <button
-                    v-else
-                    label="Searching"
-                    class="btn btn-success ml-2 float-left"
-                  >
-                    <b-spinner small></b-spinner>
-                  </button>
-                </div>
-              </div>
-            </form>
-          </li>
-        </ul>
+    </b-collapse> -->
+    <v-app-bar color="primary" density="prominent"
+      ><div class="container">
+        <div class="banner">
+          <a class="navbar-brand" href="/">
+            <img
+              class="img-fluid d-md-block"
+              src="../../assets/images/bcid-logo-rev-en.svg"
+              width="185"
+              height="45"
+              alt="B.C. Government Logo"
+            />
+          </a>
+          <h1>Graduation Records and Achievement Data</h1>
+          <span v-if="version">v{{ version }}</span>
+        </div>
+        <div class="float-right user-profile">
+          <slot></slot>
+        </div>
       </div>
-    </nav>
+    </v-app-bar>
+    <v-app-bar class="navigation-main" id="navbar" aria-label="aria-label">
+      <ul>
+        <li>
+          <router-link :to="routes.studentSearch" id="select-student-route"
+            >Student Search</router-link
+          >
+        </li>
+        <li>
+          <router-link :to="routes.programs" id="programs-route"
+            >Programs</router-link
+          >
+        </li>
+        <li>
+          <router-link :to="routes.courses" id="courses-route"
+            >Courses</router-link
+          >
+        </li>
+        <li>
+          <router-link :to="routes.assessments" id="assessments-route"
+            >Assessments</router-link
+          >
+        </li>
+        <li>
+          <router-link :to="routes.schools" id="schools-route"
+            >Schools</router-link
+          >
+        </li>
+        <li>
+          <router-link :to="routes.psi" id="psi-route">PSI</router-link>
+        </li>
+        <li>
+          <router-link :to="routes.codes" id="codes-route">Codes</router-link>
+        </li>
+        <li>
+          <router-link :to="routes.schoolReports">School Reports</router-link>
+        </li>
+        <li>
+          <router-link :to="routes.batchProcessing"
+            >Batch Processing</router-link
+          >
+        </li>
+        <li v-if="!profile.pen" class="disabled">
+          <a
+            id="profile-route"
+            class="text-decoration-none text-disabled"
+            :disabled="true"
+            >Profile (Student Not Loaded)</a
+          >
+        </li>
+        <li v-else>
+          <router-link
+            :to="`/student-profile/${this.profile.studentID}`"
+            id="profile-route"
+            >Profile ({{
+              profile.pen ? profile.pen : "Student Not Loaded"
+            }})</router-link
+          >
+        </li>
+        <li>
+          <form v-on:submit.prevent>
+            <div class="form-group top-search">
+              <div>
+                <v-form @submit.prevent>
+                  <v-row class="align-center">
+                    <v-col class="d-flex align-center">
+                      <v-text-field
+                        type="search"
+                        v-model="penInput"
+                        maxlength="9"
+                        minlength="9"
+                        outlined
+                        dense
+                        placeholder=""
+                        class=""
+                        ref="penSearch"
+                      ></v-text-field>
+                      <v-btn
+                        v-if="!searchLoading"
+                        @click="findStudentByPen"
+                        variant="flat"
+                        color="primary"
+                        class="px-2"
+                        >Search
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </div>
+            </div>
+          </form>
+        </li>
+      </ul>
+    </v-app-bar>
   </div>
 </template>
 <script>
@@ -364,8 +372,6 @@ header .nav-btn {
   display: none;
   position: fixed;
   top: 85px;
-  color: #fcba19;
-  background-color: #38598a;
   width: 100%;
   -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
   -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
@@ -377,7 +383,6 @@ header .nav-btn {
   display: flex;
   flex-direction: column;
   margin: 0;
-  color: #fff;
   list-style: none;
   margin-left: -25px;
 }
@@ -390,7 +395,6 @@ header .nav-btn {
   display: flex;
   font-size: 0.813em;
   font-weight: normal;
-  color: #fff;
   padding: 0 14px 0 14px;
   text-decoration: none;
 }
@@ -454,6 +458,7 @@ header .nav-btn {
     display: inline;
   }
   .top-search {
+    width: 100px;
     position: absolute;
     top: -78px;
     right: 20px;
@@ -505,8 +510,9 @@ header .nav-btn {
   }
   .top-search {
     position: absolute;
+    width: 230px;
     top: 1px;
-    right: 20px;
+    right: 0px;
   }
   .user-profile {
     margin-top: -20px;

@@ -1,6 +1,5 @@
 <template>
   <div class="studentlist">
-    <h1></h1>
     <!-- Vuetify -->
     <v-card>
       <v-card-title class="text-center justify-center py-6">
@@ -11,28 +10,654 @@
         look up students by other criteria.
       </p>
       <v-tabs v-model="tab" bg-color="transparent" grow>
-        <v-tab value="one"> Test 1 </v-tab>
-        <v-tab value="two"> Test 2 </v-tab>
+        <v-tab value="one"> PEN Search </v-tab>
+        <v-tab value="two"> Advanced Search </v-tab>
       </v-tabs>
       <v-card-text>
         <v-window v-model="tab">
           <v-window-item value="one">
-            <v-row>
-              <v-col cols="12">
-                <v-form @submit.prevent>
-                  <label for="search-by-pen" class="float-left w-100"
-                    >Search by PEN:</label
+            <v-form @submit.prevent>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Search by PEN:"
+                    :disabled="searchLoading"
+                    :loading="searchLoading"
+                    id="search-by-pen"
+                    type="search"
+                    maxlength="9"
+                    minlength="9"
+                    v-model="penInput"
+                    placeholder=""
+                    ref="penSearch"
+                    v-on:keyup="keyHandler"
+                    tabindex="1"
+                    class="w-50 float-left"
+                    lazy
+                    trim
                   >
-                </v-form>
-              </v-col>
-            </v-row>
+                  </v-text-field>
+                </v-col>
+              </v-row>
+              <v-btn
+                id="search-submit"
+                v-on:click="findStudentByPen"
+                variant="flat"
+                color="primary"
+              >
+                Search
+              </v-btn>
+            </v-form>
+            <div v-if="isEnvLocalHost" class="sample-pens m-3">
+              Samples: V0.1.2
+              <div class="row col-12">
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a00dfa87ff1'
+                      )
+                    "
+                    >Student 1</a
+                  >
+                  1950 NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a0b1f6b7896'
+                      )
+                    "
+                    >Student 2</a
+                  >
+                  1950 NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a0bd2497bc2'
+                      )
+                    "
+                    >Student 3</a
+                  >
+                  1950 NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a06f60a6439'
+                      )
+                    "
+                    >Student 4</a
+                  >
+                  1950 COMPLETED 2017/08/01
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a0b10330d76'
+                      )
+                    "
+                    >Student 5</a
+                  >
+                  1950 COMPLETED 2019/05/01
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a06f60a6439'
+                      )
+                    "
+                    >Student 6</a
+                  >
+                  1950 COMPLETED 2012/11/01
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a1baa405960'
+                      )
+                    "
+                    >Student 7</a
+                  >
+                  2004-EN NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a41d6d647fa'
+                      )
+                    "
+                    >Student 8</a
+                  >
+                  2004-EN NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a1b7186023a'
+                      )
+                    "
+                    >Student 9</a
+                  >
+                  2004-EN COMPLETED 2021/02/01
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a1f51581eaa'
+                      )
+                    "
+                    >Student 10</a
+                  >
+                  2004-PF COMPLETED 2015/06/01
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a2e514f0fcb'
+                      )
+                    "
+                    >Student 11</a
+                  >
+                  2018-EN COMPLETED 2021/01/01
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a2e6d724185'
+                      )
+                    "
+                    >Student 13</a
+                  >
+                  2018-EN COMPLETED 2020/11/01
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a2e3d7130cd'
+                      )
+                    "
+                    >Student 14</a
+                  >
+                  2018-EN COMPLETED 2020/06/01
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a32b43b1cc5'
+                      )
+                    "
+                    >Student 15</a
+                  >
+                  2018-EN NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a3003f356c5'
+                      )
+                    "
+                    >Student 16</a
+                  >
+                  2018-EN NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a33cd244fad'
+                      )
+                    "
+                    >Student 17</a
+                  >
+                  2018-EN NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a32cae02ba7'
+                      )
+                    "
+                    >Student 18</a
+                  >
+                  2018-PF COMPLETED 2020/06/01
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a3288dc765f'
+                      )
+                    "
+                    >Student 19</a
+                  >
+                  2018-PF COMPLETED 2020/05/01
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a3288e77b17'
+                      )
+                    "
+                    >Student 20</a
+                  >
+                  2018-PF COMPLETED 2020/04/01
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a3288ef7ea2'
+                      )
+                    "
+                    >Student 21</a
+                  >
+                  2018-PF NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a3004627073'
+                      )
+                    "
+                    >Student 22</a
+                  >
+                  2018-PF NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a338168590c'
+                      )
+                    "
+                    >Student 23</a
+                  >
+                  2018-PF NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-49ffe91c03e6'
+                      )
+                    "
+                    >Student 24</a
+                  >
+                  1950 NOPROG AN NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a2e225977c8'
+                      )
+                    "
+                    >Student 25</a
+                  >
+                  1950 NOPROG AN NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a19919c7262'
+                      )
+                    "
+                    >Student 26</a
+                  >
+                  SCCP AD NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a1f06df5d06'
+                      )
+                    "
+                    >Student 27</a
+                  >
+                  SCCP AD NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a335e95483b'
+                      )
+                    "
+                    >Student 28</a
+                  >
+                  SCCP AD NOT COMPLETED
+                </div>
+                <div class="px-3 col-4">
+                  <a
+                    href="#"
+                    v-on:click="
+                      findStudentByStudentIdSample(
+                        'ac339d70-7649-1a2e-8176-4a335e8e44ae'
+                      )
+                    "
+                    >Student 29</a
+                  >
+                  SCCP AD NOT COMPLETED
+                </div>
+              </div>
+            </div>
           </v-window-item>
-          <v-window-item value="two"> Two </v-window-item>
+          <v-window-item value="two">
+            <div class="advanced-search-form">
+              <v-form v-on:submit.prevent>
+                <div class="advanced-search-form">
+                  <v-row>
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <div
+                        href="#"
+                        v-on:click="
+                          advancedSearchInput.legalLastName.contains =
+                            !advancedSearchInput.legalLastName.contains
+                        "
+                        v-bind:class="{
+                          active: advancedSearchInput.legalLastName.contains,
+                        }"
+                        class="wild-card-button"
+                        v-b-tooltip.hover
+                        title="Legal Surname Starts With"
+                      >
+                        [.*]
+                      </div>
+                      <v-text-field
+                        label="Legal Surname:"
+                        id="legal-surname-input"
+                        class="form__input"
+                        v-model="advancedSearchInput.legalLastName.value"
+                        placeholder=""
+                        v-on:keyup="keyHandler"
+                        tabindex="2"
+                      />
+                    </div>
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <div
+                        href="#"
+                        v-on:click="
+                          advancedSearchInput.legalFirstName.contains =
+                            !advancedSearchInput.legalFirstName.contains
+                        "
+                        v-bind:class="{
+                          active: advancedSearchInput.legalFirstName.contains,
+                        }"
+                        class="wild-card-button"
+                        v-b-tooltip.hover
+                        title="Legal Given Starts With"
+                      >
+                        [.*]
+                      </div>
+                      <v-text-field
+                        label="Legal Given:"
+                        id="legal-given-input"
+                        v-model="advancedSearchInput.legalFirstName.value"
+                        placeholder=""
+                        v-on:keyup="keyHandler"
+                        tabindex="2"
+                      />
+                    </div>
+
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <div
+                        href="#"
+                        v-on:click="
+                          advancedSearchInput.legalMiddleNames.contains =
+                            !advancedSearchInput.legalMiddleNames.contains
+                        "
+                        v-bind:class="{
+                          active: advancedSearchInput.legalMiddleNames.contains,
+                        }"
+                        class="wild-card-button"
+                        v-b-tooltip.hover
+                        title="Legal Middle Starts With"
+                      >
+                        [.*]
+                      </div>
+                      <v-text-field
+                        label="Legal Middle:"
+                        id="legal-middle-input"
+                        v-model="advancedSearchInput.legalMiddleNames.value"
+                        placeholder=""
+                        v-on:keyup="keyHandler"
+                        tabindex="3"
+                      />
+                    </div>
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <v-select
+                        label="Gender:"
+                        id="gender-select"
+                        v-model="advancedSearchInput.gender.value"
+                        :items="genderOptions"
+                        tabindex="4"
+                      ></v-select>
+                    </div>
+                    <div
+                      class="form-group advanced-search-field col-12 col-md-2"
+                    >
+                      >
+                      <v-text-field
+                        label="Birthdate From:"
+                        class="form__input"
+                        id="datepicker-birthdate-from"
+                        v-model="advancedSearchInput.birthdateFrom.value"
+                        type="date"
+                        placeholder="YYYY-MM-DD"
+                        max="9999-12-30"
+                        autocomplete="off"
+                        tabindex="6"
+                        v-on:keyup="keyHandler"
+                      ></v-text-field>
+                    </div>
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <v-text-field
+                        label="Birthdate to:"
+                        id="datepicker-birthdate-to"
+                        v-model="advancedSearchInput.birthdateTo.value"
+                        type="date"
+                        placeholder="YYYY-MM-DD"
+                        max="9999-12-30"
+                        :date-format-options="{ year: '4-digit' }"
+                        autocomplete="off"
+                        tabindex="6"
+                        v-on:keyup="keyHandler"
+                      ></v-text-field>
+                    </div>
+                  </v-row>
+                  <div class="row">
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <div
+                        href="#"
+                        v-on:click="
+                          advancedSearchInput.usualLastName.contains =
+                            !advancedSearchInput.usualLastName.contains
+                        "
+                        v-bind:class="{
+                          active: advancedSearchInput.usualLastName.contains,
+                        }"
+                        class="wild-card-button"
+                        v-b-tooltip.hover
+                        title="Usual Surname Starts With"
+                      >
+                        [.*]
+                      </div>
+                      <v-text-field
+                        label="Usual Surname:"
+                        id="usual-surname-input"
+                        v-model="advancedSearchInput.usualLastName.value"
+                        placeholder=""
+                        v-on:keyup="keyHandler"
+                        tabindex="7"
+                      ></v-text-field>
+                    </div>
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <div
+                        href="#"
+                        v-on:click="
+                          advancedSearchInput.usualFirstName.contains =
+                            !advancedSearchInput.usualFirstName.contains
+                        "
+                        v-bind:class="{
+                          active: advancedSearchInput.usualFirstName.contains,
+                        }"
+                        class="wild-card-button"
+                        v-b-tooltip.hover
+                        title="Usual Given Starts With"
+                      >
+                        [.*]
+                      </div>
+                      <v-text-field
+                        label="Usual Given:"
+                        id="usual-given-input"
+                        v-model="advancedSearchInput.usualFirstName.value"
+                        placeholder=""
+                        v-on:keyup="keyHandler"
+                        tabindex="8"
+                      ></v-text-field>
+                    </div>
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <div
+                        href="#"
+                        v-on:click="
+                          advancedSearchInput.usualMiddleNames.contains =
+                            !advancedSearchInput.usualMiddleNames.contains
+                        "
+                        v-bind:class="{
+                          active: advancedSearchInput.usualMiddleNames.contains,
+                        }"
+                        class="wild-card-button"
+                        v-b-tooltip.hover
+                        title="Usual Middle Starts With"
+                      >
+                        [.*]
+                      </div>
+                      <v-text-field
+                        label="Usual Middle:"
+                        id="usual-middle-input"
+                        v-model="advancedSearchInput.usualMiddleNames.value"
+                        placeholder=""
+                        v-on:keyup="keyHandler"
+                        tabindex="9"
+                      ></v-text-field>
+                    </div>
+                  </div>
+                  <v-row>
+                    <div class="advanced-search-button">
+                      <button
+                        id="adv-search-submit"
+                        @click="findStudentsByAdvancedSearch()"
+                        v-if="!advancedSearchLoading"
+                        class="btn btn-primary"
+                        tabindex="12"
+                      >
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                        Search
+                      </button>
+                      <button
+                        id="adv-search-submit"
+                        @click="findStudentsByAdvancedSearch()"
+                        v-if="advancedSearchLoading"
+                        class="btn btn-success"
+                        tabindex="12"
+                      >
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                        Search
+                      </button>
+                      <button
+                        id="adv-search-reset-button"
+                        @click="clearInput"
+                        class="btn btn-outline-primary mx-2"
+                      >
+                        Reset
+                      </button>
+                      &nbsp;&nbsp;<b-spinner
+                        v-if="advancedSearchLoading"
+                        label="Loading"
+                        >Loading</b-spinner
+                      >
+                    </div>
+                  </v-row>
+                </div>
+                <div v-if="studentSearchResults" class="row">
+                  <div class="search-results-message my-4 col-12 col-md-8">
+                    <strong
+                      ><span
+                        id="adv-search-results-message"
+                        v-if="advancedSearchMessage"
+                        >{{ advancedSearchMessage }}
+                        {{ advancedSearchAPIMessage }}</span
+                      ></strong
+                    >
+                  </div>
+                  <div class="results-option-group col-12 col-md-4">
+                    <label v-if="totalPages > 1">Results per page</label>
+                    <b-form-select
+                      class="results-option"
+                      v-if="totalPages > 1"
+                      @change="findStudentsByAdvancedSearch()"
+                      v-model="resultsPerPage"
+                      :options="resultsPerPageOptions"
+                      :value="resultsPerPage"
+                    ></b-form-select>
+                  </div>
+                </div>
+              </v-form>
+            </div>
+          </v-window-item>
         </v-window>
       </v-card-text>
     </v-card>
     <!-- Vuetify -->
-    <div>
+    <!-- <div>
       <b-card no-body class="p-0">
         <b-tabs card>
           <b-tab id="search-tab" title="PEN Search" active>
@@ -88,683 +713,11 @@
                   </div>
                 </div>
               </form>
-              <div v-if="isEnvLocalHost" class="sample-pens m-3">
-                Samples: V0.1.2
-                <div class="row col-12">
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a00dfa87ff1'
-                        )
-                      "
-                      >Student 1</a
-                    >
-                    1950 NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a0b1f6b7896'
-                        )
-                      "
-                      >Student 2</a
-                    >
-                    1950 NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a0bd2497bc2'
-                        )
-                      "
-                      >Student 3</a
-                    >
-                    1950 NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a06f60a6439'
-                        )
-                      "
-                      >Student 4</a
-                    >
-                    1950 COMPLETED 2017/08/01
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a0b10330d76'
-                        )
-                      "
-                      >Student 5</a
-                    >
-                    1950 COMPLETED 2019/05/01
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a06f60a6439'
-                        )
-                      "
-                      >Student 6</a
-                    >
-                    1950 COMPLETED 2012/11/01
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a1baa405960'
-                        )
-                      "
-                      >Student 7</a
-                    >
-                    2004-EN NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a41d6d647fa'
-                        )
-                      "
-                      >Student 8</a
-                    >
-                    2004-EN NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a1b7186023a'
-                        )
-                      "
-                      >Student 9</a
-                    >
-                    2004-EN COMPLETED 2021/02/01
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a1f51581eaa'
-                        )
-                      "
-                      >Student 10</a
-                    >
-                    2004-PF COMPLETED 2015/06/01
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a2e514f0fcb'
-                        )
-                      "
-                      >Student 11</a
-                    >
-                    2018-EN COMPLETED 2021/01/01
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a2e6d724185'
-                        )
-                      "
-                      >Student 13</a
-                    >
-                    2018-EN COMPLETED 2020/11/01
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a2e3d7130cd'
-                        )
-                      "
-                      >Student 14</a
-                    >
-                    2018-EN COMPLETED 2020/06/01
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a32b43b1cc5'
-                        )
-                      "
-                      >Student 15</a
-                    >
-                    2018-EN NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a3003f356c5'
-                        )
-                      "
-                      >Student 16</a
-                    >
-                    2018-EN NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a33cd244fad'
-                        )
-                      "
-                      >Student 17</a
-                    >
-                    2018-EN NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a32cae02ba7'
-                        )
-                      "
-                      >Student 18</a
-                    >
-                    2018-PF COMPLETED 2020/06/01
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a3288dc765f'
-                        )
-                      "
-                      >Student 19</a
-                    >
-                    2018-PF COMPLETED 2020/05/01
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a3288e77b17'
-                        )
-                      "
-                      >Student 20</a
-                    >
-                    2018-PF COMPLETED 2020/04/01
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a3288ef7ea2'
-                        )
-                      "
-                      >Student 21</a
-                    >
-                    2018-PF NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a3004627073'
-                        )
-                      "
-                      >Student 22</a
-                    >
-                    2018-PF NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a338168590c'
-                        )
-                      "
-                      >Student 23</a
-                    >
-                    2018-PF NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-49ffe91c03e6'
-                        )
-                      "
-                      >Student 24</a
-                    >
-                    1950 NOPROG AN NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a2e225977c8'
-                        )
-                      "
-                      >Student 25</a
-                    >
-                    1950 NOPROG AN NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a19919c7262'
-                        )
-                      "
-                      >Student 26</a
-                    >
-                    SCCP AD NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a1f06df5d06'
-                        )
-                      "
-                      >Student 27</a
-                    >
-                    SCCP AD NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a335e95483b'
-                        )
-                      "
-                      >Student 28</a
-                    >
-                    SCCP AD NOT COMPLETED
-                  </div>
-                  <div class="px-3 col-4">
-                    <a
-                      href="#"
-                      v-on:click="
-                        findStudentByStudentIdSample(
-                          'ac339d70-7649-1a2e-8176-4a335e8e44ae'
-                        )
-                      "
-                      >Student 29</a
-                    >
-                    SCCP AD NOT COMPLETED
-                  </div>
-                </div>
-              </div>
-            </b-card-text>
-          </b-tab>
-
-          <b-tab id="advanced-search-tab" title="Advanced Search">
-            <b-card-text>
-              <form v-on:submit.prevent>
-                <div class="advanced-search-form">
-                  <div class="row my-3">
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <label>Legal Surname</label>
-                      <div
-                        href="#"
-                        v-on:click="
-                          advancedSearchInput.legalLastName.contains =
-                            !advancedSearchInput.legalLastName.contains
-                        "
-                        v-bind:class="{
-                          active: advancedSearchInput.legalLastName.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Legal Surname Starts With"
-                      >
-                        [.*]
-                      </div>
-                      <b-input
-                        id="legal-surname-input"
-                        class="form__input"
-                        v-model="advancedSearchInput.legalLastName.value"
-                        placeholder=""
-                        v-on:keyup="keyHandler"
-                        tabindex="1"
-                      />
-                    </div>
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <label>Legal Given</label>
-                      <div
-                        href="#"
-                        v-on:click="
-                          advancedSearchInput.legalFirstName.contains =
-                            !advancedSearchInput.legalFirstName.contains
-                        "
-                        v-bind:class="{
-                          active: advancedSearchInput.legalFirstName.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Legal Given Starts With"
-                      >
-                        [.*]
-                      </div>
-                      <b-input
-                        id="legal-given-input"
-                        v-model="advancedSearchInput.legalFirstName.value"
-                        placeholder=""
-                        v-on:keyup="keyHandler"
-                        tabindex="2"
-                      />
-                    </div>
-
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <label>Legal Middle</label>
-                      <div
-                        href="#"
-                        v-on:click="
-                          advancedSearchInput.legalMiddleNames.contains =
-                            !advancedSearchInput.legalMiddleNames.contains
-                        "
-                        v-bind:class="{
-                          active: advancedSearchInput.legalMiddleNames.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Legal Middle Starts With"
-                      >
-                        [.*]
-                      </div>
-                      <b-input
-                        id="legal-middle-input"
-                        v-model="advancedSearchInput.legalMiddleNames.value"
-                        placeholder=""
-                        v-on:keyup="keyHandler"
-                        tabindex="3"
-                      />
-                    </div>
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <label>Gender</label>
-                      <b-form-select
-                        id="gender-select"
-                        v-model="advancedSearchInput.gender.value"
-                        :options="genderOptions"
-                        tabindex="4"
-                      ></b-form-select>
-                    </div>
-                    <div
-                      class="form-group advanced-search-field col-12 col-md-2"
-                    >
-                      <label for="datepicker-birthdate-from"
-                        >Birthdate From</label
-                      >
-                      <b-input-group class="mb-3">
-                        <b-form-input
-                          class="form__input"
-                          id="datepicker-birthdate-from"
-                          v-model="advancedSearchInput.birthdateFrom.value"
-                          type="date"
-                          placeholder="YYYY-MM-DD"
-                          max="9999-12-30"
-                          autocomplete="off"
-                          tabindex="6"
-                          v-on:keyup="keyHandler"
-                        ></b-form-input>
-                      </b-input-group>
-                    </div>
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <label for="datepicker-birthdate-to">Birthdate to</label>
-                      <b-input-group class="mb-3">
-                        <b-form-input
-                          id="datepicker-birthdate-to"
-                          v-model="advancedSearchInput.birthdateTo.value"
-                          type="date"
-                          placeholder="YYYY-MM-DD"
-                          max="9999-12-30"
-                          :date-format-options="{ year: '4-digit' }"
-                          autocomplete="off"
-                          tabindex="6"
-                          v-on:keyup="keyHandler"
-                        ></b-form-input>
-                      </b-input-group>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <label>Usual Surname</label>
-                      <div
-                        href="#"
-                        v-on:click="
-                          advancedSearchInput.usualLastName.contains =
-                            !advancedSearchInput.usualLastName.contains
-                        "
-                        v-bind:class="{
-                          active: advancedSearchInput.usualLastName.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Usual Surname Starts With"
-                      >
-                        [.*]
-                      </div>
-                      <b-input
-                        id="usual-surname-input"
-                        v-model="advancedSearchInput.usualLastName.value"
-                        placeholder=""
-                        v-on:keyup="keyHandler"
-                        tabindex="7"
-                      />
-                    </div>
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <label>Usual Given</label>
-                      <div
-                        href="#"
-                        v-on:click="
-                          advancedSearchInput.usualFirstName.contains =
-                            !advancedSearchInput.usualFirstName.contains
-                        "
-                        v-bind:class="{
-                          active: advancedSearchInput.usualFirstName.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Usual Given Starts With"
-                      >
-                        [.*]
-                      </div>
-                      <b-input
-                        id="usual-given-input"
-                        v-model="advancedSearchInput.usualFirstName.value"
-                        placeholder=""
-                        v-on:keyup="keyHandler"
-                        tabindex="8"
-                      />
-                    </div>
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <label>Usual Middle</label>
-                      <div
-                        href="#"
-                        v-on:click="
-                          advancedSearchInput.usualMiddleNames.contains =
-                            !advancedSearchInput.usualMiddleNames.contains
-                        "
-                        v-bind:class="{
-                          active: advancedSearchInput.usualMiddleNames.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Usual Middle Starts With"
-                      >
-                        [.*]
-                      </div>
-                      <b-input
-                        id="usual-middle-input"
-                        v-model="advancedSearchInput.usualMiddleNames.value"
-                        placeholder=""
-                        v-on:keyup="keyHandler"
-                        tabindex="9"
-                      />
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="advanced-search-button">
-                      <button
-                        id="adv-search-submit"
-                        @click="findStudentsByAdvancedSearch()"
-                        v-if="!advancedSearchLoading"
-                        class="btn btn-primary"
-                        tabindex="12"
-                      >
-                        <i class="fas fa-search" aria-hidden="true"></i>
-                        Search
-                      </button>
-                      <button
-                        id="adv-search-submit"
-                        @click="findStudentsByAdvancedSearch()"
-                        v-if="advancedSearchLoading"
-                        class="btn btn-success"
-                        tabindex="12"
-                      >
-                        <i class="fas fa-search" aria-hidden="true"></i>
-                        Search
-                      </button>
-                      <button
-                        id="adv-search-reset-button"
-                        @click="clearInput"
-                        class="btn btn-outline-primary mx-2"
-                      >
-                        Reset
-                      </button>
-                      &nbsp;&nbsp;<b-spinner
-                        v-if="advancedSearchLoading"
-                        label="Loading"
-                        >Loading</b-spinner
-                      >
-                    </div>
-                  </div>
-                </div>
-                <div v-if="studentSearchResults" class="row">
-                  <div class="search-results-message my-4 col-12 col-md-8">
-                    <strong
-                      ><span
-                        id="adv-search-results-message"
-                        v-if="advancedSearchMessage"
-                        >{{ advancedSearchMessage }}
-                        {{ advancedSearchAPIMessage }}</span
-                      ></strong
-                    >
-                  </div>
-                  <div class="results-option-group col-12 col-md-4">
-                    <label v-if="totalPages > 1">Results per page</label>
-                    <b-form-select
-                      class="results-option"
-                      v-if="totalPages > 1"
-                      @change="findStudentsByAdvancedSearch()"
-                      v-model="resultsPerPage"
-                      :options="resultsPerPageOptions"
-                      :value="resultsPerPage"
-                    ></b-form-select>
-                  </div>
-                </div>
-              </form>
-              <transition name="fade">
-                <div v-if="studentSearchResults" class="table-responsive">
-                  <DisplayTable
-                    v-if="studentSearchResults.length"
-                    v-bind:items="studentSearchResults"
-                    title="Student Search Results"
-                    v-bind:fields="studentSearchResultsFields"
-                    id="pen"
-                    v-bind:showFilter="false"
-                    v-bind:pagination="true"
-                  >
-                    <template #cell(pen)="data">
-                      <router-link
-                        :to="'/student-profile/' + data.item.studentID"
-                        >{{ data.item.pen }}</router-link
-                      >
-                    </template>
-                    <template #cell(more)="row">
-                      <b-btn
-                        variant="outline primary"
-                        style="color: #666"
-                        size="sm"
-                        @click="row.toggleDetails"
-                        class="more-button w-100"
-                      >
-                        <img
-                          v-show="!row.detailsShowing"
-                          src="../assets/images/icon-right.svg"
-                          width="9px"
-                          aria-hidden="true"
-                          alt=""
-                        />
-                        <img
-                          v-show="row.detailsShowing"
-                          src="../assets/images/icon-down.svg"
-                          height="5px"
-                          aria-hidden="true"
-                          alt=""
-                        />
-                      </b-btn>
-                    </template>
-                    <template #row-details="row">
-                      <b-card>
-                        <ul>
-                          <li>
-                            <strong>Usual given:</strong>
-                            {{ row.item.usualFirstName }}
-                          </li>
-                          <li>
-                            <strong>Usual middle:</strong>
-                            {{ row.item.usualMiddleNames }}
-                          </li>
-                          <li>
-                            <strong>Usual surname:</strong>
-                            {{ row.item.usualLastName }}
-                          </li>
-                        </ul>
-                      </b-card>
-                    </template>
-                  </DisplayTable>
-                </div>
-              </transition>
             </b-card-text>
           </b-tab>
         </b-tabs>
       </b-card>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -955,6 +908,12 @@ export default {
         },
       },
     };
+  },
+  watch: {
+    searchLoading(val) {
+      if (!val) return;
+      setTimeout(() => (this.searchLoading = false), 2000);
+    },
   },
   validations() {},
   created() {
@@ -1296,7 +1255,7 @@ div.error {
   color: #dee2eb;
   position: absolute;
   right: 21px;
-  top: 40px;
+  top: 10px;
   z-index: 10;
   text-decoration: none;
 }
