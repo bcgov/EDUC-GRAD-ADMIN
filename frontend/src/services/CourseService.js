@@ -26,7 +26,7 @@ export default {
   },
   getRuleCourseRequirements(rule) {
     return ApiService.apiAxios.get(
-      "/api/v1/course/requirement/rule?rule=" + rule + "&pageNo=0&pageSize=600"
+      "/api/v1/course/requirement/rule?rule=" + rule + "&pageNo=0&pageSize=2000"
     );
   },
   getCourseRequirements(params) {
