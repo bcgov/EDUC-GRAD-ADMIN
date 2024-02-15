@@ -10,12 +10,12 @@
         look up students by other criteria.
       </p>
       <v-tabs v-model="tab" bg-color="transparent" grow>
-        <v-tab value="one"> PEN Search </v-tab>
-        <v-tab value="two"> Advanced Search </v-tab>
+        <v-tab value="pen" color="primary"> PEN Search </v-tab>
+        <v-tab value="advance" color="primary"> Advanced Search </v-tab>
       </v-tabs>
       <v-card-text>
         <v-window v-model="tab">
-          <v-window-item value="one">
+          <v-window-item value="pen">
             <v-form @submit.prevent>
               <v-row>
                 <v-col cols="12">
@@ -390,334 +390,339 @@
               </div>
             </div>
           </v-window-item>
-          <v-window-item value="two">
+          <v-window-item value="advance">
             <div class="advanced-search-form">
               <v-form v-on:submit.prevent>
-                <div class="advanced-search-form">
-                  <v-row>
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <div
-                        href="#"
-                        v-on:click="
-                          advancedSearchInput.legalLastName.contains =
-                            !advancedSearchInput.legalLastName.contains
-                        "
-                        v-bind:class="{
-                          active: advancedSearchInput.legalLastName.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Legal Surname Starts With"
-                      >
-                        [.*]
-                      </div>
-                      <v-text-field
-                        label="Legal Surname:"
-                        id="legal-surname-input"
-                        class="form__input"
-                        v-model="advancedSearchInput.legalLastName.value"
-                        placeholder=""
-                        v-on:keyup="keyHandler"
-                        tabindex="2"
-                      />
-                    </div>
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <div
-                        href="#"
-                        v-on:click="
-                          advancedSearchInput.legalFirstName.contains =
-                            !advancedSearchInput.legalFirstName.contains
-                        "
-                        v-bind:class="{
-                          active: advancedSearchInput.legalFirstName.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Legal Given Starts With"
-                      >
-                        [.*]
-                      </div>
-                      <v-text-field
-                        label="Legal Given:"
-                        id="legal-given-input"
-                        v-model="advancedSearchInput.legalFirstName.value"
-                        placeholder=""
-                        v-on:keyup="keyHandler"
-                        tabindex="2"
-                      />
-                    </div>
-
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <div
-                        href="#"
-                        v-on:click="
-                          advancedSearchInput.legalMiddleNames.contains =
-                            !advancedSearchInput.legalMiddleNames.contains
-                        "
-                        v-bind:class="{
-                          active: advancedSearchInput.legalMiddleNames.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Legal Middle Starts With"
-                      >
-                        [.*]
-                      </div>
-                      <v-text-field
-                        label="Legal Middle:"
-                        id="legal-middle-input"
-                        v-model="advancedSearchInput.legalMiddleNames.value"
-                        placeholder=""
-                        v-on:keyup="keyHandler"
-                        tabindex="3"
-                      />
-                    </div>
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <v-select
-                        label="Gender:"
-                        id="gender-select"
-                        v-model="advancedSearchInput.gender.value"
-                        :items="genderOptions"
-                        tabindex="4"
-                      ></v-select>
-                    </div>
+                <v-row class="advanced-search-row-1">
+                  <div class="advanced-search-field col-12 col-md-2">
                     <div
-                      class="form-group advanced-search-field col-12 col-md-2"
+                      href="#"
+                      v-on:click="
+                        advancedSearchInput.legalLastName.contains =
+                          !advancedSearchInput.legalLastName.contains
+                      "
+                      v-bind:class="{
+                        active: advancedSearchInput.legalLastName.contains,
+                      }"
+                      class="wild-card-button"
+                      v-b-tooltip.hover
+                      title="Legal Surname Starts With"
                     >
-                      >
-                      <v-text-field
-                        label="Birthdate From:"
-                        class="form__input"
-                        id="datepicker-birthdate-from"
-                        v-model="advancedSearchInput.birthdateFrom.value"
-                        type="date"
-                        placeholder="YYYY-MM-DD"
-                        max="9999-12-30"
-                        autocomplete="off"
-                        tabindex="6"
-                        v-on:keyup="keyHandler"
-                      ></v-text-field>
+                      [.*]
                     </div>
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <v-text-field
-                        label="Birthdate to:"
-                        id="datepicker-birthdate-to"
-                        v-model="advancedSearchInput.birthdateTo.value"
-                        type="date"
-                        placeholder="YYYY-MM-DD"
-                        max="9999-12-30"
-                        :date-format-options="{ year: '4-digit' }"
-                        autocomplete="off"
-                        tabindex="6"
-                        v-on:keyup="keyHandler"
-                      ></v-text-field>
-                    </div>
-                  </v-row>
-                  <div class="row">
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <div
-                        href="#"
-                        v-on:click="
-                          advancedSearchInput.usualLastName.contains =
-                            !advancedSearchInput.usualLastName.contains
-                        "
-                        v-bind:class="{
-                          active: advancedSearchInput.usualLastName.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Usual Surname Starts With"
-                      >
-                        [.*]
-                      </div>
-                      <v-text-field
-                        label="Usual Surname:"
-                        id="usual-surname-input"
-                        v-model="advancedSearchInput.usualLastName.value"
-                        placeholder=""
-                        v-on:keyup="keyHandler"
-                        tabindex="7"
-                      ></v-text-field>
-                    </div>
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <div
-                        href="#"
-                        v-on:click="
-                          advancedSearchInput.usualFirstName.contains =
-                            !advancedSearchInput.usualFirstName.contains
-                        "
-                        v-bind:class="{
-                          active: advancedSearchInput.usualFirstName.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Usual Given Starts With"
-                      >
-                        [.*]
-                      </div>
-                      <v-text-field
-                        label="Usual Given:"
-                        id="usual-given-input"
-                        v-model="advancedSearchInput.usualFirstName.value"
-                        placeholder=""
-                        v-on:keyup="keyHandler"
-                        tabindex="8"
-                      ></v-text-field>
-                    </div>
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <div
-                        href="#"
-                        v-on:click="
-                          advancedSearchInput.usualMiddleNames.contains =
-                            !advancedSearchInput.usualMiddleNames.contains
-                        "
-                        v-bind:class="{
-                          active: advancedSearchInput.usualMiddleNames.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Usual Middle Starts With"
-                      >
-                        [.*]
-                      </div>
-                      <v-text-field
-                        label="Usual Middle:"
-                        id="usual-middle-input"
-                        v-model="advancedSearchInput.usualMiddleNames.value"
-                        placeholder=""
-                        v-on:keyup="keyHandler"
-                        tabindex="9"
-                      ></v-text-field>
-                    </div>
+                    <v-text-field
+                      label="Legal Surname:"
+                      id="legal-surname-input"
+                      class="form__input"
+                      v-model="advancedSearchInput.legalLastName.value"
+                      placeholder=""
+                      v-on:keyup="keyHandler"
+                      tabindex="2"
+                    />
                   </div>
-                  <v-row>
-                    <div class="advanced-search-button">
-                      <button
-                        id="adv-search-submit"
-                        @click="findStudentsByAdvancedSearch()"
-                        v-if="!advancedSearchLoading"
-                        class="btn btn-primary"
-                        tabindex="12"
-                      >
-                        <i class="fas fa-search" aria-hidden="true"></i>
-                        Search
-                      </button>
-                      <button
-                        id="adv-search-submit"
-                        @click="findStudentsByAdvancedSearch()"
-                        v-if="advancedSearchLoading"
-                        class="btn btn-success"
-                        tabindex="12"
-                      >
-                        <i class="fas fa-search" aria-hidden="true"></i>
-                        Search
-                      </button>
-                      <button
-                        id="adv-search-reset-button"
-                        @click="clearInput"
-                        class="btn btn-outline-primary mx-2"
-                      >
-                        Reset
-                      </button>
-                      &nbsp;&nbsp;<b-spinner
-                        v-if="advancedSearchLoading"
-                        label="Loading"
-                        >Loading</b-spinner
-                      >
-                    </div>
-                  </v-row>
-                </div>
-                <div v-if="studentSearchResults" class="row">
-                  <div class="search-results-message my-4 col-12 col-md-8">
-                    <strong
-                      ><span
-                        id="adv-search-results-message"
-                        v-if="advancedSearchMessage"
-                        >{{ advancedSearchMessage }}
-                        {{ advancedSearchAPIMessage }}</span
-                      ></strong
+                  <div class="advanced-search-field col-12 col-md-2">
+                    <div
+                      href="#"
+                      v-on:click="
+                        advancedSearchInput.legalFirstName.contains =
+                          !advancedSearchInput.legalFirstName.contains
+                      "
+                      v-bind:class="{
+                        active: advancedSearchInput.legalFirstName.contains,
+                      }"
+                      class="wild-card-button"
+                      v-b-tooltip.hover
+                      title="Legal Given Starts With"
                     >
+                      [.*]
+                    </div>
+                    <v-text-field
+                      label="Legal Given:"
+                      id="legal-given-input"
+                      v-model="advancedSearchInput.legalFirstName.value"
+                      placeholder=""
+                      v-on:keyup="keyHandler"
+                      tabindex="2"
+                    />
                   </div>
-                  <div class="results-option-group col-12 col-md-4">
-                    <label v-if="totalPages > 1">Results per page</label>
-                    <b-form-select
-                      class="results-option"
-                      v-if="totalPages > 1"
-                      @change="findStudentsByAdvancedSearch()"
-                      v-model="resultsPerPage"
-                      :options="resultsPerPageOptions"
-                      :value="resultsPerPage"
-                    ></b-form-select>
+
+                  <div class="advanced-search-field col-12 col-md-2">
+                    <div
+                      href="#"
+                      v-on:click="
+                        advancedSearchInput.legalMiddleNames.contains =
+                          !advancedSearchInput.legalMiddleNames.contains
+                      "
+                      v-bind:class="{
+                        active: advancedSearchInput.legalMiddleNames.contains,
+                      }"
+                      class="wild-card-button"
+                      v-b-tooltip.hover
+                      title="Legal Middle Starts With"
+                    >
+                      [.*]
+                    </div>
+                    <v-text-field
+                      label="Legal Middle:"
+                      id="legal-middle-input"
+                      v-model="advancedSearchInput.legalMiddleNames.value"
+                      placeholder=""
+                      v-on:keyup="keyHandler"
+                      tabindex="3"
+                    />
                   </div>
-                </div>
+                  <div class="advanced-search-field col-12 col-md-2">
+                    <v-select
+                      v-model="advancedSearchInput.gender.value"
+                      label="Gender:"
+                      id="gender-select"
+                      :items="genderOptions"
+                      item-title="text"
+                      item-value="value"
+                      tabindex="4"
+                    ></v-select>
+                  </div>
+                  <div class="form-group advanced-search-field col-12 col-md-2">
+                    <v-text-field
+                      label="Birthdate From:"
+                      class="form__input"
+                      id="datepicker-birthdate-from"
+                      v-model="advancedSearchInput.birthdateFrom.value"
+                      type="date"
+                      placeholder="YYYY-MM-DD"
+                      max="9999-12-30"
+                      :date-format-options="{ year: '4-digit' }"
+                      autocomplete="off"
+                      tabindex="6"
+                      v-on:keyup="keyHandler"
+                    ></v-text-field>
+                  </div>
+                  <div class="advanced-search-field col-12 col-md-2">
+                    <v-text-field
+                      label="Birthdate to:"
+                      id="datepicker-birthdate-to"
+                      v-model="advancedSearchInput.birthdateTo.value"
+                      type="date"
+                      placeholder="YYYY-MM-DD"
+                      max="9999-12-30"
+                      :date-format-options="{ year: '4-digit' }"
+                      autocomplete="off"
+                      tabindex="6"
+                      v-on:keyup="keyHandler"
+                    ></v-text-field>
+                  </div>
+                </v-row>
+                <v-row>
+                  <div class="advanced-search-field col-12 col-md-2">
+                    <div
+                      href="#"
+                      v-on:click="
+                        advancedSearchInput.usualLastName.contains =
+                          !advancedSearchInput.usualLastName.contains
+                      "
+                      v-bind:class="{
+                        active: advancedSearchInput.usualLastName.contains,
+                      }"
+                      class="wild-card-button"
+                      v-b-tooltip.hover
+                      title="Usual Surname Starts With"
+                    >
+                      [.*]
+                    </div>
+                    <v-text-field
+                      label="Usual Surname:"
+                      id="usual-surname-input"
+                      v-model="advancedSearchInput.usualLastName.value"
+                      placeholder=""
+                      v-on:keyup="keyHandler"
+                      tabindex="7"
+                    ></v-text-field>
+                  </div>
+                  <div class="advanced-search-field col-12 col-md-2">
+                    <div
+                      href="#"
+                      v-on:click="
+                        advancedSearchInput.usualFirstName.contains =
+                          !advancedSearchInput.usualFirstName.contains
+                      "
+                      v-bind:class="{
+                        active: advancedSearchInput.usualFirstName.contains,
+                      }"
+                      class="wild-card-button"
+                      v-b-tooltip.hover
+                      title="Usual Given Starts With"
+                    >
+                      [.*]
+                    </div>
+                    <v-text-field
+                      label="Usual Given:"
+                      id="usual-given-input"
+                      v-model="advancedSearchInput.usualFirstName.value"
+                      placeholder=""
+                      v-on:keyup="keyHandler"
+                      tabindex="8"
+                    ></v-text-field>
+                  </div>
+                  <div class="advanced-search-field col-12 col-md-2">
+                    <div
+                      href="#"
+                      v-on:click="
+                        advancedSearchInput.usualMiddleNames.contains =
+                          !advancedSearchInput.usualMiddleNames.contains
+                      "
+                      v-bind:class="{
+                        active: advancedSearchInput.usualMiddleNames.contains,
+                      }"
+                      class="wild-card-button"
+                      v-b-tooltip.hover
+                      title="Usual Middle Starts With"
+                    >
+                      [.*]
+                    </div>
+                    <v-text-field
+                      label="Usual Middle:"
+                      id="usual-middle-input"
+                      v-model="advancedSearchInput.usualMiddleNames.value"
+                      placeholder=""
+                      v-on:keyup="keyHandler"
+                      tabindex="9"
+                    ></v-text-field>
+                  </div>
+                </v-row>
+                <v-row>
+                  <div class="advanced-search-button">
+                    <v-btn
+                      id="adv-search-submit"
+                      @click="findStudentsByAdvancedSearch()"
+                      v-if="!advancedSearchLoading"
+                      color="primary"
+                      tabindex="12"
+                    >
+                      <i class="fas fa-search" aria-hidden="true"></i>
+                      Search
+                    </v-btn>
+                    <v-btn
+                      id="adv-search-submit"
+                      @click="findStudentsByAdvancedSearch()"
+                      v-if="advancedSearchLoading"
+                      color="success"
+                      tabindex="12"
+                    >
+                      <i class="fas fa-search" aria-hidden="true"></i>
+                      Search
+                    </v-btn>
+                    <v-btn
+                      id="adv-search-reset-button"
+                      color="grey-lighten-3"
+                      @click="clearInput"
+                      class=""
+                    >
+                      Reset
+                    </v-btn>
+                    &nbsp;&nbsp;
+                    <v-progress-circular
+                      v-if="advancedSearchLoading"
+                      indeterminate
+                      color="green"
+                    >
+                    </v-progress-circular>
+                  </div>
+                </v-row>
               </v-form>
+              <v-row v-if="studentSearchResults">
+                <div class="search-results-message my-4 col-12 col-md-8">
+                  <strong
+                    ><span
+                      id="adv-search-results-message"
+                      v-if="advancedSearchMessage"
+                      >{{ advancedSearchMessage }}
+                      {{ advancedSearchAPIMessage }}</span
+                    ></strong
+                  >
+                </div>
+                <div class="results-option-group col-12 col-md-4">
+                  <label v-if="totalPages > 1">Results per page</label>
+                  <v-select
+                    class="results-option"
+                    v-if="totalPages > 1"
+                    @change="findStudentsByAdvancedSearch()"
+                    v-model="resultsPerPage"
+                    :items="resultsPerPageOptions"
+                    :value="resultsPerPage"
+                    label="Results Per Page"
+                  ></v-select>
+                </div>
+              </v-row>
+
+              <transition name="fade">
+                <div v-if="studentSearchResults" class="table-responsive">
+                  <DisplayTable
+                    v-if="studentSearchResults.length"
+                    v-bind:items="studentSearchResults"
+                    title="Student Search Results"
+                    v-bind:fields="studentSearchResultsFields"
+                    id="pen"
+                    v-bind:showFilter="false"
+                    v-bind:pagination="true"
+                  >
+                    <template #cell(pen)="data">
+                      <router-link
+                        :to="'/student-profile/' + data.item.studentID"
+                        >{{ data.item.pen }}</router-link
+                      >
+                    </template>
+                    <template #cell(more)="row">
+                      <v-btn
+                        variant="outline primary"
+                        style="color: #666"
+                        size="sm"
+                        @click="row.toggleDetails"
+                        class="more-button w-100"
+                      >
+                        <img
+                          v-show="!row.detailsShowing"
+                          src="../assets/images/icon-right.svg"
+                          width="9px"
+                          aria-hidden="true"
+                          alt=""
+                        />
+                        <img
+                          v-show="row.detailsShowing"
+                          src="../assets/images/icon-down.svg"
+                          height="5px"
+                          aria-hidden="true"
+                          alt=""
+                        />
+                      </v-btn>
+                    </template>
+                    <template #row-details="row">
+                      <v-card>
+                        <v-card-text>
+                          <ul>
+                            <li>
+                              <strong>Usual given:</strong>
+                              {{ row.item.usualFirstName }}
+                            </li>
+                            <li>
+                              <strong>Usual middle:</strong>
+                              {{ row.item.usualMiddleNames }}
+                            </li>
+                            <li>
+                              <strong>Usual surname:</strong>
+                              {{ row.item.usualLastName }}
+                            </li>
+                          </ul>
+                        </v-card-text>
+                      </v-card>
+                    </template>
+                  </DisplayTable>
+                </div>
+              </transition>
             </div>
           </v-window-item>
         </v-window>
       </v-card-text>
     </v-card>
-    <!-- Vuetify -->
-    <!-- <div>
-      <b-card no-body class="p-0">
-        <b-tabs card>
-          <b-tab id="search-tab" title="PEN Search" active>
-            <b-card-text>
-              <form v-on:submit.prevent>
-                <div class="form-group">
-                  <div class="search w-100">
-                    <label for="search-by-pen" class="float-left w-100"
-                      >Search by PEN:</label
-                    >
-                    <b-form-input
-                      id="search-by-pen"
-                      type="search"
-                      maxlength="9"
-                      minlength="9"
-                      v-model="penInput"
-                      placeholder=""
-                      ref="penSearch"
-                      v-on:keyup="keyHandler"
-                      tabindex="1"
-                      class="w-50 float-left"
-                      lazy
-                      trim
-                    >
-                    </b-form-input>
-                    <button
-                      id="search-submit"
-                      v-if="!searchLoading"
-                      v-on:click="findStudentByPen"
-                      class="btn btn-primary ml-2 float-left"
-                    >
-                      <i class="fas fa-search" aria-hidden="true"></i> Search
-                    </button>
-                    <button
-                      id="search-submit"
-                      v-if="searchLoading"
-                      class="btn btn-success ml-2 float-left"
-                    >
-                      <i class="fas fa-search" aria-hidden="true"></i> Search
-                    </button>
-                    &nbsp;&nbsp;<b-spinner v-if="searchLoading" label="Loading"
-                      >Loading</b-spinner
-                    >
-                  </div>
-                  <div class="search-results-message my-4 float-left">
-                    <strong
-                      ><span
-                        id="search-results-message"
-                        v-if="searchByPenMessage"
-                        >{{ searchByPenMessage }}</span
-                      ></strong
-                    >
-                  </div>
-                </div>
-              </form>
-            </b-card-text>
-          </b-tab>
-        </b-tabs>
-      </b-card>
-    </div> -->
   </div>
 </template>
 <script>
@@ -1142,6 +1147,9 @@ export default {
 };
 </script>
 <style scoped>
+.advanced-search-row-1 {
+  margin-top: 10px;
+}
 .studentlist {
   padding-left: 25px;
   padding-right: 25px;
