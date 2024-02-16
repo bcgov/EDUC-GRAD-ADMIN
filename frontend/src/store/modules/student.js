@@ -312,7 +312,37 @@ export const useStudentStore = defineStore("student", {
         this.student.hasNotes = true;
       }
     },
-    // SEARCH
+    //Optioanl Program CRUD
+    addStudentOptionalProgram(optionalProgramCode,careerProgramCode){
+      let optionalProgramPayload = {
+        "createUser": "string",
+        "createDate": "2024-02-14T02:15:53.938Z",
+        "updateUser": "string",
+        "updateDate": "2024-02-14T02:15:53.938Z",
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "pen": "string",
+        "optionalProgramID": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "studentOptionalProgramData": "string",
+        "optionalProgramCompletionDate": "string",
+        "optionalProgramName": "string",
+        "optionalProgramCode": "string",
+        "programCode": "string",
+        "studentID": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+      }
+        try {
+          let response = StudentService.createStudentOptionalProgram(this.id, optionalProgramPayload, careerProgramCode);
+          console.log('Request successful:', response);
+        } catch (error) {
+            console.error('Error creating student optional program:', error);
+        }
+  
+  
+  
+
+    }
+    // deleteStudentOptionalProgram
+    // updateStudentOptionalProgram
+    
   },
   getters: {
     getStudentAuditHistory() {
@@ -384,6 +414,9 @@ export const useStudentStore = defineStore("student", {
     },
     getStudentNotes() {
       return this.student.notes;
+    },
+    getStudentProgram(){
+      return this.student.gradStatus.program
     },
     studentHasCourses() {
       return this.student.hasCourses;

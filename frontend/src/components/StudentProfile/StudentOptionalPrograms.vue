@@ -5,28 +5,20 @@
         This student does not have any optional programs.
       </div>
       <DisplayTable
-        v-if="optionalPrograms"
         :items="optionalPrograms"
         :striped="false"
         :fields="optionalProgramsfields"
         showFilter="true"
         title="Optional Programs"
         :delete="{
-          disable: {
-            condition: 'OR',
-            criteria: [
-              {
-                field: 'status',
-                value: 'COMPLETED',
-              },
-            ],
-          },
           label: 'Cancel',
           action: 'removeScheduledJobs',
         }"
       >
         <template v-slot:create>
-          <OptionalProgramsForm></OptionalProgramsForm
+          <OptionalProgramsForm
+            :studentProgramId="studentProgramId"
+          ></OptionalProgramsForm
         ></template>
 
         <template #cell(optionalNonGradReasons)="row">
@@ -240,6 +232,7 @@ export default {
     ...mapState(useStudentStore, {
       optionalPrograms: "getStudentOptionalPrograms",
       careerPrograms: "getStudentCareerPrograms",
+      studentProgramId: "getStudentProgram",
     }),
   },
   data: function () {

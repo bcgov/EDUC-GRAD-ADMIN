@@ -14,10 +14,36 @@
           <a :href="authRoutes.LOGIN">Login</a>
         </div>
       </Bcheader>
+
       <div class="container" style="min-height: 100vh">
-        <transition name="fade">
-          <router-view />
-        </transition>
+        <router-view />
+        <div>{{ timerValue }}</div>
+        <div class="overlay-dialog">
+          <v-dialog v-model="tokenExpiring" max-width="600px">
+            <v-card>
+              <v-card-title>
+                <span v-if="tokenExpired">Session Expired</span>
+                <span v-else>Session Expiring</span>
+              </v-card-title>
+
+              <v-card-text>
+                <p v-if="tokenExpired">
+                  Your session has expired. Please Login.
+                </p>
+                <p v-else>
+                  Your session is about to expire in {{ timerValue }} seconds.
+                  Are you still there?
+                </p>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-btn @click="login" v-if="tokenExpired">Login</v-btn>
+                <v-btn @click="resumeSession" v-else>Yes</v-btn>
+                <v-btn @click="logout">Logout</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </div>
       </div>
 
       <BCFooter></BCFooter>
@@ -34,6 +60,7 @@ import Bcheader from "@/components/Header/BCHeader.vue";
 import BCFooter from "@/components/BCFooter.vue";
 import EnvironmentBanner from "@/components/Header/EnvironmentBanner.vue";
 import { Routes } from "@/utils/constants.js";
+import authService from "./common/authService";
 export default {
   name: "App",
   components: {
@@ -52,7 +79,7 @@ export default {
       .then(() => this.setApplicationVariables())
       .catch((e) => {
         if (!e.response) {
-          this.userLogout();
+          this.logout();
           this.$router.replace({
             name: "error",
             query: { message: `500_${e.data || "ServerError"}` },
@@ -65,11 +92,24 @@ export default {
     return {
       authRoutes: Routes,
       host: location.protocol + "//" + location.host,
+      timerValue: 0,
+      tokenExpired: false,
+      tokenExpiring: false,
+      dialog: true,
     };
+  },
+  mounted() {
+    this.setupTimer();
   },
   computed: {
     ...mapState(useAccessStore, ["roles", "userAccess"]),
-    ...mapState(useAuthStore, ["userInfoGet", "isAuthenticatedGet"]),
+    ...mapState(useAuthStore, [
+      "userInfoGet",
+      "isAuthenticatedGet",
+      "checkJWTTokenExpired",
+      "getTokenRemainingTime",
+      "jwtTokenGet",
+    ]),
     dataReady: function () {
       return this.userInfoGet;
     },
@@ -79,12 +119,36 @@ export default {
   },
   methods: {
     ...mapActions(useAuthStore, [
+      "setJwtToken",
       "setLoading",
       "getJwtToken",
       "getUserInfo",
       "logout",
     ]),
     ...mapActions(useAppStore, ["setApplicationVariables"]),
+    setupTimer() {
+      setInterval(async () => {
+        if (this.jwtTokenGet) {
+          this.timerValue = await this.getTokenRemainingTime();
+          if (this.timerValue < 300) this.tokenExpiring = true;
+          this.tokenExpired = await this.checkJWTTokenExpired();
+        }
+      }, 10000); // Update every 10000 milliseconds (10 seconds)
+    },
+    async resumeSession() {
+      // Handle the logic to resume the session
+      // For example, refresh the token or perform any necessary actions
+
+      const updatedJwtToken = await authService.refreshAuthToken(
+        this.jwtTokenGet
+      );
+      this.setJwtToken(updatedJwtToken.jwtFrontend);
+      this.tokenExpiring = false; // Hide the overlay dialog
+    },
+    login() {
+      // Use Vue Router to navigate to the login route
+      this.$router.push("/login");
+    },
   },
 };
 </script>

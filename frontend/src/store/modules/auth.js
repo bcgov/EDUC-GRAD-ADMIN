@@ -6,6 +6,12 @@ function isFollowUpVisit(jwtToken) {
   return !!jwtToken;
 }
 
+function tokenRemainingTime(jwtToken) {
+  const now = Date.now().valueOf() / 1000;
+  const jwtPayload = jwtToken.split('.')[1];
+  const payload = JSON.parse(window.atob(jwtPayload));
+  return (payload.exp - now);
+}
 function isExpiredToken(jwtToken) {
   const now = Date.now().valueOf() / 1000;
   const jwtPayload = jwtToken.split('.')[1];
@@ -47,6 +53,8 @@ export const useAuthStore = defineStore('auth', {
         localStorage.removeItem('jwtToken');
       }
     },
+    
+
     async setUserInfo(userInfo){
       if(userInfo){
         this.userInfo = userInfo;
@@ -73,6 +81,13 @@ export const useAuthStore = defineStore('auth', {
     async getUserInfo(){
       const userInfoRes = await ApiService.getUserInfo();
       this.userInfo = userInfoRes.data;
+    },
+    async checkJWTTokenExpired(){
+      
+      return this.jwtToken && isExpiredToken(this.jwtToken)
+    },
+    async getTokenRemainingTime(){
+      return tokenRemainingTime(this.jwtToken)
     },
     //retrieves the json web token from local storage. If not in local storage, retrieves it from API
     async getJwtToken() {

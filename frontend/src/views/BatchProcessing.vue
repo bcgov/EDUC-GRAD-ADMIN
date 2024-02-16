@@ -14,15 +14,21 @@
       </v-btn>
       <v-card>
         <v-tabs v-model="selectedTab" bg-color="transparent">
-          <v-tab value="batchRuns"
+          <v-tab value="batchRuns" @click="getJwtToken"
             >Batch Runs ({{ batchInfoListData.length }})</v-tab
           >
-          <v-tab value="scheduledRuns"
+          <v-tab value="scheduledRuns" @click="getJwtToken"
             >User Scheduled ({{ queueScheduledJobs.length }} Queued)</v-tab
           >
-          <v-tab value="batchRoutines">Scheduled Routines</v-tab>
-          <v-tab value="newBatchRequest">New Batch Request</v-tab>
-          <v-tab value="administration">Administration</v-tab>
+          <v-tab @click="getJwtToken" value="batchRoutines"
+            >Scheduled Routines</v-tab
+          >
+          <v-tab @click="getJwtToken" value="newBatchRequest"
+            >New Batch Request</v-tab
+          >
+          <v-tab @click="getJwtToken" value="administration"
+            >Administration</v-tab
+          >
         </v-tabs>
 
         <v-card-text>
@@ -215,6 +221,7 @@ export default {
     return {
       value: "",
       batchTypes: [],
+
       batchFields: [
         {
           key: "description",
@@ -430,6 +437,7 @@ export default {
       "updateScheduledBatchJobs",
       "setGroup",
     ]),
+    ...mapActions(useAuthStore, ["getJwtToken"]),
 
     downloadDISTRUNUSER(bid, transmissionMode = null) {
       DistributionService.downloadDISTRUNUSER(bid, transmissionMode).then(

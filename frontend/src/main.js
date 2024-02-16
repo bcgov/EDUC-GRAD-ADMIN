@@ -73,5 +73,6 @@ app.config.globalProperties.$filters = {
         }
     } 
   }
+  
 
 app.use(createPinia()).use(router).use(vuetify).mount('#app')
