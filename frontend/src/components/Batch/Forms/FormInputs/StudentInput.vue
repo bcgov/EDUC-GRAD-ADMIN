@@ -1,94 +1,97 @@
 <template>
-  <div>
-    <b-card title="Include Student(s)">
-      <b-card-text>
-        <label class="col-12 px-0">Personal Education Number</label>
-        <b-input
-          type="number"
-          v-model="pen"
-          @input="validateStudent"
-          class="col-2 float-left mr-2"
-        />
-        <div
-          class="input-errors"
-          v-for="error of v$.pen.$errors"
-          :key="error.$uid"
-        >
-          <div class="error-msg">{{ error.$message }}</div>
-        </div>
-        <div v-if="penStudentInfo">
-          <b-card>
-            <b-card-text>
-              <b-alert
-                dismissible
-                v-if="validationMessage"
-                show
-                variant="danger"
-                >{{ validationMessage }}</b-alert
-              >
-              <b-overlay :show="penValidating">
-                <div v-if="!penStudentInfo">NOT VALID</div>
-                <div v-else>
-                  <strong>First Name:</strong> {{ penStudentInfo.firstName
-                  }}<br />
-                  <strong>Last Name:</strong> {{ penStudentInfo.lastName
-                  }}<br />
-                  <strong>Birthdate:</strong> {{ penStudentInfo.dob }}<br />
-                  <strong>Status:</strong> {{ penStudentInfo.status }}<br />
-                  <strong>Program:</strong> {{ penStudentInfo.program }}<br />
-                  <strong>School of Record</strong>
-                  {{ penStudentInfo.schoolOfRecord }}<br />
-                  <strong>School at Graduation</strong>
-                  {{ penStudentInfo.schoolAtGrad }}
+  <v-container>
+    <v-card>
+      <v-card-title>Include Student(s)</v-card-title>
+      <v-card-text>
+        <v-row>
+          {{ getStudents }}
+          <v-col cols="12">
+            <v-label>Personal Education Number</v-label>
+            <v-text-field
+              v-model="pen"
+              @input="validateStudent"
+              type="number"
+              class="mr-2"
+            ></v-text-field>
+            <v-row v-for="error in v$.pen.$errors" :key="error.$uid">
+              <v-col>
+                <v-alert type="error">{{ error.$message }}</v-alert>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+
+        <v-row v-if="penStudentInfo">
+          <v-card>
+            <v-card-text>
+              <v-alert v-if="validationMessage" dismissible type="error">
+                {{ validationMessage }}
+              </v-alert>
+
+              <div v-if="!penStudentInfo">NOT VALID</div>
+              <div v-else>
+                <strong>First Name:</strong> {{ penStudentInfo.firstName
+                }}<br />
+                <strong>Last Name:</strong> {{ penStudentInfo.lastName }}<br />
+                <strong>Birthdate:</strong> {{ penStudentInfo.dob }}<br />
+                <strong>Status:</strong> {{ penStudentInfo.status }}<br />
+                <strong>Program:</strong> {{ penStudentInfo.program }}<br />
+                <strong>School of Record</strong>
+                {{ penStudentInfo.schoolOfRecord }}<br />
+                <strong>School at Graduation</strong>
+                {{ penStudentInfo.schoolAtGrad }}
+              </div>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn @click="addStudent()" :disabled="validationMessage !== ''">
+                Add Student
+              </v-btn>
+              <v-btn @click="clearPen" text> Clear </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-data-table
+              v-if="students.length"
+              :items="getStudents"
+              :headers="studentInputFields"
+              striped
+            >
+              <template v-slot:item.remove="{ item }">
+                <v-btn @click="removeStudent(item.columns.pen)" color="primary">
+                  Remove
+                </v-btn>
+              </template>
+              <template v-slot:item.info="{ item }">
+                <div>
+                  <strong>Name:</strong> {{ item.columns.info.firstName }}
+                  {{ item.columns.info.lastName }}
                 </div>
-              </b-overlay>
-            </b-card-text>
-            <b-button
-              @click="addStudent()"
-              :disabled="validationMessage != ''"
-              class="float-right"
-              >Add Student</b-button
-            >
-            <b-button @click="clearPen()" class="float-right" variant="link"
-              >Clear</b-button
-            >
-          </b-card>
-        </div>
-        <b-table
-          v-if="students.length"
-          :items="getStudents"
-          :fields="studentInputFields"
-          striped="true"
-        >
-          <template #cell(remove)="row">
-            <b-button
-              class="btn btn-primary w-100"
-              @click="removeStudent(row.item.pen)"
-            >
-              Remove
-            </b-button>
-          </template>
-          <template #cell(info)="row">
-            <div>
-              <strong>Name:</strong> {{ row.item.info.firstName }}
-              {{ row.item.info.lastName }}
-            </div>
-            <div><strong>Birthdate:</strong> {{ row.item.info.dob }}</div>
-            <div><strong>Status:</strong> {{ row.item.info.status }}</div>
-            <div><strong>Program:</strong> {{ row.item.info.program }}</div>
-            <div>
-              <strong>School of Record:</strong>
-              {{ row.item.info.schoolOfRecord }}
-            </div>
-            <div>
-              <strong>School At Graduation:</strong>
-              {{ row.item.info.schoolAtGrad }}
-            </div>
-          </template>
-        </b-table>
-      </b-card-text>
-    </b-card>
-  </div>
+                <div>
+                  <strong>Birthdate:</strong> {{ item.columns.info.dob }}
+                </div>
+                <div>
+                  <strong>Status:</strong> {{ item.columns.info.status }}
+                </div>
+                <div>
+                  <strong>Program:</strong> {{ item.columns.info.program }}
+                </div>
+                <div>
+                  <strong>School of Record:</strong>
+                  {{ item.columns.info.schoolOfRecord }}
+                </div>
+                <div>
+                  <strong>School At Graduation:</strong>
+                  {{ item.columns.info.schoolAtGrad }}
+                </div>
+              </template>
+            </v-data-table>
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 <script>
 import TRAXService from "@/services/TRAXService.js";
@@ -111,19 +114,21 @@ export default {
       pen: {
         minLength: minLength(9),
         async isValid(value) {
+          console.log("CAIDATIING");
           this.validationMessage = "";
           if (value === "") return true;
           if (value.length == 9) {
             let student = await StudentService.getStudentByPen(value);
             let studentID = student.data[0].studentID;
+
             let studentGRADStatus = await StudentService.getGraduationStatus(
               studentID
             );
+
             //check is student is status = MER
 
             if (studentGRADStatus.data) {
               //display student
-
               this.penStudentInfo = {
                 firstName: student.data[0].legalFirstName,
                 lastName: student.data[0].legalLastName,
@@ -186,19 +191,19 @@ export default {
       studentInputFields: [
         {
           key: "pen",
-          label: "pen",
+          title: "pen",
           sortable: true,
           class: "text-left col-2",
         },
         {
           key: "info",
-          label: "info",
+          title: "info",
           sortable: true,
           class: "text-left",
         },
         {
           key: "remove",
-          label: "remove",
+          title: "remove",
           sortable: true,
           class: "text-left",
         },
@@ -234,14 +239,18 @@ export default {
       this.clearPen();
     },
     removeStudent(pen) {
+      console.log("removeStudent pen");
+
       const studentList = toRaw(this.students);
+      console.log(studentList);
       for (const [index, student] in studentList) {
+        console.log(studentList[index].pen == pen);
         if (studentList[index].pen == pen) {
           console.log(pen);
           this.students.splice(index, 1);
         }
       }
-      this.setStudents(studentList);
+      this.setStudents(this.students);
     },
   },
   props: {

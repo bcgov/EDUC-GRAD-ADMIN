@@ -23,14 +23,51 @@
               <template v-slot:item.2>
                 Credential Type
                 <v-select
-                  v-model="selectedOption"
+                  v-model="credentialTypeSelected"
                   :items="options"
                   label="Choose..."
                   class="custom-select mb-2 mr-sm-2 mb-sm-0 col-12"
                   id="inline-form-select-audience"
                 ></v-select>
               </template>
-              <template v-slot:item.3> <SchoolInput></SchoolInput></template>
+              <template v-slot:item.3>
+                {{ credentialTypeSelected }}
+                <v-row>
+                  <v-select
+                    v-if="credentialTypeSelected == 'RC'"
+                    v-model="groupSelected"
+                    :items="['School', 'Ministry of Advanced Education']"
+                    label="Select Option"
+                  ></v-select>
+                  <v-select
+                    v-else
+                    v-model="groupSelected"
+                    :items="[
+                      'Student',
+                      'School',
+                      'School Category',
+                      'Program',
+                      'PSI',
+                    ]"
+                    label="Select Option"
+                  ></v-select>
+                </v-row>
+                <v-row v-if="groupSelected == 'Student'">
+                  <StudentInput></StudentInput>
+                </v-row>
+                <v-row v-if="groupSelected == 'School Category'">
+                  <DistrictInput></DistrictInput>
+                </v-row>
+                <v-row v-if="groupSelected == 'PSI'">
+                  <DistrictInput></DistrictInput>
+                </v-row>
+                <v-row v-if="groupSelected == 'Program'">
+                  <ProgramInput></ProgramInput>
+                </v-row>
+                <v-row v-if="groupSelected == 'School'">
+                  <SchoolInput></SchoolInput>
+                </v-row>
+              </template>
               <template v-slot:item.4>
                 <v-card title="Group" flat>
                   <v-container>
@@ -96,176 +133,7 @@
 
               <template v-slot:item.5>
                 <v-card title="Schedule" flat>
-                  <div
-                    class="modal-body"
-                    id="batch-modal-job-1___BV_modal_body_"
-                  >
-                    <div data-v-903f8855="">
-                      <!---->
-                      <ul>
-                        <li>
-                          <strong>Run Type: </strong>Transcript Verification
-                          Report
-                        </li>
-                        <li><strong>Copies: </strong>1</li>
-                        <li><strong>Group: </strong>School</li>
-                        <!---->
-                        <ul>
-                          <li>
-                            <strong>Select Students: </strong>Current Students
-                          </li>
-                          <!---->
-                          <li>
-                            <strong>School(s): </strong>
-                            <div class="list-item-comma">04343000</div>
-                            <div class="list-item-comma"></div>
-                          </li>
-                          <!----><!----><!---->
-                          <ul>
-                            <!----><!---->
-                          </ul>
-                          <!----><!----><!---->
-                        </ul>
-                        <!---->
-                      </ul>
-                    </div>
-                    <fieldset
-                      data-v-903f8855=""
-                      class="form-group"
-                      id="__BVID__467"
-                    >
-                      <legend
-                        tabindex="-1"
-                        class="bv-no-focus-ring col-form-label pt-0"
-                        id="__BVID__467__BV_label_"
-                      >
-                        Batch Run
-                      </legend>
-                      <div>
-                        <div
-                          data-v-903f8855=""
-                          class="bv-no-focus-ring"
-                          role="radiogroup"
-                          tabindex="-1"
-                          id="__BVID__468"
-                        >
-                          <div
-                            data-v-903f8855=""
-                            class="custom-control custom-control-inline custom-radio"
-                          >
-                            <input
-                              class="custom-control-input"
-                              type="radio"
-                              value="Run Now"
-                              id="__BVID__469"
-                              name="__BVID__468"
-                            /><label
-                              class="custom-control-label"
-                              for="__BVID__469"
-                              >Run Now</label
-                            >
-                          </div>
-                          <div
-                            data-v-903f8855=""
-                            class="custom-control custom-control-inline custom-radio"
-                          >
-                            <input
-                              class="custom-control-input"
-                              type="radio"
-                              value="Run Later"
-                              id="__BVID__470"
-                              name="__BVID__468"
-                            /><label
-                              class="custom-control-label"
-                              for="__BVID__470"
-                              >Run Later</label
-                            >
-                          </div>
-                        </div>
-                        <fieldset
-                          data-v-903f8855=""
-                          class="form-group"
-                          id="__BVID__476"
-                        >
-                          <legend
-                            tabindex="-1"
-                            class="bv-no-focus-ring col-form-label pt-0"
-                            id="__BVID__476__BV_label_"
-                          >
-                            Schedule
-                          </legend>
-                          <div>
-                            <div
-                              data-v-903f8855=""
-                              class="custom-control custom-radio"
-                            >
-                              <input
-                                class="custom-control-input"
-                                type="radio"
-                                name="schedule-options"
-                                value="N"
-                                id="__BVID__477"
-                              /><label
-                                class="custom-control-label"
-                                for="__BVID__477"
-                                >Tonight at 6:30PM</label
-                              >
-                            </div>
-                            <div
-                              data-v-903f8855=""
-                              class="custom-control custom-radio"
-                            >
-                              <input
-                                class="custom-control-input"
-                                type="radio"
-                                name="schedule-options"
-                                value="W"
-                                id="__BVID__478"
-                              /><label
-                                class="custom-control-label"
-                                for="__BVID__478"
-                                >Weekend Batch - Saturday 12:00PM</label
-                              >
-                            </div>
-                            <div
-                              data-v-903f8855=""
-                              class="custom-control custom-radio"
-                            >
-                              <input
-                                class="custom-control-input"
-                                type="radio"
-                                name="schedule-options"
-                                value="M"
-                                id="__BVID__479"
-                              /><label
-                                class="custom-control-label"
-                                for="__BVID__479"
-                                >Tomorrow at 6:30AM</label
-                              >
-                            </div>
-                            <div
-                              data-v-903f8855=""
-                              class="custom-control custom-radio"
-                            >
-                              <input
-                                class="custom-control-input"
-                                type="radio"
-                                name="schedule-options"
-                                value="Custom"
-                                id="__BVID__480"
-                              /><label
-                                class="custom-control-label"
-                                for="__BVID__480"
-                                >Custom</label
-                              >
-                            </div>
-                            <!----><!----><!----><!---->
-                          </div>
-                        </fieldset>
-                        <!----><!----><!---->
-                      </div>
-                    </fieldset>
-                  </div>
+                  <ScheduleInput></ScheduleInput>
                 </v-card>
               </template>
             </v-stepper>
@@ -278,7 +146,7 @@
             Cancel
           </v-btn>
           <v-btn color="blue-darken-1" variant="text" @click="submit">
-            Save
+            Submit
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -288,13 +156,22 @@
 
 <script>
 import SchoolInput from "@/components/Batch/Forms/FormInputs/SchoolInput.vue";
+import DistrictInput from "@/components/Batch/Forms/FormInputs/DistrictInput.vue";
+import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
+import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
+import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 export default {
   components: {
     SchoolInput: SchoolInput,
+    DistrictInput: DistrictInput,
+    StudentInput: StudentInput,
+    ProgramInput: ProgramInput,
+    ScheduleInput: ScheduleInput,
   },
   data: () => ({
     dialog: false,
-    selectedOption: null,
+    groupSelected: "",
+    credentialTypeSelected: null,
     options: [
       { title: "Blank certificate print", value: "Blank certificate print" },
       {

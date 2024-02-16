@@ -45,7 +45,7 @@
                   v-model="mincode"
                   label="Autocomplete"
                   :items="getSchoolsList"
-                  item-title="displayName"
+                  :item-title="schoolTitle"
                   item-value="mincode"
                 >
                   <template v-slot:label="label">
@@ -210,6 +210,10 @@ export default {
       "setGradDateFrom",
       "setGradDateTo",
     ]),
+    schoolTitle(item) {
+      // Customize this method to return the desired format
+      return `${item.mincode} - ${item.displayName}`;
+    },
     async validateSchool() {
       this.mincodeValidating = true;
       if (this.mincode.length < 8) {

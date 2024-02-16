@@ -16,6 +16,7 @@ export default {
   //Refreshes the users auth token
   async refreshAuthToken(token) {
     try {
+    
       const response = await axios.post(Routes.REFRESH, {
         refreshToken: token,
       });
@@ -24,7 +25,7 @@ export default {
         return { error: response.data.error_description };
       }
 
-      return response.data;
+      return response.data;      
     } catch (e) {
       console.log(`Failed to refresh JWT token - ${e}`); // eslint-disable-line no-console
       window.location.href = "/token-expired";

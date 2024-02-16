@@ -1,53 +1,42 @@
 <template>
-  <div>
-    <b-card title="Include Program(s)">
-      <b-card-text>
-        <div>
-          <label>Program</label>
+  <v-container>
+    <v-card>
+      <v-card-title>Include Program(s)</v-card-title>
+      <v-card-text>
+        <label>Program</label>
+        <v-autocomplete
+          v-model="program"
+          :items="getProgramOptions"
+          :item-title="programCodeTitle"
+          item-value="programCode"
+        ></v-autocomplete>
 
-          <b-form-select
-            id="inline-form-select-type"
-            class="col-2 mx-2"
-            :options="getProgramOptions"
-            value-field="programCode"
-            text-field="programCode"
-            v-model="program"
-          ></b-form-select>
-          <div
-            class="input-errors"
-            v-for="error of v$.program.$errors"
-            :key="error.$uid"
-          >
-            <div class="error-msg">{{ error.$message }}</div>
-          </div>
-
-          <div class="float-right mb-3">
-            <b-button :disabled="!program" @click="addProgram()">Add</b-button>
-          </div>
+        <div class="float-right mb-3">
+          <v-btn :disabled="!program" @click="addProgram()">Add</v-btn>
         </div>
-        <b-table
-          v-if="programs.length > 0"
-          :items="programs"
-          :fields="programInputFields"
-          striped="true"
+
+        <v-data-table
+          v-if="getPrograms.length > 0"
+          :items="getPrograms"
+          :headers="programInputFields"
         >
-          <template #cell(remove)="row">
-            <b-button
+          <template v-slot:item.remove="{ item }">
+            <v-btn
+              @click="removeProgram(item.columns.program)"
               class="btn btn-primary w-100"
-              @click="removeProgram(row.item.program)"
             >
               Remove
-            </b-button>
+            </v-btn>
           </template>
-          <template #cell(info)="row">
+          <template v-slot:item.info="{ item }">
             <div>
-              {{ row.item.info }}
+              {{ item.columns.info }}
             </div>
           </template>
-        </b-table>
-      </b-card-text>
-    </b-card>
-  </div>
+        </v-data-table>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 <script>
 import TRAXService from "@/services/TRAXService.js";
@@ -81,19 +70,19 @@ export default {
       programInputFields: [
         {
           key: "program",
-          label: "Program",
+          title: "Program",
           sortable: true,
           class: "text-left",
         },
         {
           key: "info",
-          label: "Post Secondary Institute Name",
+          title: "Post Secondary Institute Name",
           sortable: true,
           class: "text-left",
         },
         {
           key: "remove",
-          label: "Remove",
+          title: "Remove",
           sortable: true,
           class: "text-left",
         },
@@ -144,6 +133,10 @@ export default {
         }
       }
       this.setPrograms(programList);
+    },
+    programCodeTitle(item) {
+      // Customize this method to return the desired format
+      return `${item.programCode} - ${item.programName}`;
     },
   },
 

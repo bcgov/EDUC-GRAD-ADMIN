@@ -1,105 +1,93 @@
 <template>
-  <div>
-    <b-card title="Include School Category">
-      <b-card-text>
-        <label class="font-weight-bold pt-2">Category</label>
-        <b-form-select
-          id="inline-form-select-type"
-          class="col-4 m-2"
-          :options="[
-            { text: 'Select School Category', value: '' },
-            { text: '01 Public', value: '01' },
-            { text: '02 Independent', value: '02' },
-            { text: '03 Federally Operated Band School', value: '03' },
-            { text: '04 Yukon School', value: '04' },
-            { text: '09 Offshore', value: '09' },
-          ]"
-          v-model="schoolCategory"
-        ></b-form-select>
-        <div
-          v-if="
-            schoolCategory != '04' &&
-            schoolCategory != '09' &&
-            runType != 'NONGRADRUN' &&
-            (runType != 'DISTRUN_YE' || schoolCategory == '01')
-          "
-        >
-          <label class="float-left font-weight-bold p-2">District</label>
-          <b-input
-            type="number"
-            v-model="district"
-            maxlength="3"
-            @input="validateDistrict"
-            class="w-25 col-1 float-left"
-            :disabled="schoolCategory == ''"
-          />
-          <div
-            class="input-errors"
-            v-for="error of v$.district.$errors"
-            :key="error.$uid"
-          >
-            <div class="error-msg">{{ error.$message }}</div>
-          </div>
-          <div v-if="districtInfo" class="float-left col-10">
-            <b-card>
-              <b-card-text>
-                <b-alert
-                  dismissible
-                  v-if="validationMessage"
-                  show
-                  variant="danger"
-                  >{{ validationMessage }}</b-alert
-                >
-                <b-overlay :show="districtValidating">
-                  <div v-if="!districtInfo">NOT VALID</div>
-                  <div v-else>
-                    <strong>District:</strong> {{ districtInfo.districtName
-                    }}<br />
-                    <strong>Active Flag:</strong> {{ districtInfo.activeFlag
-                    }}<br />
-                  </div>
-                </b-overlay>
-              </b-card-text>
-              <b-button
-                @click="addDistrict()"
-                :disabled="validationMessage != ''"
-                class="float-right"
-                >Add</b-button
-              >
-            </b-card>
-          </div>
-        </div>
-        <b-table
+  <v-container>
+    <v-card>
+      <v-card-title>Include School Category</v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col>
+            {{ districts }}
+            <v-autocomplete
+              v-model="district"
+              :items="getDistrictList"
+              label="Category"
+              outlined
+              :item-title="districtTitle"
+              item-value="districtNumber"
+            ></v-autocomplete>
+            <v-btn
+              :disabled="!district"
+              @click="addDistrict()"
+              class="float-right"
+              >Add District</v-btn
+            >
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col>
+            <label class="font-weight-bold pt-2">District</label>
+
+            <v-row v-if="districtInfo" class="float-left col-10">
+              <v-card>
+                <v-card-text>
+                  <v-alert v-if="validationMessage" dismissible type="danger">{{
+                    validationMessage
+                  }}</v-alert>
+                  <v-overlay :value="districtValidating">
+                    <div v-if="!districtInfo">NOT VALID</div>
+                    <div v-else>
+                      <strong>District:</strong> {{ districtInfo.districtName
+                      }}<br />
+                      <strong>Active Flag:</strong> {{ districtInfo.activeFlag
+                      }}<br />
+                    </div>
+                  </v-overlay>
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn
+                    @click="addDistrict()"
+                    :disabled="validationMessage !== ''"
+                  >
+                    Add
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-row>
+          </v-col>
+        </v-row>
+
+        <v-data-table
           v-if="districts.length > 0"
           :items="districts"
-          :fields="districtInputFields"
-          striped="true"
+          :headers="districtInputFields"
+          striped
         >
-          <template #cell(remove)="row">
-            <b-button
-              class="btn btn-primary w-100"
-              @click="removeDistrict(row.item.district)"
+          <template v-slot:item.remove="{ item }">
+            <v-btn
+              @click="removeDistrict(item.columns.district)"
+              color="primary"
             >
               Remove
-            </b-button>
+            </v-btn>
           </template>
-          <template #cell(info)="row">
+          <template v-slot:item.info="{ item }">
             <div>
-              <strong>District Name:</strong> {{ row.item.info.districtName }}
+              <strong>District Name:</strong>
+              {{ item.columns.info.districtName }}
             </div>
             <div>
-              <strong>Active Flag:</strong> {{ row.item.info.activeFlag }}
+              <strong>Active Flag:</strong> {{ item.columns.info.activeFlag }}
             </div>
           </template>
-        </b-table>
-      </b-card-text>
-    </b-card>
-  </div>
+        </v-data-table>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 <script>
-import TRAXService from "@/services/TRAXService.js";
 import { useVuelidate } from "@vuelidate/core";
 import { mapActions, mapState } from "pinia";
+import { useAppStore } from "../../../../store/modules/app";
 import { useBatchProcessingStore } from "../../../../store/modules/batchprocessing";
 import { required, minLength, helpers } from "@vuelidate/validators";
 import { isProxy, toRaw } from "vue";
@@ -150,33 +138,7 @@ export default {
     },
   },
   validations() {
-    return {
-      schoolCategory: {
-        required: helpers.withMessage(
-          "School Category field cannot be empty",
-          required
-        ),
-      }, // Matches this.firstName
-      district: {
-        minLength: minLength(3),
-        async isValid(value) {
-          this.validationMessage = "";
-          if (value === "") return true;
-          if (value.length == 3) {
-            let district = await TRAXService.getDistrict(value);
-            if (district.data) {
-              this.districtInfo = {
-                districtNumber: district.data.districtNumber,
-                districtName: district.data.districtName,
-                activeFlag: district.data.activeFlag,
-              };
-              return true;
-            }
-          }
-          return false;
-        },
-      }, // Matches this.firstName
-    };
+    return {};
   },
   data() {
     return {
@@ -215,6 +177,9 @@ export default {
       "setDistricts",
       "setSchoolCategory",
     ]),
+    districtTitle(item) {)
+      return `${item.districtNumber} - ${item.displayName}`;
+    },
     async validateDistrict() {
       this.districtValidating = true;
       this.clearDistrictInfo();
@@ -233,10 +198,19 @@ export default {
       this.clearDistrictInfo();
     },
     addDistrict() {
+      let info = this.getDistrictList.find(
+        (districtObject) => districtObject.districtNumber === this.district
+      );
+      this.districtInfo = {
+        districtNumber: info.districtNumber,
+        districtName: info.displayName,
+        activeFlag: info.activeFlag,
+      };
       this.districts.splice(0, 0, {
         district: this.district,
         info: this.districtInfo,
       });
+
       this.setDistricts(this.districts);
       this.clearDistrictInput();
     },
@@ -257,7 +231,8 @@ export default {
   },
 
   computed: {
-    ...mapState(useBatchProcessingStore, ["getDistricts"]),
+    ...mapState(useAppStore, ["getDistrictList"]),
+
     isEmpty() {
       return this.districts.length > 0;
     },
