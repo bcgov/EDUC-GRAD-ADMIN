@@ -151,19 +151,19 @@ export default {
       districtInputFields: [
         {
           key: "district",
-          label: "District",
+          title: "District",
           sortable: true,
           class: "text-left col-1",
         },
         {
           key: "info",
-          label: "Info",
+          title: "Info",
           sortable: true,
           class: "text-left",
         },
         {
           key: "remove",
-          label: "remove",
+          title: "remove",
           sortable: true,
           class: "text-left",
         },
@@ -177,7 +177,7 @@ export default {
       "setDistricts",
       "setSchoolCategory",
     ]),
-    districtTitle(item) {)
+    districtTitle(item) {
       return `${item.districtNumber} - ${item.displayName}`;
     },
     async validateDistrict() {
