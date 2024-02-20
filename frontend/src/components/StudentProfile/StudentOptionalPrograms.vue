@@ -234,9 +234,15 @@ export default {
       ],
       optionalProgramsfields: [
         { key: "more", label: "" },
+        { key: "programCode", label: "Graduation Program" },
         { key: "optionalProgramName", label: "Optional Program" },
         { key: "optionalReqMet", label: "Requirements Met" },
         { key: "optionalNonGradReasons", label: "Requirements Not Met" },
+        {
+          key: "optionalProgramCompletionDate",
+          label: "Optional Program Completion Date",
+        },
+        { key: "delete", label: "Delete" },
       ],
       careerProgramsFields: [
         { key: "careerProgramCode", label: "" },
