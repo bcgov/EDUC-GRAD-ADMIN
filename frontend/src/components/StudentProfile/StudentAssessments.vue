@@ -137,6 +137,12 @@ export default {
           sortDirection: "desc",
         },
         {
+          key: "wroteFlag",
+          label: "Wrote Flag",
+          sortable: true,
+          sortDirection: "desc",
+        },
+        {
           key: "exceededWriteFlag",
           label: "Exceeded Writes",
           sortable: true,
