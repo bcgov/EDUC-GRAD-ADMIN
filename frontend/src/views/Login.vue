@@ -11,9 +11,9 @@
             valid IDIR.
           </v-card-text>
           <v-card-actions>
-            <button class="btn btn-primary">
+            <v-btn color="primary" href="authRoutes.LOGIN">
               <a :href="authRoutes.LOGIN">Login</a>
-            </button>
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
