@@ -6,6 +6,7 @@
       aria-label="Toolbar with button groups"
       class="float-left"
     >
+      {{ filter }} {{ totalRows }}
       <b-button-group class="mx-1">
         <b-button
           v-if="allowUpdateGradStatus && updateAllowed"
@@ -197,6 +198,7 @@
     </b-table>
 
     <b-pagination
+      v-if="totalRows"
       v-model="currentPage"
       :total-rows="totalRows"
       :per-page="perPage"
@@ -245,7 +247,8 @@ export default {
   ],
   onMounted() {
     // Set the initial number of items
-    this.totalRows = this.items.length;
+    // this.totalRows = this.items.length;
+    // this.rows = this.items.length;
   },
   data() {
     return {
@@ -302,11 +305,11 @@ export default {
     editableFields() {
       return this.fields.filter((field) => field.editable);
     },
-    // totalRows: function () {
-    //   if (this.items?.length) {
-    //     return this.items.length;
-    //   } else return this.totalRows;
-    // },
+    totalRows: function () {
+      if (this.items?.length && !this.filter) {
+        return this.items.length;
+      } else return this.totalRows;
+    },
     sortOptions() {
       return this.fields
         .filter((f) => f.sortable)
@@ -344,8 +347,11 @@ export default {
     },
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
-      this.totalRows = filteredItems.length;
-      this.currentPage = 1;
+      if (this.filter) {
+        this.totalRows = filteredItems.length;
+      }
+
+      this.currentPage = 0;
     },
   },
 };
