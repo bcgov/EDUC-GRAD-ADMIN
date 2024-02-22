@@ -8,7 +8,7 @@
     </p>
     <DisplayTable
       title="Career Programs"
-      v-bind:items="careerPrograms"
+      v-bind:items="sortedCareerPrograms"
       v-bind:fields="careerProgramFields"
       id="code"
       showFilter="true"
@@ -36,6 +36,9 @@ export default {
     ProgramManagementService.getCareerPrograms()
       .then((response) => {
         this.careerPrograms = response.data;
+        this.sortedCareerPrograms = this.careerPrograms.sort(
+          (a, b) => a.displayOrder - b.displayOrder
+        );
       })
       // eslint-disable-next-line
       .catch((error) => {
@@ -49,7 +52,16 @@ export default {
   data: function () {
     return {
       careerPrograms: [],
+      sortedCareerPrograms: [],
       careerProgramFields: [
+        {
+          key: "displayOrder",
+          label: "Display Order",
+          sortable: true,
+          sortDirection: "asc",
+          thClass: "d-none",
+          tdClass: "d-none",
+        },
         {
           key: "code",
           label: "Code",
@@ -64,12 +76,12 @@ export default {
         },
         {
           key: "startDate",
-          label: "Start Date",
+          label: "Effective Date",
           sortable: true,
         },
         {
           key: "endDate",
-          label: "End Date",
+          label: "Expiry Date",
           sortable: true,
         },
       ],
