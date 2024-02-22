@@ -6,7 +6,6 @@
       aria-label="Toolbar with button groups"
       class="float-left"
     >
-      {{ filter }} {{ totalRows }}
       <b-button-group class="mx-1">
         <b-button
           v-if="allowUpdateGradStatus && updateAllowed"
