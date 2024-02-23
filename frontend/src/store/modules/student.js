@@ -43,6 +43,9 @@ export const useStudentStore = defineStore("student", {
     },
   }),
   actions: {
+    removeCareerProgram(id) {
+      console.log(id);
+    },
     removeOptionalProgram(id) {
       console.log(id);
     },
