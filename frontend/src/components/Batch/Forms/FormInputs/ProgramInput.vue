@@ -7,7 +7,7 @@
         <v-autocomplete
           v-model="program"
           :items="getProgramOptions"
-          :item-title="programCodeTitle"
+          :item-title="programTitle"
           item-value="programCode"
         ></v-autocomplete>
 
@@ -134,7 +134,7 @@ export default {
       }
       this.setPrograms(programList);
     },
-    programCodeTitle(item) {
+    programTitle(item) {
       // Customize this method to return the desired format
       return `${item.programCode} - ${item.programName}`;
     },
