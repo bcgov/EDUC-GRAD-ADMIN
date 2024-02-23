@@ -111,6 +111,8 @@
         </b-card-text>
       </b-card>
     </b-row>
+    <slot name="create"></slot>
+
     <b-table
       v-if="items && items.length"
       :responsive="responsive"
@@ -229,7 +231,6 @@ export default {
     "title",
     "fields",
     "id",
-    "create",
     "update",
     "delete",
     "store",
