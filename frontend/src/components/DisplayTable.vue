@@ -338,9 +338,9 @@ export default {
     deleteItem(item) {
       const itemRaw = toRaw(item);
       const store = this.stores[this.store];
-      const id = toRaw(item).id;
+      const itemId = itemRaw[this.id];
       if (store) {
-        store[this.delete](id);
+        store[this.delete](itemId);
       } else {
         console.error("Store not found.");
       }
