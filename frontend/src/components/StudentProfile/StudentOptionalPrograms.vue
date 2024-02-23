@@ -4,6 +4,7 @@
       <div v-if="!optionalPrograms" class="container">
         This student does not have any optional programs.
       </div>
+
       <DisplayTable
         :items="optionalPrograms"
         :striped="false"
@@ -11,8 +12,17 @@
         showFilter="true"
         title="Optional Programs"
         :delete="{
-          label: 'Cancel',
-          action: 'removeScheduledJobs',
+          disable: {
+            condition: 'OR',
+            criteria: [
+              {
+                field: 'optionalProgramName',
+                value: 'Career Program',
+              },
+            ],
+          },
+          label: 'Delete',
+          action: 'removeOptionalProgram',
         }"
       >
         <template v-slot:create>
@@ -85,14 +95,16 @@
           </ul>
           <div v-else>n/a</div>
         </template>
-        <template #cell(optionalProgramName)="row">
+
+        <template v-slot:item.optionalProgramName="{ item }">
           <div class="pt-2">
-            {{ row.item.optionalProgramName }} ({{
-              row.item.optionalProgramCode
+            {{ item.raw.optionalProgramName }} ({{
+              item.raw.optionalProgramCode
             }}) <br />
-            {{ $filters.formatTime(row.item.OptionalProgramCompletionDate) }}
+            {{ item.raw.optionalProgramCompletionDate }}
           </div>
         </template>
+
         <template #cell(optionalReqMet)="row">
           <div v-if="row.item.studentOptionalProgramData">
             <b-table
@@ -170,46 +182,34 @@
             </b-table>
           </div>
         </template>
-        <template #cell(more)="row">
-          <b-btn
-            v-if="
-              row.item.optionalProgramName ==
-                '2018 Graduation Program Career Program' ||
-              row.item.optionalProgramName == 'Adult Career Program' ||
-              row.item.optionalProgramName == 'Career Program'
-            "
-            variant="outline primary"
-            style="color: #666"
-            size="sm"
-            @click="row.toggleDetails"
-            class="more-button"
-          >
-            <img
-              v-show="!row.detailsShowing"
-              src="../../assets/images/icon-right.svg"
-              width="9"
-              aria-hidden="true"
-              alt=""
-            />
-            <img
-              v-show="row.detailsShowing"
-              src="../../assets/images/icon-down.svg"
-              height="5"
-              aria-hidden="true"
-              alt=""
-            />
-          </b-btn>
-        </template>
-        <template #row-details="">
-          <b-card class="px-0">
-            <strong>Career Programs</strong>
-            <hr />
-            <ul id="student-career-programs">
-              <li v-for="item in careerPrograms" :key="item.careerProgramName">
-                {{ item.careerProgramName }} ({{ item.careerProgramCode }})
-              </li>
-            </ul>
-          </b-card>
+
+        <template v-slot:expanded-row="{ columns, item }">
+          <tr>
+            <td :colspan="columns.length">
+              <v-card v-if="item.raw.optionalProgramCode == 'CP'">
+                <v-card-text>
+                  <DisplayTable
+                    title="Career Programs"
+                    :items="careerPrograms"
+                    :id="careerProgramCode"
+                    :fields="careerProgramsfields"
+                    :showFilter="false"
+                    :delete="{
+                      disable: {
+                        condition: 'OR',
+                        criteria: [],
+                      },
+                      label: 'Delete',
+                      action: 'removeOptionalProgram',
+                    }"
+                    store="batchprocessing"
+                    :showExpand="false"
+                  >
+                  </DisplayTable>
+                </v-card-text>
+              </v-card>
+            </td>
+          </tr>
         </template>
       </DisplayTable>
     </div>
@@ -244,16 +244,24 @@ export default {
           class: "text-left",
         },
       ],
-      optionalProgramsfields: [
-        { key: "more", label: "" },
-        { key: "optionalProgramName", label: "Optional Program" },
-        { key: "optionalReqMet", label: "Requirements Met" },
-        { key: "optionalNonGradReasons", label: "Requirements Not Met" },
-        { key: "delete", label: "delete" },
+
+      careerProgramsfields: [
+        { key: "careerProgramCode", title: "Career Program Code" },
+        { key: "careerProgramName", title: "Career Program Name" },
+        { key: "delete", title: "delete" },
       ],
-      careerProgramsFields: [
-        { key: "careerProgramCode", label: "" },
-        { key: "careerProgramName", label: "" },
+      optionalProgramsfields: [
+        {
+          key: "data-table-expand",
+          title: "",
+
+          sortable: true,
+          class: "text-left",
+        },
+        { key: "optionalProgramName", title: "Optional Program" },
+        { key: "optionalReqMet", title: "Requirements Met" },
+        { key: "optionalNonGradReasons", title: "Requirements Not Met" },
+        { key: "delete", title: "delete" },
       ],
     };
   },

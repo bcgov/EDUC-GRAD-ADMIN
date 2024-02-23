@@ -41,7 +41,6 @@
       <template v-slot:expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length">
-            {{ columns.length }}
             <v-card>
               <v-card-text>
                 <div
