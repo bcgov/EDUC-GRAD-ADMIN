@@ -6,11 +6,17 @@
       </div>
       <DisplayTable
         v-if="optionalPrograms"
+        id="optionalProgramID"
         :items="optionalPrograms"
         :striped="false"
         :fields="optionalProgramsfields"
         showFilter="true"
         title="Optional Programs"
+        disableDeletefield="optionalProgramCode"
+        disableDeleteIfValue="CP"
+        deleteLabel="Delete"
+        store="student"
+        delete="removeOptionalProgram"
       >
         <template #cell(optionalNonGradReasons)="row">
           <div v-if="row.item.studentOptionalProgramData">
