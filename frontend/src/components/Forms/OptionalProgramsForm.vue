@@ -1,27 +1,47 @@
 <template>
-  <div class="display-modal" v-if="showModal">
-    <b-card :header="header" class="modal-body">
-      <slot name="body"> No body specified </slot>
-      <template #footer>
-        <slot name="footer"></slot>
-        <!-- <b-btn
+  <div>
+    <!-- btn to open optional program edit form-->
+    <b-btn
+      >Add Optional Program
+      <i
+        class="fas fa-plus"
+        aria-hidden="true"
+        @click="editStudentOptionalPrograms = true"
+      ></i
+    ></b-btn>
+
+    <DisplayModal
+      header="Add Optional Program"
+      :showModal="editStudentOptionalPrograms"
+    >
+      <template v-slot:body> I'm the optional programs form </template>
+
+      <template v-slot:footer>
+        <b-btn
           variant="danger"
           size="xs"
           class="float-right"
-          @click="show = false"
+          @click="editStudentOptionalPrograms = false"
           >Close</b-btn
-        > -->
+        >
       </template>
-    </b-card>
+    </DisplayModal>
   </div>
 </template>
 
 <script>
+import DisplayModal from "../DisplayModal.vue";
+
 export default {
-  name: "DisplayModal",
+  name: "HelloWorld",
   props: ["header", "showModal"],
+  components: {
+    DisplayModal: DisplayModal,
+  },
   data() {
-    return {};
+    return {
+      editStudentOptionalPrograms: false,
+    };
   },
 };
 </script>
