@@ -1,5 +1,10 @@
 <template>
   <div>
+    <b-alert variant="primary" show
+      ><i class="fa-solid fa-circle-info"></i> This student is on the
+      <strong>{{ studentGradStatus.program }}</strong> Graduation
+      Program</b-alert
+    >
     <div class="table-responsive">
       <div v-if="!optionalPrograms" class="container">
         This student does not have any optional programs.
@@ -18,6 +23,10 @@
         store="student"
         delete="removeOptionalProgram"
       >
+        <template v-slot:create>
+          <OptionalProgramsForm></OptionalProgramsForm>
+        </template>
+
         <template #cell(optionalNonGradReasons)="row">
           <div v-if="row.item.studentOptionalProgramData">
             <div
@@ -198,7 +207,7 @@
           </b-btn>
         </template>
         <template #row-details="">
-          <b-card class="px-0">
+          <!-- <b-card class="px-0">
             <strong>Career Programs</strong>
             <hr />
             <ul id="student-career-programs">
@@ -206,6 +215,22 @@
                 {{ item.careerProgramName }} ({{ item.careerProgramCode }})
               </li>
             </ul>
+          </b-card> -->
+          <b-card class="col-6">
+            <DisplayTable
+              v-if="careerPrograms"
+              :items="careerPrograms"
+              :striped="false"
+              :fields="careerProgramsFields"
+              :showFilter="false"
+              :pagination="false"
+              title="Career Programs"
+            >
+              <template #cell(careerProgramName)="row3">
+                {{ row3.item.careerProgramName }}
+                ({{ row3.item.careerProgramCode }})
+              </template>
+            </DisplayTable>
           </b-card>
         </template>
       </DisplayTable>
@@ -217,16 +242,19 @@
 import { useStudentStore } from "../../store/modules/student";
 import { mapState } from "pinia";
 import DisplayTable from "@/components/DisplayTable.vue";
+import OptionalProgramsForm from "@/components/Forms/OptionalProgramsForm.vue";
 export default {
   name: "StudentOptionalPrograms",
   components: {
     DisplayTable: DisplayTable,
+    OptionalProgramsForm: OptionalProgramsForm,
   },
 
   computed: {
     ...mapState(useStudentStore, {
       optionalPrograms: "getStudentOptionalPrograms",
       careerPrograms: "getStudentCareerPrograms",
+      studentGradStatus: "getStudentGradStatus",
     }),
   },
   data: function () {
@@ -251,8 +279,8 @@ export default {
         { key: "delete", label: "Delete" },
       ],
       careerProgramsFields: [
-        { key: "careerProgramCode", label: "" },
-        { key: "careerProgramName", label: "" },
+        { key: "careerProgramName", label: "Career Program" },
+        { key: "delete", label: "Delete" },
       ],
     };
   },
