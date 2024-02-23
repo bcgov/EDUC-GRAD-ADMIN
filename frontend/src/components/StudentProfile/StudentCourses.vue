@@ -7,12 +7,20 @@
       <DisplayTable
         v-if="courses"
         :items="courses"
-        v-bind:filterOn="toFilterItem"
         :fields="fields"
+        :id="id"
         showFilter="true"
         title="studentCourse"
+        :delete="{
+          disable: {
+            condition: 'OR',
+            criteria: [],
+          },
+          label: 'Delete',
+          action: 'removeStudentCourse',
+        }"
       >
-        <template #thead-top="">
+        <!-- <template #thead-top="">
           <b-tr class="table-row-header-group top-row">
             <b-th colspan="1" class="table-header-group text-center"></b-th>
             <b-th colspan="3" class="table-header-group text-center">
@@ -28,30 +36,30 @@
             <b-th colspan="1"></b-th>
             <b-th colspan="1">Fa</b-th>
           </b-tr>
-        </template>
-        <template #cell(sessionDate)="row">
+        </template> -->
+        <!-- <template #cell(sessionDate)="row">
           {{ $filters.formatYYYYMMDate(row.value) }}
         </template>
         <template #cell(courseName)="row">
           <b-btn
             v-b-modal="
-              row.item.courseCode +
-              row.item.courseLevel +
-              row.item.sessionDate +
+              item.raw.courseCode +
+              item.raw.courseLevel +
+              item.raw.sessionDate +
               'modal'
             "
             variant="link"
-            >{{ row.item.courseName }}</b-btn
+            >{{ item.raw.courseName }}</b-btn
           >
 
           <b-modal
             :id="
-              row.item.courseCode +
-              row.item.courseLevel +
-              row.item.sessionDate +
+              item.raw.courseCode +
+              item.raw.courseLevel +
+              item.raw.sessionDate +
               'modal'
             "
-            :title="row.item.courseName"
+            :title="item.raw.courseName"
             ok-title="Close"
             ok-only
           >
@@ -59,30 +67,30 @@
               <div class="col">
                 <strong>Instruction Language:</strong>
               </div>
-              <div class="col">{{ row.item.courseDetails.language }}</div>
+              <div class="col">{{ item.raw.courseDetails.language }}</div>
             </div>
             <div class="row py-1">
               <div class="col"><strong>Start Date:</strong></div>
               <div class="col">
                 {{
-                  $filters.formatSimpleDate(row.item.courseDetails.startDate)
+                  $filters.formatSimpleDate(item.raw.courseDetails.startDate)
                 }}
               </div>
             </div>
             <div class="row py-1">
               <div class="col"><strong>End Date:</strong></div>
               <div class="col">
-                {{ $filters.formatSimpleDate(row.item.courseDetails.endDate) }}
+                {{ $filters.formatSimpleDate(item.raw.courseDetails.endDate) }}
               </div>
             </div>
             <div class="row py-1">
               <div class="col"><strong>Credits:</strong></div>
-              <div class="col">{{ row.item.courseDetails.numCredits }}</div>
+              <div class="col">{{ item.raw.courseDetails.numCredits }}</div>
             </div>
             <div class="row py-1">
               <div class="col"><strong>Work Experience:</strong></div>
               <div class="col">
-                {{ row.item.courseDetails.workExpFlag }}
+                {{ item.raw.courseDetails.workExpFlag }}
               </div>
             </div>
             <div class="row py-1">
@@ -90,75 +98,54 @@
                 <strong>Generic Course Type:</strong>
               </div>
               <div class="col">
-                {{ row.item.courseDetails.genericCourseType }}
+                {{ item.raw.courseDetails.genericCourseType }}
               </div>
             </div>
           </b-modal>
-        </template>
-        <template #cell(more)="row">
-          <b-btn
-            v-if="row.item.hasRelatedCourse == 'Y'"
-            variant="outline primary"
-            style="color: #666"
-            size="sm"
-            @click="row.toggleDetails"
-            class="more-button"
-          >
-            <img
-              v-show="!row.detailsShowing"
-              src="../../assets/images/icon-right.svg"
-              width="9"
-              aria-hidden="true"
-              alt=""
-            />
-            <img
-              v-show="row.detailsShowing"
-              src="../../assets/images/icon-down.svg"
-              height="5"
-              aria-hidden="true"
-              alt=""
-            />
-          </b-btn>
-        </template>
-        <template #row-details="row">
-          <b-card class="px-0">
-            <ul>
-              <li v-if="row.item.customizedCourseName">
-                <strong>Customized Course Title:</strong>
-                {{ row.item.customizedCourseName }}
-              </li>
-              <li v-if="row.item.relatedCourse">
-                <strong>Related Course:</strong> {{ row.item.relatedCourse }}
-              </li>
-              <li v-if="row.item.relatedLevel">
-                <strong>Related Course Level:</strong>
-                {{ row.item.relatedLevel }}
-              </li>
-              <li v-if="row.item.relatedCourseName">
-                <strong>Related Course Name:</strong>
-                {{ row.item.relatedCourseName }}
-              </li>
-              <li v-if="row.item.alternateCourseName">
-                <strong>Alternate Course Name:</strong>
-                {{ row.item.alternateCourseName }}
-              </li>
-              <li v-if="row.item.bestSchoolPercent">
-                <strong>Best School Percent:</strong>
-                {{ row.item.bestSchoolPercent }}
-              </li>
-              <li v-if="row.item.bestExamPercent">
-                <strong>Best Exam Percent:</strong>
-                {{ row.item.bestExamPercent }}
-              </li>
-              <li v-if="row.item.metLitNumRequirement">
-                <strong>Assessment Equivalent:</strong>
-                {{ row.item.metLitNumRequirement }}
-              </li>
-              <li v-if="row.item.specialCase">
-                <strong>Special Case:</strong> {{ row.item.specialCase }}
-              </li>
-            </ul>
-          </b-card>
+        </template> -->
+
+        <template v-slot:expanded-row="{ columns, item }">
+          <tr>
+            <td :colspan="columns.length">
+              <ul v-if="item.raw.hasRelatedCourse">
+                <li v-if="item.raw.customizedCourseName">
+                  <strong>Customized Course Title:</strong>
+                  {{ item.raw.customizedCourseName }}
+                </li>
+                <li v-if="item.raw.relatedCourse">
+                  <strong>Related Course:</strong>
+                  {{ item.raw.relatedCourse }}
+                </li>
+                <li v-if="item.raw.relatedLevel">
+                  <strong>Related Course Level:</strong>
+                  {{ item.raw.relatedLevel }}
+                </li>
+                <li v-if="item.raw.relatedCourseName">
+                  <strong>Related Course Name:</strong>
+                  {{ item.raw.relatedCourseName }}
+                </li>
+                <li v-if="item.raw.alternateCourseName">
+                  <strong>Alternate Course Name:</strong>
+                  {{ item.raw.alternateCourseName }}
+                </li>
+                <li v-if="item.raw.bestSchoolPercent">
+                  <strong>Best School Percent:</strong>
+                  {{ item.raw.bestSchoolPercent }}
+                </li>
+                <li v-if="item.raw.bestExamPercent">
+                  <strong>Best Exam Percent:</strong>
+                  {{ item.raw.bestExamPercent }}
+                </li>
+                <li v-if="item.raw.metLitNumRequirement">
+                  <strong>Assessment Equivalent:</strong>
+                  {{ item.raw.metLitNumRequirement }}
+                </li>
+                <li v-if="item.raw.specialCase">
+                  <strong>Special Case:</strong> {{ item.raw.specialCase }}
+                </li>
+              </ul>
+            </td>
+          </tr>
         </template>
       </DisplayTable>
     </div>
@@ -187,74 +174,80 @@ export default {
     return {
       toFilterItem: ["courseCode", "courseLevel", "sessionDate", "courseName"],
       fields: [
-        { key: "more", label: "" },
+        {
+          key: "data-table-expand",
+          title: "",
+
+          sortable: true,
+          class: "text-left",
+        },
         {
           key: "courseCode",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "courseLevel",
-          label: "Level",
+          title: "Level",
           sortable: true,
           class: "text-left",
         },
         {
           key: "sessionDate",
-          label: "Session",
+          title: "Session",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "interimPercent",
-          label: "%",
+          title: "%",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-right",
         },
         {
           key: "interimLetterGrade",
-          label: "LG",
+          title: "LG",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-left",
         },
         {
           key: "completedCoursePercentage",
-          label: "%",
+          title: "%",
           class: "text-md-right ",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "completedCourseLetterGrade",
-          label: "LG",
+          title: "LG",
           class: "text-md-left",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "equivOrChallenge",
-          label: "Ch",
+          title: "Ch",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "credits",
-          label: "Credits",
+          title: "Credits",
           sortable: true,
           class: "text-center",
         },
         {
           key: "fineArtsAppliedSkills",
-          label: "As",
+          title: "As",
           sortable: true,
           class: "text-left",
         },
         {
           key: "courseName",
-          label: "Course Title",
+          title: "Course Title",
           sortable: true,
           class: "text-left",
         },

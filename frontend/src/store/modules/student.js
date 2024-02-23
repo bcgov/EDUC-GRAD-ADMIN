@@ -404,7 +404,10 @@ export const useStudentStore = defineStore("student", {
       return this.student.optionalPrograms;
     },
     getStudentCourses() {
-      return this.student.courses;
+      return this.student.courses.map((course) => ({
+        ...course,
+        id: `${course.courseCode}_${course.courseLevel}_${course.sessionDate}`,
+      }));
     },
     getStudentExams() {
       return this.student.exams;

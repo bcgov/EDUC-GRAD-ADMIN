@@ -27,11 +27,10 @@
         v-if="items && items.length"
         :headers="fields"
         :items="items"
-        item-key="id"
+        :item-key="id"
         :items-per-page="perPage"
         :search="filter"
         :sortBy="sortBy"
-        striped
         show-expand
         :footer-props="{
           itemsPerPageOptions: [10, 20, 50, 100],
@@ -40,65 +39,12 @@
         :expanded="expanded"
         @update:page="currentPage = $event"
       >
-        <!-- <template
-      v-for="field in editableFields"
-      v-slot:[`cell(${field.key})`]="{ value, item }"
-    >
-      <b-input
-        v-if="itemRow && itemRow[id] === item[id] && !deleteMode"
-        v-on:keyup="validateInput"
-        v-model="itemRow[field.key]"
-        :type="field.type || 'text'"
-        :key="field.key"
-        :number="field.isNumber"
-        style="height: auto; padding: 0px"
-        class="pl-2"
-      >
-      </b-input> -->
-
-        <!-- <template v-else-if="itemRow && itemRow[id] === item[id] && deleteMode"
-        ><div :key="field.key">
-          <del class="text-danger">{{ value }}</del>
-        </div></template
-      >
-      <template v-else>
-        <div
-          v-if="quickEdit"
-          class="px-2"
-          @click="edit(item)"
-          v-bind:key="field.key"
-        >
-          {{ value }}
-        </div>
-        <div v-if="!quickEdit" class="px-2" v-bind:key="field.key">
-          {{ value }}
-        </div></template
-      >
-    </template> -->
-
-        <!-- <template v-slot:cell(actions)="{ item }">
-      <b-button-group v-if="itemRow && itemRow[id] === item[id] && editMode">
-        <b-btn
-          style="width: 60px"
-          variant="success"
-          size="sm"
-          @click="saveEdit"
-        >
-          Save
-        </b-btn>
-      </b-button-group>
-    </template> -->
-
         <template v-for="(_, slotName) in $slots" v-slot:[slotName]="scope">
-          <td>
-            <!-- Use the provided template for the specified slot name -->
-            <slot :name="slotName" v-bind="scope" />
-          </td>
+          <!-- Use the provided template for the specified slot name -->
+          <slot :name="slotName" v-bind="scope" />
         </template>
 
         <template v-slot:item.delete="{ item }">
-          {{ disableDelete(item.columns) }}
-
           <v-btn
             v-if="!disableDelete(item.columns)"
             variant="danger"
@@ -171,13 +117,13 @@ export default {
     "filterOn",
     "sortBy",
     "sortDesc",
+    "show-expand",
   ],
   data() {
     return {
       deleteConfirmationDialog: false,
       itemToDelete: null,
       expanded: [],
-      // actionNames: ["removeScheduledJobs"],
       responsive: true,
       quickEdit: false,
       isAdmin: false,
@@ -264,10 +210,8 @@ export default {
 
       if (disable && disable.condition && disable.criteria) {
         if (disable.condition === "AND") {
-          console.log("AND");
           return this.checkAllCriteria(item, disable.criteria);
         } else if (disable.condition === "OR") {
-          console.log("OR");
           return this.checkAnyCriterion(item, disable.criteria);
         }
       }

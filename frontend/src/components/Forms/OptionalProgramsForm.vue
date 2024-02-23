@@ -12,6 +12,7 @@
     <v-card>
       <v-card-title> Add Optional Program </v-card-title>
       <v-card-text>
+        {{ careerProgramCodeSelect }}
         Student Program {{ studentProgramId }}
         <v-form @submit.prevent="submitForm">
           <!-- Program Name Input -->
@@ -26,6 +27,9 @@
           >
           </v-autocomplete>
           <v-autocomplete
+            multiple
+            clearable
+            chips
             v-if="isCareerProgram(optionalProgramCodeSelect)"
             v-model="careerProgramCodeSelect"
             :items="careerProgramList"
@@ -59,6 +63,14 @@ import ProgramManagementService from "@/services/ProgramManagementService.js";
 import { useStudentStore } from "../../store/modules/student";
 import { mapActions, mapState } from "pinia";
 export default {
+  watch: {
+    optionalProgramCodeSelect(newVal) {
+      // The function to be executed when isCareerProgram changes
+      if (!this.isCareerProgram(newVal)) {
+        this.clearCareerPrograms();
+      }
+    },
+  },
   mounted() {
     this.fetchPrograms();
   },
@@ -119,6 +131,9 @@ export default {
       );
 
       return activeProgram && activeProgram.optProgramCode === "CP";
+    },
+    clearCareerPrograms() {
+      this.careerProgramCodeSelect = [];
     },
     optionalProgramTitle(item) {
       if (item) {
