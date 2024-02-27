@@ -7,7 +7,6 @@
 
       <DisplayTable
         :items="optionalPrograms"
-        :striped="false"
         :fields="optionalProgramsfields"
         showFilter="true"
         title="Optional Programs"
@@ -30,7 +29,7 @@
             :studentProgramId="studentProgramId"
           ></OptionalProgramsForm
         ></template>
-
+        <template #bottom></template>
         <template #cell(optionalNonGradReasons)="row">
           <div v-if="row.item.studentOptionalProgramData">
             <div
@@ -191,8 +190,9 @@
                   <DisplayTable
                     title="Career Programs"
                     :items="careerPrograms"
-                    :id="careerProgramCode"
+                    id="careerProgramCode"
                     :fields="careerProgramsfields"
+                    :hideDefaultFooter="true"
                     :showFilter="false"
                     :delete="{
                       disable: {
@@ -205,6 +205,7 @@
                     store="batchprocessing"
                     :showExpand="false"
                   >
+                    <template #bottom></template>
                   </DisplayTable>
                 </v-card-text>
               </v-card>

@@ -31,7 +31,7 @@
         :items-per-page="perPage"
         :search="filter"
         :sortBy="sortBy"
-        show-expand
+        :show-expand="showExpand"
         :footer-props="{
           itemsPerPageOptions: [10, 20, 50, 100],
           showCurrentPage: true,
@@ -117,7 +117,8 @@ export default {
     "filterOn",
     "sortBy",
     "sortDesc",
-    "show-expand",
+    "showxpand",
+    "hideDefaultFooter",
   ],
   data() {
     return {
@@ -246,9 +247,9 @@ export default {
     deleteItem(item) {
       const itemRaw = toRaw(item);
       const store = this.stores[this.store];
-      const id = toRaw(item).id;
+      const itemId = itemRaw[this.id];
       if (store) {
-        store[this.delete.action](id);
+        store[this.delete](itemId);
       } else {
         console.error("Store not found.");
       }

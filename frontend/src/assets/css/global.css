@@ -109,3 +109,6 @@ button.collapsed, button.not-collapsed, button.more-button {
   border: none;
   padding: 0; /* Optional: Remove padding if needed */
 }
+tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, .05) !important
+}
