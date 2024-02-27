@@ -231,6 +231,7 @@ export default {
     "title",
     "fields",
     "id",
+    "create",
     "update",
     "delete",
     "store",

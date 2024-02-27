@@ -18,7 +18,9 @@
         title="Optional Programs"
       >
         <template v-slot:create>
-          <OptionalProgramsForm></OptionalProgramsForm>
+          <OptionalProgramsForm
+            :studentProgramId="studentGradStatus.program"
+          ></OptionalProgramsForm>
         </template>
 
         <template #cell(optionalNonGradReasons)="row">
