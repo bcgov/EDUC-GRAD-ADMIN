@@ -340,7 +340,7 @@ export default {
     validateOptionalPrograms() {
       return !(
         (!!this.selectedOptionalProgram &&
-          this.isCareerProgram(this.selectedOptionalProgram)) ||
+          !this.isCareerProgram(this.selectedOptionalProgram)) ||
         (!!this.selectedOptionalProgram &&
           this.isCareerProgram(this.selectedOptionalProgram) &&
           this.careerProgramsToAdd.length > 0)
