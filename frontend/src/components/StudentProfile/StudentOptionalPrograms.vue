@@ -11,11 +11,17 @@
       </div>
       <DisplayTable
         v-if="optionalPrograms"
+        id="optionalProgramID"
         :items="optionalPrograms"
         :striped="false"
         :fields="optionalProgramsfields"
         showFilter="true"
         title="Optional Programs"
+        disableDeletefield="optionalProgramCode"
+        disableDeleteIfValue="CP"
+        deleteLabel="Delete"
+        store="student"
+        delete="removeOptionalProgram"
       >
         <template v-slot:create>
           <OptionalProgramsForm
@@ -215,12 +221,18 @@
           <b-card class="col-6">
             <DisplayTable
               v-if="careerPrograms"
+              id="id"
               :items="careerPrograms"
               :striped="false"
               :fields="careerProgramsFields"
               :showFilter="false"
               :pagination="false"
               title="Career Programs"
+              disableDeletefield=""
+              disableDeleteIfValue=""
+              deleteLabel="Delete"
+              store="student"
+              delete="removeCareerProgram"
             >
               <template #cell(careerProgramName)="row3">
                 {{ row3.item.careerProgramName }}

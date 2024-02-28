@@ -43,6 +43,12 @@ export const useStudentStore = defineStore("student", {
     },
   }),
   actions: {
+    removeCareerProgram(id) {
+      console.log(id);
+    },
+    removeOptionalProgram(id) {
+      console.log(id);
+    },
     loadStudentReportsAndCertificates() {
       this.loadStudentXmlReport(this.pen);
       this.loadStudentTranscripts(this.id);
