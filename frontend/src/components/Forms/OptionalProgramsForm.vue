@@ -156,20 +156,14 @@
               </strong>
               Optional Program
               {{
-                getOptionalProgramByID(selectedOptionalProgram)
-                  .optProgramCode === "CP"
+                isCareerProgram(selectedOptionalProgram)
                   ? "with the following Career Programs"
                   : ""
               }}
               for this student.
             </p>
 
-            <ul
-              v-if="
-                getOptionalProgramByID(selectedOptionalProgram)
-                  .optProgramCode === 'CP'
-              "
-            >
+            <ul v-if="isCareerProgram(selectedOptionalProgram)">
               <li
                 v-for="item in careerProgramsToAdd"
                 :key="item.code"
@@ -227,7 +221,6 @@ import DisplayModal from "../DisplayModal.vue";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 
 //import stores & pinia utilities
-//import { useAppStore } from "@/store/modules/app";
 import { useStudentStore } from "@/store/modules/student";
 import { mapState } from "pinia";
 
@@ -265,9 +258,6 @@ export default {
       optionalPrograms: "getStudentOptionalPrograms",
       studentGradStatus: "getStudentGradStatus",
     }),
-    // ...mapState(useAppStore, {
-    //   optionalPrograms
-    // })
     optionalProgramChange() {
       return this.selectedOptionalProgram;
     },
@@ -350,11 +340,9 @@ export default {
     validateOptionalPrograms() {
       return !(
         (!!this.selectedOptionalProgram &&
-          this.getOptionalProgramByID(this.selectedOptionalProgram)
-            .optProgramCode !== "CP") ||
+          this.isCareerProgram(this.selectedOptionalProgram)) ||
         (!!this.selectedOptionalProgram &&
-          this.getOptionalProgramByID(this.selectedOptionalProgram)
-            .optProgramCode === "CP" &&
+          this.isCareerProgram(this.selectedOptionalProgram) &&
           this.careerProgramsToAdd.length > 0)
       );
     },
@@ -373,7 +361,11 @@ export default {
       this.careerProgramsToAdd = [];
     },
     submitForm() {
-      console.log("TODO - add optional program");
+      if (this.isCareerProgram(selectedCareerProgram)) {
+        // action to add career program
+      } else {
+        // action to add optional program
+      }
       this.closeCreateOptionalProgramDialog();
     },
   },
