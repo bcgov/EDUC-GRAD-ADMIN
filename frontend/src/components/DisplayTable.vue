@@ -189,12 +189,13 @@
       <template v-slot:cell(delete)="{ item }">
         <b-btn
           v-if="deleteMode && item[disableDeletefield] != disableDeleteIfValue"
-          variant="danger"
+          :variant="!!deleteLabel ? 'danger' : 'outline-danger'"
+          :pill="!deleteLabel"
           size="sm"
           @click="deleteItem(item)"
         >
-          <!-- TODO if delete label is empty, default to icon -->
-          {{ deleteLabel ? deleteLabel : "Delete" }}
+          <div v-if="!!deleteLabel">{{ deleteLabel }}</div>
+          <i v-else class="fa-solid fa-trash-can"></i>
         </b-btn>
       </template>
     </b-table>
@@ -359,6 +360,11 @@ export default {
 };
 </script>
 <style scoped>
+/* removes bootstrap vue outline on icon btn */
+button.btn-outline-danger.rounded-pill {
+  border: none;
+}
+
 @media (min-width: 992px) {
   .col-lg-4.table-filter {
     position: absolute;

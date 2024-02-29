@@ -78,7 +78,7 @@ export default {
   },
   deleteStudentCareerProgram(studentId, careerProgramCode) {
     return ApiService.apiAxios.delete(
-      "/api/v1/student/" + studentId + "/optionalPrograms/" + careerProgramCode
+      "/api/v1/student/" + studentId + "/careerPrograms/" + careerProgramCode
     );
   },
 

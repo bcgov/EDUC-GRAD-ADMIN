@@ -19,9 +19,8 @@
         title="Optional Programs"
         disableDeletefield="optionalProgramCode"
         disableDeleteIfValue="CP"
-        deleteLabel="Delete"
         store="student"
-        delete="removeOptionalProgram"
+        delete="removeStudentOptionalProgram"
       >
         <template v-slot:create>
           <OptionalProgramsForm
@@ -221,7 +220,7 @@
           <b-card class="col-6">
             <DisplayTable
               v-if="careerPrograms"
-              id="id"
+              id="careerProgramCode"
               :items="careerPrograms"
               :striped="false"
               :fields="careerProgramsFields"
@@ -230,9 +229,8 @@
               title="Career Programs"
               disableDeletefield=""
               disableDeleteIfValue=""
-              deleteLabel="Delete"
               store="student"
-              delete="removeCareerProgram"
+              delete="removeStudentCareerProgram"
             >
               <template #cell(careerProgramName)="row3">
                 {{ row3.item.careerProgramName }}
@@ -284,11 +282,11 @@ export default {
           key: "optionalProgramCompletionDate",
           label: "Optional Program Completion Date",
         },
-        { key: "delete", label: "Delete" },
+        { key: "delete", label: null },
       ],
       careerProgramsFields: [
         { key: "careerProgramName", label: "Career Program" },
-        { key: "delete", label: "Delete" },
+        { key: "delete", label: null },
       ],
     };
   },
