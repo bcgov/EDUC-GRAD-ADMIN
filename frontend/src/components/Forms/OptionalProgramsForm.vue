@@ -5,8 +5,9 @@
       variant="primary"
       class="float-right mb-2 mr-2"
       @click="openCreateOptionalProgramDialog()"
-      >Add Optional Program <i class="fas fa-plus" aria-hidden="true"></i
-    ></b-btn>
+      ><i class="fas fa-plus" aria-hidden="true"></i> Add Optional
+      Program</b-btn
+    >
 
     <DisplayModal
       header="Add Optional Program"
@@ -121,17 +122,17 @@
               <div v-if="careerProgramsToAdd.length > 0" class="mx-4 my-3">
                 <div
                   v-for="item in careerProgramsToAdd"
-                  :key="item.code"
+                  :key="item"
                   class="my-1"
                 >
                   <b-btn
                     variant="outline-danger"
                     size="sm"
                     class="px-1 py-0"
-                    @click="removeCareerProgram(item.code)"
+                    @click="unsetCareerProgram(item)"
                   >
                     <i class="fa-solid fa-xmark"></i> </b-btn
-                  >&nbsp; {{ item.code }} - {{ item.name }}
+                  >&nbsp; {{ item }} - {{ getCareerProgramByCode(item).name }}
                 </div>
               </div>
             </div>
@@ -164,12 +165,8 @@
             </p>
 
             <ul v-if="isCareerProgram(selectedOptionalProgram)">
-              <li
-                v-for="item in careerProgramsToAdd"
-                :key="item.code"
-                class="my-1"
-              >
-                {{ item.code }} - {{ item.name }}
+              <li v-for="item in careerProgramsToAdd" :key="item" class="my-1">
+                {{ item }} - {{ getCareerProgramByCode(item).name }}
               </li>
             </ul>
           </b-alert>
@@ -222,7 +219,7 @@ import ProgramManagementService from "@/services/ProgramManagementService.js";
 
 //import stores & pinia utilities
 import { useStudentStore } from "@/store/modules/student";
-import { mapState } from "pinia";
+import { mapState, mapActions } from "pinia";
 
 export default {
   name: "StudentOptionalProgramsForm",
@@ -288,6 +285,10 @@ export default {
     },
   },
   methods: {
+    ...mapActions(useStudentStore, [
+      "addStudentOptionalProgram",
+      "addStudentCareerPrograms",
+    ]),
     isCareerProgram() {
       //determines if optional program selected is a career program
       return (
@@ -321,12 +322,7 @@ export default {
         (careerProgram) => careerProgram.code === selectedCode
       );
     },
-    addCareerProgram() {
-      this.careerProgramsToAdd.push(
-        this.getCareerProgramByCode(this.selectedCareerProgram)
-      );
-    },
-    removeCareerProgram(selectedCode) {
+    unsetCareerProgram(selectedCode) {
       // The following using array.splice DOES NOT WORK due to multiple versions of Vue running on this branch
       // let index = this.careerProgramsToAdd.indexOf(selectedCode);
       // console.log(index);
@@ -334,7 +330,7 @@ export default {
       //   this.careerProgramsToAdd.splice(index, 1);
       // }
       this.careerProgramsToAdd = this.careerProgramsToAdd.filter(
-        (item) => item.code !== selectedCode
+        (item) => item !== selectedCode
       );
     },
     validateOptionalPrograms() {
@@ -361,10 +357,12 @@ export default {
       this.careerProgramsToAdd = [];
     },
     submitForm() {
-      if (this.isCareerProgram(selectedCareerProgram)) {
+      if (this.isCareerProgram(this.selectedCareerProgram)) {
         // action to add career program
+        this.addStudentCareerPrograms(this.careerProgramsToAdd);
       } else {
         // action to add optional program
+        this.addStudentOptionalProgram(this.selectedOptionalProgram);
       }
       this.closeCreateOptionalProgramDialog();
     },
@@ -376,9 +374,7 @@ export default {
       this.selectedCareerProgram = null;
     },
     careerProgramChange: function () {
-      this.careerProgramsToAdd.push(
-        this.getCareerProgramByCode(this.selectedCareerProgram)
-      );
+      this.careerProgramsToAdd.push(this.selectedCareerProgram);
     },
   },
 };

@@ -318,6 +318,50 @@ export const useStudentStore = defineStore("student", {
         this.student.hasNotes = true;
       }
     },
+    addStudentOptionalProgram(optionalProgramId) {
+      try {
+        let response = StudentService.createStudentOptionalProgram(
+          this.id,
+          optionalProgramId
+        );
+      } catch (error) {
+        console.error("Error creating student optional program: ", error);
+      }
+    },
+    addStudentCareerPrograms(careerPrograms) {
+      let careerProgramPayload = {
+        careerProgramCodes: careerPrograms,
+      };
+
+      try {
+        let response = StudentService.createStudentCareerPrograms(
+          this.id,
+          careerProgramPayload
+        );
+      } catch (error) {
+        console.error("Error creating student career program: ", error);
+      }
+    },
+    removeStudentOptionalProgram(optionalProgramId) {
+      try {
+        let response = StudentService.deleteStudentOptionalProgram(
+          this.id,
+          optionalProgramId
+        );
+      } catch (error) {
+        console.error("Error deleting student optional program: ", error);
+      }
+    },
+    removeStudentCareerProgram(careerProgramCode) {
+      try {
+        let response = StudentService.deleteStudentCareerProgram(
+          this.id,
+          careerProgramCode
+        );
+      } catch (error) {
+        console.error("Error deleting student career program: ", error);
+      }
+    },
     // SEARCH
   },
   getters: {

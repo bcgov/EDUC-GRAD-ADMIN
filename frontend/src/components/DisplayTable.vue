@@ -193,6 +193,7 @@
           size="sm"
           @click="deleteItem(item)"
         >
+          <!-- TODO if delete label is empty, default to icon -->
           {{ deleteLabel ? deleteLabel : "Delete" }}
         </b-btn>
       </template>
