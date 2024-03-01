@@ -189,14 +189,52 @@
       <template v-slot:cell(delete)="{ item }">
         <b-btn
           v-if="deleteMode && item[disableDeletefield] != disableDeleteIfValue"
-          :variant="!!deleteLabel ? 'danger' : 'outline-danger'"
-          :pill="!deleteLabel"
+          :variant="!useIconButtons ? 'danger' : 'outline-danger'"
+          :pill="!!useIconButtons"
           size="sm"
-          @click="deleteItem(item)"
+          @click="
+            deleteConfirm
+              ? (showDeleteModal[item[this.id]] = true)
+              : deleteItem(item)
+          "
         >
-          <div v-if="!!deleteLabel">{{ deleteLabel }}</div>
+          <div v-if="!useIconButtons">Delete {{ deleteLabel }}</div>
           <i v-else class="fa-solid fa-trash-can"></i>
         </b-btn>
+        <DisplayModal
+          :header="'Delete ' + deleteLabel"
+          :showModal="showDeleteModal[item[this.id]]"
+        >
+          <!-- item[this.id] -->
+          <template v-slot:body>
+            <b-alert show variant="warning"
+              ><i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+              <strong>Warning</strong>
+              <p>
+                {{ deleteMessage.prepend }}
+                <strong>{{ item[deleteMessage.labelKey] }}</strong>
+                {{ deleteMessage.append }}
+              </p></b-alert
+            >
+          </template>
+
+          <template v-slot:footer>
+            <b-btn
+              variant="outline-primary"
+              class="float-left"
+              size="xs"
+              @click="showDeleteModal = {}"
+              >Cancel</b-btn
+            >
+            <b-btn
+              variant="danger"
+              class="float-right"
+              size="xs"
+              @click="deleteItem(item)"
+              >DELETE</b-btn
+            >
+          </template>
+        </DisplayModal>
       </template>
     </b-table>
 
@@ -225,6 +263,7 @@ import { useAppStore } from "../store/modules/app.js";
 import { useBatchProcessingStore } from "../store/modules/batchprocessing.js";
 import { useStudentStore } from "../store/modules/student.js";
 import { mapState } from "pinia";
+import DisplayModal from "@/components/DisplayModal.vue";
 export default {
   name: "DisplayTable",
   props: [
@@ -238,6 +277,9 @@ export default {
     "delete",
     "store",
     "deleteLabel",
+    "deleteMessage",
+    "deleteConfirm",
+    "useIconButtons",
     "disableDeletefield",
     "disableDeleteIfValue",
     "slots",
@@ -248,6 +290,9 @@ export default {
     "sortByField",
     "sortDesc",
   ],
+  components: {
+    DisplayModal: DisplayModal,
+  },
   onMounted() {
     // Set the initial number of items
     // this.totalRows = this.items.length;
@@ -264,6 +309,7 @@ export default {
       createAllowed: false,
       editMode: false,
       deleteMode: true,
+      showDeleteModal: {},
       addMode: false,
       itemToAdd: [],
       showConfirm: false,
@@ -346,6 +392,10 @@ export default {
         store[this.delete](itemId);
       } else {
         console.error("Store not found.");
+      }
+      //close modal if delete confirm enabled
+      if (this.deleteConfirm) {
+        this.showDeleteModal = {};
       }
     },
     onFiltered(filteredItems) {

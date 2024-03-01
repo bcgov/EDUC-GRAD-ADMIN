@@ -19,6 +19,14 @@
         title="Optional Programs"
         disableDeletefield="optionalProgramCode"
         disableDeleteIfValue="CP"
+        useIconButtons="true"
+        deleteLabel="Optional Program"
+        :deleteMessage="{
+          prepend: 'You are about to remove the',
+          append: 'Optional Program for this student',
+          labelKey: 'optionalProgramName',
+        }"
+        deleteConfirm="true"
         store="student"
         delete="removeStudentOptionalProgram"
       >
@@ -229,6 +237,14 @@
               title="Career Programs"
               disableDeletefield=""
               disableDeleteIfValue=""
+              useIconButtons="true"
+              deleteLabel="Career Program"
+              deleteConfirm="true"
+              :deleteMessage="{
+                prepend: 'You are about to remove the',
+                append: 'Career Program for this student',
+                labelKey: 'careerProgramName',
+              }"
               store="student"
               delete="removeStudentCareerProgram"
             >
