@@ -209,7 +209,7 @@
           <i v-else class="fa-solid fa-trash-can"></i>
         </b-btn>
         <DisplayModal
-          :header="'Delete ' + deleteOptions ?? deleteOptions.deleteLabel"
+          :header="'Delete ' + (deleteOptions ? deleteOptions.deleteLabel : '')"
           :showModal="showDeleteModal[item[this.id]]"
         >
           <template v-slot:body>

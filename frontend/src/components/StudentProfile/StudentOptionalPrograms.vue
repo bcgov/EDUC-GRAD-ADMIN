@@ -40,7 +40,8 @@
             show
             v-if="studentGradStatus.studentStatus === 'MER'"
           >
-            <i class="fa-solid fa-circle-xmark"></i> <strong>Error</strong>
+            <i class="fa-solid fa-circle-xmark"></i>&nbsp;
+            <strong>Error</strong>
             <p>
               This student is showing as merged. Student GRAD Optional Program
               data cannot be updated for students with a status of "MER" merged.
@@ -57,7 +58,8 @@
               )
             "
           >
-            <i class="fa-solid fa-circle-xmark"></i> <strong>Error</strong>
+            <i class="fa-solid fa-circle-xmark"></i>&nbsp;
+            <strong>Error</strong>
             <p>
               This student has a program completion date of
               {{ studentGradStatus.programCompletionDate }}.
@@ -357,7 +359,7 @@
                     )
                   "
                 >
-                  <i class="fa-solid fa-circle-xmark"></i>
+                  <i class="fa-solid fa-circle-xmark"></i>&nbsp;
                   <strong>Error</strong>
                   <p>
                     This student has a program completion date of
