@@ -84,7 +84,7 @@ export function isProgramComplete(completionDate, programCode) {
 
   if (programCode === "SCCP") {
     let today = new Date();
-    return !!completionDate && new Date(completionDate) >= today;
+    return !!completionDate && new Date(completionDate) <= today;
   } else {
     return !!completionDate;
   }
