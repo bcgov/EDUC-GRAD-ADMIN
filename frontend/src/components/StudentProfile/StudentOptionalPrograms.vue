@@ -16,11 +16,14 @@
         :fields="optionalProgramsfields"
         showFilter="true"
         title="Optional Programs"
-        disableDeletefield="optionalProgramCode"
-        disableDeleteIfValue="CP"
         useIconButtons="true"
-        deleteLabel="Optional Program"
-        deleteConfirm="true"
+        :deleteOptions="{
+          disableDeletefield: 'optionalProgramCode',
+          disableDeleteIfValue: 'CP',
+          deleteLabel: 'Optional Program',
+          deleteConfirm: 'true',
+          disableDeleteBtn: disableDeleteBtn(),
+        }"
         store="student"
         delete="removeStudentOptionalProgram"
       >
@@ -31,6 +34,7 @@
         </template>
 
         <template #delete-msg="{ optionalProgramName, optionalProgramCode }">
+          <!-- ERROR if student status is MER/merged-->
           <b-alert
             variant="danger"
             show
@@ -42,21 +46,32 @@
               data cannot be updated for students with a status of "MER" merged.
             </p>
           </b-alert>
-          <b-alert variant="warning" show v-else>
-            <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
-            <strong>Warning</strong>
+          <!-- ERROR if student grad program is complete -->
+          <b-alert
+            variant="danger"
+            show
+            v-else-if="
+              isProgramComplete(
+                studentGradStatus.programCompletionDate,
+                studentGradStatus.program
+              )
+            "
+          >
+            <i class="fa-solid fa-circle-xmark"></i> <strong>Error</strong>
             <p>
-              You are about to remove the
-              <strong
-                >{{ optionalProgramName }} ({{ optionalProgramCode }})</strong
-              >
-              Optional Program for this student.
+              This student has a program completion date of
+              {{ studentGradStatus.programCompletionDate }}.
+            </p>
+            <p>
+              You must undo completion to be able to edit the Optional Programs
+              for this student.
             </p>
           </b-alert>
+          <!-- WARNING if student status is TER/terminated -->
           <b-alert
             variant="warning"
             show
-            v-if="studentGradStatus.studentStatus === 'TER'"
+            v-else-if="studentGradStatus.studentStatus === 'TER'"
           >
             <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
             <strong>Warning</strong>
@@ -65,6 +80,7 @@
               status to "CUR" if they are currently attending school.
             </p>
           </b-alert>
+          <!-- WARNING if student status is ARC/archived -->
           <b-alert
             variant="warning"
             show
@@ -77,6 +93,7 @@
               "CUR" if they are currently attending school.
             </p>
           </b-alert>
+          <!-- WARNING if student status is DEC/deceased -->
           <b-alert
             variant="warning"
             show
@@ -85,6 +102,31 @@
             <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
             <strong>Warning</strong>
             <p>This student is showing as deceased.</p>
+          </b-alert>
+
+          <!-- WARNING if student optional program is able to be deleted -->
+          <b-alert
+            variant="warning"
+            show
+            v-if="
+              !(
+                studentGradStatus.studentStatus === 'MER' ||
+                isProgramComplete(
+                  studentGradStatus.programCompletionDate,
+                  studentGradStatus.program
+                )
+              )
+            "
+          >
+            <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+            <strong>Warning</strong>
+            <p>
+              You are about to remove the
+              <strong
+                >{{ optionalProgramName }} ({{ optionalProgramCode }})</strong
+              >
+              Optional Program for this student.
+            </p>
           </b-alert>
         </template>
 
@@ -278,43 +320,59 @@
               :showFilter="false"
               :pagination="false"
               title="Career Programs"
-              disableDeletefield=""
-              disableDeleteIfValue=""
               useIconButtons="true"
-              deleteLabel="Career Program"
-              deleteConfirm="true"
+              :deleteOptions="{
+                disableDeletefield: '',
+                disableDeleteIfValue: '',
+                deleteLabel: 'Career Program',
+                deleteConfirm: 'true',
+                disableDeleteBtn: disableDeleteBtn(),
+              }"
               store="student"
               delete="removeStudentCareerProgram"
             >
               <template #delete-msg="{ careerProgramName, careerProgramCode }">
+                <!-- ERROR if student status is MER/merged-->
                 <b-alert
                   variant="danger"
                   show
                   v-if="studentGradStatus.studentStatus === 'MER'"
                 >
-                  <i class="fa-solid fa-circle-xmark"></i>
+                  <i class="fa-solid fa-circle-xmark"></i>&nbsp;
                   <strong>Error</strong>
                   <p>
-                    This student is showing as merged. Student GRAD Optional
+                    This student is showing as merged. Student GRAD Career
                     Program data cannot be updated for students with a status of
                     "MER" merged.
                   </p>
                 </b-alert>
-                <b-alert variant="warning" show v-else>
-                  <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
-                  <strong>Warning</strong>
+                <!-- ERROR if student grad program is complete -->
+                <b-alert
+                  variant="danger"
+                  show
+                  v-else-if="
+                    isProgramComplete(
+                      studentGradStatus.programCompletionDate,
+                      studentGradStatus.program
+                    )
+                  "
+                >
+                  <i class="fa-solid fa-circle-xmark"></i>
+                  <strong>Error</strong>
                   <p>
-                    You are about to remove the
-                    <strong
-                      >{{ careerProgramName }} ({{ careerProgramCode }})</strong
-                    >
-                    Career Program for this student.
+                    This student has a program completion date of
+                    {{ studentGradStatus.programCompletionDate }}.
+                  </p>
+                  <p>
+                    You must undo completion to be able to edit the Career
+                    Programs for this student.
                   </p>
                 </b-alert>
+                <!-- WARNING if student status is TER/terminated -->
                 <b-alert
                   variant="warning"
                   show
-                  v-if="studentGradStatus.studentStatus === 'TER'"
+                  v-else-if="studentGradStatus.studentStatus === 'TER'"
                 >
                   <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
                   <strong>Warning</strong>
@@ -324,6 +382,7 @@
                     school.
                   </p>
                 </b-alert>
+                <!-- WARNING if student status is ARC/archived -->
                 <b-alert
                   variant="warning"
                   show
@@ -336,6 +395,7 @@
                     status to "CUR" if they are currently attending school.
                   </p>
                 </b-alert>
+                <!-- WARNING if student status is DEC/deceased -->
                 <b-alert
                   variant="warning"
                   show
@@ -344,6 +404,30 @@
                   <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
                   <strong>Warning</strong>
                   <p>This student is showing as deceased.</p>
+                </b-alert>
+                <!-- WARNING if student career program is able to be deleted -->
+                <b-alert
+                  variant="warning"
+                  show
+                  v-if="
+                    !(
+                      studentGradStatus.studentStatus === 'MER' ||
+                      isProgramComplete(
+                        studentGradStatus.programCompletionDate,
+                        studentGradStatus.program
+                      )
+                    )
+                  "
+                >
+                  <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+                  <strong>Warning</strong>
+                  <p>
+                    You are about to remove the
+                    <strong
+                      >{{ careerProgramName }} ({{ careerProgramCode }})</strong
+                    >
+                    Career Program for this student.
+                  </p>
                 </b-alert>
               </template>
               <template #cell(careerProgramName)="row3">
@@ -361,6 +445,7 @@
 <script>
 import { useStudentStore } from "../../store/modules/student";
 import { mapState } from "pinia";
+import { isProgramComplete } from "@/utils/common.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 import OptionalProgramsForm from "@/components/Forms/OptionalProgramsForm.vue";
 export default {
@@ -405,6 +490,18 @@ export default {
     };
   },
   methods: {
+    isProgramComplete(date, program) {
+      return isProgramComplete(date, program);
+    },
+    disableDeleteBtn() {
+      return (
+        this.studentGradStatus.studentStatus === "MER" ||
+        this.isProgramComplete(
+          this.studentGradStatus.programCompletionDate,
+          this.studentGradStatus.program
+        )
+      );
+    },
     filterGradReqCourses(row) {
       if (row.gradReqMet.length > 0) {
         return true;

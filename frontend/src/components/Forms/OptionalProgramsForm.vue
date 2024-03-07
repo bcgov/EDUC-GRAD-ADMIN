@@ -43,9 +43,11 @@
               ><i class="fa-solid fa-circle-xmark"></i> <strong>Error</strong>
               <p>
                 This student has a program completion date of
-                {{ studentGradStatus.programCompletionDate }}. You must undo
-                completion to be able to edit the Optional Programs for this
-                student.
+                {{ studentGradStatus.programCompletionDate }}.
+              </p>
+              <p>
+                You must undo completion to be able to edit the Optional
+                Programs for this student.
               </p>
             </b-alert>
           </div>

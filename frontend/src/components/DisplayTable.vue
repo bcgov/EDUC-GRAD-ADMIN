@@ -189,21 +189,27 @@
       <!-- DELETE TEMPLATE - -->
       <template v-slot:cell(delete)="{ item }">
         <b-btn
-          v-if="deleteMode && item[disableDeletefield] != disableDeleteIfValue"
+          v-if="
+            deleteOptions &&
+            item[deleteOptions.disableDeletefield] !=
+              deleteOptions.disableDeleteIfValue
+          "
           :variant="!useIconButtons ? 'danger' : 'outline-danger'"
           :pill="!!useIconButtons"
           size="sm"
           @click="
-            deleteConfirm
+            deleteOptions && deleteOptions.deleteConfirm
               ? (showDeleteModal[item[this.id]] = true)
               : deleteItem(item)
           "
         >
-          <div v-if="!useIconButtons">Delete {{ deleteLabel }}</div>
+          <div v-if="!useIconButtons">
+            Delete {{ deleteOptions ?? deleteOptions.deleteLabel }}
+          </div>
           <i v-else class="fa-solid fa-trash-can"></i>
         </b-btn>
         <DisplayModal
-          :header="'Delete ' + deleteLabel"
+          :header="'Delete ' + deleteOptions ?? deleteOptions.deleteLabel"
           :showModal="showDeleteModal[item[this.id]]"
         >
           <template v-slot:body>
@@ -222,6 +228,7 @@
               variant="danger"
               class="float-right"
               size="xs"
+              :disabled="deleteOptions ? deleteOptions.disableDeleteBtn : false"
               @click="deleteItem(item)"
               >DELETE</b-btn
             >
@@ -268,6 +275,7 @@ export default {
     "update",
     "delete",
     "store",
+    "deleteOptions",
     "deleteLabel",
     "deleteConfirm",
     "useIconButtons",
@@ -385,7 +393,7 @@ export default {
         console.error("Store not found.");
       }
       //close modal if delete confirm enabled
-      if (this.deleteConfirm) {
+      if (this.deleteOptions?.deleteConfirm) {
         this.showDeleteModal = {};
       }
     },
