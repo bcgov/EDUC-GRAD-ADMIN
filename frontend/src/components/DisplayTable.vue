@@ -186,6 +186,7 @@
       <template v-for="(_, slotName) of $scopedSlots" v-slot:[slotName]="scope">
         <slot :name="slotName" v-bind="scope" />
       </template>
+      <!-- DELETE TEMPLATE - -->
       <template v-slot:cell(delete)="{ item }">
         <b-btn
           v-if="deleteMode && item[disableDeletefield] != disableDeleteIfValue"
@@ -205,17 +206,8 @@
           :header="'Delete ' + deleteLabel"
           :showModal="showDeleteModal[item[this.id]]"
         >
-          <!-- item[this.id] -->
           <template v-slot:body>
-            <b-alert show variant="warning"
-              ><i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
-              <strong>Warning</strong>
-              <p>
-                {{ deleteMessage.prepend }}
-                <strong>{{ item[deleteMessage.labelKey] }}</strong>
-                {{ deleteMessage.append }}
-              </p></b-alert
-            >
+            <slot name="delete-msg" v-bind="item"> Confirm Delete </slot>
           </template>
 
           <template v-slot:footer>
@@ -277,7 +269,6 @@ export default {
     "delete",
     "store",
     "deleteLabel",
-    "deleteMessage",
     "deleteConfirm",
     "useIconButtons",
     "disableDeletefield",

@@ -29,6 +29,26 @@
               </p>
             </b-alert>
           </div>
+
+          <div
+            v-else-if="
+              isProgramComplete(
+                studentGradStatus.programCompletionDate,
+                studentGradStatus.program
+              )
+            "
+            class="opt-program-form-body"
+          >
+            <b-alert variant="danger" show
+              ><i class="fa-solid fa-circle-xmark"></i> <strong>Error</strong>
+              <p>
+                This student has a program completion date of
+                {{ studentGradStatus.programCompletionDate }}. You must undo
+                completion to be able to edit the Optional Programs for this
+                student.
+              </p>
+            </b-alert>
+          </div>
           <!-- Display form if student status is NOT MER -->
           <div v-else class="opt-program-form-body">
             <!-- Student status warnings that inform user without blocking action -->
@@ -214,6 +234,9 @@
 //import components
 import DisplayModal from "../DisplayModal.vue";
 
+// import shared functions & validations
+import { isProgramComplete } from "@/utils/common.js";
+
 //import services
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 
@@ -289,12 +312,24 @@ export default {
       "addStudentOptionalProgram",
       "addStudentCareerPrograms",
     ]),
+    isProgramComplete(date, program) {
+      return isProgramComplete(date, program);
+    },
     isCareerProgram() {
       //determines if optional program selected is a career program
       return (
         !!this.selectedOptionalProgram &&
         this.getOptionalProgramByID(this.selectedOptionalProgram)
           .optProgramCode === "CP"
+      );
+    },
+    disableAddOptionalProgram() {
+      return (
+        !this.studentGradStatus ||
+        isProgramComplete(
+          this.studentGradStatus.programCompletionDate,
+          this.studentGradStatus.program
+        )
       );
     },
     async fetchPrograms() {

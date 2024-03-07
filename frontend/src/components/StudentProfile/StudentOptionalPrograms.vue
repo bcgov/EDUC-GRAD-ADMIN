@@ -10,7 +10,6 @@
         This student does not have any optional programs.
       </div>
       <DisplayTable
-        v-if="optionalPrograms"
         id="optionalProgramID"
         :items="optionalPrograms"
         :striped="false"
@@ -21,11 +20,6 @@
         disableDeleteIfValue="CP"
         useIconButtons="true"
         deleteLabel="Optional Program"
-        :deleteMessage="{
-          prepend: 'You are about to remove the',
-          append: 'Optional Program for this student',
-          labelKey: 'optionalProgramName',
-        }"
         deleteConfirm="true"
         store="student"
         delete="removeStudentOptionalProgram"
@@ -34,6 +28,64 @@
           <OptionalProgramsForm
             :studentProgramId="studentGradStatus.program"
           ></OptionalProgramsForm>
+        </template>
+
+        <template #delete-msg="{ optionalProgramName, optionalProgramCode }">
+          <b-alert
+            variant="danger"
+            show
+            v-if="studentGradStatus.studentStatus === 'MER'"
+          >
+            <i class="fa-solid fa-circle-xmark"></i> <strong>Error</strong>
+            <p>
+              This student is showing as merged. Student GRAD Optional Program
+              data cannot be updated for students with a status of "MER" merged.
+            </p>
+          </b-alert>
+          <b-alert variant="warning" show v-else>
+            <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+            <strong>Warning</strong>
+            <p>
+              You are about to remove the
+              <strong
+                >{{ optionalProgramName }} ({{ optionalProgramCode }})</strong
+              >
+              Optional Program for this student.
+            </p>
+          </b-alert>
+          <b-alert
+            variant="warning"
+            show
+            v-if="studentGradStatus.studentStatus === 'TER'"
+          >
+            <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+            <strong>Warning</strong>
+            <p>
+              This student has been terminated. Re-activate by setting their
+              status to "CUR" if they are currently attending school.
+            </p>
+          </b-alert>
+          <b-alert
+            variant="warning"
+            show
+            v-else-if="studentGradStatus.studentStatus === 'ARC'"
+          >
+            <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+            <strong>Warning</strong>
+            <p>
+              This student is not active. Re-activate by setting their status to
+              "CUR" if they are currently attending school.
+            </p>
+          </b-alert>
+          <b-alert
+            variant="warning"
+            show
+            v-else-if="studentGradStatus.studentStatus === 'DEC'"
+          >
+            <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+            <strong>Warning</strong>
+            <p>This student is showing as deceased.</p>
+          </b-alert>
         </template>
 
         <template #cell(optionalNonGradReasons)="row">
@@ -216,15 +268,6 @@
           </b-btn>
         </template>
         <template #row-details="">
-          <!-- <b-card class="px-0">
-            <strong>Career Programs</strong>
-            <hr />
-            <ul id="student-career-programs">
-              <li v-for="item in careerPrograms" :key="item.careerProgramName">
-                {{ item.careerProgramName }} ({{ item.careerProgramCode }})
-              </li>
-            </ul>
-          </b-card> -->
           <b-card class="col-6">
             <DisplayTable
               v-if="careerPrograms"
@@ -240,14 +283,69 @@
               useIconButtons="true"
               deleteLabel="Career Program"
               deleteConfirm="true"
-              :deleteMessage="{
-                prepend: 'You are about to remove the',
-                append: 'Career Program for this student',
-                labelKey: 'careerProgramName',
-              }"
               store="student"
               delete="removeStudentCareerProgram"
             >
+              <template #delete-msg="{ careerProgramName, careerProgramCode }">
+                <b-alert
+                  variant="danger"
+                  show
+                  v-if="studentGradStatus.studentStatus === 'MER'"
+                >
+                  <i class="fa-solid fa-circle-xmark"></i>
+                  <strong>Error</strong>
+                  <p>
+                    This student is showing as merged. Student GRAD Optional
+                    Program data cannot be updated for students with a status of
+                    "MER" merged.
+                  </p>
+                </b-alert>
+                <b-alert variant="warning" show v-else>
+                  <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+                  <strong>Warning</strong>
+                  <p>
+                    You are about to remove the
+                    <strong
+                      >{{ careerProgramName }} ({{ careerProgramCode }})</strong
+                    >
+                    Career Program for this student.
+                  </p>
+                </b-alert>
+                <b-alert
+                  variant="warning"
+                  show
+                  v-if="studentGradStatus.studentStatus === 'TER'"
+                >
+                  <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+                  <strong>Warning</strong>
+                  <p>
+                    This student has been terminated. Re-activate by setting
+                    their status to "CUR" if they are currently attending
+                    school.
+                  </p>
+                </b-alert>
+                <b-alert
+                  variant="warning"
+                  show
+                  v-else-if="studentGradStatus.studentStatus === 'ARC'"
+                >
+                  <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+                  <strong>Warning</strong>
+                  <p>
+                    This student is not active. Re-activate by setting their
+                    status to "CUR" if they are currently attending school.
+                  </p>
+                </b-alert>
+                <b-alert
+                  variant="warning"
+                  show
+                  v-else-if="studentGradStatus.studentStatus === 'DEC'"
+                >
+                  <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+                  <strong>Warning</strong>
+                  <p>This student is showing as deceased.</p>
+                </b-alert>
+              </template>
               <template #cell(careerProgramName)="row3">
                 {{ row3.item.careerProgramName }}
                 ({{ row3.item.careerProgramCode }})
