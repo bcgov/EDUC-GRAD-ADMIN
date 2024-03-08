@@ -42,6 +42,14 @@ export function showNotification(variant, bodyContent) {
     autoHideDelay: delay,
   });
 }
+/**
+ * SORTING
+ */
+
+// DUPLICATE - function is duplicated in sharedMethods; TODO Refactor uses of applyDisplayOrder() in batch before moving here
+export function applyDisplayOrder(unsorted) {
+  return unsorted?.sort((a, b) => a.displayOrder - b.displayOrder);
+}
 
 /**
  *  VALIDATION FUNCTIONS

@@ -42,9 +42,10 @@
           >
             <i class="fa-solid fa-circle-xmark"></i>&nbsp;
             <strong>Error</strong>
+            <p>This student is showing as merged.</p>
             <p>
-              This student is showing as merged. Student GRAD Optional Program
-              data cannot be updated for students with a status of "MER" merged.
+              Student GRAD Optional Program data cannot be updated for students
+              with a status of "MER" merged.
             </p>
           </b-alert>
           <!-- ERROR if student grad program is complete -->
@@ -77,9 +78,10 @@
           >
             <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
             <strong>Warning</strong>
+            <p>This student has been terminated.</p>
             <p>
-              This student has been terminated. Re-activate by setting their
-              status to "CUR" if they are currently attending school.
+              Re-activate by setting their status to "CUR" if they are currently
+              attending school.
             </p>
           </b-alert>
           <!-- WARNING if student status is ARC/archived -->
@@ -90,9 +92,10 @@
           >
             <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
             <strong>Warning</strong>
+            <p>This student is not active.</p>
             <p>
-              This student is not active. Re-activate by setting their status to
-              "CUR" if they are currently attending school.
+              Re-activate by setting their status to "CUR" if they are currently
+              attending school.
             </p>
           </b-alert>
           <!-- WARNING if student status is DEC/deceased -->
@@ -342,10 +345,10 @@
                 >
                   <i class="fa-solid fa-circle-xmark"></i>&nbsp;
                   <strong>Error</strong>
+                  <p>This student is showing as merged.</p>
                   <p>
-                    This student is showing as merged. Student GRAD Career
-                    Program data cannot be updated for students with a status of
-                    "MER" merged.
+                    Student GRAD Career Program data cannot be updated for
+                    students with a status of "MER" merged.
                   </p>
                 </b-alert>
                 <!-- ERROR if student grad program is complete -->
@@ -378,10 +381,10 @@
                 >
                   <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
                   <strong>Warning</strong>
+                  <p>This student has been terminated.</p>
                   <p>
-                    This student has been terminated. Re-activate by setting
-                    their status to "CUR" if they are currently attending
-                    school.
+                    Re-activate by setting their status to "CUR" if they are
+                    currently attending school.
                   </p>
                 </b-alert>
                 <!-- WARNING if student status is ARC/archived -->
@@ -392,9 +395,10 @@
                 >
                   <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
                   <strong>Warning</strong>
+                  <p>This student is not active.</p>
                   <p>
-                    This student is not active. Re-activate by setting their
-                    status to "CUR" if they are currently attending school.
+                    Re-activate by setting their status to "CUR" if they are
+                    currently attending school.
                   </p>
                 </b-alert>
                 <!-- WARNING if student status is DEC/deceased -->

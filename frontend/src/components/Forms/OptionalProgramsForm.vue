@@ -22,10 +22,10 @@
           >
             <b-alert variant="danger" show
               ><i class="fa-solid fa-circle-xmark"></i> <strong>Error</strong>
+              <p>This student is showing as merged.</p>
               <p>
-                This student is showing as merged. Student GRAD Optional Program
-                data cannot be updated for students with a status of "MER"
-                merged.
+                Student GRAD Optional Program data cannot be updated for
+                students with a status of "MER" merged.
               </p>
             </b-alert>
           </div>
@@ -61,9 +61,10 @@
             >
               <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
               <strong>Warning</strong>
+              <p>This student has been terminated.</p>
               <p>
-                This student has been terminated. Re-activate by setting their
-                status to "CUR" if they are currently attending school.
+                Re-activate by setting their status to "CUR" if they are
+                currently attending school.
               </p>
             </b-alert>
             <b-alert
@@ -73,9 +74,10 @@
             >
               <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
               <strong>Warning</strong>
+              <p>This student is not active.</p>
               <p>
-                This student is not active. Re-activate by setting their status
-                to "CUR" if they are currently attending school.
+                Re-activate by setting their status to "CUR" if they are
+                currently attending school.
               </p>
             </b-alert>
             <b-alert
@@ -237,7 +239,7 @@
 import DisplayModal from "../DisplayModal.vue";
 
 // import shared functions & validations
-import { isProgramComplete } from "@/utils/common.js";
+import { isProgramComplete, applyDisplayOrder } from "@/utils/common.js";
 
 //import services
 import ProgramManagementService from "@/services/ProgramManagementService.js";
@@ -288,25 +290,39 @@ export default {
     },
     activeOptionalPrograms() {
       const studentProgramId = this.studentProgramId;
-
       const currentDate = new Date().toISOString().split("T")[0];
-      return this.optionalProgramList.filter((item) => {
-        let effectiveDateUTC = null;
-        let expiryDateUTC = null;
-        if (item.effectiveDate) {
-          effectiveDateUTC = new Date(item.effectiveDate)
-            .toISOString()
-            .split("T")[0];
-        }
-        if (item.expiryDate) {
-          expiryDateUTC = new Date(item.expiryDate).toISOString().split("T")[0];
-        }
-        return (
-          item.graduationProgramCode === studentProgramId &&
-          effectiveDateUTC <= currentDate &&
-          (expiryDateUTC == null || currentDate <= expiryDateUTC)
-        );
-      }); //TODO - map to filter out existing opt programs
+
+      return applyDisplayOrder(
+        this.optionalProgramList
+          ?.filter((item) => {
+            let effectiveDateUTC = null;
+            let expiryDateUTC = null;
+            if (item.effectiveDate) {
+              effectiveDateUTC = new Date(item.effectiveDate)
+                .toISOString()
+                .split("T")[0];
+            }
+            if (item.expiryDate) {
+              expiryDateUTC = new Date(item.expiryDate)
+                .toISOString()
+                .split("T")[0];
+            }
+
+            return (
+              item.graduationProgramCode === studentProgramId &&
+              effectiveDateUTC <= currentDate &&
+              (expiryDateUTC == null || currentDate <= expiryDateUTC)
+            );
+          })
+          ?.filter((activeOptionalProgram) => {
+            return !this.studentGradStatus.optionalPrograms.some(
+              (studentOptionalProgram) =>
+                studentOptionalProgram.optionalProgramID ==
+                  activeOptionalProgram.optionalProgramID &&
+                studentOptionalProgram.optionalProgramCode !== "CP"
+            );
+          })
+      );
     },
   },
   methods: {
