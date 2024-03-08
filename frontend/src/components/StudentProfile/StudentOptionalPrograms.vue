@@ -16,7 +16,7 @@
         :fields="optionalProgramsfields"
         showFilter="true"
         title="Optional Programs"
-        useIconButtons="true"
+        :useIconButtons="true"
         :deleteOptions="{
           disableDeletefield: 'optionalProgramCode',
           disableDeleteIfValue: 'CP',
@@ -325,7 +325,7 @@
               :showFilter="false"
               :pagination="false"
               title="Career Programs"
-              useIconButtons="true"
+              :useIconButtons="true"
               :deleteOptions="{
                 disableDeletefield: '',
                 disableDeleteIfValue: '',

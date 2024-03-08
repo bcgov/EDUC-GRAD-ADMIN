@@ -204,12 +204,14 @@
           "
         >
           <div v-if="!useIconButtons">
-            Delete {{ deleteOptions ?? deleteOptions.deleteLabel }}
+            Delete{{ deleteOptions ? " " + deleteOptions.deleteLabel : "" }}
           </div>
           <i v-else class="fa-solid fa-trash-can"></i>
         </b-btn>
         <DisplayModal
-          :header="'Delete ' + (deleteOptions ? deleteOptions.deleteLabel : '')"
+          :header="
+            'Delete' + (deleteOptions ? ' ' + deleteOptions.deleteLabel : '')
+          "
           :showModal="showDeleteModal[item[this.id]]"
         >
           <template v-slot:body>
@@ -228,7 +230,11 @@
               variant="danger"
               class="float-right"
               size="xs"
-              :disabled="deleteOptions ? deleteOptions.disableDeleteBtn : false"
+              :disabled="
+                deleteOptions && deleteOptions.disableDeleteBtn
+                  ? deleteOptions.disableDeleteBtn
+                  : false
+              "
               @click="deleteItem(item)"
               >DELETE</b-btn
             >
@@ -271,7 +277,6 @@ export default {
     "title",
     "fields",
     "id",
-    "create",
     "update",
     "delete",
     "store",
