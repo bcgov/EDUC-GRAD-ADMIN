@@ -279,7 +279,7 @@ export default {
   },
   computed: {
     ...mapState(useStudentStore, {
-      optionalPrograms: "getStudentOptionalPrograms",
+      studentOptionalPrograms: "getStudentOptionalPrograms",
       studentGradStatus: "getStudentGradStatus",
     }),
     optionalProgramChange() {
@@ -315,7 +315,7 @@ export default {
             );
           })
           ?.filter((activeOptionalProgram) => {
-            return !this.studentGradStatus.optionalPrograms.some(
+            return !this.studentOptionalPrograms.some(
               (studentOptionalProgram) =>
                 studentOptionalProgram.optionalProgramID ==
                   activeOptionalProgram.optionalProgramID &&
