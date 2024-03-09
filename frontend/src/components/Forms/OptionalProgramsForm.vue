@@ -139,7 +139,7 @@
               <p class="form-label required">Career Program</p>
               <b-form-select
                 v-model="selectedCareerProgram"
-                :options="careerProgramList"
+                :options="activeCareerPrograms"
                 value-field="code"
                 text-field="name"
               ></b-form-select>
@@ -280,6 +280,7 @@ export default {
   computed: {
     ...mapState(useStudentStore, {
       studentOptionalPrograms: "getStudentOptionalPrograms",
+      studentCareerPrograms: "getStudentCareerPrograms",
       studentGradStatus: "getStudentGradStatus",
     }),
     optionalProgramChange() {
@@ -322,6 +323,25 @@ export default {
                 studentOptionalProgram.optionalProgramCode !== "CP"
             );
           })
+      );
+    },
+    activeCareerPrograms() {
+      return applyDisplayOrder(
+        this.careerProgramList
+          ?.filter(
+            (activeCareerProgram) =>
+              !this.studentCareerPrograms.some(
+                (studentCareerProgram) =>
+                  studentCareerProgram.careerProgramCode ==
+                  activeCareerProgram.code
+              )
+          )
+          ?.filter(
+            (activeCareerProgram) =>
+              !this.careerProgramsToAdd.some(
+                (careerProgram) => careerProgram == activeCareerProgram.code
+              )
+          )
       );
     },
   },
