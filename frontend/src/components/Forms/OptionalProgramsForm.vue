@@ -94,10 +94,18 @@
             <p class="form-label required">Optional Program</p>
             <b-form-select
               v-model="selectedOptionalProgram"
-              :options="activeOptionalPrograms"
               value-field="optionalProgramID"
               text-field="optionalProgramName"
-            ></b-form-select>
+            >
+              <option
+                v-for="optionalProgram in activeOptionalPrograms"
+                :key="optionalProgram.optionalProgramID"
+                :value="optionalProgram.optionalProgramID"
+              >
+                ({{ optionalProgram.optProgramCode }})
+                {{ optionalProgram.optionalProgramName }}
+              </option>
+            </b-form-select>
 
             <b-alert
               variant="primary"
@@ -139,10 +147,18 @@
               <p class="form-label required">Career Program</p>
               <b-form-select
                 v-model="selectedCareerProgram"
-                :options="activeCareerPrograms"
                 value-field="code"
                 text-field="name"
-              ></b-form-select>
+              >
+                <option
+                  v-for="careerProgram in activeCareerPrograms"
+                  :key="careerProgram.code"
+                  :value="careerProgram.code"
+                >
+                  ({{ careerProgram.code }})
+                  {{ careerProgram.name }}
+                </option>
+              </b-form-select>
               <div v-if="careerProgramsToAdd.length > 0" class="mx-4 my-3">
                 <div
                   v-for="item in careerProgramsToAdd"
