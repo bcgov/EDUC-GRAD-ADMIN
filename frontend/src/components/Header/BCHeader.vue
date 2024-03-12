@@ -264,6 +264,10 @@ export default {
               if (response.data) {
                 if (response.data.length == 0) {
                   throw new Error("Student not found");
+                } else if (response.data[0].program == null || "") {
+                  throw new Error(
+                    "Student exists in PEN but does not have a GRAD system record."
+                  );
                 }
                 this.studentStore.unsetStudent();
                 this.studentStore.setQuickSearchId(response.data[0].studentID);
