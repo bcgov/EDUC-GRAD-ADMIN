@@ -186,15 +186,60 @@
       <template v-for="(_, slotName) of $scopedSlots" v-slot:[slotName]="scope">
         <slot :name="slotName" v-bind="scope" />
       </template>
+      <!-- DELETE TEMPLATE - -->
       <template v-slot:cell(delete)="{ item }">
         <b-btn
-          v-if="deleteMode && item[disableDeletefield] != disableDeleteIfValue"
-          variant="danger"
+          v-if="
+            deleteOptions &&
+            item[deleteOptions.disableDeletefield] !=
+              deleteOptions.disableDeleteIfValue
+          "
+          :variant="!useIconButtons ? 'danger' : 'outline-danger'"
+          :pill="!!useIconButtons"
           size="sm"
-          @click="deleteItem(item)"
+          @click="
+            deleteOptions && deleteOptions.deleteConfirm
+              ? (showDeleteModal[item[this.id]] = true)
+              : deleteItem(item)
+          "
         >
-          {{ deleteLabel ? deleteLabel : "Delete" }}
+          <div v-if="!useIconButtons">
+            Delete{{ deleteOptions ? " " + deleteOptions.deleteLabel : "" }}
+          </div>
+          <i v-else class="fa-solid fa-trash-can"></i>
         </b-btn>
+        <DisplayModal
+          :header="
+            'Delete' + (deleteOptions ? ' ' + deleteOptions.deleteLabel : '')
+          "
+          :showModal="showDeleteModal[item[this.id]]"
+        >
+          <template v-slot:body>
+            <slot name="delete-msg" v-bind="item"> Confirm Delete </slot>
+          </template>
+
+          <template v-slot:footer>
+            <b-btn
+              variant="outline-primary"
+              class="float-left"
+              size="xs"
+              @click="showDeleteModal = {}"
+              >Cancel</b-btn
+            >
+            <b-btn
+              variant="danger"
+              class="float-right"
+              size="xs"
+              :disabled="
+                deleteOptions && deleteOptions.disableDeleteBtn
+                  ? deleteOptions.disableDeleteBtn
+                  : false
+              "
+              @click="deleteItem(item)"
+              >DELETE</b-btn
+            >
+          </template>
+        </DisplayModal>
       </template>
     </b-table>
 
@@ -223,6 +268,7 @@ import { useAppStore } from "../store/modules/app.js";
 import { useBatchProcessingStore } from "../store/modules/batchprocessing.js";
 import { useStudentStore } from "../store/modules/student.js";
 import { mapState } from "pinia";
+import DisplayModal from "@/components/DisplayModal.vue";
 export default {
   name: "DisplayTable",
   props: [
@@ -234,7 +280,10 @@ export default {
     "update",
     "delete",
     "store",
+    "deleteOptions",
     "deleteLabel",
+    "deleteConfirm",
+    "useIconButtons",
     "disableDeletefield",
     "disableDeleteIfValue",
     "slots",
@@ -245,6 +294,9 @@ export default {
     "sortByField",
     "sortDesc",
   ],
+  components: {
+    DisplayModal: DisplayModal,
+  },
   onMounted() {
     // Set the initial number of items
     // this.totalRows = this.items.length;
@@ -261,6 +313,7 @@ export default {
       createAllowed: false,
       editMode: false,
       deleteMode: true,
+      showDeleteModal: {},
       addMode: false,
       itemToAdd: [],
       showConfirm: false,
@@ -344,6 +397,10 @@ export default {
       } else {
         console.error("Store not found.");
       }
+      //close modal if delete confirm enabled
+      if (this.deleteOptions?.deleteConfirm) {
+        this.showDeleteModal = {};
+      }
     },
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
@@ -357,6 +414,11 @@ export default {
 };
 </script>
 <style scoped>
+/* removes bootstrap vue outline on icon btn */
+button.btn-outline-danger.rounded-pill {
+  border: none;
+}
+
 @media (min-width: 992px) {
   .col-lg-4.table-filter {
     position: absolute;

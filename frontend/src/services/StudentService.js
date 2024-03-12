@@ -1,6 +1,10 @@
 import ApiService from "../common/apiService";
 
 export default {
+  // STUDENT INFO
+  getStudentPen(id) {
+    return ApiService.apiAxios.get("/api/v1/student/stdid/" + id);
+  },
   getStudentByPen(pen) {
     return ApiService.apiAxios.get("/api/v1/student/pen/" + pen);
   },
@@ -22,18 +26,10 @@ export default {
       "/api/v1/student/gradstudentsearch?" + queryString
     );
   },
+
+  // STUDENT GRAD STATUS
   getGraduationStatus(id) {
     return ApiService.apiAxios.get("/api/v1/student/studentid/" + id);
-  },
-  getGraduationStatusOptionalPrograms(id) {
-    return ApiService.apiAxios.get(
-      "/api/v1/student/optionalprogram/studentid/" + id
-    );
-  },
-  deleteGraduationStatusOptionalPrograms(id) {
-    return ApiService.apiAxios.delete(
-      "/api/v1/student/optionalprogram/studentid/" + id
-    );
   },
   editGraduationStatus(id, json) {
     return ApiService.apiAxios.post(
@@ -52,14 +48,41 @@ export default {
       json
     );
   },
+
+  // STUDENT OPTIONAL PROGRAMS
+  getGraduationStatusOptionalPrograms(id) {
+    return ApiService.apiAxios.get(
+      "/api/v1/student/optionalprogram/studentid/" + id
+    );
+  },
   getStudentCareerPrograms(id) {
     return ApiService.apiAxios.get(
       "/api/v1/student/studentcareerprogram/studentid/" + id
     );
   },
-  getStudentStatusCodes() {
-    return ApiService.apiAxios.get("/api/v1/student/studentstatus");
+  createStudentOptionalProgram(studentId, optionalProgramId) {
+    return ApiService.apiAxios.post(
+      "/api/v1/student/" + studentId + "/optionalPrograms/" + optionalProgramId
+    );
   },
+  createStudentCareerPrograms(studentId, json) {
+    return ApiService.apiAxios.post(
+      "/api/v1/student/" + studentId + "/careerPrograms",
+      json
+    );
+  },
+  deleteStudentOptionalProgram(studentId, optionalProgramId) {
+    return ApiService.apiAxios.delete(
+      "/api/v1/student/" + studentId + "/optionalPrograms/" + optionalProgramId
+    );
+  },
+  deleteStudentCareerProgram(studentId, careerProgramCode) {
+    return ApiService.apiAxios.delete(
+      "/api/v1/student/" + studentId + "/careerPrograms/" + careerProgramCode
+    );
+  },
+
+  // STUDENT NOTES
   getStudentNotes(id) {
     return ApiService.apiAxios.get(
       "/api/v1/student/studentnotes/studentid/" + id
@@ -71,34 +94,40 @@ export default {
   deleteStudentNotes(noteID) {
     return ApiService.apiAxios.delete("/api/v1/student/studentnotes/" + noteID);
   },
-  getStudentUngradReasons(id) {
-    return ApiService.apiAxios.get(
-      "/api/v1/studentgraduation/undocompletion/studentundocompletionreason/studentid/" +
-        id
-    );
-  },
-  getUngradReasons() {
-    return ApiService.apiAxios.get(
-      "/api/v1/studentgraduation/undocompletion/undocompletionreason"
-    );
-  },
+
+  // STUDENT HISTORIES
   getStudentHistory(id) {
     return ApiService.apiAxios.get("/api/v1/student/studentHistory/" + id);
-  },
-  getBatchHistory(id, page) {
-    return ApiService.apiAxios.get(
-      "/api/v1/student/studentHistory/batchid/" + id + "?pageNumber=" + page
-    );
   },
   getStudentOptionalProgramHistory(id) {
     return ApiService.apiAxios.get(
       "/api/v1/student/studentOptionalProgramHistory/" + id
     );
   },
+  getStudentUngradReasons(id) {
+    return ApiService.apiAxios.get(
+      "/api/v1/studentgraduation/undocompletion/studentundocompletionreason/studentid/" +
+        id
+    );
+  },
+
+  // BATCH
+  getBatchHistory(id, page) {
+    return ApiService.apiAxios.get(
+      "/api/v1/student/studentHistory/batchid/" + id + "?pageNumber=" + page
+    );
+  },
+
+  // CODES
+  getStudentStatusCodes() {
+    return ApiService.apiAxios.get("/api/v1/student/studentstatus");
+  },
+  getUngradReasons() {
+    return ApiService.apiAxios.get(
+      "/api/v1/studentgraduation/undocompletion/undocompletionreason"
+    );
+  },
   getStudentHistoryActivityCode() {
     return ApiService.apiAxios.get("/api/v1/student/historyactivity");
-  },
-  getStudentPen(id) {
-    return ApiService.apiAxios.get("/api/v1/student/stdid/" + id);
   },
 };

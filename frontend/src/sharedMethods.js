@@ -2,7 +2,7 @@ import StudentService from "@/services/StudentService.js";
 
 export default {
   applyDisplayOrder(unsorted) {
-    return unsorted.sort((a, b) => a.displayOrder - b.displayOrder);
+    return unsorted?.sort((a, b) => a.displayOrder - b.displayOrder);
   },
   isEnvLocalHost() {
     return location.host.includes("localhost");
