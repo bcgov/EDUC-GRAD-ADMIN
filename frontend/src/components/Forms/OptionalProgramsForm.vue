@@ -266,12 +266,6 @@ import { mapState, mapActions } from "pinia";
 
 export default {
   name: "StudentOptionalProgramsForm",
-  props: {
-    studentProgramId: {
-      type: String,
-      default: "",
-    },
-  },
   components: {
     DisplayModal: DisplayModal,
   },
@@ -306,7 +300,7 @@ export default {
       return this.selectedCareerProgram;
     },
     activeOptionalPrograms() {
-      const studentProgramId = this.studentProgramId;
+      const studentProgramId = this.studentGradStatus.program;
       const currentDate = new Date().toISOString().split("T")[0];
 
       return applyDisplayOrder(
@@ -332,12 +326,20 @@ export default {
             );
           })
           ?.filter((activeOptionalProgram) => {
-            return !this.studentOptionalPrograms.some(
-              (studentOptionalProgram) =>
-                studentOptionalProgram.optionalProgramID ==
-                  activeOptionalProgram.optionalProgramID &&
-                studentOptionalProgram.optionalProgramCode !== "CP"
-            );
+            // If student optional programs exist, filter out existing programs. Otherwise returns all possible opt programs for grad program
+            if (
+              !!this.studentOptionalPrograms &&
+              this.studentOptionalPrograms.length > 0
+            ) {
+              return !this.studentOptionalPrograms.some(
+                (studentOptionalProgram) =>
+                  studentOptionalProgram.optionalProgramID ==
+                    activeOptionalProgram.optionalProgramID &&
+                  studentOptionalProgram.optionalProgramCode !== "CP"
+              );
+            } else {
+              return true;
+            }
           })
       );
     },
@@ -412,15 +414,13 @@ export default {
       );
     },
     unsetCareerProgram(selectedCode) {
-      // The following using array.splice DOES NOT WORK due to multiple versions of Vue running on this branch
-      // let index = this.careerProgramsToAdd.indexOf(selectedCode);
-      // console.log(index);
-      // if (index !== -1) {
-      //   this.careerProgramsToAdd.splice(index, 1);
-      // }
+      console.log("Before", this.selectedCareerProgram);
+      console.log("Before", this.careerProgramsToAdd);
       this.careerProgramsToAdd = this.careerProgramsToAdd.filter(
         (item) => item !== selectedCode
       );
+      console.log("After", this.selectedCareerProgram);
+      console.log("After", this.careerProgramsToAdd);
     },
     validateOptionalPrograms() {
       return !(
@@ -463,7 +463,10 @@ export default {
       this.selectedCareerProgram = null;
     },
     careerProgramChange: function () {
-      this.careerProgramsToAdd.push(this.selectedCareerProgram);
+      if (!!this.selectedCareerProgram) {
+        this.careerProgramsToAdd.push(this.selectedCareerProgram);
+        this.selectedCareerProgram = null;
+      }
     },
   },
 };

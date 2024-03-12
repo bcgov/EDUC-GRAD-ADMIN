@@ -28,9 +28,7 @@
         delete="removeStudentOptionalProgram"
       >
         <template v-slot:create>
-          <OptionalProgramsForm
-            :studentProgramId="studentGradStatus.program"
-          ></OptionalProgramsForm>
+          <OptionalProgramsForm></OptionalProgramsForm>
         </template>
 
         <template #delete-msg="{ optionalProgramName, optionalProgramCode }">
