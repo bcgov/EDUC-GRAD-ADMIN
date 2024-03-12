@@ -127,6 +127,18 @@ export const useStudentStore = defineStore("student", {
           }
         });
     },
+    loadStudentGradStatus(studentId) {
+      StudentService.getGraduationStatus(studentId)
+        .then((response) => {
+          this.setStudentGradStatus(response.data);
+        })
+        .catch((error) => {
+          console.error(
+            "There was an error loading student grad status",
+            error
+          );
+        });
+    },
     loadStudentOptionalPrograms(studentId) {
       StudentService.getGraduationStatusOptionalPrograms(studentId)
         .then((response) => {
@@ -335,9 +347,10 @@ export const useStudentStore = defineStore("student", {
           this.id,
           optionalProgramId
         ).then(() => {
-          // reload student optional programs & optional program history after create
+          // reload student grad status optional programs & optional program history after create
           this.loadStudentOptionalProgramHistory(this.id);
           this.loadStudentOptionalPrograms(this.id);
+          this.loadStudentGradStatus(this.id);
         });
       } catch (error) {
         console.error("Error creating student optional program: ", error);
@@ -353,10 +366,11 @@ export const useStudentStore = defineStore("student", {
           this.id,
           careerProgramPayload
         ).then(() => {
-          // reload student optional/career programs & optional program history after create
+          // reload student grad status, optional/career programs & optional program history after create
           this.loadStudentOptionalProgramHistory(this.id);
           this.loadStudentOptionalPrograms(this.id);
           this.loadStudentCareerPrograms(this.id);
+          this.loadStudentGradStatus(this.id);
         });
       } catch (error) {
         console.error("Error creating student career program: ", error);
@@ -368,9 +382,10 @@ export const useStudentStore = defineStore("student", {
           this.id,
           optionalProgramId
         ).then(() => {
-          // reload student optional programs & optional program history after delete
+          // reload student grad status, optional programs & optional program history after delete
           this.loadStudentOptionalProgramHistory(this.id);
           this.loadStudentOptionalPrograms(this.id);
+          this.loadStudentGradStatus(this.id);
         });
       } catch (error) {
         console.error("Error deleting student optional program: ", error);
@@ -382,10 +397,11 @@ export const useStudentStore = defineStore("student", {
           this.id,
           careerProgramCode
         ).then(() => {
-          // reload student optional/career programs & optional program history after delete
+          // reload student grad status, optional/career programs & optional program history after delete
           this.loadStudentOptionalProgramHistory(this.id);
           this.loadStudentOptionalPrograms(this.id);
           this.loadStudentCareerPrograms(this.id);
+          this.loadStudentGradStatus(this.id);
         });
       } catch (error) {
         console.error("Error deleting student career program: ", error);
