@@ -257,6 +257,12 @@ export default {
           sortable: true,
           class: "text-center",
         },
+        {
+          key: "appendTrans",
+          label: "Append to Schools",
+          sortable: true,
+          class: "text-center",
+        },
       ],
       totalResults: "",
       searchMessage: "",
