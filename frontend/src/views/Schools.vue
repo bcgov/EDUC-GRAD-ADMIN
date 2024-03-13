@@ -144,14 +144,14 @@
                   <img
                     v-show="!row.detailsShowing"
                     src="../../src/assets/images/icon-right.svg"
-                    width="9px"
+                    width="9"
                     aria-hidden="true"
                     alt=""
                   />
                   <img
                     v-show="row.detailsShowing"
                     src="../../src/assets/images/icon-down.svg"
-                    height="5px"
+                    height="5"
                     aria-hidden="true"
                     alt=""
                   />
@@ -254,6 +254,12 @@ export default {
         {
           key: "schoolCategory",
           label: "SPM School Category",
+          sortable: true,
+          class: "text-center",
+        },
+        {
+          key: "appendTrans",
+          label: "Append to Schools",
           sortable: true,
           class: "text-center",
         },
