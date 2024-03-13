@@ -61,6 +61,12 @@ export const useAccessStore = defineStore("access", {
     allowUpdateRecalcFlags: (state) => {
       return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
     },
+    allowOptionalProgramUpdate: (state) => {
+      return (
+        state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) ||
+        state.roles.includes(Roles.GRAD_INFO_OFFICER)
+      );
+    },
   },
 
   actions: {

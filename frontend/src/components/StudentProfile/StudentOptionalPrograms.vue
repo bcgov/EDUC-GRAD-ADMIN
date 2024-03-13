@@ -13,7 +13,7 @@
         id="optionalProgramID"
         :items="optionalPrograms"
         :striped="false"
-        :fields="optionalProgramsfields"
+        :fields="computedOptionalProgramsFields"
         showFilter="true"
         title="Optional Programs"
         :useIconButtons="true"
@@ -319,7 +319,7 @@
               id="careerProgramCode"
               :items="careerPrograms"
               :striped="false"
-              :fields="careerProgramsFields"
+              :fields="computedCareerProgramsFields"
               :showFilter="false"
               :pagination="false"
               title="Career Programs"
@@ -447,7 +447,8 @@
 </template>
 
 <script>
-import { useStudentStore } from "../../store/modules/student";
+import { useStudentStore } from "@/store/modules/student";
+import { useAccessStore } from "@/store/modules/access";
 import { mapState } from "pinia";
 import { isProgramComplete } from "@/utils/common.js";
 import DisplayTable from "@/components/DisplayTable.vue";
@@ -465,6 +466,19 @@ export default {
       careerPrograms: "getStudentCareerPrograms",
       studentGradStatus: "getStudentGradStatus",
     }),
+    ...mapState(useAccessStore, {
+      allowOptionalProgramUpdate: "allowOptionalProgramUpdate",
+    }),
+    computedOptionalProgramsFields() {
+      return this.optionalProgramsfields.filter((field) =>
+        this.allowOptionalProgramUpdate ? true : field.key != "delete"
+      );
+    },
+    computedCareerProgramsFields() {
+      return this.careerProgramsFields.filter((field) =>
+        this.allowOptionalProgramUpdate ? true : field.key != "delete"
+      );
+    },
   },
   data: function () {
     return {

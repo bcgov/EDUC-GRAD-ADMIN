@@ -2,6 +2,7 @@
   <div>
     <!-- btn to open optional program edit form-->
     <b-btn
+      v-if="allowOptionalProgramUpdate"
       variant="primary"
       class="float-right mb-2 mr-2"
       @click="openCreateOptionalProgramDialog()"
@@ -262,6 +263,7 @@ import ProgramManagementService from "@/services/ProgramManagementService.js";
 
 //import stores & pinia utilities
 import { useStudentStore } from "@/store/modules/student";
+import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
 
 export default {
@@ -292,6 +294,9 @@ export default {
       studentOptionalPrograms: "getStudentOptionalPrograms",
       studentCareerPrograms: "getStudentCareerPrograms",
       studentGradStatus: "getStudentGradStatus",
+    }),
+    ...mapState(useAccessStore, {
+      allowOptionalProgramUpdate: "allowOptionalProgramUpdate",
     }),
     optionalProgramChange() {
       return this.selectedOptionalProgram;
