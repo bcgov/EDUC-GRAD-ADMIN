@@ -279,9 +279,9 @@ export default {
             })
             .catch((error) => {
               // eslint-disable-next-line
-              console.error(error);
+              console.error("Header Search: ", error.message);
               this.searchLoading = false;
-              this.showNotification("danger", "" + error.message);
+              this.showNotification("danger", error.message);
             })
             .finally(() => {
               this.penInput = "";
