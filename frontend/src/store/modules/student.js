@@ -404,6 +404,9 @@ export const useStudentStore = defineStore("student", {
       return this.student.optionalPrograms;
     },
     getStudentCourses() {
+      if (!Array.isArray(this.student.courses) || this.student.courses.length === 0) {
+        return [];
+      }    
       return this.student.courses.map((course) => ({
         ...course,
         id: `${course.courseCode}_${course.courseLevel}_${course.sessionDate}`,

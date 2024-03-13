@@ -39,70 +39,105 @@
         </template> -->
         <!-- <template #cell(sessionDate)="row">
           {{ $filters.formatYYYYMMDate(row.value) }}
-        </template>
-        <template #cell(courseName)="row">
-          <b-btn
-            v-b-modal="
-              item.raw.courseCode +
-              item.raw.courseLevel +
-              item.raw.sessionDate +
-              'modal'
-            "
-            variant="link"
-            >{{ item.raw.courseName }}</b-btn
-          >
-
-          <b-modal
-            :id="
-              item.raw.courseCode +
-              item.raw.courseLevel +
-              item.raw.sessionDate +
-              'modal'
-            "
-            :title="item.raw.courseName"
-            ok-title="Close"
-            ok-only
-          >
-            <div class="row py-1">
-              <div class="col">
-                <strong>Instruction Language:</strong>
-              </div>
-              <div class="col">{{ item.raw.courseDetails.language }}</div>
-            </div>
-            <div class="row py-1">
-              <div class="col"><strong>Start Date:</strong></div>
-              <div class="col">
-                {{
-                  $filters.formatSimpleDate(item.raw.courseDetails.startDate)
-                }}
-              </div>
-            </div>
-            <div class="row py-1">
-              <div class="col"><strong>End Date:</strong></div>
-              <div class="col">
-                {{ $filters.formatSimpleDate(item.raw.courseDetails.endDate) }}
-              </div>
-            </div>
-            <div class="row py-1">
-              <div class="col"><strong>Credits:</strong></div>
-              <div class="col">{{ item.raw.courseDetails.numCredits }}</div>
-            </div>
-            <div class="row py-1">
-              <div class="col"><strong>Work Experience:</strong></div>
-              <div class="col">
-                {{ item.raw.courseDetails.workExpFlag }}
-              </div>
-            </div>
-            <div class="row py-1">
-              <div class="col">
-                <strong>Generic Course Type:</strong>
-              </div>
-              <div class="col">
-                {{ item.raw.courseDetails.genericCourseType }}
-              </div>
-            </div>
-          </b-modal>
         </template> -->
+        <template v-slot:item.courseName="{ item }">
+          <v-dialog max-width="500">
+            <template v-slot:activator="{ props: activatorProps }">
+              <v-dialog max-width="500">
+                <template v-slot:activator="{ props: activatorProps }">
+                  <v-btn
+                    v-bind="activatorProps"
+                    color="surface-variant"
+                    :text="item.raw.courseName"
+                    variant="flat"
+                  ></v-btn>
+                </template>
+
+                <template v-slot:default="{ isActive }">
+                  <v-card title="Dialog">
+                    <v-card-text>
+                      <div class="row py-1">
+                        <div class="col">
+                          <strong>Instruction Language:</strong>
+                        </div>
+                        <div class="col">
+                          {{ item.raw.courseDetails.language }}
+                        </div>
+                      </div>
+                      <div class="row py-1">
+                        <div class="col"><strong>Start Date:</strong></div>
+                        <div class="col">
+                          {{
+                            $filters.formatSimpleDate(
+                              item.raw.courseDetails.startDate
+                            )
+                          }}
+                        </div>
+                      </div>
+                      <div class="row py-1">
+                        <div class="col"><strong>End Date:</strong></div>
+                        <div class="col">
+                          {{
+                            $filters.formatSimpleDate(
+                              item.raw.courseDetails.endDate
+                            )
+                          }}
+                        </div>
+                      </div>
+                      <div class="row py-1">
+                        <div class="col"><strong>Credits:</strong></div>
+                        <div class="col">
+                          {{ item.raw.courseDetails.numCredits }}
+                        </div>
+                      </div>
+                      <div class="row py-1">
+                        <div class="col"><strong>Work Experience:</strong></div>
+                        <div class="col">
+                          {{ item.raw.courseDetails.workExpFlag }}
+                        </div>
+                      </div>
+                      <div class="row py-1">
+                        <div class="col">
+                          <strong>Generic Course Type:</strong>
+                        </div>
+                        <div class="col">
+                          {{ item.raw.courseDetails.genericCourseType }}
+                        </div>
+                      </div>
+                    </v-card-text>
+
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+
+                      <v-btn
+                        text="Close Dialog"
+                        @click="isActive.value = false"
+                      ></v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </template>
+              </v-dialog>
+            </template>
+
+            <template v-slot:default="{ isActive }">
+              <v-card title="Dialog">
+                <v-card-text>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </v-card-text>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+
+                  <v-btn
+                    text="Close Dialog"
+                    @click="isActive.value = false"
+                  ></v-btn>
+                </v-card-actions>
+              </v-card>
+            </template>
+          </v-dialog>
+        </template>
 
         <template v-slot:expanded-row="{ columns, item }">
           <tr>

@@ -30,7 +30,6 @@
         :item-key="id"
         :items-per-page="perPage"
         :search="filter"
-        :sortBy="sortBy"
         :show-expand="showExpand"
         :footer-props="{
           itemsPerPageOptions: [10, 20, 50, 100],

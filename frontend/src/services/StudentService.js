@@ -81,11 +81,23 @@ export default {
             console.log("ADDING OPTIONALPROGRAM")
             //return ApiService.apiAxios.post(`/api/v1/student/${studentId}/optionalPrograms`,optionalProgramPayload);
         }
-        
     },
     deleteStudentOptionalProgram(studentId, optionalProgramId){
         return ApiService.apiAxios.get(`/api/v1/student/${studentId}/optionalPrograms/${optionalProgramId}/careerPrograms`);
+    },   
+    createStudentCareerProgram(studentId, optionalProgramPayload, careerProgramCode) {
+        if(careerProgramCode){
+            console.log("ADDING CAREERPROGRAM"); return
+            //return ApiService.apiAxios.post(`/api/v1/student/${studentId}/optionalPrograms?careerProgramCode=${careerProgramCode}`,optionalProgramPayload);
+        }else{
+            console.log("ADDING OPTIONALPROGRAM")
+            //return ApiService.apiAxios.post(`/api/v1/student/${studentId}/optionalPrograms`,optionalProgramPayload);
+        }
     },
+    deleteStudentCareerProgram(studentId, optionalProgramId){
+        return ApiService.apiAxios.get(`/api/v1/student/${studentId}/optionalPrograms/${optionalProgramId}/careerPrograms`);
+    },    
+     
     updateStudentOptionalProgram(studentId,optionalProgramId, updatedOptionalProgram){    
         return ApiService.apiAxios.get(`/api/v1/student/${studentId}/optionalPrograms/${optionalProgramId}`,updatedOptionalProgram)
     
