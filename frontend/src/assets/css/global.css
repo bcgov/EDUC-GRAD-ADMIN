@@ -44,8 +44,9 @@
   width: 90% !important;
 }
 
-.text-warning{
-  color:#FCBA19 !important;
+.form-validation-message.text-warning{
+  color:#ce9608 !important;
+  font-weight: bold;
 }
 .nav-link{
   cursor: pointer;
