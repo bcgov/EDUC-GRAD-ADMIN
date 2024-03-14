@@ -413,9 +413,13 @@
                               :sortDesc="true"
                               :showFilter="false"
                               pagination="true"
-                              disableDeletefield="status"
-                              disableDeleteIfValue="COMPLETED"
-                              deleteLabel="Cancel"
+                              :useIconButtons="true"
+                              :deleteOptions="{
+                                disableDeletefield: 'status',
+                                disableDeleteIfValue: 'COMPLETED',
+                                deleteLabel: 'Scheduled Job',
+                                deleteConfirm: 'true',
+                              }"
                               store="batchprocessing"
                               delete="removeScheduledJobs"
                             >
