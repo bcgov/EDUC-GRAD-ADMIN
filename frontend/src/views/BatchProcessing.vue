@@ -404,6 +404,7 @@
                             <div v-if="!scheduledJobs.length">
                               No Scheduled Jobs
                             </div>
+
                             <DisplayTable
                               title="Job/Runs"
                               :items="scheduledJobs"
