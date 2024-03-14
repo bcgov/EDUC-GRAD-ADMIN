@@ -289,11 +289,16 @@
                     Student grade should not be AD or AN for this program
                   </div>
                 </div>
+                <div v-if="warningFlags.closedProgramGradeChangeWarning">
+                  <div class="form-validation-message text-warning">
+                    Warning: You are changing the grade for a student with a
+                    program completion date
+                  </div>
+                </div>
               </td>
               <td>
                 <b-form-select
                   size="sm"
-                  :disabled="disableStudentGrade"
                   v-model="editedGradStatus.studentGrade"
                   :options="gradeOptions"
                 >
@@ -753,6 +758,7 @@ import {
   containsAnyLetters,
   parseStudentStatus,
   showNotification,
+  isProgramComplete,
 } from "../../../utils/common.js";
 import SchoolService from "@/services/SchoolService.js";
 import sharedMethods from "../../../sharedMethods";
@@ -764,6 +770,7 @@ export default {
     this.showNotification = showNotification;
     this.containsAnyLetters = containsAnyLetters;
     this.parseStudentStatus = parseStudentStatus;
+    this.isProgramComplete = isProgramComplete;
   },
   setup() {
     const studentStore = useStudentStore();
@@ -845,6 +852,7 @@ export default {
       // Validation flags that do NOT prevent submission of GRAD status form
       warningFlags: {
         closedProgramWarning: false,
+        closedProgramGradeChangeWarning: false,
         programChangeWarning: false,
         schoolOfRecordWarning: false,
         schoolNotFoundWarning: false,
@@ -865,7 +873,6 @@ export default {
       studentUngradReason: "",
       disableSave: false,
       disableSchoolAtGrad: false,
-      disableStudentGrade: false,
       disableProgramInput: false,
       disableConsumerEdReqMet: false,
       disableStudentStatus: false,
@@ -931,6 +938,18 @@ export default {
           this.errorFlags.other.programGrade = true;
         }
       }
+      if (
+        this.isProgramComplete(
+          this.studentGradStatus.programCompletionDate,
+          this.studentGradStatus.program
+        ) &&
+        this.studentGradStatus.studentGrade !=
+          this.editedGradStatus.studentGrade
+      ) {
+        this.warningFlags.closedProgramGradeChangeWarning = true;
+      } else {
+        this.warningFlags.closedProgramGradeChangeWarning = false;
+      }
       this.validateFields();
     },
     programChange: function () {
@@ -941,12 +960,10 @@ export default {
         this.studentGradStatus.program != "SCCP"
       ) {
         this.disableProgramInput = true;
-        this.disableStudentGrade = true;
         this.disableConsumerEdReqMet = true;
         this.disableSchoolAtGrad = false;
       } else {
         this.disableProgramInput = false;
-        this.disableStudentGrade = false;
         this.disableConsumerEdReqMet = false;
         this.disableSchoolAtGrad = true;
       }
