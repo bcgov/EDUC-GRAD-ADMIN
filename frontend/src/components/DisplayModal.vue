@@ -1,7 +1,7 @@
 <template>
   <div class="display-modal" v-if="showModal">
     <b-card :header="header" class="modal-body">
-      <slot name="body"> Hello World </slot>
+      <slot name="body"> No body specified </slot>
       <template #footer>
         <slot name="footer"></slot>
         <!-- <b-btn

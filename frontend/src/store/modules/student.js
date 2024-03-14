@@ -127,6 +127,18 @@ export const useStudentStore = defineStore("student", {
           }
         });
     },
+    loadStudentGradStatus(studentId) {
+      StudentService.getGraduationStatus(studentId)
+        .then((response) => {
+          this.setStudentGradStatus(response.data);
+        })
+        .catch((error) => {
+          console.error(
+            "There was an error loading student grad status",
+            error
+          );
+        });
+    },
     loadStudentOptionalPrograms(studentId) {
       StudentService.getGraduationStatusOptionalPrograms(studentId)
         .then((response) => {
@@ -137,6 +149,23 @@ export const useStudentStore = defineStore("student", {
             this.$bvToast.toast("ERROR " + error.response.statusText, {
               title:
                 "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
+                error.response.status,
+              variant: "danger",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
+    loadStudentCareerPrograms(studentId) {
+      StudentService.getStudentCareerPrograms(studentId)
+        .then((response) => {
+          this.setStudentCareerPrograms(response.data);
+        })
+        .catch((error) => {
+          if (error.response.status) {
+            this.$bvToast.toast("ERROR " + error.response.statusText, {
+              title:
+                "There was an error with the Student Service (getting the student's Career Programs): " +
                 error.response.status,
               variant: "danger",
               noAutoHide: true,
@@ -310,6 +339,72 @@ export const useStudentStore = defineStore("student", {
       this.student.notes = payload;
       if (this.student.notes.length) {
         this.student.hasNotes = true;
+      }
+    },
+    addStudentOptionalProgram(optionalProgramId) {
+      try {
+        let response = StudentService.createStudentOptionalProgram(
+          this.id,
+          optionalProgramId
+        ).then(() => {
+          // reload student grad status optional programs & optional program history after create
+          this.loadStudentOptionalProgramHistory(this.id);
+          this.loadStudentOptionalPrograms(this.id);
+          this.loadStudentGradStatus(this.id);
+        });
+      } catch (error) {
+        console.error("Error creating student optional program: ", error);
+      }
+    },
+    addStudentCareerPrograms(careerPrograms) {
+      let careerProgramPayload = {
+        careerProgramCodes: careerPrograms,
+      };
+
+      try {
+        let response = StudentService.createStudentCareerPrograms(
+          this.id,
+          careerProgramPayload
+        ).then(() => {
+          // reload student grad status, optional/career programs & optional program history after create
+          this.loadStudentOptionalProgramHistory(this.id);
+          this.loadStudentOptionalPrograms(this.id);
+          this.loadStudentCareerPrograms(this.id);
+          this.loadStudentGradStatus(this.id);
+        });
+      } catch (error) {
+        console.error("Error creating student career program: ", error);
+      }
+    },
+    removeStudentOptionalProgram(optionalProgramId) {
+      try {
+        let response = StudentService.deleteStudentOptionalProgram(
+          this.id,
+          optionalProgramId
+        ).then(() => {
+          // reload student grad status, optional programs & optional program history after delete
+          this.loadStudentOptionalProgramHistory(this.id);
+          this.loadStudentOptionalPrograms(this.id);
+          this.loadStudentGradStatus(this.id);
+        });
+      } catch (error) {
+        console.error("Error deleting student optional program: ", error);
+      }
+    },
+    removeStudentCareerProgram(careerProgramCode) {
+      try {
+        let response = StudentService.deleteStudentCareerProgram(
+          this.id,
+          careerProgramCode
+        ).then(() => {
+          // reload student grad status, optional/career programs & optional program history after delete
+          this.loadStudentOptionalProgramHistory(this.id);
+          this.loadStudentOptionalPrograms(this.id);
+          this.loadStudentCareerPrograms(this.id);
+          this.loadStudentGradStatus(this.id);
+        });
+      } catch (error) {
+        console.error("Error deleting student career program: ", error);
       }
     },
     // SEARCH
