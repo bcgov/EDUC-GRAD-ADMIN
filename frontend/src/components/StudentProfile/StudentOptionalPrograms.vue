@@ -1,17 +1,138 @@
 <template>
   <div>
+    <b-alert variant="primary" show
+      ><i class="fa-solid fa-circle-info"></i> This student is on the
+      <strong>{{ studentGradStatus.program }}</strong> Graduation
+      Program</b-alert
+    >
     <div class="table-responsive">
       <div v-if="!optionalPrograms" class="container">
         This student does not have any optional programs.
       </div>
       <DisplayTable
-        v-if="optionalPrograms"
+        id="optionalProgramID"
         :items="optionalPrograms"
         :striped="false"
-        :fields="optionalProgramsfields"
+        :fields="computedOptionalProgramsFields"
         showFilter="true"
         title="Optional Programs"
+        :useIconButtons="true"
+        :deleteOptions="{
+          disableDeletefield: 'optionalProgramCode',
+          disableDeleteIfValue: 'CP',
+          deleteLabel: 'Optional Program',
+          deleteConfirm: 'true',
+          disableDeleteBtn: disableDeleteBtn(),
+        }"
+        store="student"
+        delete="removeStudentOptionalProgram"
       >
+        <template v-slot:create>
+          <OptionalProgramsForm></OptionalProgramsForm>
+        </template>
+
+        <template #delete-msg="{ optionalProgramName, optionalProgramCode }">
+          <!-- ERROR if student status is MER/merged-->
+          <b-alert
+            variant="danger"
+            show
+            v-if="studentGradStatus.studentStatus === 'MER'"
+          >
+            <i class="fa-solid fa-circle-xmark"></i>&nbsp;
+            <strong>Error</strong>
+            <p>This student is showing as merged.</p>
+            <p>
+              Student GRAD Optional Program data cannot be updated for students
+              with a status of "MER" merged.
+            </p>
+          </b-alert>
+          <!-- ERROR if student grad program is complete -->
+          <b-alert
+            variant="danger"
+            show
+            v-else-if="
+              isProgramComplete(
+                studentGradStatus.programCompletionDate,
+                studentGradStatus.program
+              )
+            "
+          >
+            <i class="fa-solid fa-circle-xmark"></i>&nbsp;
+            <strong>Error</strong>
+            <p>
+              This student has a program completion date of
+              {{ studentGradStatus.programCompletionDate }}.
+            </p>
+            <p>
+              You must undo completion to be able to edit the Optional Programs
+              for this student.
+            </p>
+          </b-alert>
+          <!-- WARNING if student status is TER/terminated -->
+          <b-alert
+            variant="warning"
+            show
+            v-else-if="studentGradStatus.studentStatus === 'TER'"
+          >
+            <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+            <strong>Warning</strong>
+            <p>This student has been terminated.</p>
+            <p>
+              Re-activate by setting their status to "CUR" if they are currently
+              attending school.
+            </p>
+          </b-alert>
+          <!-- WARNING if student status is ARC/archived -->
+          <b-alert
+            variant="warning"
+            show
+            v-else-if="studentGradStatus.studentStatus === 'ARC'"
+          >
+            <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+            <strong>Warning</strong>
+            <p>This student is not active.</p>
+            <p>
+              Re-activate by setting their status to "CUR" if they are currently
+              attending school.
+            </p>
+          </b-alert>
+          <!-- WARNING if student status is DEC/deceased -->
+          <b-alert
+            variant="warning"
+            show
+            v-else-if="studentGradStatus.studentStatus === 'DEC'"
+          >
+            <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+            <strong>Warning</strong>
+            <p>This student is showing as deceased.</p>
+          </b-alert>
+
+          <!-- WARNING if student optional program is able to be deleted -->
+          <b-alert
+            variant="warning"
+            show
+            v-if="
+              !(
+                studentGradStatus.studentStatus === 'MER' ||
+                isProgramComplete(
+                  studentGradStatus.programCompletionDate,
+                  studentGradStatus.program
+                )
+              )
+            "
+          >
+            <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+            <strong>Warning</strong>
+            <p>
+              You are about to remove the
+              <strong
+                >{{ optionalProgramName }} ({{ optionalProgramCode }})</strong
+              >
+              Optional Program for this student.
+            </p>
+          </b-alert>
+        </template>
+
         <template #cell(optionalNonGradReasons)="row">
           <div v-if="row.item.studentOptionalProgramData">
             <div
@@ -192,14 +313,132 @@
           </b-btn>
         </template>
         <template #row-details="">
-          <b-card class="px-0">
-            <strong>Career Programs</strong>
-            <hr />
-            <ul id="student-career-programs">
-              <li v-for="item in careerPrograms" :key="item.careerProgramName">
-                {{ item.careerProgramName }} ({{ item.careerProgramCode }})
-              </li>
-            </ul>
+          <b-card class="col-6">
+            <DisplayTable
+              v-if="careerPrograms"
+              id="careerProgramCode"
+              :items="careerPrograms"
+              :striped="false"
+              :fields="computedCareerProgramsFields"
+              :showFilter="false"
+              :pagination="false"
+              title="Career Programs"
+              :useIconButtons="true"
+              :deleteOptions="{
+                disableDeletefield: '',
+                disableDeleteIfValue: '',
+                deleteLabel: 'Career Program',
+                deleteConfirm: 'true',
+                disableDeleteBtn: disableDeleteBtn(),
+              }"
+              store="student"
+              delete="removeStudentCareerProgram"
+            >
+              <template #delete-msg="{ careerProgramName, careerProgramCode }">
+                <!-- ERROR if student status is MER/merged-->
+                <b-alert
+                  variant="danger"
+                  show
+                  v-if="studentGradStatus.studentStatus === 'MER'"
+                >
+                  <i class="fa-solid fa-circle-xmark"></i>&nbsp;
+                  <strong>Error</strong>
+                  <p>This student is showing as merged.</p>
+                  <p>
+                    Student GRAD Career Program data cannot be updated for
+                    students with a status of "MER" merged.
+                  </p>
+                </b-alert>
+                <!-- ERROR if student grad program is complete -->
+                <b-alert
+                  variant="danger"
+                  show
+                  v-else-if="
+                    isProgramComplete(
+                      studentGradStatus.programCompletionDate,
+                      studentGradStatus.program
+                    )
+                  "
+                >
+                  <i class="fa-solid fa-circle-xmark"></i>&nbsp;
+                  <strong>Error</strong>
+                  <p>
+                    This student has a program completion date of
+                    {{ studentGradStatus.programCompletionDate }}.
+                  </p>
+                  <p>
+                    You must undo completion to be able to edit the Career
+                    Programs for this student.
+                  </p>
+                </b-alert>
+                <!-- WARNING if student status is TER/terminated -->
+                <b-alert
+                  variant="warning"
+                  show
+                  v-else-if="studentGradStatus.studentStatus === 'TER'"
+                >
+                  <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+                  <strong>Warning</strong>
+                  <p>This student has been terminated.</p>
+                  <p>
+                    Re-activate by setting their status to "CUR" if they are
+                    currently attending school.
+                  </p>
+                </b-alert>
+                <!-- WARNING if student status is ARC/archived -->
+                <b-alert
+                  variant="warning"
+                  show
+                  v-else-if="studentGradStatus.studentStatus === 'ARC'"
+                >
+                  <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+                  <strong>Warning</strong>
+                  <p>This student is not active.</p>
+                  <p>
+                    Re-activate by setting their status to "CUR" if they are
+                    currently attending school.
+                  </p>
+                </b-alert>
+                <!-- WARNING if student status is DEC/deceased -->
+                <b-alert
+                  variant="warning"
+                  show
+                  v-else-if="studentGradStatus.studentStatus === 'DEC'"
+                >
+                  <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+                  <strong>Warning</strong>
+                  <p>This student is showing as deceased.</p>
+                </b-alert>
+                <!-- WARNING if student career program is able to be deleted -->
+                <b-alert
+                  variant="warning"
+                  show
+                  v-if="
+                    !(
+                      studentGradStatus.studentStatus === 'MER' ||
+                      isProgramComplete(
+                        studentGradStatus.programCompletionDate,
+                        studentGradStatus.program
+                      )
+                    )
+                  "
+                >
+                  <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;
+                  <strong>Warning</strong>
+                  <p>
+                    You are about to remove the
+                    <strong
+                      >{{ careerProgramName }} ({{ careerProgramCode }})</strong
+                    >
+                    Career Program for this student.
+                  </p>
+                </b-alert>
+              </template>
+              <template #cell(careerProgramName)="row3">
+                {{ row3.item.careerProgramName }}
+                ({{ row3.item.careerProgramCode }})
+              </template>
+            </DisplayTable>
           </b-card>
         </template>
       </DisplayTable>
@@ -208,20 +447,38 @@
 </template>
 
 <script>
-import { useStudentStore } from "../../store/modules/student";
+import { useStudentStore } from "@/store/modules/student";
+import { useAccessStore } from "@/store/modules/access";
 import { mapState } from "pinia";
+import { isProgramComplete } from "@/utils/common.js";
 import DisplayTable from "@/components/DisplayTable.vue";
+import OptionalProgramsForm from "@/components/Forms/OptionalProgramsForm.vue";
 export default {
   name: "StudentOptionalPrograms",
   components: {
     DisplayTable: DisplayTable,
+    OptionalProgramsForm: OptionalProgramsForm,
   },
 
   computed: {
     ...mapState(useStudentStore, {
       optionalPrograms: "getStudentOptionalPrograms",
       careerPrograms: "getStudentCareerPrograms",
+      studentGradStatus: "getStudentGradStatus",
     }),
+    ...mapState(useAccessStore, {
+      allowOptionalProgramUpdate: "allowOptionalProgramUpdate",
+    }),
+    computedOptionalProgramsFields() {
+      return this.optionalProgramsfields.filter((field) =>
+        this.allowOptionalProgramUpdate ? true : field.key != "delete"
+      );
+    },
+    computedCareerProgramsFields() {
+      return this.careerProgramsFields.filter((field) =>
+        this.allowOptionalProgramUpdate ? true : field.key != "delete"
+      );
+    },
   },
   data: function () {
     return {
@@ -234,17 +491,35 @@ export default {
       ],
       optionalProgramsfields: [
         { key: "more", label: "" },
+        { key: "programCode", label: "Graduation Program" },
         { key: "optionalProgramName", label: "Optional Program" },
         { key: "optionalReqMet", label: "Requirements Met" },
         { key: "optionalNonGradReasons", label: "Requirements Not Met" },
+        {
+          key: "optionalProgramCompletionDate",
+          label: "Optional Program Completion Date",
+        },
+        { key: "delete", label: null },
       ],
       careerProgramsFields: [
-        { key: "careerProgramCode", label: "" },
-        { key: "careerProgramName", label: "" },
+        { key: "careerProgramName", label: "Career Program" },
+        { key: "delete", label: null },
       ],
     };
   },
   methods: {
+    isProgramComplete(date, program) {
+      return isProgramComplete(date, program);
+    },
+    disableDeleteBtn() {
+      return (
+        this.studentGradStatus.studentStatus === "MER" ||
+        this.isProgramComplete(
+          this.studentGradStatus.programCompletionDate,
+          this.studentGradStatus.program
+        )
+      );
+    },
     filterGradReqCourses(row) {
       if (row.gradReqMet.length > 0) {
         return true;

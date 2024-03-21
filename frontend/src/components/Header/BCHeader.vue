@@ -263,7 +263,13 @@ export default {
             .then((response) => {
               if (response.data) {
                 if (response.data.length == 0) {
-                  throw new Error("Student not found");
+                  throw new Error(
+                    `Student ${this.penInput} cannot be found on the GRAD or PEN database`
+                  );
+                } else if (response.data[0].program == null || "") {
+                  throw new Error(
+                    `Student ${this.penInput} exists in PEN but does not have a GRAD system record.`
+                  );
                 }
                 this.studentStore.unsetStudent();
                 this.studentStore.setQuickSearchId(response.data[0].studentID);
@@ -273,12 +279,9 @@ export default {
             })
             .catch((error) => {
               // eslint-disable-next-line
-              console.log("BCHeader: " + error);
+              console.error("Header Search: ", error.message);
               this.searchLoading = false;
-              this.showNotification(
-                "danger",
-                `Student ${this.penInput} cannot be found on the GRAD or PEN database`
-              );
+              this.showNotification("danger", error.message);
             })
             .finally(() => {
               this.penInput = "";
