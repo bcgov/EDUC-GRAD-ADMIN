@@ -12,7 +12,7 @@
         {{ item.columns.enabled }}
         {{ getSwitchValue(item) }}
         <v-switch
-          :input-value="item.columns.enabled"
+          :model-value="getSwitchValue(item)"
           label="Enable"
           @change="toggleRoutine(item.raw.jobType, item.raw.id)"
         ></v-switch>

@@ -70,20 +70,15 @@
                         {{ item.raw.description }}
                       </template>
                       <template v-slot:item.newRequest="{ item }">
-                        <v-btn
-                          :disabled="item.raw.disabled"
-                          @click="
-                            newBatchRequest(
-                              item.raw.code,
-                              item.raw.label,
-                              item.raw.description
-                            )
-                          "
-                          >+</v-btn
-                        ></template
-                      >
+                        <GraduationAlgorithmForm
+                          v-if="item.raw.code == 'REGALG'"
+                        ></GraduationAlgorithmForm
+                        ><TranscriptAlgorithmForm
+                          v-else-if="item.raw.code == 'TVRRUN'"
+                        ></TranscriptAlgorithmForm>
+                        <v-btn v-else :disabled="true">+ </v-btn>
+                      </template>
                     </v-data-table>
-                    <Form></Form>
                   </v-col>
                   <v-col sm="12" md="4">
                     <v-data-table
@@ -99,18 +94,9 @@
                         {{ item.raw.description }}
                       </template>
                       <template v-slot:item.newRequest="{ item }">
-                        <v-btn
-                          :disabled="item.raw.disabled"
-                          @click="
-                            newBatchRequest(
-                              item.raw.code,
-                              item.raw.label,
-                              item.raw.description
-                            )
-                          "
-                          >+</v-btn
-                        ></template
-                      >
+                        <Form v-if="item.raw.code == 'DISTRUNUSER'"></Form>
+                        <v-btn v-else :disabled="true">+ </v-btn>
+                      </template>
                     </v-data-table>
                   </v-col>
                   <v-col sm="12" md="4">
@@ -160,6 +146,8 @@ import DisplayTable from "@/components/DisplayTable.vue";
 import BatchJobForm from "@/components/Batch/Batch.vue";
 import ScheduledBatchRuns from "@/components/Batch/ScheduledBatchRuns.vue";
 import Form from "@/components/Batch/Forms/Form.vue";
+import GraduationAlgorithmForm from "@/components/Batch/Forms/GraduationAlgorithmForm.vue";
+import TranscriptAlgorithmForm from "@/components/Batch/Forms/TranscriptAlgorithmForm.vue";
 import BatchRuns from "@/components/Batch/BatchRuns.vue";
 import BatchRoutines from "@/components/Batch/BatchRoutines.vue";
 import sharedMethods from "../sharedMethods";
@@ -217,6 +205,9 @@ export default {
     BatchJobForm: BatchJobForm,
     BatchRoutines: BatchRoutines,
     ScheduledBatchRuns: ScheduledBatchRuns,
+    Form: Form,
+    GraduationAlgorithmForm: GraduationAlgorithmForm,
+    TranscriptAlgorithmForm: TranscriptAlgorithmForm,
   },
   data() {
     return {

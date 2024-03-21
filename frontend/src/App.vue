@@ -147,7 +147,7 @@ export default {
     },
     login() {
       // Use Vue Router to navigate to the login route
-      this.$router.push("/login");
+      this.$router.push(this.loginUrl);
     },
   },
 };
