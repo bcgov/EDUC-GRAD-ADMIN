@@ -1,26 +1,25 @@
 <template>
   <div style="display: none">
-    <a id="logout_href" :href='link'/>
+    <a id="logout_href" :href="link" />
   </div>
 </template>
 
 <script>
-
-import {Routes} from '@/utils/constants';
+import { Routes } from "@/utils/constants";
 export default {
-  name: 'BackendSessionExpired',
+  name: "BackendSessionExpired",
   data() {
     return {
-      link: Routes.SESSION_EXPIRED
+      link: Routes.SESSION_EXPIRED,
     };
   },
   mounted() {
-    window.location = document.getElementById('logout_href').href;
+    window.location = document.getElementById("logout_href").href;
   },
   methods: {
     logout() {
-      this.$store.commit('auth/setJwtToken');
-    }
-  }
+      this.$store.commit("auth/setJwtToken");
+    },
+  },
 };
 </script>

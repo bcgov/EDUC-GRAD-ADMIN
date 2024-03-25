@@ -28,7 +28,7 @@ export default {
       return response.data;      
     } catch (e) {
       console.log(`Failed to refresh JWT token - ${e}`); // eslint-disable-line no-console
-      window.location.href = "/token-expired";
+
       throw e;
     }
   },

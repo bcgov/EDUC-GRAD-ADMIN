@@ -5,6 +5,15 @@
       <v-col :cols="12" :md="isBatchShowing || isErrorShowing ? 7 : 12">
         <v-card>
           <v-card-text>
+            <v-btn
+              text
+              color="primary"
+              class="link-button"
+              href="https://example.com"
+              target="_blank"
+            >
+              Go to Example
+            </v-btn>
             <DisplayTable
               title="Job/Runs"
               :items="batchRuns"
@@ -14,116 +23,104 @@
               pagination="true"
             >
               <template v-slot:item.data-table-expand="{ item }"> </template>
+              <template v-slot:item.jobDownload="{ item }">
+                <v-btn
+                  size="small"
+                  v-if="
+                    (item.raw?.jobParameters?.payload?.localDownload === 'Y' ||
+                      (item.raw?.jobParameters?.transmissionType &&
+                        item.raw?.jobParameters?.transmissionType === 'FTP')) &&
+                    item.raw.status === 'COMPLETED'
+                  "
+                  :disabled="item.raw.status !== 'COMPLETED'"
+                  @click="
+                    downloadDISTRUNUSER(
+                      item.raw.jobExecutionId,
+                      item.raw.jobParameters.transmissionType
+                    )
+                  "
+                >
+                  <v-icon>fas fa-download</v-icon>
+                </v-btn>
+              </template>
               <template v-slot:item.jobExecutionId="{ item }">
-                <v-row>
-                  <v-col
-                    v-if="
-                      item.raw.jobParameters && item.raw.jobParameters.payload
-                    "
-                    class="float-left downloadIcon py-2 px-0"
-                  >
-                    <v-btn
-                      v-if="
-                        (item.raw.jobParameters.payload.localDownload === 'Y' ||
-                          (item.raw.jobParameters.transmissionType &&
-                            item.raw.jobParameters.transmissionType ===
-                              'FTP')) &&
-                        item.raw.status === 'COMPLETED'
-                      "
-                      :disabled="item.raw.status !== 'COMPLETED'"
-                      @click="
-                        downloadDISTRUNUSER(
-                          item.raw.jobExecutionId,
-                          item.raw.jobParameters.transmissionType
-                        )
-                      "
-                    >
-                      <v-icon>fas fa-download</v-icon>
-                    </v-btn>
-                    <v-btn v-else disabled variant="link" size="xs">
+                <v-menu :close-on-content-click="true" location="end">
+                  <template v-slot:activator="{ props }">
+                    <v-btn color="indigo" v-bind="props">
                       {{ item.raw.jobExecutionId }}
                     </v-btn>
-                    <div v-else>&nbsp;&nbsp;</div>
-                  </v-col>
-
-                  <v-menu :close-on-content-click="true" location="end">
-                    <template v-slot:activator="{ props }">
-                      <v-btn color="indigo" v-bind="props">
-                        {{ item.raw.jobExecutionId }}
-                      </v-btn>
-                    </template>
-                    <v-card max-width="500">
-                      <v-divider></v-divider>
-                      <v-list>
-                        <v-list-item
-                          @click="setBatchId(item.raw.jobExecutionId, 'batch')"
-                          :title="item.raw.jobExecutionId"
+                  </template>
+                  <v-card max-width="500">
+                    <v-divider></v-divider>
+                    <v-list>
+                      <v-list-item
+                        @click="setBatchId(item.raw.jobExecutionId, 'batch')"
+                        :title="item.raw.jobExecutionId"
+                      >
+                        <v-list-item-title>
+                          View Batch Results</v-list-item-title
                         >
-                          <v-list-item-title>
-                            View Batch Results</v-list-item-title
-                          >
-                        </v-list-item>
-                      </v-list>
-                      <v-list>
-                        <v-list-item>
-                          <v-list-item-title>
-                            Rerun this batch for
-                            {{
-                              item.raw.expectedStudentsProcessed != 0
-                                ? item.raw.expectedStudentsProcessed
-                                : ""
-                            }}
-                            students</v-list-item-title
-                          >
+                      </v-list-item>
+                    </v-list>
+                    <v-list>
+                      <v-list-item>
+                        <v-list-item-title>
+                          Rerun this batch for
+                          {{
+                            item.raw.expectedStudentsProcessed != 0
+                              ? item.raw.expectedStudentsProcessed
+                              : ""
+                          }}
+                          students</v-list-item-title
+                        >
+                        <div
+                          class="row border-bottom p-2"
+                          v-if="item.raw.jobType != 'DISTRUNUSER'"
+                        >
                           <div
-                            class="row border-bottom p-2"
+                            class="col-2 px-2 m-0"
                             v-if="item.raw.jobType != 'DISTRUNUSER'"
                           >
-                            <div
-                              class="col-2 px-2 m-0"
-                              v-if="item.raw.jobType != 'DISTRUNUSER'"
+                            <b-btn
+                              :id="
+                                'batch-job-id-rerun-btn' +
+                                item.raw.jobExecutionId
+                              "
+                              :disabled="
+                                item.raw.jobType != 'TVRRUN' &&
+                                item.raw.jobType != 'REGALG'
+                              "
+                              class="p-0 m-0 float-right"
+                              variant="link"
+                              size="xs"
+                              @click="rerunBatch(item.raw.jobExecutionId)"
                             >
-                              <b-btn
-                                :id="
-                                  'batch-job-id-rerun-btn' +
-                                  item.raw.jobExecutionId
-                                "
-                                :disabled="
-                                  item.raw.jobType != 'TVRRUN' &&
-                                  item.raw.jobType != 'REGALG'
-                                "
-                                class="p-0 m-0 float-right"
-                                variant="link"
-                                size="xs"
-                                @click="rerunBatch(item.raw.jobExecutionId)"
-                              >
-                                <img
-                                  width="35"
-                                  src="../../assets/images/play_icon.png"
-                                />
-                              </b-btn>
-                            </div>
+                              <img
+                                width="35"
+                                src="../../assets/images/play_icon.png"
+                              />
+                            </b-btn>
                           </div>
-                        </v-list-item>
-                      </v-list>
+                        </div>
+                      </v-list-item>
+                    </v-list>
 
-                      <v-divider></v-divider>
-                      <pre
-                        >{{
-                          JSON.stringify(item.raw.jobParameters, null, "\t")
-                        }} </pre
-                      >
-                    </v-card>
-                  </v-menu>
+                    <v-divider></v-divider>
+                    <pre
+                      >{{
+                        JSON.stringify(item.raw.jobParameters, null, "\t")
+                      }} </pre
+                    >
+                  </v-card>
+                </v-menu>
 
-                  <v-popover
-                    :target="'batch-job-id-btn' + item.raw.jobExecutionId"
-                    triggers="focus"
-                    :ref="'popover-' + item.raw.jobExecutionId"
-                    class="w-40"
-                  >
-                  </v-popover>
-                </v-row>
+                <v-popover
+                  :target="'batch-job-id-btn' + item.raw.jobExecutionId"
+                  triggers="focus"
+                  :ref="'popover-' + item.raw.jobExecutionId"
+                  class="w-40"
+                >
+                </v-popover>
               </template>
 
               <template v-slot:item.failedStudentsProcessed="{ item }">
@@ -208,11 +205,11 @@ export default {
 
       batchRunsFields: [
         {
-          key: "data-table-expand",
+          key: "jobDownload",
           title: "",
-
           sortable: true,
-          class: "text-left",
+          class: "text-left p-0 m-0",
+          editable: true,
         },
         {
           key: "jobExecutionId",
@@ -396,5 +393,9 @@ export default {
 <style scoped>
 input {
   border-radius: 0px;
+}
+.link-button {
+  text-decoration: underline;
+  /* You can add more styles as needed to make it look like a link */
 }
 </style>

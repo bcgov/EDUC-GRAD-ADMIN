@@ -376,7 +376,7 @@ router.beforeEach((to, _from, next) => {
       .then(() => {
         
         if (!aStore.isAuthenticated) {
-          next("/token-expired");
+          next("/token-expired2");
         } else {
           accessStore
             .setAccess()

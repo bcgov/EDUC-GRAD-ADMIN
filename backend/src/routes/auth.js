@@ -67,6 +67,7 @@ router.get("/logout", async (req, res) => {
       );
     } else {
       retUrl = encodeURIComponent(
+        
         config.get("logoutEndpoint") +
           "?post_logout_redirect_uri=" +
           config.get("server:frontend") +
@@ -75,11 +76,12 @@ router.get("/logout", async (req, res) => {
     }
     res.redirect(config.get("siteMinder_logout_endpoint") + retUrl);
   } else {
-    if (req.query && req.query.sessionExpired) {
-      res.redirect(config.get("server:frontend") + "/session-expired");
-    } else {
-      res.redirect(config.get("server:frontend") + "/logout");
-    }
+    res.redirect(config.get("server:frontend") + "/logout");
+    // if (req.query && req.query.sessionExpired) {
+    //   res.redirect(config.get("server:frontend") + "/session-expired");
+    // } else {
+    //   res.redirect(config.get("server:frontend") + "/logout");
+    // }
   }
 });
 

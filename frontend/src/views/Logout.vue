@@ -1,27 +1,27 @@
 <template>
-  <b-container fluid class="full-height">
-    <b-row align-h="center">
-      <b-col xs="10" sm="10" md="8" lg="4" xl="3">
-        <b-card class="session-expired-card">
-          <b-card-title class="gov-header">
+  <v-container fluid class="full-height">
+    <v-row align="center">
+      <v-col cols="10" sm="10" md="8" lg="4" xl="3">
+        <v-card class="session-expired-card">
+          <v-card-title class="gov-header">
             <h4 id="logout_text">Logged Out</h4>
-          </b-card-title>
-          <b-card-text id="logout_descriptor">
-            <b-row style="margin: 0.3rem">You have Logged out.</b-row>
-            <a
-              id="login-button"
+          </v-card-title>
+          <v-card-text id="logout_descriptor">
+            <v-row style="margin: 0.3rem">You have Logged out.</v-row>
+            <v-btn
               @click="clearStorage"
-              :href="routes.LOGIN"
+              :href="Routes.LOGIN"
               class="ma-1"
               dark
               color="#003366"
-              >Log In</a
-            ><span>&nbsp;again if you wish to continue.</span>
-          </b-card-text>
-        </b-card>
-      </b-col>
-    </b-row>
-  </b-container>
+              >Log In</v-btn
+            >
+            <span>&nbsp;again if you wish to continue.</span>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -35,7 +35,7 @@ export default {
       routes: Routes,
     };
   },
-  created() {
+  mounted() {
     this.setJwtToken();
   },
 
