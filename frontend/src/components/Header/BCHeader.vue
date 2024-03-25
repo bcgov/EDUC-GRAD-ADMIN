@@ -309,6 +309,12 @@ export default {
 #navbar {
   z-index: 99;
 }
+header#navbar {
+  top: 40px !important;
+}
+button.v-btn.v-theme--light.bg-primary.v-btn--density-default.v-btn--size-default.v-btn--variant-flat.px-2 {
+  top: 14px;
+}
 header {
   z-index: 99;
   background-color: var(--primary-nav);
@@ -371,7 +377,7 @@ header .nav-btn {
 .navigation-main {
   display: none;
   position: fixed;
-  top: 85px;
+  top: 40px;
   width: 100%;
   -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
   -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
