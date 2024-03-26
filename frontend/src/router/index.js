@@ -366,32 +366,24 @@ const router = createRouter({
     },
   ],
 });
+//Fix for multiple next() call warning
 router.beforeEach((to, _from, next) => {
   const aStore = useAuthStore();
   const accessStore = useAccessStore();
+
   // this section is to set page title in vue store
   if (to.meta.requiresAuth) {
     aStore
       .getJwtToken()
       .then(() => {
-        
         if (!aStore.isAuthenticated) {
           next("/token-expired2");
         } else {
-          accessStore
-            .setAccess()
+          Promise.all([accessStore.setAccess(), aStore.getUserInfo()])
             .then(() => {
               next();
             })
             .catch((error) => {
-              next("error");
-            });
-          aStore
-            .getUserInfo()
-            .then(() => {
-              next();
-            })
-            .catch(() => {
               next("error");
             });
         }
@@ -407,4 +399,46 @@ router.beforeEach((to, _from, next) => {
     next();
   }
 });
+
+// router.beforeEach((to, _from, next) => {
+//   const aStore = useAuthStore();
+//   const accessStore = useAccessStore();
+//   // this section is to set page title in vue store
+//   if (to.meta.requiresAuth) {
+//     aStore
+//       .getJwtToken()
+//       .then(() => {
+
+//         if (!aStore.isAuthenticated) {
+//           next("/token-expired2");
+//         } else {
+//           accessStore
+//             .setAccess()
+//             .then(() => {
+//               next();
+//             })
+//             .catch((error) => {
+//               next("error");
+//             });
+//           aStore
+//             .getUserInfo()
+//             .then(() => {
+//               next();
+//             })
+//             .catch(() => {
+//               next("error");
+//             });
+//         }
+//       })
+//       .catch(() => {
+//         if (!aStore.userInfo) {
+//           next("/login");
+//         } else {
+//           next("/token-expired");
+//         }
+//       });
+//   } else {
+//     next();
+//   }
+// });
 export default router;
