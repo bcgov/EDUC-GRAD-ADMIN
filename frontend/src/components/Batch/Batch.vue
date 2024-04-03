@@ -958,7 +958,7 @@
           size="sm"
           variant="primary"
           class="btn btn-primary w-100 float-right col-2 p-2"
-          :disabled="batch.details['who'] == '' || batch.details['who'] == null"
+          :disabled="!batchIsValid"
         >
           Download
         </b-button>
@@ -1436,7 +1436,8 @@ export default {
       }
       if (
         this.batch.details["what"] == "DISTRUNUSER" &&
-        this.batch.details["where"] == "BC Mail" &&
+        (this.batch.details["where"] == "BC Mail" ||
+          this.batch.details["where"] == "localDownload") &&
         this.batch.details["credential"] == "Blank certificate print" &&
         this.batch.details["blankCertificateDetails"].length == 0
       ) {
@@ -1445,7 +1446,8 @@ export default {
       }
       if (
         this.batch.details["what"] == "DISTRUNUSER" &&
-        this.batch.details["where"] == "BC Mail" &&
+        (this.batch.details["where"] == "BC Mail" ||
+          this.batch.details["where"] == "localDownload") &&
         this.batch.details["credential"] == "Blank transcript print" &&
         this.batch.details["blankTranscriptDetails"].length == 0
       ) {
