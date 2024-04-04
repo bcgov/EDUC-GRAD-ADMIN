@@ -76,9 +76,7 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return
     }else{
-      console.log(request)
-      return
-      //return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
+      return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
     }
   },
   runBlankDISTRUNUSERUserRequest(request, credentialType){
