@@ -33,9 +33,10 @@
                         active: advancedSearchInput.legalLastName.contains,
                       }"
                       class="wild-card-button"
-                      v-b-tooltip.hover
-                      title="Legal Surname Starts With"
                     >
+                      <v-tooltip activator="parent" location="top"
+                        >Legal Surname Starts With</v-tooltip
+                      >
                       [.*]
                     </div>
                     <v-text-field
@@ -59,9 +60,10 @@
                         active: advancedSearchInput.legalFirstName.contains,
                       }"
                       class="wild-card-button"
-                      v-b-tooltip.hover
-                      title="Legal Given Starts With"
                     >
+                      <v-tooltip activator="parent" location="top"
+                        >Legal Given Starts With</v-tooltip
+                      >
                       [.*]
                     </div>
                     <v-text-field
@@ -85,9 +87,10 @@
                         active: advancedSearchInput.legalMiddleNames.contains,
                       }"
                       class="wild-card-button"
-                      v-b-tooltip.hover
-                      title="Legal Middle Starts With"
                     >
+                      <v-tooltip activator="parent" location="top"
+                        >Legal Middle Starts With</v-tooltip
+                      >
                       [.*]
                     </div>
                     <v-text-field
@@ -152,9 +155,10 @@
                         active: advancedSearchInput.usualLastName.contains,
                       }"
                       class="wild-card-button"
-                      v-b-tooltip.hover
-                      title="Usual Surname Starts With"
                     >
+                      <v-tooltip activator="parent" location="top"
+                        >Usual Surname Starts With</v-tooltip
+                      >
                       [.*]
                     </div>
                     <v-text-field
@@ -177,9 +181,10 @@
                         active: advancedSearchInput.usualFirstName.contains,
                       }"
                       class="wild-card-button"
-                      v-b-tooltip.hover
-                      title="Usual Given Starts With"
                     >
+                      <v-tooltip activator="parent" location="top"
+                        >Usual Given Starts With</v-tooltip
+                      >
                       [.*]
                     </div>
                     <v-text-field
@@ -202,9 +207,10 @@
                         active: advancedSearchInput.usualMiddleNames.contains,
                       }"
                       class="wild-card-button"
-                      v-b-tooltip.hover
-                      title="Usual Middle Starts With"
                     >
+                      <v-tooltip activator="parent" location="top"
+                        >Usual Middle Starts With</v-tooltip
+                      >
                       [.*]
                     </div>
                     <v-text-field
