@@ -7,7 +7,6 @@ export default {
   },
   runREGALG(request, cronTime="")
    {
-    console.log(cronTime)
     if(cronTime){
       let scheduledRequest = {};
       scheduledRequest.cronExpression = cronTime
@@ -76,9 +75,7 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return
     }else{
-      console.log(request)
-      return
-      //return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
+      return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
     }
   },
   runBlankDISTRUNUSERUserRequest(request, credentialType){
