@@ -11,7 +11,13 @@
       </li>
       <li v-if="details.who">
         <strong>Group: </strong
-        >{{ details.who == "District" ? "School Category" : details.who }}
+        >{{
+          details.who == "District"
+            ? details.what == "CERT_REGEN"
+              ? "District"
+              : "School Category"
+            : details.who
+        }}
       </li>
       <li v-if="details.credential">
         <strong>Credential Type: </strong>{{ details.credential }}
@@ -100,7 +106,10 @@
       </ul>
       <li
         v-if="
-          details.where && details.what != 'REGALG' && details.what != 'TVRRUN'
+          details.where &&
+          details.what != 'REGALG' &&
+          details.what != 'TVRRUN' &&
+          details.what != 'CERT_REGEN'
         "
       >
         <strong>Where: </strong>

@@ -184,7 +184,10 @@
           >
             <div
               class="p-0 mt-3 col-3"
-              v-if="batch.details['who'] == 'District'"
+              v-if="
+                batch.details['who'] == 'District' &&
+                batch.details['what'] != 'CERT_REGEN'
+              "
             >
               <label class="font-weight-bold">Category</label>
               <b-form-select
@@ -210,7 +213,8 @@
                 batch.details['what'] != 'NONGRADRUN' &&
                 batch.details['what'] != 'DISTRUN_YE' &&
                 batch.details['what'] != 'DISTRUN_SUPP' &&
-                batch.details['what'] != 'ARC_STUDENTS'
+                batch.details['what'] != 'ARC_STUDENTS' &&
+                batch.details['what'] != 'CERT_REGEN'
               "
             >
               <label class="font-weight-bold p-0 m-0 row"
@@ -1244,7 +1248,7 @@ export default {
           group: [
             { text: "All", value: "all" },
             "Student",
-            { text: "School Category", value: "District" },
+            { text: "District", value: "District" },
           ],
         },
         ARC_STUDENTS: {
@@ -1414,6 +1418,7 @@ export default {
 
       if (
         this.batch.details["who"] == "District" &&
+        this.batch.details["what"] != "CERT_REGEN" &&
         !this.batch.details["categoryCode"]
       ) {
         this.batchIsValid = false;

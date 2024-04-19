@@ -1556,7 +1556,10 @@ export default {
         if (this.tabContent[id]["details"].categoryCode == "") {
           districtCategoryCode = [];
         }
-        if (!districtCategoryCode.length) {
+        if (
+          !districtCategoryCode.length &&
+          this.tabContent[id].details["what"] != "CERT_REGEN"
+        ) {
           this.validationMessage = "Please select a district category";
           return;
         }
