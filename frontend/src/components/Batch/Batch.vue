@@ -244,8 +244,10 @@
                     type="text"
                     placeholder="YYYY-MM-DD"
                     autocomplete="off"
-                    @input="editBatchJob('gradDateFrom', $event)"
+                    @input="setGradFromDate($event)"
                   ></b-form-input>
+                  ss
+                  {{ v$.gradDateFrom.$invalid }}
                   <!-- <ul
                     class="position-absolute form-validation-message text-danger"
                   >
@@ -258,13 +260,15 @@
                       button-only
                       right
                       locale="en-US"
-                      @input="editBatchJob('gradDateFrom', $event)"
+                      @input="setGradFromDate($event)"
                     ></b-form-datepicker>
                   </b-input-group-append>
                 </b-input-group>
+                ERROR
               </div>
 
               <div class="float-left col-4">
+                {{ validationMessage }}
                 <strong><label class="pt-1">Grad End Date</label></strong>
                 <b-input-group class="mb-3">
                   <!-- <ValidationProvider
@@ -1071,7 +1075,8 @@
   </div>
 </template>
 <script>
-//import { ValidationProvider, ValidationObserver, extend } from "vee-validate";
+import { useVuelidate } from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
 import TRAXService from "@/services/TRAXService.js";
 import SchoolService from "@/services/SchoolService.js";
 import StudentService from "@/services/StudentService.js";
@@ -1146,10 +1151,32 @@ import SharedMethods from "../../sharedMethods";
 // });
 
 export default {
+  setup: () => ({ v$: useVuelidate() }),
   components: {
     // ValidationProvider: ValidationProvider,
     // ValidationObserver: ValidationObserver,
     BatchConfirmInfo: BatchConfirmInfo,
+  },
+  validations() {
+    return {
+      gradDateFrom: function () {
+        this.gradDateFrom = SharedMethods.dateFormatYYYYMMDD(this.gradDateFrom);
+        // Convert string dates to Date objects for comparison
+        const fromDate = new Date(this.gradDateFrom);
+        const toDate = new Date(this.gradDateTo);
+
+        // Check if gradDateFrom is greater than gradDateTo
+        if (fromDate.getTime() && fromDate.getTime() > toDate.getTime()) {
+          console.log("Grad start date cannot be >  End Date");
+          // Handle the error, for example, by resetting gradDateFrom or displaying a message
+          this.validationMessage = "Grad start date cannot be >  End Date";
+          // You can also display a message to the user indicating the error
+          // console.error("gradDateFrom cannot be greater than gradDateTo");
+          console.log("INVALID");
+          return false;
+        }
+      },
+    };
   },
   data: function () {
     return {
@@ -1281,65 +1308,11 @@ export default {
         },
       },
     };
+    220;
   },
 
-  mounted() {
-    // extend(
-    //   "validateschool",
-    //   (value, refValues) => {
-    //     return SchoolService.getSchoolInfo(value)
-    //       .then((response) => {
-    //         let credential = refValues[2];
-    //         if (
-    //           (credential == "Blank certificate print" || credential == "OT") &&
-    //           response.data.transcriptEligibility == "N"
-    //         ) {
-    //           return "This school is not eligible for trasncripts.";
-    //         }
-    //         if (
-    //           (credential == "Blank certificate print" ||
-    //             credential == "OC" ||
-    //             credential == "RC") &&
-    //           response.data.certificateEligibility == "N"
-    //         ) {
-    //           return "This school is not eligible for certificates.";
-    //         }
-    //         if (response.data.minCode) {
-    //           this.$refs[
-    //             "schoolName" + refValues[0] + refValues[1]
-    //           ][0].placeholder = response.data.schoolName;
-    //           this.$refs[
-    //             "transcriptEligibility" + refValues[0] + refValues[1]
-    //           ][0].placeholder = response.data.transcriptEligibility;
-    //           this.$refs[
-    //             "certificateEligibility" + refValues[0] + refValues[1]
-    //           ][0].placeholder = response.data.certificateEligibility;
-    //           this.$refs[
-    //             "schoolCategory" + refValues[0] + refValues[1]
-    //           ][0].placeholder = response.data.schoolCategory;
-    //           this.$refs[
-    //             "reportingFlag" + refValues[0] + refValues[1]
-    //           ][0].placeholder = response.data.reportingFlag;
-    //           return { valid: true };
-    //         } else {
-    //           return {
-    //             valid: false,
-    //           };
-    //         }
-    //       })
-    //       .catch((error) => {
-    //         // eslint-disable-next-line
-    //         console.log(error);
-    //         return {
-    //           valid: false,
-    //         };
-    //       });
-    //   },
-    //   {
-    //     immediate: false,
-    //   }
-    // );
-  },
+  mounted() {},
+
   created() {
     this.formElements = Object.assign({}, this.formElements);
     this.transcriptTypes = this.getTranscriptTypes();
@@ -1371,6 +1344,12 @@ export default {
   },
 
   methods: {
+    setGradFromDate($event) {
+      // do some silly transformation
+
+      this.gradDateFrom = SharedMethods.dateFormatYYYYMMDD(this.gradDateFrom);
+      this.editBatchJob("gradDateFrom", this.gradDateFrom);
+    },
     ...mapActions(useBatchProcessingStore, [
       "addValueToTypeInBatchId",
       "deleteStudentBatch",
@@ -2098,21 +2077,6 @@ export default {
     currentPSIYear: String,
   },
   watch: {
-    gradDateFrom: function () {
-      this.validationMessage = "";
-      this.gradDateFrom = SharedMethods.dateFormatYYYYMMDD(this.gradDateFrom);
-      // Convert string dates to Date objects for comparison
-      const fromDate = new Date(this.gradDateFrom);
-      const toDate = new Date(this.gradDateTo);
-
-      // Check if gradDateFrom is greater than gradDateTo
-      if (fromDate.getTime() > toDate.getTime()) {
-        // Handle the error, for example, by resetting gradDateFrom or displaying a message
-        this.validationMessage = "Grad start date cannot be >  End Date";
-        // You can also display a message to the user indicating the error
-        // console.error("gradDateFrom cannot be greater than gradDateTo");
-      }
-    },
     gradDateTo: function () {
       this.gradDateTo = SharedMethods.dateFormatYYYYMMDD(this.gradDateTo);
       // Convert string dates to Date objects for comparison
