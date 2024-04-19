@@ -3,7 +3,7 @@
     <!-- User Interface controls -->
     <v-row>
       <slot name="create"></slot>
-      <v-row v-if="showFilter">
+      <v-row v-if="showFilter" id="filter">
         <v-col lg="8" class="px-0 float-left"></v-col>
         <v-col sm="12" lg="4" class="my-1 table-filter p-0">
           <v-row>
@@ -278,8 +278,8 @@ export default {
 
 <style scoped>
 .table-filter {
-  position: absolute;
+  /* position: absolute;
   top: -15px;
-  right: 0;
+  right: 0; */
 }
 </style>

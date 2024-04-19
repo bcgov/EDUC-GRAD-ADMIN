@@ -54,7 +54,7 @@
                 </template>
 
                 <template v-slot:default="{ isActive }">
-                  <v-card title="Dialog">
+                  <v-card :title="item.raw.courseName">
                     <v-card-text>
                       <div class="row py-1">
                         <div class="col">
@@ -121,10 +121,7 @@
 
             <template v-slot:default="{ isActive }">
               <v-card title="Dialog">
-                <v-card-text>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </v-card-text>
+                <v-card-text> </v-card-text>
 
                 <v-card-actions>
                   <v-spacer></v-spacer>

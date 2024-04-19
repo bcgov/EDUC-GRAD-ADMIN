@@ -1,85 +1,106 @@
 <template>
   <div>
+    <div v-if="!assessments" class="container">
+      This student does not have any assessments.
+    </div>
     <DisplayTable
+      v-if="assessments"
       :items="assessments"
       :fields="fields"
       showFilter="true"
       title="Assessments"
     >
-      <template #cell(sessionDate)="row">
-        {{ $filters.formatYYYYMMDate(row.value) }}
+      <!-- <template v-slot:item.sessionDate="{ item }">
+        {{ $filters.formatYYYYMMDate(item.value) }}
+      </template> -->
+      <template v-slot:item.assessmentName="{ item }">
+        <v-dialog max-width="500">
+          <template v-slot:activator="{ props: activatorProps }">
+            <v-dialog max-width="500">
+              <template v-slot:activator="{ props: activatorProps }">
+                <v-btn
+                  v-bind="activatorProps"
+                  color="surface-variant"
+                  :text="item.raw.assessmentName"
+                  variant="flat"
+                  class="m-1 p-1 text-left"
+                >
+                </v-btn>
+              </template>
+              <template v-slot:default="{ isActive }">
+                <v-card :title="item.raw.assessmentName">
+                  <v-card-text>
+                    <div class="row py-1">
+                      <div class="col">
+                        <strong>Language:</strong>
+                      </div>
+                      <div class="col">
+                        {{ item.raw.assessmentDetails.language }}
+                      </div>
+                    </div>
+                    <div class="row py-1">
+                      <div class="col"><strong>Start Date:</strong></div>
+                      <div class="col">
+                        {{
+                          $filters.formatSimpleDate(
+                            item.raw.assessmentDetails.startDate
+                          )
+                        }}
+                      </div>
+                    </div>
+                    <div class="row py-1">
+                      <div class="col"><strong>End Date:</strong></div>
+                      <div class="col">
+                        {{
+                          $filters.formatSimpleDate(
+                            item.raw.assessmentDetails.endDate
+                          )
+                        }}
+                      </div>
+                    </div>
+                  </v-card-text>
+
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                      text="Close Dialog"
+                      @click="isActive.value = false"
+                    ></v-btn>
+                  </v-card-actions>
+                </v-card>
+              </template>
+            </v-dialog>
+          </template>
+        </v-dialog>
       </template>
-      <template #cell(assessmentName)="row">
-        <div class="d-flex flex-column text-md-left">
-          <div class="">
-            <b-button
-              :id="
-                'popover-button-event' +
-                row.item.assessmentCode +
-                row.item.sessionDate
-              "
-              variant="link"
-              class="m-0 p-0 text-left"
-            >
-              {{ row.item.assessmentName }}
-            </b-button>
-          </div>
-          <b-popover
-            :ref="'popover' + row.item.assessmentCode + row.item.sessionDate"
-            triggers="focus"
-            :target="
-              'popover-button-event' +
-              row.item.assessmentCode +
-              row.item.sessionDate
-            "
-            :title="row.item.assessmentName"
-          >
-            <div>
-              <strong>Language:</strong>
-              {{ row.item.assessmentDetails.language }}
-            </div>
-            <div>
-              <strong>Start Date:</strong>
-              {{
-                $filters.formatSimpleDate(row.item.assessmentDetails.startDate)
-              }}
-            </div>
-            <div>
-              <strong>End Date:</strong>
-              {{
-                $filters.formatSimpleDate(row.item.assessmentDetails.endDate)
-              }}
-            </div>
-          </b-popover>
-        </div>
-      </template>
-      <template #cell(more)="row">
-        <b-btn
+      <template v-slot:item.more="{ item }">
+        <v-btn
           variant="outline primary"
           style="color: #666"
           size="sm"
-          @click="row.toggleDetails"
+          @click="item.raw.toggleDetails"
           class="more-button"
-          v-if="row.item.hasMoreInfo"
+          v-if="item.raw.hasMoreInfo"
         >
           <img
-            v-show="!row.detailsShowing"
+            v-show="!item.raw.detailsShowing"
             src="../../assets/images/icon-right.svg"
             width="9"
             aria-hidden="true"
             alt=""
           />
           <img
-            v-show="row.detailsShowing"
+            v-show="item.raw.detailsShowing"
             src="../../assets/images/icon-down.svg"
             height="5"
             aria-hidden="true"
             alt=""
           />
-        </b-btn>
+        </v-btn>
       </template>
       <template #row-details="row">
-        <b-card class="px-0">
+        <v-card class="px-0">
           <ul>
             <li v-if="row.item.mincodeAssessment">
               <strong>Assessment Centre:</strong>
@@ -90,7 +111,7 @@
               {{ row.item.mincodeAssessmentName }}
             </li>
           </ul>
-        </b-card>
+        </v-card>
       </template>
     </DisplayTable>
   </div>
@@ -116,43 +137,43 @@ export default {
   data: function () {
     return {
       fields: [
-        { key: "more", label: "" },
+        { key: "more", title: "" },
         {
           key: "assessmentCode",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-left",
         },
         {
           key: "sessionDate",
-          label: "Session",
+          title: "Session",
           sortable: true,
           class: "text-md-center",
         },
         {
           key: "specialCase",
-          label: "Special Case",
+          title: "Special Case",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "exceededWriteFlag",
-          label: "Exceeded Writes",
+          title: "Exceeded Writes",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
         },
         {
           key: "proficiencyScore",
-          label: "Proficiency Score",
+          title: "Proficiency Score",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
         },
         {
           key: "assessmentName",
-          label: "Name",
+          title: "Name",
           sortable: true,
           sortDirection: "desc",
           class: "text-left w-50",
