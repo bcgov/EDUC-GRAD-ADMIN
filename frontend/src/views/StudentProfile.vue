@@ -1,606 +1,155 @@
 <template>
   <div class="student-profile">
+    <!-- Studnet Demo. -->
     <div class="row m-0 py-3">
       <StudentInformation></StudentInformation>
+
       <div class="col-12 px-3">
         <div class="float-right grad-actions" v-if="allowRunGradAlgorithm">
-          <b-spinner v-if="tabLoading" class="px-1 my-2"></b-spinner>
-          <b-dropdown
-            :disabled="tabLoading || !hasGradStatus"
-            v-b-tooltip.hover.left
-            id="actions"
-            right
-            :text="smallScreen ? '' : 'Transcripts & TVRs'"
-            class="m-md-2 float-right admin-gear-w-text"
-          >
-            <b-dropdown-item
-              :disabled="studentGradStatus.studentStatus === 'MER'"
-              v-on:click="projectedGradStatusWithFinalMarks"
-              >Preview Final Marks</b-dropdown-item
-            >
-            <b-dropdown-item
-              :disabled="studentGradStatus.studentStatus === 'MER'"
-              v-on:click="projectedGradStatusWithFinalAndReg"
-              >Update TVR</b-dropdown-item
-            >
-            <b-dropdown-item
-              :disabled="
-                studentGradStatus.recalculateGradStatus !== 'Y' ||
-                studentGradStatus.studentStatus === 'MER' ||
-                (!!studentGradStatus.programCompletionDate &&
-                  studentGradStatus.program !== 'SCCP')
-              "
-              v-on:click="graduateStudent"
-              >Update Grad Status</b-dropdown-item
-            >
-            <b-dropdown-item
-              :disabled="
-                studentGradStatus.studentStatus === 'MER' ||
-                !studentGradStatus.programCompletionDate
-              "
-              v-on:click="updateStudentReports"
-              >Update Transcript</b-dropdown-item
-            >
-            <b-dropdown-divider></b-dropdown-divider>
-            <b-dropdown-item
-              :disabled="
-                studentGradStatus.studentStatus === 'MER' ||
-                !studentGradStatus.programCompletionDate
-              "
-              v-b-modal.ungraduate-student-modal
-              >Undo Completion</b-dropdown-item
-            >
-          </b-dropdown>
-        </div>
-      </div>
-    </div>
-    <div class="row m-0">
-      <div class="col-12 px-0">
-        <div>
-          <b-card no-body class="p-0">
-            <b-tabs :pills="smallScreen" v-model="selectedTab" card>
-              <b-tab title="GRAD" class="grad-tab gradstatus-tabs py-4">
-                <div class="mb-2 mx-1 row">
-                  <div class="col-12 col-lg-4 col-md-5 m-0 p-0">
-                    <b-button
-                      class="mr-2 my-1"
-                      v-on:click="gradTab = 'gradStatus'"
-                      size="sm"
-                      :variant="
-                        gradTab == 'gradStatus'
-                          ? 'primary'
-                          : 'outline-secondary'
-                      "
-                      >GRAD Status</b-button
-                    >
-                    <b-button
-                      class="mx-0 my-1"
-                      :disabled="!gradCourses"
-                      v-on:click="gradTab = 'gradCourses'"
-                      size="sm"
-                      :variant="
-                        gradTab == 'gradCourses'
-                          ? 'primary'
-                          : 'outline-secondary'
-                      "
-                      >Requirement Details</b-button
-                    >
-                  </div>
-                  <div class="pr-0 col-12 col-lg-8 col-md-7 text-right">
-                    <strong>Updated:</strong>
-                    {{ $filters.formatTime(studentGradStatus.updateDate) }} by
-                    {{ studentGradStatus.updateUser }}
-                  </div>
-                </div>
-                <b-card-text>
-                  <StudentGraduationStatus
-                    v-if="gradTab == 'gradStatus'"
-                  ></StudentGraduationStatus>
-                  <GRADRequirementDetails v-if="gradTab == 'gradCourses'">
-                    <div v-if="studentGradStatus.studentGradData">
-                      <b-alert
-                        variant="info"
-                        v-if="studentGradStatus.studentGradData.gradMessage"
-                        :show="!studentGradStatus.recalculateGradStatus"
-                        >{{
-                          studentGradStatus.studentGradData.gradMessage
-                        }}</b-alert
-                      >
-                    </div>
-                  </GRADRequirementDetails>
-                  <b-overlay
-                    :show="tabLoading"
-                    rounded="sm"
-                    no-wrap
-                  ></b-overlay>
-                </b-card-text>
-              </b-tab>
-              <b-tab
-                v-if="courses != 'not loaded'"
-                :title="'Courses (' + courses.length + ')'"
-                class="py-3 px-0 m-1"
-              >
-                <b-card-text>
-                  <StudentCourses></StudentCourses>
-                  <b-overlay :show="tabLoading" rounded="sm" no-wrap>
-                  </b-overlay>
-                </b-card-text>
-              </b-tab>
-
-              <b-tab
-                v-if="assessments != 'not loaded'"
-                :title="'Assessments (' + assessments.length + ')'"
-                class="py-3 px-0 m-1"
-              >
-                <b-card-text>
-                  <StudentAssessments />
-                  <b-overlay
-                    :show="tabLoading"
-                    rounded="sm"
-                    no-wrap
-                  ></b-overlay>
-                </b-card-text>
-              </b-tab>
-
-              <b-tab
-                v-if="exams != 'not loaded'"
-                :title="'Exams Details (' + exams.length + ')'"
-                class="py-3 px-0 m-1"
-              >
-                <b-card-text>
-                  <StudentExams />
-                  <b-overlay
-                    :show="tabLoading"
-                    rounded="sm"
-                    no-wrap
-                  ></b-overlay>
-                </b-card-text>
-              </b-tab>
-
-              <b-tab
-                v-if="optionalPrograms != 'not loaded'"
-                :title="'Optional Programs (' + optionalPrograms.length + ')'"
-                class="py-3 px-0 m-1"
-              >
-                <b-card-text>
-                  <StudentOptionalPrograms></StudentOptionalPrograms>
-                  <b-overlay
-                    :show="tabLoading"
-                    rounded="sm"
-                    no-wrap
-                  ></b-overlay>
-                </b-card-text>
-              </b-tab>
-
-              <b-tab
-                v-if="
-                  this.courses == 'not loaded' ||
-                  this.assessments == 'not loaded'
-                "
-                title="Loading ..."
-                class="tab-loading py-3 px-0 m-1"
-              >
-                <b-card-text class="text-center"
-                  >Loading Student Courses and Assesments</b-card-text
-                >
-              </b-tab>
-
-              <b-tab
-                :title="'Audit History'"
-                class="audit-history-tabs py-3 px-0 m-1"
-              >
-                <b-card-text>
-                  <div class="ml-3">
-                    <b-button
-                      class="mr-2 my-1"
-                      v-on:click="auditTab = 'studentAudit'"
-                      size="sm"
-                      :variant="
-                        auditTab == 'studentAudit'
-                          ? 'primary'
-                          : 'outline-secondary'
-                      "
-                      >Student Audit</b-button
-                    >
-                    <b-button
-                      class="mr-2 my-1"
-                      v-on:click="auditTab = 'notes'"
-                      size="sm"
-                      :variant="
-                        auditTab == 'notes' ? 'primary' : 'outline-secondary'
-                      "
-                      >Notes ({{ studentNotes.length }})</b-button
-                    >
-                    <b-button
-                      class="mr-2 my-1"
-                      v-on:click="auditTab = 'undoCompletionReasons'"
-                      size="sm"
-                      :variant="
-                        auditTab == 'undoCompletionReasons'
-                          ? 'primary'
-                          : 'outline-secondary'
-                      "
-                      >Undo Completion Reasons ({{
-                        studentUngradReasons.length
-                      }})</b-button
-                    >
-                  </div>
-                  <StudentAuditHistory v-if="auditTab == 'studentAudit'" />
-                  <StudentNotes v-else-if="auditTab == 'notes'" />
-                  <div
-                    v-else-if="auditTab == 'undoCompletionReasons'"
-                    class="pb-3 px-3"
-                  >
-                    <p v-if="studentUngradReasons.length === 0">
-                      Student has no undo completion reasons to show
-                    </p>
-                    <DisplayTable
-                      v-else
-                      striped
-                      :items="studentUngradReasons"
-                      :fields="[
-                        {
-                          key: 'createDate',
-                          label: 'Undo Completion Date',
-                          class: 'px-0 py-2 w-15',
-                        },
-                        {
-                          key: 'undoCompletionReasonCode',
-                          label: 'Code',
-                          class: 'px-0 py-2 w-10',
-                        },
-                        {
-                          key: 'undoCompletionReasonDescription',
-                          label: 'Reason',
-                          class: 'px-0 py-2 w-80',
-                        },
-                        {
-                          key: 'createUser',
-                          label: 'User',
-                          class: 'px-0 py-2 w-80',
-                        },
-                      ]"
-                    >
-                      <template #cell(createDate)="row">
-                        {{ $filters.formatTime(row.value) }}
-                      </template>
-                    </DisplayTable>
-                  </div>
-                  <b-overlay
-                    :show="tabLoading"
-                    rounded="sm"
-                    no-wrap
-                  ></b-overlay>
-                </b-card-text>
-              </b-tab>
-            </b-tabs>
-          </b-card>
-        </div>
-      </div>
-    </div>
-    <div>
-      <!-- Projected Grad Status Modal -->
-      <b-modal
-        no-close-on-backdrop
-        size="xl"
-        ref="projectedGradStatusWithFinalMarks"
-        title="Projected Grad Status with Final Marks"
-        centered
-      >
-        <b-alert
-          variant="info"
-          show
-          v-if="this.projectedGradStatus && this.projectedGradStatus.gradStatus"
-          >{{ projectedGradStatus.gradMessage }}</b-alert
-        >
-        <b-card-group
-          deck
-          v-if="this.projectedGradStatus && this.projectedGradStatus.gradStatus"
-        >
-          <b-card header="Requirements met">
-            <b-card-text>
-              <b-table
-                small
-                :items="this.projectedGradStatus.requirementsMet"
-                :fields="requirementsMetFields"
-              >
-              </b-table>
-            </b-card-text>
-          </b-card>
-          <b-card header="Noncompletion reasons">
-            <div
-              v-if="projectedGradStatus && projectedGradStatus.nonGradReasons"
-            >
-              <b-card-text
-                ><b-table
-                  small
-                  :items="this.projectedGradStatus.nonGradReasons"
-                  :fields="noncompletionReasonsFields"
-                ></b-table
-              ></b-card-text>
-            </div>
-            <div v-else>
-              <b-card-text>All program requirements have been met</b-card-text>
-            </div>
-          </b-card>
-        </b-card-group>
-        <div v-if="this.projectedOptionalGradStatus">
-          <div
-            v-for="optionalProgram in this.projectedOptionalGradStatus"
-            :key="optionalProgram.optionalProgramCode"
-          >
-            <h3 class="optionalProgramName">
-              {{ optionalProgram.optionalProgramName }}
-            </h3>
-            <b-card-group deck>
-              <b-card header="Requirements met">
-                <b-card-text>
-                  <b-table
-                    small
-                    :items="
-                      optionalProgram.studentOptionalProgramData
-                        .optionalRequirementsMet
-                    "
-                    :fields="[
-                      { key: 'rule', label: 'Rule', class: 'px-0 py-2' },
-                      {
-                        key: 'description',
-                        label: 'Description',
-                        class: 'px-0 py-2',
-                      },
-                    ]"
-                  >
-                  </b-table>
-                </b-card-text>
-              </b-card>
-              <b-card header="Requirements not met">
-                <div
-                  v-if="
-                    optionalProgram.studentOptionalProgramData
-                      .optionalNonGradReasons
-                  "
-                >
-                  <b-card-text>
-                    <b-table
-                      small
-                      :items="
-                        optionalProgram.studentOptionalProgramData
-                          .optionalNonGradReasons
-                      "
-                    >
-                    </b-table>
-                  </b-card-text>
-                </div>
-                <div v-else>
-                  <b-card-text>All requirements have been met</b-card-text>
-                </div>
-              </b-card>
-            </b-card-group>
-          </div>
-        </div>
-        <template #modal-footer="{ cancel }">
-          <!-- Emulate built in modal footer ok and cancel button actions -->
-          <b-button size="sm" variant="outline-secondary" v-on:click="cancel">
-            Close
-          </b-button>
-        </template>
-      </b-modal>
-      <!-- Projected Grad status and registrations Modal -->
-      <b-modal
-        no-close-on-backdrop
-        size="xl"
-        ref="projectedGradStatusWithFinalAndReg"
-        centered
-        title="Projected Grad Status with Final Marks and Registrations"
-      >
-        <b-alert variant="info" show>{{
-          projectedGradStatusWithRegistrations.gradMessage
-        }}</b-alert>
-
-        <b-card-group
-          deck
-          v-if="
-            this.projectedGradStatusWithRegistrations &&
-            this.projectedGradStatusWithRegistrations.gradStatus
-          "
-        >
-          <b-card header="Requirements met">
-            <b-card-text>
-              <b-table
-                small
-                :items="
-                  this.projectedGradStatusWithRegistrations.requirementsMet
-                "
-                :fields="requirementsMetFields"
-              >
-                <template #cell(rule)="row">
-                  <div
-                    v-if="row.item.projected"
-                    style="background-color: #eaf2fa; width: 100%"
-                  >
-                    {{ row.item.rule }}
-                  </div>
-                  <div v-else>
-                    {{ row.item.rule }}
-                  </div>
-                </template>
-                <template #cell(description)="row">
-                  <div
-                    v-if="row.item.projected"
-                    style="background-color: #eaf2fa; width: 100%"
-                  >
-                    {{ row.item.description }} (Projected)
-                  </div>
-                  <div v-else>
-                    {{ row.item.description }}
-                  </div>
-                </template>
-              </b-table>
-            </b-card-text>
-          </b-card>
-          <!-- Original -->
-          <b-card header="Noncompletion reasons">
-            <div
-              v-if="
-                projectedGradStatusWithRegistrations &&
-                projectedGradStatusWithRegistrations.nonGradReasons
-              "
-            >
-              <b-card-text
-                ><b-table
-                  small
-                  :items="
-                    this.projectedGradStatusWithRegistrations.nonGradReasons
-                  "
-                  :fields="noncompletionReasonsFields"
-                ></b-table
-              ></b-card-text>
-            </div>
-            <div v-else>
-              <b-card-text>All program requirements have been met</b-card-text>
-            </div>
-          </b-card>
-        </b-card-group>
-        <div v-if="this.projectedOptionalGradStatus">
-          <div
-            v-for="optionalProgram in this.projectedOptionalGradStatus"
-            :key="optionalProgram.optionalProgramCode"
-          >
-            <h3 class="optionalProgramName">
-              {{ optionalProgram.optionalProgramName }}
-            </h3>
-            <b-card-group deck>
-              <b-card header="Requirements met">
-                <b-card-text>
-                  <b-table
-                    small
-                    :items="
-                      optionalProgram.studentOptionalProgramData
-                        .optionalRequirementsMet
-                    "
-                    :fields="[
-                      { key: 'rule', label: 'Rule', class: 'px-0 py-2' },
-                      {
-                        key: 'description',
-                        label: 'Description',
-                        class: 'px-0 py-2',
-                      },
-                    ]"
-                  >
-                  </b-table>
-                </b-card-text>
-              </b-card>
-              <b-card header="Requirements not met">
-                <div
-                  v-if="
-                    optionalProgram.studentOptionalProgramData
-                      .optionalNonGradReasons
-                  "
-                >
-                  <b-card-text>
-                    <b-table
-                      small
-                      :items="
-                        optionalProgram.studentOptionalProgramData
-                          .optionalNonGradReasons
-                      "
-                    >
-                    </b-table>
-                  </b-card-text>
-                </div>
-                <div v-else>
-                  <b-card-text>All requirements have been met</b-card-text>
-                </div>
-              </b-card>
-            </b-card-group>
-          </div>
-        </div>
-        <template #modal-footer="{ ok, cancel, hide }">
-          <!-- Emulate built in modal footer ok and cancel button actions -->
-          <b-button size="sm" variant="outline-secondary" @click="cancel">
-            Close
-          </b-button>
-        </template>
-      </b-modal>
-      <div>
-        <b-modal id="ungraduate-student-modal" title="Undo Completion">
-          <p>Undo Completion Reason</p>
-          <b-form-select
-            v-model="studentUngradReasonSelected"
-            :options="ungradReasons"
-            value-field="code"
-            text-field="label"
-          >
-            <template #first>
-              <b-form-select-option value="" disabled
-                >-- Select an Undo Completion Reason --</b-form-select-option
+          <v-progress-circular v-if="tabLoading" indeterminate color="green">
+          </v-progress-circular>
+          <v-menu offset-y>
+            <template v-slot:activator="{ props }">
+              <v-btn
+                text
+                v-bind="props"
+                :disabled="tabLoading || !hasGradStatus"
+                id="actions"
+                right
+                class="m-md-2 float-right admin-gear-w-text"
+                >Transcripts & TVRs</v-btn
               >
             </template>
-          </b-form-select>
-          <div class="mt-3" v-if="studentUngradReasonSelected">
-            <b-alert
-              class="m-0"
-              variant="warning"
-              v-if="ungradReasons.length > 0"
-              show
-              >{{
-                ungradReasons.find(
-                  (element) => element.code === studentUngradReasonSelected
-                ).description
-              }}</b-alert
-            >
+            <v-list>
+              <v-list-item
+                :disabled="studentGradStatus.studentStatus === 'MER'"
+                v-on:click="projectedGradStatusWithFinalMarks"
+                >Preview Final Marks</v-list-item
+              >
+              <v-list-item
+                :disabled="studentGradStatus.studentStatus === 'MER'"
+                v-on:click="projectedGradStatusWithFinalAndReg"
+                >Update TVR</v-list-item
+              >
+              <v-list-item
+                :disabled="
+                  studentGradStatus.recalculateGradStatus !== 'Y' ||
+                  studentGradStatus.studentStatus === 'MER' ||
+                  (!!studentGradStatus.programCompletionDate &&
+                    studentGradStatus.program !== 'SCCP')
+                "
+                v-on:click="graduateStudent"
+                >Update Grad Status</v-list-item
+              >
+              <v-list-item
+                :disabled="
+                  studentGradStatus.studentStatus === 'MER' ||
+                  !studentGradStatus.programCompletionDate
+                "
+                v-on:click="updateStudentReports"
+                >Update Transcript</v-list-item
+              >
+              <v-list-item
+                :disabled="
+                  studentGradStatus.studentStatus === 'MER' ||
+                  !studentGradStatus.programCompletionDate
+                "
+                >Undo Completion</v-list-item
+              >
+            </v-list>
+          </v-menu>
+        </div>
+      </div>
+    </div>
+    <!-- Studnet Demo. end-->
+    <div class="row m-0">
+      <div class="col-12 px-0">
+        <v-card class="p-0">
+          <!-- Updated info. -->
+          <div class="pr-0 col-12 col-lg-12 col-md-7 text-right">
+            <strong>Updated:</strong>
+            {{ $filters.formatTime(studentGradStatus.updateDate) }} by
+            {{ studentGradStatus.updateUser }}
           </div>
-
-          <div v-if="studentUngradReasonSelected == 'OTH'" class="mt-3">
-            <label>Description</label>
-            <b-form-textarea
-              v-model="studentUngradReasonDescription"
-              placeholder="Reason for running undo completion on this student..."
-              :state="studentUngradReasonDescription.length > 0"
-            ></b-form-textarea>
-          </div>
-          <b-form-checkbox
-            v-if="studentUngradReasonSelected"
-            id="confirm-student-undo-completion"
-            v-model="confirmStudentUndoCompletion"
-            class="mt-3"
-          >
-            I confirm that I am authorized to undo completion for this student
-          </b-form-checkbox>
-
-          <template #modal-footer="{ ok, cancel, hide }">
-            <!-- Emulate built in modal footer ok and cancel button actions -->
-            <b-button
-              size="sm"
-              variant="outline-secondary"
-              @click="
-                cancel();
-                resetUndoCompletionValues();
-              "
+          <!-- Updated info. end -->
+          <v-tabs v-model="selectedTab">
+            <v-tab value="GRAD">GRAD</v-tab>
+            <v-tab value="Courses">Courses ({{ courses.length }})</v-tab>
+            <v-tab value="Assessments"
+              >Assessments ({{ assessments.length }})</v-tab
             >
-              Cancel
-            </b-button>
-            <!-- Button with custom close trigger value -->
-
-            <b-button
-              size="sm"
-              variant="primary"
-              :disabled="
-                (studentUngradReasonSelected == 'OTH' &&
-                  studentUngradReasonDescription.length == 0) ||
-                studentUngradReasonSelected == '' ||
-                !confirmStudentUndoCompletion
-              "
-              @click="
-                hide('ungraduate-student-modal');
-                ungraduateStudent();
-                resetUndoCompletionValues();
-              "
+            <v-tab value="Exams">Exams Details ({{ exams.length }})</v-tab>
+            <v-tab value="Optional"
+              >Optional Programs ({{ optionalPrograms.length }})</v-tab
             >
-              Undo Completion
-            </b-button>
-          </template>
-        </b-modal>
+            <v-tab value="Audit">Audit History</v-tab>
+          </v-tabs>
+          <v-card-text>
+            <v-window v-model="selectedTab">
+              <v-window-item value="GRAD">
+                <StudentGraduationStatus></StudentGraduationStatus>
+                <div id="RequirementDetails">
+                  <v-progress-circular
+                    v-if="tabLoading"
+                    indeterminate
+                    color="green"
+                  >
+                  </v-progress-circular>
+                  <div v-if="studentGradStatus.studentGradData">
+                    <v-alert
+                      color="Info"
+                      icon="$info"
+                      v-if="
+                        studentGradStatus.studentGradData.gradMessage &&
+                        !studentGradStatus.recalculateGradStatus
+                      "
+                    >
+                      {{ studentGradStatus.studentGradData.gradMessage }}
+                    </v-alert>
+                  </div>
+                  <GRADRequirementDetails> </GRADRequirementDetails>
+                </div>
+              </v-window-item>
+              <v-window-item value="Courses">
+                <v-progress-circular
+                  v-if="tabLoading"
+                  indeterminate
+                  color="green"
+                >
+                </v-progress-circular>
+                <StudentCourses></StudentCourses
+              ></v-window-item>
+              <v-window-item value="Assessments">
+                <v-progress-circular
+                  v-if="tabLoading"
+                  indeterminate
+                  color="green"
+                >
+                </v-progress-circular>
+                <StudentAssessments
+              /></v-window-item>
+              <v-window-item value="Exams">
+                <v-progress-circular
+                  v-if="tabLoading"
+                  indeterminate
+                  color="green"
+                >
+                </v-progress-circular>
+                <StudentExams />
+              </v-window-item>
+              <v-window-item value="Optional">
+                <v-progress-circular
+                  v-if="tabLoading"
+                  indeterminate
+                  color="green"
+                >
+                </v-progress-circular>
+                <StudentOptionalPrograms></StudentOptionalPrograms
+              ></v-window-item>
+              <v-window-item value="Audit"> Six </v-window-item>
+            </v-window>
+          </v-card-text>
+        </v-card>
       </div>
     </div>
   </div>

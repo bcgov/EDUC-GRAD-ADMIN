@@ -27,10 +27,10 @@
         </tr>
         <tr>
           <td>
-            <b-button
-              v-b-toggle.student-accordion
-              variant="link"
+            <v-btn
               v-on:click="moreStudentInfo = !moreStudentInfo"
+              text
+              variant="plain"
             >
               <img
                 v-show="!moreStudentInfo"
@@ -46,7 +46,7 @@
                 aria-hidden="true"
                 alt=""
               />
-            </b-button>
+            </v-btn>
           </td>
           <td
             class="align-top profile-name-data px-0"
@@ -112,11 +112,11 @@
           <label>Birthdate(yyyy-mm-dd)</label>
           <h2 class="px-0">{{ studentInfo.dob }}</h2>
         </div>
-        <b-button
+        <v-btn
           class="text-decoration-none"
           v-b-toggle.student-accordion
-          variant="link"
           v-on:click="moreStudentInfo = !moreStudentInfo"
+          variant="plain"
         >
           <img
             v-show="!moreStudentInfo"
@@ -133,14 +133,18 @@
             alt=""
           />
           &nbsp;{{ moreStudentInfo ? "Hide " : "Show " }}Student Details
-        </b-button>
+        </v-btn>
       </div>
     </div>
 
     <div class="col-12 px-3">
-      <b-collapse id="student-accordion" class="">
-        <b-card no-body class="border-0">
-          <b-table-simple
+      <div
+        v-show="moreStudentInfo"
+        id="student-accordion"
+        v-expand-x-transition
+      >
+        <v-card no-body class="border-0">
+          <v-table
             striped
             hover
             small
@@ -148,27 +152,27 @@
             role="presentation"
             aria-label="student details"
           >
-            <b-tbody>
-              <b-tr>
-                <b-td class="px-2"
-                  ><strong>Usual surname:</strong>
-                  {{ studentInfo.usualLastName }}</b-td
-                >
-                <b-td class="px-2"
-                  ><strong>Usual given:</strong>
+            <tbody>
+              <tr>
+                <td class="px-2">
+                  <strong>Usual surname:</strong>
+                  {{ studentInfo.usualLastName }}
+                </td>
+                <td class="px-2">
+                  <strong>Usual given:</strong>
                   {{ studentInfo.usualFirstName }}
-                </b-td>
-                <b-td class="px-2"
-                  ><strong>Usual middle:</strong>
+                </td>
+                <td class="px-2">
+                  <strong>Usual middle:</strong>
                   {{ studentInfo.usualMiddleNames }}
-                </b-td>
-              </b-tr>
-              <b-tr>
-                <b-td class="px-2"
-                  ><strong>Gender:</strong> {{ studentInfo.genderCode }}</b-td
-                >
-                <b-td class="px-2"
-                  ><strong>True student ID:</strong>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-2">
+                  <strong>Gender:</strong> {{ studentInfo.genderCode }}
+                </td>
+                <td class="px-2">
+                  <strong>True student ID:</strong>
                   <span
                     v-if="
                       studentInfo.trueStudentID &&
@@ -181,29 +185,26 @@
                   <span v-else-if="studentInfo.trueStudentID">
                     Fetching PEN...
                   </span>
-                </b-td>
-                <b-td class="px-2"
-                  ><strong>Local ID:</strong> {{ studentInfo.localID }}</b-td
-                >
-              </b-tr>
-              <b-tr>
-                <b-td class="px-2"
-                  ><strong>PEN Status Code:</strong>
-                  {{ studentInfo.statusCode }}</b-td
-                >
-                <b-td class="px-2"
-                  ><strong>Postal code:</strong>
-                  {{ studentInfo.postalCode }}</b-td
-                >
-                <b-td class="px-2" v-if="studentInfo.studentStatus == 'D'"
-                  ><strong>Deceased date:</strong>
-                  {{ studentInfo.deceasedDate }}</b-td
-                >
-              </b-tr>
-            </b-tbody>
-          </b-table-simple>
-        </b-card>
-      </b-collapse>
+                </td>
+                <td class="px-2">
+                  <strong>Local ID:</strong> {{ studentInfo.localID }}
+                </td>
+              </tr>
+              <tr>
+                <td class="px-2">
+                  <strong>PEN Status Code:</strong> {{ studentInfo.statusCode }}
+                </td>
+                <td class="px-2">
+                  <strong>Postal code:</strong> {{ studentInfo.postalCode }}
+                </td>
+                <td class="px-2" v-if="studentInfo.studentStatus == 'D'">
+                  <strong>Deceased date:</strong> {{ studentInfo.deceasedDate }}
+                </td>
+              </tr>
+            </tbody>
+          </v-table>
+        </v-card>
+      </div>
     </div>
   </div>
 </template>

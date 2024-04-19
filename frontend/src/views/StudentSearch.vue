@@ -570,17 +570,17 @@ export default {
     closeRecord: function () {
       this.unsetStudent();
     },
-    // keyHandler: function (e) {
-    //   if (e.keyCode === 13) {
-    //     //enter key pressed
-    //     this.studentSearchResults = [];
-    //     if (this.penInput) {
-    //       this.findStudentByPen();
-    //     } else if (this.surnameInput) {
-    //       this.findStudentBySurname();
-    //     }
-    //   }
-    // },
+    keyHandler: function (e) {
+      if (e.keyCode === 13) {
+        //enter key pressed
+        this.studentSearchResults = [];
+        if (this.penInput) {
+          this.findStudentByPen();
+        } else if (this.surnameInput) {
+          this.findStudentBySurname();
+        }
+      }
+    },
     findStudentsByAdvancedSearch: function () {
       this.advancedSearchMessage = "";
       this.message = "";

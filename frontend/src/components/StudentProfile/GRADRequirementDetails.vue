@@ -2,8 +2,8 @@
   <div>
     <slot></slot>
     <div>
-      <b-card no-body header="Assessment Requirements">
-        <b-card-text class="p-3">
+      <v-card no-body header="Assessment Requirements">
+        <v-card-text class="p-3">
           <DisplayTable
             v-if="hasGradStatus"
             :items="gradStatusAssessments"
@@ -19,10 +19,10 @@
               </div>
             </template>
           </DisplayTable>
-        </b-card-text>
-      </b-card>
-      <b-card no-body header="Course Requirements">
-        <b-card-text class="p-3">
+        </v-card-text>
+      </v-card>
+      <v-card no-body header="Course Requirements">
+        <v-card-text class="p-3">
           <DisplayTable
             v-if="hasGradStatus && gradStatusCourses"
             :items="gradStatusCourses"
@@ -47,8 +47,8 @@
               </div>
             </template>
           </DisplayTable>
-        </b-card-text>
-      </b-card>
+        </v-card-text>
+      </v-card>
     </div>
   </div>
 </template>

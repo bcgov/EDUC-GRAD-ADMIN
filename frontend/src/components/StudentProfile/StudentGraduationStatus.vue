@@ -2,21 +2,19 @@
   <div>
     <div class="row">
       <div class="col-12 m-0 p-2">
-        <b-card
+        <v-card
           header="Graduation Information"
           class="col-12 p-0"
           no-body
           v-if="studentGradStatus != 'not loaded' && !hasGradStatus"
         >
-          <b-card-body>
-            <b-card-text>
-              <div v-if="!hasGradStatus">
-                {{ studentFullName.legalFirstName }} found on the PEN database
-                <strong>but does not have a GRAD system record</strong>
-              </div>
-            </b-card-text>
-          </b-card-body>
-        </b-card>
+          <v-card-text>
+            <div v-if="!hasGradStatus">
+              {{ studentFullName.legalFirstName }} found on the PEN database
+              <strong>but does not have a GRAD system record</strong>
+            </div>
+          </v-card-text>
+        </v-card>
       </div>
     </div>
     <!-- GRAD Status View -->
