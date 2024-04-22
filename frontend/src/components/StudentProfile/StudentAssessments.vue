@@ -3,6 +3,7 @@
     <div v-if="!assessments" class="container">
       This student does not have any assessments.
     </div>
+    {{ assessments }}
     <DisplayTable
       v-if="assessments"
       :items="assessments"
@@ -74,44 +75,17 @@
           </template>
         </v-dialog>
       </template>
-      <template v-slot:item.more="{ item }">
-        <v-btn
-          variant="outline primary"
-          style="color: #666"
-          size="sm"
-          @click="item.raw.toggleDetails"
-          class="more-button"
-          v-if="item.raw.hasMoreInfo"
-        >
-          <img
-            v-show="!item.raw.detailsShowing"
-            src="../../assets/images/icon-right.svg"
-            width="9"
-            aria-hidden="true"
-            alt=""
-          />
-          <img
-            v-show="item.raw.detailsShowing"
-            src="../../assets/images/icon-down.svg"
-            height="5"
-            aria-hidden="true"
-            alt=""
-          />
-        </v-btn>
-      </template>
-      <template #row-details="row">
-        <v-card class="px-0">
-          <ul>
-            <li v-if="row.item.mincodeAssessment">
-              <strong>Assessment Centre:</strong>
-              {{ row.item.mincodeAssessment }}
-            </li>
-            <li v-if="row.item.mincodeAssessmentName">
-              <strong>Assessment Centre Name:</strong>
-              {{ row.item.mincodeAssessmentName }}
-            </li>
-          </ul>
-        </v-card>
+      <template v-slot:expanded-row="{ item }">
+        <ul v-if="item.raw.hasMoreInfo == true">
+          <li v-if="item.raw.mincodeAssessment">
+            <strong>Assessment Centre:</strong>
+            {{ item.raw.mincodeAssessment }}
+          </li>
+          <li v-if="item.raw.mincodeAssessmentName">
+            <strong>Assessment Centre Name:</strong>
+            {{ item.raw.mincodeAssessmentName }}
+          </li>
+        </ul>
       </template>
     </DisplayTable>
   </div>
@@ -136,8 +110,14 @@ export default {
   },
   data: function () {
     return {
+      detailsShowing: false,
       fields: [
-        { key: "more", title: "" },
+        {
+          key: "data-table-expand",
+          title: "",
+          sortable: true,
+          class: "text-left",
+        },
         {
           key: "assessmentCode",
           title: "Code",
@@ -181,6 +161,5 @@ export default {
       ],
     };
   },
-  methods: {},
 };
 </script>
