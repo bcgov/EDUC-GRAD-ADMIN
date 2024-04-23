@@ -93,6 +93,6 @@ jobs:
           oc rollout status dc/${{ env.IMAGE_NAME }}-dc
 
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.3.0
+        uses: zaproxy/action-full-scan@v0.10.0
         with:
           target: 'https://educ-grad-admin-bbe4c3-test.apps.silver.devops.gov.bc.ca'
