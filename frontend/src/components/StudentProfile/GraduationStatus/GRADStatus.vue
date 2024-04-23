@@ -6,7 +6,7 @@
           v-if="allowUpdateGradStatus"
           class="gradstatus-actions float-right"
         >
-          <div v-if="!showEdit && allowUpdateGradStatus">
+          <div v-if="!studentGradStatus.showEdit && allowUpdateGradStatus">
             <b-link
               href="#"
               class="edit"
@@ -29,7 +29,7 @@
               Edit
             </b-link>
           </div>
-          <div v-if="showEdit">
+          <div v-if="studentGradStatus.showEdit">
             <b-button-group>
               <b-button
                 :disabled="disableSaveButton"
@@ -65,7 +65,7 @@
           v-if="
             studentGradStatus &&
             studentGradStatus.studentStatus == 'N' &&
-            showEdit
+            studentGradStatus.showEdit
           "
         >
           <b-alert show variant="warning" class="p-3 mb-1">
@@ -82,7 +82,7 @@
           v-else-if="
             studentGradStatus &&
             studentGradStatus.studentStatus == 'TER' &&
-            showEdit
+            studentGradStatus.showEdit
           "
         >
           <b-alert show variant="warning" class="p-3 mb-1">
@@ -99,7 +99,7 @@
           v-else-if="
             studentGradStatus &&
             studentGradStatus.studentStatus == 'ARC' &&
-            showEdit
+            studentGradStatus.showEdit
           "
         >
           <b-alert show variant="warning" class="p-3 mb-1">
@@ -115,7 +115,7 @@
           v-else-if="
             studentGradStatus &&
             studentGradStatus.studentStatus == 'DEC' &&
-            showEdit
+            studentGradStatus.showEdit
           "
         >
           <b-alert show variant="warning" class="p-3 mb-1">
@@ -132,7 +132,7 @@
           class="table table-hover table-sm"
         >
           <tbody>
-            <tr v-if="!showEdit">
+            <tr v-if="!studentGradStatus.showEdit">
               <td class="w-50"><strong>Program: </strong></td>
               <td class="w-50">
                 <span v-b-tooltip.hover title="Program">{{
@@ -140,7 +140,7 @@
                 }}</span>
               </td>
             </tr>
-            <tr v-if="showEdit">
+            <tr v-if="studentGradStatus.showEdit">
               <td class="w-50">
                 <strong>Program: </strong>
                 <div v-if="editedGradStatus.program == '1950'">
@@ -193,7 +193,7 @@
               </td>
             </tr>
             <!-- END program edit -->
-            <tr v-if="!showEdit">
+            <tr v-if="!studentGradStatus.showEdit">
               <td><strong>Program completion date: </strong></td>
               <td>
                 {{
@@ -203,7 +203,7 @@
                 }}
               </td>
             </tr>
-            <tr v-if="showEdit">
+            <tr v-if="studentGradStatus.showEdit">
               <td>
                 <strong>Program completion date: (YYYY-MM)</strong><br />
                 <!-- Warning if program completion date for SCCP is out of range -->
@@ -244,7 +244,7 @@
             </tr>
             <!-- END program completion date edit -->
 
-            <tr v-if="!showEdit">
+            <tr v-if="!studentGradStatus.showEdit">
               <td><strong>Student status: </strong></td>
               <td>
                 <span v-if="studentGradStatus.studentStatus">{{
@@ -252,7 +252,7 @@
                 }}</span>
               </td>
             </tr>
-            <tr v-if="showEdit">
+            <tr v-if="studentGradStatus.showEdit">
               <td><strong>Student status: </strong></td>
               <td class="p-1">
                 <b-form-select
@@ -265,7 +265,7 @@
                 ></b-form-select>
               </td>
             </tr>
-            <tr v-if="!showEdit">
+            <tr v-if="!studentGradStatus.showEdit">
               <td><strong>Student grade: </strong></td>
               <td>
                 <span v-if="studentGradStatus.studentGrade">{{
@@ -273,7 +273,7 @@
                 }}</span>
               </td>
             </tr>
-            <tr v-if="showEdit">
+            <tr v-if="studentGradStatus.showEdit">
               <td>
                 <strong>Student grade: </strong>
                 <!-- Warning if student is not on 1950 program and grade is AN/AD. 
@@ -306,7 +306,7 @@
               </td>
             </tr>
 
-            <tr v-if="!showEdit">
+            <tr v-if="!studentGradStatus.showEdit">
               <td><strong>School of record: </strong></td>
               <td>
                 <b-button
@@ -389,7 +389,7 @@
                 </b-modal>
               </td>
             </tr>
-            <tr v-if="showEdit">
+            <tr v-if="studentGradStatus.showEdit">
               <td>
                 <strong>School of record:</strong><br />
                 <!-- Warning if school of record missing; Samara to investigate if we use this since msg is same as scoolOfRecordWarning -->
@@ -453,7 +453,7 @@
                 ></b-input>
               </td>
             </tr>
-            <tr v-if="!showEdit">
+            <tr v-if="!studentGradStatus.showEdit">
               <td><strong>School at graduation: </strong></td>
               <td>
                 <b-button
@@ -541,7 +541,7 @@
                 </b-modal>
               </td>
             </tr>
-            <tr v-if="showEdit">
+            <tr v-if="studentGradStatus.showEdit">
               <td>
                 <strong>School at graduation:</strong><br />
                 <div
@@ -649,7 +649,7 @@
                 </ul>
               </td>
             </tr>
-            <tr v-if="!showEdit">
+            <tr v-if="!studentGradStatus.showEdit">
               <td><strong>Adult start date: </strong></td>
               <td>
                 <span v-if="studentGradStatus.adultStartDate">{{
@@ -657,7 +657,7 @@
                 }}</span>
               </td>
             </tr>
-            <tr v-if="showEdit">
+            <tr v-if="studentGradStatus.showEdit">
               <td>
                 <strong>Adult start date: (YYYY-MM-DD)</strong>
                 <!-- Warning if adult start date contains non-numeric values -->
@@ -686,7 +686,7 @@
                 ></b-input>
               </td>
             </tr>
-            <tr v-if="showEdit">
+            <tr v-if="studentGradStatus.showEdit">
               <td><strong>Consumer education requirement met:</strong></td>
               <td>
                 <b-form-select
@@ -698,7 +698,7 @@
                 </b-form-select>
               </td>
             </tr>
-            <tr v-if="!showEdit">
+            <tr v-if="!studentGradStatus.showEdit">
               <td><strong>Consumer education requirement met:</strong></td>
               <td>
                 <span v-if="studentGradStatus.consumerEducationRequirementMet">
@@ -706,7 +706,7 @@
                 >
               </td>
             </tr>
-            <tr v-if="!showEdit">
+            <tr v-if="!studentGradStatus.showEdit">
               <td><strong>Recalculate Grad Status:</strong></td>
               <td>
                 {{ String(studentGradStatus.recalculateGradStatus) }}
@@ -723,7 +723,7 @@
                 />
               </td>
             </tr>
-            <tr v-if="!showEdit">
+            <tr v-if="!studentGradStatus.showEdit">
               <td><strong>Recalculate Projected Grad:</strong></td>
               <td>
                 {{ String(studentGradStatus.recalculateProjectedGrad) }}
@@ -826,7 +826,7 @@ export default {
       dismissSecs: 3, // remove?
       dismissCountDown: 0, // remove?
       showModal: false,
-      showEdit: false,
+      // showEdit: false,
       show: false,
       notificationMessage: "",
       // Validation flags that PREVENT submission of GRAD Status form
@@ -1303,7 +1303,7 @@ export default {
         this.disableProgramInput = false;
         this.disableStudentStatus = false;
       }
-      this.showEdit = true;
+      this.studentGradStatus.showEdit = true;
       if (this.studentGradStatus.programCompletionDate) {
         this.$set(
           this.editedGradStatus,
@@ -1384,7 +1384,7 @@ export default {
     },
 
     cancelGradStatus() {
-      this.showEdit = false;
+      this.studentGradStatus.showEdit = false;
 
       this.warningFlags.schoolOfRecordWarning = false;
       this.warningFlags.schoolNotFoundWarning = false;
@@ -1442,7 +1442,7 @@ export default {
           );
           this.getSchoolInfo(response.data.schoolOfRecord, "schoolOfRecord");
           this.getSchoolInfo(response.data.schoolAtGrad, "schoolAtGrad");
-          this.showEdit = false;
+          this.studentGradStatus.showEdit = false;
           this.editedGradStatus = {};
 
           this.showNotification("success", "GRAD Status Saved");

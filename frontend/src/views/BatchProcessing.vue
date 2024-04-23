@@ -1117,6 +1117,82 @@ export default {
           }
         });
     },
+    runCERTREGEN(request, id) {
+      let requestId = id.replace("job-", "");
+      this.$set(this.spinners, id, true);
+      let index = id.replace("job-", "") - 1;
+      let value = true;
+      this.setTabLoading({ index, value });
+      BatchProcessingService.runCERTREGEN(request)
+        .then((response) => {
+          this.getAdminDashboardData();
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.getAdminDashboardData();
+            this.cancelBatchJob(id);
+            this.selectedTab = 0;
+            this.$bvToast.toast("This request is running in the background", {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "success",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
+    runCERTREGEN_ALL(request, id) {
+      let requestId = id.replace("job-", "");
+      this.$set(this.spinners, id, true);
+      let index = id.replace("job-", "") - 1;
+      let value = true;
+      this.setTabLoading({ index, value });
+      BatchProcessingService.runCERTREGEN_ALL()
+        .then((response) => {
+          this.getAdminDashboardData();
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.getAdminDashboardData();
+            this.cancelBatchJob(id);
+            this.selectedTab = 0;
+            this.$bvToast.toast("This request is running in the background", {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "success",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
     runNONGRADRUN(request, id) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
@@ -1480,7 +1556,10 @@ export default {
         if (this.tabContent[id]["details"].categoryCode == "") {
           districtCategoryCode = [];
         }
-        if (!districtCategoryCode.length) {
+        if (
+          !districtCategoryCode.length &&
+          this.tabContent[id].details["what"] != "CERT_REGEN"
+        ) {
           this.validationMessage = "Please select a district category";
           return;
         }
@@ -1677,6 +1756,30 @@ export default {
           this.addScheduledJob(scheduledRequest, id);
         } else {
           this.runDISTRUN_SUPP(request, id);
+        }
+      } else if (this.tabContent[id].details["what"] == "CERT_REGEN") {
+        request.runMode = "Y";
+        delete request.credentialTypeCode;
+        delete request.schoolCategoryCodes;
+        delete request.gradDateFrom;
+        delete request.gradDateTo;
+        delete request.quantity;
+        delete request.localDownload;
+        delete request.reportType;
+
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "SDBJ";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          if (this.tabContent[id].details["who"] == "all") {
+            this.runCERTREGEN_ALL(request, id);
+          } else {
+            this.runCERTREGEN(request, id);
+          }
         }
       } else if (this.tabContent[id].details["what"] == "ARC_STUDENTS") {
         if (cronTime) {

@@ -41,6 +41,7 @@ export const useStudentStore = defineStore("student", {
       auditHistory: [],
       auditHistoryOptionalPrograms: [],
     },
+    showEdit: false,
   }),
   actions: {
     loadStudentReportsAndCertificates() {
@@ -131,6 +132,7 @@ export const useStudentStore = defineStore("student", {
       StudentService.getGraduationStatus(studentId)
         .then((response) => {
           this.setStudentGradStatus(response.data);
+          this.showEdit = false;
         })
         .catch((error) => {
           console.error(

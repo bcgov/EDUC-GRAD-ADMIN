@@ -7,7 +7,6 @@ export default {
   },
   runREGALG(request, cronTime="")
    {
-    console.log(cronTime)
     if(cronTime){
       let scheduledRequest = {};
       scheduledRequest.cronExpression = cronTime
@@ -17,8 +16,6 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return
     }else{
-      console.log("REGALG SERVICE")
-      console.log(request)
       return ApiService.apiAxios.post('/api/v1/batch/specialrun', request);
     }
   },
@@ -76,9 +73,7 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return
     }else{
-      console.log(request)
-      return
-      //return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
+      return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
     }
   },
   runBlankDISTRUNUSERUserRequest(request, credentialType){
@@ -87,6 +82,28 @@ export default {
   runPSIRUN(request, transmissionType){
     return ApiService.apiAxios.post('/api/v1/batch/executepsireportbatchjob/' + transmissionType, request);
   },
+  runCERTREGEN(request, cronTime=""){
+    if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
+      // If the condition is true, set districts to an empty array
+      request.districts = [];
+    }
+    if(cronTime){
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime;
+      scheduledRequest.jobName = "RCBJ";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      this.addScheduledJob(scheduledRequest);
+      return
+    }else{
+      return ApiService.apiAxios.post('/api/v1/batch/executecertregenbatchjob', request);
+    } 
+  },
+  runCERTREGEN_ALL(){
+    
+    return ApiService.apiAxios.get('/api/v1/batch/executecertregenbatchjob');
+  
+  },  
   getBatchErrors(id, page) {
     return ApiService.apiAxios.get('/api/v1/batch/dashboard/errors/'  + id + '?pageNumber=' + page);
   },
@@ -97,8 +114,7 @@ export default {
     return ApiService.apiAxios.get('/api/v1/batch/schedule/listjobs');
   },
   addScheduledJob(scheduledJob) {
-    console.log("SCHEDULE")
-    console.log(scheduledJob)
+
     return ApiService.apiAxios.post('/api/v1/batch/schedule/add?batchJobTypeCode=' + scheduledJob.jobName, scheduledJob);
   },
   removeScheduledJobs(id) {

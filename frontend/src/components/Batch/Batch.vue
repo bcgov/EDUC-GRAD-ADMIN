@@ -174,6 +174,7 @@
             v-if="
               batch.details['what'] != '' &&
               batch.details['who'] != 'Student' &&
+              batch.details['who'] != 'all' &&
               batch.details['what'] != 'DISTRUN' &&
               batch.details['who'] != 'PSI' &&
               batch.details['credential'] != 'Blank transcript print' &&
@@ -183,7 +184,10 @@
           >
             <div
               class="p-0 mt-3 col-3"
-              v-if="batch.details['who'] == 'District'"
+              v-if="
+                batch.details['who'] == 'District' &&
+                batch.details['what'] != 'CERT_REGEN'
+              "
             >
               <label class="font-weight-bold">Category</label>
               <b-form-select
@@ -209,7 +213,8 @@
                 batch.details['what'] != 'NONGRADRUN' &&
                 batch.details['what'] != 'DISTRUN_YE' &&
                 batch.details['what'] != 'DISTRUN_SUPP' &&
-                batch.details['what'] != 'ARC_STUDENTS'
+                batch.details['what'] != 'ARC_STUDENTS' &&
+                batch.details['what'] != 'CERT_REGEN'
               "
             >
               <label class="font-weight-bold p-0 m-0 row"
@@ -1239,6 +1244,13 @@ export default {
           copies: true,
           where: true,
         },
+        CERT_REGEN: {
+          group: [
+            { text: "All", value: "all" },
+            "Student",
+            { text: "District", value: "District" },
+          ],
+        },
         ARC_STUDENTS: {
           group: [
             {
@@ -1406,6 +1418,7 @@ export default {
 
       if (
         this.batch.details["who"] == "District" &&
+        this.batch.details["what"] != "CERT_REGEN" &&
         !this.batch.details["categoryCode"]
       ) {
         this.batchIsValid = false;
@@ -1492,8 +1505,7 @@ export default {
             if (
               type.code === "ARC_STUDENTS" ||
               type.code === "ARC_SCH_REPORTS" ||
-              type.code === "EDW_SNAPSHOT" ||
-              type.code === "CERT_REGEN"
+              type.code === "EDW_SNAPSHOT"
             ) {
               type.disabled = true;
             }
@@ -1948,12 +1960,19 @@ export default {
             batchDetail.details["who"] = "School";
           }
         }
+        if (type == "gradDateFrom") {
+          event = SharedMethods.dateFormatYYYYMMDD(this.gradDateFrom);
+        }
+        if (type == "gradDateTo") {
+          event = SharedMethods.dateFormatYYYYMMDD(this.gradDateTo);
+        }
         if (type == "gradDate") {
           if (event == "Current Students") {
             this.editBatchJob("gradDateFrom", "");
             this.editBatchJob("gradDateTo", "");
           }
         }
+
         if (type == "categoryCode") {
           if (event != "04" || event != "09") {
             this.clearBatchGroupDetails(id);
@@ -2083,6 +2102,38 @@ export default {
     jobId: String,
     currentPSIYear: String,
   },
+  watch: {
+    gradDateFrom: function () {
+      this.validationMessage = "";
+      this.gradDateFrom = SharedMethods.dateFormatYYYYMMDD(this.gradDateFrom);
+      // Convert string dates to Date objects for comparison
+      const fromDate = new Date(this.gradDateFrom);
+      const toDate = new Date(this.gradDateTo);
+
+      // Check if gradDateFrom is greater than gradDateTo
+      if (fromDate.getTime() > toDate.getTime()) {
+        // Handle the error, for example, by resetting gradDateFrom or displaying a message
+        this.validationMessage = "Grad start date cannot be >  End Date";
+        // You can also display a message to the user indicating the error
+        // console.error("gradDateFrom cannot be greater than gradDateTo");
+      }
+    },
+    gradDateTo: function () {
+      this.gradDateTo = SharedMethods.dateFormatYYYYMMDD(this.gradDateTo);
+      // Convert string dates to Date objects for comparison
+      const fromDate = new Date(this.gradDateFrom);
+      const toDate = new Date(this.gradDateTo);
+
+      // Check if gradDateTo is less than gradDateFrom
+      if (toDate.getTime() < fromDate.getTime()) {
+        // Handle the error, for example, by resetting gradDateTo or displaying a message
+        this.gradDateTo = null;
+        this.validationMessage = "Grad End date cannot be <  Start Date";
+        // You can also display a message to the user indicating the error
+        // console.error("gradDateTo cannot be less than gradDateFrom");
+      }
+    },
+  },
   computed: {
     ...mapState(useBatchProcessingStore, {
       tabContent: "getBatchDetails",
@@ -2108,6 +2159,10 @@ export default {
 
     requestId() {
       return this.jobId.replace("job-", "");
+    },
+    formattedGradDateFrom() {
+      // Format gradDateFrom using dateFormatYYYYMM function
+      return dateFormatYYYYMM(this.gradDateFrom);
     },
   },
 };
