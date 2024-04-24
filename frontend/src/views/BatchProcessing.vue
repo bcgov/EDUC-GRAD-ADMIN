@@ -1556,7 +1556,10 @@ export default {
         if (this.tabContent[id]["details"].categoryCode == "") {
           districtCategoryCode = [];
         }
-        if (!districtCategoryCode.length) {
+        if (
+          !districtCategoryCode.length &&
+          this.tabContent[id].details["what"] != "CERT_REGEN"
+        ) {
           this.validationMessage = "Please select a district category";
           return;
         }
@@ -1756,6 +1759,14 @@ export default {
         }
       } else if (this.tabContent[id].details["what"] == "CERT_REGEN") {
         request.runMode = "Y";
+        delete request.credentialTypeCode;
+        delete request.schoolCategoryCodes;
+        delete request.gradDateFrom;
+        delete request.gradDateTo;
+        delete request.quantity;
+        delete request.localDownload;
+        delete request.reportType;
+
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;
