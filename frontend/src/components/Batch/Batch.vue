@@ -238,10 +238,6 @@
               <div class="float-left col-3 m-0 p-0">
                 <strong><label class="pt-1">Grad Start Date</label></strong>
                 <b-input-group class="mb-3">
-                  <!-- <ValidationProvider
-                    :rules="'validDate|lessthangraddateto:' + gradDateTo"
-                    v-slot="{ errors }"
-                  > -->
                   <b-form-input
                     id="gradDateFromInput"
                     v-model="gradDateFrom"
@@ -250,14 +246,6 @@
                     autocomplete="off"
                     @input="setGradFromDate($event)"
                   ></b-form-input>
-                  ss
-                  {{ v$.gradDateFrom.$invalid }}
-                  <!-- <ul
-                    class="position-absolute form-validation-message text-danger"
-                  >
-                    <li v-for="error in errors" :key="error">{{ error }}</li>
-                  </ul> -->
-                  <!-- </ValidationProvider> -->
                   <b-input-group-append>
                     <b-form-datepicker
                       v-model="gradDateFrom"
@@ -268,11 +256,16 @@
                     ></b-form-datepicker>
                   </b-input-group-append>
                 </b-input-group>
-                ERROR
+                <div class="form-validation-message text-danger">
+                  {{
+                    v$.gradDateFrom.$invalid
+                      ? "Grad start date cannot be >  End Date"
+                      : ""
+                  }}
+                </div>
               </div>
 
               <div class="float-left col-4">
-                {{ validationMessage }}
                 <strong><label class="pt-1">Grad End Date</label></strong>
                 <b-input-group class="mb-3">
                   <!-- <ValidationProvider
@@ -303,6 +296,13 @@
                     ></b-form-datepicker>
                   </b-input-group-append>
                 </b-input-group>
+                <div class="form-validation-message text-danger">
+                  {{
+                    v$.gradDateTo.$invalid
+                      ? "Grad End date cannot be <  Start Date"
+                      : ""
+                  }}
+                </div>
               </div>
             </div>
           </div>
@@ -1171,13 +1171,30 @@ export default {
 
         // Check if gradDateFrom is greater than gradDateTo
         if (fromDate.getTime() && fromDate.getTime() > toDate.getTime()) {
-          console.log("Grad start date cannot be >  End Date");
           // Handle the error, for example, by resetting gradDateFrom or displaying a message
           this.validationMessage = "Grad start date cannot be >  End Date";
           // You can also display a message to the user indicating the error
           // console.error("gradDateFrom cannot be greater than gradDateTo");
-          console.log("INVALID");
           return false;
+        } else {
+          return true;
+        }
+      },
+      gradDateTo: function () {
+        this.gradDateTo = SharedMethods.dateFormatYYYYMMDD(this.gradDateTo);
+        // Convert string dates to Date objects for comparison
+        const fromDate = new Date(this.gradDateFrom);
+        const toDate = new Date(this.gradDateTo);
+
+        // Check if gradDateFrom is greater than gradDateTo
+        if (toDate.getTime() && toDate.getTime() < fromDate.getTime()) {
+          // Handle the error, for example, by resetting gradDateFrom or displaying a message
+          this.validationMessage = "End Date date cannot be <  Start Date";
+          // You can also display a message to the user indicating the error
+          // console.error("gradDateFrom cannot be greater than gradDateTo");
+          return false;
+        } else {
+          return true;
         }
       },
     };
@@ -1364,6 +1381,10 @@ export default {
       "editBatchDetails",
     ]),
     validBatch() {
+      if (this.v$.$invalid) {
+        this.batchIsValid = false;
+        return;
+      }
       if (
         this.batch.details["what"] != "DISTRUN_YE" &&
         this.batch.details["what"] != "DISTRUN" &&
@@ -2081,23 +2102,7 @@ export default {
     jobId: String,
     currentPSIYear: String,
   },
-  watch: {
-    gradDateTo: function () {
-      this.gradDateTo = SharedMethods.dateFormatYYYYMMDD(this.gradDateTo);
-      // Convert string dates to Date objects for comparison
-      const fromDate = new Date(this.gradDateFrom);
-      const toDate = new Date(this.gradDateTo);
-
-      // Check if gradDateTo is less than gradDateFrom
-      if (toDate.getTime() < fromDate.getTime()) {
-        // Handle the error, for example, by resetting gradDateTo or displaying a message
-        this.gradDateTo = null;
-        this.validationMessage = "Grad End date cannot be <  Start Date";
-        // You can also display a message to the user indicating the error
-        // console.error("gradDateTo cannot be less than gradDateFrom");
-      }
-    },
-  },
+  watch: {},
   computed: {
     ...mapState(useBatchProcessingStore, {
       tabContent: "getBatchDetails",
