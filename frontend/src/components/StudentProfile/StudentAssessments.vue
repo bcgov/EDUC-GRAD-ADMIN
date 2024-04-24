@@ -3,13 +3,13 @@
     <div v-if="!assessments" class="container">
       This student does not have any assessments.
     </div>
-    {{ assessments }}
     <DisplayTable
       v-if="assessments"
       :items="assessments"
       :fields="fields"
       showFilter="true"
       title="Assessments"
+      :id="id"
     >
       <!-- <template v-slot:item.sessionDate="{ item }">
         {{ $filters.formatYYYYMMDate(item.value) }}
@@ -75,17 +75,21 @@
           </template>
         </v-dialog>
       </template>
-      <template v-slot:expanded-row="{ item }">
-        <ul v-if="item.raw.hasMoreInfo == true">
-          <li v-if="item.raw.mincodeAssessment">
-            <strong>Assessment Centre:</strong>
-            {{ item.raw.mincodeAssessment }}
-          </li>
-          <li v-if="item.raw.mincodeAssessmentName">
-            <strong>Assessment Centre Name:</strong>
-            {{ item.raw.mincodeAssessmentName }}
-          </li>
-        </ul>
+      <template v-slot:expanded-row="{ columns, item }">
+        <tr>
+          <td :colspan="columns.length">
+            <ul v-if="item.raw.hasMoreInfo == true">
+              <li v-if="item.raw.mincodeAssessment">
+                <strong>Assessment Centre:</strong>
+                {{ item.raw.mincodeAssessment }}
+              </li>
+              <li v-if="item.raw.mincodeAssessmentName">
+                <strong>Assessment Centre Name:</strong>
+                {{ item.raw.mincodeAssessmentName }}
+              </li>
+            </ul>
+          </td>
+        </tr>
       </template>
     </DisplayTable>
   </div>

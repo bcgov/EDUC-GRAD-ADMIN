@@ -313,36 +313,35 @@ export const useStudentStore = defineStore("student", {
       }
     },
     //Optioanl Program CRUD
-    addStudentOptionalProgram(optionalProgramCode,careerProgramCode){
+    addStudentOptionalProgram(optionalProgramCode, careerProgramCode) {
       let optionalProgramPayload = {
-        "createUser": "string",
-        "createDate": "2024-02-14T02:15:53.938Z",
-        "updateUser": "string",
-        "updateDate": "2024-02-14T02:15:53.938Z",
-        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-        "pen": "string",
-        "optionalProgramID": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-        "studentOptionalProgramData": "string",
-        "optionalProgramCompletionDate": "string",
-        "optionalProgramName": "string",
-        "optionalProgramCode": "string",
-        "programCode": "string",
-        "studentID": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        createUser: "string",
+        createDate: "2024-02-14T02:15:53.938Z",
+        updateUser: "string",
+        updateDate: "2024-02-14T02:15:53.938Z",
+        id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        pen: "string",
+        optionalProgramID: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        studentOptionalProgramData: "string",
+        optionalProgramCompletionDate: "string",
+        optionalProgramName: "string",
+        optionalProgramCode: "string",
+        programCode: "string",
+        studentID: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      };
+      try {
+        let response = StudentService.createStudentOptionalProgram(
+          this.id,
+          optionalProgramPayload,
+          careerProgramCode
+        );
+        console.log("Request successful:", response);
+      } catch (error) {
+        console.error("Error creating student optional program:", error);
       }
-        try {
-          let response = StudentService.createStudentOptionalProgram(this.id, optionalProgramPayload, careerProgramCode);
-          console.log('Request successful:', response);
-        } catch (error) {
-            console.error('Error creating student optional program:', error);
-        }
-  
-  
-  
-
-    }
+    },
     // deleteStudentOptionalProgram
     // updateStudentOptionalProgram
-    
   },
   getters: {
     getStudentAuditHistory() {
@@ -404,9 +403,12 @@ export const useStudentStore = defineStore("student", {
       return this.student.optionalPrograms;
     },
     getStudentCourses() {
-      if (!Array.isArray(this.student.courses) || this.student.courses.length === 0) {
+      if (
+        !Array.isArray(this.student.courses) ||
+        this.student.courses.length === 0
+      ) {
         return [];
-      }    
+      }
       return this.student.courses.map((course) => ({
         ...course,
         id: `${course.courseCode}_${course.courseLevel}_${course.sessionDate}`,
@@ -416,13 +418,23 @@ export const useStudentStore = defineStore("student", {
       return this.student.exams;
     },
     getStudentAssessments() {
-      return this.student.assessments;
+      if (
+        !Array.isArray(this.student.assessments) ||
+        this.student.assessments.length === 0
+      ) {
+        return "";
+      }
+      return this.student.assessments.map((assessment) => ({
+        ...assessment,
+        id: `${assessment.assessmentCode}_${assessment.sessionDate}`,
+      }));
+      // return this.student.assessments;
     },
     getStudentNotes() {
       return this.student.notes;
     },
-    getStudentProgram(){
-      return this.student.gradStatus.program
+    getStudentProgram() {
+      return this.student.gradStatus.program;
     },
     studentHasCourses() {
       return this.student.hasCourses;
