@@ -259,7 +259,7 @@
                 <div class="form-validation-message text-danger">
                   {{
                     v$.gradDateFrom.$invalid
-                      ? "Grad start date cannot be >  End Date"
+                      ? "Grad start date cannot be greater than " + gradDateTo
                       : ""
                   }}
                 </div>
@@ -299,7 +299,7 @@
                 <div class="form-validation-message text-danger">
                   {{
                     v$.gradDateTo.$invalid
-                      ? "Grad End date cannot be <  Start Date"
+                      ? "Grad End date cannot be less than " + gradDateFrom
                       : ""
                   }}
                 </div>
@@ -1080,7 +1080,6 @@
 </template>
 <script>
 import { useVuelidate } from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
 import TRAXService from "@/services/TRAXService.js";
 import SchoolService from "@/services/SchoolService.js";
 import StudentService from "@/services/StudentService.js";
@@ -1329,7 +1328,6 @@ export default {
         },
       },
     };
-    220;
   },
 
   mounted() {},
