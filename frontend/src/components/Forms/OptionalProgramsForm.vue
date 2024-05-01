@@ -311,24 +311,7 @@ export default {
       return applyDisplayOrder(
         this.optionalProgramList
           ?.filter((item) => {
-            let effectiveDateUTC = null;
-            let expiryDateUTC = null;
-            if (item.effectiveDate) {
-              effectiveDateUTC = new Date(item.effectiveDate)
-                .toISOString()
-                .split("T")[0];
-            }
-            if (item.expiryDate) {
-              expiryDateUTC = new Date(item.expiryDate)
-                .toISOString()
-                .split("T")[0];
-            }
-
-            return (
-              item.graduationProgramCode === studentProgramId &&
-              effectiveDateUTC <= currentDate &&
-              (expiryDateUTC == null || currentDate <= expiryDateUTC)
-            );
+            return item.graduationProgramCode === studentProgramId;
           })
           ?.filter((activeOptionalProgram) => {
             // If student optional programs exist, filter out existing programs. Otherwise returns all possible opt programs for grad program
