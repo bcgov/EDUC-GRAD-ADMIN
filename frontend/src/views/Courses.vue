@@ -2,95 +2,107 @@
   <div class="courses-all">
     <h1>Courses</h1>
     <div>
-      <b-card no-body>
-        <b-tabs card>
-          <b-tab title="Course" active>
-            <form v-on:submit.prevent>
+      <v-card no-body>
+        <v-tabs v-model="tab" bg-color="transparent" grow>
+          <v-tab value="courseTab" color="primary">Course</v-tab>
+          <v-tab value="courseRestrictionsTab" color="primary"
+            >Course restrictions</v-tab
+          >
+          <v-tab value="courseRequirementsTab" color="primary"
+            >Course requirements</v-tab
+          >
+        </v-tabs>
+        <v-card-text>
+          <v-window v-model="tab">
+            <v-window-item value="courseTab">
               <div class="advanced-search-form">
-                <div class="row my-3">
-                  <div class="advanced-search-field col-12 col-md-2">
-                    <label>TRAX Code</label>
-                    <div
-                      href="#"
-                      v-on:click="
-                        advancedSearchInput.courseCode.contains =
-                          !advancedSearchInput.courseCode.contains
-                      "
-                      v-bind:class="{
-                        active: advancedSearchInput.courseCode.contains,
-                      }"
-                      class="wild-card-button"
-                      v-b-tooltip.hover
-                      title="Course code starts with"
-                    >
-                      [.*]
+                <v-form v-on:submit.prevent>
+                  <v-row class="row my-3">
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <div
+                        href="#"
+                        v-on:click="
+                          advancedSearchInput.courseCode.contains =
+                            !advancedSearchInput.courseCode.contains
+                        "
+                        v-bind:class="{
+                          active: advancedSearchInput.courseCode.contains,
+                        }"
+                        class="wild-card-button"
+                      >
+                        <v-tooltip activator="parent" location="top"
+                          >Course code starts with</v-tooltip
+                        >
+                        [.*]
+                      </div>
+                      <v-text-field
+                        label="TRAX Code:"
+                        v-model="advancedSearchInput.courseCode.value"
+                        placeholder=""
+                        tabindex="1"
+                      />
                     </div>
-                    <b-input
-                      class="form__input"
-                      v-model="advancedSearchInput.courseCode.value"
-                      placeholder=""
-                      tabindex="1"
-                    />
-                  </div>
-                  <div class="advanced-search-field col-12 col-md-2">
-                    <label>TRAX Grade Level</label>
-                    <div
-                      href="#"
-                      v-on:click="
-                        advancedSearchInput.courseLevel.contains =
-                          !advancedSearchInput.courseLevel.contains
-                      "
-                      v-bind:class="{
-                        active: advancedSearchInput.courseLevel.contains,
-                      }"
-                      class="wild-card-button"
-                      v-b-tooltip.hover
-                      title="Course level starts with"
-                    >
-                      [.*]
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <div
+                        href="#"
+                        v-on:click="
+                          advancedSearchInput.courseLevel.contains =
+                            !advancedSearchInput.courseLevel.contains
+                        "
+                        v-bind:class="{
+                          active: advancedSearchInput.courseLevel.contains,
+                        }"
+                        class="wild-card-button"
+                      >
+                        <v-tooltip activator="parent" location="top"
+                          >Course level starts with</v-tooltip
+                        >
+                        [.*]
+                      </div>
+                      <v-text-field
+                        label="TRAX Grade Level:"
+                        v-model="advancedSearchInput.courseLevel.value"
+                        placeholder=""
+                        tabindex="2"
+                      />
                     </div>
-                    <b-input
-                      class="form__input"
-                      v-model="advancedSearchInput.courseLevel.value"
-                      placeholder=""
-                      tabindex="2"
-                    />
-                  </div>
-                  <div class="advanced-search-field col-12 col-md-2">
-                    <label>Course Title</label>
-                    <div
-                      href="#"
-                      v-on:click="
-                        advancedSearchInput.courseName.contains =
-                          !advancedSearchInput.courseName.contains
-                      "
-                      v-bind:class="{
-                        active: advancedSearchInput.courseName.contains,
-                      }"
-                      class="wild-card-button"
-                      v-b-tooltip.hover
-                      title="Course name contains"
-                    >
-                      [.*]
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <div
+                        href="#"
+                        v-on:click="
+                          advancedSearchInput.courseName.contains =
+                            !advancedSearchInput.courseName.contains
+                        "
+                        v-bind:class="{
+                          active: advancedSearchInput.courseName.contains,
+                        }"
+                        class="wild-card-button"
+                      >
+                        <v-tooltip activator="parent" location="top"
+                          >Course name contains</v-tooltip
+                        >
+                        [.*]
+                      </div>
+                      <v-text-field
+                        label="Course Title:"
+                        v-model="advancedSearchInput.courseName.value"
+                        placeholder=""
+                        tabindex="3"
+                      />
                     </div>
-                    <b-input
-                      class="form__input"
-                      v-model="advancedSearchInput.courseName.value"
-                      placeholder=""
-                      tabindex="3"
-                    />
-                  </div>
-                  <div class="advanced-search-field col-12 col-md-2">
-                    <label>Instruction Language</label>
-                    <b-form-select
-                      v-model="advancedSearchInput.language.value"
-                      :options="langOptions"
-                    ></b-form-select>
-                  </div>
-                  <div class="advanced-search-field col-12 col-md-2">
-                    <label for="datepicker-startDate">TRAX Start Date</label>
-                    <b-input-group class="mb-3">
-                      <b-form-input
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <v-select
+                        label="Instruction Language:"
+                        v-model="advancedSearchInput.language.value"
+                        :items="langOptions"
+                        item-title="text"
+                        item-value="value"
+                        tabindex="4"
+                      ></v-select>
+                    </div>
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <v-text-field
+                        label="TRAX Start Date:"
                         id="datepicker-startDate"
                         v-model="advancedSearchInput.startDate.value"
                         type="date"
@@ -99,13 +111,11 @@
                         :date-format-options="{ year: '4-digit' }"
                         autocomplete="off"
                         tabindex="5"
-                      ></b-form-input>
-                    </b-input-group>
-                  </div>
-                  <div class="advanced-search-field col-12 col-md-2">
-                    <label for="datepicker-endDate">TRAX End Date</label>
-                    <b-input-group class="mb-3">
-                      <b-form-input
+                      ></v-text-field>
+                    </div>
+                    <div class="advanced-search-field col-12 col-md-2">
+                      <v-text-field
+                        label="TRAX End Date:"
                         id="datepicker-endDate"
                         v-model="advancedSearchInput.endDate.value"
                         type="date"
@@ -113,56 +123,63 @@
                         max="9999-12-30"
                         :date-format-options="{ year: '4-digit' }"
                         autocomplete="off"
-                        tabindex="5"
-                      ></b-form-input>
-                    </b-input-group>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="advanced-search-button">
-                    <button
-                      v-on:click="advanceCourseSearch"
-                      v-if="!advancedSearchLoading"
-                      class="btn btn-primary"
-                      tabindex="6"
-                    >
-                      Search
-                    </button>
-                    <button
-                      class="btn btn-success"
-                      v-if="advancedSearchLoading"
-                      tabindex="6"
-                    >
-                      Search
-                    </button>
-                    <button
-                      v-on:click="clearInput('courses')"
-                      class="btn btn-outline-primary mx-2"
-                    >
-                      Reset
-                    </button>
-                    <b-spinner v-if="advancedSearchLoading" label="Loading"
-                      >Loading</b-spinner
-                    >
-                  </div>
-                </div>
+                        tabindex="6"
+                      ></v-text-field>
+                    </div>
+                  </v-row>
+                  <v-row>
+                    <div class="advanced-search-button">
+                      <v-btn
+                        v-on:click="advanceCourseSearch"
+                        v-if="!advancedSearchLoading"
+                        class="btn"
+                        color="primary"
+                        tabindex="7"
+                      >
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                        Search
+                      </v-btn>
+                      <v-btn
+                        class="btn"
+                        color="success"
+                        v-if="advancedSearchLoading"
+                        tabindex="7"
+                        ><i class="fas fa-search" aria-hidden="true"></i>
+                        Search
+                        <v-progress-circular
+                          v-if="advancedSearchLoading"
+                          indeterminate
+                          color="green"
+                        >
+                        </v-progress-circular>
+                      </v-btn>
+                      <v-btn
+                        v-on:click="clearInput('courses')"
+                        class="btn btn-outline-primary mx-2"
+                        tabindex="7"
+                      >
+                        Reset
+                      </v-btn>
+                    </div>
+                  </v-row>
 
-                <div v-if="courses">
-                  <div v-if="totalResults > 0" class="row">
-                    <div class="search-results-message my-3 col-12 col-md-8">
-                      <strong>{{ totalResults }}</strong> course records found.
+                  <div v-if="courses">
+                    <div v-if="totalResults > 0" class="row">
+                      <div class="search-results-message my-3 col-12 col-md-8">
+                        <strong>{{ totalResults }}</strong> course records
+                        found.
+                      </div>
+                    </div>
+                    <div v-if="advancedSearchMessage" class="row">
+                      <div class="search-results-message my-5 col-12 col-md-8">
+                        <strong>{{ advancedSearchMessage }}</strong>
+                      </div>
                     </div>
                   </div>
-                  <div v-if="advancedSearchMessage" class="row">
-                    <div class="search-results-message my-5 col-12 col-md-8">
-                      <strong>{{ advancedSearchMessage }}</strong>
-                    </div>
-                  </div>
-                </div>
+                </v-form>
               </div>
-            </form>
-            <b-card-text>
               <DisplayTable
+                v-if="courses.length"
                 title="Courses"
                 v-bind:items="courses"
                 v-bind:fields="courseFields"
@@ -170,142 +187,151 @@
                 :showFilter="true"
                 pagination="true"
               ></DisplayTable>
-            </b-card-text>
-          </b-tab>
-          <b-tab title="Course restrictions">
-            <b-card-text>
-              <DisplayTable
-                title="Course restrictions"
-                v-bind:items="courseRestrictions"
-                v-bind:fields="courseRestrictionFields"
-                id="courseRestrictionId"
-                :showFilter="true"
-                pagination="true"
-              >
-              </DisplayTable>
-            </b-card-text>
-          </b-tab>
-          <b-tab title="Course requirements">
-            <b-card-text>
-              <form v-on:submit.prevent>
-                <div class="advanced-search-form">
-                  <div class="row my-3">
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <label>Course code</label>
-                      <div
-                        href="#"
-                        v-on:click="
-                          requirementsSearchInput.courseCode.contains =
-                            !requirementsSearchInput.courseCode.contains
-                        "
-                        v-bind:class="{
-                          active: requirementsSearchInput.courseCode.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Course code starts with"
-                      >
-                        [.*]
+            </v-window-item>
+            <v-window-item value="courseRestrictionsTab">
+              <b-card-text>
+                <DisplayTable
+                  title="Course restrictions"
+                  v-bind:items="courseRestrictions"
+                  v-bind:fields="courseRestrictionFields"
+                  id="courseRestrictionId"
+                  :showFilter="true"
+                  pagination="true"
+                >
+                </DisplayTable>
+              </b-card-text>
+            </v-window-item>
+            <v-window-item value="courseRequirementsTab">
+              <b-card-text>
+                <v-form v-on:submit.prevent id="courseReqForm">
+                  <div class="advanced-search-form">
+                    <v-row class="row my-3">
+                      <div class="advanced-search-field col-12 col-md-2">
+                        <div
+                          href="#"
+                          v-on:click="
+                            requirementsSearchInput.courseCode.contains =
+                              !requirementsSearchInput.courseCode.contains
+                          "
+                          v-bind:class="{
+                            active: requirementsSearchInput.courseCode.contains,
+                          }"
+                          class="wild-card-button"
+                        >
+                          <v-tooltip activator="parent" location="top"
+                            >Course code starts with</v-tooltip
+                          >
+                          [.*]
+                        </div>
+                        <v-text-field
+                          label="Course code:"
+                          v-model="requirementsSearchInput.courseCode.value"
+                          placeholder=""
+                          tabindex="1"
+                        ></v-text-field>
                       </div>
-                      <b-input
-                        class="form__input"
-                        v-model="requirementsSearchInput.courseCode.value"
-                        placeholder=""
-                        tabindex="1"
-                      />
-                    </div>
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <label>Course level</label>
-                      <b-input
-                        class="form__input"
-                        v-model="requirementsSearchInput.courseLevel.value"
-                        placeholder=""
-                        tabindex="2"
-                        trim
-                      />
-                    </div>
-                    <div class="advanced-search-field col-12 col-md-2">
-                      <label>Rule#</label>
-                      <div
-                        href="#"
-                        v-on:click="
-                          requirementsSearchInput.rule.contains =
-                            !requirementsSearchInput.rule.contains
-                        "
-                        v-bind:class="{
-                          active: requirementsSearchInput.rule.contains,
-                        }"
-                        class="wild-card-button"
-                        v-b-tooltip.hover
-                        title="Rule number starts with"
-                      >
-                        [.*]
+                      <div class="advanced-search-field col-12 col-md-2">
+                        <v-text-field
+                          label="Course level:"
+                          v-model="requirementsSearchInput.courseLevel.value"
+                          placeholder=""
+                          tabindex="2"
+                          trim
+                        ></v-text-field>
                       </div>
-                      <b-input
-                        class="form__input"
-                        v-model="requirementsSearchInput.rule.value"
-                        placeholder=""
-                        tabindex="3"
-                        trim
-                      />
+                      <div class="advanced-search-field col-12 col-md-2">
+                        <div
+                          href="#"
+                          v-on:click="
+                            requirementsSearchInput.rule.contains =
+                              !requirementsSearchInput.rule.contains
+                          "
+                          v-bind:class="{
+                            active: requirementsSearchInput.rule.contains,
+                          }"
+                          class="wild-card-button"
+                        >
+                          <v-tooltip activator="parent" location="top"
+                            >Rule number starts with</v-tooltip
+                          >
+                          [.*]
+                        </div>
+                        <v-text-field
+                          label="Rule#:"
+                          v-model="requirementsSearchInput.rule.value"
+                          placeholder=""
+                          tabindex="3"
+                          trim
+                        ></v-text-field>
+                      </div>
+                    </v-row>
+                    <v-row>
+                      <div class="advanced-search-button">
+                        <v-btn
+                          v-on:click="courseRequirementsSearch"
+                          v-if="!courseRequirementLoading"
+                          color="primary"
+                          tabindex="6"
+                        >
+                          <i class="fas fa-search" aria-hidden="true"></i>
+                          Search
+                        </v-btn>
+                        <v-btn
+                          color="success"
+                          v-if="courseRequirementLoading"
+                          tabindex="6"
+                        >
+                          <i class="fas fa-search" aria-hidden="true"></i>
+                          Search
+                          <v-progress-circular
+                            v-if="courseRequirementLoading"
+                            indeterminate
+                            color="green"
+                          >
+                          </v-progress-circular>
+                        </v-btn>
+                        <v-btn
+                          v-on:click="clearInput('requirements')"
+                          class="btn btn-outline-primary mx-2"
+                        >
+                          Reset
+                        </v-btn>
+                      </div>
+                    </v-row>
+                    <div v-if="courseRequirements">
+                      <div v-if="totalRequirementResults > 0" class="row">
+                        <div
+                          class="search-results-message my-3 col-12 col-md-8"
+                        >
+                          <strong>{{ totalRequirementResults }}</strong> course
+                          requirements found.
+                        </div>
+                      </div>
+                      <v-row v-if="courseRequirementMessage">
+                        <div
+                          class="search-results-message my-5 col-12 col-md-8"
+                        >
+                          <strong>{{ courseRequirementMessage }}</strong>
+                        </div>
+                      </v-row>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="advanced-search-button">
-                      <button
-                        v-on:click="courseRequirementsSearch"
-                        v-if="!courseRequirementLoading"
-                        class="btn btn-primary"
-                        tabindex="6"
-                      >
-                        Search
-                      </button>
-                      <button
-                        class="btn btn-success"
-                        v-if="courseRequirementLoading"
-                        tabindex="6"
-                      >
-                        Search
-                      </button>
-                      <button
-                        v-on:click="clearInput('requirements')"
-                        class="btn btn-outline-primary mx-2"
-                      >
-                        Reset
-                      </button>
-                      <b-spinner v-if="courseRequirementLoading" label="Loading"
-                        >Loading</b-spinner
-                      >
-                    </div>
-                  </div>
-                  <div v-if="courseRequirements">
-                    <div v-if="totalRequirementResults > 0" class="row">
-                      <div class="search-results-message my-3 col-12 col-md-8">
-                        <strong>{{ totalRequirementResults }}</strong> course
-                        requirements found.
-                      </div>
-                    </div>
-                    <div v-if="courseRequirementMessage" class="row">
-                      <div class="search-results-message my-5 col-12 col-md-8">
-                        <strong>{{ courseRequirementMessage }}</strong>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </form>
-              <DisplayTable
-                title="Course requirements"
-                v-bind:items="courseRequirements"
-                v-bind:fields="courseRequirementFields"
-                id="courseRestrictionId"
-                :showFilter="true"
-                pagination="true"
-              >
-              </DisplayTable>
-            </b-card-text>
-          </b-tab>
-        </b-tabs>
-      </b-card>
+                </v-form>
+                <DisplayTable
+                  v-if="courseRequirements.length"
+                  title="Course requirements"
+                  v-bind:items="courseRequirements"
+                  v-bind:fields="courseRequirementFields"
+                  id="courseRestrictionId"
+                  :showFilter="true"
+                  pagination="true"
+                >
+                </DisplayTable>
+              </b-card-text>
+            </v-window-item>
+          </v-window>
+        </v-card-text>
+      </v-card>
     </div>
   </div>
 </template>
@@ -321,6 +347,7 @@ export default {
   },
   data() {
     return {
+      tab: null,
       advancedSearchLoading: false,
       advancedSearchMessage: "",
       courseRequirementLoading: false,
@@ -377,60 +404,60 @@ export default {
       courseFields: [
         {
           key: "courseCode",
-          label: "TRAX Course Code",
+          title: "TRAX Course Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "courseLevel",
-          label: "Grade Level",
+          title: "Grade Level",
           sortable: true,
           class: "text-center",
         },
         {
           key: "courseName",
-          label: "Course Title",
+          title: "Course Title",
           sortable: true,
         },
         {
           key: "numCredits",
-          label: "Credit Value",
+          title: "Credit Value",
           class: "text-center",
           sortable: true,
         },
         {
           key: "language",
-          label: "Instruction Language",
+          title: "Instruction Language",
           sortable: true,
           class: "text-center",
         },
         {
           key: "startDate",
-          label: "TRAX Start Date",
+          title: "TRAX Start Date",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "endDate",
-          label: "TRAX End Date",
+          title: "TRAX End Date",
           sortable: true,
           class: "text-center",
         },
         {
           key: "coRegID",
-          label: "Coreg ID",
+          title: "Coreg ID",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "workExpFlag",
-          label: "Work Experience",
+          title: "Work Experience",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "genericCourseType",
-          label: "Generic Course Type",
+          title: "Generic Course Type",
           sortable: true,
           class: "text-center",
         },
@@ -438,21 +465,21 @@ export default {
       courseRestrictionFields: [
         {
           key: "mainCourse",
-          label: "Course Code Main",
+          title: "Course Code Main",
           sortable: true,
           class: "text-left",
           editable: true,
         },
         {
           key: "mainCourseLevel",
-          label: "Course Level Main",
+          title: "Course Level Main",
           sortable: true,
           class: "text-left",
           editable: true,
         },
         {
           key: "restrictedCourse",
-          label: "Course Code Restricted",
+          title: "Course Code Restricted",
           sortable: true,
           class: "text-left",
           sortDirection: "desc",
@@ -460,14 +487,14 @@ export default {
         },
         {
           key: "restrictedCourseLevel",
-          label: "Course Level Restricted",
+          title: "Course Level Restricted",
           sortable: true,
           class: "text-left",
           editable: true,
         },
         {
           key: "restrictionStartDate",
-          label: "Restriction Start Date",
+          title: "Restriction Start Date",
           sortable: true,
           class: "text-left",
           sortDirection: "desc",
@@ -475,7 +502,7 @@ export default {
         },
         {
           key: "restrictionEndDate",
-          label: "Restriction End Date",
+          title: "Restriction End Date",
           sortable: true,
           class: "text-left",
           editable: true,
@@ -484,21 +511,21 @@ export default {
       courseRequirementFields: [
         {
           key: "courseCode",
-          label: "Course code",
+          title: "Course code",
           sortable: true,
           class: "text-left",
           editable: true,
         },
         {
           key: "courseLevel",
-          label: "Course level",
+          title: "Course level",
           sortable: true,
           class: "text-left",
           editable: true,
         },
         {
           key: "courseName",
-          label: "Course name",
+          title: "Course name",
           sortable: true,
           class: "text-left",
           sortDirection: "desc",
@@ -506,21 +533,21 @@ export default {
         },
         {
           key: "ruleCode",
-          label: "Rule #",
+          title: "Rule #",
           sortable: true,
           class: "text-left",
           editable: true,
         },
         {
           key: "traxReqNumber",
-          label: "Transcript Req #",
+          title: "Transcript Req #",
           sortable: true,
           class: "text-left",
           editable: true,
         },
         {
           key: "requirementName",
-          label: "Requirement name",
+          title: "Requirement name",
           sortable: true,
           class: "text-left",
           sortDirection: "desc",
@@ -528,7 +555,7 @@ export default {
         },
         {
           key: "requirementProgram",
-          label: "Requirement program",
+          title: "Requirement program",
           sortable: true,
           class: "text-left",
           editable: true,
@@ -898,6 +925,7 @@ export default {
 }
 .advanced-search-form {
   background-color: #fff;
+  margin-bottom: 20px;
 }
 .wild-card-button:hover {
   cursor: pointer;

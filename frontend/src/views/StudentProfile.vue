@@ -146,7 +146,42 @@
                 </v-progress-circular>
                 <StudentOptionalPrograms></StudentOptionalPrograms
               ></v-window-item>
-              <v-window-item value="Audit"> Six </v-window-item>
+              <v-window-item value="Audit">
+                <v-progress-circular
+                  v-if="tabLoading"
+                  indeterminate
+                  color="green"
+                >
+                </v-progress-circular>
+                <div class="ml-3">
+                  <v-btn
+                    class="mr-2 my-1"
+                    v-on:click="auditTab = 'studentAudit'"
+                    size="sm"
+                    :variant="auditTab == 'studentAudit' ? 'tonal' : 'outlined'"
+                    >Student Audit</v-btn
+                  >
+                  <v-btn
+                    class="mr-2 my-1"
+                    v-on:click="auditTab = 'notes'"
+                    size="sm"
+                    :variant="auditTab == 'notes' ? 'tonal' : 'outlined'"
+                    >Notes ({{ studentNotes.length }})</v-btn
+                  >
+                  <v-btn
+                    class="mr-2 my-1"
+                    v-on:click="auditTab = 'undoCompletionReasons'"
+                    size="sm"
+                    :variant="
+                      auditTab == 'undoCompletionReasons' ? 'tonal' : 'outlined'
+                    "
+                    >Undo Completion Reasons ({{
+                      studentUngradReasons.length
+                    }})</v-btn
+                  >
+                  <StudentAuditHistory v-if="auditTab == 'studentAudit'" />
+                </div>
+              </v-window-item>
             </v-window>
           </v-card-text>
         </v-card>
