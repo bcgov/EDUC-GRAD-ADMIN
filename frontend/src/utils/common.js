@@ -97,3 +97,7 @@ export function isProgramComplete(completionDate, programCode) {
     return !!completionDate;
   }
 }
+
+export function isProgramPF(program) {
+  return program.includes("PF");
+}

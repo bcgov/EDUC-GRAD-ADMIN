@@ -276,7 +276,7 @@
             <tr v-if="studentGradStatus.showEdit">
               <td>
                 <strong>Student grade: </strong>
-                <!-- Warning if student is not on 1950 program and grade is AN/AD. 
+                <!-- Warning if student is not on 1950 program and grade is AN/AD.
                 *Note that we have existing SCCP students with AD/AN, but future students on SCCP program should not have a grade of AN/AD -->
                 <div
                   v-if="
@@ -431,6 +431,17 @@
                   class="form-validation-message text-danger"
                 >
                   Please enter at least 8 digits&nbsp;&nbsp;<i
+                    class="fas fa-exclamation-triangle"
+                    aria-hidden="true"
+                  ></i>
+                </div>
+                <!-- Warning if the User is changing the School of Record to a non-093 school and the student is still being reported as on *-PF. -->
+                <div
+                  v-if="warningFlags.schoolOfRecordNotPFWarning"
+                  class="form-validation-message text-warning"
+                >
+                  This change requires Supervisor approval if student is
+                  remaining on the PF program, otherwise change program to EN.<i
                     class="fas fa-exclamation-triangle"
                     aria-hidden="true"
                   ></i>
@@ -759,6 +770,8 @@ import {
   parseStudentStatus,
   showNotification,
   isProgramComplete,
+  isProgramPF,
+  isPFSchool,
 } from "../../../utils/common.js";
 import SchoolService from "@/services/SchoolService.js";
 import sharedMethods from "../../../sharedMethods";
@@ -857,6 +870,7 @@ export default {
         schoolOfRecordWarning: false,
         schoolNotFoundWarning: false,
         schoolOfRecordInputWarning: false, //look at moving to error flags, but fine for now since backend prevents submission
+        schoolOfRecordNotPFWarning: false,
         schoolAtGraduationWarning: false,
         schoolAtGraduationNotFoundWarning: false,
         schoolAtGraduationInputWarning: false,
@@ -1062,6 +1076,13 @@ export default {
       } else {
         this.errorFlags.emptyError.schoolOfRecordMissing = false;
       }
+      if (isProgramPF(this.studentGradStatus.program)) {
+        if (!isPFSchool(this.editedGradStatus.schoolOfRecord)) {
+          this.warningFlags.schoolOfRecordNotPFWarning = true;
+        } else {
+          this.warningFlags.schoolOfRecordNotPFWarning = false;
+        }
+      }
       if (this.editedGradStatus.schoolOfRecord?.length < 8) {
         this.warningFlags.schoolOfRecordWarning = false;
         this.warningFlags.schoolNotFoundWarning = false;
@@ -1078,7 +1099,6 @@ export default {
         this.errorFlags.other.offshore1950 = false;
         this.disableSave = false;
       }
-
       if (
         this.editedGradStatus.schoolOfRecord ==
         this.studentGradStatus.schoolOfRecord
