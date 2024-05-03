@@ -108,6 +108,11 @@ export default {
   dateFormatYYYYMMDD(value) {
     return value.replace(/^([\d]{4})([\d]{2})([\d]{2})$/, "$1-$2-$3");
   },
+  isValidDateString(value) {
+    // Regular expression for YYYY-MM-DD format
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    return regex.test(value);
+  },
   jobLabel(jobId) {
     return this.jobId.replace("job-", "");
   },

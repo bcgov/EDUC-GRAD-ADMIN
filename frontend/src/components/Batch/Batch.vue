@@ -231,6 +231,7 @@
                 @change="editBatchJob('gradDate', $event)"
               ></b-form-select>
             </div>
+
             <div
               class="date-ranges col-12 row"
               v-if="batch.details['gradDate'] == 'Date Range'"
@@ -257,11 +258,12 @@
                   </b-input-group-append>
                 </b-input-group>
                 <div class="form-validation-message text-danger">
-                  {{
-                    v$.gradDateFrom.$invalid
-                      ? "Grad start date cannot be greater than " + gradDateTo
-                      : ""
-                  }}
+                  <div
+                    v-for="error in v$.gradDateFrom?.$silentErrors"
+                    :key="error"
+                  >
+                    <span>{{ error.$message }}</span>
+                  </div>
                 </div>
               </div>
 
@@ -278,7 +280,7 @@
                     type="text"
                     placeholder="YYYY-MM-DD"
                     autocomplete="off"
-                    @input="editBatchJob('gradDateTo', $event)"
+                    @input="setGradToDate('gradDateTo', $event)"
                   ></b-form-input>
                   <!-- <span
                     class="position-absolute form-validation-message text-danger"
@@ -292,16 +294,18 @@
                       right
                       locale="en-US"
                       aria-controls="example-input"
-                      @input="editBatchJob('gradDateTo', $event)"
+                      @input="setGradToDate('gradDateTo', $event)"
                     ></b-form-datepicker>
                   </b-input-group-append>
                 </b-input-group>
+
                 <div class="form-validation-message text-danger">
-                  {{
-                    v$.gradDateTo.$invalid
-                      ? "Grad End date cannot be less than " + gradDateFrom
-                      : ""
-                  }}
+                  <div
+                    v-for="error in v$.gradDateTo?.$silentErrors"
+                    :key="error"
+                  >
+                    <span>{{ error.$message }}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1080,6 +1084,7 @@
 </template>
 <script>
 import { useVuelidate } from "@vuelidate/core";
+import { required, helpers } from "@vuelidate/validators";
 import TRAXService from "@/services/TRAXService.js";
 import SchoolService from "@/services/SchoolService.js";
 import StudentService from "@/services/StudentService.js";
@@ -1095,64 +1100,6 @@ import { mapState, mapActions } from "pinia";
 
 import SharedMethods from "../../sharedMethods";
 
-// extend("minmax", {
-//   validate(value, { min, max }) {
-//     return value.length >= min && value.length <= max;
-//   },
-//   params: ["min", "max"],
-//   message:
-//     "The {_field_} field must have at least {min} characters and {max} characters at most",
-// });
-// extend("validDate", {
-//   validate(value) {
-//     if ((value.match(/-/g) || []).length != 2) {
-//       return false;
-//     } else return true;
-//   },
-//   params: ["gradDateFrom"],
-//   message: "Format: YYYY-MM-DD",
-// });
-// extend("mincodelength", {
-//   validate(value) {
-//     return value.length == 8;
-//   },
-//   message: "Minimum 8 characters",
-// });
-// extend("lessthangraddateto", {
-//   validate(value, { gradDateTo }) {
-//     const date1 = new Date(value);
-//     const date2 = new Date(gradDateTo);
-//     if (gradDateTo) {
-//       return date1 < date2;
-//     } else return true;
-//   },
-//   params: ["gradDateTo"],
-//   message: "The Grad Start Date field must be less than {gradDateTo}",
-// });
-// extend("greaterthangraddateFrom", {
-//   validate(value, { gradDateFrom }) {
-//     const date1 = new Date(gradDateFrom);
-//     const date2 = new Date(value);
-//     if (gradDateFrom) {
-//       return date1 < date2;
-//     } else return true;
-//   },
-//   params: ["gradDateFrom"],
-//   message: "The Grad End Date field must be less than {gradDateFrom}",
-// });
-// extend("adultdogwoodpublicrestrictedtoministryofadvancededgroup", {
-//   validate(value, args) {
-//     // eslint-disable-next-line
-
-//     if (
-//       value == "Ministry of Advanced Education" &&
-//       args[0] == "Blank certificate print"
-//     ) {
-//       return "You can only print for public Adult Dogwood for Ministry of Advanced Education";
-//     } else return true;
-//   },
-// });
-
 export default {
   setup: () => ({ v$: useVuelidate() }),
   components: {
@@ -1162,40 +1109,89 @@ export default {
   },
   validations() {
     return {
-      gradDateFrom: function () {
-        this.gradDateFrom = SharedMethods.dateFormatYYYYMMDD(this.gradDateFrom);
-        // Convert string dates to Date objects for comparison
-        const fromDate = new Date(this.gradDateFrom);
-        const toDate = new Date(this.gradDateTo);
+      gradDateFrom: {
+        isDateInvalid: helpers.withMessage(
+          "Enter a valid start date",
+          (value) => {
+            const regex = /^\d{4}-\d{2}-\d{2}$/;
+            if (
+              this.batch.details["gradDate"] == "Date Range" &&
+              !regex.test(this.gradDateFrom)
+            ) {
+              return false;
+            } else return true;
+          }
+        ),
+        isValidFromDate: helpers.withMessage(
+          "Grad start date cannot be greater than End Date",
+          (value) => {
+            const fromDate = new Date(this.gradDateFrom);
+            const toDate = new Date(this.gradDateTo);
 
-        // Check if gradDateFrom is greater than gradDateTo
-        if (fromDate.getTime() && fromDate.getTime() > toDate.getTime()) {
-          // Handle the error, for example, by resetting gradDateFrom or displaying a message
-          this.validationMessage = "Grad start date cannot be >  End Date";
-          // You can also display a message to the user indicating the error
-          // console.error("gradDateFrom cannot be greater than gradDateTo");
-          return false;
-        } else {
-          return true;
-        }
+            if (
+              this.batch.details["gradDate"] == "Date Range" &&
+              fromDate.getTime() > toDate.getTime()
+            ) {
+              return false;
+            } else {
+              return true;
+            }
+          }
+        ),
       },
-      gradDateTo: function () {
-        this.gradDateTo = SharedMethods.dateFormatYYYYMMDD(this.gradDateTo);
-        // Convert string dates to Date objects for comparison
-        const fromDate = new Date(this.gradDateFrom);
-        const toDate = new Date(this.gradDateTo);
+      gradDateTo: {
+        isDateInvalid: helpers.withMessage(
+          "Enter a valid end date",
+          (value) => {
+            const regex = /^\d{4}-\d{2}-\d{2}$/;
+            if (
+              this.batch.details["gradDate"] == "Date Range" &&
+              !regex.test(value)
+            ) {
+              return false;
+            } else return true;
+          }
+        ),
+        isValidFromDate: helpers.withMessage(
+          "End Date date cannot be earlier than Start Date",
+          (value) => {
+            const fromDate = new Date(this.gradDateFrom);
+            const toDate = new Date(this.gradDateTo);
 
-        // Check if gradDateFrom is greater than gradDateTo
-        if (toDate.getTime() && toDate.getTime() < fromDate.getTime()) {
-          // Handle the error, for example, by resetting gradDateFrom or displaying a message
-          this.validationMessage = "End Date date cannot be <  Start Date";
-          // You can also display a message to the user indicating the error
-          // console.error("gradDateFrom cannot be greater than gradDateTo");
-          return false;
-        } else {
-          return true;
-        }
+            if (
+              this.batch.details["gradDate"] == "Date Range" &&
+              toDate.getTime() < fromDate.getTime()
+            ) {
+              return false;
+            } else {
+              return true;
+            }
+          }
+        ),
       },
+      // gradDateTo: function () {
+      //   this.gradDateTo = SharedMethods.dateFormatYYYYMMDD(this.gradDateTo);
+      //   // Convert string dates to Date objects for comparison
+      //   const regex = /^\d{4}-\d{2}-\d{2}$/;
+      //   if (!this.gradDateTo) {
+      //     return { isValid: false, message: "Date cannot be empty" };
+      //   }
+      //   if (!regex.test(this.gradDateTo)) {
+      //     return { isValid: false, message: "Invalid date" };
+      //   }
+      //   const fromDate = new Date(this.gradDateFrom);
+      //   const toDate = new Date(this.gradDateTo);
+
+      //   // Check if gradDateFrom is greater than gradDateTo
+      //   if (toDate.getTime() < fromDate.getTime()) {
+      //     return {
+      //       isValid: false,
+      //       message: "End Date date cannot be earlier than Start Date",
+      //     };
+      //   } else {
+      //     return { isValid: true, message: "" };
+      //   }
+      // },
     };
   },
   data: function () {
@@ -1364,10 +1360,12 @@ export default {
 
   methods: {
     setGradFromDate($event) {
-      // do some silly transformation
-
       this.gradDateFrom = SharedMethods.dateFormatYYYYMMDD(this.gradDateFrom);
       this.editBatchJob("gradDateFrom", this.gradDateFrom);
+    },
+    setGradToDate($event) {
+      this.gradDateTo = SharedMethods.dateFormatYYYYMMDD(this.gradDateTo);
+      this.editBatchJob("gradDateTo", this.gradDateTo);
     },
     ...mapActions(useBatchProcessingStore, [
       "addValueToTypeInBatchId",
@@ -1672,7 +1670,6 @@ export default {
         if (value) {
           SchoolService.getSchoolInfo(value)
             .then((response) => {
-              console.log(response);
               if (response.data.minCode) {
                 this.addValueToTypeInBatchId({
                   id,
@@ -1965,10 +1962,10 @@ export default {
           event = SharedMethods.dateFormatYYYYMMDD(this.gradDateTo);
         }
         if (type == "gradDate") {
-          if (event == "Current Students") {
-            this.editBatchJob("gradDateFrom", "");
-            this.editBatchJob("gradDateTo", "");
-          }
+          this.editBatchJob("gradDateFrom", "");
+          this.editBatchJob("gradDateTo", "");
+          this.gradDateFrom = "";
+          this.gradDateTo = "";
         }
 
         if (type == "categoryCode") {
