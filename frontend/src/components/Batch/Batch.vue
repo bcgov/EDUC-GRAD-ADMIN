@@ -1113,27 +1113,28 @@ export default {
         isDateInvalid: helpers.withMessage(
           "Enter a valid end date",
           (value) => {
-            const regex = /^\d{4}-\d{2}-\d{2}$/;
-            if (
-                this.batch.details["gradDate"] == "Date Range" &&
-                regex.test(value) // Check if the date format is valid
-            ) {
-                // Split the date string into year, month, and day parts
-                const parts = value.split('-');
-                const year = parseInt(parts[0]);
-                const month = parseInt(parts[1]) - 1; // Months are zero-indexed
-                const day = parseInt(parts[2]);
-                
-                // Create a Date object and check if it represents a valid date
-                const date = new Date(year, month, day);
-                return (
-                    date.getFullYear() === year &&
-                    date.getMonth() === month &&
-                    date.getDate() === day
-                );
-            } else {
-                return false;
-            }
+            if(this.batch.details["gradDate"] == "Date Range"){
+              const regex = /^\d{4}-\d{2}-\d{2}$/;
+              if (regex.test(value)){ // Check if the date format is valid
+                  // Split the date string into year, month, and day parts
+                  const parts = value.split('-');
+                  const year = parseInt(parts[0]);
+                  const month = parseInt(parts[1]) - 1; // Months are zero-indexed
+                  const day = parseInt(parts[2]);
+                  
+                  // Create a Date object and check if it represents a valid date
+                  const date = new Date(year, month, day);
+                  return (
+                      date.getFullYear() === year &&
+                      date.getMonth() === month &&
+                      date.getDate() === day
+                  );
+              } else {
+                  return false;
+              }
+
+            }else{ return true }
+
           }
         ),
         isValidFromDate: helpers.withMessage(
@@ -1157,27 +1158,28 @@ export default {
         isDateInvalid: helpers.withMessage(
           "Enter a valid end date",
           (value) => {
-            const regex = /^\d{4}-\d{2}-\d{2}$/;
-          if (
-              this.batch.details["gradDate"] == "Date Range" &&
-              regex.test(value) // Check if the date format is valid
-          ) {
-              // Split the date string into year, month, and day parts
-              const parts = value.split('-');
-              const year = parseInt(parts[0]);
-              const month = parseInt(parts[1]) - 1; // Months are zero-indexed
-              const day = parseInt(parts[2]);
-              
-              // Create a Date object and check if it represents a valid date
-              const date = new Date(year, month, day);
-              return (
-                  date.getFullYear() === year &&
-                  date.getMonth() === month &&
-                  date.getDate() === day
-              );
-          } else {
-              return false;
-          }
+            if(this.batch.details["gradDate"] == "Date Range"){
+              const regex = /^\d{4}-\d{2}-\d{2}$/;
+              if (regex.test(value)){ // Check if the date format is valid
+                  // Split the date string into year, month, and day parts
+                  const parts = value.split('-');
+                  const year = parseInt(parts[0]);
+                  const month = parseInt(parts[1]) - 1; // Months are zero-indexed
+                  const day = parseInt(parts[2]);
+                  
+                  // Create a Date object and check if it represents a valid date
+                  const date = new Date(year, month, day);
+                  return (
+                      date.getFullYear() === year &&
+                      date.getMonth() === month &&
+                      date.getDate() === day
+                  );
+              } else {
+                  return false;
+              }
+
+            }else{ return true }
+
           }
         ),
         isValidFromDate: helpers.withMessage(
