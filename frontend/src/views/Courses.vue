@@ -189,7 +189,7 @@
               ></DisplayTable>
             </v-window-item>
             <v-window-item value="courseRestrictionsTab">
-              <b-card-text>
+              <v-card-text>
                 <DisplayTable
                   title="Course restrictions"
                   v-bind:items="courseRestrictions"
@@ -199,10 +199,10 @@
                   pagination="true"
                 >
                 </DisplayTable>
-              </b-card-text>
+              </v-card-text>
             </v-window-item>
             <v-window-item value="courseRequirementsTab">
-              <b-card-text>
+              <v-card-text>
                 <v-form v-on:submit.prevent id="courseReqForm">
                   <div class="advanced-search-form">
                     <v-row class="row my-3">
@@ -327,7 +327,7 @@
                   pagination="true"
                 >
                 </DisplayTable>
-              </b-card-text>
+              </v-card-text>
             </v-window-item>
           </v-window>
         </v-card-text>
