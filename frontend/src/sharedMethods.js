@@ -114,11 +114,13 @@ export default {
             if (Array.isArray(obj[prop])) {
                 obj[prop] = obj[prop].filter(item => item !== "");
                 if (obj[prop].length === 0) {
-                    delete obj[prop];
+                    // Do not delete empty arrays
+                    // delete obj[prop];
+                    obj[prop] = [];
                 }
             } else if (typeof obj[prop] === 'object' && obj[prop] !== null) {
                 removeEmptyElements(obj[prop]);
-                if (Object.keys(obj[prop]).length === 0) {
+                if (Object.keys(obj[prop]).length === 0 && !Array.isArray(obj[prop])) {
                     delete obj[prop];
                 }
             } else if (obj[prop] === "") {
@@ -127,7 +129,7 @@ export default {
         }
     }
     return obj;
-},
+  },
   isValidDateString(value) {
     // Regular expression for YYYY-MM-DD format
     const regex = /^\d{4}-\d{2}-\d{2}$/;
