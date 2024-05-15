@@ -765,28 +765,11 @@
                   class="row col-12"
                 >
                   <div class="col-2 p-0 m-0">
-                    <!-- <ValidationProvider
-                        name="Mincode"
-                        :rules="
-                          'mincodelength|validateschool:' +
-                          jobId +
-                          ',' +
-                          index +
-                          ',' +
-                          batch.details['credential']
-                        "
-                        v-slot="{ errors }"
-                      > -->
                     <b-form-input
                       type="number"
                       v-model="school.value"
                       maxLength="8"
                     />
-                    <!-- <span
-                      class="position-absolute w-100 form-validation-message text-danger"
-                      >{{ errors[0] }}</span
-                    > -->
-                    <!-- </ValidationProvider> -->
                   </div>
                   <b-form-input
                     show="false"
@@ -829,7 +812,6 @@
                     </button>
                   </div>
                 </form>
-                <!-- </ValidationObserver> -->
               </div>
               <div class="row col-12 mb-2">
                 <div v-if="school.schoolName" class="col-2">
@@ -1831,8 +1813,9 @@ export default {
               this.$refs["student-status" + id + valueIndex][0].updateValue(
                 student.data[0].studentStatus
               );
+
               this.$refs["schoolAtGraduation" + id + valueIndex][0].updateValue(
-                student.data[0].schoolAtGrad
+                studentGradStatus.data.schoolAtGrad
               );
               this.$refs["program" + id + valueIndex][0].updateValue(
                 student.data[0].program
