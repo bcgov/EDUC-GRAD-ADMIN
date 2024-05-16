@@ -6,135 +6,104 @@
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">User Profile</span>
+          <span class="text-h5">GRADUATION ALGORITHM</span>
         </v-card-title>
         <v-card-text>
           <v-container>
-            <v-stepper
-              :items="[
-                'Initialize',
-                'Credential Type',
-                'Group',
-                'Extra',
-                'Schedule',
-              ]"
-            >
-              <template v-slot:item.1> User Request Distribution Run </template>
-              <template v-slot:item.2>
-                Credential Type
-                <v-select
-                  v-model="credentialTypeSelected"
-                  :items="options"
-                  label="Choose..."
-                  class="custom-select mb-2 mr-sm-2 mb-sm-0 col-12"
-                  id="inline-form-select-audience"
-                ></v-select>
-              </template>
-              <template v-slot:item.3>
-                {{ credentialTypeSelected }}
-                <v-row>
-                  <v-select
-                    v-if="credentialTypeSelected == 'RC'"
-                    v-model="groupSelected"
-                    :items="['School', 'Ministry of Advanced Education']"
-                    label="Select Option"
-                  ></v-select>
-                  <v-select
-                    v-else
-                    v-model="groupSelected"
-                    :items="[
-                      'Student',
-                      'School',
-                      'School Category',
-                      'Program',
-                      'PSI',
-                    ]"
-                    label="Select Option"
-                  ></v-select>
-                </v-row>
-                <v-row v-if="groupSelected == 'Student'">
-                  <StudentInput></StudentInput>
-                </v-row>
-                <v-row v-if="groupSelected == 'School Category'">
-                  <DistrictInput></DistrictInput>
-                </v-row>
-                <v-row v-if="groupSelected == 'PSI'">
-                  <DistrictInput></DistrictInput>
-                </v-row>
-                <v-row v-if="groupSelected == 'Program'">
-                  <ProgramInput></ProgramInput>
-                </v-row>
-                <v-row v-if="groupSelected == 'School'">
-                  <SchoolInput></SchoolInput>
-                </v-row>
-              </template>
-              <template v-slot:item.4>
-                <v-card title="Group" flat>
-                  <v-container>
-                    <v-row>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          label="Legal first name*"
-                          required
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          label="Legal middle name"
-                          hint="example of helper text only on focus"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          label="Legal last name*"
-                          hint="example of persistent helper text"
-                          persistent-hint
-                          required
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-text-field label="Email*" required></v-text-field>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-text-field
-                          label="Password*"
-                          type="password"
-                          required
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6">
-                        <v-select
-                          :items="['0-17', '18-29', '30-54', '54+']"
-                          label="Age*"
-                          required
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6">
-                        <v-autocomplete
-                          :items="[
-                            'Skiing',
-                            'Ice hockey',
-                            'Soccer',
-                            'Basketball',
-                            'Hockey',
-                            'Reading',
-                            'Writing',
-                            'Coding',
-                            'Basejump',
-                          ]"
-                          label="Interests"
-                          multiple
-                        ></v-autocomplete>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card>
-              </template>
+            <v-stepper show-actions v-model="step">
+              <template v-slot:default="{ prev, next }">
+                <v-stepper-header>
+                  <v-stepper-item
+                    :rules="[() => false]"
+                    complete
+                    editable
+                    title="Group"
+                    value="1"
+                  ></v-stepper-item>
 
-              <template v-slot:item.5>
-                <v-card title="Schedule" flat>
-                  <ScheduleInput></ScheduleInput>
-                </v-card>
+                  <v-divider></v-divider>
+
+                  <v-stepper-item
+                    complete
+                    editable
+                    title="Run/Schedule"
+                    value="2"
+                  ></v-stepper-item>
+                </v-stepper-header>
+
+                <v-stepper-window>
+                  <v-stepper-window-item value="1">
+                    <v-row>
+                      <v-select
+                        v-model="groupSelected"
+                        :items="[
+                          'Student',
+                          'School',
+                          'School Category',
+                          'Program',
+                          'PSI',
+                        ]"
+                        label="Select Option"
+                        @update:modelValue="setGroup(groupSelected)"
+                      ></v-select>
+                    </v-row>
+                    <v-row v-if="groupSelected == 'Student'">
+                      <StudentInput></StudentInput>
+                    </v-row>
+                    <v-row v-if="groupSelected == 'School Category'">
+                      <DistrictInput></DistrictInput>
+                    </v-row>
+                    <v-row v-if="groupSelected == 'PSI'">
+                      <DistrictInput></DistrictInput>
+                    </v-row>
+                    <v-row v-if="groupSelected == 'Program'">
+                      <ProgramInput></ProgramInput>
+                    </v-row>
+                    <v-row v-if="groupSelected == 'School'">
+                      <SchoolInput></SchoolInput>
+                    </v-row>
+                  </v-stepper-window-item>
+
+                  <v-stepper-window-item value="2">
+                    <v-card title="Schedule" flat>
+                      <div v-if="getGroup === 'School Category'">
+                        Districts:
+                        <v-list>
+                          <v-list-item
+                            v-for="(
+                              district, index
+                            ) in getBatchRequest.districts"
+                            :key="index"
+                          >
+                            <v-list-item-content>
+                              <v-list-item-title>{{
+                                district
+                              }}</v-list-item-title>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list>
+                      </div>
+                      <div v-if="getGroup === 'Program'">
+                        Districts: {{ getBatchRequest.programs }}
+                      </div>
+                      <div v-if="getGroup === 'PSI'">
+                        Post Secondary Institutions: REQUEST
+                        {{ getBatchRequest }}
+                      </div>
+                      <v-btn @click="changeStep(0)">Edit</v-btn>
+
+                      <ScheduleInput></ScheduleInput>
+                    </v-card>
+                  </v-stepper-window-item>
+
+                  <v-stepper-window-item value="3">
+                    <span>Step Window 3</span>
+                  </v-stepper-window-item>
+                </v-stepper-window>
+                <v-stepper-actions
+                  @click:prev="prev"
+                  @click:next="next"
+                ></v-stepper-actions>
               </template>
             </v-stepper>
           </v-container>
@@ -142,13 +111,27 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+          <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
           </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="submit">
+          <v-btn
+            :disabled="v$.$invalid"
+            color="blue-darken-1"
+            variant="text"
+            @click="submit"
+          >
             Submit
           </v-btn>
         </v-card-actions>
+
+        {{ getBatchRequest }}
+
+        <br />
+        <br />
+        {{ v$.getBatchRequest }}
+        <br />
+        <br />
+        {{ v$ }}
       </v-card>
     </v-dialog>
   </v-row>
@@ -160,7 +143,63 @@ import DistrictInput from "@/components/Batch/Forms/FormInputs/DistrictInput.vue
 import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
 import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
+import { useVuelidate } from "@vuelidate/core";
+import { required, helpers } from "@vuelidate/validators";
+import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
+import { mapActions, mapState } from "pinia";
 export default {
+  setup: () => ({ v$: useVuelidate() }),
+  validations() {
+    return {
+      getBatchRequest: {
+        hasAtLeastOneGroupValue: helpers.withMessage(
+          "Must contain at least one " + this.getGroup,
+          (value) => {
+            if (this.getBatchRequest) {
+              let isValid = false;
+              if (
+                this.getGroup &&
+                [
+                  "Student",
+                  "School",
+                  "School Category",
+                  "Program",
+                  "Psi",
+                ].includes(this.getGroup)
+              ) {
+                if (this.getGroup === "School") {
+                  isValid =
+                    this.getBatchRequest.schoolOfRecords &&
+                    this.getBatchRequest.schoolOfRecords.length > 0;
+                } else if (this.getGroup === "Student") {
+                  isValid = getBatchRequest.psi;
+                  this.getBatchRequest.students &&
+                    this.getBatchRequest.students.length > 0;
+                } else if (this.getGroup === "School Category") {
+                  isValid =
+                    this.getBatchRequest.districts &&
+                    this.getBatchRequest.districts.length > 0;
+                } else if (this.getGroup === "Program") {
+                  isValid =
+                    this.getBatchRequest.programs &&
+                    this.getBatchRequest.programs.length > 0;
+                } else if (this.getGroup === "Psi") {
+                  isValid =
+                    this.getBatchRequest.psi &&
+                    this.getBatchRequest.psi.length > 0;
+                } else {
+                  isValid = true; // Return true if none of the above conditions matched
+                }
+                return isValid;
+              }
+            } else {
+              return false;
+            }
+          }
+        ),
+      },
+    };
+  },
   components: {
     SchoolInput: SchoolInput,
     DistrictInput: DistrictInput,
@@ -169,28 +208,34 @@ export default {
     ScheduleInput: ScheduleInput,
   },
   data: () => ({
+    step: 0,
     dialog: false,
     groupSelected: "",
-    credentialTypeSelected: null,
-    options: [
-      { title: "Blank certificate print", value: "Blank certificate print" },
-      {
-        title: "Reprint certificate – no principal signature block",
-        value: "RC",
-      },
-      {
-        title:
-          "Original certificate (includes transcript) – with principal signature block",
-        value: "OC",
-      },
-      { title: "Blank transcript print", value: "Blank transcript print" },
-      { title: "Transcript", value: "OT" },
-    ],
   }),
+  computed: {
+    ...mapState(useBatchProcessingStore, [
+      "getBatchRequest",
+      "getGroup",
+      "getDistricts",
+      "getSchools",
+      "getPSI",
+      "getPrograms",
+    ]),
+  },
   methods: {
+    ...mapActions(useBatchProcessingStore, [
+      "clearBatchDetails",
+      "clearBatchGroupData",
+      "setGroup",
+    ]),
     submit() {},
     cancel() {
+      this.clearBatchDetails();
       this.dialog = false;
+      console.log("CLEARING BATCH");
+    },
+    changeStep(step) {
+      this.step = step;
     },
   },
 };

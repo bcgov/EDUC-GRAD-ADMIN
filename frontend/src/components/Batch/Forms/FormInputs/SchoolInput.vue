@@ -25,6 +25,7 @@
                 <v-date-picker
                   v-model="gradDateFrom"
                   @change="updateSchoolDateRange"
+                  :max="gradDateTo"
                 ></v-date-picker>
               </v-col>
 
@@ -33,6 +34,7 @@
                 <v-date-picker
                   v-model="gradDateTo"
                   @change="updateSchoolDateRange"
+                  :min="gradDateFrom"
                 ></v-date-picker>
               </v-col>
             </v-row>

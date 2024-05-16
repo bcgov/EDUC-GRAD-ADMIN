@@ -5,7 +5,10 @@
       <v-card-text>
         <v-row>
           <v-col>
-            {{ districts }}
+            {{ getBatchRequest }}
+            |||||
+
+            {{ getDistricts }}
             <v-autocomplete
               v-model="district"
               :items="getDistrictList"
@@ -232,6 +235,7 @@ export default {
 
   computed: {
     ...mapState(useAppStore, ["getDistrictList"]),
+    ...mapState(useBatchProcessingStore, ["getDistricts", "getBatchRequest"]),
 
     isEmpty() {
       return this.districts.length > 0;

@@ -315,7 +315,7 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
       return {
           pens: state.who === "Student" ? state.students.map(student => student.pen) : [],
           schoolOfRecords: state.who === "School" ? state.schools.map(school => school.mincode) : [],
-          districts: state.who === "District" ? state.districts.map(district => district.district) : [],
+          districts: state.who === "School Category" ? state.districts.map(district => district.district) : [],
           programs: state.who === "Program" ? state.programs.map(program => program.program) : [],
           psiCodes: state.who === "Psi" ? state.psi.map(postSecondaryInstitution => postSecondaryInstitution.psi) : [],
           credentialTypeCode: state.credential,

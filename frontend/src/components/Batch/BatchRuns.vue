@@ -5,15 +5,6 @@
       <v-col :cols="12" :md="isBatchShowing || isErrorShowing ? 7 : 12">
         <v-card>
           <v-card-text>
-            <v-btn
-              text
-              color="primary"
-              class="link-button"
-              href="https://example.com"
-              target="_blank"
-            >
-              Go to Example
-            </v-btn>
             <DisplayTable
               title="Job/Runs"
               :items="batchRuns"

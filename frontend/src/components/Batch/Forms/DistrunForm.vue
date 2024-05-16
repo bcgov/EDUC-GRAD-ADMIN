@@ -74,7 +74,7 @@
       v-model="group"
       @change="
         validateForm;
-        setGroup(this.group);
+        setGroup(group);
         clearGroupData();
       "
       value="group"
