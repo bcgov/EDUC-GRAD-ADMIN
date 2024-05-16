@@ -61,6 +61,7 @@ import { mapActions, mapState } from "pinia";
 
 export default {
   components: {},
+
   setup() {
     const batchProcessingStore = useBatchProcessingStore();
 
@@ -124,14 +125,14 @@ export default {
   data() {
     return {};
   },
-  mounted() {},
+  beforeMount() {
+    // Trigger Vuelidate validations on mount
+    console.log("mounted schedule input");
+    this.v$.$touch();
+  },
   created() {},
   methods: {
-    ...mapActions(useBatchProcessingStore, [
-      "setSchools",
-      "setGradDateFrom",
-      "setGradDateTo",
-    ]),
+    ...mapActions(useBatchProcessingStore, []),
     resetModal() {},
     getCronTime() {
       if (this.getBatchRunSchedule == "N") {

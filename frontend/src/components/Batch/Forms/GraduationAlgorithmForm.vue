@@ -123,14 +123,21 @@
             Submit
           </v-btn>
         </v-card-actions>
-
+        STORE - GETBATCHREQUEST
         {{ getBatchRequest }}
 
         <br />
         <br />
+        GRAD FORM VALIDATIONS V$
         {{ v$.getBatchRequest }}
         <br />
         <br />
+        RUN SCHEDULE COMPONENT VALIDATIONS
+        {{ v$.RunLaterScheduleSet }}
+        <br />
+        <br />
+
+        ALL VAIDATIONS V$
         {{ v$ }}
       </v-card>
     </v-dialog>
@@ -152,6 +159,53 @@ export default {
   validations() {
     return {
       getBatchRequest: {
+        hasAtLeastOneGroupValue: helpers.withMessage(
+          "Must contain at least one " + this.getGroup,
+          (value) => {
+            if (this.getBatchRequest) {
+              let isValid = false;
+              if (
+                this.getGroup &&
+                [
+                  "Student",
+                  "School",
+                  "School Category",
+                  "Program",
+                  "Psi",
+                ].includes(this.getGroup)
+              ) {
+                if (this.getGroup === "School") {
+                  isValid =
+                    this.getBatchRequest.schoolOfRecords &&
+                    this.getBatchRequest.schoolOfRecords.length > 0;
+                } else if (this.getGroup === "Student") {
+                  isValid = getBatchRequest.psi;
+                  this.getBatchRequest.students &&
+                    this.getBatchRequest.students.length > 0;
+                } else if (this.getGroup === "School Category") {
+                  isValid =
+                    this.getBatchRequest.districts &&
+                    this.getBatchRequest.districts.length > 0;
+                } else if (this.getGroup === "Program") {
+                  isValid =
+                    this.getBatchRequest.programs &&
+                    this.getBatchRequest.programs.length > 0;
+                } else if (this.getGroup === "Psi") {
+                  isValid =
+                    this.getBatchRequest.psi &&
+                    this.getBatchRequest.psi.length > 0;
+                } else {
+                  isValid = true; // Return true if none of the above conditions matched
+                }
+                return isValid;
+              }
+            } else {
+              return false;
+            }
+          }
+        ),
+      },
+      getBatchSchedule: {
         hasAtLeastOneGroupValue: helpers.withMessage(
           "Must contain at least one " + this.getGroup,
           (value) => {
