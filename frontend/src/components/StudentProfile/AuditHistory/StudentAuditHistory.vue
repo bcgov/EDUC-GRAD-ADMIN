@@ -1,142 +1,158 @@
 <template>
   <div class="container">
-    <b-card no-body>
-      <b-tabs card>
-        <b-tab title="Student Change History">
-          <DisplayTable
-            :items="studentChangeHighlight"
-            :fields="studentChangeFields"
-            showFilter="false"
-            title="Student Change History"
-            :sortDesc="sortDesc"
-            :sortBy="'createDate'"
-          >
-            <template #cell(more)="row">
-              <b-btn
-                variant="outline primary"
-                style="color: #666"
-                size="sm"
-                @click="row.toggleDetails"
-                class="more-button"
-              >
-                <img
-                  v-show="!row.detailsShowing"
-                  src="../../../assets/images/icon-right.svg"
-                  width="9"
-                  aria-hidden="true"
-                  alt=""
-                />
-                <img
-                  v-show="row.detailsShowing"
-                  src="../../../assets/images/icon-down.svg"
-                  height="5"
-                  aria-hidden="true"
-                  alt=""
-                />
-              </b-btn>
-            </template>
+    <v-card no-body>
+      <v-tabs v-model="selectedTab">
+        <v-tab value="studentChangeHistory">Student Change History</v-tab>
+        <v-tab value="optionalProgramChangeHistory"
+          >Optional Program Change History</v-tab
+        >
+      </v-tabs>
+      <v-card-text>
+        <v-window v-model="selectedTab">
+          <v-window-item value="studentChangeHistory">
+            <DisplayTable
+              :items="studentChangeHighlight"
+              :fields="studentChangeFields"
+              showFilter="false"
+              title="Student Change History"
+              :sortDesc="sortDesc"
+              :sortBy="'createDate'"
+            >
+              {{ studentChangeHighlight }}
+              <!-- <template v-slot:item.data="{ item }">
+                <v-card class="px-0 mt-0">
+                  {{ item }}
+                </v-card>
+              </template> -->
+              <!-- <template #cell(more)="row">
+                <v-btn
+                  variant="outlined"
+                  size="sm"
+                  @click="row.toggleDetails"
+                  class="more-button"
+                >
+                  <img
+                    v-show="!row.detailsShowing"
+                    src="../../../assets/images/icon-right.svg"
+                    width="9"
+                    aria-hidden="true"
+                    alt=""
+                  />
+                  <img
+                    v-show="row.detailsShowing"
+                    src="../../../assets/images/icon-down.svg"
+                    height="5"
+                    aria-hidden="true"
+                    alt=""
+                  />
+                </v-btn>
+              </template>
 
-            <template #row-details="row">
-              <b-card class="px-0 mt-0">
-                <p>
-                  <strong
-                    >Changed By {{ row.item.data.updateUser }} on
-                    {{ $filters.formatTime(row.item.data.updateDate) }}</strong
+              <template #row-details="row">
+                <v-card class="px-0 mt-0">
+                  <p>
+                    <strong
+                      >Changed By {{ row.item.data.updateUser }} on
+                      {{
+                        $filters.formatTime(row.item.data.updateDate)
+                      }}</strong
+                    >
+                  </p>
+                  <pre>
+                    {{ JSON.stringify(row.item.data, null, "\t") }}
+                  </pre>
+                </v-card>
+              </template>
+
+              <template #cell(programCompletionDate)="row">
+                {{ $filters.formatYYYYMMDate(row.value.value) }}
+              </template>
+
+              <template #cell(createDate)="row">
+                {{ $filters.formatTime(row.value.value) }}
+              </template>
+
+              <template #cell(activityCode)="row">
+                {{ row.item.data.activityCodeDescription }}
+              </template>
+
+              <template #cell()="row">
+                <div :class="row.value.changed ? 'value-changed' : ''">
+                  {{ row.value.value }}
+                </div>
+              </template> -->
+            </DisplayTable>
+          </v-window-item>
+
+          <v-window-item value="optionalProgramChangeHistory">
+            T2
+            <!-- <DisplayTable
+                :items="optionalProgramChangeHighlight"
+                :fields="optionalProgramChangeFields"
+                showFilter="false"
+                title="Optional Program Change History"
+                :sort-desc="true"
+                :sortBy="'createDate'"
+              >
+                <template #cell(more)="row">
+                  <v-btn
+                    variant="outlined"
+                    size="sm"
+                    @click="row.toggleDetails"
+                    class="more-button"
                   >
-                </p>
-                <pre>
+                    <img
+                      v-show="!row.detailsShowing"
+                      src="../../../assets/images/icon-right.svg"
+                      width="9"
+                      aria-hidden="true"
+                      alt=""
+                    />
+                    <img
+                      v-show="row.detailsShowing"
+                      src="../../../assets/images/icon-down.svg"
+                      height="5"
+                      aria-hidden="true"
+                      alt=""
+                    />
+                  </v-btn>
+                </template>
+
+                <template #row-details="row">
+                  <v-card class="px-0 mt-0">
+                    <p>
+                      <strong
+                        >Changed By {{ row.item.data.updateUser }} on
+                        {{
+                          $filters.formatTime(row.item.data.updateDate)
+                        }}</strong
+                      >
+                    </p>
+                    <pre>
                     {{ JSON.stringify(row.item.data, null, "\t") }}
                   </pre
-                >
-              </b-card>
-            </template>
+                    >
+                  </v-card>
+                </template>
 
-            <template #cell(programCompletionDate)="row">
-              {{ $filters.formatYYYYMMDate(row.value.value) }}
-            </template>
+                <template #cell(createDate)="row">
+                  {{ $filters.formatTime(row.value.value) }}
+                </template>
 
-            <template #cell(createDate)="row">
-              {{ $filters.formatTime(row.value.value) }}
-            </template>
+                <template #cell(activityCode)="row">
+                  {{ row.item.data.activityCodeDescription }}
+                </template>
 
-            <template #cell(activityCode)="row">
-              {{ row.item.data.activityCodeDescription }}
-            </template>
-
-            <template #cell()="row">
-              <div :class="row.value.changed ? 'value-changed' : ''">
-                {{ row.value.value }}
-              </div>
-            </template>
-          </DisplayTable>
-        </b-tab>
-
-        <b-tab title="Optional Program Change History">
-          <DisplayTable
-            :items="optionalProgramChangeHighlight"
-            :fields="optionalProgramChangeFields"
-            showFilter="false"
-            title="Optional Program Change History"
-            :sort-desc="true"
-            :sortBy="'createDate'"
-          >
-            <template #cell(more)="row">
-              <b-btn
-                variant="outline primary"
-                style="color: #666"
-                size="sm"
-                @click="row.toggleDetails"
-                class="more-button"
-              >
-                <img
-                  v-show="!row.detailsShowing"
-                  src="../../../assets/images/icon-right.svg"
-                  width="9"
-                  aria-hidden="true"
-                  alt=""
-                />
-                <img
-                  v-show="row.detailsShowing"
-                  src="../../../assets/images/icon-down.svg"
-                  height="5"
-                  aria-hidden="true"
-                  alt=""
-                />
-              </b-btn>
-            </template>
-
-            <template #row-details="row">
-              <b-card class="px-0 mt-0">
-                <p>
-                  <strong
-                    >Changed By {{ row.item.data.updateUser }} on
-                    {{ $filters.formatTime(row.item.data.updateDate) }}</strong
-                  >
-                </p>
-                <pre>
-                    {{ JSON.stringify(row.item.data, null, "\t") }}
-                  </pre
-                >
-              </b-card>
-            </template>
-
-            <template #cell(createDate)="row">
-              {{ $filters.formatTime(row.value.value) }}
-            </template>
-
-            <template #cell(activityCode)="row">
-              {{ row.item.data.activityCodeDescription }}
-            </template>
-
-            <template #cell()="row">
-              <div :class="row.value.changed ? 'value-changed' : ''">
-                {{ row.value.value }}
-              </div>
-            </template>
-          </DisplayTable>
-        </b-tab>
-      </b-tabs>
-    </b-card>
+                <template #cell()="row">
+                  <div :class="row.value.changed ? 'value-changed' : ''">
+                    {{ row.value.value }}
+                  </div>
+                </template>
+              </DisplayTable> -->
+          </v-window-item>
+        </v-window>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 
@@ -163,6 +179,7 @@ export default {
   },
   data: function () {
     return {
+      selectedTab: 0,
       isEdit: false,
       isDelete: false,
       isAdd: false,
@@ -174,97 +191,97 @@ export default {
       window: { width: 0, height: 0 },
       studentChangeFields: [
         {
-          key: "more",
-          label: "",
+          key: "data-table-expand",
+          title: "",
           sortable: true,
         },
         {
           key: "createDate",
-          label: "Date",
+          title: "Date",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "activityCode",
-          label: "Change",
+          title: "Change",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "updateUser",
-          label: "Update User",
+          title: "Update User",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "program",
-          label: "Program",
+          title: "Program",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "programCompletionDate",
-          label: "Program Completion Date",
+          title: "Program Completion Date",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "studentStatus",
-          label: "Status",
+          title: "Status",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "studentGrade",
-          label: "Grade",
+          title: "Grade",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "schoolOfRecord",
-          label: "School of Record",
+          title: "School of Record",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "schoolAtGrad",
-          label: "School at Graduation",
+          title: "School at Graduation",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "consumerEducationRequirementMet",
-          label: "Consumer Ed",
+          title: "Consumer Ed",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "honoursStanding",
-          label: "Honours",
+          title: "Honours",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "gpa",
-          label: "GPA",
+          title: "GPA",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "recalculateProjectedGrad",
-          label: "Recalc Projected Grad",
+          title: "Recalc Projected Grad",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "recalculateGradStatus",
-          label: "Recalc Grad",
+          title: "Recalc Grad",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "batchId",
-          label: "Batch ID",
+          title: "Batch ID",
           sortable: true,
           sortDirection: "asc",
         },
@@ -273,45 +290,45 @@ export default {
       optionalProgramChangeFields: [
         {
           key: "more",
-          label: "",
+          title: "",
           sortable: true,
         },
         {
           key: "createDate",
-          label: "Date",
+          title: "Date",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "activityCode",
-          label: "Change",
+          title: "Change",
           sortable: true,
         },
         {
           key: "updateUser",
-          label: "Update User",
+          title: "Update User",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "programCode",
-          label: "Program Code",
+          title: "Program Code",
           sortable: true,
         },
         {
           key: "optionalProgramCode",
-          label: "Optional Program Code",
+          title: "Optional Program Code",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "optionalProgramName",
-          label: "Optional Program Name",
+          title: "Optional Program Name",
           sortable: true,
         },
         {
           key: "optionalProgramCompletionDate",
-          label: "Program Completion Date",
+          title: "Program Completion Date",
           sortable: true,
         },
       ],
