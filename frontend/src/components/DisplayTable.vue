@@ -27,7 +27,7 @@
         v-if="items && items.length"
         :headers="fields"
         :items="items"
-        :item-key="id"
+        :item-value="id"
         :items-per-page="perPage"
         :search="filter"
         :show-expand="showExpand"
@@ -124,6 +124,7 @@ export default {
       deleteConfirmationDialog: false,
       itemToDelete: null,
       expanded: [],
+      showExpand: false,
       responsive: true,
       quickEdit: false,
       isAdmin: false,

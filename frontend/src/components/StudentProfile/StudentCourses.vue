@@ -4,7 +4,6 @@
       <div v-if="!courses" class="container">
         This student does not have any courses.
       </div>
-      {{ courses }}
       <DisplayTable
         v-if="courses"
         :items="courses"

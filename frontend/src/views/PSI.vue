@@ -166,7 +166,6 @@
         </div>
       </v-form>
       <v-card-text>
-        {{ psiResults }}
         <DisplayTable
           :items="psiResults"
           :fields="psiFields"
