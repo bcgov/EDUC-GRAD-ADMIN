@@ -1,232 +1,241 @@
 <template>
   <div class="psi-view">
     <h1>Post Secondary Institutions</h1>
-    <b-card no-body>
-      <b-tabs card>
-        <b-tab title="Post Secondary Institutions" active>
-          <form v-on:submit.prevent>
-            <div class="advanced-search-form">
-              <div class="row my-3">
-                <div class="advanced-search-field col-12 col-md-2">
-                  <label>PSI Code</label>
-                  <div
-                    href="#"
-                    v-on:click="
-                      advancedSearchInput.psiCode.contains =
-                        !advancedSearchInput.psiCode.contains
-                    "
-                    v-bind:class="{
-                      active: advancedSearchInput.psiCode.contains,
-                    }"
-                    class="wild-card-button"
-                    v-b-tooltip.hover
-                    title="PSI code starts with"
-                  >
-                    [.*]
-                  </div>
-                  <b-input
-                    class="form__input"
-                    v-model="advancedSearchInput.psiCode.value"
-                    placeholder=""
-                    tabindex="1"
-                    trim
-                  />
-                </div>
-                <div class="advanced-search-field col-12 col-md-2">
-                  <label>PSI Name</label>
-                  <div
-                    href="#"
-                    v-on:click="
-                      advancedSearchInput.psiName.contains =
-                        !advancedSearchInput.psiName.contains
-                    "
-                    v-bind:class="{
-                      active: advancedSearchInput.psiName.contains,
-                    }"
-                    class="wild-card-button"
-                    v-b-tooltip.hover
-                    title="PSI name starts with"
-                  >
-                    [.*]
-                  </div>
-                  <b-input
-                    class="form__input"
-                    v-model="advancedSearchInput.psiName.value"
-                    placeholder=""
-                    tabindex="2"
-                  />
-                </div>
-                <div class="advanced-search-field col-12 col-md-2">
-                  <label>CSL Code</label>
-                  <div
-                    href="#"
-                    v-on:click="
-                      advancedSearchInput.cslCode.contains =
-                        !advancedSearchInput.cslCode.contains
-                    "
-                    v-bind:class="{
-                      active: advancedSearchInput.cslCode.contains,
-                    }"
-                    class="wild-card-button"
-                    v-b-tooltip.hover
-                    title="CSL code starts with"
-                  >
-                    [.*]
-                  </div>
-                  <b-input
-                    class="form__input"
-                    v-model="advancedSearchInput.cslCode.value"
-                    placeholder=""
-                    tabindex="3"
-                    trim
-                  />
-                </div>
-                <div class="advanced-search-field col-12 col-md-2">
-                  <label>Active</label>
-                  <b-form-select
-                    v-model="advancedSearchInput.openFlag.value"
-                    :options="options"
-                    tabindex="4"
-                  ></b-form-select>
-                </div>
-                <div class="advanced-search-field col-12 col-md-2">
-                  <label>Transmission Mode</label>
-                  <div
-                    href="#"
-                    v-on:click="
-                      advancedSearchInput.transmissionMode.contains =
-                        !advancedSearchInput.transmissionMode.contains
-                    "
-                    v-bind:class="{
-                      active: advancedSearchInput.transmissionMode.contains,
-                    }"
-                    class="wild-card-button"
-                    v-b-tooltip.hover
-                    title="Transmission mode starts with"
-                  >
-                    [.*]
-                  </div>
-                  <b-input
-                    class="form__input"
-                    v-model="advancedSearchInput.transmissionMode.value"
-                    placeholder=""
-                    tabindex="5"
-                  />
-                </div>
+    <v-card no-body>
+      <v-form v-on:submit.prevent id="psiReqForm">
+        <div class="advanced-search-form">
+          <div class="row my-3">
+            <div class="advanced-search-field col-12 col-md-2">
+              <div
+                href="#"
+                v-on:click="
+                  advancedSearchInput.psiCode.contains =
+                    !advancedSearchInput.psiCode.contains
+                "
+                v-bind:class="{
+                  active: advancedSearchInput.psiCode.contains,
+                }"
+                class="wild-card-button"
+              >
+                <v-tooltip activator="parent" location="top"
+                  >PSI code starts with</v-tooltip
+                >
+                [.*]
               </div>
-              <div class="row">
-                <div class="advanced-search-button">
-                  <button
-                    v-on:click="advancePSISearch"
-                    v-if="!advancedSearchLoading"
-                    class="btn btn-primary"
-                    tabindex="6"
-                  >
-                    Search
-                  </button>
-                  <button
-                    class="btn btn-success"
-                    v-if="advancedSearchLoading"
-                    tabindex="6"
-                  >
-                    Search
-                  </button>
-                  <button
-                    @click="clearInput"
-                    class="btn btn-outline-primary mx-2"
-                  >
-                    Reset
-                  </button>
-                  <b-spinner v-if="advancedSearchLoading" label="Loading"
-                    >Loading</b-spinner
-                  >
-                </div>
+              <v-text-field
+                label="PSI Code:"
+                v-model="advancedSearchInput.psiCode.value"
+                placeholder=""
+                id="psiCode"
+                class="form__input"
+                trim
+                tabindex="1"
+              ></v-text-field>
+            </div>
+            <div class="advanced-search-field col-12 col-md-2">
+              <div
+                href="#"
+                v-on:click="
+                  advancedSearchInput.psiName.contains =
+                    !advancedSearchInput.psiName.contains
+                "
+                v-bind:class="{
+                  active: advancedSearchInput.psiName.contains,
+                }"
+                class="wild-card-button"
+              >
+                <v-tooltip activator="parent" location="top"
+                  >PSI name starts with</v-tooltip
+                >
+                [.*]
               </div>
+              <v-text-field
+                label="PSI Name:"
+                v-model="advancedSearchInput.psiName.value"
+                placeholder=""
+                id="psiName"
+                class="form__input"
+                trim
+                tabindex="2"
+              ></v-text-field>
+            </div>
+            <div class="advanced-search-field col-12 col-md-2">
+              <div
+                href="#"
+                v-on:click="
+                  advancedSearchInput.cslCode.contains =
+                    !advancedSearchInput.cslCode.contains
+                "
+                v-bind:class="{
+                  active: advancedSearchInput.cslCode.contains,
+                }"
+                class="wild-card-button"
+                title="CSL code starts with"
+              >
+                <v-tooltip activator="parent" location="top"
+                  >CSL code starts with</v-tooltip
+                >
+                [.*]
+              </div>
+              <v-text-field
+                label="CSL Code:"
+                v-model="advancedSearchInput.cslCode.value"
+                placeholder=""
+                id="cslCode"
+                class="form__input"
+                trim
+                tabindex="3"
+              ></v-text-field>
+            </div>
+            <div class="advanced-search-field col-12 col-md-2">
+              <v-select
+                label="Active:"
+                v-model="advancedSearchInput.openFlag.value"
+                :items="options"
+                item-title="text"
+                item-value="value"
+                tabindex="4"
+              ></v-select>
+            </div>
+            <div class="advanced-search-field col-12 col-md-2">
+              <div
+                href="#"
+                v-on:click="
+                  advancedSearchInput.transmissionMode.contains =
+                    !advancedSearchInput.transmissionMode.contains
+                "
+                v-bind:class="{
+                  active: advancedSearchInput.transmissionMode.contains,
+                }"
+                class="wild-card-button"
+              >
+                [.*]
+                <v-tooltip activator="parent" location="top"
+                  >Transmission mode starts with</v-tooltip
+                >
+              </div>
+              <v-text-field
+                label="Transmission Mode:"
+                v-model="advancedSearchInput.transmissionMode.value"
+                placeholder=""
+                id="transmissionMode"
+                class="form__input"
+                trim
+                tabindex="5"
+              ></v-text-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="advanced-search-button">
+              <v-btn
+                v-on:click="advancePSISearch"
+                v-if="!advancedSearchLoading"
+                color="primary"
+                tabindex="6"
+              >
+                <i class="fas fa-search" aria-hidden="true"></i>
+                Search
+              </v-btn>
+              <v-btn color="success" v-if="advancedSearchLoading" tabindex="6"
+                ><i class="fas fa-search" aria-hidden="true"></i>Search
+                <v-progress-circular
+                  v-if="advancedSearchLoading"
+                  indeterminate
+                  color="green"
+                ></v-progress-circular
+              ></v-btn>
+              <v-btn @click="clearInput" class="btn btn-outline-primary mx-2">
+                Reset
+              </v-btn>
+            </div>
+          </div>
 
-              <div v-if="psiResults">
-                <div v-if="totalResults > 0" class="row">
-                  <div class="search-results-message my-3 col-12 col-md-8">
-                    <strong>{{ totalResults }}</strong> Post Secondary
-                    Institutions found.
-                  </div>
-                </div>
-                <div v-if="advancedSearchMessage" class="row">
-                  <div class="search-results-message my-5 col-12 col-md-8">
-                    <strong>{{ advancedSearchMessage }}</strong>
-                  </div>
-                </div>
+          <div v-if="psiResults">
+            <div v-if="totalResults > 0" class="row">
+              <div class="search-results-message my-3 col-12 col-md-8">
+                <strong>{{ totalResults }}</strong> Post Secondary Institutions
+                found.
               </div>
             </div>
-          </form>
-          <b-card-text>
-            <DisplayTable
-              :items="psiResults"
-              :fields="psiFields"
-              :showFilter="true"
-              :pagination="true"
-              title="PSI"
+            <div v-if="advancedSearchMessage" class="row">
+              <div class="search-results-message my-5 col-12 col-md-8">
+                <strong>{{ advancedSearchMessage }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </v-form>
+      <v-card-text>
+        {{ psiResults }}
+        <DisplayTable
+          :items="psiResults"
+          :fields="psiFields"
+          id="psiCode"
+          :showFilter="true"
+          :pagination="true"
+          title="PSI"
+        >
+          <!-- <template #cell(more)="row">
+            <v-btn
+              variant="outline primary"
+              style="color: #666"
+              size="sm"
+              @click="row.toggleDetails"
+              class="more-button"
             >
-              <template #cell(more)="row">
-                <b-btn
-                  variant="outline primary"
-                  style="color: #666"
-                  size="sm"
-                  @click="row.toggleDetails"
-                  class="more-button"
-                >
-                  <img
-                    v-show="!row.detailsShowing"
-                    src="../assets/images/icon-right.svg"
-                    width="9px"
-                    aria-hidden="true"
-                    alt=""
-                  />
-                  <img
-                    v-show="row.detailsShowing"
-                    src="../assets/images/icon-down.svg"
-                    height="5px"
-                    aria-hidden="true"
-                    alt=""
-                  />
-                </b-btn>
-              </template>
-              <template #row-details="row">
-                <b-card class="px-0">
-                  <ul>
-                    <li v-if="row.item.address1">
-                      <strong>Address:</strong> {{ row.item.address1 }}
-                    </li>
-                    <li v-if="row.item.city">
-                      <strong>City:</strong> {{ row.item.city }}
-                    </li>
-                    <li v-if="row.item.provinceCode">
-                      <strong>Province Code:</strong>
-                      {{ row.item.provinceCode }}
-                    </li>
-                    <li v-if="row.item.provinceName">
-                      <strong>Province Name:</strong>
-                      {{ row.item.provinceName }}
-                    </li>
-                    <li v-if="row.item.countryCode">
-                      <strong>Country Code:</strong> {{ row.item.countryCode }}
-                    </li>
-                    <li v-if="row.item.postal">
-                      <strong>Postal Code:</strong> {{ row.item.postal }}
-                    </li>
-                    <li v-if="row.item.phone1">
-                      <strong>Phone:</strong> {{ row.item.phone }}
-                    </li>
-                    <li v-if="row.item.fax">
-                      <strong>Fax:</strong> {{ row.item.fax }}
-                    </li>
-                  </ul>
-                </b-card>
-              </template>
-            </DisplayTable>
-          </b-card-text>
-        </b-tab>
-      </b-tabs>
-    </b-card>
+              <img
+                v-show="!row.detailsShowing"
+                src="../assets/images/icon-right.svg"
+                width="9px"
+                aria-hidden="true"
+                alt=""
+              />
+              <img
+                v-show="row.detailsShowing"
+                src="../assets/images/icon-down.svg"
+                height="5px"
+                aria-hidden="true"
+                alt=""
+              />
+            </v-btn>
+          </template> -->
+          <template v-slot:expanded-row="{ columns, item }">
+            <tr>
+              <td :colspan="columns.length">
+                <ul>
+                  <li v-if="item.raw.address1">
+                    <strong>Address:</strong> {{ item.raw.address1 }}
+                  </li>
+                  <li v-if="item.raw.city">
+                    <strong>City:</strong> {{ item.raw.city }}
+                  </li>
+                  <li v-if="item.raw.provinceCode">
+                    <strong>Province Code:</strong>
+                    {{ item.raw.provinceCode }}
+                  </li>
+                  <li v-if="item.raw.provinceName">
+                    <strong>Province Name:</strong>
+                    {{ item.raw.provinceName }}
+                  </li>
+                  <li v-if="item.raw.countryCode">
+                    <strong>Country Code:</strong> {{ item.raw.countryCode }}
+                  </li>
+                  <li v-if="item.raw.postal">
+                    <strong>Postal Code:</strong> {{ item.raw.postal }}
+                  </li>
+                  <li v-if="item.raw.phone1">
+                    <strong>Phone:</strong> {{ item.raw.phone }}
+                  </li>
+                  <li v-if="item.raw.fax">
+                    <strong>Fax:</strong> {{ item.raw.fax }}
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </template>
+        </DisplayTable>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 
@@ -252,39 +261,44 @@ export default {
       ],
       psiResults: [],
       psiFields: [
-        { key: "more", label: "", sortable: true },
+        {
+          key: "data-table-expand",
+          title: "",
+          sortable: true,
+          class: "text-left",
+        },
         {
           key: "psiCode",
-          label: "PSI Code",
+          title: "PSI Code",
           sortable: true,
           class: "text-left",
         },
         {
           key: "psiName",
-          label: "PSI Name",
+          title: "PSI Name",
           sortable: true,
         },
         {
           key: "cslCode",
-          label: "CSL Code",
+          title: "CSL Code",
           sortable: true,
           class: "text-left",
         },
         {
           key: "psisCode",
-          label: "PSIS Code",
+          title: "PSIS Code",
           sortable: true,
           class: "text-center",
         },
         {
           key: "openFlag",
-          label: "Active",
+          title: "Active",
           sortable: true,
           class: "text-center",
         },
         {
           key: "transmissionMode",
-          label: "Transmission Mode",
+          title: "Transmission Mode",
           sortable: true,
         },
       ],
@@ -506,7 +520,7 @@ export default {
   color: #dee2eb;
   position: absolute;
   right: 21px;
-  top: 40px;
+  top: 10px;
   z-index: 10;
   text-decoration: none;
 }
