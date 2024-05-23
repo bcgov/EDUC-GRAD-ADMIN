@@ -1618,6 +1618,7 @@ export default {
         quantity: quantity,
         localDownload: localDownload,
       };
+      request = sharedMethods.removeEmptyElements(request);
 
       if (this.batchHasErrors(this.tabContent[id])) {
         return;

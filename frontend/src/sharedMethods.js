@@ -108,6 +108,33 @@ export default {
   dateFormatYYYYMMDD(value) {
     return value.replace(/^([\d]{4})([\d]{2})([\d]{2})$/, "$1-$2-$3");
   },
+  removeEmptyElements(obj) {
+    for (var prop in obj) {
+        if (obj.hasOwnProperty(prop)) {
+            if (Array.isArray(obj[prop])) {
+                obj[prop] = obj[prop].filter(item => item !== "");
+                if (obj[prop].length === 0) {
+                    // Do not delete empty arrays
+                    // delete obj[prop];
+                    obj[prop] = [];
+                }
+            } else if (typeof obj[prop] === 'object' && obj[prop] !== null) {
+                removeEmptyElements(obj[prop]);
+                if (Object.keys(obj[prop]).length === 0 && !Array.isArray(obj[prop])) {
+                    delete obj[prop];
+                }
+            } else if (obj[prop] === "") {
+                obj[prop] = null;
+            }
+        }
+    }
+    return obj;
+  },
+  isValidDateString(value) {
+    // Regular expression for YYYY-MM-DD format
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    return regex.test(value);
+  },
   jobLabel(jobId) {
     return this.jobId.replace("job-", "");
   },

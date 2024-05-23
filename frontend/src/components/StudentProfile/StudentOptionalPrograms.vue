@@ -521,7 +521,7 @@ export default {
       );
     },
     filterGradReqCourses(row) {
-      if (row.gradReqMet.length > 0) {
+      if (row.gradReqMet?.length > 0) {
         return true;
       }
     },

@@ -231,6 +231,7 @@
                 @change="editBatchJob('gradDate', $event)"
               ></b-form-select>
             </div>
+
             <div
               class="date-ranges col-12 row"
               v-if="batch.details['gradDate'] == 'Date Range'"
@@ -238,34 +239,32 @@
               <div class="float-left col-3 m-0 p-0">
                 <strong><label class="pt-1">Grad Start Date</label></strong>
                 <b-input-group class="mb-3">
-                  <!-- <ValidationProvider
-                    :rules="'validDate|lessthangraddateto:' + gradDateTo"
-                    v-slot="{ errors }"
-                  > -->
                   <b-form-input
                     id="gradDateFromInput"
                     v-model="gradDateFrom"
                     type="text"
                     placeholder="YYYY-MM-DD"
                     autocomplete="off"
-                    @input="editBatchJob('gradDateFrom', $event)"
+                    @input="setGradFromDate($event)"
                   ></b-form-input>
-                  <!-- <ul
-                    class="position-absolute form-validation-message text-danger"
-                  >
-                    <li v-for="error in errors" :key="error">{{ error }}</li>
-                  </ul> -->
-                  <!-- </ValidationProvider> -->
                   <b-input-group-append>
                     <b-form-datepicker
                       v-model="gradDateFrom"
                       button-only
                       right
                       locale="en-US"
-                      @input="editBatchJob('gradDateFrom', $event)"
+                      @input="setGradFromDate($event)"
                     ></b-form-datepicker>
                   </b-input-group-append>
                 </b-input-group>
+                <div class="form-validation-message text-danger">
+                  <div
+                    v-for="error in v$.gradDateFrom?.$silentErrors"
+                    :key="error"
+                  >
+                    <span>{{ error.$message }}</span>
+                  </div>
+                </div>
               </div>
 
               <div class="float-left col-4">
@@ -281,7 +280,7 @@
                     type="text"
                     placeholder="YYYY-MM-DD"
                     autocomplete="off"
-                    @input="editBatchJob('gradDateTo', $event)"
+                    @input="setGradToDate($event)"
                   ></b-form-input>
                   <!-- <span
                     class="position-absolute form-validation-message text-danger"
@@ -295,10 +294,19 @@
                       right
                       locale="en-US"
                       aria-controls="example-input"
-                      @input="editBatchJob('gradDateTo', $event)"
+                      @input="setGradToDate($event)"
                     ></b-form-datepicker>
                   </b-input-group-append>
                 </b-input-group>
+
+                <div class="form-validation-message text-danger">
+                  <div
+                    v-for="error in v$.gradDateTo?.$silentErrors"
+                    :key="error"
+                  >
+                    <span>{{ error.$message }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -757,28 +765,11 @@
                   class="row col-12"
                 >
                   <div class="col-2 p-0 m-0">
-                    <!-- <ValidationProvider
-                        name="Mincode"
-                        :rules="
-                          'mincodelength|validateschool:' +
-                          jobId +
-                          ',' +
-                          index +
-                          ',' +
-                          batch.details['credential']
-                        "
-                        v-slot="{ errors }"
-                      > -->
                     <b-form-input
                       type="number"
                       v-model="school.value"
                       maxLength="8"
                     />
-                    <!-- <span
-                      class="position-absolute w-100 form-validation-message text-danger"
-                      >{{ errors[0] }}</span
-                    > -->
-                    <!-- </ValidationProvider> -->
                   </div>
                   <b-form-input
                     show="false"
@@ -821,7 +812,6 @@
                     </button>
                   </div>
                 </form>
-                <!-- </ValidationObserver> -->
               </div>
               <div class="row col-12 mb-2">
                 <div v-if="school.schoolName" class="col-2">
@@ -1075,7 +1065,8 @@
   </div>
 </template>
 <script>
-//import { ValidationProvider, ValidationObserver, extend } from "vee-validate";
+import { useVuelidate } from "@vuelidate/core";
+import { required, helpers } from "@vuelidate/validators";
 import TRAXService from "@/services/TRAXService.js";
 import SchoolService from "@/services/SchoolService.js";
 import StudentService from "@/services/StudentService.js";
@@ -1091,69 +1082,131 @@ import { mapState, mapActions } from "pinia";
 
 import SharedMethods from "../../sharedMethods";
 
-// extend("minmax", {
-//   validate(value, { min, max }) {
-//     return value.length >= min && value.length <= max;
-//   },
-//   params: ["min", "max"],
-//   message:
-//     "The {_field_} field must have at least {min} characters and {max} characters at most",
-// });
-// extend("validDate", {
-//   validate(value) {
-//     if ((value.match(/-/g) || []).length != 2) {
-//       return false;
-//     } else return true;
-//   },
-//   params: ["gradDateFrom"],
-//   message: "Format: YYYY-MM-DD",
-// });
-// extend("mincodelength", {
-//   validate(value) {
-//     return value.length == 8;
-//   },
-//   message: "Minimum 8 characters",
-// });
-// extend("lessthangraddateto", {
-//   validate(value, { gradDateTo }) {
-//     const date1 = new Date(value);
-//     const date2 = new Date(gradDateTo);
-//     if (gradDateTo) {
-//       return date1 < date2;
-//     } else return true;
-//   },
-//   params: ["gradDateTo"],
-//   message: "The Grad Start Date field must be less than {gradDateTo}",
-// });
-// extend("greaterthangraddateFrom", {
-//   validate(value, { gradDateFrom }) {
-//     const date1 = new Date(gradDateFrom);
-//     const date2 = new Date(value);
-//     if (gradDateFrom) {
-//       return date1 < date2;
-//     } else return true;
-//   },
-//   params: ["gradDateFrom"],
-//   message: "The Grad End Date field must be less than {gradDateFrom}",
-// });
-// extend("adultdogwoodpublicrestrictedtoministryofadvancededgroup", {
-//   validate(value, args) {
-//     // eslint-disable-next-line
-
-//     if (
-//       value == "Ministry of Advanced Education" &&
-//       args[0] == "Blank certificate print"
-//     ) {
-//       return "You can only print for public Adult Dogwood for Ministry of Advanced Education";
-//     } else return true;
-//   },
-// });
-
 export default {
+  setup: () => ({ v$: useVuelidate() }),
   components: {
     // ValidationProvider: ValidationProvider,
     // ValidationObserver: ValidationObserver,
     BatchConfirmInfo: BatchConfirmInfo,
+  },
+  validations() {
+    return {
+      gradDateFrom: {
+        isDateInvalid: helpers.withMessage(
+          "Enter a valid end date",
+          (value) => {
+            if (this.batch.details["gradDate"] == "Date Range") {
+              const regex = /^\d{4}-\d{2}-\d{2}$/;
+              if (regex.test(value)) {
+                // Check if the date format is valid
+                // Split the date string into year, month, and day parts
+                const parts = value.split("-");
+                const year = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1; // Months are zero-indexed
+                const day = parseInt(parts[2]);
+
+                // Create a Date object and check if it represents a valid date
+                const date = new Date(year, month, day);
+                return (
+                  date.getFullYear() === year &&
+                  date.getMonth() === month &&
+                  date.getDate() === day
+                );
+              } else {
+                return false;
+              }
+            } else {
+              return true;
+            }
+          }
+        ),
+        isValidFromDate: helpers.withMessage(
+          "Grad start date cannot be greater than End Date",
+          (value) => {
+            const fromDate = new Date(this.gradDateFrom);
+            const toDate = new Date(this.gradDateTo);
+
+            if (
+              this.batch.details["gradDate"] == "Date Range" &&
+              fromDate.getTime() > toDate.getTime()
+            ) {
+              return false;
+            } else {
+              return true;
+            }
+          }
+        ),
+      },
+      gradDateTo: {
+        isDateInvalid: helpers.withMessage(
+          "Enter a valid end date",
+          (value) => {
+            if (this.batch.details["gradDate"] == "Date Range") {
+              const regex = /^\d{4}-\d{2}-\d{2}$/;
+              if (regex.test(value)) {
+                // Check if the date format is valid
+                // Split the date string into year, month, and day parts
+                const parts = value.split("-");
+                const year = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1; // Months are zero-indexed
+                const day = parseInt(parts[2]);
+
+                // Create a Date object and check if it represents a valid date
+                const date = new Date(year, month, day);
+                return (
+                  date.getFullYear() === year &&
+                  date.getMonth() === month &&
+                  date.getDate() === day
+                );
+              } else {
+                return false;
+              }
+            } else {
+              return true;
+            }
+          }
+        ),
+        isValidFromDate: helpers.withMessage(
+          "End Date date cannot be earlier than Start Date",
+          (value) => {
+            const fromDate = new Date(this.gradDateFrom);
+            const toDate = new Date(this.gradDateTo);
+
+            if (
+              this.batch.details["gradDate"] == "Date Range" &&
+              toDate.getTime() < fromDate.getTime()
+            ) {
+              return false;
+            } else {
+              return true;
+            }
+          }
+        ),
+      },
+      // gradDateTo: function () {
+      //   this.gradDateTo = SharedMethods.dateFormatYYYYMMDD(this.gradDateTo);
+      //   // Convert string dates to Date objects for comparison
+      //   const regex = /^\d{4}-\d{2}-\d{2}$/;
+      //   if (!this.gradDateTo) {
+      //     return { isValid: false, message: "Date cannot be empty" };
+      //   }
+      //   if (!regex.test(this.gradDateTo)) {
+      //     return { isValid: false, message: "Invalid date" };
+      //   }
+      //   const fromDate = new Date(this.gradDateFrom);
+      //   const toDate = new Date(this.gradDateTo);
+
+      //   // Check if gradDateFrom is greater than gradDateTo
+      //   if (toDate.getTime() < fromDate.getTime()) {
+      //     return {
+      //       isValid: false,
+      //       message: "End Date date cannot be earlier than Start Date",
+      //     };
+      //   } else {
+      //     return { isValid: true, message: "" };
+      //   }
+      // },
+    };
   },
   data: function () {
     return {
@@ -1287,63 +1340,8 @@ export default {
     };
   },
 
-  mounted() {
-    // extend(
-    //   "validateschool",
-    //   (value, refValues) => {
-    //     return SchoolService.getSchoolInfo(value)
-    //       .then((response) => {
-    //         let credential = refValues[2];
-    //         if (
-    //           (credential == "Blank certificate print" || credential == "OT") &&
-    //           response.data.transcriptEligibility == "N"
-    //         ) {
-    //           return "This school is not eligible for trasncripts.";
-    //         }
-    //         if (
-    //           (credential == "Blank certificate print" ||
-    //             credential == "OC" ||
-    //             credential == "RC") &&
-    //           response.data.certificateEligibility == "N"
-    //         ) {
-    //           return "This school is not eligible for certificates.";
-    //         }
-    //         if (response.data.minCode) {
-    //           this.$refs[
-    //             "schoolName" + refValues[0] + refValues[1]
-    //           ][0].placeholder = response.data.schoolName;
-    //           this.$refs[
-    //             "transcriptEligibility" + refValues[0] + refValues[1]
-    //           ][0].placeholder = response.data.transcriptEligibility;
-    //           this.$refs[
-    //             "certificateEligibility" + refValues[0] + refValues[1]
-    //           ][0].placeholder = response.data.certificateEligibility;
-    //           this.$refs[
-    //             "schoolCategory" + refValues[0] + refValues[1]
-    //           ][0].placeholder = response.data.schoolCategory;
-    //           this.$refs[
-    //             "reportingFlag" + refValues[0] + refValues[1]
-    //           ][0].placeholder = response.data.reportingFlag;
-    //           return { valid: true };
-    //         } else {
-    //           return {
-    //             valid: false,
-    //           };
-    //         }
-    //       })
-    //       .catch((error) => {
-    //         // eslint-disable-next-line
-    //         console.log(error);
-    //         return {
-    //           valid: false,
-    //         };
-    //       });
-    //   },
-    //   {
-    //     immediate: false,
-    //   }
-    // );
-  },
+  mounted() {},
+
   created() {
     this.formElements = Object.assign({}, this.formElements);
     this.transcriptTypes = this.getTranscriptTypes();
@@ -1375,6 +1373,14 @@ export default {
   },
 
   methods: {
+    setGradFromDate($event) {
+      this.gradDateFrom = SharedMethods.dateFormatYYYYMMDD(this.gradDateFrom);
+      this.editBatchJob("gradDateFrom", this.gradDateFrom);
+    },
+    setGradToDate($event) {
+      this.gradDateTo = SharedMethods.dateFormatYYYYMMDD(this.gradDateTo);
+      this.editBatchJob("gradDateTo", this.gradDateTo);
+    },
     ...mapActions(useBatchProcessingStore, [
       "addValueToTypeInBatchId",
       "deleteStudentBatch",
@@ -1385,6 +1391,10 @@ export default {
       "editBatchDetails",
     ]),
     validBatch() {
+      if (this.v$.$invalid) {
+        this.batchIsValid = false;
+        return;
+      }
       if (
         this.batch.details["what"] != "DISTRUN_YE" &&
         this.batch.details["what"] != "DISTRUN" &&
@@ -1674,7 +1684,6 @@ export default {
         if (value) {
           SchoolService.getSchoolInfo(value)
             .then((response) => {
-              console.log(response);
               if (response.data.minCode) {
                 this.addValueToTypeInBatchId({
                   id,
@@ -1804,8 +1813,9 @@ export default {
               this.$refs["student-status" + id + valueIndex][0].updateValue(
                 student.data[0].studentStatus
               );
+
               this.$refs["schoolAtGraduation" + id + valueIndex][0].updateValue(
-                student.data[0].schoolAtGrad
+                studentGradStatus.data.schoolAtGrad
               );
               this.$refs["program" + id + valueIndex][0].updateValue(
                 student.data[0].program
@@ -1967,10 +1977,10 @@ export default {
           event = SharedMethods.dateFormatYYYYMMDD(this.gradDateTo);
         }
         if (type == "gradDate") {
-          if (event == "Current Students") {
-            this.editBatchJob("gradDateFrom", "");
-            this.editBatchJob("gradDateTo", "");
-          }
+          this.editBatchJob("gradDateFrom", "");
+          this.editBatchJob("gradDateTo", "");
+          this.gradDateFrom = "";
+          this.gradDateTo = "";
         }
 
         if (type == "categoryCode") {
@@ -2102,38 +2112,7 @@ export default {
     jobId: String,
     currentPSIYear: String,
   },
-  watch: {
-    gradDateFrom: function () {
-      this.validationMessage = "";
-      this.gradDateFrom = SharedMethods.dateFormatYYYYMMDD(this.gradDateFrom);
-      // Convert string dates to Date objects for comparison
-      const fromDate = new Date(this.gradDateFrom);
-      const toDate = new Date(this.gradDateTo);
-
-      // Check if gradDateFrom is greater than gradDateTo
-      if (fromDate.getTime() > toDate.getTime()) {
-        // Handle the error, for example, by resetting gradDateFrom or displaying a message
-        this.validationMessage = "Grad start date cannot be >  End Date";
-        // You can also display a message to the user indicating the error
-        // console.error("gradDateFrom cannot be greater than gradDateTo");
-      }
-    },
-    gradDateTo: function () {
-      this.gradDateTo = SharedMethods.dateFormatYYYYMMDD(this.gradDateTo);
-      // Convert string dates to Date objects for comparison
-      const fromDate = new Date(this.gradDateFrom);
-      const toDate = new Date(this.gradDateTo);
-
-      // Check if gradDateTo is less than gradDateFrom
-      if (toDate.getTime() < fromDate.getTime()) {
-        // Handle the error, for example, by resetting gradDateTo or displaying a message
-        this.gradDateTo = null;
-        this.validationMessage = "Grad End date cannot be <  Start Date";
-        // You can also display a message to the user indicating the error
-        // console.error("gradDateTo cannot be less than gradDateFrom");
-      }
-    },
-  },
+  watch: {},
   computed: {
     ...mapState(useBatchProcessingStore, {
       tabContent: "getBatchDetails",
