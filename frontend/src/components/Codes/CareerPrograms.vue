@@ -1,11 +1,17 @@
 <template>
   <div>
+    <h3>Career Program Codes</h3>
     <p>
       The optional program Career Program in GRAD can be broken down further by
       specific career program code. A Student on the optional program CP, Career
       Program, would also be assigned a Career Program code(s) to identify what
       career program(s) they are on.
     </p>
+    <v-progress-circular
+      v-if="isLoading"
+      color="primary"
+      indeterminate
+    ></v-progress-circular>
     <DisplayTable
       title="Career Programs"
       v-bind:items="careerPrograms"
@@ -13,11 +19,11 @@
       id="code"
       showFilter="true"
     >
-      <template #cell(startDate)="row">
-        {{ $filters.formatYYYYMMDate(row.item.startDate) }}
+      <template v-slot:item.startDate="{ item }">
+        {{ $filters.formatYYYYMMDate(item.raw.startDate) }}
       </template>
-      <template #cell(endDate)="row">
-        {{ $filters.formatYYYYMMDate(row.item.endDate) }}
+      <template v-slot:item.endDate="{ item }">
+        {{ $filters.formatYYYYMMDate(item.raw.endDate) }}
       </template>
     </DisplayTable>
   </div>
@@ -36,6 +42,7 @@ export default {
     ProgramManagementService.getCareerPrograms()
       .then((response) => {
         this.careerPrograms = response.data;
+        this.isLoading = false;
       })
       // eslint-disable-next-line
       .catch((error) => {
@@ -48,28 +55,29 @@ export default {
   },
   data: function () {
     return {
+      isLoading: true,
       careerPrograms: [],
       careerProgramFields: [
         {
           key: "code",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-15",
         },
         {
           key: "description",
-          label: "Program",
+          title: "Program",
           sortable: true,
         },
         {
           key: "startDate",
-          label: "Start Date",
+          title: "Start Date",
           sortable: true,
         },
         {
           key: "endDate",
-          label: "End Date",
+          title: "End Date",
           sortable: true,
         },
       ],

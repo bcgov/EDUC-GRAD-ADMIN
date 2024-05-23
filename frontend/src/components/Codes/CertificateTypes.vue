@@ -1,21 +1,21 @@
 <template>
   <div>
+    <h3>Certificate Types</h3>
     <p>A list of certificate types used by the GRAD system.</p>
     <DisplayTable
-      title="Certificate Types"
       v-bind:items="certificateTypes"
       v-bind:fields="certificateTypesFields"
       id="code"
       showFilter="true"
     >
-      <template #cell(effectiveDate)="row">
-        {{ $filters.formatYYYYMMDate(row.item.effectiveDate) }}
+      <template v-slot:item.effectiveDate="{ item }">
+        {{ $filters.formatYYYYMMDate(item.raw.effectiveDate) }}
       </template>
-      <template #cell(expiryDate)="row">
-        {{ $filters.formatYYYYMMDate(row.item.expiryDate) }}
+      <template v-slot:item.expiryDate="{ item }">
+        {{ $filters.formatYYYYMMDate(item.raw.expiryDate) }}
       </template>
-      <template #cell(language)="row">
-        {{ row.item.language }}
+      <template v-slot:item.language="{ item }">
+        {{ item.raw.language }}
       </template>
     </DisplayTable>
   </div>
@@ -50,35 +50,35 @@ export default {
       certificateTypesFields: [
         {
           key: "code",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-10",
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "language",
-          label: "Language",
+          title: "Language",
           sortable: true,
           class: "w-10",
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],

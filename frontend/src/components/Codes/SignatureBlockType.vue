@@ -1,8 +1,8 @@
 <template>
   <div>
+    <h3>Signature Block</h3>
     <p>Signature block(s) used on students' certificates and transcript.</p>
     <DisplayTable
-      title="Signature Block"
       v-bind:items="signatureBlock"
       v-bind:fields="signatureBlockFields"
       id=""
@@ -41,18 +41,18 @@ export default {
       signatureBlockFields: [
         {
           key: "code",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "label",
-          label: "Signature Block",
+          title: "Signature Block",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         // {
@@ -68,8 +68,6 @@ export default {
       ],
     };
   },
-  computed: {},
-  methods: {},
 };
 </script>
 

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h3>Report Types</h3>
     <p>
       Students' in the GRAD system may have several types of individual reports
       associated with their GRAD data. Schools also have several types of
@@ -8,17 +9,16 @@
       Type table differentiates between individual student and school reports.
     </p>
     <DisplayTable
-      title="Report Types"
       v-bind:items="reportTypes"
       v-bind:fields="reportTypesFields"
       id="code"
       showFilter="true"
     >
-      <template #cell(effectiveDate)="row">
-        {{ $filters.formatSimpleDate(row.item.effectiveDate) }}
+      <template v-slot:item.effectiveDate="{ item }">
+        {{ $filters.formatSimpleDate(item.raw.effectiveDate) }}
       </template>
-      <template #cell(expiryDate)="row">
-        {{ $filters.formatSimpleDate(row.item.expiryDate) }}
+      <template v-slot:item.expiryDate="{ item }">
+        {{ $filters.formatSimpleDate(item.raw.expiryDate) }}
       </template>
     </DisplayTable>
   </div>
@@ -53,29 +53,29 @@ export default {
       reportTypesFields: [
         {
           key: "code",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-15",
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],

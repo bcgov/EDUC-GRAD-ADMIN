@@ -1,6 +1,11 @@
 <template>
   <div>
     <p>Digitized signatures used on students' certificates and transcript.</p>
+    <v-progress-circular
+      v-if="isLoading"
+      color="primary"
+      indeterminate
+    ></v-progress-circular>
     <DisplayTable
       title="Report Types"
       v-bind:items="digitalSignatures"
@@ -8,20 +13,15 @@
       showFilter="true"
       id="signatureId"
     >
-      <template #cell(signatureContent)="row">
-        <b-card header="" class="overflow-hidden">
-          <b-row no-gutters>
-            <b-col md="6">
-              <b-card-img
-                :src="'data:image/png;base64, ' + row.item.signatureContent"
-              ></b-card-img>
-            </b-col>
-          </b-row>
-        </b-card>
+      <template v-slot:item.signatureContent="{ item }">
+        <v-card header="" class="overflow-hidden">
+          <v-img
+            :src="'data:image/png;base64, ' + item.raw.signatureContent"
+          ></v-img>
+        </v-card>
       </template>
-
-      <template #cell(updatedTimestamp)="row">
-        {{ $filters.formatTime(row.item.updatedTimestamp) }}
+      <template v-slot:item.updatedTimestamp="{ item }">
+        {{ $filters.formatTime(item.raw.updatedTimestamp) }}
       </template>
     </DisplayTable>
   </div>
@@ -40,6 +40,7 @@ export default {
     GraduationReportService.getDigitalSignatures()
       .then((response) => {
         this.digitalSignatures = response.data;
+        this.isLoading = false;
       })
       // eslint-disable-next-line
       .catch((error) => {
@@ -52,31 +53,32 @@ export default {
   },
   data: function () {
     return {
+      isLoading: true,
       digitalSignatures: [],
       digitalSignaturesFields: [
         {
           key: "signatureContent",
-          label: "Signature",
+          title: "Signature",
           sortable: true,
         },
         {
           key: "gradReportSignatureCode",
-          label: "Code",
+          title: "Code",
           sortable: true,
         },
         {
           key: "gradReportSignatureName",
-          label: "Signature Name",
+          title: "Signature Name",
           sortable: true,
         },
         {
           key: "districtName",
-          label: "Organization",
+          title: "Organization",
           sortable: true,
         },
         {
           key: "updatedTimestamp",
-          label: "Last Updated",
+          title: "Last Updated",
           sortable: true,
         },
       ],

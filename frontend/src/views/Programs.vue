@@ -2,7 +2,7 @@
   <div class="programs-all">
     <h1>Programs</h1>
 
-    <v-card>
+    <v-card no-body>
       <v-card-subtitle>
         <v-tabs v-model="tab" bg-color="transparent" grow>
           <v-tab to="/programs/algorithm-rules">Algorithm Rules</v-tab>

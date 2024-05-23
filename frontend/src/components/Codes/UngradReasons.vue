@@ -1,22 +1,22 @@
 <template>
   <div>
+    <h3>Undo Completion Reasons</h3>
     <p>
       When a User performs the "Undo Completion" process (security permissions
       needed), the User must select an "Undo Completion" reason. The list of
       Undo Completion reasons are maintained in this table.
     </p>
     <DisplayTable
-      title="Undo Completion Reasons"
       v-bind:items="ungradReasons"
       v-bind:fields="ungradReasonsFields"
       id=""
       showFilter="true"
     >
-      <template #cell(effectiveDate)="row">
-        {{ $filters.formatSimpleDate(row.item.effectiveDate) }}
+      <template v-slot:item.effectiveDate="{ item }">
+        {{ $filters.formatSimpleDate(item.raw.effectiveDate) }}
       </template>
-      <template #cell(expiryDate)="row">
-        {{ $filters.formatSimpleDate(row.item.expiryDate) }}
+      <template v-slot:item.expiryDate="{ item }">
+        {{ $filters.formatSimpleDate(item.raw.expiryDate) }}
       </template>
     </DisplayTable>
   </div>
@@ -51,28 +51,28 @@ export default {
       ungradReasonsFields: [
         {
           key: "code",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],

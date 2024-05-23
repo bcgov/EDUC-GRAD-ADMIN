@@ -1,18 +1,18 @@
 <template>
   <div>
+    <h3>Batch Type Codes</h3>
     <p>A list of Batch Runs used by the GRAD system.</p>
     <DisplayTable
-      title="Batch Types"
       v-bind:items="batchTypes"
       v-bind:fields="batchTypesFields"
       id=""
       showFilter="true"
     >
-      <template #cell(effectiveDate)="row">
-        {{ $filters.formatSimpleDate(row.item.effectiveDate) }}
+      <template v-slot:item.effectiveDate="{ item }">
+        {{ $filters.formatSimpleDate(item.raw.effectiveDate) }}
       </template>
-      <template #cell(expiryDate)="row">
-        {{ $filters.formatSimpleDate(row.item.expiryDate) }}
+      <template v-slot:item.expiryDate="{ item }">
+        {{ $filters.formatSimpleDate(item.raw.expiryDate) }}
       </template>
     </DisplayTable>
   </div>
@@ -47,28 +47,28 @@ export default {
       batchTypesFields: [
         {
           key: "code",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],

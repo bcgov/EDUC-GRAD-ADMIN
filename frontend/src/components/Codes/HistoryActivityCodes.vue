@@ -1,22 +1,22 @@
 <template>
   <div>
+    <h3>History Activity Codes</h3>
     <p>
       Student history records are created by certain GRAD processes and User
       initiated activity. Each record will be associated with a history activity
       code.
     </p>
     <DisplayTable
-      title="Program Certificate Transcripts"
       v-bind:items="historyActivityCode"
       v-bind:fields="historyActivityCodeFields"
       id="code"
       showFilter="true"
     >
-      <template #cell(effectiveDate)="row">
-        {{ $filters.formatSimpleDate(row.item.effectiveDate) }}
+      <template v-slot:item.effectiveDate="{ item }">
+        {{ $filters.formatSimpleDate(item.raw.effectiveDate) }}
       </template>
-      <template #cell(expiryDate)="row">
-        {{ $filters.formatSimpleDate(row.item.expiryDate) }}
+      <template v-slot:item.expiryDate="{ item }">
+        {{ $filters.formatSimpleDate(item.raw.expiryDate) }}
       </template>
     </DisplayTable>
   </div>
@@ -50,29 +50,29 @@ export default {
       historyActivityCodeFields: [
         {
           key: "code",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-15",
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],

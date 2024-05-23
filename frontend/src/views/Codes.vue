@@ -1,115 +1,45 @@
 <template>
   <div class="codes-view">
     <h1>Codes</h1>
-    <div class="codes">
-      <v-card title="Program Management" no-body>
-        <v-card-title header-tag="nav" class="px-3">
-          <b-nav card-header tabs>
-            <b-nav-item
-              to="/codes/career-programs"
-              :active="tab === 1"
-              @click="tab = 1"
-              >Career Program Codes</b-nav-item
-            >
-            <b-nav-item-dropdown
-              id="credentials-dropdown"
-              text="Credentials"
-              ref="credentials-dropdown"
-              toggle-class="nav-link-credentials"
-              left
-            >
-              <b-nav-item
-                to="/codes/certificates-types"
-                :active="tab === 2"
-                @click="
-                  tab = 2;
-                  closeDropdown('credentials-dropdown');
-                "
-                >Certificate Types</b-nav-item
-              >
-              <b-nav-item
-                to="/codes/transcript-types"
-                :active="tab === 2"
-                @click="
-                  tab = 2;
-                  closeDropdown('credentials-dropdown');
-                "
-                >Transcript Types</b-nav-item
-              >
-              <b-nav-item
-                to="/codes/program-certificate-transcript"
-                :active="tab === 2"
-                @click="
-                  tab = 2;
-                  closeDropdown('credentials-dropdown');
-                "
-                >Program Certificate Transcript</b-nav-item
-              >
-              <b-nav-item
-                to="/codes/digital-signatures"
-                :active="tab === 2"
-                @click="
-                  tab = 2;
-                  closeDropdown('credentials-dropdown');
-                "
-                >Digital Signature</b-nav-item
-              >
-              <b-nav-item
-                to="/codes/signature-blocks"
-                :active="tab === 2"
-                @click="
-                  tab = 2;
-                  closeDropdown('credentials-dropdown');
-                "
-                >Signature Block</b-nav-item
-              >
-              <b-nav-item
-                to="/codes/document-status-codes"
-                :active="tab === 2"
-                @click="
-                  tab = 2;
-                  closeDropdown('credentials-dropdown');
-                "
-                >Document Status Codes</b-nav-item
-              >
-            </b-nav-item-dropdown>
-            <b-nav-item
-              to="/codes/report-types"
-              :active="tab === 3"
-              @click="tab = 3"
-              >Report Types</b-nav-item
-            >
-            <b-nav-item
-              to="/codes/student-status-codes"
-              :active="tab === 4"
-              @click="tab = 4"
-              >Student Status Codes</b-nav-item
-            >
-            <b-nav-item
-              to="/codes/ungrad-reasons"
-              :active="tab === 5"
-              @click="tab = 5"
-              >Undo Completion Reason Codes</b-nav-item
-            >
-            <b-nav-item
-              to="/codes/history-activity"
-              :active="tab === 6"
-              @click="tab = 6"
-              >History Activity Codes</b-nav-item
-            >
-            <b-nav-item
-              to="/codes/batch-types"
-              :active="tab === 7"
-              @click="tab = 7"
-              >Batch Type Codes</b-nav-item
-            >
-          </b-nav>
-        </v-card-title>
-        <v-card-text>
-          <router-view v-bind:key="$route.fullPath"></router-view>
-        </v-card-text>
-      </v-card>
-    </div>
+    <v-card no-body>
+      <v-card-title>
+        <v-tabs v-model="tab" bg-color="transparent" grow>
+          <v-tab to="/codes/career-programs">Career Program Codes</v-tab>
+          <v-tab>
+            <v-menu offset-y>
+              <template v-slot:activator="{ props }">
+                <v-btn text v-bind="props">Credentials</v-btn>
+              </template>
+              <v-list>
+                <v-list-item to="/codes/certificates-types"
+                  >Certificate Types</v-list-item
+                >
+                <v-list-item to="/codes/program-certificate-transcript"
+                  >Program Certificate Transcript</v-list-item
+                >
+                <v-list-item to="/codes/digital-signatures"
+                  >Digital Signature</v-list-item
+                >
+                <v-list-item to="/codes/signature-blocks"
+                  >Signature Block</v-list-item
+                >
+                <v-list-item to="/codes/document-status-codes"
+                  >Document Status Codes</v-list-item
+                >
+              </v-list>
+            </v-menu>
+          </v-tab>
+          <v-tab to="/codes/report-types">Report Types</v-tab>
+          <v-tab to="/codes/student-status-codes">Student Status Codes</v-tab>
+          <v-tab to="/codes/ungrad-reasons">Undo Completion Reason Codes</v-tab>
+          <v-tab to="/codes/history-activity">History Activity Codes</v-tab>
+          <v-tab to="/codes/batch-types">Batch Type Codes</v-tab>
+        </v-tabs>
+      </v-card-title>
+      <v-card-text>
+        <router-view v-bind:key="$route.fullPath"></router-view>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 

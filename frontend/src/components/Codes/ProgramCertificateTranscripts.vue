@@ -1,24 +1,24 @@
 <template>
   <div>
+    <h3>Program Certificate Transcripts</h3>
     <p>
       The rules governing which certificate type or transcript type will be used
       for a student.
     </p>
     <DisplayTable
-      title="Program Certificate Transcripts"
       v-bind:items="programCertificateTranscripts"
       v-bind:fields="programCertificateTranscriptsFields"
       id="code"
       showFilter="true"
     >
-      <template #cell(schoolCategoryCode)="row">
-        {{ $filters.formatNullsToNA(row.item.schoolCategoryCode) }}
+      <template v-slot:item.schoolCategoryCode="{ item }">
+        {{ $filters.formatNullsToNA(item.raw.schoolCategoryCode) }}
       </template>
-      <template #cell(certificateTypeCode)="row">
-        {{ $filters.formatNullsToNA(row.item.certificateTypeCode) }}
+      <template v-slot:item.certificateTypeCode="{ item }">
+        {{ $filters.formatNullsToNA(item.raw.certificateTypeCode) }}
       </template>
-      <template #cell(transcriptTypeCode)="row">
-        {{ $filters.formatNullsToNA(row.item.transcriptTypeCode) }}
+      <template v-slot:item.transcriptTypeCode="{ item }">
+        {{ $filters.formatNullsToNA(item.raw.transcriptTypeCode) }}
       </template>
     </DisplayTable>
   </div>
@@ -53,24 +53,24 @@ export default {
       programCertificateTranscriptsFields: [
         {
           key: "graduationProgramCode",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-15",
         },
         {
           key: "schoolCategoryCode",
-          label: "School Category Code",
+          title: "School Category Code",
           sortable: true,
         },
         {
           key: "certificateTypeCode",
-          label: "Certificate Type Code",
+          title: "Certificate Type Code",
           sortable: true,
         },
         {
           key: "transcriptTypeCode",
-          label: "Transcript Type Code",
+          title: "Transcript Type Code",
           sortable: true,
         },
       ],
