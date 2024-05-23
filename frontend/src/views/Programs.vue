@@ -3,9 +3,8 @@
     <h1>Programs</h1>
 
     <v-card>
-      <v-card-title> Program Management </v-card-title>
       <v-card-subtitle>
-        <v-tabs v-model="tab">
+        <v-tabs v-model="tab" bg-color="transparent" grow>
           <v-tab to="/programs/algorithm-rules">Algorithm Rules</v-tab>
           <v-tab>
             <v-menu offset-y>
@@ -42,7 +41,7 @@
           <v-tab to="/programs/special-cases"
             >Assessment Special Case Codes</v-tab
           >
-          <v-tab to="/programs/requirement-types">Requirement Type Code</v-tab>
+          <v-tab to="/programs/requirement-types">Requirement Type Codes</v-tab>
         </v-tabs>
       </v-card-subtitle>
       <v-card-text>

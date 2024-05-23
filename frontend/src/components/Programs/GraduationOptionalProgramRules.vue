@@ -1,9 +1,9 @@
 <template>
   <div id="optional-graduation-program-rules">
+    <h3>Optional Program Rules</h3>
     <DisplayTable
       v-bind:items="optionalProgramRules"
       v-bind:fields="optionalOptionalProgramRulesFields"
-      title="Program"
       id="programCode"
       showFilter="true"
     >

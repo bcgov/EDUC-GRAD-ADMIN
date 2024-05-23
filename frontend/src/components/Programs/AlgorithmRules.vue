@@ -1,15 +1,15 @@
 <template>
   <div id="algorithm-rules">
+    <h3>Algorithm Rules</h3>
     <DisplayTable
       v-bind:items="algorithmRules"
-      title="Program"
       v-bind:filterOn="toFilterItem"
       v-bind:fields="algorithmRulesFields"
       id="specialCase"
       showFilter="true"
     >
       <template #cell(ruleName)="row">
-        {{ row.item.algorithmRuleCode.label }}
+        {{ row.item.algorithmRuleCode.title }}
       </template>
       <template #cell(ruleDescription)="row">
         {{ row.item.algorithmRuleCode.description }}
@@ -25,7 +25,6 @@
 import { showNotification } from "../../utils/common.js";
 import DisplayTable from "../DisplayTable.vue";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
-import sharedMethods from "../../sharedMethods";
 
 export default {
   name: "AlgorithmRules",
@@ -49,28 +48,28 @@ export default {
       algorithmRulesFields: [
         {
           key: "graduationProgramCode",
-          label: "Program Code",
+          title: "Program Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "ruleName",
-          label: "Rule Name",
+          title: "Rule Name",
           sortable: true,
         },
         {
           key: "ruleDescription",
-          label: "Rule Description",
+          title: "Rule Description",
           sortable: true,
         },
         {
           key: "sortOrder",
-          label: "Sort Order",
+          title: "Sort Order",
           sortable: true,
         },
         {
           key: "isActive",
-          label: "Active Flag",
+          title: "Active Flag",
           sortable: true,
         },
       ],

@@ -1,15 +1,15 @@
 <template>
   <div id="transcript-message">
-    <!-- <DisplayTable
+    <h3>Transcript Messaging</h3>
+    <DisplayTable
       v-bind:items="transcriptMessages"
-      title="Transcript Message"
       v-bind:fields="transcriptMessageFields"
       id="transcriptMessage"
       :slots="templates"
       showFilter="true"
       pagnation="true"
     >
-    </DisplayTable> -->
+    </DisplayTable>
   </div>
 </template>
 
@@ -34,67 +34,67 @@ export default {
       transcriptMessageFields: [
         {
           key: "programCode",
-          label: "Program Code",
+          title: "Program Code",
           sortable: true,
           editable: true,
         },
         {
           key: "messageTypeCode",
-          label: "Message Type Code",
+          title: "Message Type Code",
           sortable: true,
           editable: true,
         },
         {
           key: "gradMainMessage",
-          label: "Main Message",
+          title: "Main Message",
           sortable: true,
           editable: true,
         },
         {
           key: "gradDateMessage",
-          label: "Date Message",
+          title: "Date Message",
           sortable: true,
           editable: true,
         },
         {
           key: "graduationSchool",
-          label: "Graduation School",
+          title: "Graduation School",
           sortable: true,
           editable: true,
         },
         {
           key: "honourNote",
-          label: "Honour Note",
+          title: "Honour Note",
           sortable: true,
           editable: true,
         },
         {
           key: "adIBProgramMessage",
-          label: "AD and IB Program Message",
+          title: "AD and IB Program Message",
           sortable: true,
           editable: true,
         },
         {
           key: "frenchImmersionMessage",
-          label: "French Immersion Message",
+          title: "French Immersion Message",
           sortable: true,
           editable: true,
         },
         {
           key: "careerProgramMessage",
-          label: "Career Program Message",
+          title: "Career Program Message",
           sortable: true,
           editable: true,
         },
         {
           key: "gradProjectedMessage",
-          label: "Grad Projected Message",
+          title: "Grad Projected Message",
           sortable: true,
           editable: true,
         },
         {
           key: "honourProjectedNote",
-          label: "Honour Projected Note",
+          title: "Honour Projected Note",
           sortable: true,
           editable: true,
         },

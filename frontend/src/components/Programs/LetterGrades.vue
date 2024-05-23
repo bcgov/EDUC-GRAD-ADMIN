@@ -1,8 +1,8 @@
 <template>
   <div>
+    <h3>Letter Grades</h3>
     <DisplayTable
       v-bind:items="letterGrades"
-      title="Letter Grade"
       v-bind:filterOn="toFilterItem"
       v-bind:fields="letterGradesFields"
       id="letterGrade"
@@ -50,48 +50,48 @@ export default {
       letterGradesFields: [
         {
           key: "grade",
-          label: "Letter Grade",
+          title: "Letter Grade",
           sortable: true,
           sortDirection: "desc",
           class: "text-center",
         },
         {
           key: "percentRangeHigh",
-          label: "Percentage Range High",
+          title: "Percentage Range High",
           sortable: true,
           class: "text-center",
         },
         {
           key: "percentRangeLow",
-          label: "Percentage Range Low",
+          title: "Percentage Range Low",
           sortable: true,
           class: "text-center",
         },
         {
           key: "passFlag",
-          label: "Pass",
+          title: "Pass",
           sortable: true,
           class: "text-center",
         },
         {
           key: "gpaMarkValue",
-          label: "GPA Mark Value",
+          title: "GPA Mark Value",
           sortable: true,
           class: "text-center",
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],

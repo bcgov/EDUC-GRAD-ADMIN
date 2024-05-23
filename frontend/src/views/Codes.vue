@@ -2,8 +2,8 @@
   <div class="codes-view">
     <h1>Codes</h1>
     <div class="codes">
-      <b-card title="Program Management" no-body>
-        <b-card-header header-tag="nav" class="px-3">
+      <v-card title="Program Management" no-body>
+        <v-card-title header-tag="nav" class="px-3">
           <b-nav card-header tabs>
             <b-nav-item
               to="/codes/career-programs"
@@ -104,13 +104,11 @@
               >Batch Type Codes</b-nav-item
             >
           </b-nav>
-        </b-card-header>
-        <b-card-body>
-          <b-card-text>
-            <router-view v-bind:key="$route.fullPath"></router-view>
-          </b-card-text>
-        </b-card-body>
-      </b-card>
+        </v-card-title>
+        <v-card-text>
+          <router-view v-bind:key="$route.fullPath"></router-view>
+        </v-card-text>
+      </v-card>
     </div>
   </div>
 </template>
@@ -139,58 +137,58 @@ export default {
       batchTypesFields: [
         {
           key: "code",
-          label: "Code",
+          title: "Code",
           sortable: true,
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
       ],
       reportSignaturesFields: [
         {
           key: "signatureContent",
-          label: "Signture",
+          title: "Signture",
           sortable: true,
         },
         {
           key: "updatedTimestamp",
-          label: "Last Updated",
+          title: "Last Updated",
           sortable: true,
         },
         {
           key: "gradReportSignatureCode",
-          label: "Filename",
+          title: "Filename",
           sortable: true,
         },
       ],
       certificateTypesFields: [
         {
           key: "code",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-15",
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],
@@ -198,29 +196,29 @@ export default {
       reportTypesFields: [
         {
           key: "code",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-15",
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],
@@ -228,29 +226,29 @@ export default {
       requirementTypesFields: [
         {
           key: "reqTypeCode",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-15",
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],
@@ -258,29 +256,29 @@ export default {
       studentStatusCodesFields: [
         {
           key: "code",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-15",
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],
@@ -288,28 +286,28 @@ export default {
       ungradReasonsFields: [
         {
           key: "code",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],

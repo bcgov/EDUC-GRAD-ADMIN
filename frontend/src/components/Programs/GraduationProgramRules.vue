@@ -1,9 +1,9 @@
 <template>
   <div id="graduation-program-rules">
+    <h3>Program Rules</h3>
     <div v-if="!selectedProgramCode">
       <DisplayTable
         v-bind:items="graduationProgramRules"
-        title="Program"
         v-bind:fields="graduationProgramsFields"
         id="programCode"
         v-bind:role="roles"

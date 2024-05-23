@@ -1,8 +1,8 @@
 <template>
   <div>
+    <h3>Assessment Special Case Codes</h3>
     <DisplayTable
       v-bind:items="specialCases"
-      title="Program"
       v-bind:filterOn="toFilterItem"
       v-bind:fields="specialCasesFields"
       id="specialCase"
@@ -45,33 +45,33 @@ export default {
       specialCasesFields: [
         {
           key: "spCase",
-          label: "Special Case",
+          title: "Special Case",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "passFlag",
-          label: "Pass",
+          title: "Pass",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],

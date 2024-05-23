@@ -51,33 +51,33 @@ export default {
       assessmentFields: [
         {
           key: "assessmentCode",
-          label: "Assessment Code",
+          title: "Assessment Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-15",
         },
         {
           key: "assessmentName",
-          label: "Assessment Name",
+          title: "Assessment Name",
           sortable: true,
           class: "w-40",
         },
         {
           key: "language",
-          label: "Language",
+          title: "Language",
           sortable: true,
           sortDirection: "desc",
           class: "w-5 text-center",
         },
         {
           key: "startDate",
-          label: "Start Date",
+          title: "Start Date",
           sortable: true,
           class: "w-20",
         },
         {
           key: "endDate",
-          label: "End Date",
+          title: "End Date",
           sortable: true,
           class: "w-20",
         },
@@ -86,33 +86,33 @@ export default {
       assessmentRequirementsFields: [
         {
           key: "assessmentCode",
-          label: "Assessment Code",
+          title: "Assessment Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "assessmentName",
-          label: "Assessment Name",
+          title: "Assessment Name",
           sortable: true,
         },
         {
           key: "ruleCode",
-          label: "Rule#",
+          title: "Rule#",
           sortable: true,
         },
         {
           key: "traxReqNumber",
-          label: "Transcript Req #",
+          title: "Transcript Req #",
           sortable: true,
         },
         {
           key: "requirementName",
-          label: "Requirement Name",
+          title: "Requirement Name",
           sortable: true,
         },
         {
           key: "requirementProgram",
-          label: "Requirement Program",
+          title: "Requirement Program",
           sortable: true,
         },
       ],

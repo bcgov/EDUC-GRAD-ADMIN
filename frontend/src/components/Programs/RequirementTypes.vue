@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h3>Requirement Type Codes</h3>
     <p>
       Requirement type codes support how the algorithm runs program rules and
       optional program rules.
@@ -50,29 +51,29 @@ export default {
       requirementTypesFields: [
         {
           key: "reqTypeCode",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-15",
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],

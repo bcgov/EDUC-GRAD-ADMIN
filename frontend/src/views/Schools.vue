@@ -122,7 +122,6 @@
             </div>
           </div>
         </div>
-        {{ schools }}
         <DisplayTable
           v-if="schools.length"
           title="Results"

@@ -934,7 +934,7 @@ export default {
   color: #dee2eb;
   position: absolute;
   right: 21px;
-  top: 40px;
+  top: 10px;
   z-index: 10;
   text-decoration: none;
 }

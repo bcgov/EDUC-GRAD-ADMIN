@@ -174,30 +174,6 @@
           :pagination="true"
           title="PSI"
         >
-          <!-- <template #cell(more)="row">
-            <v-btn
-              variant="outline primary"
-              style="color: #666"
-              size="sm"
-              @click="row.toggleDetails"
-              class="more-button"
-            >
-              <img
-                v-show="!row.detailsShowing"
-                src="../assets/images/icon-right.svg"
-                width="9px"
-                aria-hidden="true"
-                alt=""
-              />
-              <img
-                v-show="row.detailsShowing"
-                src="../assets/images/icon-down.svg"
-                height="5px"
-                aria-hidden="true"
-                alt=""
-              />
-            </v-btn>
-          </template> -->
           <template v-slot:expanded-row="{ columns, item }">
             <tr>
               <td :colspan="columns.length">

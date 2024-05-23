@@ -1,8 +1,8 @@
 <template>
   <div>
+    <h3>Optional Programs</h3>
     <DisplayTable
       v-bind:items="graduationOptionalPrograms"
-      title="Optional Programs"
       v-bind:fields="graduationOptionalProgramsFields"
       id="id"
       showFilter="true"
@@ -23,12 +23,10 @@ import ProgramManagementService from "@/services/ProgramManagementService.js";
 import DisplayTable from "../DisplayTable.vue";
 import { showNotification } from "../../utils/common.js";
 
-
 export default {
   name: "GraduationOptionalProgram",
   props: {},
-  computed: {
-  },
+  computed: {},
   components: {
     DisplayTable: DisplayTable,
   },
