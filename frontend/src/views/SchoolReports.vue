@@ -2,122 +2,113 @@
   <div class="reports-view">
     <h1>School Reports</h1>
 
-    <b-card no-body>
-      <b-tabs card>
-        <b-tab title="Search" active>
-          <b-card-text>
-            <b-container class="p-3">
-              <b-row align-v="stretch" class="row-eq-height">
-                <b-col>
-                  <label class="col-6 p-0">Mincode</label>
-                </b-col>
-              </b-row>
-
-              <b-row align-v="stretch" class="row-eq-height">
-                <b-col>
-                  <div
-                    href="#"
-                    v-on:click="mincode.contains = !mincode.contains"
-                    v-bind:class="{ active: mincode.contains }"
-                    class="wild-card-button"
-                    v-b-tooltip.hover
-                    title="Mincode contains"
-                  >
-                    [.*]
-                  </div>
-                  <b-input
-                    v-model="mincode.value"
-                    v-on:keyup="keyHandler"
-                    placeholder=""
-                    id="mincode"
-                    minlength="3"
-                    trim
-                  />
-                </b-col>
-                <b-col class="col-6" />
-              </b-row>
-
-              <b-row class="p-3">
-                <b-col align-self="baseline">
-                  <div class="row">
-                    <div class="advanced-search-button">
-                      <button
-                        v-on:click="schoolReportSearch"
-                        v-if="!searchLoading"
-                        class="btn btn-primary"
-                        tabindex="6"
-                      >
-                        Search
-                      </button>
-                      <button class="btn btn-success" v-if="searchLoading">
-                        Search
-                      </button>
-                      <button
-                        @click="clearInput"
-                        class="btn btn-outline-primary mx-2"
-                      >
-                        Reset
-                      </button>
-                      <b-spinner v-if="searchLoading" label="Loading"
-                        >Loading</b-spinner
-                      >
-                    </div>
-                  </div>
-                </b-col>
-              </b-row>
-              <div v-if="reports">
-                <div v-if="totalResults > 0 && !searchLoading" class="row">
-                  <div class="search-results-message my-3 col-12 col-md-8">
-                    <strong>{{ totalResults }}</strong> report{{
-                      totalResults === 1 ? "" : "s"
-                    }}
-                    found.
-                  </div>
-                </div>
-              </div>
-              <div v-if="searchMessage" class="row">
-                <div class="search-results-message my-2 col-12 col-md-8">
-                  <strong>{{ searchMessage }}</strong>
-                </div>
-              </div>
-            </b-container>
-
-            <DisplayTable
-              title="Results"
-              v-bind:items="reports"
-              v-bind:fields="reportFields"
-              sortKey="report"
-              id="mincode"
-              v-bind:showFileter="true"
-              pagination="true"
-              >schoolReportSearch
-              <template #cell(report)="row">
-                <a
-                  @click="
-                    downloadFile(
-                      row.item.report,
-                      'application/pdf',
-                      'school-report_' +
-                        row.item.reportTypeCode +
-                        '_' +
-                        row.item.schoolOfRecord
-                    )
-                  "
-                  href="#"
-                  class="pdf-link float-left mt-2"
+    <v-card no-body>
+      <v-form v-on:submit.prevent id="psiReqForm">
+        <div class="advanced-search-form">
+          <div class="row my-3">
+            <div class="advanced-search-field col-12 col-md-2">
+              <div
+                href="#"
+                v-on:click="mincode.contains = !mincode.contains"
+                v-bind:class="{ active: mincode.contains }"
+                class="wild-card-button"
+                v-b-tooltip.hover
+              >
+                <v-tooltip activator="parent" location="top"
+                  >Mincode contains</v-tooltip
                 >
-                  {{ row.item.reportTypeLabel }} (PDF)
-                </a>
-              </template>
+                [.*]
+              </div>
+              <v-text-field
+                label="Mincode:"
+                v-model="mincode.value"
+                v-on:keyup="keyHandler"
+                placeholder=""
+                id="mincode"
+                minlength="3"
+                trim
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="advanced-search-button">
+              <v-btn
+                v-on:click="schoolReportSearch"
+                v-if="!searchLoading"
+                color="primary"
+                tabindex="6"
+              >
+                <i class="fas fa-search" aria-hidden="true"></i>
+                Search
+              </v-btn>
+              <v-btn color="success" v-if="searchLoading" tabindex="6"
+                ><i class="fas fa-search" aria-hidden="true"></i>Search
+                <v-progress-circular
+                  v-if="searchLoading"
+                  indeterminate
+                  color="green"
+                ></v-progress-circular
+              ></v-btn>
+              <v-btn @click="clearInput" class="btn btn-outline-primary mx-2">
+                Reset
+              </v-btn>
+              <b-spinner v-if="searchLoading" label="Loading"
+                >Loading</b-spinner
+              >
+            </div>
+          </div>
 
-              <template #cell(updateDate)="row">
-                {{ $filters.formatTime(row.item.updateDate) }}
-              </template>
-            </DisplayTable>
-          </b-card-text>
-        </b-tab>
-      </b-tabs>
-    </b-card>
+          <div v-if="reports">
+            <div v-if="totalResults > 0 && !searchLoading" class="row">
+              <div class="search-results-message my-3 col-12 col-md-8">
+                <strong>{{ totalResults }}</strong> report{{
+                  totalResults === 1 ? "" : "s"
+                }}
+                found.
+              </div>
+            </div>
+          </div>
+          <div v-if="searchMessage" class="row">
+            <div class="search-results-message my-2 col-12 col-md-8">
+              <strong>{{ searchMessage }}</strong>
+            </div>
+          </div>
+        </div>
+      </v-form>
+      <v-card-text>
+        <DisplayTable
+          title="Results"
+          v-bind:items="reports"
+          v-bind:fields="reportFields"
+          sortKey="report"
+          id="mincode"
+          v-bind:showFileter="true"
+          pagination="true"
+        >
+          <template v-slot:item.report="{ item }">
+            <a
+              @click="
+                downloadFile(
+                  item.raw.report,
+                  'application/pdf',
+                  'school-report_' +
+                    item.raw.reportTypeCode +
+                    '_' +
+                    item.raw.schoolOfRecord
+                )
+              "
+              href="#"
+              class="pdf-link float-left mt-2"
+            >
+              {{ item.raw.reportTypeLabel }} (PDF)
+            </a>
+          </template>
+          <template v-slot:item.updateDate="{ item }">
+            {{ $filters.formatTime(item.raw.updateDate) }}
+          </template>
+        </DisplayTable>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 
@@ -147,37 +138,37 @@ export default {
       reportFields: [
         {
           key: "report",
-          label: "Report",
+          title: "Report",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "reportTypeCode",
-          label: "Report Type Code",
+          title: "Report Type Code",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "schoolOfRecord",
-          label: "Mincode",
+          title: "Mincode",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "schoolOfRecordName",
-          label: "School Name",
+          title: "School Name",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "updateUser",
-          label: "Last Update User",
+          title: "Last Update User",
           sortable: true,
           sortDirection: "asc",
         },
         {
           key: "updateDate",
-          label: "Last Update Date",
+          title: "Last Update Date",
           sortable: true,
           sortDirection: "asc",
         },
@@ -248,6 +239,9 @@ export default {
 .table td {
   border-top: none !important;
 }
+.advanced-search-form {
+  background-color: #fff;
+}
 .wild-card-button:hover {
   cursor: pointer;
 }
@@ -267,5 +261,26 @@ export default {
 
 .wild-card-button.active {
   color: green;
+}
+.search-results-message {
+  float: left;
+  clear: both;
+}
+.advanced-search-button {
+  padding-left: 1 5px;
+}
+.tab-loading {
+  color: green !important;
+}
+
+.profile-name {
+  padding-bottom: 10px;
+}
+.table-filter {
+  top: 0px !important;
+}
+.reports-view {
+  padding-left: 25px;
+  padding-right: 25px;
 }
 </style>
