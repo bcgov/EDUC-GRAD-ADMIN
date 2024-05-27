@@ -1746,7 +1746,6 @@ export default {
         this.validating = false;
       }
       if (type == "students") {
-        //remove duplicates
         this.validating = true;
         if (value) {
           let student = await StudentService.getStudentByPen(value);
@@ -1756,12 +1755,6 @@ export default {
           } else if (student.data[0].studentStatus == "MER") {
             this.validationMessage =
               value + " is a merged student and not permitted";
-          } else if (
-            !student.data[0].programCompletionDate &&
-            this.batch.details["what"] == "CERT_REGEN"
-          ) {
-            this.validationMessage =
-              "Cannot regenerate a certificate for this student - this student has not completed their program";
           } else {
             //check if student has a gradStatus
             let studentGradStatus = await StudentService.getGraduationStatus(
@@ -1814,6 +1807,17 @@ export default {
                   return;
                 }
               }
+              // Students must have a program completion date if regenerating their certificate
+              if (
+                !studentGradStatus.data.programCompletionDate &&
+                this.batch.details["what"] == "CERT_REGEN"
+              ) {
+                this.validationMessage =
+                  "Cannot regenerate a certificate for this student - this student has not completed their program";
+                this.validating = false;
+                return;
+              }
+
               this.addValueToTypeInBatchId({
                 id,
                 type,
