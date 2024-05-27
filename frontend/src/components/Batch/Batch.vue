@@ -1761,8 +1761,7 @@ export default {
             this.batch.details["what"] == "CERT_REGEN"
           ) {
             this.validationMessage =
-              value +
-              " does not have a program completion date and has not graduated";
+              "Cannot regenerate a certificate for this student - this student has not completed their program";
           } else {
             //check if student has a gradStatus
             let studentGradStatus = await StudentService.getGraduationStatus(
