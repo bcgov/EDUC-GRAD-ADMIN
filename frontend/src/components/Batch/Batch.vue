@@ -1756,6 +1756,13 @@ export default {
           } else if (student.data[0].studentStatus == "MER") {
             this.validationMessage =
               value + " is a merged student and not permitted";
+          } else if (
+            !student.data[0].programCompletionDate &&
+            this.batch.details["what"] == "CERT_REGEN"
+          ) {
+            this.validationMessage =
+              value +
+              " does not have a program completion date and has not graduated";
           } else {
             //check if student has a gradStatus
             let studentGradStatus = await StudentService.getGraduationStatus(
