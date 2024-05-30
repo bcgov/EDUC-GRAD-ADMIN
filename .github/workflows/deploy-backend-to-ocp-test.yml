@@ -38,7 +38,7 @@ env:
   MIN_MEM: "200Mi"
   MAX_MEM: "250Mi"
   MIN_REPLICAS: "3"
-  MAX_REPLICAS: "3"
+  MAX_REPLICAS: "5"
 
 on:
   workflow_dispatch:
