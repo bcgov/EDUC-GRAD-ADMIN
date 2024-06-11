@@ -13,7 +13,9 @@
         Update
       </v-btn>
       <v-card>
-        <v-tabs v-model="selectedTab" bg-color="transparent">
+        {{ getActiveTab }}s
+
+        <v-tabs v-model="activeTab" bg-color="transparent">
           <v-tab value="batchRuns" @click="getJwtToken"
             >Batch Runs ({{ batchInfoListData.length }})</v-tab
           >
@@ -23,7 +25,12 @@
           <v-tab @click="getJwtToken" value="batchRoutines"
             >Scheduled Routines</v-tab
           >
-          <v-tab @click="getJwtToken" value="newBatchRequest"
+          <v-tab
+            @click="
+              getJwtToken;
+              clearBatchDetails;
+            "
+            value="newBatchRequest"
             >New Batch Request</v-tab
           >
           <v-tab @click="getJwtToken" value="administration"
@@ -32,7 +39,7 @@
         </v-tabs>
 
         <v-card-text>
-          <v-window v-model="selectedTab">
+          <v-window v-model="activeTab">
             <v-window-item value="batchRuns">
               <BatchRuns></BatchRuns>
             </v-window-item>
@@ -155,11 +162,21 @@ import { useAccessStore } from "../store/modules/access";
 import { useBatchProcessingStore } from "../store/modules/batchprocessing";
 import { useAuthStore } from "../store/modules/auth";
 import { mapState, mapActions } from "pinia";
-import { nextTick } from "vue";
+import { nextTick, ref, watch } from "vue";
 
 export default {
   name: "Batch Processing",
+  setup() {
+    const batchProcessingStore = useBatchProcessingStore();
+    const activeTab = ref(batchProcessingStore.activeTab);
+    watch(activeTab, (newValue) => {
+      batchProcessingStore.activeTab = newValue;
+    });
 
+    return {
+      activeTab,
+    };
+  },
   computed: {
     ...mapState(useAccessStore, [
       "allowUpdateGradStatus",
@@ -167,11 +184,12 @@ export default {
       "allowCreateBatchJob",
     ]),
     ...mapState(useBatchProcessingStore, {
-      tabCounter: "getBatchCounter",
-      tabContent: "getBatchDetails",
-      tabs: "getBatchProcessingTabs",
-      spinners: "getBatchTabsLoading",
+      //   tabCounter: "getBatchCounter",
+      //   tabContent: "getBatchDetails",
+      //   tabs: "getBatchProcessingTabs",
+      //   spinners: "getBatchTabsLoading",
       scheduledJobs: "getScheduledBatchJobs",
+      getActiveTab: "getActiveTab",
     }),
     ...mapState(useAuthStore, {
       userFullName: "userFullName",
@@ -455,50 +473,6 @@ export default {
       } else {
         return String(date.getFullYear());
       }
-    },
-    cancelBatchJob(id) {
-      for (let i = 0; i < this.tabs.length; i++) {
-        if (this.tabs[i] == id) {
-          this.tabs.splice(i, 1);
-          this.spinners.splice(i, 1);
-          this.clearBatchDetails(id);
-          return;
-        }
-      }
-    },
-
-    newBatchJob() {
-      let batchDetail = {
-        details: {
-          what: "",
-          who: "",
-          credential: "",
-          where: "",
-          copies: "1",
-          psiYear: this.getCurrentPSIYear(),
-          reportType: "",
-        },
-        students: [{}],
-        schools: [{}],
-        districts: [{}],
-        programs: [{}],
-        blankTranscriptDetails: [{}],
-        blankCertificateDetails: [{}],
-      };
-      let id = "job-" + this.tabCounter;
-      this.$set(this.spinners, id, false);
-      this.editBatchDetails({
-        batchDetail,
-        id,
-      });
-      this.addBatchJob("job-" + this.tabCounter);
-      nextTick(() => {
-        nextTick(() => {
-          requestAnimationFrame(() => {
-            this.selectedTab = this.tabs.length;
-          });
-        });
-      });
     },
     formatDate(value) {
       return value.toLocaleString("en-CA", { timeZone: "PST" });

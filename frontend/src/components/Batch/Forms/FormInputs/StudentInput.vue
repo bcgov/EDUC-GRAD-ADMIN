@@ -54,7 +54,7 @@
           <v-col>
             <v-data-table
               v-if="students.length"
-              :items="getStudents"
+              :items="students"
               :headers="studentInputFields"
               striped
             >
@@ -94,20 +94,37 @@
   </v-container>
 </template>
 <script>
+import { isProxy, toRaw, ref, watch } from "vue";
 import TRAXService from "@/services/TRAXService.js";
 import SchoolService from "@/services/SchoolService.js";
 import StudentService from "@/services/StudentService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import { useVuelidate } from "@vuelidate/core";
 import { mapActions, mapState } from "pinia";
-import { useBatchProcessingStore } from "../../../../store/modules/batchprocessing";
+import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
 import { required, minLength, helpers } from "@vuelidate/validators";
-import { isProxy, toRaw } from "vue";
 
 export default {
   components: {},
   setup(props) {
-    return { v$: useVuelidate() };
+    const batchRequestFormStore = useBatchRequestFormStore();
+    const gradDateFrom = ref(batchRequestFormStore.gradDateFrom);
+    const gradDateTo = ref(batchRequestFormStore.gradDateTo);
+    const students = ref(batchRequestFormStore.students);
+
+    watch(gradDateFrom, (newValue) => {
+      batchRequestFormStore.gradDateFrom = newValue;
+    });
+    watch(gradDateTo, (newValue) => {
+      batchRequestFormStore.gradDateTo = newValue;
+    });
+
+    return {
+      gradDateTo,
+      gradDateFrom,
+      students,
+      v$: useVuelidate(),
+    };
   },
   validations() {
     return {
@@ -187,7 +204,6 @@ export default {
       penStudentInfo: "",
       penValidating: false,
       validationMessage: "",
-      students: [],
       studentInputFields: [
         {
           key: "pen",
@@ -213,7 +229,10 @@ export default {
   mounted() {},
   created() {},
   methods: {
-    ...mapActions(useBatchProcessingStore, ["setStudents"]),
+    ...mapActions(useBatchRequestFormStore, [
+      "clearBatchDetails",
+      "clearBatchGroupData",
+    ]),
     async validateStudent() {
       this.penValidating = true;
       this.clearPenStudentInfo();
@@ -235,22 +254,14 @@ export default {
         pen: this.pen,
         info: this.penStudentInfo,
       });
-      this.setStudents(this.students);
       this.clearPen();
     },
     removeStudent(pen) {
-      console.log("removeStudent pen");
-
-      const studentList = toRaw(this.students);
-      console.log(studentList);
-      for (const [index, student] in studentList) {
-        console.log(studentList[index].pen == pen);
-        if (studentList[index].pen == pen) {
-          console.log(pen);
+      for (const [index, student] in this.students) {
+        if (this.students[index].pen == pen) {
           this.students.splice(index, 1);
         }
       }
-      this.setStudents(this.students);
     },
   },
   props: {
@@ -259,7 +270,12 @@ export default {
   },
 
   computed: {
-    ...mapState(useBatchProcessingStore, ["getStudents"]),
+    computed: {
+      ...mapState(useBatchRequestFormStore, [
+        "getBatchRequest",
+        "getBatchRunTime",
+      ]),
+    },
     isEmpty() {
       return this.students.length > 0;
     },

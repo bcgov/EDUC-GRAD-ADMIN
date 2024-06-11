@@ -3,18 +3,18 @@
     <v-row>
       {{ v$ }}
       <br /><br />
-      {{ getGroup }}ss
-      <div v-if="getGroup === 'School'">
+      {{ group }}ss
+      <div v-if="this.group === 'School'">
         Schools: {{ getBatchRequest.schoolOfRecords }}
       </div>
-      <div v-if="getGroup === 'School Category'">
+      <div v-if="this.group === 'School Category'">
         Districts: {{ getBatchRequest.districts }}
       </div>
-      <div v-if="getGroup === 'Program'">
+      <div v-if="this.group === 'Program'">
         Schools: {{ getBatchRequest.programs }}
       </div>
-      <div v-if="getGroup === 'PSI'">Schools: {{ getBatchRequest.psis }}</div>
-      RUNTIME {{ getBatchRunTime }}<br />
+      <div v-if="this.group === 'PSI'">Schools: {{ getBatchRequest.psis }}</div>
+      RUNTIME {{ batchRunTime }}<br />
 
       RUN SCHEDULE {{ batchRunSchedule }}<br />
       CUSTOM DATE {{ batchRunCustomDate }}<br />
@@ -56,34 +56,34 @@ import { isProxy, toRaw, ref, watch } from "vue";
 import SchoolService from "@/services/SchoolService.js";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import { useBatchProcessingStore } from "../../../../store/modules/batchprocessing";
+import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
 import { mapActions, mapState } from "pinia";
 
 export default {
   components: {},
 
   setup() {
-    const batchProcessingStore = useBatchProcessingStore();
-
-    const batchRunTime = ref(batchProcessingStore.batchRunTime);
-    const batchRunSchedule = ref(batchProcessingStore.batchRunSchedule);
-    const batchRunCustomDate = ref(batchProcessingStore.batchRunCustomDate);
-    const batchRunCustomTime = ref(batchProcessingStore.batchRunCustomTime);
+    const batchRequestFormStore = useBatchRequestFormStore();
+    const group = ref(batchRequestFormStore.who);
+    const batchRunTime = ref(batchRequestFormStore.batchRunTime);
+    const batchRunSchedule = ref(batchRequestFormStore.batchRunSchedule);
+    const batchRunCustomDate = ref(batchRequestFormStore.batchRunCustomDate);
+    const batchRunCustomTime = ref(batchRequestFormStore.batchRunCustomTime);
 
     watch(batchRunTime, (newValue) => {
-      batchProcessingStore.batchRunTime = newValue;
+      batchRequestFormStore.batchRunTime = newValue;
     });
 
     watch(batchRunSchedule, (newValue) => {
-      batchProcessingStore.batchRunSchedule = newValue;
+      batchRequestFormStore.batchRunSchedule = newValue;
     });
 
     watch(batchRunCustomDate, (newValue) => {
-      batchProcessingStore.batchRunCustomDate = newValue;
+      batchRequestFormStore.batchRunCustomDate = newValue;
     });
 
     watch(batchRunCustomTime, (newValue) => {
-      batchProcessingStore.batchRunCustomTime = newValue;
+      batchRequestFormStore.batchRunCustomTime = newValue;
     });
 
     return {
@@ -125,14 +125,12 @@ export default {
   data() {
     return {};
   },
-  beforeMount() {
-    // Trigger Vuelidate validations on mount
-    console.log("mounted schedule input");
-    this.v$.$touch();
+
+  created() {
+    console.log("STEPPER");
   },
-  created() {},
   methods: {
-    ...mapActions(useBatchProcessingStore, []),
+    ...mapActions(useBatchRequestFormStore, []),
     resetModal() {},
     getCronTime() {
       if (this.getBatchRunSchedule == "N") {
@@ -187,9 +185,8 @@ export default {
   props: {},
 
   computed: {
-    ...mapState(useBatchProcessingStore, [
+    ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
-      "getGroup",
       "getBatchRunSchedule",
       "getCronTime",
       "getBatchRunTime",

@@ -2,7 +2,6 @@
   <v-container>
     <v-row>
       <v-col>
-        {{ gradDateFrom }}
         <v-card title="Include School(s)">
           <v-card-text>
             <label class="font-weight-bold p-2 m-0 row float-left"
@@ -24,7 +23,6 @@
                 <strong><label class="pt-1">Grad Start Date</label></strong>
                 <v-date-picker
                   v-model="gradDateFrom"
-                  @change="updateSchoolDateRange"
                   :max="gradDateTo"
                 ></v-date-picker>
               </v-col>
@@ -33,7 +31,6 @@
                 <strong><label class="pt-1">Grad End Date</label></strong>
                 <v-date-picker
                   v-model="gradDateTo"
-                  @change="updateSchoolDateRange"
                   :min="gradDateFrom"
                 ></v-date-picker>
               </v-col>
@@ -64,23 +61,20 @@
                 <v-card>
                   <v-card-text>
                     <v-spinner v-if="mincodeValidating"></v-spinner>
-                    <v-overlay :value="mincodeValidating">
-                      <transition :duration="{ enter: 500, leave: 800 }">
-                        <div v-if="!mincodeSchoolInfo">NOT VALID</div>
-                        <div v-else>
-                          <strong>School Name:</strong>
-                          {{ mincodeSchoolInfo.schoolName }}<br />
-                          <strong>Transcript Eligibility:</strong>
-                          {{ mincodeSchoolInfo.transcriptEligibility }}<br />
-                          <strong>Certificate Eligibility</strong>
-                          {{ mincodeSchoolInfo.certificateEligibility }}<br />
-                          <strong>School Category</strong>
-                          {{ mincodeSchoolInfo.transcriptEligibility }}<br />
-                          <strong>TRAX reporting</strong>
-                          {{ mincodeSchoolInfo.traxReporting }}<br />
-                        </div>
-                      </transition>
-                    </v-overlay>
+                    {{ mincodeSchoolInfo }}
+                    <div v-if="mincodeSchoolInfo">
+                      <strong>School Name:</strong>
+                      {{ mincodeSchoolInfo.schoolName }}<br />
+                      <strong>Transcript Eligibility:</strong>
+                      {{ mincodeSchoolInfo.transcriptEligibility }}<br />
+                      <strong>Certificate Eligibility</strong>
+                      {{ mincodeSchoolInfo.certificateEligibility }}<br />
+                      <strong>School Category</strong>
+                      {{ mincodeSchoolInfo.transcriptEligibility }}<br />
+                      <strong>TRAX reporting</strong>
+                      {{ mincodeSchoolInfo.traxReporting }}<br />
+                    </div>
+                    <div v-else>NOT VALID</div>
                   </v-card-text>
                   <v-btn @click="addSchool()" class="float-right"
                     >Add School</v-btn
@@ -131,13 +125,13 @@
   </v-container>
 </template>
 <script>
-import { isProxy, toRaw } from "vue";
+import { isProxy, toRaw, ref, watch } from "vue";
 import TRAXService from "@/services/TRAXService.js";
 import SchoolService from "@/services/SchoolService.js";
 import StudentService from "@/services/StudentService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import { useVuelidate } from "@vuelidate/core";
-import { useBatchProcessingStore } from "../../../../store/modules/batchprocessing";
+import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
 import { useAppStore } from "../../../../store/modules/app";
 import { mapActions, mapState } from "pinia";
 import { required, minLength, helpers } from "@vuelidate/validators";
@@ -145,26 +139,48 @@ import { required, minLength, helpers } from "@vuelidate/validators";
 export default {
   components: {},
   setup() {
-    return { v$: useVuelidate() };
+    const batchRequestFormStore = useBatchRequestFormStore();
+    const gradDateFrom = ref(batchRequestFormStore.gradDateFrom);
+    const gradDateTo = ref(batchRequestFormStore.gradDateTo);
+    const schools = ref(batchRequestFormStore.schools);
+
+    watch(gradDateFrom, (newValue) => {
+      batchRequestFormStore.gradDateFrom = newValue;
+    });
+    watch(gradDateTo, (newValue) => {
+      batchRequestFormStore.gradDateTo = newValue;
+    });
+
+    return {
+      gradDateTo,
+      gradDateFrom,
+      schools,
+      v$: useVuelidate(),
+    };
   },
   validations() {
     return {
       mincode: {
-        minLength: minLength(8),
         async isValid(value) {
+          console.log("validatiing " + value);
           if (value === "") return true;
           if (value.length == 8) {
-            let schoolInfo = await SchoolService.getSchoolInfo(value);
-            if (schoolInfo.data) {
-              this.mincodeSchoolInfo = {
-                schoolName: schoolInfo.data.schoolName,
-                transcriptEligibility: schoolInfo.data.transcriptEligibility,
-                certificateEligibility: schoolInfo.data.certificateEligibility,
-                schoolCategory: schoolInfo.data.schoolCategory,
-                traxReporting: schoolInfo.data.reportingFlag,
-              };
-              return true;
-            } else {
+            try {
+              let schoolInfo = await SchoolService.getSchoolInfo(value);
+              if (schoolInfo.data) {
+                this.mincodeSchoolInfo = {
+                  schoolName: schoolInfo.data.schoolName,
+                  transcriptEligibility: schoolInfo.data.transcriptEligibility,
+                  certificateEligibility:
+                    schoolInfo.data.certificateEligibility,
+                  schoolCategory: schoolInfo.data.schoolCategory,
+                  traxReporting: schoolInfo.data.reportingFlag,
+                };
+                return true;
+              }
+            } catch (error) {
+              console.log(error);
+              this.mincodeSchoolInfo = null;
               return false;
             }
           }
@@ -175,13 +191,10 @@ export default {
   data() {
     return {
       includeStudents: "Current Students",
-      gradDateFrom: "",
-      gradDateTo: "",
       selectedSchool: "",
       mincode: "",
       mincodeSchoolInfo: "",
       mincodeValidating: false,
-      schools: [],
       schoolInputFields: [
         {
           key: "mincode",
@@ -207,27 +220,9 @@ export default {
   mounted() {},
   created() {},
   methods: {
-    ...mapActions(useBatchProcessingStore, [
-      "setSchools",
-      "setGradDateFrom",
-      "setGradDateTo",
-    ]),
     schoolTitle(item) {
       // Customize this method to return the desired format
       return `${item.mincode} - ${item.displayName}`;
-    },
-    async validateSchool() {
-      this.mincodeValidating = true;
-      if (this.mincode.length < 8) {
-        this.clearmincodeSchoolInfo();
-      } else {
-        const result = await this.v$.$validate();
-        if (!result) {
-          return;
-        }
-      }
-
-      this.mincodeValidating = false;
     },
     clearmincodeSchoolInfo() {
       this.mincodeSchoolInfo = "";
@@ -236,33 +231,25 @@ export default {
       this.mincode = "";
       this.clearmincodeSchoolInfo();
     },
-    updateSchoolDateRange() {
-      console.log("gradDateChange");
-      this.setGradDateFrom(this.gradDateFrom);
-      this.setGradDateTo(this.gradDateTo);
-    },
+
     addSchool() {
       this.schools.splice(0, 0, {
         mincode: this.mincode,
         info: this.mincodeSchoolInfo,
       });
-      this.setSchools(this.schools);
       this.clearMincode();
     },
     removeSchool(mincode) {
-      const schoolList = toRaw(this.schools);
-      for (const [index, school] in schoolList) {
-        if (schoolList[index].mincode == mincode) {
+      for (const [index, school] in this.schools) {
+        if (this.schools[index].mincode == mincode) {
           this.schools.splice(index, 1);
         }
       }
-      this.setSchools(schoolList);
     },
   },
   props: {},
 
   computed: {
-    ...mapState(useBatchProcessingStore, ["getSchools"]),
     ...mapState(useAppStore, ["getSchoolsList"]),
     isEmpty() {
       return this.students.length > 0;

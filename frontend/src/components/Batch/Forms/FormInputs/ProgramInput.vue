@@ -4,20 +4,21 @@
       <v-card-title>Include Program(s)</v-card-title>
       <v-card-text>
         <label>Program</label>
+
         <v-autocomplete
           v-model="program"
-          :items="getProgramOptions"
+          :items="computedProgramList"
           :item-title="programTitle"
           item-value="programCode"
+          :item-disabled="true"
         ></v-autocomplete>
 
         <div class="float-right mb-3">
           <v-btn :disabled="!program" @click="addProgram()">Add</v-btn>
         </div>
-
         <v-data-table
-          v-if="getPrograms.length > 0"
-          :items="getPrograms"
+          v-if="programs.length > 0"
+          :items="programs"
           :headers="programInputFields"
         >
           <template v-slot:item.remove="{ item }">
@@ -39,18 +40,35 @@
   </v-container>
 </template>
 <script>
+import { isProxy, toRaw, ref, watch } from "vue";
 import TRAXService from "@/services/TRAXService.js";
 import { useVuelidate } from "@vuelidate/core";
 import { required, minLength, helpers } from "@vuelidate/validators";
-import { isProxy, toRaw } from "vue";
-import { useBatchProcessingStore } from "../../../../store/modules/batchprocessing";
+import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
 import { useAppStore } from "../../../../store/modules/app";
 import { mapActions, mapState } from "pinia";
 
 export default {
   components: {},
-  setup(props) {
-    return { v$: useVuelidate() };
+  setup() {
+    const batchRequestFormStore = useBatchRequestFormStore();
+    const gradDateFrom = ref(batchRequestFormStore.gradDateFrom);
+    const gradDateTo = ref(batchRequestFormStore.gradDateTo);
+    const programs = ref(batchRequestFormStore.programs);
+
+    watch(gradDateFrom, (newValue) => {
+      batchRequestFormStore.gradDateFrom = newValue;
+    });
+    watch(gradDateTo, (newValue) => {
+      batchRequestFormStore.gradDateTo = newValue;
+    });
+
+    return {
+      gradDateTo,
+      gradDateFrom,
+      programs,
+      v$: useVuelidate(),
+    };
   },
   validations() {
     return {
@@ -66,7 +84,6 @@ export default {
       programValidating: false,
       validationMessage: "",
       schoolCategory: "",
-      programs: [],
       programInputFields: [
         {
           key: "program",
@@ -92,7 +109,6 @@ export default {
   mounted() {},
   created() {},
   methods: {
-    ...mapActions(useBatchProcessingStore, ["setPrograms"]),
     async validateProgram() {
       this.programValidating = true;
       this.clearProgramInfo();
@@ -121,18 +137,14 @@ export default {
         program: this.program,
         info: prog.programName,
       });
-      this.setPrograms(this.programs);
       this.clearProgram();
     },
     removeProgram(program) {
-      let programList = toRaw(this.programs);
-      for (const [index] in programList) {
-        if (programList[index].program == program) {
-          console.log(program);
+      for (const [index] in this.programs) {
+        if (this.programs[index].program == program) {
           this.programs.splice(index, 1);
         }
       }
-      this.setPrograms(programList);
     },
     programTitle(item) {
       // Customize this method to return the desired format
@@ -141,7 +153,14 @@ export default {
   },
 
   computed: {
-    ...mapState(useBatchProcessingStore, ["getPrograms"]),
+    computedProgramList() {
+      const programCodesToFilterOut = this.programs.map((p) => p.program);
+      console.log(programCodesToFilterOut);
+      return this.getProgramOptions.filter(
+        (program) => !programCodesToFilterOut.includes(program.programCode)
+      );
+    },
+    ...mapState(useBatchRequestFormStore, ["getPrograms"]),
     ...mapState(useAppStore, ["getProgramOptions"]),
     isEmpty() {
       return this.programs.length > 0;

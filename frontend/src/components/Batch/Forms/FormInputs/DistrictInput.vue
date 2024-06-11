@@ -88,17 +88,34 @@
   </v-container>
 </template>
 <script>
+import { isProxy, toRaw, ref, watch } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { mapActions, mapState } from "pinia";
 import { useAppStore } from "../../../../store/modules/app";
-import { useBatchProcessingStore } from "../../../../store/modules/batchprocessing";
+import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
 import { required, minLength, helpers } from "@vuelidate/validators";
-import { isProxy, toRaw } from "vue";
 
 export default {
   components: {},
-  setup(props) {
-    return { v$: useVuelidate() };
+  setup() {
+    const batchRequestFormStore = useBatchRequestFormStore();
+    const gradDateFrom = ref(batchRequestFormStore.gradDateFrom);
+    const gradDateTo = ref(batchRequestFormStore.gradDateTo);
+    const districts = ref(batchRequestFormStore.districts);
+
+    watch(gradDateFrom, (newValue) => {
+      batchRequestFormStore.gradDateFrom = newValue;
+    });
+    watch(gradDateTo, (newValue) => {
+      batchRequestFormStore.gradDateTo = newValue;
+    });
+
+    return {
+      gradDateTo,
+      gradDateFrom,
+      districts,
+      v$: useVuelidate(),
+    };
   },
   watch: {
     schoolCategory(newValue, previousValue) {
@@ -137,7 +154,6 @@ export default {
         };
         this.addDistrict();
       }
-      this.setSchoolCategory(newValue);
     },
   },
   validations() {
@@ -150,7 +166,6 @@ export default {
       districtValidating: false,
       validationMessage: "",
       schoolCategory: "",
-      districts: [],
       districtInputFields: [
         {
           key: "district",
@@ -176,10 +191,6 @@ export default {
   mounted() {},
   created() {},
   methods: {
-    ...mapActions(useBatchProcessingStore, [
-      "setDistricts",
-      "setSchoolCategory",
-    ]),
     districtTitle(item) {
       return `${item.districtNumber} - ${item.displayName}`;
     },
@@ -214,18 +225,14 @@ export default {
         info: this.districtInfo,
       });
 
-      this.setDistricts(this.districts);
       this.clearDistrictInput();
     },
     removeDistrict(district) {
-      let districtList = toRaw(this.districts);
-      for (const [index] in districtList) {
-        console.log(district + index);
-        if (districtList[index].district == district) {
+      for (const [index] in this.districts) {
+        if (this.districts[index].district == district) {
           this.districts.splice(index, 1);
         }
       }
-      this.setDistricts(districtList);
     },
   },
   props: {
@@ -235,7 +242,7 @@ export default {
 
   computed: {
     ...mapState(useAppStore, ["getDistrictList"]),
-    ...mapState(useBatchProcessingStore, ["getDistricts", "getBatchRequest"]),
+    ...mapState(useBatchRequestFormStore, ["getDistricts", "getBatchRequest"]),
 
     isEmpty() {
       return this.districts.length > 0;

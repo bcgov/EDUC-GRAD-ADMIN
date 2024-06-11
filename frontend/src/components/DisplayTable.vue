@@ -27,7 +27,7 @@
         v-if="items && items.length"
         :headers="fields"
         :items="items"
-        :item-key="id"
+        :item-value="id"
         :items-per-page="perPage"
         :search="filter"
         :show-expand="showExpand"
