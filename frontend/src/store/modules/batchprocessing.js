@@ -8,6 +8,10 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
     scheduledBatchJobs: [],
     batchRuns: [],
     batchRoutines: [],
+    activeTab: "batchRuns",
+    
+
+    //delete below
     schools: [],
     districts: [],
     programs:[],
@@ -277,7 +281,10 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
 
   },
   getters: {
- getGroupData: (state) => {
+    getActiveTab: (state) => {
+      return state.activeTab
+    },
+    getGroupData: (state) => {
       
       if (state.who === "Student") {
         return state.students.map(student => student.pen);

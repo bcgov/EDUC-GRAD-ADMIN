@@ -169,7 +169,7 @@
         <DisplayTable
           :items="psiResults"
           :fields="psiFields"
-          id="psiCode"
+          :id="'psiCode'"
           :showFilter="true"
           :pagination="true"
           title="PSI"
