@@ -10,7 +10,7 @@
         This student does not have any optional programs.
       </div>
       <DisplayTable
-        id="optionalProgramID"
+        id="id"
         :items="optionalPrograms"
         :striped="false"
         :fields="computedOptionalProgramsFields"

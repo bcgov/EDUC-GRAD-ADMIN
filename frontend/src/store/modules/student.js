@@ -378,11 +378,10 @@ export const useStudentStore = defineStore("student", {
         console.error("Error creating student career program: ", error);
       }
     },
-    removeStudentOptionalProgram(optionalProgramId) {
+    removeStudentOptionalProgram(sOPId) {
       try {
         let response = StudentService.deleteStudentOptionalProgram(
-          this.id,
-          optionalProgramId
+          this.id, sOPId
         ).then(() => {
           // reload student grad status, optional programs & optional program history after delete
           this.loadStudentOptionalProgramHistory(this.id);
