@@ -2,12 +2,18 @@
   <div class="assessments-view">
     <h1>Assessments</h1>
     <div>
-      <b-card no-body>
-        <b-tabs card>
-          <b-tab title="Assessment" active>
-            <b-card-text v-if="assessments">
+      <v-card no-body>
+        <v-tabs v-model="tab" bg-color="transparent" grow>
+          <v-tab value="assessmentTab" color="primary">Assessments</v-tab>
+          <v-tab value="assessmentRequirementsTab" color="primary"
+            >Assessment Requirements</v-tab
+          >
+        </v-tabs>
+        <v-card-text>
+          <v-window v-model="tab">
+            <v-window-item value="assessmentTab">
               <DisplayTable
-                title="Assessments"
+                v-if="assessments"
                 v-bind:items="assessments"
                 v-bind:fields="assessmentFields"
                 id="assessmentCode"
@@ -15,22 +21,20 @@
                 showFilter="true"
               >
               </DisplayTable>
-            </b-card-text>
-          </b-tab>
-          <b-tab title="Assessment Requirements">
-            <b-card-text v-if="assessmentRequirements">
+            </v-window-item>
+            <v-window-item value="assessmentRequirementsTab">
               <DisplayTable
-                title="Assessment Requirements"
+                v-if="assessmentRequirements"
                 v-bind:items="assessmentRequirements"
                 v-bind:fields="assessmentRequirementsFields"
                 id="assessmentCode"
                 showFilter="true"
               >
               </DisplayTable>
-            </b-card-text>
-          </b-tab>
-        </b-tabs>
-      </b-card>
+            </v-window-item>
+          </v-window>
+        </v-card-text>
+      </v-card>
     </div>
   </div>
 </template>
@@ -45,6 +49,7 @@ export default {
   },
   data() {
     return {
+      tab: null,
       assessments: [],
       assessmentRequirements: [],
       assmtCode: "",

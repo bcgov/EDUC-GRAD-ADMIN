@@ -299,55 +299,32 @@
                     v-bind:showFilter="false"
                     v-bind:pagination="true"
                   >
-                    <template #cell(pen)="data">
+                    <template v-slot:item.pen="{ item }">
                       <router-link
-                        :to="'/student-profile/' + data.item.studentID"
-                        >{{ data.item.pen }}</router-link
+                        :to="'/student-profile/' + item.raw.studentID"
                       >
-                    </template>
-                    <template #cell(more)="row">
-                      <v-btn
-                        variant="outline primary"
-                        style="color: #666"
-                        size="sm"
-                        @click="row.toggleDetails"
-                        class="more-button w-100"
-                      >
-                        <img
-                          v-show="!row.detailsShowing"
-                          src="../assets/images/icon-right.svg"
-                          width="9px"
-                          aria-hidden="true"
-                          alt=""
-                        />
-                        <img
-                          v-show="row.detailsShowing"
-                          src="../assets/images/icon-down.svg"
-                          height="5px"
-                          aria-hidden="true"
-                          alt=""
-                        />
-                      </v-btn>
-                    </template>
-                    <template #row-details="row">
-                      <v-card>
-                        <v-card-text>
+                        {{ item.raw.pen }}
+                      </router-link></template
+                    >
+                    <template v-slot:expanded-row="{ columns, item }">
+                      <tr>
+                        <td :colspan="columns.length">
                           <ul>
                             <li>
                               <strong>Usual given:</strong>
-                              {{ row.item.usualFirstName }}
+                              {{ item.raw.usualFirstName }}
                             </li>
                             <li>
                               <strong>Usual middle:</strong>
-                              {{ row.item.usualMiddleNames }}
+                              {{ item.raw.usualMiddleNames }}
                             </li>
                             <li>
                               <strong>Usual surname:</strong>
-                              {{ row.item.usualLastName }}
+                              {{ item.raw.usualLastName }}
                             </li>
                           </ul>
-                        </v-card-text>
-                      </v-card>
+                        </td>
+                      </tr>
                     </template>
                   </DisplayTable>
                 </div>
@@ -396,11 +373,9 @@ export default {
       studentSearchResults: [],
       studentSearchResultsFields: [
         {
-          key: "more",
+          key: "data-table-expand",
           title: "",
-          sortable: false,
-          editable: false,
-          class: "w-1",
+          class: "text-left",
         },
         {
           key: "pen",
