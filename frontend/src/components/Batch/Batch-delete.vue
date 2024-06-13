@@ -1490,8 +1490,7 @@ export default {
             if (
               type.code === "ARC_STUDENTS" ||
               type.code === "ARC_SCH_REPORTS" ||
-              type.code === "EDW_SNAPSHOT" ||
-              type.code === "CERT_REGEN"
+              type.code === "EDW_SNAPSHOT"
             ) {
               type.disabled = true;
             }
