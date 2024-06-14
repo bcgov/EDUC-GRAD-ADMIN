@@ -227,7 +227,8 @@ export default {
   z-index: 99;
 }
 header#navbar {
-  top: 40px !important;
+  top: 55px !important;
+  height: 56px;
 }
 button.v-btn.v-theme--light.bg-primary.v-btn--density-default.v-btn--size-default.v-btn--variant-flat.px-2 {
   top: 14px;
