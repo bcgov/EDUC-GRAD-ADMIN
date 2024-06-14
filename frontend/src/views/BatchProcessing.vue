@@ -101,7 +101,10 @@
                       </template>
                       <template v-slot:item.newRequest="{ item }">
                         <Form v-if="item.raw.code == 'DISTRUNUSER'"></Form>
-                        <v-btn v-else :disabled="true">+ </v-btn>
+                        <RegenerateCertificateForm
+                          v-else-if="item.raw.code == 'CERT_REGEN'"
+                        ></RegenerateCertificateForm>
+                        <v-btn v-else :disabled="item.raw.disabled">+ </v-btn>
                       </template>
                     </v-data-table>
                   </v-col>
@@ -149,9 +152,9 @@
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import DistributionService from "@/services/DistributionService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
-import BatchJobForm from "@/components/Batch/Batch.vue";
 import ScheduledBatchRuns from "@/components/Batch/ScheduledBatchRuns.vue";
 import Form from "@/components/Batch/Forms/Form.vue";
+import RegenerateCertificateForm from "@/components/Batch/Forms/RegenerateCertificateForm.vue";
 import GraduationAlgorithmForm from "@/components/Batch/Forms/GraduationAlgorithmForm.vue";
 import TranscriptAlgorithmForm from "@/components/Batch/Forms/TranscriptAlgorithmForm.vue";
 import BatchRuns from "@/components/Batch/BatchRuns.vue";
@@ -219,12 +222,11 @@ export default {
     Form: Form,
     DisplayTable: DisplayTable,
     BatchRuns: BatchRuns,
-    BatchJobForm: BatchJobForm,
     BatchRoutines: BatchRoutines,
     ScheduledBatchRuns: ScheduledBatchRuns,
-    Form: Form,
     GraduationAlgorithmForm: GraduationAlgorithmForm,
     TranscriptAlgorithmForm: TranscriptAlgorithmForm,
+    RegenerateCertificateForm: RegenerateCertificateForm,
   },
   data() {
     return {
@@ -392,7 +394,14 @@ export default {
         ]);
         this.distributionBatchRunOptions = this.filterBatchTypes(
           this.batchTypes,
-          ["DISTRUN_YE", "DISTRUN_SUPP", "NONGRADRUN", "DISTRUN", "DISTRUNUSER"]
+          [
+            "DISTRUN_YE",
+            "DISTRUN_SUPP",
+            "NONGRADRUN",
+            "DISTRUN",
+            "DISTRUNUSER",
+            "CERT_REGEN",
+          ]
         );
 
         this.PSIBatchRunOptions = this.filterBatchTypes(this.batchTypes, [
@@ -416,12 +425,13 @@ export default {
       });
   },
   methods: {
-    disableBatchRuns(batchRunOptions, codeList) {
+    disableBatchRuns(batchRunOptions, disableList) {
       batchRunOptions.forEach((option, index, array) => {
-        if (codeList.includes(option.code)) {
-          array[index].disabled = false;
-        } else {
+        if (disableList.includes(option.code)) {
+          console.log(option.code);
           array[index].disabled = true;
+        } else {
+          array[index].disabled = false;
         }
       });
       return batchRunOptions;
@@ -481,46 +491,46 @@ export default {
     updateAllDashboards() {
       this.updateDashboards();
     },
-    batchHasErrors(batch) {
-      batch.validationMessage = "";
-      //check for what
-      if (!batch.details["what"]) {
-        this.validationMessage = "Type of batch Not Specified";
-        return true;
-      }
-      //check for who
+    // batchHasErrors(batch) {
+    //   batch.validationMessage = "";
+    //   //check for what
+    //   if (!batch.details["what"]) {
+    //     this.validationMessage = "Type of batch Not Specified";
+    //     return true;
+    //   }
+    //   //check for who
 
-      if (
-        !batch.details["who"] &&
-        batch.details["what"] != "DISTRUN_SUPP" &&
-        batch.details["what"] != "DISTRUN" &&
-        batch.details["what"] != "DISTRUN_YE" &&
-        batch.details["what"] != "NONGRADRUN"
-      ) {
-        this.validationMessage = "Group not specified";
-        return true;
-      }
-      //check for local download
-      if (batch.details["where"] == "localDownload") {
-        if (batch.details["what"] == "DISTRUNUSER") {
-          if (batch.details["credential"] == "Blank certificate print") {
-            if (!batch.details["blankCertificateDetails"].length) {
-              this.validationMessage =
-                "Please choose at least one certificate type";
-              return true;
-            }
-          }
-          if (batch.details["credential"] == "Blank transcript print") {
-            if (!batch.details["blankTranscriptDetails"].length) {
-              this.validationMessage =
-                "Please choose at least one transcript type";
-              return true;
-            }
-          }
-        }
-      }
-      return false;
-    },
+    //   if (
+    //     !batch.details["who"] &&
+    //     batch.details["what"] != "DISTRUN_SUPP" &&
+    //     batch.details["what"] != "DISTRUN" &&
+    //     batch.details["what"] != "DISTRUN_YE" &&
+    //     batch.details["what"] != "NONGRADRUN"
+    //   ) {
+    //     this.validationMessage = "Group not specified";
+    //     return true;
+    //   }
+    //   //check for local download
+    //   if (batch.details["where"] == "localDownload") {
+    //     if (batch.details["what"] == "DISTRUNUSER") {
+    //       if (batch.details["credential"] == "Blank certificate print") {
+    //         if (!batch.details["blankCertificateDetails"].length) {
+    //           this.validationMessage =
+    //             "Please choose at least one certificate type";
+    //           return true;
+    //         }
+    //       }
+    //       if (batch.details["credential"] == "Blank transcript print") {
+    //         if (!batch.details["blankTranscriptDetails"].length) {
+    //           this.validationMessage =
+    //             "Please choose at least one transcript type";
+    //           return true;
+    //         }
+    //       }
+    //     }
+    //   }
+    //   return false;
+    // },
     getBatchData(item) {
       if (item.raw.value) {
         return item.raw.value;

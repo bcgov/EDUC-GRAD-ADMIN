@@ -146,6 +146,7 @@ export default {
 
             if (studentGRADStatus.data) {
               //display student
+              console.log(studentGRADStatus.data);
               this.penStudentInfo = {
                 firstName: student.data[0].legalFirstName,
                 lastName: student.data[0].legalLastName,
@@ -160,6 +161,18 @@ export default {
                   value + " is a merged student and not permitted";
                 return false;
               }
+              if (this.runType == "CERT_REGEN") {
+                //when User is entereing PENs for the REGEN process, error if the student has a null PROGRAM COMPLETION DATE
+                console.log(
+                  "PCD" + studentGRADStatus.data.programCompletionDate
+                );
+                if (!studentGRADStatus.data.programCompletionDate) {
+                  this.validationMessage =
+                    "Error: Cannot regenerate a certificate for this student - this student has not completed their program";
+                }
+                return false;
+              }
+
               //check if what credentialType was selected
               if (
                 this.runType == "DISTRUNUSER" &&
