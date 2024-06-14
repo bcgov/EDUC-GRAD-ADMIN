@@ -80,7 +80,7 @@
                   v-on:keyup="keyHandler"
                   placeholder=""
                   id="schoolName"
-                  tabindex="2"
+                  tabindex="3"
                 ></v-text-field>
               </div>
             </v-row>
@@ -92,7 +92,7 @@
               v-on:click="advancedSchoolSearch"
               v-if="!searchLoading"
               color="primary"
-              tabindex="3"
+              tabindex="4"
             >
               <i class="fas fa-search" aria-hidden="true"></i>
               Search
@@ -105,7 +105,11 @@
                 color="green"
               ></v-progress-circular
             ></v-btn>
-            <v-btn @click="clearInput" class="btn btn-outline-primary mx-2">
+            <v-btn
+              @click="clearInput"
+              class="btn btn-outline-primary mx-2"
+              tabindex="5"
+            >
               Reset
             </v-btn>
           </div>
@@ -124,76 +128,45 @@
         </div>
         <DisplayTable
           v-if="schools.length"
-          title="Results"
-          v-bind:items="schools"
-          v-bind:fields="schoolFields"
-          sortKey="schoolName"
-          id="mincode"
-          v-bind:showFilter="true"
-          pagination="true"
+          :items="schools"
+          :fields="schoolFields"
+          :id="'minCode'"
+          :showFilter="true"
+          :pagination="true"
         >
-          <template v-slot:item.more="{ item }">
-            <v-btn
-              variant="outline primary"
-              style="color: #666"
-              size="sm"
-              @click="item.toggleDetails"
-              class="more-button"
-            >
-              <img
-                v-show="!item.detailsShowing"
-                src="../../src/assets/images/icon-right.svg"
-                width="9px"
-                aria-hidden="true"
-                alt=""
-              />
-              <img
-                v-show="item.detailsShowing"
-                src="../../src/assets/images/icon-down.svg"
-                height="5px"
-                aria-hidden="true"
-                alt=""
-              />
-            </v-btn>
-          </template>
-
-          <template #row-details="row">
-            <v-card class="px-0 col-12">
-              <div class="col-12 col-md-5 float-left p-0">
-                <v-card header="School Details" class="overflow-hidden">
-                  <v-card-text>
-                    <ul class="float-left">
-                      <li v-if="row.item.address1">
-                        <strong>Address:</strong> {{ row.item.address1 }}
-                      </li>
-                      <li v-if="row.item.city">
-                        <strong>City:</strong> {{ row.item.city }}
-                      </li>
-                      <li v-if="row.item.provCode">
-                        <strong>Province Code:</strong>
-                        {{ row.item.provCode }}
-                      </li>
-                      <li v-if="row.item.postal">
-                        <strong>Postal Code:</strong> {{ row.item.postal }}
-                      </li>
-                      <li v-if="row.item.schoolEmail">
-                        <strong>Email:</strong> {{ row.item.schoolEmail }}
-                      </li>
-                      <li v-if="row.item.principalName">
-                        <strong>Principal:</strong>
-                        {{ row.item.principalName }}
-                      </li>
-                      <li v-if="row.item.schoolPhone">
-                        <strong>Phone:</strong> {{ row.item.schoolPhone }}
-                      </li>
-                      <li v-if="row.item.schoolFax">
-                        <strong>Fax:</strong> {{ row.item.schoolFax }}
-                      </li>
-                    </ul>
-                  </v-card-text>
-                </v-card>
-              </div>
-            </v-card>
+          <template v-slot:expanded-row="{ columns, item }">
+            <tr>
+              <td :colspan="columns.length">
+                <ul>
+                  <li v-if="item.raw.address1">
+                    <strong>Address:</strong> {{ item.raw.address1 }}
+                  </li>
+                  <li v-if="item.raw.city">
+                    <strong>City:</strong> {{ item.raw.city }}
+                  </li>
+                  <li v-if="item.raw.provCode">
+                    <strong>Province Code:</strong>
+                    {{ item.raw.provCode }}
+                  </li>
+                  <li v-if="item.raw.postal">
+                    <strong>Postal Code:</strong> {{ item.raw.postal }}
+                  </li>
+                  <li v-if="item.raw.schoolEmail">
+                    <strong>Email:</strong> {{ item.raw.schoolEmail }}
+                  </li>
+                  <li v-if="item.raw.principalName">
+                    <strong>Principal:</strong>
+                    {{ item.raw.principalName }}
+                  </li>
+                  <li v-if="item.raw.schoolPhone">
+                    <strong>Phone:</strong> {{ item.raw.schoolPhone }}
+                  </li>
+                  <li v-if="item.raw.schoolFax">
+                    <strong>Fax:</strong> {{ item.raw.schoolFax }}
+                  </li>
+                </ul>
+              </td>
+            </tr>
           </template>
         </DisplayTable>
       </v-card-text>
@@ -216,8 +189,10 @@ export default {
       schools: {},
       schoolFields: [
         {
-          key: "more",
-          label: "",
+          key: "data-table-expand",
+          title: "",
+          sortable: true,
+          class: "text-left",
         },
         {
           key: "minCode",
@@ -251,6 +226,12 @@ export default {
         {
           key: "schoolCategory",
           title: "SPM School Category",
+          sortable: true,
+          class: "text-center",
+        },
+        {
+          key: "appendTrans",
+          title: "Append to Schools",
           sortable: true,
           class: "text-center",
         },
