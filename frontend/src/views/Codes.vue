@@ -122,8 +122,6 @@ import { useAuthStore } from "../store/modules/auth";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import StudentService from "@/services/StudentService.js";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
-import BatchProcessingService from "@/services/BatchProcessingService.js";
-import CourseService from "@/services/CourseService";
 
 export default {
   name: "codes",
