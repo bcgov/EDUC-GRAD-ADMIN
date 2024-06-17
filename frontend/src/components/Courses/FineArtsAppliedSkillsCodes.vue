@@ -1,6 +1,9 @@
 <template>
   <div>
-    <p>A list of Fine Arts Applied Skills Codes maintained in this table.</p>
+    <p>
+      Fine Arts Applied Skills codes Indicates that a course is being used for
+      the Fine Arts and/or Applied Skills graduation requirement.
+    </p>
     <DisplayTable
       title="Fine Arts Applied Skills Codes"
       v-bind:items="sortedFaAsCodes"
@@ -26,7 +29,7 @@ import CourseService from "@/services/CourseService";
 import { applyDisplayOrder } from "@/utils/common.js";
 
 export default {
-  name: "FineArtsAppliedSkillsTypes",
+  name: "FineArtsAppliedSkillsCodes",
   components: {
     DisplayTable: DisplayTable,
   },

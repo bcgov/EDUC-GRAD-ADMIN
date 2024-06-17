@@ -103,12 +103,6 @@
               @click="tab = 7"
               >Batch Type Codes</b-nav-item
             >
-          <b-nav-item
-            to="/codes/fine-arts-applied-skills"
-            :active="tab === 8"
-            @click="tab = 8"
-            >Fine Arts Applied Skills Code</b-nav-item
-          >
           </b-nav>
         </b-card-header>
         <b-card-body>
@@ -144,19 +138,6 @@ export default {
       reportSignatures: [],
       batchTypes: [],
       batchTypesFields: [
-        {
-          key: "code",
-          label: "Code",
-          sortable: true,
-        },
-        {
-          key: "label",
-          label: "Label",
-          sortable: true,
-        },
-      ],
-      fineArtsAppliedSkillsTypes: [],
-      fineArtsAppliedSkillsTypesFields: [
         {
           key: "code",
           label: "Code",
@@ -348,7 +329,6 @@ export default {
     this.getStudentStatusCodes();
     this.getUngradReasons();
     this.getBatchJobTypes();
-    this.getFineArtsAppliedSkillsTypes();
   },
   methods: {
     closeDropdown(dropdown) {
@@ -440,19 +420,6 @@ export default {
             noAutoHide: true,
           });
         });
-    },
-    getFineArtsAppliedSkillsTypes() {
-      console.log(CourseService.getFineArtsAppliedSkillsTypes()
-          .then((response) => {
-            this.fineArtsAppliedSkillsTypes = response.data;
-          })
-          .catch((error) => {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title: "ERROR" + error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
-          }));
     },
     getUngradReasons() {
       StudentService.getUngradReasons()
