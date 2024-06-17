@@ -1,13 +1,12 @@
 <template>
   <div>
     <p>A list of Fine Arts Applied Skills Codes maintained in this table.</p>
-    {{fineArtsAppliedSkillsTypes}}
     <DisplayTable
-        title="Fine Arts Applied Skills Codes"
-        v-bind:items="fineArtsAppliedSkillsTypes"
-        v-bind:fields="fineArtsAppliedSkillsTypesFields"
-        id=""
-        showFilter="true"
+      title="Fine Arts Applied Skills Codes"
+      v-bind:items="sortedFaAsCodes"
+      v-bind:fields="fineArtsAppliedSkillsTypesFields"
+      id="fineArtsAppliedSkillsCode"
+      showFilter="true"
     >
       <template #cell(effectiveDate)="row">
         {{ $filters.formatSimpleDate(row.item.effectiveDate) }}
@@ -23,6 +22,9 @@
 import DisplayTable from "@/components/DisplayTable.vue";
 import CourseService from "@/services/CourseService";
 
+// import shared functions & validations
+import { applyDisplayOrder } from "@/utils/common.js";
+
 export default {
   name: "FineArtsAppliedSkillsTypes",
   components: {
@@ -30,24 +32,24 @@ export default {
   },
   created() {
     CourseService.getFineArtsAppliedSkillsTypes()
-        .then((response) => {
-          this.fineArtsAppliedSkillsTypes = response.data;
-        })
-        // eslint-disable-next-line
-        .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+      .then((response) => {
+        this.fineArtsAppliedSkillsTypes = response.data;
+      })
+      // eslint-disable-next-line
+      .catch((error) => {
+        this.$bvToast.toast("ERROR " + error.response.statusText, {
+          title: "ERROR" + error.response.status,
+          variant: "danger",
+          noAutoHide: true,
         });
+      });
   },
   data: function () {
     return {
       fineArtsAppliedSkillsTypes: [],
       fineArtsAppliedSkillsTypesFields: [
         {
-          key: "code",
+          key: "fineArtsAppliedSkillsCode",
           label: "Code",
           sortable: true,
           sortDirection: "desc",
@@ -75,7 +77,11 @@ export default {
       ],
     };
   },
-  methods: {},
+  computed: {
+    sortedFaAsCodes() {
+      return applyDisplayOrder(this.fineArtsAppliedSkillsTypes);
+    },
+  },
 };
 </script>
 
