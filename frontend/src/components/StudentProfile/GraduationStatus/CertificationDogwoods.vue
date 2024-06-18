@@ -1,17 +1,17 @@
 <template>
   <div class="certification-dogwoods pb-2">
-    <b-card header="Student Certificates/Dogwoods" no-body>
-      <b-card-text class="py-4">
+    <v-card title="Student Certificates/Dogwoods" no-body>
+      <v-card-text class="py-4">
         <div
           v-if="this.studentGradStatus.schoolAtGrad && !isCertificateEligible()"
         >
-          <b-alert show variant="info" class="p-3 mb-1 mx-3">
+          <v-alert type="info" class="p-3 mb-1 mx-3">
             <h4 class="alert-heading">Ineligible for Ministry certificates</h4>
             <p class="locked-message">
               This student's school at graduation is ineligible for Ministry
               certificates.
             </p>
-          </b-alert>
+          </v-alert>
         </div>
         <div v-if="certificates">
           <div
@@ -48,8 +48,8 @@
             </div>
           </div>
         </div>
-      </b-card-text>
-    </b-card>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
   <div class="requirements-met-and-not-met">
     <div class="requirements-not-met pb-2">
-      <b-card header="Noncompletion Reasons" class="w-100">
-        <b-card-text
+      <v-card title="Noncompletion Reasons" class="w-100">
+        <v-card-text
           v-if="
             studentGradStatus.studentGradData &&
             Object.keys(studentGradStatus.studentGradData).length > 0
@@ -14,24 +14,29 @@
             </ul>
           </div>
           <div v-else>
-            <b-table
-              :items="nongradReasons"
-              :fields="[
-                { key: 'rule', label: 'Rule', sortable: true },
-                { key: 'description', label: 'Description', sortable: true },
-              ]"
-              small
-              striped
-            >
-            </b-table>
+            <v-table density="compact">
+              <thead>
+                <tr>
+                  <th class="text-left">Rule</th>
+                  <th class="text-left">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in nongradReasons" :key="item.rule">
+                  <td>{{ item.rule }}</td>
+                  <td>{{ item.description }}</td>
+                </tr>
+              </tbody>
+            </v-table>
           </div>
-        </b-card-text>
-      </b-card>
+        </v-card-text>
+      </v-card>
     </div>
 
     <div class="requirements-met pb-2">
-      <b-card
-        header="Requirements Met"
+      {{ requirementsMet }}
+      <v-card
+        title="Requirements Met"
         v-if="
           studentGradStatus.studentGradData &&
           Object.keys(studentGradStatus.studentGradData).length > 0
@@ -39,18 +44,23 @@
         no-body
         class="w-100"
       >
-        <b-card-text class="m-3">
-          <b-table
-            :items="requirementsMet"
-            :fields="[
-              { key: 'rule', label: 'Rule', sortable: true },
-              { key: 'description', label: 'Description', sortable: true },
-            ]"
-            small
-            striped
-          ></b-table>
-        </b-card-text>
-      </b-card>
+        <v-card-text class="m-3">
+          <v-table density="compact">
+            <thead>
+              <tr>
+                <th class="text-left">Rule</th>
+                <th class="text-left">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in requirementsMet" :key="item.rule">
+                <td>{{ item.rule }}</td>
+                <td>{{ item.description }}</td>
+              </tr>
+            </tbody>
+          </v-table>
+        </v-card-text>
+      </v-card>
     </div>
   </div>
 </template>
