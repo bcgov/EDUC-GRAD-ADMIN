@@ -20,6 +20,7 @@ import UngradReasons from "../components/Codes/UngradReasons.vue";
 import HistoryActivityCodes from "../components/Codes/HistoryActivityCodes.vue";
 import DocumentStatusCode from "../components/Codes/DocumentStatusCode.vue";
 import BatchTypes from "../components/Codes/BatchTypes.vue";
+import FineArtsAppliedSkillsTypes from "../components/Codes/FineArtsAppliedSkillsCodes.vue";
 // Programs
 import AdminGraduationPrograms from "../views/Programs.vue";
 import AlgorithmRules from "../components/Programs/AlgorithmRules.vue";
@@ -347,6 +348,13 @@ const router = createRouter({
         {
           path: "/codes/batch-types",
           component: BatchTypes,
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
+          path: "/codes/fine-arts-applied-skills",
+          component: FineArtsAppliedSkillsTypes,
           meta: {
             requiresAuth: true,
           },

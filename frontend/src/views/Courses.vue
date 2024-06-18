@@ -173,6 +173,7 @@
             </b-card-text>
           </b-tab>
           <b-tab title="Course restrictions">
+            <!-- TODO: Refactor this into it's own component for Vuetify -->
             <b-card-text>
               <DisplayTable
                 title="Course restrictions"
@@ -304,6 +305,9 @@
               </DisplayTable>
             </b-card-text>
           </b-tab>
+          <b-tab title="Fine Arts Applied Skills">
+            <FineArtsAppliedSkillsCodes
+          /></b-tab>
         </b-tabs>
       </b-card>
     </div>
@@ -314,10 +318,13 @@
 import { showNotification } from "../utils/common.js";
 import CourseService from "@/services/CourseService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
+import FineArtsAppliedSkillsCodes from "@/components/Courses/FineArtsAppliedSkillsCodes.vue";
+
 export default {
   name: "courses",
   components: {
     DisplayTable: DisplayTable,
+    FineArtsAppliedSkillsCodes: FineArtsAppliedSkillsCodes,
   },
   data() {
     return {
