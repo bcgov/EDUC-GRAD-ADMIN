@@ -1,14 +1,14 @@
 <template>
   <div>
     <p>
-      Fine Arts Applied Skills codes Indicates that a course is being used for
-      the Fine Arts and/or Applied Skills graduation requirement.
+      Identifies the special cases associated with writing the exam or allowing
+      an exemption from exam writing
     </p>
     <DisplayTable
-      title="Fine Arts Applied Skills Codes"
-      v-bind:items="sortedFaAsCodes"
-      v-bind:fields="fineArtsAppliedSkillsTypesFields"
-      id="fineArtsAppliedSkillsCode"
+      title="Exam Special Case Codes"
+      v-bind:items="sortedExamSpecialCaseCodes"
+      v-bind:fields="examSpecialCaseCodesFields"
+      id="examSpecialCaseCode"
       showFilter="true"
     >
       <template #cell(effectiveDate)="row">
@@ -29,14 +29,15 @@ import CourseService from "@/services/CourseService";
 import { applyDisplayOrder } from "@/utils/common.js";
 
 export default {
-  name: "FineArtsAppliedSkillsCodes",
+  name: "ExamSpecialCaseCodes",
   components: {
     DisplayTable: DisplayTable,
   },
   created() {
-    CourseService.getFineArtsAppliedSkillsTypes()
+    // get codes
+    CourseService.getExamSpecialCaseCodes()
       .then((response) => {
-        this.fineArtsAppliedSkillsTypes = response.data;
+        this.examSpecialCaseCodes = response.data;
       })
       // eslint-disable-next-line
       .catch((error) => {
@@ -49,10 +50,10 @@ export default {
   },
   data: function () {
     return {
-      fineArtsAppliedSkillsTypes: [],
-      fineArtsAppliedSkillsTypesFields: [
+      examSpecialCaseCodes: [],
+      examSpecialCaseCodesFields: [
         {
-          key: "fineArtsAppliedSkillsCode",
+          key: "examSpecialCaseCode",
           label: "Code",
           sortable: true,
         },
@@ -70,18 +71,20 @@ export default {
           key: "effectiveDate",
           label: "Effective Date",
           sortable: true,
+          class: "w-25",
         },
         {
           key: "expiryDate",
           label: "Expiry Date",
           sortable: true,
+          class: "w-25",
         },
       ],
     };
   },
   computed: {
-    sortedFaAsCodes() {
-      return applyDisplayOrder(this.fineArtsAppliedSkillsTypes);
+    sortedExamSpecialCaseCodes() {
+      return applyDisplayOrder(this.examSpecialCaseCodes);
     },
   },
 };

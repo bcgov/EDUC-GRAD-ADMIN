@@ -47,4 +47,7 @@ export default {
   getFineArtsAppliedSkillsTypes() {
     return ApiService.apiAxios.get("/api/v1/course/fineArtsAppliedSkillsCodes");
   },
+  getExamSpecialCaseCodes() {
+    return ApiService.apiAxios.get("/api/v1/course/examSpecialCaseCodes");
+  },
 };
