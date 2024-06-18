@@ -50,4 +50,7 @@ export default {
   getExamSpecialCaseCodes() {
     return ApiService.apiAxios.get("/api/v1/course/examSpecialCaseCodes");
   },
+  getEquivalentOrChallengeCodes() {
+    return ApiService.apiAxios.get("/api/v1/course/equivalentOrChallengeCodes");
+  },
 };
