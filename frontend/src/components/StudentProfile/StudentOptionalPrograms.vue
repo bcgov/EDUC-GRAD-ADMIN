@@ -441,6 +441,12 @@
             </DisplayTable>
           </b-card>
         </template>
+
+        <template #cell(optionalProgramCompletionDate)="row">
+          {{
+            $filters.formatYYYYMMDate(row.item.optionalProgramCompletionDate)
+          }}
+        </template>
       </DisplayTable>
     </div>
   </div>
