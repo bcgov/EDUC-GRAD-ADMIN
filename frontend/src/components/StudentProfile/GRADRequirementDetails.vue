@@ -4,17 +4,17 @@
     <div>
       <v-card no-body header="Assessment Requirements">
         <v-card-text class="p-3">
+          <h3>Assessment Requirements</h3>
           <DisplayTable
             v-if="hasGradStatus"
             :items="gradStatusAssessments"
             :fields="fields2"
             showFilter="true"
-            title="RequirementDetailsAssessments"
           >
-            <template #cell(gradReqMet)="row">
+            <template v-slot:item.gradReqMet="{ item }">
               <div class="d-flex flex-column text-md-left">
                 <div class="gradReqsMet">
-                  {{ row.value }}
+                  {{ item.raw.gradReqMet }}
                 </div>
               </div>
             </template>
@@ -23,25 +23,25 @@
       </v-card>
       <v-card no-body header="Course Requirements">
         <v-card-text class="p-3">
+          <h3>Course Requirements</h3>
           <DisplayTable
             v-if="hasGradStatus && gradStatusCourses"
             :items="gradStatusCourses"
             :fields="fields"
             showFilter="true"
-            title="RequirementDetailsCourses"
           >
-            <template #cell(gradReqMet)="row">
+            <template v-slot:item.gradReqMet="{ item }">
               <div class="d-flex flex-column text-md-left">
                 <div class="gradReqsMet">
-                  {{ row.value }}
+                  {{ item.raw.gradReqMet }}
                 </div>
               </div>
             </template>
-            <template #cell(gradReqMetDetail)="row">
+            <template v-slot:item.gradReqMetDetail="{ item }">
               <div class="d-flex flex-column text-md-left">
                 <div class="">
                   {{
-                    row.item.gradReqMetDetail ? row.item.gradReqMetDetail : " "
+                    item.raw.gradReqMetDetail ? item.raw.gradReqMetDetail : " "
                   }}
                 </div>
               </div>
@@ -77,43 +77,43 @@ export default {
       fields2: [
         {
           key: "assessmentCode",
-          label: "Code",
+          title: "Code",
           sortable: true,
           class: "text-left",
         },
         {
           key: "assessmentName",
-          label: "Name",
+          title: "Name",
           sortable: true,
           class: "text-left",
         },
         {
           key: "sessionDate",
-          label: "Session",
+          title: "Session",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "specialCase",
-          label: "Special Case",
+          title: "Special Case",
           sortable: true,
           class: "text-left",
         },
         {
           key: "exceededWriteFlag",
-          label: "Exceeded Writes",
+          title: "Exceeded Writes",
           sortable: true,
           class: "text-left",
         },
         {
           key: "proficiencyScore",
-          label: "Proficiency Score",
+          title: "Proficiency Score",
           sortable: true,
           class: "text-left",
         },
         {
           key: "gradReqMet",
-          label: "Reqts Met",
+          title: "Reqts Met",
           sortable: true,
           class: "text-left",
           sortByFormatted: true,
@@ -141,61 +141,61 @@ export default {
         },
         {
           key: "gradReqMetDetail",
-          label: "Reqt Name",
+          title: "Reqt Name",
           sortable: true,
           class: "text-left",
         },
       ],
       fields: [
-        { key: "more", label: "" },
+        { key: "more", title: "" },
         {
           key: "courseCode",
-          label: "Code",
+          title: "Code",
           sortable: true,
           class: "text-left",
         },
         {
           key: "courseLevel",
-          label: "Level",
+          title: "Level",
           sortable: true,
           class: "text-left",
         },
         {
           key: "sessionDate",
-          label: "Session",
+          title: "Session",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "interimPercent",
-          label: "Interim %",
+          title: "Interim %",
           class: "text-md-center",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "completedCoursePercentage",
-          label: "Completed Course %",
+          title: "Completed Course %",
           class: "text-md-center ",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "completedCourseLetterGrade",
-          label: "LG",
+          title: "LG",
           class: "text-md-center",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "credits",
-          label: "Credits",
+          title: "Credits",
           sortable: true,
           class: "text-center",
         },
         {
           key: "gradReqMet",
-          label: "Reqts Met",
+          title: "Reqts Met",
           sortable: true,
           class: "text-left",
           sortByFormatted: true,
@@ -247,13 +247,13 @@ export default {
         },
         {
           key: "gradReqMetDetail",
-          label: "Reqt Name",
+          title: "Reqt Name",
           sortable: true,
           class: "text-left",
         },
         {
           key: "creditsUsedForGrad",
-          label: "Credits Used",
+          title: "Credits Used",
           sortable: true,
           class: "text-left",
         },
