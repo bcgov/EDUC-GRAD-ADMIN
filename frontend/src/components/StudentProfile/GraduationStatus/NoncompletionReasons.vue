@@ -34,7 +34,6 @@
     </div>
 
     <div class="requirements-met pb-2">
-      {{ requirementsMet }}
       <v-card
         title="Requirements Met"
         v-if="

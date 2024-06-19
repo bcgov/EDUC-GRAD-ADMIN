@@ -66,124 +66,149 @@
       <div class="col-12 px-0">
         <v-card class="p-0">
           <!-- Updated info. -->
-          <div class="pr-0 col-12 col-lg-12 col-md-7 text-right">
-            <strong>Updated:</strong>
-            {{ $filters.formatTime(studentGradStatus.updateDate) }} by
-            {{ studentGradStatus.updateUser }}
+          <div class="mb-2 mx-1 row">
+            <div class="col-12 col-lg-4 col-md-5 m-1 p-0">
+              <v-tabs v-model="tab" bg-color="transparent" grow>
+                <v-tab variant="outlined" value="gradStatusTab" color="primary"
+                  >GRAD Status</v-tab
+                >
+                <v-tab
+                  variant="outlined"
+                  value="requirementDetailsTab"
+                  color="primary"
+                  >Requirement Details</v-tab
+                >
+              </v-tabs>
+            </div>
+            <div class="pr-0 col-12 col-lg-8 col-md-7 text-right">
+              <strong>Updated:</strong>
+              {{ $filters.formatTime(studentGradStatus.updateDate) }} by
+              {{ studentGradStatus.updateUser }}
+            </div>
           </div>
           <!-- Updated info. end -->
-          <v-tabs v-model="selectedTab">
-            <v-tab value="GRAD">GRAD</v-tab>
-            <v-tab value="Courses">Courses ({{ courses.length }})</v-tab>
-            <v-tab value="Assessments"
-              >Assessments ({{ assessments.length }})</v-tab
-            >
-            <v-tab value="Exams">Exams Details ({{ exams.length }})</v-tab>
-            <v-tab value="Optional"
-              >Optional Programs ({{ optionalPrograms.length }})</v-tab
-            >
-            <v-tab value="Audit">Audit History</v-tab>
-          </v-tabs>
-          <v-card-text>
-            <v-window v-model="selectedTab">
-              <v-window-item value="GRAD">
-                <StudentGraduationStatus></StudentGraduationStatus>
-                <div id="RequirementDetails">
-                  <v-progress-circular
-                    v-if="tabLoading"
-                    indeterminate
-                    color="green"
-                  >
-                  </v-progress-circular>
-                  <div v-if="studentGradStatus.studentGradData">
-                    <v-alert
-                      color="Info"
-                      icon="$info"
-                      v-if="
-                        studentGradStatus.studentGradData.gradMessage &&
-                        !studentGradStatus.recalculateGradStatus
-                      "
+          <v-window v-model="tab">
+            <v-window-item value="gradStatusTab">
+              <v-tabs v-model="selectedTab">
+                <v-tab value="GRAD">GRAD</v-tab>
+                <v-tab value="Courses">Courses ({{ courses.length }})</v-tab>
+                <v-tab value="Assessments"
+                  >Assessments ({{ assessments.length }})</v-tab
+                >
+                <v-tab value="Exams">Exams Details ({{ exams.length }})</v-tab>
+                <v-tab value="Optional"
+                  >Optional Programs ({{ optionalPrograms.length }})</v-tab
+                >
+                <v-tab value="Audit">Audit History</v-tab>
+              </v-tabs>
+              <v-card-text>
+                <v-window v-model="selectedTab">
+                  <v-window-item value="GRAD">
+                    <div v-if="studentGradStatus.studentGradData">
+                      <v-alert
+                        color="Info"
+                        icon="$info"
+                        v-if="
+                          studentGradStatus.studentGradData.gradMessage &&
+                          !studentGradStatus.recalculateGradStatus
+                        "
+                      >
+                        {{ studentGradStatus.studentGradData.gradMessage }}
+                      </v-alert>
+                    </div>
+                    <StudentGraduationStatus></StudentGraduationStatus>
+                    <div id="RequirementDetails">
+                      <v-progress-circular
+                        v-if="tabLoading"
+                        indeterminate
+                        color="green"
+                      >
+                      </v-progress-circular>
+                    </div>
+                  </v-window-item>
+                  <v-window-item value="Courses">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
                     >
-                      {{ studentGradStatus.studentGradData.gradMessage }}
-                    </v-alert>
-                  </div>
-                  <GRADRequirementDetails> </GRADRequirementDetails>
-                </div>
-              </v-window-item>
-              <v-window-item value="Courses">
-                <v-progress-circular
-                  v-if="tabLoading"
-                  indeterminate
-                  color="green"
-                >
-                </v-progress-circular>
-                <StudentCourses></StudentCourses
-              ></v-window-item>
-              <v-window-item value="Assessments">
-                <v-progress-circular
-                  v-if="tabLoading"
-                  indeterminate
-                  color="green"
-                >
-                </v-progress-circular>
-                <StudentAssessments
-              /></v-window-item>
-              <v-window-item value="Exams">
-                <v-progress-circular
-                  v-if="tabLoading"
-                  indeterminate
-                  color="green"
-                >
-                </v-progress-circular>
-                <StudentExams />
-              </v-window-item>
-              <v-window-item value="Optional">
-                <v-progress-circular
-                  v-if="tabLoading"
-                  indeterminate
-                  color="green"
-                >
-                </v-progress-circular>
-                <StudentOptionalPrograms></StudentOptionalPrograms
-              ></v-window-item>
-              <v-window-item value="Audit">
-                <v-progress-circular
-                  v-if="tabLoading"
-                  indeterminate
-                  color="green"
-                >
-                </v-progress-circular>
-                <div class="ml-3">
-                  <v-btn
-                    class="mr-2 my-1"
-                    v-on:click="auditTab = 'studentAudit'"
-                    size="sm"
-                    :variant="auditTab == 'studentAudit' ? 'tonal' : 'outlined'"
-                    >Student Audit</v-btn
-                  >
-                  <v-btn
-                    class="mr-2 my-1"
-                    v-on:click="auditTab = 'notes'"
-                    size="sm"
-                    :variant="auditTab == 'notes' ? 'tonal' : 'outlined'"
-                    >Notes ({{ studentNotes.length }})</v-btn
-                  >
-                  <v-btn
-                    class="mr-2 my-1"
-                    v-on:click="auditTab = 'undoCompletionReasons'"
-                    size="sm"
-                    :variant="
-                      auditTab == 'undoCompletionReasons' ? 'tonal' : 'outlined'
-                    "
-                    >Undo Completion Reasons ({{
-                      studentUngradReasons.length
-                    }})</v-btn
-                  >
-                  <StudentAuditHistory v-if="auditTab == 'studentAudit'" />
-                </div>
-              </v-window-item>
-            </v-window>
-          </v-card-text>
+                    </v-progress-circular>
+                    <StudentCourses></StudentCourses
+                  ></v-window-item>
+                  <v-window-item value="Assessments">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
+                    </v-progress-circular>
+                    <StudentAssessments
+                  /></v-window-item>
+                  <v-window-item value="Exams">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
+                    </v-progress-circular>
+                    <StudentExams />
+                  </v-window-item>
+                  <v-window-item value="Optional">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
+                    </v-progress-circular>
+                    <StudentOptionalPrograms></StudentOptionalPrograms
+                  ></v-window-item>
+                  <v-window-item value="Audit">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
+                    </v-progress-circular>
+                    <div class="ml-3">
+                      <v-btn
+                        class="mr-2 my-1"
+                        v-on:click="auditTab = 'studentAudit'"
+                        size="sm"
+                        :variant="
+                          auditTab == 'studentAudit' ? 'tonal' : 'outlined'
+                        "
+                        >Student Audit</v-btn
+                      >
+                      <v-btn
+                        class="mr-2 my-1"
+                        v-on:click="auditTab = 'notes'"
+                        size="sm"
+                        :variant="auditTab == 'notes' ? 'tonal' : 'outlined'"
+                        >Notes ({{ studentNotes.length }})</v-btn
+                      >
+                      <v-btn
+                        class="mr-2 my-1"
+                        v-on:click="auditTab = 'undoCompletionReasons'"
+                        size="sm"
+                        :variant="
+                          auditTab == 'undoCompletionReasons'
+                            ? 'tonal'
+                            : 'outlined'
+                        "
+                        >Undo Completion Reasons ({{
+                          studentUngradReasons.length
+                        }})</v-btn
+                      >
+                      <StudentAuditHistory v-if="auditTab == 'studentAudit'" />
+                    </div>
+                  </v-window-item>
+                </v-window>
+              </v-card-text>
+            </v-window-item>
+            <v-window-item value="requirementDetailsTab">
+              <GRADRequirementDetails> </GRADRequirementDetails>
+            </v-window-item>
+          </v-window>
         </v-card>
       </div>
     </div>
@@ -260,6 +285,7 @@ export default {
   props: {},
   data() {
     return {
+      tab: null,
       pen: "",
       optionalProgramTab: "",
       projectedOptionalGradStatus: "",
