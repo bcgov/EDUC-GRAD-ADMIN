@@ -306,10 +306,13 @@
             </b-card-text>
           </b-tab>
           <b-tab title="Fine Arts Applied Skills">
-            <FineArtsAppliedSkillsCodes
-          /></b-tab>
+            <FineArtsAppliedSkillsCodes />
+          </b-tab>
           <b-tab title="Exam Special Cases">
             <ExamSpecialCaseCodes />
+          </b-tab>
+          <b-tab title="Equivalency or Challenge">
+            <EquivalentOrChallengeCodes />
           </b-tab>
         </b-tabs>
       </b-card>
@@ -323,6 +326,7 @@ import CourseService from "@/services/CourseService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 import FineArtsAppliedSkillsCodes from "@/components/Courses/FineArtsAppliedSkillsCodes.vue";
 import ExamSpecialCaseCodes from "@/components/Courses/ExamSpecialCaseCodes.vue";
+import EquivalentOrChallengeCodes from "@/components/Courses/EquivalentOrChallengeCodes.vue";
 
 export default {
   name: "courses",
@@ -330,6 +334,7 @@ export default {
     DisplayTable: DisplayTable,
     FineArtsAppliedSkillsCodes: FineArtsAppliedSkillsCodes,
     ExamSpecialCaseCodes: ExamSpecialCaseCodes,
+    EquivalentOrChallengeCodes: EquivalentOrChallengeCodes,
   },
   data() {
     return {

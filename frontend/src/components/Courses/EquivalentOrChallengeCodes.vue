@@ -1,14 +1,14 @@
 <template>
   <div>
     <p>
-      Identifies the special cases associated with writing the exam or allowing
-      an exemption from exam writing.
+      Indicates if credit for the course was granted through the Equivalency (E)
+      or Challenge (C) process.
     </p>
     <DisplayTable
       title="Exam Special Case Codes"
-      v-bind:items="sortedExamSpecialCaseCodes"
-      v-bind:fields="examSpecialCaseCodesFields"
-      id="examSpecialCaseCode"
+      v-bind:items="sortedEquivalentOrChallengeCodes"
+      v-bind:fields="equivalentOrChallengeCodesFields"
+      id="equivalentOrChallengeCode"
       showFilter="true"
     >
       <template #cell(effectiveDate)="row">
@@ -29,15 +29,15 @@ import CourseService from "@/services/CourseService";
 import { applyDisplayOrder } from "@/utils/common.js";
 
 export default {
-  name: "ExamSpecialCaseCodes",
+  name: "EquivalentOrChallengeCodes",
   components: {
     DisplayTable: DisplayTable,
   },
   created() {
     // get codes
-    CourseService.getExamSpecialCaseCodes()
+    CourseService.getEquivalentOrChallengeCodes()
       .then((response) => {
-        this.examSpecialCaseCodes = response.data;
+        this.equivalentOrChallengeCodes = response.data;
       })
       // eslint-disable-next-line
       .catch((error) => {
@@ -50,10 +50,10 @@ export default {
   },
   data: function () {
     return {
-      examSpecialCaseCodes: [],
-      examSpecialCaseCodesFields: [
+      equivalentOrChallengeCodes: [],
+      equivalentOrChallengeCodesFields: [
         {
-          key: "examSpecialCaseCode",
+          key: "equivalentOrChallengeCode",
           label: "Code",
           sortable: true,
         },
@@ -71,20 +71,18 @@ export default {
           key: "effectiveDate",
           label: "Effective Date",
           sortable: true,
-          class: "w-25",
         },
         {
           key: "expiryDate",
           label: "Expiry Date",
           sortable: true,
-          class: "w-25",
         },
       ],
     };
   },
   computed: {
-    sortedExamSpecialCaseCodes() {
-      return applyDisplayOrder(this.examSpecialCaseCodes);
+    sortedEquivalentOrChallengeCodes() {
+      return applyDisplayOrder(this.equivalentOrChallengeCodes);
     },
   },
 };
