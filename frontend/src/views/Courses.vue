@@ -306,8 +306,8 @@
             </b-card-text>
           </b-tab>
           <b-tab title="Fine Arts Applied Skills">
-            <FineArtsAppliedSkillsCodes
-          /></b-tab>
+            <FineArtsAppliedSkillsCodes />
+          </b-tab>
           <b-tab title="Exam Special Cases">
             <ExamSpecialCaseCodes />
           </b-tab>
