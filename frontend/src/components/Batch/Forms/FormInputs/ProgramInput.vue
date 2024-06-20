@@ -148,7 +148,11 @@ export default {
     },
     programTitle(item) {
       // Customize this method to return the desired format
-      return `${item.programCode} - ${item.programName}`;
+      if (item) {
+        return `${item.programCode} - ${item.programName}`;
+      } else {
+        return null;
+      }
     },
   },
 

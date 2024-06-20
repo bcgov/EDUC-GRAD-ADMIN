@@ -4,20 +4,23 @@
       <v-col>
         <v-card title="Include School(s)">
           <v-card-text>
-            <label class="font-weight-bold p-2 m-0 row float-left"
-              >Select Schools</label
-            >
-
-            <v-select
-              v-model="includeStudents"
-              :items="['Current Students', 'Date Range']"
-              label="Include Students"
-              class="mb-2 mr-sm-2 mb-sm-0 col-3 float-left"
-            ></v-select>
-
+            <v-row>
+              <v-col md="2">
+                <label class="font-weight-bold">Include</label>
+              </v-col>
+              <v-col md="10">
+                <v-select
+                  v-model="includeStudents"
+                  :items="['Current Students', 'Date Range']"
+                  label="Select which students to include"
+                  class=""
+                ></v-select>
+              </v-col>
+            </v-row>
             <v-row
               v-if="includeStudents === 'Date Range'"
-              class="date-ranges col-12 row"
+              class="date-ranges"
+              md
             >
               <v-col class="row float-left col-3 m-0 p-0">
                 <strong><label class="pt-1">Grad Start Date</label></strong>
@@ -37,12 +40,13 @@
             </v-row>
 
             <v-row>
-              <v-col>
+              <v-col md="2">
                 <label class="font-weight-bold">Mincode</label>
-                {{ selectedSchool }}
+              </v-col>
+              <v-col>
                 <v-autocomplete
                   v-model="mincode"
-                  label="Autocomplete"
+                  label="Select a school to include"
                   :items="getSchoolsList"
                   :item-title="schoolTitle"
                   item-value="mincode"
@@ -51,18 +55,9 @@
                     {{ label.label }}
                   </template>
                 </v-autocomplete>
-
-                <v-row v-for="error in v$.mincode.$errors" :key="error.$uid">
-                  <div class="error-msg">{{ error.$message }}</div>
-                </v-row>
-              </v-col>
-
-              <v-col md="10" v-if="mincodeSchoolInfo">
-                <v-card>
+                <v-card v-if="mincodeSchoolInfo">
                   <v-card-text>
-                    <v-spinner v-if="mincodeValidating"></v-spinner>
-                    {{ mincodeSchoolInfo }}
-                    <div v-if="mincodeSchoolInfo">
+                    <div>
                       <strong>School Name:</strong>
                       {{ mincodeSchoolInfo.schoolName }}<br />
                       <strong>Transcript Eligibility:</strong>
@@ -73,16 +68,18 @@
                       {{ mincodeSchoolInfo.transcriptEligibility }}<br />
                       <strong>TRAX reporting</strong>
                       {{ mincodeSchoolInfo.traxReporting }}<br />
+                      <v-btn @click="addSchool()" class="float-right"
+                        >Add School</v-btn
+                      >
                     </div>
-                    <div v-else>NOT VALID</div>
                   </v-card-text>
-                  <v-btn @click="addSchool()" class="float-right"
-                    >Add School</v-btn
-                  >
                 </v-card>
+
+                <v-row v-for="error in v$.mincode.$errors" :key="error.$uid">
+                  <div class="error-msg">{{ error.$message }}</div>
+                </v-row>
               </v-col>
             </v-row>
-            {{ schools }}
             <v-data-table
               v-if="schools.length"
               :items="schools"
@@ -117,6 +114,7 @@
                   {{ item.raw.info.traxReporting }}
                 </div>
               </template>
+              <template #bottom></template>
             </v-data-table>
           </v-card-text>
         </v-card>
@@ -222,7 +220,11 @@ export default {
   methods: {
     schoolTitle(item) {
       // Customize this method to return the desired format
-      return `${item.mincode} - ${item.displayName}`;
+      if (item) {
+        return `${item.mincode} - ${item.displayName}`;
+      } else {
+        return null;
+      }
     },
     clearmincodeSchoolInfo() {
       this.mincodeSchoolInfo = "";
