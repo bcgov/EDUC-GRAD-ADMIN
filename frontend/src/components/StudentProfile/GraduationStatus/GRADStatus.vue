@@ -1,7 +1,7 @@
 <template>
   <div class="graduation-status">
-    <b-card no-body header="GRAD Status">
-      <b-card-text class="p-3">
+    <v-card no-body title="GRAD Status">
+      <v-card-text class="p-3">
         <b-button-group
           v-if="allowUpdateGradStatus"
           class="gradstatus-actions float-right"
@@ -48,17 +48,18 @@
             </b-button-group>
           </div>
         </b-button-group>
+
         <!-- Info callout in edit form when student status is MER/Merged -->
         <div
           v-if="studentGradStatus && studentGradStatus.studentStatus == 'MER'"
         >
-          <b-alert show variant="info" class="p-3 mb-1">
+          <v-alert show variant="info" class="p-3 mb-1">
             <h4 class="alert-heading">Student status: Merged</h4>
             <p class="locked-message">
               This student's status is set to 'Merged'. Their data cannot be
               changed.
             </p>
-          </b-alert>
+          </v-alert>
         </div>
         <!-- Warning callout in edit form when student status is N/Not Active -->
         <div
@@ -68,14 +69,14 @@
             showEdit
           "
         >
-          <b-alert show variant="warning" class="p-3 mb-1">
+          <v-alert show variant="warning" class="p-3 mb-1">
             <h4 class="alert-heading">Student status: Not active</h4>
             <p class="locked-message">
               This student's status is set to 'Not active'. Re-activate their
               record by setting their 'Student status' to 'Active' if they are
               enrolled in a school.
             </p>
-          </b-alert>
+          </v-alert>
         </div>
         <!-- Warning callout in edit form when student status is TER/Terminated -->
         <div
@@ -85,14 +86,14 @@
             showEdit
           "
         >
-          <b-alert show variant="warning" class="p-3 mb-1">
+          <v-alert show variant="warning" class="p-3 mb-1">
             <h4 class="alert-heading">Student status: Terminated</h4>
             <p class="locked-message">
               This student's status is set to 'Terminated'. Re-activate their
               record by setting their 'Student status' to 'Current' if they are
               enrolled in a school.
             </p>
-          </b-alert>
+          </v-alert>
         </div>
         <!-- Warning callout in edit form when student status is ARC/Archived -->
         <div
@@ -102,13 +103,13 @@
             showEdit
           "
         >
-          <b-alert show variant="warning" class="p-3 mb-1">
+          <v-alert show variant="warning" class="p-3 mb-1">
             <h4 class="alert-heading">Student status: Archived</h4>
             <p class="locked-message">
               This student is not active. Re-activate by setting their status to
               "Current" if they are currently attending school
             </p>
-          </b-alert>
+          </v-alert>
         </div>
         <!-- Warning callout in edit form when student status is DEC/Deceased -->
         <div
@@ -118,12 +119,12 @@
             showEdit
           "
         >
-          <b-alert show variant="warning" class="p-3 mb-1">
+          <v-alert show variant="warning" class="p-3 mb-1">
             <h4 class="alert-heading">Student status: Deceased</h4>
             <p class="locked-message">
               Warning: This student is showing as "Deceased".
             </p>
-          </b-alert>
+          </v-alert>
         </div>
 
         <table
@@ -738,8 +739,8 @@
             <tr></tr>
           </tbody>
         </table>
-      </b-card-text>
-    </b-card>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 

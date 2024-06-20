@@ -14,6 +14,9 @@
                 <v-list-item to="/codes/certificates-types"
                   >Certificate Types</v-list-item
                 >
+                <v-list-item to="/codes/transcript-types"
+                  >Transcript Types</v-list-item
+                >
                 <v-list-item to="/codes/program-certificate-transcript"
                   >Program Certificate Transcript</v-list-item
                 >

@@ -72,12 +72,12 @@ export default {
         },
         {
           key: "startDate",
-          title: "Start Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "endDate",
-          title: "End Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],
