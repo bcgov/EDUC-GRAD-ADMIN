@@ -14,7 +14,7 @@ env:
 
 jobs:
   DeployRunner:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     outputs:
       runner_name: ${{ steps.deploy_runner.outputs.runner_name }}
     steps:
@@ -65,7 +65,7 @@ jobs:
           url: ${{ secrets.ROCKETCHAT_WEBHOOK_FAILURES }}
   # now burn it all down!!
   TearDown:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: ${{ always() }}
     needs: [DeployRunner, DailyRegression]
     steps:
