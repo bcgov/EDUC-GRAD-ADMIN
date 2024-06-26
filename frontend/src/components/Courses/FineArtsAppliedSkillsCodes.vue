@@ -1,7 +1,7 @@
 <template>
   <div>
     <p>
-      Fine Arts Applied Skills codes Indicates that a course is being used for
+      Fine Arts Applied Skills codes indicates that a course is being used for
       the Fine Arts and/or Applied Skills graduation requirement.
     </p>
     <DisplayTable
