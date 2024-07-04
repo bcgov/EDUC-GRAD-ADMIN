@@ -4,18 +4,20 @@
       <v-card-title>Include Program(s)</v-card-title>
       <v-card-text>
         <label>Program</label>
-
-        <v-autocomplete
-          v-model="program"
-          :items="computedProgramList"
-          :item-title="programTitle"
-          item-value="programCode"
-          :item-disabled="true"
-        ></v-autocomplete>
-
-        <div class="float-right mb-3">
-          <v-btn :disabled="!program" @click="addProgram()">Add</v-btn>
-        </div>
+        <v-row>
+          <v-col sm="11">
+            <v-autocomplete
+              v-model="program"
+              :items="computedProgramList"
+              :item-title="programTitle"
+              item-value="programCode"
+              :item-disabled="true"
+            ></v-autocomplete>
+          </v-col>
+          <v-col sm="1" class="p-2">
+            <v-btn :disabled="!program" @click="addProgram()">Add</v-btn>
+          </v-col>
+        </v-row>
         <v-data-table
           v-if="programs.length > 0"
           :items="programs"

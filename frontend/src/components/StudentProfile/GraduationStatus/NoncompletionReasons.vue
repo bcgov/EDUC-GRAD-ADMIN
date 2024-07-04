@@ -1,6 +1,6 @@
 <template>
   <div class="requirements-met-and-not-met">
-    <div class="requirements-not-met pb-2">
+    <div class="requirements-not-met mb-2">
       <v-card title="Noncompletion Reasons" class="w-100">
         <v-card-text
           v-if="
@@ -43,7 +43,7 @@
         no-body
         class="w-100"
       >
-        <v-card-text class="m-3">
+        <v-card-text class="">
           <v-table density="compact">
             <thead>
               <tr>

@@ -56,11 +56,14 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     },    
   },
   getters: {
+    getGroup: (state) => {
+      return state.who
+    },
     getGroupData: (state) => {
       
       if (state.who === "Student") {
         return state.students.map(student => student.pen);
-      } else if (state.who === "District") {
+      } else if (state.who === "School Category") {
         return state.districts;
       } else if (state.who === "Program") {
         return state.programs;

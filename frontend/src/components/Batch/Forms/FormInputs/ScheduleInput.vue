@@ -2,20 +2,74 @@
   <v-container>
     <v-row>
       <v-col sm="12">
-        <div v-if="this.group === 'School'">
-          <v-data-table :items="getGroupData" :headers="schoolInputFields">
+        GROUP
+        {{ getGroup }}
+        <div v-if="getGroup == 'School'">
+          <v-data-table
+            :items="getGroupData"
+            :headers="[
+              {
+                key: 'mincode',
+                title: 'Mincode',
+                sortable: true,
+                class: 'text-left',
+              },
+              {
+                key: 'info.schoolName',
+                title: 'School',
+                sortable: true,
+                class: 'text-left',
+              },
+            ]"
+          >
             <template #bottom></template
           ></v-data-table>
         </div>
-        <div v-if="this.group === 'School Category'">
-          Districts: {{ getBatchRequest.districts }}
+        <div v-if="getGroup == 'School Category'">
+          {{ getGroupData }}
+          <v-data-table
+            :items="getGroupData"
+            :headers="[
+              {
+                key: 'district',
+                title: 'District',
+                sortable: true,
+                class: 'text-left',
+              },
+              {
+                key: 'info.districtName',
+                title: 'District Name',
+                sortable: true,
+                class: 'text-left',
+              },
+            ]"
+          >
+            <template #bottom></template
+          ></v-data-table>
         </div>
-        <div v-if="this.group === 'Program'">
-          Schools: {{ getBatchRequest.programs }}
+        <div v-if="getGroup == 'Program'">
+          {{ getGroupData }}
+          <v-data-table
+            :items="getGroupData"
+            :headers="[
+              {
+                key: 'program',
+                title: 'Program',
+                sortable: true,
+                class: 'text-left',
+              },
+              {
+                key: 'info',
+                title: 'Program Name',
+                sortable: true,
+                class: 'text-left',
+              },
+            ]"
+          >
+            <template #bottom></template
+          ></v-data-table>
         </div>
-        <div v-if="this.group === 'PSI'">
-          Schools: {{ getBatchRequest.psis }}
-        </div>
+        <div v-if="getGroup == 'PSI'">Schools: {{ getBatchRequest.psis }}</div>
       </v-col>
       <v-col>
         <v-radio-group v-model="batchRunTime">
@@ -62,7 +116,7 @@ export default {
 
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
-    const group = ref(batchRequestFormStore.who);
+
     const batchRunTime = ref(batchRequestFormStore.batchRunTime);
     const batchRunSchedule = ref(batchRequestFormStore.batchRunSchedule);
     const batchRunCustomDate = ref(batchRequestFormStore.batchRunCustomDate);
@@ -85,7 +139,6 @@ export default {
     });
 
     return {
-      group,
       batchRunTime,
       batchRunSchedule,
       batchRunCustomDate,
@@ -122,28 +175,7 @@ export default {
     };
   },
   data() {
-    return {
-      schoolInputFields: [
-        {
-          key: "mincode",
-          title: "Mincode",
-          sortable: true,
-          class: "text-left",
-        },
-        {
-          key: "info.schoolName",
-          title: "School",
-          sortable: true,
-          class: "text-left",
-        },
-        {
-          key: "remove",
-          title: "",
-          sortable: true,
-          class: "text-left",
-        },
-      ],
-    };
+    return {};
   },
 
   created() {
@@ -213,6 +245,7 @@ export default {
       "getBatchRunCustomDate",
       "getbatchRunCustomTime",
       "getGroupData",
+      "getGroup",
     ]),
     isEmpty() {
       return this.students.length > 0;

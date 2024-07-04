@@ -2,7 +2,6 @@
   <div>
     <div v-if="adminDashboardLoading">LOADING</div>
     <div v-if="!scheduledJobs.length">No Scheduled Jobs</div>
-    {{ scheduledJobs }}
     <DisplayTable
       title="Job/Runs"
       :items="scheduledJobs"

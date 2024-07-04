@@ -201,9 +201,9 @@ export default {
   },
   onBeforeMount() {
     // Now, you can use the mapped actions in the hook
-    // this.actionNames.forEach((actionName) => {
-    //   this[actionName]();
-    // });
+    this.actionNames.forEach((actionName) => {
+      this[actionName]();
+    });
   },
   methods: {
     disableDelete(item) {
@@ -249,7 +249,7 @@ export default {
       const store = this.stores[this.store];
       const itemId = itemRaw[this.id];
       if (store) {
-        store[this.delete](itemId);
+        store[this.delete.action](itemId);
       } else {
         console.error("Store not found.");
       }

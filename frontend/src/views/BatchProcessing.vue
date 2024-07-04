@@ -61,7 +61,7 @@
             <v-window-item value="newBatchRequest">
               <v-container>
                 <v-row>
-                  <v-col sm="12" md="4">
+                  <v-col justify-md="start">
                     <v-data-table
                       :items="batchRunGradOptions"
                       :headers="batchFields"
@@ -243,11 +243,13 @@ export default {
           key: "newRequest",
           title: "",
           sortable: true,
+          align: "top",
         },
         {
           key: "displayOrder",
           title: "",
           sortable: true,
+          align: " d-none",
         },
       ],
       validationMessage: "",
@@ -1311,5 +1313,8 @@ h6 {
 }
 .delete-button {
   border-radius: 0px;
+}
+.v-container {
+  max-width: 100%;
 }
 </style>

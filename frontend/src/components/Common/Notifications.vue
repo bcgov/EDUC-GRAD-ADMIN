@@ -1,5 +1,5 @@
 <template>
-  <v-snackbar v-model="isVisible" :timeout="timeout" top right>
+  <v-snackbar v-model:visible="isVisible" :timeout="timeout" top right>
     {{ message }}
   </v-snackbar>
 </template>
@@ -9,7 +9,7 @@ export default {
   data() {
     return {
       isVisible: false,
-      message: "",
+      message: '',
       timeout: 6000, // Default timeout for the snackbar
     };
   },
@@ -23,6 +23,6 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 /* Add any custom styles if needed */
 </style>
