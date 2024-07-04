@@ -9,8 +9,8 @@
       showFilter="true"
       title="Assessments"
     >
-      <template #cell(sessionDate)="row">
-        {{ $filters.formatYYYYMMDate(row.value) }}
+      <template v-slot:item.sessionDate="{ item }">
+        {{ $filters.formatYYYYMMDate(item.raw.sessionDate) }}
       </template>
     </DisplayTable>
   </div>
@@ -34,85 +34,89 @@ export default {
   data: function () {
     return {
       fields: [
-        { key: "more", label: "" },
+        // {
+        //   key: "data-table-expand",
+        //   title: "",
+        //   class: "text-left",
+        // },
         {
           key: "courseCode",
-          label: "Code",
+          title: "Code",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
         },
         {
           key: "courseLevel",
-          label: "Level",
+          title: "Level",
           sortable: true,
           class: "text-md-center",
         },
         {
           key: "sessionDate",
-          label: "Session",
+          title: "Session",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "completedSchoolPercentage",
-          label: "School %",
+          title: "School %",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
         },
         {
           key: "bestSchoolPercentage",
-          label: "Best School %",
+          title: "Best School %",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
         },
         {
           key: "optIn",
-          label: "Opt In",
+          title: "Opt In",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
         },
         {
           key: "specialCase",
-          label: "Special Case",
+          title: "Special Case",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
         },
         {
           key: "wroteFlag",
-          label: "Wrote Exam",
+          title: "Wrote Exam",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
         },
         {
           key: "completedCourseExamPercentage",
-          label: "Exam %",
+          title: "Exam %",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
         },
         {
           key: "bestExamPercentage",
-          label: "Best Exam %",
+          title: "Best Exam %",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
         },
         {
           key: "completedCourseFinalPercentage",
-          label: "Final %",
+          title: "Final %",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
         },
         {
           key: "completedCourseLetterGrade",
-          label: "Final LG",
+          title: "Final LG",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
