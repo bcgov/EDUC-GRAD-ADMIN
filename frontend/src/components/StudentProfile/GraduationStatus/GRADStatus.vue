@@ -2,7 +2,46 @@
   <div class="graduation-status">
     <v-card no-body title="GRAD Status">
       <v-card-text class="p-3">
-        <b-button-group
+        <v-btn-group
+          v-if="allowUpdateGradStatus"
+          class="gradstatus-actions float-right"
+        >
+          <div v-if="!showEdit && allowUpdateGradStatus">
+            <v-btn
+              v-if="studentGradStatus.studentStatus === 'MER'"
+              @click="editGradStatus"
+              size="small"
+              color="primary"
+              disabled
+            >
+              Edit
+            </v-btn>
+            <v-btn v-else @click="editGradStatus" size="small" color="primary">
+              Edit
+            </v-btn>
+          </div>
+          <div v-if="showEdit">
+            <v-btn-group>
+              <v-btn
+                :disabled="disableSaveButton"
+                @click="saveGraduationStatus(studentId)"
+                size="small"
+                color="primary"
+              >
+                Save
+              </v-btn>
+              <v-btn
+                @click="cancelGradStatus"
+                size="small"
+                color="primary"
+                outlined
+              >
+                Cancel
+              </v-btn>
+            </v-btn-group>
+          </div>
+        </v-btn-group>
+        <!-- <b-button-group
           v-if="allowUpdateGradStatus"
           class="gradstatus-actions float-right"
         >
@@ -47,7 +86,7 @@
               >
             </b-button-group>
           </div>
-        </b-button-group>
+        </b-button-group> -->
 
         <!-- Info callout in edit form when student status is MER/Merged -->
         <div
@@ -127,18 +166,12 @@
           </v-alert>
         </div>
 
-        <table
-          role="presentation"
-          aria-label="edit grad status"
-          class="table table-hover table-sm"
-        >
+        <v-table density="compact" aria-label="edit grad status">
           <tbody>
             <tr v-if="!showEdit">
               <td class="w-50"><strong>Program: </strong></td>
               <td class="w-50">
-                <span v-b-tooltip.hover title="Program">{{
-                  studentGradStatus.program
-                }}</span>
+                <span>{{ studentGradStatus.program }}</span>
               </td>
             </tr>
             <tr v-if="showEdit">
@@ -738,7 +771,7 @@
             </tr>
             <tr></tr>
           </tbody>
-        </table>
+        </v-table>
       </v-card-text>
     </v-card>
   </div>

@@ -135,7 +135,6 @@
             </template>
           </v-dialog>
         </template>
-
         <template v-slot:expanded-row="{ columns, item }">
           <tr>
             <td :colspan="columns.length">
@@ -209,7 +208,6 @@ export default {
         {
           key: "data-table-expand",
           title: "",
-
           sortable: true,
           class: "text-left",
         },
