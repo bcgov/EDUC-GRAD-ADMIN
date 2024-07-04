@@ -1,25 +1,23 @@
 <template>
   <v-container>
     <v-row>
-      {{ v$ }}
-      <br /><br />
-      {{ group }}ss
-      <div v-if="this.group === 'School'">
-        Schools: {{ getBatchRequest.schoolOfRecords }}
-      </div>
-      <div v-if="this.group === 'School Category'">
-        Districts: {{ getBatchRequest.districts }}
-      </div>
-      <div v-if="this.group === 'Program'">
-        Schools: {{ getBatchRequest.programs }}
-      </div>
-      <div v-if="this.group === 'PSI'">Schools: {{ getBatchRequest.psis }}</div>
-      RUNTIME {{ batchRunTime }}<br />
-
-      RUN SCHEDULE {{ batchRunSchedule }}<br />
-      CUSTOM DATE {{ batchRunCustomDate }}<br />
-      CUSTOM TIME {{ batchRunCustomTime }}<br />
-      <v-col cols="12">
+      <v-col sm="12">
+        <div v-if="this.group === 'School'">
+          <v-data-table :items="getGroupData" :headers="schoolInputFields">
+            <template #bottom></template
+          ></v-data-table>
+        </div>
+        <div v-if="this.group === 'School Category'">
+          Districts: {{ getBatchRequest.districts }}
+        </div>
+        <div v-if="this.group === 'Program'">
+          Schools: {{ getBatchRequest.programs }}
+        </div>
+        <div v-if="this.group === 'PSI'">
+          Schools: {{ getBatchRequest.psis }}
+        </div>
+      </v-col>
+      <v-col>
         <v-radio-group v-model="batchRunTime">
           <v-radio label="Run Now" value="Run Now"></v-radio>
           <v-radio label="Run Later" value="Run Later"></v-radio>
@@ -87,6 +85,7 @@ export default {
     });
 
     return {
+      group,
       batchRunTime,
       batchRunSchedule,
       batchRunCustomDate,
@@ -123,7 +122,28 @@ export default {
     };
   },
   data() {
-    return {};
+    return {
+      schoolInputFields: [
+        {
+          key: "mincode",
+          title: "Mincode",
+          sortable: true,
+          class: "text-left",
+        },
+        {
+          key: "info.schoolName",
+          title: "School",
+          sortable: true,
+          class: "text-left",
+        },
+        {
+          key: "remove",
+          title: "",
+          sortable: true,
+          class: "text-left",
+        },
+      ],
+    };
   },
 
   created() {
@@ -192,6 +212,7 @@ export default {
       "getBatchRunTime",
       "getBatchRunCustomDate",
       "getbatchRunCustomTime",
+      "getGroupData",
     ]),
     isEmpty() {
       return this.students.length > 0;

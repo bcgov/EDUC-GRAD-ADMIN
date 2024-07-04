@@ -6,7 +6,7 @@
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">User Request Certificate Regeneration</span>
+          <span class="text-h5">GRADUATION ALGORITHM</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -37,20 +37,29 @@
                       <v-select
                         v-model="group"
                         :items="[
-                          'All',
                           'Student',
-                          { name: 'District', value: 'School Category' },
+                          'School',
+                          'School Category',
+                          'Program',
+                          'PSI',
                         ]"
-                        item-title="name"
-                        item-value="value"
                         label="Select Option"
                       ></v-select>
                     </v-row>
                     <v-row v-if="group == 'Student'">
-                      <StudentInput runType="CERT_REGEN"></StudentInput>
+                      <StudentInput></StudentInput>
                     </v-row>
                     <v-row v-if="group == 'School Category'">
-                      <DistrictInput runType="CERT_REGEN"></DistrictInput>
+                      <DistrictInput></DistrictInput>
+                    </v-row>
+                    <v-row v-if="group == 'PSI'">
+                      <DistrictInput></DistrictInput>
+                    </v-row>
+                    <v-row v-if="group == 'Program'">
+                      <ProgramInput></ProgramInput>
+                    </v-row>
+                    <v-row v-if="group == 'School'">
+                      <SchoolInput></SchoolInput>
                     </v-row>
                   </v-stepper-window-item>
 
@@ -230,8 +239,6 @@ export default {
                   isValid =
                     this.getBatchRequest.psiCodes &&
                     this.getBatchRequest.psiCodes.length > 0;
-                } else if (this.group === "All") {
-                  isValid = false;
                 } else {
                   isValid = true; // Return true if none of the above conditions matched
                 }

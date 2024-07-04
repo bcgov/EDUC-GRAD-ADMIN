@@ -192,7 +192,11 @@ export default {
   created() {},
   methods: {
     districtTitle(item) {
-      return `${item.districtNumber} - ${item.displayName}`;
+      if (item) {
+        return `${item.districtNumber} - ${item.displayName}`;
+      } else {
+        return null;
+      }
     },
     async validateDistrict() {
       this.districtValidating = true;

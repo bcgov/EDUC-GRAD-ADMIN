@@ -34,17 +34,24 @@
                 <v-stepper-window>
                   <v-stepper-window-item value="1">
                     <v-row>
-                      <v-select
-                        v-model="group"
-                        :items="[
-                          'Student',
-                          'School',
-                          'School Category',
-                          'Program',
-                          'PSI',
-                        ]"
-                        label="Select Option"
-                      ></v-select>
+                      <v-col md="2">
+                        <label class="font-weight-bold">Group</label>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col>
+                        <v-select
+                          v-model="group"
+                          :items="[
+                            'Student',
+                            'School',
+                            'School Category',
+                            'Program',
+                            'PSI',
+                          ]"
+                          label="Select a group"
+                        ></v-select>
+                      </v-col>
                     </v-row>
                     <v-row v-if="group == 'Student'">
                       <StudentInput></StudentInput>
