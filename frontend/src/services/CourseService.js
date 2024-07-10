@@ -44,4 +44,13 @@ export default {
       "/api/v1/course/studentexam/pen/" + pen + "?sortForUI=true"
     );
   },
+  getFineArtsAppliedSkillsTypes() {
+    return ApiService.apiAxios.get("/api/v1/course/fineArtsAppliedSkillsCodes");
+  },
+  getExamSpecialCaseCodes() {
+    return ApiService.apiAxios.get("/api/v1/course/examSpecialCaseCodes");
+  },
+  getEquivalentOrChallengeCodes() {
+    return ApiService.apiAxios.get("/api/v1/course/equivalentOrChallengeCodes");
+  },
 };

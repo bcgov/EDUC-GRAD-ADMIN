@@ -172,10 +172,11 @@
               ></DisplayTable>
             </b-card-text>
           </b-tab>
-          <b-tab title="Course restrictions">
+          <b-tab title="Course Restrictions">
+            <!-- TODO: Refactor this into it's own component for Vuetify -->
             <b-card-text>
               <DisplayTable
-                title="Course restrictions"
+                title="Course Restrictions"
                 v-bind:items="courseRestrictions"
                 v-bind:fields="courseRestrictionFields"
                 id="courseRestrictionId"
@@ -185,7 +186,7 @@
               </DisplayTable>
             </b-card-text>
           </b-tab>
-          <b-tab title="Course requirements">
+          <b-tab title="Course Requirements">
             <b-card-text>
               <form v-on:submit.prevent>
                 <div class="advanced-search-form">
@@ -304,6 +305,15 @@
               </DisplayTable>
             </b-card-text>
           </b-tab>
+          <b-tab title="Fine Arts Applied Skills">
+            <FineArtsAppliedSkillsCodes />
+          </b-tab>
+          <b-tab title="Exam Special Cases">
+            <ExamSpecialCaseCodes />
+          </b-tab>
+          <b-tab title="Equivalency or Challenge">
+            <EquivalentOrChallengeCodes />
+          </b-tab>
         </b-tabs>
       </b-card>
     </div>
@@ -314,10 +324,17 @@
 import { showNotification } from "../utils/common.js";
 import CourseService from "@/services/CourseService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
+import FineArtsAppliedSkillsCodes from "@/components/Courses/FineArtsAppliedSkillsCodes.vue";
+import ExamSpecialCaseCodes from "@/components/Courses/ExamSpecialCaseCodes.vue";
+import EquivalentOrChallengeCodes from "@/components/Courses/EquivalentOrChallengeCodes.vue";
+
 export default {
   name: "courses",
   components: {
     DisplayTable: DisplayTable,
+    FineArtsAppliedSkillsCodes: FineArtsAppliedSkillsCodes,
+    ExamSpecialCaseCodes: ExamSpecialCaseCodes,
+    EquivalentOrChallengeCodes: EquivalentOrChallengeCodes,
   },
   data() {
     return {
