@@ -215,15 +215,17 @@
                   Warning: This program is closed.
                 </div>
               </td>
-              <td class="w-50">
-                <b-form-select
+              <td>
+                <v-select
                   :disabled="disableProgramInput"
-                  size="sm"
                   v-model="editedGradStatus.program"
-                  :options="programOptions"
-                  value-field="programCode"
-                  text-field="programCode"
-                ></b-form-select>
+                  :items="programOptions"
+                  item-title="programCode"
+                  item-value="programCode"
+                  density="compact"
+                  variant="outlined"
+                  label="Select Program"
+                ></v-select>
               </td>
             </tr>
             <!-- END program edit -->
@@ -261,19 +263,18 @@
                 </div>
               </td>
               <td>
-                <b-input
+                <!-- <v-text-field
+                  v-model="editedGradStatus.programCompletionDate"
+                  label="Program completion date"
                   :disabled="
                     editedGradStatus.program != 'SCCP' ||
                     (studentGradStatus.programCompletionDate &&
                       new Date(studentGradStatus.programCompletionDate) <=
                         new Date())
                   "
-                  size="sm"
-                  type="text"
                   maxLength="7"
-                  v-model="editedGradStatus.programCompletionDate"
                   :formatter="formatYYYYMMDate"
-                ></b-input>
+                ></v-text-field> -->
               </td>
             </tr>
             <!-- END program completion date edit -->
@@ -289,14 +290,14 @@
             <tr v-if="showEdit">
               <td><strong>Student status: </strong></td>
               <td class="p-1">
-                <b-form-select
+                <!-- <b-form-select
                   size="sm"
                   v-model="editedGradStatus.studentStatus"
                   :options="studentStatusOptions"
                   value-field="code"
                   text-field="label"
                   :disabled="disableStudentStatus"
-                ></b-form-select>
+                ></b-form-select> -->
               </td>
             </tr>
             <tr v-if="!showEdit">
@@ -325,20 +326,20 @@
                 </div>
               </td>
               <td>
-                <b-form-select
+                <!-- <b-form-select
                   size="sm"
                   :disabled="disableStudentGrade"
                   v-model="editedGradStatus.studentGrade"
                   :options="gradeOptions"
                 >
-                </b-form-select>
+                </b-form-select> -->
               </td>
             </tr>
 
             <tr v-if="!showEdit">
               <td><strong>School of record: </strong></td>
               <td>
-                <b-button
+                <!-- <b-button
                   class="p-0 text-left"
                   v-b-modal.modal-1
                   variant="link"
@@ -355,9 +356,9 @@
                       : schoolOfRecord.schoolName
                   }}<br />
                   {{ studentGradStatus.schoolOfRecord }}</b-button
-                >
+                > -->
 
-                <b-modal
+                <!-- <b-modal
                   id="modal-1"
                   title="School Information"
                   ok-title="Close"
@@ -415,7 +416,7 @@
                       </tr>
                     </tbody>
                   </table>
-                </b-modal>
+                </b-modal> -->
               </td>
             </tr>
             <tr v-if="showEdit">
@@ -472,19 +473,19 @@
                 </div>
               </td>
               <td>
-                <b-input
+                <!-- <b-input
                   size="sm"
                   type="text"
                   maxlength="8"
                   minength="8"
                   :disabled="disableSchoolOfRecord"
                   v-model="editedGradStatus.schoolOfRecord"
-                ></b-input>
+                ></b-input> -->
               </td>
             </tr>
             <tr v-if="!showEdit">
               <td><strong>School at graduation: </strong></td>
-              <td>
+              <!-- <td>
                 <b-button
                   v-if="studentGradStatus && studentGradStatus.schoolAtGrad"
                   class="p-0 text-left"
@@ -568,7 +569,7 @@
                     </tbody>
                   </table>
                 </b-modal>
-              </td>
+              </td> -->
             </tr>
             <tr v-if="showEdit">
               <td>
@@ -632,13 +633,13 @@
                 </div>
               </td>
               <td>
-                <b-input
+                <!-- <b-input
                   :disabled="disableSchoolAtGrad"
                   size="sm"
                   type="text"
                   maxlength="8"
                   v-model="editedGradStatus.schoolAtGrad"
-                ></b-input>
+                ></b-input> -->
               </td>
             </tr>
             <tr>
@@ -706,25 +707,25 @@
                 </div>
               </td>
               <td>
-                <b-input
+                <!-- <b-input
                   :disabled="editedGradStatus.program != '1950'"
                   size="sm"
                   type="text"
                   maxLength="10"
                   v-model="editedGradStatus.adultStartDate"
-                ></b-input>
+                ></b-input> -->
               </td>
             </tr>
             <tr v-if="showEdit">
               <td><strong>Consumer education requirement met:</strong></td>
               <td>
-                <b-form-select
+                <!-- <b-form-select
                   size="sm"
                   v-model="editedGradStatus.consumerEducationRequirementMet"
                   :options="consumerEducRecMet"
                   :disabled="disableConsumerEdReqMet"
                 >
-                </b-form-select>
+                </b-form-select> -->
               </td>
             </tr>
             <tr v-if="!showEdit">
@@ -744,12 +745,12 @@
             <tr v-else>
               <td><strong>Recalculate Grad Status:</strong></td>
               <td>
-                <b-form-select
+                <!-- <b-form-select
                   size="sm"
                   v-model="editedGradStatus.recalculateGradStatus"
                   :options="recalcFlags"
                   :disabled="!allowUpdateRecalcFlags"
-                />
+                /> -->
               </td>
             </tr>
             <tr v-if="!showEdit">
@@ -761,12 +762,12 @@
             <tr v-else>
               <td><strong>Recalculate Projected Grad:</strong></td>
               <td>
-                <b-form-select
+                <!-- <b-form-select
                   size="sm"
                   v-model="editedGradStatus.recalculateProjectedGrad"
                   :options="recalcFlags"
                   :disabled="!allowUpdateRecalcFlags"
-                />
+                /> -->
               </td>
             </tr>
             <tr></tr>

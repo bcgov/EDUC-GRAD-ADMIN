@@ -8,14 +8,14 @@
       id="specialCase"
       showFilter="true"
     >
-      <template #cell(ruleName)="row">
-        {{ row.item.algorithmRuleCode.title }}
+      <template v-slot:item.algorithmRuleCode="{ item }">
+        {{ item.raw.label }}
       </template>
-      <template #cell(ruleDescription)="row">
-        {{ row.item.algorithmRuleCode.description }}
+      <template v-slot:item.description="{ item }">
+        {{ item.raw.description }}
       </template>
-      <template #cell(isActive)="row">
-        {{ row.item.algorithmRuleCode.isActiveRule }}
+      <template v-slot:item.isActiveRule="{ item }">
+        {{ item.raw.isActiveRule }}
       </template>
     </DisplayTable>
   </div>
@@ -53,12 +53,12 @@ export default {
           sortDirection: "desc",
         },
         {
-          key: "ruleName",
+          key: "algorithmRuleCode.label",
           title: "Rule Name",
           sortable: true,
         },
         {
-          key: "ruleDescription",
+          key: "algorithmRuleCode.description",
           title: "Rule Description",
           sortable: true,
         },
@@ -68,7 +68,7 @@ export default {
           sortable: true,
         },
         {
-          key: "isActive",
+          key: "algorithmRuleCode.isActiveRule",
           title: "Active Flag",
           sortable: true,
         },
