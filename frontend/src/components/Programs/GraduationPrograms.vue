@@ -10,11 +10,11 @@
         v-bind:role="roles"
         pagination="true"
       >
-        <template #cell(effectiveDate)="row">
-          {{ $filters.formatSimpleDate(row.item.effectiveDate) }}
+        <template v-slot:item.effectiveDate="{ item }">
+          {{ $filters.formatSimpleDate(item.raw.effectiveDate) }}
         </template>
-        <template #cell(expiryDate)="row">
-          {{ $filters.formatSimpleDate(row.item.expiryDate) }}
+        <template v-slot:item.expiryDate="{ item }">
+          {{ $filters.formatSimpleDate(item.raw.expiryDate) }}
         </template>
       </DisplayTable>
     </div>

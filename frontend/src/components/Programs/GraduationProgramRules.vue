@@ -11,62 +11,71 @@
         showFilter="true"
         pagination="true"
       >
-        <template #cell(ruleCode)="row">
-          <b-modal
-            :id="
-              'modal-' +
-              row.item.graduationProgramCode +
-              row.item.programRequirementCode.proReqCode
-            "
-            :title="
-              'Rule # ' +
-              row.item.programRequirementCode.proReqCode +
-              ' - ' +
-              ruleMatchType
-            "
-            size="xl"
-          >
-            <b-spinner v-if="loadingRuleMatch" class="px-1 my-2"></b-spinner>
-            <div v-else-if="!ruleMatchList.length">Not applicable</div>
-            <div v-else>
-              <DisplayTable
-                v-bind:items="ruleMatchList"
-                title="GradProgramRuleMatch"
-                v-bind:fields="ruleMatchFields"
-                id="gradProgramRuleMatch"
-                :showFilter="false"
-                :pagination="false"
-              >
-              </DisplayTable>
-            </div>
-            <template #modal-footer="{ cancel }">
-              <!-- Emulate built in modal footer ok and cancel button actions -->
-              <b-button
-                size="sm"
-                variant="outline-secondary"
-                v-on:click="cancel"
-              >
-                Close
-              </b-button>
-            </template>
-          </b-modal>
-          <b-btn
-            variant="link"
-            size="xs"
-            class="p-0"
-            @click="
-              ruleNumberClicked(
-                row.item.programRequirementCode.requirementCategory,
+        <template v-slot:item.ruleCode="{ item }">
+          <td>
+            <v-dialog max-width="800px">
+              <template v-slot:default="{ isActive }">
+                <v-card>
+                  <v-progress-circular
+                    v-if="loadingRuleMatch"
+                    indeterminate
+                    color="primary"
+                  ></v-progress-circular>
+                  <div v-else-if="!ruleMatchList.length">Not applicable</div>
+                  <div v-else>
+                    <v-card-title>
+                      <!-- :id="
+                'modal-' +
+                row.item.graduationProgramCode +
                 row.item.programRequirementCode.proReqCode
-              )
-            "
-            v-b-modal="
-              'modal-' +
-              row.item.graduationProgramCode +
-              row.item.programRequirementCode.proReqCode
-            "
-            >{{ row.item.programRequirementCode.proReqCode }}
-          </b-btn>
+              " -->
+                      {{
+                        "Rule # " +
+                        item.raw.programRequirementCode.proReqCode +
+                        " - " +
+                        ruleMatchType
+                      }}
+                    </v-card-title>
+                    <DisplayTable
+                      v-bind:items="ruleMatchList"
+                      title="GradProgramRuleMatch"
+                      v-bind:fields="ruleMatchFields"
+                      id="gradProgramRuleMatch"
+                      :showFilter="false"
+                      :pagination="false"
+                    >
+                    </DisplayTable>
+                  </div>
+                  <v-card-actions>
+                    <v-btn
+                      outlined
+                      color="secondary"
+                      @click="isActive.value = false"
+                    >
+                      Close
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </template>
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  @click="
+                    ruleNumberClicked(
+                      item.raw.programRequirementCode.requirementCategory,
+                      item.raw.programRequirementCode.proReqCode
+                    )
+                  "
+                  v-b-modal="
+                    'modal-' +
+                    item.raw.graduationProgramCode +
+                    item.raw.programRequirementCode.proReqCode
+                  "
+                  >{{ item.raw.programRequirementCode.proReqCode }}
+                </v-btn>
+              </template>
+            </v-dialog>
+          </td>
         </template>
 
         <template #cell(programRequirementCode.traxReqNumber)="row">
