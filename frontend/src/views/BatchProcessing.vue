@@ -1322,33 +1322,34 @@ export default {
       let index = id.replace("job-", "") - 1;
       let value = true;
       this.setTabLoading({ index, value });
-      BatchProcessingService.runYearlyArchiveBatchJobStudents(request)
-        .then((response) => {
-          //update the admin dashboard
-          this.getAdminDashboardData();
-          this.cancelBatchJob(id);
-          this.selectedTab = 0;
-          if (response) {
-            this.$bvToast.toast(
-              "Batch run has started for request " + requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            this.cancelBatchJob(id);
-            this.$bvToast.toast("There was an error processing " + requestId, {
-              title: "BATCH PROCESSING UPDATE",
-              variant: "error",
-              noAutoHide: true,
-            });
-          }
-        });
+      console.log(request);
+      // BatchProcessingService.runYearlyArchiveBatchJobStudents(request)
+      //   .then((response) => {
+      //     //update the admin dashboard
+      //     this.getAdminDashboardData();
+      //     this.cancelBatchJob(id);
+      //     this.selectedTab = 0;
+      //     if (response) {
+      //       this.$bvToast.toast(
+      //         "Batch run has started for request " + requestId,
+      //         {
+      //           title: "BATCH PROCESSING STARTED",
+      //           variant: "success",
+      //           noAutoHide: true,
+      //         }
+      //       );
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     if (error) {
+      //       this.cancelBatchJob(id);
+      //       this.$bvToast.toast("There was an error processing " + requestId, {
+      //         title: "BATCH PROCESSING UPDATE",
+      //         variant: "error",
+      //         noAutoHide: true,
+      //       });
+      //     }
+      //   });
     },
     runManageSchoolReports(request, id) {
       let requestId = id.replace("job-", "");
