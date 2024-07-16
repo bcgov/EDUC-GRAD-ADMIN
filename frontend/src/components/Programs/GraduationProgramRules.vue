@@ -78,17 +78,17 @@
           </td>
         </template>
 
-        <template #cell(programRequirementCode.traxReqNumber)="row">
+        <template v-slot:item.programRequirementCode="{ item }">
           {{
-            row.item.programRequirementCode.traxReqNumber ===
-            row.item.programRequirementCode.proReqCode
+            item.raw.programRequirementCode.traxReqNumber ===
+            item.raw.programRequirementCode.proReqCode
               ? ""
-              : row.item.programRequirementCode.traxReqNumber
+              : item.raw.programRequirementCode.traxReqNumber
           }}
         </template>
 
-        <template #cell(programRequirementCode.traxReqChar)="row">
-          {{ row.item.programRequirementCode.traxReqChar }}
+        <template v-slot:item.traxReqChar="{ item }">
+          {{ item.raw.programRequirementCode.traxReqChar }}
         </template>
       </DisplayTable>
     </div>
