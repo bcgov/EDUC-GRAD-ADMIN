@@ -1,6 +1,7 @@
 <template>
   <div id="optional-graduation-program-rules">
     <h3>Optional Program Rules</h3>
+
     <DisplayTable
       v-bind:items="optionalProgramRules"
       v-bind:fields="optionalOptionalProgramRulesFields"
@@ -69,8 +70,6 @@
                     item.raw.optionalProgramRequirementCode.optProReqCode
                   )
                 "
-                text
-                variant="plain"
               >
                 {{ item.raw.optionalProgramRequirementCode.optProReqCode }}
               </v-btn>
@@ -147,7 +146,7 @@ export default {
           class: "",
         },
         {
-          key: "optionalProgramRequirementCode.title",
+          key: "optionalProgramRequirementCode.label",
           title: "Requirement Name",
           sortable: true,
           editable: true,
@@ -175,7 +174,7 @@ export default {
           class: "",
         },
         {
-          key: "optionalProgramRequirementCode.requirementTypeCode.title",
+          key: "optionalProgramRequirementCode.requirementTypeCode.label",
           title: "Requirement Type",
           sortable: true,
           editable: true,

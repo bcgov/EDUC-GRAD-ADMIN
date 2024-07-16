@@ -8,10 +8,8 @@
       id="letterGrade"
       showFilter="true"
     >
-      <template #cell(expiryDate)="row">
-        <div v-if="row.item.expiryDate">
-          {{ $filters.formatSimpleDate(row.item.expiryDate) }}
-        </div>
+      <template v-slot:item.expiryDate="{ item }">
+        {{ $filters.formatSimpleDate(item.raw.expiryDate) }}
       </template>
     </DisplayTable>
   </div>
