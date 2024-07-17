@@ -11,6 +11,15 @@
           <v-tab value="courseRequirementsTab" color="primary"
             >Course requirements</v-tab
           >
+          <v-tab value="fineArtsAppliedSkillsTab" color="primary"
+            >Fine Arts Applied Skills</v-tab
+          >
+          <v-tab value="examSpecialCaseCodesTab" color="primary"
+            >Exam Special Cases</v-tab
+          >
+          <v-tab value="equivalentOrChallengeCodesTab" color="primary"
+            >Equivalency or Challenge</v-tab
+          >
         </v-tabs>
         <v-card-text>
           <v-window v-model="tab">
@@ -329,6 +338,15 @@
                 </DisplayTable>
               </v-card-text>
             </v-window-item>
+            <v-window-item value="fineArtsAppliedSkillsTab">
+              <FineArtsAppliedSkillsCodes
+            /></v-window-item>
+            <v-window-item value="examSpecialCaseCodesTab">
+              <ExamSpecialCaseCodes
+            /></v-window-item>
+            <v-window-item value="equivalentOrChallengeCodesTab">
+              <EquivalentOrChallengeCodes
+            /></v-window-item>
           </v-window>
         </v-card-text>
       </v-card>
@@ -340,10 +358,16 @@
 import { showNotification } from "../utils/common.js";
 import CourseService from "@/services/CourseService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
+import FineArtsAppliedSkillsCodes from "@/components/Courses/FineArtsAppliedSkillsCodes.vue";
+import ExamSpecialCaseCodes from "@/components/Courses/ExamSpecialCaseCodes.vue";
+import EquivalentOrChallengeCodes from "@/components/Courses/EquivalentOrChallengeCodes.vue";
 export default {
   name: "courses",
   components: {
     DisplayTable: DisplayTable,
+    FineArtsAppliedSkillsCodes: FineArtsAppliedSkillsCodes,
+    ExamSpecialCaseCodes: ExamSpecialCaseCodes,
+    EquivalentOrChallengeCodes: EquivalentOrChallengeCodes,
   },
   data() {
     return {
