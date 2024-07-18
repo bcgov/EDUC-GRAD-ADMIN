@@ -1,97 +1,99 @@
 <template>
   <div id="graduation-program-rules">
     <h3>Program Rules</h3>
-    <div v-if="!selectedProgramCode">
-      <DisplayTable
-        v-bind:items="graduationProgramRules"
-        v-bind:fields="graduationProgramsFields"
-        id="programCode"
-        v-bind:role="roles"
-        :slots="templates"
-        showFilter="true"
-        pagination="true"
-      >
-        <template v-slot:item.ruleCode="{ item }">
-          <td>
-            <v-dialog max-width="800px">
-              <template v-slot:default="{ isActive }">
-                <v-card>
-                  <v-progress-circular
-                    v-if="loadingRuleMatch"
-                    indeterminate
-                    color="primary"
-                  ></v-progress-circular>
-                  <div v-else-if="!ruleMatchList.length">Not applicable</div>
-                  <div v-else>
-                    <v-card-title>
-                      <!-- :id="
+    <v-progress-circular
+      v-if="isLoading"
+      color="primary"
+      indeterminate
+    ></v-progress-circular>
+    <DisplayTable
+      v-bind:items="graduationProgramRules"
+      v-bind:fields="graduationProgramsFields"
+      id="programCode"
+      :slots="templates"
+      showFilter="true"
+      pagination="true"
+    >
+      <template v-slot:item.ruleCode="{ item }">
+        <td>
+          <v-dialog max-width="800px">
+            <template v-slot:default="{ isActive }">
+              <v-card>
+                <v-progress-circular
+                  v-if="loadingRuleMatch"
+                  indeterminate
+                  color="primary"
+                ></v-progress-circular>
+                <div v-else-if="!ruleMatchList.length">Not applicable</div>
+                <div v-else>
+                  <v-card-title>
+                    <!-- :id="
                 'modal-' +
                 row.item.graduationProgramCode +
                 row.item.programRequirementCode.proReqCode
               " -->
-                      {{
-                        "Rule # " +
-                        item.raw.programRequirementCode.proReqCode +
-                        " - " +
-                        ruleMatchType
-                      }}
-                    </v-card-title>
-                    <DisplayTable
-                      v-bind:items="ruleMatchList"
-                      title="GradProgramRuleMatch"
-                      v-bind:fields="ruleMatchFields"
-                      id="gradProgramRuleMatch"
-                      :showFilter="false"
-                      :pagination="false"
-                    >
-                    </DisplayTable>
-                  </div>
-                  <v-card-actions>
-                    <v-btn
-                      outlined
-                      color="secondary"
-                      @click="isActive.value = false"
-                    >
-                      Close
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </template>
-              <template v-slot:activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  @click="
-                    ruleNumberClicked(
-                      item.raw.programRequirementCode.requirementCategory,
-                      item.raw.programRequirementCode.proReqCode
-                    )
-                  "
-                  v-b-modal="
-                    'modal-' +
-                    item.raw.graduationProgramCode +
+                    {{
+                      "Rule # " +
+                      item.raw.programRequirementCode.proReqCode +
+                      " - " +
+                      ruleMatchType
+                    }}
+                  </v-card-title>
+                  <DisplayTable
+                    v-bind:items="ruleMatchList"
+                    title="GradProgramRuleMatch"
+                    v-bind:fields="ruleMatchFields"
+                    id="gradProgramRuleMatch"
+                    :showFilter="false"
+                    :pagination="false"
+                  >
+                  </DisplayTable>
+                </div>
+                <v-card-actions>
+                  <v-btn
+                    outlined
+                    color="secondary"
+                    @click="isActive.value = false"
+                  >
+                    Close
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </template>
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                @click="
+                  ruleNumberClicked(
+                    item.raw.programRequirementCode.requirementCategory,
                     item.raw.programRequirementCode.proReqCode
-                  "
-                  >{{ item.raw.programRequirementCode.proReqCode }}
-                </v-btn>
-              </template>
-            </v-dialog>
-          </td>
-        </template>
+                  )
+                "
+                >{{ item.raw.programRequirementCode.proReqCode }}
+              </v-btn>
+              <!-- v-b-modal="
+                  'modal-' +
+                  item.raw.graduationProgramCode +
+                  item.raw.programRequirementCode.proReqCode
+                " -->
+            </template>
+          </v-dialog>
+        </td>
+      </template>
 
-        <template v-slot:item.programRequirementCode="{ item }">
-          {{
-            item.raw.programRequirementCode.traxReqNumber ===
-            item.raw.programRequirementCode.proReqCode
-              ? ""
-              : item.raw.programRequirementCode.traxReqNumber
-          }}
-        </template>
+      <template v-slot:item.programRequirementCode="{ item }">
+        {{
+          item.raw.programRequirementCode.traxReqNumber ===
+          item.raw.programRequirementCode.proReqCode
+            ? ""
+            : item.raw.programRequirementCode.traxReqNumber
+        }}
+      </template>
 
-        <template v-slot:item.traxReqChar="{ item }">
-          {{ item.raw.programRequirementCode.traxReqChar }}
-        </template>
-      </DisplayTable>
-    </div>
+      <template v-slot:item.traxReqChar="{ item }">
+        {{ item.raw.programRequirementCode.traxReqChar }}
+      </template>
+    </DisplayTable>
   </div>
 </template>
 
@@ -106,11 +108,20 @@ export default {
   components: {
     DisplayTable: DisplayTable,
   },
-  props: {},
-
-  computed: { ...mapGetters("auth", ["roles"]) },
+  created() {
+    ProgramManagementService.getProgramRules()
+      .then((response) => {
+        this.graduationProgramRules = response.data;
+        this.isLoading = false;
+      })
+      .catch((error) => {
+        //eslint-disable-next-line
+        console.log("There was an error:" + error.response);
+      });
+  },
   data: function () {
     return {
+      isLoading: true,
       show: false,
       isHidden: false,
       opened: [],
@@ -270,16 +281,7 @@ export default {
       selectedProgramId: "",
     };
   },
-  created() {
-    ProgramManagementService.getProgramRules()
-      .then((response) => {
-        this.graduationProgramRules = response.data;
-      })
-      .catch((error) => {
-        //eslint-disable-next-line
-        console.log("There was an error:" + error.response);
-      });
-  },
+
   methods: {
     ruleNumberClicked(categoryCode, ruleNum) {
       switch (categoryCode) {

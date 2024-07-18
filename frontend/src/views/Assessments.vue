@@ -17,7 +17,6 @@
                 v-bind:items="assessments"
                 v-bind:fields="assessmentFields"
                 id="assessmentCode"
-                v-bind:role="role"
                 showFilter="true"
               >
               </DisplayTable>

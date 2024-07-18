@@ -1,13 +1,17 @@
 <template>
   <div id="graduation-programs">
     <h3>Programs</h3>
+    <v-progress-circular
+      v-if="isLoading"
+      color="primary"
+      indeterminate
+    ></v-progress-circular>
     <div v-if="!selectedProgramCode">
       <DisplayTable
         v-bind:items="graduationPrograms"
         v-bind:fields="graduationProgramsFields"
         id="programCode"
         showFilter="true"
-        v-bind:role="roles"
         pagination="true"
       >
         <template v-slot:item.effectiveDate="{ item }">
@@ -33,11 +37,10 @@ export default {
     DisplayTable: DisplayTable,
   },
   props: {},
-  computed: {
-    ...mapGetters("auth", ["roles"]),
-  },
+  computed: {},
   data: function () {
     return {
+      isLoading: true,
       show: false,
       isHidden: false,
       opened: [],
@@ -98,6 +101,7 @@ export default {
           return obj.programCode !== "NOPROG";
         });
         this.graduationPrograms = gradPrograms;
+        this.isLoading = false;
       })
       .catch((error) => {
         this.showNotification(

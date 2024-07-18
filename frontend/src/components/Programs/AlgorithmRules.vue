@@ -1,6 +1,11 @@
 <template>
   <div id="algorithm-rules">
     <h3>Algorithm Rules</h3>
+    <v-progress-circular
+      v-if="isLoading"
+      color="primary"
+      indeterminate
+    ></v-progress-circular>
     <DisplayTable
       v-bind:items="algorithmRules"
       v-bind:filterOn="toFilterItem"
@@ -36,6 +41,7 @@ export default {
     ProgramManagementService.getAlgorithmRules()
       .then((response) => {
         this.algorithmRules = response.data;
+        this.isLoading = false;
       })
       .catch((error) => {
         this.showNotification("danger", "There was an error: " + error);
@@ -43,6 +49,7 @@ export default {
   },
   data: function () {
     return {
+      isLoading: true,
       algorithmRules: [],
       toFilterItem: ["graduationProgramCode", "isActive"],
       algorithmRulesFields: [

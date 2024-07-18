@@ -15,7 +15,6 @@
                   "
                   v-bind:class="{ active: search.district.contains }"
                   class="wild-card-button"
-                  v-b-tooltip.hover
                 >
                   <v-tooltip activator="parent" location="top"
                     >District contains</v-tooltip
@@ -40,7 +39,6 @@
                   "
                   v-bind:class="{ active: search.mincode.contains }"
                   class="wild-card-button"
-                  v-b-tooltip.hover
                   title="Mincode contains"
                 >
                   <v-tooltip activator="parent" location="top"
@@ -67,7 +65,6 @@
                   "
                   v-bind:class="{ active: search.schoolName.contains }"
                   class="wild-card-button"
-                  v-b-tooltip.hover
                 >
                   <v-tooltip activator="parent" location="top"
                     >School name contains</v-tooltip
@@ -184,6 +181,7 @@ export default {
   },
   data() {
     return {
+      courseRequirementLoading: true,
       url: null,
       file: [],
       schools: {},
@@ -293,9 +291,11 @@ export default {
             if (this.schools.length == 0) {
               this.searchMessage = "School cannot be found.";
             }
+            this.courseRequirementLoading = false;
           })
           .catch((error) => {
             this.searchLoading = false;
+            this.courseRequirementLoading = false;
             this.searchMessage = "School cannot be found.";
             console.log(error);
           });

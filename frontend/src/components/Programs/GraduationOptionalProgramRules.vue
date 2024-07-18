@@ -1,7 +1,11 @@
 <template>
   <div id="optional-graduation-program-rules">
     <h3>Optional Program Rules</h3>
-
+    <v-progress-circular
+      v-if="isLoading"
+      color="primary"
+      indeterminate
+    ></v-progress-circular>
     <DisplayTable
       v-bind:items="optionalProgramRules"
       v-bind:fields="optionalOptionalProgramRulesFields"
@@ -110,6 +114,7 @@ export default {
   },
   data: function () {
     return {
+      isLoading: true,
       opened: [],
       optionalProgramRules: [],
       optionalOptionalProgramRulesFields: [
@@ -259,6 +264,7 @@ export default {
     ProgramManagementService.getAllOptionalProgramRules()
       .then((response) => {
         this.optionalProgramRules = response.data;
+        this.isLoading = false;
       })
       .catch((error) => {
         // eslint-disable-next-line

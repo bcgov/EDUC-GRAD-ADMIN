@@ -1,6 +1,11 @@
 <template>
   <div id="transcript-message">
     <h3>Transcript Messaging</h3>
+    <v-progress-circular
+      v-if="isLoading"
+      color="primary"
+      indeterminate
+    ></v-progress-circular>
     <DisplayTable
       v-bind:items="transcriptMessages"
       v-bind:fields="transcriptMessageFields"
@@ -24,6 +29,7 @@ export default {
   },
   data: function () {
     return {
+      isLoading: true,
       transcriptMessages: [],
       templates: [
         {
@@ -105,6 +111,7 @@ export default {
     ProgramManagementService.getTranscriptMessage()
       .then((response) => {
         this.transcriptMessages = response.data;
+        this.isLoading = false;
       })
       .catch((error) => {
         //eslint-disable-next-line

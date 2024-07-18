@@ -62,7 +62,6 @@ export default {
           key: "code",
           title: "Code",
           sortable: true,
-          sortDirection: "desc",
           class: "w-15",
         },
         {
@@ -77,6 +76,7 @@ export default {
         },
         {
           key: "endDate",
+          sortDirection: "asc",
           title: "Expiry Date",
           sortable: true,
         },
