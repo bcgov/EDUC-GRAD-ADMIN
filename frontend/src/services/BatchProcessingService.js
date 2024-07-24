@@ -52,6 +52,10 @@ export default {
   runDISTRUN_SUPP(){
     return ApiService.apiAxios.get('/api/v1/batch/executesuppdisrunbatchjob');
   },
+  runSCHL_RPT_REGEN(request, cronTime=""){
+    let type = (request.activityCode === 'NONGRADPRJ') ? 'TVRRUN' : 'REGALG';
+    return ApiService.apiAxios.post(`/api/v1/batch/regenerate/school-report?type=${type}`,request);
+  },  
   runNONGRADRUN(request, cronTime=""){
     if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
       // If the condition is true, set districts to an empty array

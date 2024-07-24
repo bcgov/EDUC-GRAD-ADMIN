@@ -1117,6 +1117,38 @@ export default {
           }
         });
     },
+    runSCHL_RPT_REGEN(request, id) {
+      let requestId = id.replace("job-", "");
+      this.$set(this.spinners, id, true);
+      let index = id.replace("job-", "") - 1;
+      let value = true;
+      this.setTabLoading({ index, value });
+      BatchProcessingService.runSCHL_RPT_REGEN(request)
+        .then((response) => {
+          this.getAdminDashboardData();
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
+          if (response.data) {
+            this.$bvToast.toast(response.data, {
+              title: "BATCH PROCESSING STARTED",
+              variant: "success",
+              noAutoHide: true,
+            });
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.getAdminDashboardData();
+            this.cancelBatchJob(id);
+            this.selectedTab = 0;
+            this.$bvToast.toast("This request is running in the background", {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "success",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
     runCERTREGEN(request, id) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
@@ -1611,7 +1643,7 @@ export default {
         schoolCategoryCodes: [this.tabContent[id].details["categoryCode"]],
         programs: programs,
         psiCodes: psi,
-        reportType: [this.tabContent[id].details["reportType"]],
+        activityCode: this.tabContent[id].details["reportType"],
         gradDateFrom: gradDateFrom,
         gradDateTo: gradDateTo,
         validateInput: false,
@@ -1766,7 +1798,7 @@ export default {
         delete request.gradDateTo;
         delete request.quantity;
         delete request.localDownload;
-        delete request.reportType;
+        delete request.activityCode;
 
         if (cronTime) {
           let scheduledRequest = {};
@@ -1781,6 +1813,42 @@ export default {
           } else {
             this.runCERTREGEN(request, id);
           }
+        }
+      } else if (this.tabContent[id].details["what"] == "SCHL_RPT_REGEN") {
+        delete request.credentialTypeCode;
+        request.statuses = null;
+        request.studentIDs = null;
+        request.user = "xx";
+        request.address = {
+          streetLine1: "string",
+          streetLine2: "string",
+          streetLine3: "string",
+          city: "string",
+          region: "string",
+          country: "string",
+          code: "string",
+        };
+
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "??";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runSCHL_RPT_REGEN(request, id);
+        }
+      } else if (this.tabContent[id].details["what"] == "ARC_STUDENTS") {
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "ARCS";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runArchiveStudents(request, id);
         }
       } else if (this.tabContent[id].details["what"] == "ARC_STUDENTS") {
         if (cronTime) {
