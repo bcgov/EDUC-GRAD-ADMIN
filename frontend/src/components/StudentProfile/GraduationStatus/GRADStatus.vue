@@ -10,83 +10,38 @@
             <v-btn
               v-if="studentGradStatus.studentStatus === 'MER'"
               @click="editGradStatus"
+              variant="flat"
               size="small"
               color="primary"
               disabled
             >
               Edit
             </v-btn>
-            <v-btn v-else @click="editGradStatus" size="small" color="primary">
+            <v-btn
+              v-else
+              @click="editGradStatus"
+              size="small"
+              variant="flat"
+              color="primary"
+            >
               Edit
             </v-btn>
           </div>
           <div v-if="showEdit">
-            <v-btn-group>
-              <v-btn
-                :disabled="disableSaveButton"
-                @click="saveGraduationStatus(studentId)"
-                size="small"
-                color="primary"
-              >
-                Save
-              </v-btn>
-              <v-btn
-                @click="cancelGradStatus"
-                size="small"
-                color="primary"
-                outlined
-              >
-                Cancel
-              </v-btn>
-            </v-btn-group>
+            <v-btn
+              :disabled="disableSaveButton"
+              @click="saveGraduationStatus(studentId)"
+              variant="flat"
+              size="small"
+              color="primary"
+            >
+              Save
+            </v-btn>
+            <v-btn @click="cancelGradStatus" size="small" variant="outlined">
+              Cancel
+            </v-btn>
           </div>
         </v-btn-group>
-        <!-- <b-button-group
-          v-if="allowUpdateGradStatus"
-          class="gradstatus-actions float-right"
-        >
-          <div v-if="!showEdit && allowUpdateGradStatus">
-            <b-link
-              href="#"
-              class="edit"
-              disabled
-              v-if="studentGradStatus.studentStatus === 'MER'"
-              v-on:click="editGradStatus"
-              size="sm"
-              variant="primary"
-            >
-              Edit
-            </b-link>
-            <b-link
-              href="#"
-              class="edit"
-              v-else
-              v-on:click="editGradStatus"
-              size="sm"
-              variant="primary"
-            >
-              Edit
-            </b-link>
-          </div>
-          <div v-if="showEdit">
-            <b-button-group>
-              <b-button
-                :disabled="disableSaveButton"
-                v-on:click="saveGraduationStatus(studentId)"
-                size="sm"
-                variant="primary"
-                >Save</b-button
-              >
-
-              <b-button
-                v-on:click="cancelGradStatus"
-                size="sm"
-                variant="outline-primary"
-                >Cancel</b-button
-              >
-            </b-button-group>
-          </div>
-        </b-button-group> -->
 
         <!-- Info callout in edit form when student status is MER/Merged -->
         <div
@@ -165,7 +120,7 @@
             </p>
           </v-alert>
         </div>
-
+        {{ editedGradStatus }}
         <v-table density="compact" aria-label="edit grad status">
           <tbody>
             <tr v-if="!showEdit">
@@ -222,9 +177,9 @@
                   :items="programOptions"
                   item-title="programCode"
                   item-value="programCode"
-                  density="compact"
+                  label="Select"
                   variant="outlined"
-                  label="Select Program"
+                  density="compact"
                 ></v-select>
               </td>
             </tr>
@@ -263,9 +218,9 @@
                 </div>
               </td>
               <td>
-                <!-- <v-text-field
+                <v-text-field
                   v-model="editedGradStatus.programCompletionDate"
-                  label="Program completion date"
+                  label=""
                   :disabled="
                     editedGradStatus.program != 'SCCP' ||
                     (studentGradStatus.programCompletionDate &&
@@ -274,7 +229,9 @@
                   "
                   maxLength="7"
                   :formatter="formatYYYYMMDate"
-                ></v-text-field> -->
+                  density="compact"
+                  clearable
+                ></v-text-field>
               </td>
             </tr>
             <!-- END program completion date edit -->
@@ -289,15 +246,17 @@
             </tr>
             <tr v-if="showEdit">
               <td><strong>Student status: </strong></td>
-              <td class="p-1">
-                <!-- <b-form-select
-                  size="sm"
-                  v-model="editedGradStatus.studentStatus"
-                  :options="studentStatusOptions"
-                  value-field="code"
-                  text-field="label"
+              <td>
+                <v-select
                   :disabled="disableStudentStatus"
-                ></b-form-select> -->
+                  v-model="editedGradStatus.studentStatus"
+                  :items="studentStatusOptions"
+                  item-title="label"
+                  item-value="code"
+                  label="Select"
+                  variant="outlined"
+                  density="compact"
+                ></v-select>
               </td>
             </tr>
             <tr v-if="!showEdit">
@@ -326,13 +285,16 @@
                 </div>
               </td>
               <td>
-                <!-- <b-form-select
-                  size="sm"
+                <v-select
                   :disabled="disableStudentGrade"
                   v-model="editedGradStatus.studentGrade"
-                  :options="gradeOptions"
-                >
-                </b-form-select> -->
+                  :items="gradeOptions"
+                  item-title="text"
+                  item-value="value"
+                  label="Select"
+                  variant="outlined"
+                  density="compact"
+                ></v-select>
               </td>
             </tr>
 
@@ -473,14 +435,15 @@
                 </div>
               </td>
               <td>
-                <!-- <b-input
-                  size="sm"
-                  type="text"
+                <v-text-field
+                  v-model="editedGradStatus.schoolOfRecord"
+                  label=""
+                  :disabled="disableSchoolOfRecord"
                   maxlength="8"
                   minength="8"
-                  :disabled="disableSchoolOfRecord"
-                  v-model="editedGradStatus.schoolOfRecord"
-                ></b-input> -->
+                  density="compact"
+                  clearable
+                ></v-text-field>
               </td>
             </tr>
             <tr v-if="!showEdit">
@@ -633,13 +596,15 @@
                 </div>
               </td>
               <td>
-                <!-- <b-input
-                  :disabled="disableSchoolAtGrad"
-                  size="sm"
-                  type="text"
-                  maxlength="8"
+                <v-text-field
                   v-model="editedGradStatus.schoolAtGrad"
-                ></b-input> -->
+                  label=""
+                  :disabled="disableSchoolAtGrad"
+                  maxlength="8"
+                  minength="8"
+                  density="compact"
+                  clearable
+                ></v-text-field>
               </td>
             </tr>
             <tr>
@@ -707,25 +672,29 @@
                 </div>
               </td>
               <td>
-                <!-- <b-input
-                  :disabled="editedGradStatus.program != '1950'"
-                  size="sm"
-                  type="text"
-                  maxLength="10"
+                <v-text-field
                   v-model="editedGradStatus.adultStartDate"
-                ></b-input> -->
+                  label=""
+                  :disabled="editedGradStatus.program != '1950'"
+                  maxLength="10"
+                  density="compact"
+                  clearable
+                ></v-text-field>
               </td>
             </tr>
             <tr v-if="showEdit">
               <td><strong>Consumer education requirement met:</strong></td>
               <td>
-                <!-- <b-form-select
-                  size="sm"
-                  v-model="editedGradStatus.consumerEducationRequirementMet"
-                  :options="consumerEducRecMet"
+                <v-select
                   :disabled="disableConsumerEdReqMet"
-                >
-                </b-form-select> -->
+                  v-model="editedGradStatus.consumerEducationRequirementMet"
+                  :items="consumerEducRecMet"
+                  item-title="text"
+                  item-value="value"
+                  label="Select"
+                  variant="outlined"
+                  density="compact"
+                ></v-select>
               </td>
             </tr>
             <tr v-if="!showEdit">
@@ -745,12 +714,16 @@
             <tr v-else>
               <td><strong>Recalculate Grad Status:</strong></td>
               <td>
-                <!-- <b-form-select
-                  size="sm"
-                  v-model="editedGradStatus.recalculateGradStatus"
-                  :options="recalcFlags"
+                <v-select
                   :disabled="!allowUpdateRecalcFlags"
-                /> -->
+                  v-model="editedGradStatus.recalculateGradStatus"
+                  :items="recalcFlags"
+                  item-title="text"
+                  item-value="value"
+                  label="Select"
+                  variant="outlined"
+                  density="compact"
+                ></v-select>
               </td>
             </tr>
             <tr v-if="!showEdit">
@@ -762,12 +735,16 @@
             <tr v-else>
               <td><strong>Recalculate Projected Grad:</strong></td>
               <td>
-                <!-- <b-form-select
-                  size="sm"
-                  v-model="editedGradStatus.recalculateProjectedGrad"
-                  :options="recalcFlags"
+                <v-select
                   :disabled="!allowUpdateRecalcFlags"
-                /> -->
+                  v-model="editedGradStatus.recalculateProjectedGrad"
+                  :items="recalcFlags"
+                  item-title="text"
+                  item-value="value"
+                  label="Select"
+                  variant="outlined"
+                  density="compact"
+                ></v-select>
               </td>
             </tr>
             <tr></tr>
