@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar color="primary" density="prominent"
+    <v-app-bar color="bcGovBlue" density="prominent"
       ><div class="container">
         <div class="banner">
           <a class="navbar-brand" href="/">
@@ -235,8 +235,8 @@ button.v-btn.v-theme--light.bg-primary.v-btn--density-default.v-btn--size-defaul
 }
 header {
   z-index: 99;
-  background-color: var(--primary-nav);
-  border-bottom: 2px solid var(--bcgold);
+  /* background-color: var(--primary-nav);
+  border-bottom: 2px solid var(--bcgold); */
   padding: 0 30px 0 30px;
   color: #fff;
   display: flex;
