@@ -1336,6 +1336,24 @@ export default {
           copies: true,
           where: true,
         },
+        TVR_DELETE: {
+          group: [
+            {
+              text: "School",
+              value: "School",
+            },
+            {
+              text: "Student",
+              value: "Student",
+            },
+            {
+              text: "All Students",
+              value: "All Students",
+            },
+          ],
+          copies: true,
+          where: true,
+        },
       },
     };
   },
@@ -1449,6 +1467,9 @@ export default {
       ) {
         this.batchIsValid = false;
         return;
+      }
+      if (this.batch.details["what"] == "TVR_DELETE") {
+        //this.batchIsValid = false;
       }
       if (
         this.batch.details["what"] == "DISTRUNUSER" &&
