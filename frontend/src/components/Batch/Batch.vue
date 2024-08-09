@@ -157,8 +157,9 @@
               "
             >
               All students with a School of Record matching the entered school
-              and with a student status of CUR will have their status changed to
-              ARC
+              and with a student status of CUR
+              <strong>or a student status of TER</strong> will have their status
+              changed to ARC
             </b-alert>
             <b-alert
               :show="
