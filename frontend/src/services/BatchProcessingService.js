@@ -103,13 +103,12 @@ export default {
     if(cronTime){
       let scheduledRequest = {};
       scheduledRequest.cronExpression = cronTime;
-      scheduledRequest.jobName = "";
+      scheduledRequest.jobName = "ASBJ";
       scheduledRequest.blankPayLoad = null;
       scheduledRequest.payload = request;
       this.addScheduledJob(scheduledRequest);
       return
     }else{
-      console.log(request)
       return ApiService.apiAxios.post('/api/v1/batch/executeyearlyarchivebatchjobstudents', request);
     } 
   },

@@ -737,7 +737,6 @@
               variant="warning"
               >{{ validationMessage }}</b-alert
             >
-            {{ ARC_STUDENTS_confirm }}
             <div class="row col-12 border-bottom mb-3">
               <div class="col-2"><strong>Mincode</strong></div>
               <div class="col-4"><strong>School Name</strong></div>
