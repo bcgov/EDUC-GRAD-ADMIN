@@ -123,7 +123,12 @@
                                         <div class="col-9"></div>
                                         <div class="col-3"></div>
                                       </div>
-                                      <div class="row border-bottom p-2">
+                                      <div
+                                        class="row border-bottom p-2"
+                                        v-if="
+                                          row.item.jobType != 'ARC_STUDENTS'
+                                        "
+                                      >
                                         <div class="col-12">
                                           <a
                                             href="#"
@@ -152,6 +157,7 @@
                                           row.item.jobType != 'DISTRUN_YE' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'NONGRADRUN' &&
+                                          row.item.jobType != 'ARC_STUDENTS' &&
                                           row.item.jobType != 'PSIRUN'
                                         "
                                       >
@@ -205,6 +211,7 @@
                                           row.item.jobType != 'DISTRUN_YE' &&
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
+                                          row.item.jobType != 'ARC_STUDENTS' &&
                                           row.item.failedStudentsProcessed != 0
                                         "
                                       >
@@ -256,7 +263,8 @@
                                           row.item.jobType != 'DISTRUN_YE' &&
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
-                                          row.item.jobType != 'PSIRUN'
+                                          row.item.jobType != 'PSIRUN' &&
+                                          row.item.jobType != 'ARC_STUDENTS'
                                         "
                                       >
                                         <div class="col-9 p-2">

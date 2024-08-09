@@ -984,7 +984,9 @@
           ></BatchConfirmInfo>
 
           <b-form-group v-if="batch.details['what'] == 'ARC_STUDENTS'">
-            <h2>Batch Confirmation</h2>
+            <h4>
+              Batch Confirmation: please read and accept before submitting
+            </h4>
             <b-form-checkbox-group
               v-model="ARC_STUDENTS_confirm"
               name="checkbox-group"
