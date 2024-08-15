@@ -1510,13 +1510,8 @@ export default {
             });
           }
 
-          //disable code for release 1.7.0
           this.batchTypes = this.batchTypes.map((type) => {
-            if (
-              type.code === "ARC_STUDENTS" ||
-              type.code === "ARC_SCH_REPORTS" ||
-              type.code === "EDW_SNAPSHOT"
-            ) {
+            if (type.code === "ARC_STUDENTS" || type.code === "EDW_SNAPSHOT") {
               type.disabled = true;
             }
             return type;
