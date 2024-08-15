@@ -112,6 +112,19 @@ export default {
       return ApiService.apiAxios.post('/api/v1/batch/executeyearlyarchivebatchjobstudents', request);
     } 
   },
+  runYearlyArchiveBatchJobSchools(request, cronTime=""){
+    if(cronTime){
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime;
+      scheduledRequest.jobName = "ASRBJ";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      this.addScheduledJob(scheduledRequest);
+      return
+    }else{
+      return ApiService.apiAxios.post('/api/v1/batch/executearchivebatchjobschoolreports', request);
+    } 
+  },
   runCERTREGEN_ALL(){
     return ApiService.apiAxios.get('/api/v1/batch/executecertregenbatchjob');
   },  

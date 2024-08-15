@@ -126,7 +126,8 @@
                                       <div
                                         class="row border-bottom p-2"
                                         v-if="
-                                          row.item.jobType != 'ARC_STUDENTS'
+                                          row.item.jobType != 'ARC_STUDENTS' &&
+                                          row.item.jobType != 'ARC_SCH_REPORTS'
                                         "
                                       >
                                         <div class="col-12">
@@ -158,6 +159,8 @@
                                           row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'ARC_STUDENTS' &&
+                                          row.item.jobType !=
+                                            'ARC_SCH_REPORTS' &&
                                           row.item.jobType != 'PSIRUN'
                                         "
                                       >
@@ -212,6 +215,8 @@
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'ARC_STUDENTS' &&
+                                          row.item.jobType !=
+                                            'ARC_SCH_REPORTS' &&
                                           row.item.failedStudentsProcessed != 0
                                         "
                                       >
@@ -264,6 +269,8 @@
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'PSIRUN' &&
+                                          row.item.jobType !=
+                                            'ARC_SCH_REPORTS' &&
                                           row.item.jobType != 'ARC_STUDENTS'
                                         "
                                       >
@@ -1358,7 +1365,7 @@ export default {
           }
         });
     },
-    runManageSchoolReports(request, id) {
+    runArchiveSchoolReports(request, id) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
@@ -1807,12 +1814,12 @@ export default {
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "ARCS";
+          scheduledRequest.jobName = "ASRBJ";
           scheduledRequest.blankPayLoad = null;
           scheduledRequest.payload = request;
           this.addScheduledJob(scheduledRequest, id);
         } else {
-          this.runManageSchoolReports(request, id);
+          this.runArchiveSchoolReports(request, id);
         }
       }
     },
