@@ -1688,7 +1688,7 @@ export default {
           this.runTVRRUN(request, id);
         }
       } else if (this.tabContent[id].details["what"] == "TVR_DELETE") {
-        request.activityCode = "tvrDelete";
+        request.activityCode = "tvrDeleted";
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;
