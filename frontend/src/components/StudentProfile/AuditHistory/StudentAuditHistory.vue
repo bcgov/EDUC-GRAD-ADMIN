@@ -9,7 +9,7 @@
             showFilter="false"
             title="Student Change History"
             :sortDesc="sortDesc"
-            :sortBy="'createDate'"
+            :sortBy="'updateDate'"
           >
             <template #cell(more)="row">
               <b-btn
@@ -55,7 +55,7 @@
               {{ $filters.formatYYYYMMDate(row.value.value) }}
             </template>
 
-            <template #cell(createDate)="row">
+            <template #cell(updateDate)="row">
               {{ $filters.formatTime(row.value.value) }}
             </template>
 
@@ -78,7 +78,7 @@
             showFilter="false"
             title="Optional Program Change History"
             :sort-desc="true"
-            :sortBy="'createDate'"
+            :sortBy="'updateDate'"
           >
             <template #cell(more)="row">
               <b-btn
@@ -120,7 +120,7 @@
               </b-card>
             </template>
 
-            <template #cell(createDate)="row">
+            <template #cell(updateDate)="row">
               {{ $filters.formatTime(row.value.value) }}
             </template>
 
@@ -179,7 +179,7 @@ export default {
           sortable: true,
         },
         {
-          key: "createDate",
+          key: "updateDate",
           label: "Date",
           sortable: true,
           sortDirection: "desc",
@@ -277,7 +277,7 @@ export default {
           sortable: true,
         },
         {
-          key: "createDate",
+          key: "updateDate",
           label: "Date",
           sortable: true,
           sortDirection: "desc",
@@ -358,7 +358,7 @@ export default {
         for (const field of this.studentChangeFields) {
           if (
             index > 0 &&
-            field.key != "createDate" &&
+            field.key != "updateDate" &&
             field.key != "activityCode"
           ) {
             tempEntry[field.key] = {
@@ -386,7 +386,7 @@ export default {
         // temp entry to build our change highlight
         let tempEntry = {};
         for (const field of this.optionalProgramChangeFields) {
-          if (index === 0 || field.key == "createDate") {
+          if (index === 0 || field.key == "updateDate") {
             tempEntry[field.key] = {
               value: value[field.key],
               changed: true,
