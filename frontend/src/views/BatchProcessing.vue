@@ -123,7 +123,12 @@
                                         <div class="col-9"></div>
                                         <div class="col-3"></div>
                                       </div>
-                                      <div class="row border-bottom p-2">
+                                      <div
+                                        class="row border-bottom p-2"
+                                        v-if="
+                                          row.item.jobType != 'ARC_STUDENTS'
+                                        "
+                                      >
                                         <div class="col-12">
                                           <a
                                             href="#"
@@ -152,6 +157,7 @@
                                           row.item.jobType != 'DISTRUN_YE' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'NONGRADRUN' &&
+                                          row.item.jobType != 'ARC_STUDENTS' &&
                                           row.item.jobType != 'PSIRUN'
                                         "
                                       >
@@ -205,6 +211,7 @@
                                           row.item.jobType != 'DISTRUN_YE' &&
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
+                                          row.item.jobType != 'ARC_STUDENTS' &&
                                           row.item.failedStudentsProcessed != 0
                                         "
                                       >
@@ -256,7 +263,8 @@
                                           row.item.jobType != 'DISTRUN_YE' &&
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
-                                          row.item.jobType != 'PSIRUN'
+                                          row.item.jobType != 'PSIRUN' &&
+                                          row.item.jobType != 'ARC_STUDENTS'
                                         "
                                       >
                                         <div class="col-9 p-2">
@@ -1611,10 +1619,10 @@ export default {
         schoolCategoryCodes: [this.tabContent[id].details["categoryCode"]],
         programs: programs,
         psiCodes: psi,
-        reportType: [this.tabContent[id].details["reportType"]],
+        reportTypes: [this.tabContent[id].details["reportType"]],
         gradDateFrom: gradDateFrom,
         gradDateTo: gradDateTo,
-        validateInput: false,
+        validateInput: true,
         quantity: quantity,
         localDownload: localDownload,
       };
@@ -1783,10 +1791,12 @@ export default {
           }
         }
       } else if (this.tabContent[id].details["what"] == "ARC_STUDENTS") {
+        delete request.credentialTypeCode;
+
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "ARCS";
+          scheduledRequest.jobName = "ASBJ";
           scheduledRequest.blankPayLoad = null;
           scheduledRequest.payload = request;
           this.addScheduledJob(scheduledRequest, id);

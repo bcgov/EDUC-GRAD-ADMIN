@@ -31,7 +31,11 @@
             details.who != 'District'
           "
         >
-          <strong>Select Students: </strong>{{ details.gradDate }}
+          <strong>Select Students: </strong>
+          <div v-if="details.what == 'ARC_STUDENTS'">
+            Current and Terminated Students
+          </div>
+          <div v-else>{{ details.gradDate }}</div>
         </li>
         <li v-if="details.who == 'PSI'">
           <strong>PSI: </strong>
@@ -109,7 +113,8 @@
           details.where &&
           details.what != 'REGALG' &&
           details.what != 'TVRRUN' &&
-          details.what != 'CERT_REGEN'
+          details.what != 'CERT_REGEN' &&
+          details.what != 'ARC_STUDENTS'
         "
       >
         <strong>Where: </strong>

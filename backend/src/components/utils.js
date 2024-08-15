@@ -183,6 +183,7 @@ async function postData(token, url, data, correlationID) {
     };
  
     log.info('post Data Url', url);
+    
     log.verbose('post Data Req', minify(data));
     data.createUser = 'GRAD';
     data.updateUser = 'GRAD';
