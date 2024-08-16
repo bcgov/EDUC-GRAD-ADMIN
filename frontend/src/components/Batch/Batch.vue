@@ -167,8 +167,9 @@
               "
             >
               All students with a School of Record matching the entered school
-              and with a student status of CUR or a student status of TER will
-              have their status changed to ARC
+              and with a student status of CUR
+              <strong>or a student status of TER</strong> will have their status
+              changed to ARC
             </b-alert>
             <b-alert
               :show="
@@ -1400,25 +1401,24 @@ export default {
     this.batchTypes = this.getBatchJobTypes();
     this.reportTypes = [
       {
-        code: "NONGRADREGARC",
+        code: "NONGRADPRJ",
         label:
-          "Archived Not-Yet Graduated Students (MM YYYY to MM YYYY) Report",
+          "NONGRADPRJ - Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
         description:
-          "The final daily, cumulative list of student in the current cycle who have not-yet graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
+          "A list of all current students reported on a graduation program, in grade 12 or AD, who are not projected to graduate based on missing course registrations or assessment registrations. Produced as part of TVR Batch Run.",
       },
       {
-        code: "GRADREGARC",
-        label:
-          "Archived Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
+        code: "GRADREG",
+        label: "GRADREG - Graduated Students (MM YYYY to MM YYYY) Report",
         description:
-          "The final daily, cumulative list of student in the current cycle who have graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
+          "A daily, cumulative list of student in the current cycle who have graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
       },
       {
-        code: "NONGRADPRJARC",
+        code: "NONGRADREG",
         label:
-          "Archived Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
+          "NONGRADREG - Not-Yet Graduated Students (MM YYYY to MM YYYY) Report",
         description:
-          "The final list of grade 12 or AD students on a graduation program who were not projected to graduate based on missing course registrations or assessment registrations submitted by the school in the reporting cycle.",
+          "A daily, cumulative list of student in the current cycle who have not-yet graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
       },
     ];
   },
