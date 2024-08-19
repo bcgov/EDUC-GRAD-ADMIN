@@ -157,8 +157,8 @@
               "
             >
               All students with a School of Record matching the entered school
-              and with a student status of CUR will have their status changed to
-              ARC
+              and with a student status of CUR or a student status of TER will
+              have their status changed to ARC
             </b-alert>
             <b-alert
               :show="
@@ -968,6 +968,7 @@
           Schedule/Run Batch
         </b-button>
         <!-- Modal Dialogs -->
+
         <b-modal
           :id="'batch-modal-' + jobId"
           :title="'Run  Request ' + requestId"
@@ -981,6 +982,28 @@
             :items="batch"
             :batchTypes="batchTypes"
           ></BatchConfirmInfo>
+
+          <b-form-group v-if="batch.details['what'] == 'ARC_STUDENTS'">
+            <h4>
+              Batch Confirmation: please read and accept before submitting
+            </h4>
+            <b-form-checkbox-group
+              v-model="ARC_STUDENTS_confirm"
+              name="checkbox-group"
+            >
+              <b-form-checkbox value="finalGraduation">
+                Final Graduation Algorithm and TVR batch jobs have been run for
+                students from the previous cycle
+              </b-form-checkbox>
+              <b-form-checkbox value="regenerateReports">
+                Regenerate School Reports process has been completed for any
+                schools that require final updates
+              </b-form-checkbox>
+              <b-form-checkbox value="archiveReports">
+                Archive School Reports process has been completed
+              </b-form-checkbox>
+            </b-form-checkbox-group>
+          </b-form-group>
           <b-form-group label="Batch Run" v-slot="{ ariaDescribedby }">
             <b-form-radio-group v-model="batchRunTime">
               <b-form-radio
@@ -1210,6 +1233,7 @@ export default {
   },
   data: function () {
     return {
+      ARC_STUDENTS_confirm: [],
       runType: "",
       reportTypes: [],
       reportType: "",
@@ -1513,7 +1537,7 @@ export default {
           //disable code for release 1.7.0
           this.batchTypes = this.batchTypes.map((type) => {
             if (
-              type.code === "ARC_STUDENTS" ||
+              type.code === "SCHL_RPT_REGEN" ||
               type.code === "ARC_SCH_REPORTS" ||
               type.code === "EDW_SNAPSHOT"
             ) {
@@ -1597,7 +1621,12 @@ export default {
       alert(JSON.stringify(values, null, 2));
     },
     disableConfirm() {
-      if (this.batchRunTime == "Run Now") {
+      if (
+        this.batch.details["what"] == "ARC_STUDENTS" &&
+        this.ARC_STUDENTS_confirm.length !== 3
+      ) {
+        return true;
+      } else if (this.batchRunTime == "Run Now") {
         return false;
       } else {
         if (this.batchRunSchedule && this.batchRunSchedule == "Custom") {
@@ -2127,6 +2156,7 @@ export default {
     ...mapState(useBatchProcessingStore, {
       tabContent: "getBatchDetails",
     }),
+
     batch() {
       return this.tabContent[this.jobId];
     },
