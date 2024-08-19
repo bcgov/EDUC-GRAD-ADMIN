@@ -1468,9 +1468,6 @@ export default {
         this.batchIsValid = false;
         return;
       }
-      if (this.batch.details["what"] == "TVR_DELETE") {
-        //this.batchIsValid = false;
-      }
       if (
         this.batch.details["what"] == "DISTRUNUSER" &&
         this.batch.details["credential"] == ""
