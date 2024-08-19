@@ -214,6 +214,7 @@
                 batch.details['what'] != 'DISTRUN_YE' &&
                 batch.details['what'] != 'DISTRUN_SUPP' &&
                 batch.details['what'] != 'ARC_STUDENTS' &&
+                batch.details['what'] != 'TVR_DELETE' &&
                 batch.details['what'] != 'CERT_REGEN'
               "
             >

@@ -14,7 +14,13 @@
     >
     <ul>
       <li v-if="typeLabel"><strong>Run Type: </strong>{{ typeLabel }}</li>
-      <li v-if="details.copies">
+      <li
+        v-if="
+          details.copies &&
+          details.what != 'ARC_STUDENTS' &&
+          details.what != 'TVR_DELETE'
+        "
+      >
         <strong>Copies: </strong>{{ details.copies }}
       </li>
       <li v-if="details.who">
@@ -122,7 +128,8 @@
           details.what != 'REGALG' &&
           details.what != 'TVRRUN' &&
           details.what != 'CERT_REGEN' &&
-          details.what != 'ARC_STUDENTS'
+          details.what != 'ARC_STUDENTS' &&
+          details.what != 'TVR_DELETE'
         "
       >
         <strong>Where: </strong>
