@@ -146,6 +146,25 @@ export default {
     return ApiService.apiAxios.post("/api/v1/batch/tvrspecialrun", request);
     //console.log(request);
   },
+  runYearlyArchiveBatchJobStudents(request, cronTime = "") {
+    if (cronTime) {
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime;
+      scheduledRequest.jobName = "ASBJ";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      this.addScheduledJob(scheduledRequest);
+      return;
+    } else {
+      return ApiService.apiAxios.post(
+        "/api/v1/batch/executeyearlyarchivebatchjobstudents",
+        request
+      );
+    }
+  },
+  runCERTREGEN_ALL() {
+    return ApiService.apiAxios.get("/api/v1/batch/executecertregenbatchjob");
+  },
   getBatchErrors(id, page) {
     return ApiService.apiAxios.get(
       "/api/v1/batch/dashboard/errors/" + id + "?pageNumber=" + page
