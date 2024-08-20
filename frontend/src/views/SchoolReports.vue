@@ -91,22 +91,22 @@
             <a
               @click="
                 downloadFile(
-                  item.raw.report,
+                  item.report,
                   'application/pdf',
                   'school-report_' +
-                    item.raw.reportTypeCode +
+                    item.reportTypeCode +
                     '_' +
-                    item.raw.schoolOfRecord
+                    item.schoolOfRecord
                 )
               "
               href="#"
               class="pdf-link float-left mt-2"
             >
-              {{ item.raw.reportTypeLabel }} (PDF)
+              {{ item.reportTypeLabel }} (PDF)
             </a>
           </template>
           <template v-slot:item.updateDate="{ item }">
-            {{ $filters.formatTime(item.raw.updateDate) }}
+            {{ $filters.formatTime(item.updateDate) }}
           </template>
         </DisplayTable>
       </v-card-text>

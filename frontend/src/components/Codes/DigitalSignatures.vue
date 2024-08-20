@@ -16,12 +16,12 @@
       <template v-slot:item.signatureContent="{ item }">
         <v-card header="" class="overflow-hidden">
           <v-img
-            :src="'data:image/png;base64, ' + item.raw.signatureContent"
+            :src="'data:image/png;base64, ' + item.signatureContent"
           ></v-img>
         </v-card>
       </template>
       <template v-slot:item.updatedTimestamp="{ item }">
-        {{ $filters.formatTime(item.raw.updatedTimestamp) }}
+        {{ $filters.formatTime(item.updatedTimestamp) }}
       </template>
     </DisplayTable>
   </div>

@@ -135,31 +135,31 @@
             <tr>
               <td :colspan="columns.length">
                 <ul>
-                  <li v-if="item.raw.address1">
-                    <strong>Address:</strong> {{ item.raw.address1 }}
+                  <li v-if="item.address1">
+                    <strong>Address:</strong> {{ item.address1 }}
                   </li>
-                  <li v-if="item.raw.city">
-                    <strong>City:</strong> {{ item.raw.city }}
+                  <li v-if="item.city">
+                    <strong>City:</strong> {{ item.city }}
                   </li>
-                  <li v-if="item.raw.provCode">
+                  <li v-if="item.provCode">
                     <strong>Province Code:</strong>
-                    {{ item.raw.provCode }}
+                    {{ item.provCode }}
                   </li>
-                  <li v-if="item.raw.postal">
-                    <strong>Postal Code:</strong> {{ item.raw.postal }}
+                  <li v-if="item.postal">
+                    <strong>Postal Code:</strong> {{ item.postal }}
                   </li>
-                  <li v-if="item.raw.schoolEmail">
-                    <strong>Email:</strong> {{ item.raw.schoolEmail }}
+                  <li v-if="item.schoolEmail">
+                    <strong>Email:</strong> {{ item.schoolEmail }}
                   </li>
-                  <li v-if="item.raw.principalName">
+                  <li v-if="item.principalName">
                     <strong>Principal:</strong>
-                    {{ item.raw.principalName }}
+                    {{ item.principalName }}
                   </li>
-                  <li v-if="item.raw.schoolPhone">
-                    <strong>Phone:</strong> {{ item.raw.schoolPhone }}
+                  <li v-if="item.schoolPhone">
+                    <strong>Phone:</strong> {{ item.schoolPhone }}
                   </li>
-                  <li v-if="item.raw.schoolFax">
-                    <strong>Fax:</strong> {{ item.raw.schoolFax }}
+                  <li v-if="item.schoolFax">
+                    <strong>Fax:</strong> {{ item.schoolFax }}
                   </li>
                 </ul>
               </td>

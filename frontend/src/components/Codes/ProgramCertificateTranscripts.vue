@@ -12,13 +12,13 @@
       showFilter="true"
     >
       <template v-slot:item.schoolCategoryCode="{ item }">
-        {{ $filters.formatNullsToNA(item.raw.schoolCategoryCode) }}
+        {{ $filters.formatNullsToNA(item.schoolCategoryCode) }}
       </template>
       <template v-slot:item.certificateTypeCode="{ item }">
-        {{ $filters.formatNullsToNA(item.raw.certificateTypeCode) }}
+        {{ $filters.formatNullsToNA(item.certificateTypeCode) }}
       </template>
       <template v-slot:item.transcriptTypeCode="{ item }">
-        {{ $filters.formatNullsToNA(item.raw.transcriptTypeCode) }}
+        {{ $filters.formatNullsToNA(item.transcriptTypeCode) }}
       </template>
     </DisplayTable>
   </div>

@@ -24,16 +24,16 @@
     >
       <template v-slot:item.pen="{ item }">
         <v-btn
-        :id="'pen' + item.raw.pen"
-        text
-        small
-        @click="findStudentByPen(item.raw.pen)"
-      >
-        {{ item.raw.pen }}
-      </v-btn>
+          :id="'pen' + item.pen"
+          text
+          small
+          @click="findStudentByPen(item.pen)"
+        >
+          {{ item.pen }}
+        </v-btn>
       </template>
       <template v-slot:item.schoolOfRecord="{ item }">
-        <div v-if="item.raw.schoolOfRecord">{{ item.raw.schoolOfRecord }}</div>
+        <div v-if="item.schoolOfRecord">{{ item.schoolOfRecord }}</div>
       </template>
     </DisplayTable>
   </div>

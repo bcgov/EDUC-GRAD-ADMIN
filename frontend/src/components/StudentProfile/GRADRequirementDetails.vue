@@ -14,7 +14,7 @@
             <template v-slot:item.gradReqMet="{ item }">
               <div class="d-flex flex-column text-md-left">
                 <div class="gradReqsMet">
-                  {{ item.raw.gradReqMet }}
+                  {{ item.gradReqMet }}
                 </div>
               </div>
             </template>
@@ -33,16 +33,14 @@
             <template v-slot:item.gradReqMet="{ item }">
               <div class="d-flex flex-column text-md-left">
                 <div class="gradReqsMet">
-                  {{ item.raw.gradReqMet }}
+                  {{ item.gradReqMet }}
                 </div>
               </div>
             </template>
             <template v-slot:item.gradReqMetDetail="{ item }">
               <div class="d-flex flex-column text-md-left">
                 <div class="">
-                  {{
-                    item.raw.gradReqMetDetail ? item.raw.gradReqMetDetail : " "
-                  }}
+                  {{ item.gradReqMetDetail ? item.gradReqMetDetail : " " }}
                 </div>
               </div>
             </template>

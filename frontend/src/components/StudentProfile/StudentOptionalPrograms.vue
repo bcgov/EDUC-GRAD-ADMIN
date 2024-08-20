@@ -97,10 +97,9 @@
 
         <template v-slot:item.optionalProgramName="{ item }">
           <div class="pt-2">
-            {{ item.raw.optionalProgramName }} ({{
-              item.raw.optionalProgramCode
-            }}) <br />
-            {{ item.raw.optionalProgramCompletionDate }}
+            {{ item.optionalProgramName }} ({{ item.optionalProgramCode }})
+            <br />
+            {{ item.optionalProgramCompletionDate }}
           </div>
         </template>
 
@@ -185,7 +184,7 @@
         <template v-slot:expanded-row="{ columns, item }">
           <tr>
             <td :colspan="columns.length">
-              <v-card v-if="item.raw.optionalProgramCode == 'CP'">
+              <v-card v-if="item.optionalProgramCode == 'CP'">
                 <v-card-text>
                   <DisplayTable
                     title="Career Programs"

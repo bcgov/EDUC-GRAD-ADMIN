@@ -238,11 +238,13 @@ export default {
       return disable; // Disable delete if none of the criteria are met
     },
     checkCriterion(item, criterion) {
+      console.log(criterion);
       const { field, value } = criterion;
 
       // Implement logic to check the criterion for the given item
       // For simplicity, assuming direct field comparison
-      return item[field] === value;
+      //return item[field] === value;
+      return true;
     },
     deleteItem(item) {
       const itemRaw = toRaw(item);

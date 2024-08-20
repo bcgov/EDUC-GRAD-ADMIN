@@ -14,7 +14,7 @@
         <v-switch
           :model-value="getSwitchValue(item)"
           label="Enable"
-          @change="toggleRoutine(item.raw.jobType, item.raw.id)"
+          @change="toggleRoutine(item.jobType, item.id)"
         ></v-switch>
       </template>
     </DisplayTable>

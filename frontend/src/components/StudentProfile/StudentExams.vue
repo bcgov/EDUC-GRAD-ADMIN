@@ -10,7 +10,7 @@
       title="Assessments"
     >
       <template v-slot:item.sessionDate="{ item }">
-        {{ $filters.formatYYYYMMDate(item.raw.sessionDate) }}
+        {{ $filters.formatYYYYMMDate(item.sessionDate) }}
       </template>
     </DisplayTable>
   </div>

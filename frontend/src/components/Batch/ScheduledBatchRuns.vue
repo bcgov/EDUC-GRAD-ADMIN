@@ -24,16 +24,18 @@
       }"
       store="batchprocessing"
     >
-      <template v-slot:item.jobParameters="{ item, headers }">
+      <template v-slot:item.jobParameters="{ value }">
+        {{ item.jobParameters }}
         <v-btn
-          v-if="item.raw.status == 'COMPLETED'"
-          :id="'batch-job-id-btn' + item.raw.jobExecutionId"
+          v-if="item.status == 'COMPLETED'"
+          :id="'batch-job-id-btn' + item.jobExecutionId"
           size="xs"
         >
-          {{ item.raw.jobExecutionId }}
+          {{ item.jobExecutionId }}
         </v-btn>
+
         <v-btn v-else disabled size="xs">
-          {{ item.raw.jobExecutionId }}
+          {{ item.jobExecutionId }}
         </v-btn>
       </template>
 
@@ -43,7 +45,7 @@
             <v-card>
               <v-card-text>
                 <div
-                  v-for="(value, key) in item.raw.jobParameters.payload"
+                  v-for="(value, key) in item.jobParameters.payload"
                   :key="key"
                 >
                   <span v-if="value != null"

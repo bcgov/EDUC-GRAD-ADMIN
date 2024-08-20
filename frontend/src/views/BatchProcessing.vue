@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h2>Batch Processing</h2>
+    <h3>Batch Processing</h3>
     <div>
       <v-btn
         class="position-absolute"
@@ -12,188 +12,185 @@
         <v-icon left> mdi-sync-alt </v-icon>
         Update
       </v-btn>
-      <v-card>
-        {{ getActiveTab }}
 
-        <v-tabs v-model="activeTab" bg-color="transparent">
-          <v-tab value="batchRuns" @click="getJwtToken"
-            >Batch Runs ({{ batchInfoListData.length }})</v-tab
-          >
-          <v-tab value="scheduledRuns" @click="getJwtToken"
-            >User Scheduled ({{ queueScheduledJobs.length }} Queued)</v-tab
-          >
-          <v-tab @click="getJwtToken" value="batchRoutines"
-            >Scheduled Routines</v-tab
-          >
-          <v-tab
-            @click="
-              getJwtToken;
-              clearBatchDetails;
-            "
-            value="newBatchRequest"
-            >New Batch Request</v-tab
-          >
-          <v-tab @click="getJwtToken" value="administration"
-            >Administration</v-tab
-          >
-        </v-tabs>
+      {{ getActiveTab }}
 
-        <v-card-text>
-          <v-window v-model="activeTab">
-            <v-window-item value="batchRuns">
-              <BatchRuns></BatchRuns>
-            </v-window-item>
+      <v-tabs v-model="tab" bg-color="transparent">
+        <v-tab value="batchRuns" @click="getJwtToken"
+          >Batch Runs ({{ batchInfoListData.length }})</v-tab
+        >
+        <v-tab value="scheduledRuns" @click="getJwtToken"
+          >User Scheduled ({{ queueScheduledJobs.length }} Queued)</v-tab
+        >
+        <v-tab @click="getJwtToken" value="batchRoutines"
+          >Scheduled Routines</v-tab
+        >
+        <v-tab
+          @click="
+            getJwtToken;
+            clearBatchDetails;
+          "
+          value="newBatchRequest"
+          >New Batch Request</v-tab
+        >
+        <v-tab @click="getJwtToken" value="administration"
+          >Administration</v-tab
+        >
+      </v-tabs>
 
-            <v-window-item value="scheduledRuns">
-              <v-container>
-                <v-row v-if="!scheduledJobs.length">
-                  <v-col> No Scheduled Jobs </v-col>
-                </v-row>
-                <v-row v-else>
-                  <v-col> <ScheduledBatchRuns></ScheduledBatchRuns></v-col>
-                </v-row>
-              </v-container>
-            </v-window-item>
+      <v-tabs-window v-model="tab">
+        <v-tabs-window-item value="batchRuns">
+          <BatchRuns></BatchRuns>
+        </v-tabs-window-item>
 
-            <v-window-item value="batchRoutines">
-              <BatchRoutines></BatchRoutines>
-            </v-window-item>
-            <v-window-item value="newBatchRequest">
-              <v-container>
-                <v-row>
-                  <v-col justify-md="start">
-                    <h2>GRAD and TVR</h2>
-                    <v-data-table
-                      :items="batchRunGradOptions"
-                      :headers="batchFields"
-                      items-per-page="-1"
-                      :disable-pagination="true"
-                      hide-actions
-                      :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
-                      class="batchOptions"
-                    >
-                      <template #bottom></template>
-                      <template v-slot:item.description="{ item }">
-                        <strong>{{ item.raw.label }}</strong>
-                        <br />
-                        {{ item.raw.description }}
-                      </template>
-                      <template v-slot:item.newRequest="{ item }">
-                        <GraduationAlgorithmForm
-                          v-if="item.raw.code == 'REGALG'"
-                        ></GraduationAlgorithmForm
-                        ><TranscriptAlgorithmForm
-                          v-else-if="item.raw.code == 'TVRRUN'"
-                        ></TranscriptAlgorithmForm>
-                        <v-btn v-else :disabled="true">+ </v-btn>
-                      </template>
-                    </v-data-table>
-                  </v-col>
-                  <v-col sm="12" md="4">
-                    <h2>Credentials</h2>
-                    <label>User Requests</label>
-                    <v-data-table
-                      :items="credentialBatchRunOptions.userRequests"
-                      :headers="batchFields"
-                      items-per-page="-1"
-                      :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
-                      class="batchOptions"
-                    >
-                      <template #bottom></template>
-                      <template v-slot:item.description="{ item }">
-                        <strong>{{ item.raw.label }}</strong>
-                        <br />
-                        {{ item.raw.description }}
-                      </template>
-                      <template v-slot:item.newRequest="{ item }">
-                        <Form v-if="item.raw.code == 'DISTRUNUSER'"></Form>
-                        <RegenerateCertificateForm
-                          v-else-if="item.raw.code == 'CERT_REGEN'"
-                        ></RegenerateCertificateForm>
-                        <v-btn v-else :disabled="item.raw.disabled">+ </v-btn>
-                      </template>
-                    </v-data-table>
-                    <label>Regeneration</label>
-                    <v-data-table
-                      :items="credentialBatchRunOptions.regenerationRequests"
-                      :headers="batchFields"
-                      items-per-page="-1"
-                      :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
-                      class="batchOptions"
-                    >
-                      <template #bottom></template>
-                      <template v-slot:item.description="{ item }">
-                        <strong>{{ item.raw.label }}</strong>
-                        <br />
-                        {{ item.raw.description }}
-                      </template>
-                      <template v-slot:item.newRequest="{ item }">
-                        <Form v-if="item.raw.code == 'DISTRUNUSER'"></Form>
-                        <RegenerateCertificateForm
-                          v-else-if="item.raw.code == 'CERT_REGEN'"
-                        ></RegenerateCertificateForm>
-                        <v-btn v-else :disabled="item.raw.disabled">+ </v-btn>
-                      </template>
-                    </v-data-table>
-                    <label>PSIRequests</label>
-                    <v-data-table
-                      :items="credentialBatchRunOptions.PSIRequests"
-                      :headers="batchFields"
-                      items-per-page="-1"
-                      :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
-                      class="batchOptions"
-                    >
-                      <template #bottom></template>
-                      <template v-slot:item.description="{ item }">
-                        <strong>{{ item.raw.label }}</strong>
-                        <br />
-                        {{ item.raw.description }}
-                      </template>
-                      <template v-slot:item.newRequest="{ item }">
-                        <Form v-if="item.raw.code == 'DISTRUNUSER'"></Form>
-                        <RegenerateCertificateForm
-                          v-else-if="item.raw.code == 'CERT_REGEN'"
-                        ></RegenerateCertificateForm>
-                        <v-btn v-else :disabled="item.raw.disabled">+ </v-btn>
-                      </template>
-                    </v-data-table>
-                  </v-col>
-                  <v-col sm="12" md="4">
-                    <h2>Year-End Administration</h2>
-                    <v-data-table
-                      :items="credentialBatchRunOptions.yearEndBatchRunOptions"
-                      :headers="batchFields"
-                      items-per-page="-1"
-                      :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
-                      class="batchOptions"
-                    >
-                      <template #bottom></template>
-                      <template v-slot:item.description="{ item }">
-                        <strong>{{ item.raw.label }}</strong>
-                        <br />
-                        {{ item.raw.description }}
-                      </template>
-                      <template v-slot:item.newRequest="{ item }">
-                        <v-btn
-                          :disabled="item.raw.disabled"
-                          @click="
-                            newBatchRequest(
-                              item.raw.code,
-                              item.raw.label,
-                              item.raw.description
-                            )
-                          "
-                          >+</v-btn
-                        ></template
-                      >
-                    </v-data-table>
-                  </v-col></v-row
+        <v-tabs-window-item value="scheduledRuns">
+          <v-container>
+            <v-row v-if="!scheduledJobs.length">
+              <v-col> No Scheduled Jobs </v-col>
+            </v-row>
+            <v-row v-else>
+              <v-col> <ScheduledBatchRuns></ScheduledBatchRuns></v-col>
+            </v-row>
+          </v-container>
+        </v-tabs-window-item>
+
+        <v-tabs-window-item value="batchRoutines">
+          <BatchRoutines></BatchRoutines>
+        </v-tabs-window-item>
+        <v-tabs-window-item value="newBatchRequest">
+          <v-container>
+            <v-row>
+              <v-col justify-md="start">
+                <h3>GRAD and TVR</h3>
+                <v-data-table
+                  :items="batchRunGradOptions"
+                  :headers="batchFields"
+                  items-per-page="-1"
+                  :disable-pagination="true"
+                  hide-default-header
+                  :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                  class="pb-3"
                 >
-              </v-container>
-            </v-window-item>
-          </v-window>
-        </v-card-text>
-      </v-card>
+                  <template #bottom></template>
+                  <template v-slot:item.description="{ item }">
+                    <strong>{{ item.label }} </strong>
+                    <br />
+                    {{ item.description }}
+                  </template>
+                  <template v-slot:item.newRequest="{ item }">
+                    <GraduationAlgorithmForm
+                      v-if="item.code == 'REGALG'"
+                    ></GraduationAlgorithmForm
+                    ><TranscriptAlgorithmForm
+                      v-else-if="item.code == 'TVRRUN'"
+                    ></TranscriptAlgorithmForm>
+                    <v-btn v-else :disabled="true">+ </v-btn>
+                  </template>
+                </v-data-table>
+              </v-col>
+              <v-col sm="12" md="4">
+                <h3>Credentials</h3>
+                <label>User Requests</label>
+                <v-data-table
+                  :items="credentialBatchRunOptions.userRequests"
+                  :headers="batchFields"
+                  items-per-page="-1"
+                  hide-default-header
+                  :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                  class="pb-3"
+                >
+                  <template #bottom></template>
+                  <template v-slot:item.description="{ item }">
+                    <strong>{{ item.label }}</strong>
+                    <br />
+                    {{ item.description }}
+                  </template>
+                  <template v-slot:item.newRequest="{ item }">
+                    <Form v-if="item.code == 'DISTRUNUSER'"></Form>
+                    <RegenerateCertificateForm
+                      v-else-if="item.code == 'CERT_REGEN'"
+                    ></RegenerateCertificateForm>
+                    <v-btn v-else :disabled="item.disabled">+ </v-btn>
+                  </template>
+                </v-data-table>
+                <label>Regeneration</label>
+                <v-data-table
+                  :items="credentialBatchRunOptions.regenerationRequests"
+                  :headers="batchFields"
+                  items-per-page="-1"
+                  :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                  hide-default-header
+                  class="pb-3"
+                >
+                  <template #bottom></template>
+                  <template v-slot:item.description="{ item }">
+                    <strong> {{ item.label }} </strong>
+                    <br />
+                    {{ item.description }}
+                  </template>
+                  <template v-slot:item.newRequest="{ item }">
+                    <Form v-if="item.code == 'DISTRUNUSER'"></Form>
+                    <RegenerateCertificateForm
+                      v-else-if="item.code == 'CERT_REGEN'"
+                    ></RegenerateCertificateForm>
+                    <v-btn v-else :disabled="item.disabled">+ </v-btn>
+                  </template>
+                </v-data-table>
+                <label>PSIRequests</label>
+                <v-data-table
+                  :items="credentialBatchRunOptions.PSIRequests"
+                  :headers="batchFields"
+                  items-per-page="-1"
+                  :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                  class="pb-3"
+                  hide-default-header
+                >
+                  <template #bottom></template>
+                  <template v-slot:item.description="{ item }">
+                    <strong> {{ item.label }} </strong>
+                    <br />
+                    {{ item.description }}
+                  </template>
+                  <template v-slot:item.newRequest="{ item }">
+                    <Form v-if="item.code == 'DISTRUNUSER'"></Form>
+                    <RegenerateCertificateForm
+                      v-else-if="item.code == 'CERT_REGEN'"
+                    ></RegenerateCertificateForm>
+                    <v-btn v-else :disabled="item.disabled">+ </v-btn>
+                  </template>
+                </v-data-table>
+              </v-col>
+              <v-col sm="12" md="4">
+                <h3>Year-End Administration</h3>
+                <v-data-table
+                  :items="credentialBatchRunOptions.yearEndBatchRunOptions"
+                  :headers="batchFields"
+                  items-per-page="-1"
+                  :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                  class="pb-3"
+                  hide-default-header
+                >
+                  <template #bottom></template>
+                  <template v-slot:item.description="{ item }">
+                    <strong>{{ item.label }}</strong>
+                    <br />
+                    {{ item.description }}
+                  </template>
+                  <template v-slot:item.newRequest="{ item }">
+                    <v-btn
+                      :disabled="item.disabled"
+                      @click="
+                        newBatchRequest(item.code, item.label, item.description)
+                      "
+                      >+</v-btn
+                    ></template
+                  >
+                </v-data-table>
+              </v-col></v-row
+            >
+          </v-container>
+        </v-tabs-window-item>
+      </v-tabs-window>
     </div>
   </div>
 </template>
@@ -282,6 +279,7 @@ export default {
   },
   data() {
     return {
+      tab: "",
       value: "",
       batchTypes: [],
 
@@ -506,8 +504,8 @@ export default {
     //   return false;
     // },
     getBatchData(item) {
-      if (item.raw.value) {
-        return item.raw.value;
+      if (item.value) {
+        return item.value;
       } else {
         return item;
       }
@@ -1289,10 +1287,11 @@ h6 {
 .v-container {
   max-width: 100%;
 }
-.v-table > .v-table__wrapper > table > thead {
-  display: none !important;
-}
-.v-data-table thead {
-  display: none;
+
+label {
+  font-weight: bold;
+  border-bottom: 1px solid;
+  width: 100%;
+  padding-bottom: 5px;
 }
 </style>

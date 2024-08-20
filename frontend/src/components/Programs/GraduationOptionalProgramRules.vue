@@ -19,12 +19,12 @@
               <v-card>
                 <v-card-title>
                   {{
-                    (item.raw.optionalProgramRequirementCode
-                      .requirementCategory === "C"
+                    (item.optionalProgramRequirementCode.requirementCategory ===
+                    "C"
                       ? "Courses"
                       : "Assessments") +
                     " that match rule #" +
-                    item.raw.optionalProgramRequirementCode.optProReqCode
+                    item.optionalProgramRequirementCode.optProReqCode
                   }}
                 </v-card-title>
 
@@ -70,12 +70,12 @@
                 v-bind="props"
                 @click="
                   ruleNumberClicked(
-                    item.raw.optionalProgramRequirementCode.requirementCategory,
-                    item.raw.optionalProgramRequirementCode.optProReqCode
+                    item.optionalProgramRequirementCode.requirementCategory,
+                    item.optionalProgramRequirementCode.optProReqCode
                   )
                 "
               >
-                {{ item.raw.optionalProgramRequirementCode.optProReqCode }}
+                {{ item.optionalProgramRequirementCode.optProReqCode }}
               </v-btn>
             </template>
           </v-dialog>
@@ -86,12 +86,12 @@
             class="p-0"
             @click="
               ruleNumberClicked(
-                item.raw.optionalProgramRequirementCode.requirementCategory,
-                item.raw.optionalProgramRequirementCode.optProReqCode
+                item.optionalProgramRequirementCode.requirementCategory,
+                item.optionalProgramRequirementCode.optProReqCode
               )
             "
           >
-            {{ item.raw.optionalProgramRequirementCode.optProReqCode }}
+            {{ item.optionalProgramRequirementCode.optProReqCode }}
           </v-btn> -->
         </td>
       </template>
