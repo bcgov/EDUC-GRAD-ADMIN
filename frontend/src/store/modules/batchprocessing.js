@@ -318,23 +318,30 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
     getCredential: (state) => state.credential,
     getPsi: (state) => state.psi,
     getLocalDownload: (state) => state.getWhere == "localDownload"?"Y":"N", 
+
+    
     getBatchRequest: (state) => {
       return {
+
+        //All group data
           pens: state.who === "Student" ? state.students.map(student => student.pen) : [],
           schoolOfRecords: state.who === "School" ? state.schools.map(school => school.mincode) : [],
           districts: state.who === "School Category" ? state.districts.map(district => district.district) : [],
           programs: state.who === "Program" ? state.programs.map(program => program.program) : [],
           psiCodes: state.who === "Psi" ? state.psi.map(postSecondaryInstitution => postSecondaryInstitution.psi) : [],
+          
+
+
           credentialTypeCode: state.credential,
           schoolCategoryCodes: state.categoryCode,
           gradDateFrom: state.gradDateFrom,
           gradDateTo: state.gradDateTo,
           validateInputs: false,
           quantity: state.copies,
-          localDownload: state.getLocalDownload,
+          ...(state.what ? { localDownload: state.getLocalDownload } : {}),
       }
-    },   
-
+    },  
+   
     //batch getters legacy
     getBatchDetails: (state) => {
       return state.batchDetails;

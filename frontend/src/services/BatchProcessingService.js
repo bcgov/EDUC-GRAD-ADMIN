@@ -36,18 +36,36 @@ export default {
       return ApiService.apiAxios.post('/api/v1/batch/tvrspecialrun', request);
     }
   },
-  runDISTRUNUSER(request,credentialType) {
-    if(credentialType == "OT"){
-      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT', request);
-    }else if(credentialType == "OC"){
-      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OC', request);
-    }else if(credentialType == "RC"){
-      return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/RC', request);
-    }else if(credentialType == "Blank transcript print"){
-      return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OT', request);
-    }else if(credentialType == "Blank certificate print"){
-      return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OC', request);
+  runDISTRUNUSER(request,credentialType, cronTime="") {
+    if(cronTime){
+      let scheduledRequest = {};
+      if(credentialType == "Blank transcript print" || credentialType == "Blank certificate print"){
+        
+        scheduledRequest.payload = request;
+        scheduledRequest.blankPayLoad = null;
+      }else{
+        scheduledRequest.payload = null;
+        scheduledRequest.blankPayLoad = request;
+      }
+      scheduledRequest.cronExpression = cronTime
+      scheduledRequest.jobName = "URDBJ";
+      this.addScheduledJob(scheduledRequest);
+      return
+    }else{
+      if(credentialType == "OT"){
+        return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT', request);
+      }else if(credentialType == "OC"){
+        return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OC', request);
+      }else if(credentialType == "RC"){
+        return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/RC', request);
+      }else if(credentialType == "Blank transcript print"){
+        return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OT', request);
+      }else if(credentialType == "Blank certificate print"){
+        return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OC', request);
+      }
     }
+
+    
   },     
   runDISTRUN_MONTHLY(){
     return ApiService.apiAxios.get('/api/v1/batch/executedisrunbatchjob');
@@ -76,14 +94,12 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return
     }else{
-      console.log(request)
-      return
-      //return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
+      return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
     }
   },
-  runBlankDISTRUNUSERUserRequest(request, credentialType){
-    return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/'+ credentialType, request);
-  },
+  // runBlankDISTRUNUSERUserRequest(request, credentialType){
+  //   return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/'+ credentialType, request);
+  // },
   runPSIRUN(request, transmissionType){
     return ApiService.apiAxios.post('/api/v1/batch/executepsireportbatchjob/' + transmissionType, request);
   },

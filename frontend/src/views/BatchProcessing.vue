@@ -13,7 +13,7 @@
         Update
       </v-btn>
       <v-card>
-        {{ getActiveTab }}s
+        {{ getActiveTab }}
 
         <v-tabs v-model="activeTab" bg-color="transparent">
           <v-tab value="batchRuns" @click="getJwtToken"
@@ -62,12 +62,15 @@
               <v-container>
                 <v-row>
                   <v-col justify-md="start">
+                    <h2>GRAD and TVR</h2>
                     <v-data-table
                       :items="batchRunGradOptions"
                       :headers="batchFields"
                       items-per-page="-1"
                       :disable-pagination="true"
+                      hide-actions
                       :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                      class="batchOptions"
                     >
                       <template #bottom></template>
                       <template v-slot:item.description="{ item }">
@@ -87,11 +90,58 @@
                     </v-data-table>
                   </v-col>
                   <v-col sm="12" md="4">
+                    <h2>Credentials</h2>
+                    <label>User Requests</label>
                     <v-data-table
-                      :items="distributionBatchRunOptions"
+                      :items="credentialBatchRunOptions.userRequests"
                       :headers="batchFields"
                       items-per-page="-1"
                       :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                      class="batchOptions"
+                    >
+                      <template #bottom></template>
+                      <template v-slot:item.description="{ item }">
+                        <strong>{{ item.raw.label }}</strong>
+                        <br />
+                        {{ item.raw.description }}
+                      </template>
+                      <template v-slot:item.newRequest="{ item }">
+                        <Form v-if="item.raw.code == 'DISTRUNUSER'"></Form>
+                        <RegenerateCertificateForm
+                          v-else-if="item.raw.code == 'CERT_REGEN'"
+                        ></RegenerateCertificateForm>
+                        <v-btn v-else :disabled="item.raw.disabled">+ </v-btn>
+                      </template>
+                    </v-data-table>
+                    <label>Regeneration</label>
+                    <v-data-table
+                      :items="credentialBatchRunOptions.regenerationRequests"
+                      :headers="batchFields"
+                      items-per-page="-1"
+                      :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                      class="batchOptions"
+                    >
+                      <template #bottom></template>
+                      <template v-slot:item.description="{ item }">
+                        <strong>{{ item.raw.label }}</strong>
+                        <br />
+                        {{ item.raw.description }}
+                      </template>
+                      <template v-slot:item.newRequest="{ item }">
+                        <Form v-if="item.raw.code == 'DISTRUNUSER'"></Form>
+                        <RegenerateCertificateForm
+                          v-else-if="item.raw.code == 'CERT_REGEN'"
+                        ></RegenerateCertificateForm>
+                        <v-btn v-else :disabled="item.raw.disabled">+ </v-btn>
+                      </template>
+                    </v-data-table>
+                    <label>PSIRequests</label>
+                    <v-data-table
+                      :items="credentialBatchRunOptions.PSIRequests"
+                      :headers="batchFields"
+                      items-per-page="-1"
+                      :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                      class="batchOptions"
                     >
                       <template #bottom></template>
                       <template v-slot:item.description="{ item }">
@@ -109,11 +159,13 @@
                     </v-data-table>
                   </v-col>
                   <v-col sm="12" md="4">
+                    <h2>Year-End Administration</h2>
                     <v-data-table
-                      :items="PSIBatchRunOptions"
+                      :items="credentialBatchRunOptions.yearEndBatchRunOptions"
                       :headers="batchFields"
                       items-per-page="-1"
                       :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                      class="batchOptions"
                     >
                       <template #bottom></template>
                       <template v-slot:item.description="{ item }">
@@ -286,103 +338,11 @@ export default {
       searchResults: [],
       batchValid: false,
       batchRunGradOptions: [],
+      credentialBatchRunOptions: [],
+
       distributionBatchRunOptions: [],
       PSIBatchRunOptions: [],
-      adminBatchRunOptions: [
-        {
-          createUser: "API_GRAD_BATCH",
-          createDate: "2022-11-26T00:53:27.000+00:00",
-          updateUser: "API_GRAD_BATCH",
-          updateDate: "2022-11-26T00:53:27.000+00:00",
-          code: "ARCHIVE_PROCESS",
-          label: "Archive Process",
-          description:
-            "A Year-End Distribution Run that sends printed certificate and transcript packages (including distribution reports) to districts and schools. Includes students with new program completions where a certificate has not yet been distributed and students with updated transcripts after a previous completion.",
-          displayOrder: 50,
-          effectiveDate: "2021-09-27T07:00:00.000+00:00",
-          expiryDate: null,
-        },
-        {
-          createUser: "API_GRAD_BATCH",
-          createDate: "2022-11-26T00:53:27.000+00:00",
-          updateUser: "API_GRAD_BATCH",
-          updateDate: "2022-11-26T00:53:27.000+00:00",
-          code: "EDW_DOWNLOADS",
-          label: "EDW Downloads",
-          description:
-            "A Supplemental Year-End Distribution Run that sends printed certificate and transcript packages (including distribution reports) to schools only. Includes students with new program completions where a certificate has not yet been distributed and students with updated transcripts after a previous completion.",
-          displayOrder: 70,
-          effectiveDate: "2021-09-27T07:00:00.000+00:00",
-          expiryDate: null,
-        },
-        {
-          createUser: "API_GRAD_BATCH",
-          createDate: "2022-11-26T00:53:27.000+00:00",
-          updateUser: "API_GRAD_BATCH",
-          updateDate: "2022-11-26T00:53:27.000+00:00",
-          code: "Purge/Rollover/Delete School Reports",
-          label: "PURGE_ROLLOVER_DELETE_SCHOOL_REPORTS",
-          description:
-            "A Non-Graduate Transcript Distribution Run sends transcript packages (including distribution reports) to districts and schools for any current students in Grade 12 or AD who were on a graduation program but did not graduate.",
-          displayOrder: 80,
-          effectiveDate: "2021-09-27T07:00:00.000+00:00",
-          expiryDate: null,
-        },
-        {
-          createUser: "API_GRAD_BATCH",
-          createDate: "2022-04-05T16:26:11.000+00:00",
-          updateUser: "API_GRAD_BATCH",
-          updateDate: "2022-04-05T16:26:11.000+00:00",
-          code: "Challenges Report",
-          label: "CHALLENGES_REPORT",
-          description:
-            "A Credentials Distribution Run that sends printed certificate and transcript packages (including distribution reports) to schools only. Includes students with new program completions where a certificate has not yet been distributed.",
-          displayOrder: 60,
-          effectiveDate: "2021-09-27T07:00:00.000+00:00",
-          expiryDate: null,
-        },
-      ],
-      utilitiesBatchRunOptions: [
-        {
-          createUser: "API_GRAD_BATCH",
-          createDate: "2022-11-26T00:53:27.000+00:00",
-          updateUser: "API_GRAD_BATCH",
-          updateDate: "2022-11-26T00:53:27.000+00:00",
-          code: "ADOPT_STUDENT",
-          label: "Adopt Student",
-          description:
-            "A Year-End Distribution Run that sends printed certificate and transcript packages (including distribution reports) to districts and schools. Includes students with new program completions where a certificate has not yet been distributed and students with updated transcripts after a previous completion.",
-          displayOrder: 50,
-          effectiveDate: "2021-09-27T07:00:00.000+00:00",
-          expiryDate: null,
-        },
-        {
-          createUser: "API_GRAD_BATCH",
-          createDate: "2022-11-26T00:53:27.000+00:00",
-          updateUser: "API_GRAD_BATCH",
-          updateDate: "2022-11-26T00:53:27.000+00:00",
-          code: "MERGE_DEMERGE_STUDENT_DATA",
-          label: "Merge/Demerge Student Data",
-          description:
-            "A Supplemental Year-End Distribution Run that sends printed certificate and transcript packages (including distribution reports) to schools only. Includes students with new program completions where a certificate has not yet been distributed and students with updated transcripts after a previous completion.",
-          displayOrder: 70,
-          effectiveDate: "2021-09-27T07:00:00.000+00:00",
-          expiryDate: null,
-        },
-        {
-          createUser: "API_GRAD_BATCH",
-          createDate: "2022-11-26T00:53:27.000+00:00",
-          updateUser: "API_GRAD_BATCH",
-          updateDate: "2022-11-26T00:53:27.000+00:00",
-          code: "TRANSFER_STUDENT_ASSESSMENT_DATA",
-          label: "Transfer Student Course/Assessment Data",
-          description:
-            "A Non-Graduate Transcript Distribution Run sends transcript packages (including distribution reports) to districts and schools for any current students in Grade 12 or AD who were on a graduation program but did not graduate.",
-          displayOrder: 80,
-          effectiveDate: "2021-09-27T07:00:00.000+00:00",
-          expiryDate: null,
-        },
-      ],
+      yearEndBatchRunOptions: [],
     };
   },
   created() {
@@ -394,16 +354,28 @@ export default {
           "REGALG",
           "TVRRUN",
         ]);
+        this.credentialBatchRunOptions.userRequests = this.filterBatchTypes(
+          this.batchTypes,
+          ["DISTRUNUSER"]
+        );
+        this.credentialBatchRunOptions.regenerationRequests =
+          this.filterBatchTypes(this.batchTypes, [
+            "CERT_REGEN",
+            "SCHL_RPT_REGEN",
+          ]);
+        this.credentialBatchRunOptions.PSIRequests = this.filterBatchTypes(
+          this.batchTypes,
+          ["PSIRUN"]
+        );
+        this.credentialBatchRunOptions.yearEndBatchRunOptions =
+          this.filterBatchTypes(this.batchTypes, [
+            "ARC_STUDENTS",
+            "ARC_SCH_REPORTS",
+          ]);
+
         this.distributionBatchRunOptions = this.filterBatchTypes(
           this.batchTypes,
-          [
-            "DISTRUN_YE",
-            "DISTRUN_SUPP",
-            "NONGRADRUN",
-            "DISTRUN",
-            "DISTRUNUSER",
-            "CERT_REGEN",
-          ]
+          ["DISTRUN_YE", "CERT_REGEN"]
         );
 
         this.PSIBatchRunOptions = this.filterBatchTypes(this.batchTypes, [
@@ -1316,5 +1288,11 @@ h6 {
 }
 .v-container {
   max-width: 100%;
+}
+.v-table > .v-table__wrapper > table > thead {
+  display: none !important;
+}
+.v-data-table thead {
+  display: none;
 }
 </style>

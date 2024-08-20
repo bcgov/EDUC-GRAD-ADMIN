@@ -132,7 +132,7 @@
         </v-card-actions>
         {{ activeTab }}
         STORE - GETBATCHREQUEST
-        {{ getBatchRequest }}
+        <pre>{{ getBatchRequest }}</pre>
 
         <br />
         <br />
@@ -305,7 +305,9 @@ export default {
           this.getBatchRequestCrontime
         );
         this.closeDialogAndResetForm();
-        this.activeTab = "batchRuns";
+        nextTick(() => {
+          this.activeTab = "batchRuns";
+        });
       } catch (error) {
         // handle the error and show the notification
         console.error("Error:", error);

@@ -1,10 +1,12 @@
 import { defineStore } from "pinia";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import { isProxy, toRaw } from "vue";
+import {MinistryAddress} from "@/utils/constants.js"
 
 export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
   namespaced: true,
   state: () => ({
+    runType: "",
     schools: [],
     districts: [],
     programs:[],
@@ -24,6 +26,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     copies:"1",
     allPsi:false,
     allDistricts:false,
+    distribution: null,
     localDownload: "N",
 
     batchRunTime: null,
@@ -32,7 +35,10 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     batchRunCustomTime: null
   }),
   actions: {
- 
+  async setBatchRunType(payload){
+    console.log("setting batch type" + payload)
+    this.runType = payload
+  },
   async clearBatchGroupData(){
     this.schools=[];
     this.districts=[];
@@ -53,9 +59,23 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     async clearBatchCredentialsDetails(payload){
       this.batchDetails[payload].details['blankCertificateDetails']=[{}];
       this.batchDetails[payload].details['blankTranscriptDetails']=[{}];
+    },
+    async updateCredential(credential) {
+      this.credential = credential;
+      this.resetBlankCertificateDetails();
+      this.resetBlankTranscriptDetails();
     },    
+    async resetBlankCertificateDetails() {
+      console.log("R1")
+      this.blankCertificateDetails = [];
+    },
+    async resetBlankTranscriptDetails() {
+      console.log("R2")
+      this.blankTranscriptDetails = [];
+    },
   },
   getters: {
+    
     getGroup: (state) => {
       return state.who
     },
@@ -77,7 +97,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
       }
     },
     getBatchRunTime: (state) => state.batchRunTime,
-    getLocalDownload: (state) => state.getWhere == "localDownload"?"Y":"N", 
+    getLocalDownload: (state) => state.distribution == "Download"?"Y":"N", 
     getBatchRequestCrontime: (state) => {
    
         if (state.batchRunSchedule == "N") {
@@ -129,22 +149,42 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         }
 
     },
+    getBlankCertificateDetails:(state) => state.blankCertificateDetails,
+    getBlankTranscriptDetails : (state) => state.blankTranscriptDetails,
+    getUserDistributionAddress: (state) =>{
+      return MinistryAddress
+    },
+
+    
     getBatchRequest: (state) => {
-      console.log(state.who)
-      return {
-          pens: state.who === "Student" ? state.students.map(student => student.pen) : [],
-          schoolOfRecords: state.who === "School" ? state.schools.map(school => school.mincode) : [],
-          districts: state.who === "School Category" ? state.districts.map(district => district.district) : [],
-          programs: state.who === "Program" ? state.programs.map(program => program.program) : [],
-          psiCodes: state.who === "Psi" ? state.psi.map(postSecondaryInstitution => postSecondaryInstitution.psi) : [],
-          credentialTypeCode: state.credential,
-          schoolCategoryCodes: state.categoryCode,
-          gradDateFrom: state.gradDateFrom,
-          gradDateTo: state.gradDateTo,
-          validateInputs: false,
-          quantity: state.copies,
-          localDownload: state.getLocalDownload,
-      }
+      let request = {
+        runtype: state.runType,
+        pens: state.who === "Student" ? state.students.map(student => student.pen) : [],
+        schoolOfRecords: state.who === "School" ? state.schools.map(school => school.mincode) : [],
+        districts: state.who === "School Category" ? state.districts.map(district => district.district) : [],
+        programs: state.who === "Program" ? state.programs.map(program => program.program) : [],
+        psiCodes: state.who === "Psi" ? state.psi.map(postSecondaryInstitution => postSecondaryInstitution.psi) : [],
+        schoolCategoryCodes: state.categoryCode,
+        validateInputs: false,
+
+        // gradDateFrom and gradDateTo are empty if "Current Students" is selected
+        gradDateFrom: state.gradDateFrom,
+        gradDateTo: state.gradDateTo,
+
+        // Include credentialTypeCode based on the credential selected
+        ...(state.credential === "Blank certificate print" ? { credentialTypeCode: state.blankCertificateDetails } : {}),
+        ...(state.credential === "Blank transcript print" ? { credentialTypeCode: state.blankTranscriptDetails } : {}),
+
+        // User distribution run with specific conditions
+        ...(state.runType === "DISTRUNUSER" ? {
+            // Check distribution method
+            localDownload: state.getLocalDownload,
+            quantity: state.copies,
+            user: "Shaun2",
+            address: state.getUserDistributionAddress,
+        } : {}),
+      };
+      return request
     },   
   }
 

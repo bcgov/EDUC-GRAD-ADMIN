@@ -27,11 +27,11 @@ export const Roles = Object.freeze({
   GRAD_SYSTEM_COORDINATOR: "GRAD_SYSTEM_COORDINATOR"
 });
 
-export const MinistryAddressLabel = Object.freeze({
-  TO: "Ministry of Education and Child Care",
-  ADDRESS: "4TH FLOOR 620 SUPERIOR",
-  PO: "PO BOX 9886 STN PROV GOVT",
-  CITY: "VICTORIA",
-  PROVINCE: "BC BRITISH COLUMBIA",
-  POSTAL: "V8W9T6",
+export const MinistryAddress = Object.freeze({
+  streetLine1: "4TH FLOOR 620 SUPERIOR",
+  streetLine2: "PO BOX 9886 STN PROV GOVT",
+  city: "VICTORIA",
+  region: "BRITISH COLUMBIA",
+  country: "CANADA",
+  code: "V8W9T6",
 });
