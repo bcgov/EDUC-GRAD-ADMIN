@@ -1371,6 +1371,7 @@ export default {
       let index = id.replace("job-", "") - 1;
       let value = true;
       this.setTabLoading({ index, value });
+      delete request.credentialTypeCode;
       BatchProcessingService.runYearlyArchiveBatchJobSchools(request)
         .then((response) => {
           //update the admin dashboard
