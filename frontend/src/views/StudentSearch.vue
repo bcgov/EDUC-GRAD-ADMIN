@@ -300,10 +300,8 @@
                     v-bind:pagination="true"
                   >
                     <template v-slot:item.pen="{ item }">
-                      <router-link
-                        :to="'/student-profile/' + item.raw.studentID"
-                      >
-                        {{ item.raw.pen }}
+                      <router-link :to="'/student-profile/' + item.studentID">
+                        {{ item.pen }}
                       </router-link></template
                     >
                     <template v-slot:expanded-row="{ columns, item }">
@@ -312,15 +310,15 @@
                           <ul>
                             <li>
                               <strong>Usual given:</strong>
-                              {{ item.raw.usualFirstName }}
+                              {{ item.usualFirstName }}
                             </li>
                             <li>
                               <strong>Usual middle:</strong>
-                              {{ item.raw.usualMiddleNames }}
+                              {{ item.usualMiddleNames }}
                             </li>
                             <li>
                               <strong>Usual surname:</strong>
-                              {{ item.raw.usualLastName }}
+                              {{ item.usualLastName }}
                             </li>
                           </ul>
                         </td>

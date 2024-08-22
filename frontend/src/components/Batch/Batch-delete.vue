@@ -77,7 +77,7 @@
                 :options="transcriptTypes"
                 value-field="code"
                 text-field="description"
-                :value="batch.details['credentialDetails']"
+                :value="blankTranscriptDetails"
                 @change="editBatchJob('blankTranscriptDetails', $event)"
               ></b-form-checkbox-group>
               <b-form-checkbox-group
@@ -114,7 +114,7 @@
                   name="blankCertificateDetailsOptions"
                   :options="certificateTypes"
                   :aria-describedby="blankCertificateDetailsOptions"
-                  :value="batch.details['credentials']"
+                  :value="blankCertificateDetails"
                   @change="editBatchJob('blankCertificateDetails', $event)"
                 ></b-form-checkbox-group>
               </b-form-group>

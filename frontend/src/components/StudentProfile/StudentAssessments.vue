@@ -22,21 +22,21 @@
                 <v-btn
                   v-bind="activatorProps"
                   color="surface-variant"
-                  :text="item.raw.assessmentName"
+                  :text="item.assessmentName"
                   variant="flat"
                   class="m-1 p-1 text-left"
                 >
                 </v-btn>
               </template>
               <template v-slot:default="{ isActive }">
-                <v-card :title="item.raw.assessmentName">
+                <v-card :title="item.assessmentName">
                   <v-card-text>
                     <div class="row py-1">
                       <div class="col">
                         <strong>Language:</strong>
                       </div>
                       <div class="col">
-                        {{ item.raw.assessmentDetails.language }}
+                        {{ item.assessmentDetails.language }}
                       </div>
                     </div>
                     <div class="row py-1">
@@ -44,7 +44,7 @@
                       <div class="col">
                         {{
                           $filters.formatSimpleDate(
-                            item.raw.assessmentDetails.startDate
+                            item.assessmentDetails.startDate
                           )
                         }}
                       </div>
@@ -54,7 +54,7 @@
                       <div class="col">
                         {{
                           $filters.formatSimpleDate(
-                            item.raw.assessmentDetails.endDate
+                            item.assessmentDetails.endDate
                           )
                         }}
                       </div>
@@ -78,14 +78,14 @@
       <template v-slot:expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length">
-            <ul v-if="item.raw.hasMoreInfo == true">
-              <li v-if="item.raw.mincodeAssessment">
+            <ul v-if="item.hasMoreInfo == true">
+              <li v-if="item.mincodeAssessment">
                 <strong>Assessment Centre:</strong>
-                {{ item.raw.mincodeAssessment }}
+                {{ item.mincodeAssessment }}
               </li>
-              <li v-if="item.raw.mincodeAssessmentName">
+              <li v-if="item.mincodeAssessmentName">
                 <strong>Assessment Centre Name:</strong>
-                {{ item.raw.mincodeAssessmentName }}
+                {{ item.mincodeAssessmentName }}
               </li>
             </ul>
           </td>

@@ -178,32 +178,30 @@
             <tr>
               <td :colspan="columns.length">
                 <ul>
-                  <li v-if="item.raw.address1">
-                    <strong>Address:</strong> {{ item.raw.address1 }}
+                  <li v-if="item.address1">
+                    <strong>Address:</strong> {{ item.address1 }}
                   </li>
-                  <li v-if="item.raw.city">
-                    <strong>City:</strong> {{ item.raw.city }}
+                  <li v-if="item.city">
+                    <strong>City:</strong> {{ item.city }}
                   </li>
-                  <li v-if="item.raw.provinceCode">
+                  <li v-if="item.provinceCode">
                     <strong>Province Code:</strong>
-                    {{ item.raw.provinceCode }}
+                    {{ item.provinceCode }}
                   </li>
-                  <li v-if="item.raw.provinceName">
+                  <li v-if="item.provinceName">
                     <strong>Province Name:</strong>
-                    {{ item.raw.provinceName }}
+                    {{ item.provinceName }}
                   </li>
-                  <li v-if="item.raw.countryCode">
-                    <strong>Country Code:</strong> {{ item.raw.countryCode }}
+                  <li v-if="item.countryCode">
+                    <strong>Country Code:</strong> {{ item.countryCode }}
                   </li>
-                  <li v-if="item.raw.postal">
-                    <strong>Postal Code:</strong> {{ item.raw.postal }}
+                  <li v-if="item.postal">
+                    <strong>Postal Code:</strong> {{ item.postal }}
                   </li>
-                  <li v-if="item.raw.phone1">
-                    <strong>Phone:</strong> {{ item.raw.phone }}
+                  <li v-if="item.phone1">
+                    <strong>Phone:</strong> {{ item.phone }}
                   </li>
-                  <li v-if="item.raw.fax">
-                    <strong>Fax:</strong> {{ item.raw.fax }}
-                  </li>
+                  <li v-if="item.fax"><strong>Fax:</strong> {{ item.fax }}</li>
                 </ul>
               </td>
             </tr>

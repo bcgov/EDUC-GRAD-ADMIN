@@ -9,10 +9,10 @@
       isOptionalProgram="true"
     >
       <template v-slot:item.effectiveDate="{ item }">
-        {{ $filters.formatSimpleDate(item.raw.effectiveDate) }}
+        {{ $filters.formatSimpleDate(item.effectiveDate) }}
       </template>
       <template v-slot:item.expiryDate="{ item }">
-        {{ $filters.formatSimpleDate(item.raw.expiryDate) }}
+        {{ $filters.formatSimpleDate(item.expiryDate) }}
       </template>
     </DisplayTable>
   </div>

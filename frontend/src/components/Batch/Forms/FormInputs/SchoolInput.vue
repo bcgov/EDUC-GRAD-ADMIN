@@ -87,7 +87,7 @@
             >
               <template v-slot:item.remove="{ item }">
                 <v-btn
-                  @click="removeSchool(item.raw.mincode)"
+                  @click="removeSchool(item.mincode)"
                   class="btn btn-primary w-100"
                   >Remove</v-btn
                 >
@@ -95,23 +95,23 @@
               <template v-slot:item.info="{ item }">
                 <div>
                   <strong>School Name:</strong>
-                  {{ item.raw.info.schoolName }}
+                  {{ item.info.schoolName }}
                 </div>
                 <div>
                   <strong>Transcript Eligibility:</strong>
-                  {{ item.raw.info.transcriptEligibility }}
+                  {{ item.info.transcriptEligibility }}
                 </div>
                 <div>
                   <strong>Certificate Eligibility</strong>
-                  {{ item.raw.info.certificateEligibility }}
+                  {{ item.info.certificateEligibility }}
                 </div>
                 <div>
                   <strong>School Category</strong>
-                  {{ item.raw.info.transcriptEligibility }}
+                  {{ item.info.transcriptEligibility }}
                 </div>
                 <div>
                   <strong>TRAX reporting</strong>
-                  {{ item.raw.info.traxReporting }}
+                  {{ item.info.traxReporting }}
                 </div>
               </template>
               <template #bottom></template>

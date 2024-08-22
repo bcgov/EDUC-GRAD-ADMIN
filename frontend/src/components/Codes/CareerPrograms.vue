@@ -20,10 +20,10 @@
       showFilter="true"
     >
       <template v-slot:item.startDate="{ item }">
-        {{ $filters.formatYYYYMMDate(item.raw.startDate) }}
+        {{ $filters.formatYYYYMMDate(item.startDate) }}
       </template>
       <template v-slot:item.endDate="{ item }">
-        {{ $filters.formatYYYYMMDate(item.raw.endDate) }}
+        {{ $filters.formatYYYYMMDate(item.endDate) }}
       </template>
     </DisplayTable>
   </div>

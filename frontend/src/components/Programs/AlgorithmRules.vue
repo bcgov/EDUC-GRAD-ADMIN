@@ -14,13 +14,13 @@
       showFilter="true"
     >
       <template v-slot:item.algorithmRuleCode="{ item }">
-        {{ item.raw.label }}
+        {{ item.label }}
       </template>
       <template v-slot:item.description="{ item }">
-        {{ item.raw.description }}
+        {{ item.description }}
       </template>
       <template v-slot:item.isActiveRule="{ item }">
-        {{ item.raw.isActiveRule }}
+        {{ item.isActiveRule }}
       </template>
     </DisplayTable>
   </div>

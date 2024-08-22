@@ -34,7 +34,7 @@
               " -->
                     {{
                       "Rule # " +
-                      item.raw.programRequirementCode.proReqCode +
+                      item.programRequirementCode.proReqCode +
                       " - " +
                       ruleMatchType
                     }}
@@ -65,16 +65,16 @@
                 v-bind="props"
                 @click="
                   ruleNumberClicked(
-                    item.raw.programRequirementCode.requirementCategory,
-                    item.raw.programRequirementCode.proReqCode
+                    item.programRequirementCode.requirementCategory,
+                    item.programRequirementCode.proReqCode
                   )
                 "
-                >{{ item.raw.programRequirementCode.proReqCode }}
+                >{{ item.programRequirementCode.proReqCode }}
               </v-btn>
               <!-- v-b-modal="
                   'modal-' +
-                  item.raw.graduationProgramCode +
-                  item.raw.programRequirementCode.proReqCode
+                  item.graduationProgramCode +
+                  item.programRequirementCode.proReqCode
                 " -->
             </template>
           </v-dialog>
@@ -83,15 +83,15 @@
 
       <template v-slot:item.programRequirementCode="{ item }">
         {{
-          item.raw.programRequirementCode.traxReqNumber ===
-          item.raw.programRequirementCode.proReqCode
+          item.programRequirementCode.traxReqNumber ===
+          item.programRequirementCode.proReqCode
             ? ""
-            : item.raw.programRequirementCode.traxReqNumber
+            : item.programRequirementCode.traxReqNumber
         }}
       </template>
 
       <template v-slot:item.traxReqChar="{ item }">
-        {{ item.raw.programRequirementCode.traxReqChar }}
+        {{ item.programRequirementCode.traxReqChar }}
       </template>
     </DisplayTable>
   </div>

@@ -9,7 +9,6 @@ import "@fortawesome/fontawesome-free/js/all.js";
 import "vuetify/styles";
 import * as colors from "vuetify/lib/util/colors";
 import styles from "vuetify/styles?inline";
-import * as labs from "vuetify/labs/components";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 import "@mdi/font/css/materialdesignicons.css";
@@ -38,7 +37,6 @@ const vuetify = createVuetify({
     defaultSet: "mdi",
   },
   components: {
-    ...labs,
     ...components,
     ...directives,
     ...styles,

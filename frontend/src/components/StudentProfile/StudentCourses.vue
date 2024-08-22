@@ -48,20 +48,20 @@
                   <v-btn
                     v-bind="activatorProps"
                     color="surface-variant"
-                    :text="item.raw.courseName"
+                    :text="item.courseName"
                     variant="flat"
                   ></v-btn>
                 </template>
 
                 <template v-slot:default="{ isActive }">
-                  <v-card :title="item.raw.courseName">
+                  <v-card :title="item.courseName">
                     <v-card-text>
                       <div class="row py-1">
                         <div class="col">
                           <strong>Instruction Language:</strong>
                         </div>
                         <div class="col">
-                          {{ item.raw.courseDetails.language }}
+                          {{ item.courseDetails.language }}
                         </div>
                       </div>
                       <div class="row py-1">
@@ -69,7 +69,7 @@
                         <div class="col">
                           {{
                             $filters.formatSimpleDate(
-                              item.raw.courseDetails.startDate
+                              item.courseDetails.startDate
                             )
                           }}
                         </div>
@@ -79,7 +79,7 @@
                         <div class="col">
                           {{
                             $filters.formatSimpleDate(
-                              item.raw.courseDetails.endDate
+                              item.courseDetails.endDate
                             )
                           }}
                         </div>
@@ -87,13 +87,13 @@
                       <div class="row py-1">
                         <div class="col"><strong>Credits:</strong></div>
                         <div class="col">
-                          {{ item.raw.courseDetails.numCredits }}
+                          {{ item.courseDetails.numCredits }}
                         </div>
                       </div>
                       <div class="row py-1">
                         <div class="col"><strong>Work Experience:</strong></div>
                         <div class="col">
-                          {{ item.raw.courseDetails.workExpFlag }}
+                          {{ item.courseDetails.workExpFlag }}
                         </div>
                       </div>
                       <div class="row py-1">
@@ -101,7 +101,7 @@
                           <strong>Generic Course Type:</strong>
                         </div>
                         <div class="col">
-                          {{ item.raw.courseDetails.genericCourseType }}
+                          {{ item.courseDetails.genericCourseType }}
                         </div>
                       </div>
                     </v-card-text>
@@ -138,41 +138,41 @@
         <template v-slot:expanded-row="{ columns, item }">
           <tr>
             <td :colspan="columns.length">
-              <ul v-if="item.raw.hasRelatedCourse">
-                <li v-if="item.raw.customizedCourseName">
+              <ul v-if="item.hasRelatedCourse">
+                <li v-if="item.customizedCourseName">
                   <strong>Customized Course Title:</strong>
-                  {{ item.raw.customizedCourseName }}
+                  {{ item.customizedCourseName }}
                 </li>
-                <li v-if="item.raw.relatedCourse">
+                <li v-if="item.relatedCourse">
                   <strong>Related Course:</strong>
-                  {{ item.raw.relatedCourse }}
+                  {{ item.relatedCourse }}
                 </li>
-                <li v-if="item.raw.relatedLevel">
+                <li v-if="item.relatedLevel">
                   <strong>Related Course Level:</strong>
-                  {{ item.raw.relatedLevel }}
+                  {{ item.relatedLevel }}
                 </li>
-                <li v-if="item.raw.relatedCourseName">
+                <li v-if="item.relatedCourseName">
                   <strong>Related Course Name:</strong>
-                  {{ item.raw.relatedCourseName }}
+                  {{ item.relatedCourseName }}
                 </li>
-                <li v-if="item.raw.alternateCourseName">
+                <li v-if="item.alternateCourseName">
                   <strong>Alternate Course Name:</strong>
-                  {{ item.raw.alternateCourseName }}
+                  {{ item.alternateCourseName }}
                 </li>
-                <li v-if="item.raw.bestSchoolPercent">
+                <li v-if="item.bestSchoolPercent">
                   <strong>Best School Percent:</strong>
-                  {{ item.raw.bestSchoolPercent }}
+                  {{ item.bestSchoolPercent }}
                 </li>
-                <li v-if="item.raw.bestExamPercent">
+                <li v-if="item.bestExamPercent">
                   <strong>Best Exam Percent:</strong>
-                  {{ item.raw.bestExamPercent }}
+                  {{ item.bestExamPercent }}
                 </li>
-                <li v-if="item.raw.metLitNumRequirement">
+                <li v-if="item.metLitNumRequirement">
                   <strong>Assessment Equivalent:</strong>
-                  {{ item.raw.metLitNumRequirement }}
+                  {{ item.metLitNumRequirement }}
                 </li>
-                <li v-if="item.raw.specialCase">
-                  <strong>Special Case:</strong> {{ item.raw.specialCase }}
+                <li v-if="item.specialCase">
+                  <strong>Special Case:</strong> {{ item.specialCase }}
                 </li>
               </ul>
             </td>

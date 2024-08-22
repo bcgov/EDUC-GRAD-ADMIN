@@ -21,19 +21,18 @@
       id="id"
       :showFilter="false"
       :pagination="false"
-    >
-      <template #cell(pen)="row">
+      ><template v-slot:item.pen="{ item }">
         <b-btn
-          :id="'pen' + row.item.pen"
+          :id="'pen' + item.pen"
           variant="link"
           size="xs"
-          @click="findStudentByPen(row.item.pen)"
+          @click="findStudentByPen(item.pen)"
         >
-          {{ row.item.pen }}
+          {{ item.pen }}
         </b-btn>
       </template>
-      <template #cell(schoolOfRecord)="row">
-        <div v-if="row.item.schoolOfRecord">{{ row.item.schoolOfRecord }}</div>
+      <template v-slot:item.schoolOfRecord="{ item }">
+        <div v-if="item.schoolOfRecord">{{ item.schoolOfRecord }}</div>
       </template>
     </DisplayTable>
   </div>

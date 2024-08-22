@@ -162,6 +162,7 @@ export default {
   setup() {
     const batchProcessingStore = useBatchProcessingStore();
     const batchRequestFormStore = useBatchRequestFormStore();
+
     const notifications = ref(null);
     const activeTab = ref(batchProcessingStore.activeTab);
     watch(activeTab, (newValue) => {
