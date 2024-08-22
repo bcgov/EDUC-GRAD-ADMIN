@@ -41,6 +41,7 @@ export const useStudentStore = defineStore("student", {
       auditHistory: [],
       auditHistoryOptionalPrograms: [],
     },
+    editedGradStatus: {},
   }),
   actions: {
     loadStudentReportsAndCertificates() {
@@ -312,6 +313,9 @@ export const useStudentStore = defineStore("student", {
         this.student.hasNotes = true;
       }
     },
+    setEditedGradStatus(gradStatus) {
+      this.editedGradStatus = gradStatus;
+    },
     //Optioanl Program CRUD
     addStudentOptionalProgram(optionalProgramCode, careerProgramCode) {
       let optionalProgramPayload = {
@@ -508,6 +512,9 @@ export const useStudentStore = defineStore("student", {
     },
     getStudentCareerPrograms() {
       return this.student.careerPrograms;
+    },
+    getEditedGradStatus() {
+      return this.editedGradStatus;
     },
   },
 });
