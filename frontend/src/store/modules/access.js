@@ -16,6 +16,11 @@ export const useAccessStore = defineStore("access", {
         state.roles.includes(Roles.GRAD_INFO_OFFICER)
       );
     },
+    allowRunArchiveStudents: (state) => {
+      return (
+        state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) 
+      );
+    },
     allowCreateStudentNotes: (state) => {
       return (
         state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) ||

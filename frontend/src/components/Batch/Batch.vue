@@ -1533,6 +1533,11 @@ export default {
               return type;
             });
           }
+          if (!this.allowRunArchiveStudents) {
+            this.batchTypes = this.batchTypes.filter(
+              (type) => type.code != "ARC_STUDENTS"
+            );
+          }
 
           //disable code for release 1.7.0
           this.batchTypes = this.batchTypes.map((type) => {
@@ -2167,6 +2172,7 @@ export default {
       allowRunDistrunMonthly: "allowRunDistrunMonthly",
       allowSelectProgramGroup: "allowSelectProgramGroup",
       allowSelectCategoryCodeGroup: "allowSelectCategoryCodeGroup",
+      allowRunArchiveStudents: "allowRunArchiveStudents",
       allowRunPSI: "allowRunPSI",
     }),
     ...mapState(useAppStore, {
