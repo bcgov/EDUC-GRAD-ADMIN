@@ -1846,7 +1846,10 @@ export default {
         }
       } else if (this.tabContent[id].details["what"] == "ARC_STUDENTS") {
         delete request.credentialTypeCode;
-
+        //All Students group selected, set the payload activityCode:ALL
+        if (this.tabContent[id].details["who"] == "All Students") {
+          request.activityCode = "ALL";
+        }
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;
