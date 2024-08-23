@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h3>Digitized Signatures</h3>
     <p>Digitized signatures used on students' certificates and transcript.</p>
     <v-progress-circular
       v-if="isLoading"
@@ -72,7 +73,7 @@ export default {
           sortable: true,
         },
         {
-          key: "districtName",
+          key: "gradReportSignatureOrganizationName",
           title: "Organization",
           sortable: true,
         },
