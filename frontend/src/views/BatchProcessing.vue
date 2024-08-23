@@ -68,10 +68,10 @@
                   items-per-page="-1"
                   :disable-pagination="true"
                   hide-default-header
+                  hide-default-footer
                   :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
                   class="pb-3"
                 >
-                  <template #bottom></template>
                   <template v-slot:item.description="{ item }">
                     <strong>{{ item.label }} </strong>
                     <br />
@@ -96,23 +96,49 @@
                   :headers="batchFields"
                   items-per-page="-1"
                   hide-default-header
+                  hide-default-footer
                   :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
                   class="pb-3"
                 >
-                  <template #bottom></template>
-                  <template v-slot:item.description="{ item }">
-                    <strong>{{ item.label }}</strong>
-                    <br />
-                    {{ item.description }}
-                  </template>
-                  <template v-slot:item.newRequest="{ item }">
-                    <Form v-if="item.code == 'DISTRUNUSER'"></Form>
-                    <RegenerateCertificateForm
-                      v-else-if="item.code == 'CERT_REGEN'"
-                    ></RegenerateCertificateForm>
-                    <v-btn v-else :disabled="item.disabled">+ </v-btn>
-                  </template>
                 </v-data-table>
+                <v-table>
+                  <tbody>
+                    <tr>
+                      <td class="pl-3">Blank certificate print</td>
+                      <td>
+                        <Form credentialType="Blank certificate print"></Form>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        Reprint certificate – no principal signature block
+                      </td>
+                      <td>
+                        <Form credentialType="RC"></Form>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        Original certificate – with principal signature block
+                      </td>
+                      <td>
+                        <Form credentialType="OC"></Form>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Blank transcript print</td>
+                      <td>
+                        <Form credentialType="Blank transcript print"></Form>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Transcript</td>
+                      <td>
+                        <Form credentialType="OT"></Form>
+                      </td>
+                    </tr>
+                  </tbody>
+                </v-table>
                 <label>Regeneration</label>
                 <v-data-table
                   :items="credentialBatchRunOptions.regenerationRequests"
@@ -120,9 +146,9 @@
                   items-per-page="-1"
                   :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
                   hide-default-header
+                  hide-default-footer
                   class="pb-3"
                 >
-                  <template #bottom></template>
                   <template v-slot:item.description="{ item }">
                     <strong> {{ item.label }} </strong>
                     <br />
@@ -144,17 +170,19 @@
                   :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
                   class="pb-3"
                   hide-default-header
+                  hide-default-footer
                 >
-                  <template #bottom></template>
                   <template v-slot:item.description="{ item }">
                     <strong> {{ item.label }} </strong>
                     <br />
                     {{ item.description }}
                   </template>
                   <template v-slot:item.newRequest="{ item }">
-                    <Form v-if="item.code == 'DISTRUNUSER'"></Form>
                     <RegenerateCertificateForm
-                      v-else-if="item.code == 'CERT_REGEN'"
+                      v-if="item.code == 'CERT_REGEN'"
+                    ></RegenerateCertificateForm>
+                    <RegenerateCertificateForm
+                      v-if="item.code == 'SCHL_RPT_REGEN'"
                     ></RegenerateCertificateForm>
                     <v-btn v-else :disabled="item.disabled">+ </v-btn>
                   </template>
@@ -169,8 +197,8 @@
                   :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
                   class="pb-3"
                   hide-default-header
+                  hide-default-footer
                 >
-                  <template #bottom></template>
                   <template v-slot:item.description="{ item }">
                     <strong>{{ item.label }}</strong>
                     <br />
@@ -356,6 +384,7 @@ export default {
           this.batchTypes,
           ["DISTRUNUSER"]
         );
+
         this.credentialBatchRunOptions.regenerationRequests =
           this.filterBatchTypes(this.batchTypes, [
             "CERT_REGEN",
