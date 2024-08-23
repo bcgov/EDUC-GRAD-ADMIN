@@ -134,18 +134,18 @@
       <v-col cols="12" md="5" v-if="isBatchShowing">
         <v-card>
           <v-card-text>
+            <v-btn
+              variant="danger"
+              size="xs"
+              class="float-right"
+              @click="isBatchShowing ^= true"
+            >
+              Close
+            </v-btn>
             <BatchJobSearchResults
               :selectedBatchId="adminSelectedBatchId"
             ></BatchJobSearchResults>
           </v-card-text>
-          <v-btn
-            variant="danger"
-            size="xs"
-            class="float-right"
-            @click="isBatchShowing ^= true"
-          >
-            Close
-          </v-btn>
         </v-card>
       </v-col>
       <v-col cols="12" md="5" v-if="isErrorShowing">

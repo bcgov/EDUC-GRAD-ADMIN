@@ -14,6 +14,7 @@
       There are no results to display.<br />
       Please select another Job Execution ID.
     </p>
+    <strong>Batch Id#: {{ selectedBatchId }}</strong>
     <DisplayTable
       title="Job/Runs"
       v-bind:items="batchData"

@@ -2,7 +2,7 @@
   <div class="studentlist">
     <!-- Vuetify -->
     <v-card>
-      <v-card-title class="text-center justify-center py-6">
+      <v-card-title class="">
         <h1 class="font-weight-bold text-h2 text-basil">Student Search</h1>
       </v-card-title>
       <p>

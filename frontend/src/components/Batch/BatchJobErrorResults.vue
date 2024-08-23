@@ -32,7 +32,7 @@
           {{ item.pen }}
         </v-btn>
       </template>
-      <template v-slot:item.schoolOfRecord="{ item }">
+      <template v-slot:item="{ item }">
         <div v-if="item.schoolOfRecord">{{ item.schoolOfRecord }}</div>
       </template>
     </DisplayTable>
