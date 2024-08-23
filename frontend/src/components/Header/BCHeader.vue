@@ -368,6 +368,11 @@ header .nav-btn {
   outline-offset: 1px;
 }
 
+/**Overrides inline style that vuetify forces on the rendered component for some unknown reason*/
+:deep(.v-toolbar__content) {
+  height: 64px !important;
+}
+
 /*
     These are sample media queries only. Media queries are quite subjective
     but, in general, should be made for the three different classes of screen
