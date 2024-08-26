@@ -308,7 +308,6 @@ header .nav-btn {
   flex-direction: column;
   margin: 0;
   list-style: none;
-  margin-left: -25px;
 }
 
 .navigation-main ul li {
@@ -440,7 +439,7 @@ header .nav-btn {
   .top-search {
     position: absolute;
     width: 230px;
-    top: 1px;
+    top: -11px;
     right: 0px;
   }
   .user-profile {
