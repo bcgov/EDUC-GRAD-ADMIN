@@ -6,7 +6,7 @@
     >
     <ul>
       <li v-if="typeLabel"><strong>Run Type: </strong>{{ typeLabel }}</li>
-      <li v-if="details.copies">
+      <li v-if="details.copies && details.what == 'DISTRUNUSER'">
         <strong>Copies: </strong>{{ details.copies }}
       </li>
       <li v-if="details.who">
