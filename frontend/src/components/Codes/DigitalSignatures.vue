@@ -70,7 +70,7 @@ export default {
           sortable: true,
         },
         {
-          key: "districtName",
+          key: "gradReportSignatureOrganizationName",
           label: "Organization",
           sortable: true,
         },

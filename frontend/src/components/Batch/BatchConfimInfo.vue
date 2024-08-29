@@ -6,10 +6,7 @@
     >
     <ul class="p-3">
       <li v-if="typeLabel"><strong>Run Type: </strong>{{ typeLabel }}</li>
-      <li v-if="typeLabel">
-        <strong>Run Type: </strong>{{ details.reportType }}
-      </li>
-      <li v-if="details.copies && details.what != 'ARC_SCH_REPORTS'">
+      <li v-if="details.copies && details.what == 'DISTRUNUSER'">
         <strong>Copies: </strong>{{ details.copies }}
       </li>
       <li v-if="details.who">
