@@ -99,7 +99,7 @@ export default {
       return ApiService.apiAxios.post('/api/v1/batch/executecertregenbatchjob', request);
     } 
   },
-  runYearlyArchiveBatchJobStudents(request, cronTime=""){
+  runArchiveStudents(request, cronTime=""){
     if(cronTime){
       let scheduledRequest = {};
       scheduledRequest.cronExpression = cronTime;
@@ -109,10 +109,10 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return
     }else{
-      return ApiService.apiAxios.post('/api/v1/batch/executeyearlyarchivebatchjobstudents', request);
+      return ApiService.apiAxios.post('/api/v1/batch/student/archive', request);
     } 
   },
-  runYearlyArchiveBatchJobSchools(request, cronTime=""){
+  runArchiveSchoolReports(request, cronTime=""){
     if(cronTime){
       let scheduledRequest = {};
       scheduledRequest.cronExpression = cronTime;
@@ -122,7 +122,7 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return
     }else{
-      return ApiService.apiAxios.post('/api/v1/batch/executearchivebatchjobschoolreports', request);
+      return ApiService.apiAxios.post('/api/v1/batch/report/school/archive', request);
     } 
   },
   runCERTREGEN_ALL(){

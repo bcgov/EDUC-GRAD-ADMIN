@@ -1337,7 +1337,10 @@ export default {
       let index = id.replace("job-", "") - 1;
       let value = true;
       this.setTabLoading({ index, value });
-      BatchProcessingService.runYearlyArchiveBatchJobStudents(request)
+      if (this.tabContent[id].details["who"] == "All Students") {
+        request.activityCode = "ALL";
+      }
+      BatchProcessingService.runArchiveStudents(request)
         .then((response) => {
           //update the admin dashboard
           this.getAdminDashboardData();
@@ -1371,8 +1374,11 @@ export default {
       let index = id.replace("job-", "") - 1;
       let value = true;
       this.setTabLoading({ index, value });
+      if (this.tabContent[id].details["who"] == "All Schools") {
+        request.activityCode = "ALL";
+      }
       delete request.credentialTypeCode;
-      BatchProcessingService.runYearlyArchiveBatchJobSchools(request)
+      BatchProcessingService.runArchiveSchoolReports(request)
         .then((response) => {
           //update the admin dashboard
           this.getAdminDashboardData();
@@ -1800,10 +1806,7 @@ export default {
         }
       } else if (this.tabContent[id].details["what"] == "ARC_STUDENTS") {
         delete request.credentialTypeCode;
-        //All Students group selected, set the payload activityCode:ALL
-        if (this.tabContent[id].details["who"] == "All Students") {
-          request.activityCode = "ALL";
-        }
+
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;
