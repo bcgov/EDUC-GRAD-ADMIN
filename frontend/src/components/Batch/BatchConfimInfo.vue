@@ -4,7 +4,7 @@
       >Warning: You have selected a large volume of documents to be
       printed</b-alert
     >
-    <ul>
+    <ul class="p-3">
       <li v-if="typeLabel"><strong>Run Type: </strong>{{ typeLabel }}</li>
       <li v-if="details.copies && details.what == 'DISTRUNUSER'">
         <strong>Copies: </strong>{{ details.copies }}
@@ -28,7 +28,8 @@
             details.gradDate &&
             details.who != 'PSI' &&
             details.who != 'Student' &&
-            details.who != 'District'
+            details.who != 'District' &&
+            details.what == 'ARC_STUDENTS'
           "
         >
           <strong>Select Students: </strong>
@@ -114,7 +115,8 @@
           details.what != 'REGALG' &&
           details.what != 'TVRRUN' &&
           details.what != 'CERT_REGEN' &&
-          details.what != 'ARC_STUDENTS'
+          details.what != 'ARC_STUDENTS' &&
+          details.what != 'ARC_SCH_REPORTS'
         "
       >
         <strong>Where: </strong>

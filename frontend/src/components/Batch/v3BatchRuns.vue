@@ -82,7 +82,10 @@
             </div>
             <div
               class="row border-bottom p-2"
-              v-if="row.item.jobType != 'DISTRUNUSER'"
+              v-if="
+                row.item.jobType != 'DISTRUNUSER' &&
+                row.item.jobType != 'ARC_SCH_REPORTS'
+              "
             >
               <div class="col-10 p-2">
                 Rerun this batch for <br />{{
@@ -113,7 +116,7 @@
             <div
               class="row border-bottom p-2"
               v-if="
-                row.item.jobType != 'DISTRUNUSER' &&
+                (row.item.jobType != 'DISTRUNUSER' || row.item.jobType != '' ||) &&
                 row.item.failedStudentsProcessed != 0
               "
             >

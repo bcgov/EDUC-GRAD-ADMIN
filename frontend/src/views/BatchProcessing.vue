@@ -126,7 +126,8 @@
                                       <div
                                         class="row border-bottom p-2"
                                         v-if="
-                                          row.item.jobType != 'ARC_STUDENTS'
+                                          row.item.jobType != 'ARC_STUDENTS' &&
+                                          row.item.jobType != 'ARC_SCH_REPORTS'
                                         "
                                       >
                                         <div class="col-12">
@@ -158,6 +159,8 @@
                                           row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'ARC_STUDENTS' &&
+                                          row.item.jobType !=
+                                            'ARC_SCH_REPORTS' &&
                                           row.item.jobType != 'PSIRUN'
                                         "
                                       >
@@ -212,6 +215,8 @@
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'ARC_STUDENTS' &&
+                                          row.item.jobType !=
+                                            'ARC_SCH_REPORTS' &&
                                           row.item.failedStudentsProcessed != 0
                                         "
                                       >
@@ -264,6 +269,8 @@
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'PSIRUN' &&
+                                          row.item.jobType !=
+                                            'ARC_SCH_REPORTS' &&
                                           row.item.jobType != 'ARC_STUDENTS'
                                         "
                                       >
@@ -1330,7 +1337,10 @@ export default {
       let index = id.replace("job-", "") - 1;
       let value = true;
       this.setTabLoading({ index, value });
-      BatchProcessingService.runYearlyArchiveBatchJobStudents(request)
+      if (this.tabContent[id].details["who"] == "All Students") {
+        request.activityCode = "ALL";
+      }
+      BatchProcessingService.runArchiveStudents(request)
         .then((response) => {
           //update the admin dashboard
           this.getAdminDashboardData();
@@ -1358,13 +1368,17 @@ export default {
           }
         });
     },
-    runManageSchoolReports(request, id) {
+    runArchiveSchoolReports(request, id) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
       this.setTabLoading({ index, value });
-      BatchProcessingService.runYearlyArchiveBatchJobSchools(request)
+      if (this.tabContent[id].details["who"] == "All Schools") {
+        request.activityCode = "ALL";
+      }
+      delete request.credentialTypeCode;
+      BatchProcessingService.runArchiveSchoolReports(request)
         .then((response) => {
           //update the admin dashboard
           this.getAdminDashboardData();
@@ -1792,10 +1806,7 @@ export default {
         }
       } else if (this.tabContent[id].details["what"] == "ARC_STUDENTS") {
         delete request.credentialTypeCode;
-        //All Students group selected, set the payload activityCode:ALL
-        if (this.tabContent[id].details["who"] == "All Students") {
-          request.activityCode = "ALL";
-        }
+
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;
@@ -1810,12 +1821,12 @@ export default {
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "ARCS";
+          scheduledRequest.jobName = "ASRBJ";
           scheduledRequest.blankPayLoad = null;
           scheduledRequest.payload = request;
           this.addScheduledJob(scheduledRequest, id);
         } else {
-          this.runManageSchoolReports(request, id);
+          this.runArchiveSchoolReports(request, id);
         }
       }
     },
