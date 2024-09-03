@@ -12,15 +12,9 @@
       <strong>Warning:</strong> You have selected to delete TVRs for all ARC
       students</b-alert
     >
-    <ul>
+    <ul class="p-3">
       <li v-if="typeLabel"><strong>Run Type: </strong>{{ typeLabel }}</li>
-      <li
-        v-if="
-          details.copies &&
-          details.what != 'ARC_STUDENTS' &&
-          details.what != 'TVR_DELETE'
-        "
-      >
+      <li v-if="details.copies && details.what == 'DISTRUNUSER'">
         <strong>Copies: </strong>{{ details.copies }}
       </li>
       <li v-if="details.who">
@@ -42,7 +36,8 @@
             details.gradDate &&
             details.who != 'PSI' &&
             details.who != 'Student' &&
-            details.who != 'District'
+            details.who != 'District' &&
+            details.what == 'ARC_STUDENTS'
           "
         >
           <strong>Select Students: </strong>
@@ -129,7 +124,8 @@
           details.what != 'TVRRUN' &&
           details.what != 'CERT_REGEN' &&
           details.what != 'ARC_STUDENTS' &&
-          details.what != 'TVR_DELETE'
+          details.what != 'TVR_DELETE' &&
+          details.what != 'ARC_SCH_REPORTS'
         "
       >
         <strong>Where: </strong>
