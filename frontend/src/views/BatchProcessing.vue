@@ -126,6 +126,7 @@
                                       <div
                                         class="row border-bottom p-2"
                                         v-if="
+                                          row.item.jobType != 'TVR_DELETE' &&
                                           row.item.jobType != 'ARC_STUDENTS' &&
                                           row.item.jobType != 'ARC_SCH_REPORTS'
                                         "
@@ -158,6 +159,7 @@
                                           row.item.jobType != 'DISTRUN_YE' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'NONGRADRUN' &&
+                                          row.item.jobType != 'TVR_DELETE' &&
                                           row.item.jobType != 'ARC_STUDENTS' &&
                                           row.item.jobType !=
                                             'ARC_SCH_REPORTS' &&
@@ -214,6 +216,7 @@
                                           row.item.jobType != 'DISTRUN_YE' &&
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
+                                          row.item.jobType != 'TVR_DELETE' &&
                                           row.item.jobType != 'ARC_STUDENTS' &&
                                           row.item.jobType !=
                                             'ARC_SCH_REPORTS' &&
@@ -269,6 +272,7 @@
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'PSIRUN' &&
+                                          row.item.jobType != 'TVR_DELETE' &&
                                           row.item.jobType !=
                                             'ARC_SCH_REPORTS' &&
                                           row.item.jobType != 'ARC_STUDENTS'
