@@ -1483,9 +1483,10 @@ export default {
       let index = id.replace("job-", "") - 1;
       let value = true;
       this.setTabLoading({ index, value });
-      //TODO batch processing service
-      // console.log(requestId);
-      // console.log(request);
+      if (this.tabContent[id].details["who"] == "All Students") {
+        request.activityCode = "ALL";
+      }
+      request.reportTypes = ["ACHV"];
 
       BatchProcessingService.runTVR_DELETE(request)
         .then((response) => {
@@ -1710,7 +1711,6 @@ export default {
           this.runTVRRUN(request, id);
         }
       } else if (this.tabContent[id].details["what"] == "TVR_DELETE") {
-        request.activityCode = "tvrDeleted";
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;

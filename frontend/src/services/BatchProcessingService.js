@@ -140,7 +140,11 @@ export default {
     }
   },
   runTVR_DELETE(request) {
-    return ApiService.apiAxios.post("/api/v1/batch/tvrspecialrun", request);
+    //return ApiService.apiAxios.post("/api/v1/batch/tvrspecialrun", request);
+    return ApiService.apiAxios.post(
+      "/api/v1/batch/report/student/delete",
+      request
+    );
     //console.log(request);
   },
   runArchiveStudents(request, cronTime = "") {
