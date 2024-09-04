@@ -1583,7 +1583,7 @@ export default {
               (type) => type.code != "ARC_STUDENTS"
             );
           }
-          if (!this.allowRunTVRDeleteStudent) {
+          if (!this.allowRunTVRDelete) {
             this.batchTypes = this.batchTypes.filter(
               (type) => type.code != "TVR_DELETE"
             );
@@ -2244,7 +2244,7 @@ export default {
       allowSelectProgramGroup: "allowSelectProgramGroup",
       allowSelectCategoryCodeGroup: "allowSelectCategoryCodeGroup",
       allowRunArchiveStudents: "allowRunArchiveStudents",
-      allowRunTVRDeleteStudent: "allowRunTVRDeleteStudent",
+      allowRunTVRDelete: "allowRunTVRDelete",
       allowRunTVRDeleteSchools: "allowRunTVRDeleteSchools",
       allowRunPSI: "allowRunPSI",
     }),

@@ -20,7 +20,7 @@ export const useAccessStore = defineStore("access", {
       return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
     },
     // Role mapping could be improved for TVR Delete since existing pattern doesn't account for granularity needed
-    allowRunTVRDeleteStudent: (state) => {
+    allowRunTVRDelete: (state) => {
       return (
         state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) ||
         state.roles.includes(Roles.GRAD_INFO_OFFICER)
