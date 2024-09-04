@@ -1,6 +1,11 @@
 <template>
   <div class="assessments-view">
     <h1>Assessments</h1>
+    <Snackbar
+      v-model="snackbarVisible"
+      :message="snackbarMessage"
+      color="error"
+    />
     <div>
       <v-card no-body>
         <v-tabs v-model="tab" bg-color="transparent" grow>
@@ -41,14 +46,18 @@
 <script>
 import AssessmentService from "@/services/AssessmentService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
+import Snackbar from "@/components/Common/Snackbar.vue";
 export default {
   name: "assessments",
   components: {
     DisplayTable: DisplayTable,
+    Snackbar: Snackbar,
   },
   data() {
     return {
       tab: null,
+      snackbarVisible: false,
+      snackbarMessage: "",
       assessments: [],
       assessmentRequirements: [],
       assmtCode: "",
@@ -132,13 +141,11 @@ export default {
         .then((response) => {
           this.assessments = response.data;
         })
-        // eslint-disable-next-line
         .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+          // eslint-disable-next-line
+          console.error("API error:", error);
+          this.snackbarMessage = error;
+          this.snackbarVisible = true;
         });
     },
     getAllAssessmentReqs() {
@@ -146,13 +153,11 @@ export default {
         .then((response) => {
           this.assessmentRequirements = response.data;
         })
-        // eslint-disable-next-line
         .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+          // eslint-disable-next-line
+          console.error("API error:", error);
+          this.snackbarMessage = error;
+          this.snackbarVisible = true;
         });
     },
   },
