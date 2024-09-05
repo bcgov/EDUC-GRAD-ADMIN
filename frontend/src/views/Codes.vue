@@ -49,7 +49,7 @@
 <script>
 import { mapState } from "pinia";
 import { useAuthStore } from "../store/modules/auth";
-
+import Snackbar from "@/components/Common/Snackbar.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import StudentService from "@/services/StudentService.js";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
@@ -57,13 +57,14 @@ import BatchProcessingService from "@/services/BatchProcessingService.js";
 
 export default {
   name: "codes",
-  components: {},
+  components: { Snackbar: Snackbar },
   data() {
     return {
       url: null,
       file: [],
       tab: 1,
-
+      snackbarVisible: false,
+      snackbarMessage: "",
       certificateTypes: [],
       reportSignatures: [],
       batchTypes: [],
@@ -275,11 +276,10 @@ export default {
         })
         // eslint-disable-next-line
         .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+          // eslint-disable-next-line
+          console.error("API error:", error);
+          this.snackbarMessage = error.message;
+          this.snackbarVisible = true;
         });
     },
     getCertificateTypes() {
@@ -289,11 +289,10 @@ export default {
         })
         // eslint-disable-next-line
         .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+          // eslint-disable-next-line
+          console.error("API error:", error);
+          this.snackbarMessage = error.message;
+          this.snackbarVisible = true;
         });
     },
     getReportTypes() {
@@ -303,11 +302,10 @@ export default {
         })
         // eslint-disable-next-line
         .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+          // eslint-disable-next-line
+          console.error("API error:", error);
+          this.snackbarMessage = error.message;
+          this.snackbarVisible = true;
         });
     },
     getRequirementTypes() {
@@ -317,11 +315,10 @@ export default {
         })
         // eslint-disable-next-line
         .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+          // eslint-disable-next-line
+          console.error("API error:", error);
+          this.snackbarMessage = error.message;
+          this.snackbarVisible = true;
         });
     },
     getStudentStatusCodes() {
@@ -331,11 +328,10 @@ export default {
         })
         // eslint-disable-next-line
         .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+          // eslint-disable-next-line
+          console.error("API error:", error);
+          this.snackbarMessage = error.message;
+          this.snackbarVisible = true;
         });
     },
     getBatchJobTypes() {
@@ -344,11 +340,10 @@ export default {
           this.batchTypes = response.data;
         })
         .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+          // eslint-disable-next-line
+          console.error("API error:", error);
+          this.snackbarMessage = error.message;
+          this.snackbarVisible = true;
         });
     },
     getUngradReasons() {
@@ -358,11 +353,10 @@ export default {
         })
         // eslint-disable-next-line
         .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+          // eslint-disable-next-line
+          console.error("API error:", error);
+          this.snackbarMessage = error.message;
+          this.snackbarVisible = true;
         });
     },
     getReportSignatures() {
@@ -372,11 +366,10 @@ export default {
         })
         // eslint-disable-next-line
         .catch((error) => {
-          this.$bvToast.toast("ERROR " + error.response.statusText, {
-            title: "ERROR" + error.response.status,
-            variant: "danger",
-            noAutoHide: true,
-          });
+          // eslint-disable-next-line
+          console.error("API error:", error);
+          this.snackbarMessage = error.message;
+          this.snackbarVisible = true;
         });
     },
   },

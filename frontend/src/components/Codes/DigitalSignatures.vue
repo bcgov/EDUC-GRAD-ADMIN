@@ -53,7 +53,7 @@ export default {
       .catch((error) => {
         // eslint-disable-next-line
         console.error("API error:", error);
-        this.snackbarMessage = error;
+        this.snackbarMessage = error.message;
         this.snackbarVisible = true;
         this.isLoading = false;
       });
