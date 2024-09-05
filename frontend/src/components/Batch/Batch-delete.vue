@@ -129,11 +129,7 @@
               formElements[batch.details['what']] &&
               formElements[batch.details['what']].message
             "
-          >
-            <b-alert show variant="info">
-              {{ formElements[batch.details["what"]].message }}
-            </b-alert>
-          </div>
+          ></div>
           <div
             class="m-0 p-0 col-3"
             v-if="

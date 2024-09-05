@@ -10,7 +10,6 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
     batchRoutines: [],
     activeTab: "batchRuns",
     
-
     //delete below
     schools: [],
     districts: [],
@@ -64,7 +63,6 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
       for (let value of this.scheduledBatchJobs) {
         value.jobParameters = JSON.parse(value.jobParameters);
       }
-      
     },
     async setBatchJobs() {
       BatchProcessingService.getDashboardInfo()
@@ -74,7 +72,6 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
         for (const batch of batchRunData) {
           batch.jobParameters = JSON.parse(batch.jobParameters);
         }
-    
         // Set the batchRuns property
         this.batchRuns = batchRunData;
         

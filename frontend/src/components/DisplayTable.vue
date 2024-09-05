@@ -45,15 +45,16 @@
 
         <template v-slot:item.delete="{ item }">
           <v-btn
-            v-if="!disableDelete(item.columns)"
+            v-if="!disableDelete(item)"
             variant="danger"
             size="sm"
-            @click="openDeleteConfirmationDialog(item.columns)"
+            @click="openDeleteConfirmationDialog(item)"
           >
             {{ this.delete.label ? this.delete.label : "Delete" }}
           </v-btn>
         </template>
       </v-data-table>
+
       <v-dialog v-model="deleteConfirmationDialog" max-width="400">
         <v-card>
           <v-card-title class="headline">Confirm Deletion</v-card-title>
@@ -238,7 +239,6 @@ export default {
       return disable; // Disable delete if none of the criteria are met
     },
     checkCriterion(item, criterion) {
-      console.log(criterion);
       const { field, value } = criterion;
 
       // Implement logic to check the criterion for the given item

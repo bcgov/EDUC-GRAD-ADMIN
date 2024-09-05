@@ -20,7 +20,7 @@
       :fields="batchDataFields"
       id="id"
       :showFilter="false"
-      :pagination="false"
+      :pagination="true"
     >
       <template v-slot:item.pen="{ item }">
         <v-btn
@@ -32,7 +32,7 @@
           {{ item.pen }}
         </v-btn>
       </template>
-      <template v-slot:item="{ item }">
+      <template v-slot:item.schoolOfRecord="{ item }">
         <div v-if="item.schoolOfRecord">{{ item.schoolOfRecord }}</div>
       </template>
     </DisplayTable>

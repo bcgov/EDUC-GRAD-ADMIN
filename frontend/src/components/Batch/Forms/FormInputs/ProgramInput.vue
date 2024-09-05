@@ -25,7 +25,7 @@
         >
           <template v-slot:item.remove="{ item }">
             <v-btn
-              @click="removeProgram(item.columns.program)"
+              @click="removeProgram(item.program)"
               class="btn btn-primary w-100"
             >
               Remove
@@ -33,7 +33,7 @@
           </template>
           <template v-slot:item.info="{ item }">
             <div>
-              {{ item.columns.info }}
+              {{ item.info }}
             </div>
           </template>
         </v-data-table>

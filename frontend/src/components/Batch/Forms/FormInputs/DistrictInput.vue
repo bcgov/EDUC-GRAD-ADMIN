@@ -5,9 +5,6 @@
       <v-card-text>
         <v-row>
           <v-col>
-            {{ getBatchRequest }}
-            |||||
-
             {{ getDistricts }}
             <v-autocomplete
               v-model="district"
@@ -66,21 +63,16 @@
           striped
         >
           <template v-slot:item.remove="{ item }">
-            <v-btn
-              @click="removeDistrict(item.columns.district)"
-              color="primary"
-            >
+            <v-btn @click="removeDistrict(item.district)" color="primary">
               Remove
             </v-btn>
           </template>
           <template v-slot:item.info="{ item }">
             <div>
               <strong>District Name:</strong>
-              {{ item.columns.info.districtName }}
+              {{ item.info.districtName }}
             </div>
-            <div>
-              <strong>Active Flag:</strong> {{ item.columns.info.activeFlag }}
-            </div>
+            <div><strong>Active Flag:</strong> {{ item.info.activeFlag }}</div>
           </template>
         </v-data-table>
       </v-card-text>
@@ -203,7 +195,6 @@ export default {
       this.clearDistrictInfo();
       const result = await this.v$.$validate();
       if (!result) {
-        console.log("NO RESULT");
         return;
       }
       this.districtValidating = false;

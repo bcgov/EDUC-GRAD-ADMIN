@@ -4,6 +4,10 @@
       <v-col>
         <v-card title="Include School(s)">
           <v-card-text>
+            <v-alert v-if="$slots.inputWarning" type="info" class="pb-2">
+              <slot name="inputWarning"></slot>
+            </v-alert>
+
             <v-row>
               <v-col md="2">
                 <label class="font-weight-bold">Include</label>

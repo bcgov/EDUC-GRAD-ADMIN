@@ -15,7 +15,19 @@
       Please select another Job Execution ID.
     </p>
     <strong>Batch Id#: {{ selectedBatchId }}</strong>
-    <DisplayTable
+    {{ itemsPerPage }}
+    {{ totalElements }}
+    <v-data-table-server
+      v-model:items-per-page="itemsPerPage"
+      :headers="batchDataFields"
+      :items="batchData"
+      :items-length="totalElements"
+      :loading="loading"
+      item-value="id"
+      @update:options="loadItems"
+    ></v-data-table-server>
+
+    <!-- <DisplayTable
       title="Job/Runs"
       v-bind:items="batchData"
       v-bind:fields="batchDataFields"
@@ -35,7 +47,7 @@
       <template v-slot:item.schoolOfRecord="{ item }">
         <div v-if="item.schoolOfRecord">{{ item.schoolOfRecord }}</div>
       </template>
-    </DisplayTable>
+    </DisplayTable> -->
   </div>
 </template>
 
@@ -54,6 +66,9 @@ export default {
       batchData: [],
       perPage: 10,
       rows: 0,
+      loading: false,
+      totalElements: 0,
+      itemsPerPage: 10,
       currentPage: 0,
       userSelectedPage: 0,
       batchLoading: false,
@@ -111,6 +126,26 @@ export default {
     },
   },
   methods: {
+    loadItems({ page, itemsPerPage, sortBy }) {
+      console.log("LOADINGITEMS");
+      console.log(page);
+      console.log(itemsPerPage);
+      console.log(sortBy);
+      this.batchLoading = true;
+      StudentService.getBatchHistory(this.selectedBatchId, page - 1)
+        .then((response) => {
+          this.batchData = response.data.content;
+          this.totalElements = response.data.totalElements;
+          this.batchLoading = false;
+          console.log(this.totalElements);
+        })
+        .catch((error) => {
+          if (error.response.status) {
+            this.isBatchLoading = false;
+          }
+        });
+    },
+
     getAdminDashboardData(batchId, page) {
       this.batchData = [];
       this.rows = 0;
@@ -124,15 +159,11 @@ export default {
         .then((response) => {
           this.batchData = response.data.content;
           this.rows = response.data.totalElements;
+          this.itemsPerPage = response.data.size;
           this.batchLoading = false;
         })
         .catch((error) => {
           if (error.response.status) {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title: "ERROR" + error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
             this.isBatchLoading = false;
           }
         });

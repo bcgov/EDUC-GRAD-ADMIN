@@ -2,14 +2,15 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"> + </v-btn>
+        <v-btn color="primary" v-bind="props" @click="setCredentialForForm">
+          +
+        </v-btn>
       </template>
       <v-card>
         <v-card-title>
           <span class="text-h5">User Request Distribution Run</span>
         </v-card-title>
         <v-card-text>
-          {{ getBatchRequest }}
           <v-container>
             <v-stepper alt-labels show-actions v-model="step">
               <template v-slot:default="{ prev, next }">
@@ -51,17 +52,11 @@
 
                 <v-stepper-window>
                   <v-stepper-window-item value="1">
-                    Credential Type
-                    <v-select
-                      v-model="credentialType"
-                      :items="options"
-                      label="Choose..."
-                      class=""
-                      id=""
-                    ></v-select>
-                    <div v-if="credentialType == 'Blank transcript print'">
-                      {{ blankTranscriptDetails }}
+                    {{ getBatchRequest }}
+                    <div v-if="getCredential == 'Blank transcript print'">
+                      Select transcript type
                       <v-checkbox
+                        hide-details
                         v-for="(option, index) in transcriptTypes"
                         :key="index"
                         :label="option.description"
@@ -69,9 +64,10 @@
                         v-model="blankTranscriptDetails"
                       ></v-checkbox>
                     </div>
-                    <div v-if="credentialType == 'Blank certificate print'">
-                      {{ blankCertificateDetails }}
+                    <div v-if="getCredential == 'Blank certificate print'">
+                      Select certificate type
                       <v-checkbox
+                        hide-details
                         v-for="(option, index) in certificateTypes"
                         :key="index"
                         :label="option.description"
@@ -89,37 +85,8 @@
                     <v-row>
                       <v-col>
                         <v-select
-                          v-if="
-                            credentialType != 'Blank certificate print' &&
-                            credentialType != 'Blank transcript print'
-                          "
                           v-model="group"
-                          :items="[
-                            'Student',
-                            'School',
-                            'School Category',
-                            'Program',
-                            'PSI',
-                          ]"
-                          label="Select a group"
-                        ></v-select>
-
-                        <v-select
-                          v-else-if="!blankCertificateDetails.includes('A')"
-                          v-model="group"
-                          :items="[
-                            'School',
-                            'Ministry of Education Advanced Education ',
-                          ]"
-                          label="Select a group"
-                        ></v-select>
-                        <v-select
-                          v-else-if="blankTranscriptDetails.includes('A')"
-                          v-model="group"
-                          :items="[
-                            'School',
-                            'Ministry of Education Advanced Education',
-                          ]"
+                          :items="groupItems"
                           label="Select a group"
                         ></v-select>
                       </v-col>
@@ -249,6 +216,7 @@ export default {
     const batchRequestFormStore = useBatchRequestFormStore();
     const notifications = ref(null);
     const activeTab = ref(batchProcessingStore.activeTab);
+    console.log("open modal");
     watch(activeTab, (newValue) => {
       batchProcessingStore.activeTab = newValue;
     });
@@ -266,23 +234,12 @@ export default {
       batchRequestFormStore.blankTranscriptDetails
     );
 
-    const credentialType = ref(batchRequestFormStore.credential);
-
     watch(blankCertificateDetails, (newValue) => {
-      console.log("BC update");
       batchRequestFormStore.blankCertificateDetails = newValue;
     });
 
     watch(blankTranscriptDetails, (newValue) => {
-      console.log("BT UPDATE");
       batchRequestFormStore.blankTranscriptDetails = newValue;
-    });
-
-    watch(credentialType, (newValue, oldValue) => {
-      if (newValue !== oldValue) {
-        console.log("update credential");
-        batchRequestFormStore.updateCredential(newValue);
-      }
     });
 
     watch(group, (newValue) => {
@@ -293,13 +250,13 @@ export default {
       activeTab,
       blankCertificateDetails,
       blankTranscriptDetails,
-      credentialType,
       group,
       notifications,
       changeTab,
       v$: useVuelidate(),
     };
   },
+  props: ["credentialSelected"],
   created() {
     this.transcriptTypes = this.getTranscriptTypes();
     this.certificateTypes = this.getCertificateTypes();
@@ -308,13 +265,12 @@ export default {
     return {
       getBatchRequest: {
         batchRunTimeSet: helpers.withMessage("Runtime not set", (value) => {
-          console.log("VALIDATE" + this.getBatchRunTime);
           if (this.getBatchRunTime) {
             return true;
           } else return false;
         }),
         credentialTypeSelected: helpers.withMessage(
-          "Runtime not set",
+          "Credential type not selected",
           (value) => {
             if (this.credentialType) {
               console.log(this.credentialType);
@@ -417,13 +373,31 @@ export default {
       "getBatchRequestCrontime",
       "getBlankCertificateDetails",
       "getBlankTranscriptDetails",
+      "getCredential",
     ]),
+    groupItems() {
+      if (this.getCredential === "Blank certificate print") {
+        return this.blankCertificateDetails.includes("A")
+          ? ["School"]
+          : ["School", "Ministry of Education Advanced Education"];
+      } else if (this.getCredential === "Blank transcript print") {
+        return this.blankTranscriptDetails
+          ? ["School", "Ministry of Education Advanced Education"]
+          : ["Select a credential type"];
+      } else {
+        return ["Student", "School", "School Category", "Program"];
+      }
+    },
   },
   methods: {
+    setCredentialForForm() {
+      this.setCredential(this.credentialSelected);
+    },
     ...mapActions(useBatchRequestFormStore, [
       "clearBatchDetails",
       "clearBatchGroupData",
       "setBatchRunType",
+      "setCredential",
     ]),
     getTranscriptTypes() {
       GraduationReportService.getTranscriptTypes()

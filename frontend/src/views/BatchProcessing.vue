@@ -13,11 +13,9 @@
         Update
       </v-btn>
 
-      {{ getActiveTab }}
-
       <v-tabs v-model="tab" bg-color="transparent">
         <v-tab value="batchRuns" @click="getJwtToken"
-          >Batch Runs ({{ batchInfoListData.length }})</v-tab
+          >Batch Runs ({{ batchRuns.length }})</v-tab
         >
         <v-tab value="scheduledRuns" @click="getJwtToken"
           >User Scheduled ({{ queueScheduledJobs.length }} Queued)</v-tab
@@ -106,7 +104,9 @@
                     <tr>
                       <td class="pl-3">Blank certificate print</td>
                       <td>
-                        <Form credentialType="Blank certificate print"></Form>
+                        <Form
+                          credentialSelected="Blank certificate print"
+                        ></Form>
                       </td>
                     </tr>
                     <tr>
@@ -114,7 +114,7 @@
                         Reprint certificate – no principal signature block
                       </td>
                       <td>
-                        <Form credentialType="RC"></Form>
+                        <Form credentialSelected="RC"></Form>
                       </td>
                     </tr>
                     <tr>
@@ -122,19 +122,21 @@
                         Original certificate – with principal signature block
                       </td>
                       <td>
-                        <Form credentialType="OC"></Form>
+                        <Form credentialSelected="OC"></Form>
                       </td>
                     </tr>
                     <tr>
                       <td>Blank transcript print</td>
                       <td>
-                        <Form credentialType="Blank transcript print"></Form>
+                        <Form
+                          credentialSelected="Blank transcript print"
+                        ></Form>
                       </td>
                     </tr>
                     <tr>
                       <td>Transcript</td>
                       <td>
-                        <Form credentialType="OT"></Form>
+                        <Form credentialSelected="OT"></Form>
                       </td>
                     </tr>
                   </tbody>
@@ -155,14 +157,13 @@
                     {{ item.description }}
                   </template>
                   <template v-slot:item.newRequest="{ item }">
-                    <Form v-if="item.code == 'DISTRUNUSER'"></Form>
                     <RegenerateCertificateForm
-                      v-else-if="item.code == 'CERT_REGEN'"
+                      v-if="item.code == 'CERT_REGEN'"
                     ></RegenerateCertificateForm>
                     <v-btn v-else :disabled="item.disabled">+ </v-btn>
                   </template>
                 </v-data-table>
-                <label>PSIRequests</label>
+                <label>PSI Requests</label>
                 <v-data-table
                   :items="credentialBatchRunOptions.PSIRequests"
                   :headers="batchFields"
@@ -178,13 +179,7 @@
                     {{ item.description }}
                   </template>
                   <template v-slot:item.newRequest="{ item }">
-                    <RegenerateCertificateForm
-                      v-if="item.code == 'CERT_REGEN'"
-                    ></RegenerateCertificateForm>
-                    <RegenerateCertificateForm
-                      v-if="item.code == 'SCHL_RPT_REGEN'"
-                    ></RegenerateCertificateForm>
-                    <v-btn v-else :disabled="item.disabled">+ </v-btn>
+                    <PSIForm></PSIForm>
                   </template>
                 </v-data-table>
               </v-col>
@@ -205,17 +200,18 @@
                     {{ item.description }}
                   </template>
                   <template v-slot:item.newRequest="{ item }">
-                    <v-btn
-                      :disabled="item.disabled"
-                      @click="
-                        newBatchRequest(item.code, item.label, item.description)
-                      "
-                      >+</v-btn
-                    ></template
-                  >
-                </v-data-table>
-              </v-col></v-row
-            >
+                    <DistrunFormYearEnd
+                      v-if="item.code == 'DISTRUN_YE'"
+                    ></DistrunFormYearEnd>
+                    <ArchiveStudentsForm
+                      v-if="item.code == 'ARC_STUDENTS'"
+                    ></ArchiveStudentsForm>
+                    <ArchiveSchoolReportsForm
+                      v-if="item.code == 'ARC_SCH_REPORTS'"
+                    ></ArchiveSchoolReportsForm>
+                  </template>
+                </v-data-table> </v-col
+            ></v-row>
           </v-container>
         </v-tabs-window-item>
       </v-tabs-window>
@@ -234,6 +230,10 @@ import Form from "@/components/Batch/Forms/Form.vue";
 import RegenerateCertificateForm from "@/components/Batch/Forms/RegenerateCertificateForm.vue";
 import GraduationAlgorithmForm from "@/components/Batch/Forms/GraduationAlgorithmForm.vue";
 import TranscriptAlgorithmForm from "@/components/Batch/Forms/TranscriptAlgorithmForm.vue";
+import DistrunFormYearEnd from "@/components/Batch/Forms/DistrunFormYearEndForm.vue";
+import ArchiveStudentsForm from "@/components/Batch/Forms/ArchiveStudentsForm.vue";
+import ArchiveSchoolReportsForm from "@/components/Batch/Forms/ArchiveSchoolReportsForm.vue";
+import PSIForm from "@/components/Batch/Forms/PSIForm.vue";
 import BatchRuns from "@/components/Batch/BatchRuns.vue";
 import BatchRoutines from "@/components/Batch/BatchRoutines.vue";
 import sharedMethods from "../sharedMethods";
@@ -242,7 +242,7 @@ import { useAccessStore } from "../store/modules/access";
 import { useBatchProcessingStore } from "../store/modules/batchprocessing";
 import { useAuthStore } from "../store/modules/auth";
 import { mapState, mapActions } from "pinia";
-import { nextTick, ref, watch } from "vue";
+import { ref, watch } from "vue";
 
 export default {
   name: "Batch Processing",
@@ -264,12 +264,9 @@ export default {
       "allowCreateBatchJob",
     ]),
     ...mapState(useBatchProcessingStore, {
-      //   tabCounter: "getBatchCounter",
-      //   tabContent: "getBatchDetails",
-      //   tabs: "getBatchProcessingTabs",
-      //   spinners: "getBatchTabsLoading",
       scheduledJobs: "getScheduledBatchJobs",
       getActiveTab: "getActiveTab",
+      batchRuns: "getBatchRuns",
     }),
     ...mapState(useAuthStore, {
       userFullName: "userFullName",
@@ -288,13 +285,10 @@ export default {
     results() {
       return this.searchResults;
     },
-    batchInfoListDataChange() {
-      return this.batchInfoListData;
+    batchRunsChange() {
+      return this.batchRuns;
     },
   },
-  props: [
-    //'adminSelectedBatchId',
-  ],
   components: {
     Form: Form,
     DisplayTable: DisplayTable,
@@ -304,6 +298,10 @@ export default {
     GraduationAlgorithmForm: GraduationAlgorithmForm,
     TranscriptAlgorithmForm: TranscriptAlgorithmForm,
     RegenerateCertificateForm: RegenerateCertificateForm,
+    DistrunFormYearEnd: DistrunFormYearEnd,
+    ArchiveStudentsForm: ArchiveStudentsForm,
+    ArchiveSchoolReportsForm: ArchiveSchoolReportsForm,
+    PSIForm: PSIForm,
   },
   data() {
     return {
@@ -353,7 +351,6 @@ export default {
       timePerRecord: "18s",
       isErrorShowing: false,
       isBatchShowing: false,
-      batchInfoListData: [],
       certificateTypes: [],
       transcriptTypes: [],
       fields: ["date", "program", "success", "view"],
@@ -398,6 +395,7 @@ export default {
           this.filterBatchTypes(this.batchTypes, [
             "ARC_STUDENTS",
             "ARC_SCH_REPORTS",
+            "DISTRUN_YE",
           ]);
 
         this.distributionBatchRunOptions = this.filterBatchTypes(
@@ -492,46 +490,6 @@ export default {
     updateAllDashboards() {
       this.updateDashboards();
     },
-    // batchHasErrors(batch) {
-    //   batch.validationMessage = "";
-    //   //check for what
-    //   if (!batch.details["what"]) {
-    //     this.validationMessage = "Type of batch Not Specified";
-    //     return true;
-    //   }
-    //   //check for who
-
-    //   if (
-    //     !batch.details["who"] &&
-    //     batch.details["what"] != "DISTRUN_SUPP" &&
-    //     batch.details["what"] != "DISTRUN" &&
-    //     batch.details["what"] != "DISTRUN_YE" &&
-    //     batch.details["what"] != "NONGRADRUN"
-    //   ) {
-    //     this.validationMessage = "Group not specified";
-    //     return true;
-    //   }
-    //   //check for local download
-    //   if (batch.details["where"] == "localDownload") {
-    //     if (batch.details["what"] == "DISTRUNUSER") {
-    //       if (batch.details["credential"] == "Blank certificate print") {
-    //         if (!batch.details["blankCertificateDetails"].length) {
-    //           this.validationMessage =
-    //             "Please choose at least one certificate type";
-    //           return true;
-    //         }
-    //       }
-    //       if (batch.details["credential"] == "Blank transcript print") {
-    //         if (!batch.details["blankTranscriptDetails"].length) {
-    //           this.validationMessage =
-    //             "Please choose at least one transcript type";
-    //           return true;
-    //         }
-    //       }
-    //     }
-    //   }
-    //   return false;
-    // },
     getBatchData(item) {
       if (item.value) {
         return item.value;
@@ -983,6 +941,7 @@ export default {
         this.setScheduledBatchJobs(response.data);
       });
     },
+    //delete
     runbatch(id, cronTime) {
       let pens = [],
         schools = [],

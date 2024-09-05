@@ -82,7 +82,7 @@ export default {
   },  
   runDISTRUN_YE(request, cronTime=""){
     if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
-      // If the condition is true, set districts to an empty array
+      // If the condition is true, set districts to an empty
       request.districts = [];
     }
     if(cronTime){

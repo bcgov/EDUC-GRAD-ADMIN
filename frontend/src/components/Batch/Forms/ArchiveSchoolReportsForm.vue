@@ -6,7 +6,7 @@
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">PSI Run FTP / Paper</span>
+          <span class="text-h5">Archive School Reports Process</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -34,24 +34,56 @@
                 <v-stepper-window>
                   <v-stepper-window-item value="1">
                     <v-row>
-                      <v-col> <PSIInput></PSIInput> </v-col
-                    ></v-row>
+                      <v-select
+                        v-model="group"
+                        :items="['School', 'All Schools']"
+                        label="Select Option"
+                      ></v-select>
+                    </v-row>
+                    <v-row v-if="group == 'School'">
+                      <SchoolInput>
+                        <template #inputWarning>
+                          <p>
+                            AThis will archive current school reports, which
+                            will become static and no longer be updated. School
+                            reports must be archived before the new data
+                            collection cycle begins so they are not overwritten
+                            entirely.
+                          </p>
+                        </template>
+                      </SchoolInput>
+                    </v-row>
+                    <v-row v-if="group == 'All Schools'">
+                      <v-alert type="info" class="pb-2">
+                        <p>
+                          This will archive current school reports, which will
+                          become static and no longer be updated. School reports
+                          must be archived before the new data collection cycle
+                          begins so they are not overwritten entirely.
+                        </p>
+                      </v-alert>
+                    </v-row>
                   </v-stepper-window-item>
 
                   <v-stepper-window-item value="2">
                     <v-card title="Schedule" flat>
-                      Post Secondary Institutions:
-                      <v-list>
-                        <v-list-item
-                          v-for="(district, index) in getBatchRequest.psis"
-                          :key="index"
-                        >
-                          <v-list-item-content>
-                            <v-list-item-title>{{ psis }}</v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list>
-
+                      <div v-if="group === 'School Category'">
+                        Districts:
+                        <v-list>
+                          <v-list-item
+                            v-for="(
+                              district, index
+                            ) in getBatchRequest.districts"
+                            :key="index"
+                          >
+                            <v-list-item-content>
+                              <v-list-item-title>{{
+                                district
+                              }}</v-list-item-title>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list>
+                      </div>
                       <div v-if="group === 'Program'">
                         Districts: {{ getBatchRequest.programs }}
                       </div>
@@ -93,6 +125,26 @@
             Submit
           </v-btn>
         </v-card-actions>
+        STORE - GETBATCHREQUEST
+        {{ getBatchRequest }}
+
+        <br />
+        <br />
+        GRAD FORM VALIDATIONS V$
+        {{ v$.getBatchRequest }}
+        <br />
+        <br />
+        RUN SCHEDULE COMPONENT VALIDATIONS
+        {{ v$.RunLaterScheduleSet }}
+        <br />
+        <br />
+
+        ALL VAIDATIONS V$
+        {{ v$ }}
+        <br />
+        <br />
+        BATCH RUN TIME {{ batchRunTime }}
+        {{ v$.batchRunTime }}
 
         <p v-for="error of v$.$errors" :key="error.$uid">
           {{ error.$message }}
@@ -104,37 +156,25 @@
 
 <script>
 import { ref, watch } from "vue";
-import BatchProcessingService from "@/services/BatchProcessingService.js";
-import PSIInput from "@/components/Batch/Forms/FormInputs/PSIInput.vue";
+import SchoolInput from "@/components/Batch/Forms/FormInputs/SchoolInput.vue";
+import DistrictInput from "@/components/Batch/Forms/FormInputs/DistrictInput.vue";
+import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
+import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
-import Notifications from "@/components/Common/Notifications.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
-import { useBatchProcessingStore } from "../../../store/modules/batchProcessing";
 import { mapActions, mapState } from "pinia";
 export default {
   setup() {
-    const batchProcessingStore = useBatchProcessingStore();
     const batchRequestFormStore = useBatchRequestFormStore();
-    const notifications = ref(null);
-    const activeTab = ref(batchProcessingStore.activeTab);
-    watch(activeTab, (newValue) => {
-      batchRequestFormStore.activeTab = newValue;
-    });
-    const changeTab = (tabName) => {
-      activeTab.value = tabName;
-    };
     const group = ref(batchRequestFormStore.who);
     watch(group, (newValue) => {
       batchRequestFormStore.who = newValue;
     });
 
     return {
-      activeTab,
       group,
-      notifications,
-      changeTab,
       v$: useVuelidate(),
     };
   },
@@ -147,19 +187,28 @@ export default {
             return true;
           } else return false;
         }),
-        hasPSiValue: helpers.withMessage(
+        hasAtLeastOneGroupValue: helpers.withMessage(
           "Must contain at least one " + this.group,
           (value) => {
             if (this.getBatchRequest) {
               let isValid = false;
-              if (this.group === "Psi") {
-                isValid =
-                  this.getBatchRequest.psiCodes &&
-                  this.getBatchRequest.psiCodes.length > 0;
-              } else {
-                isValid = true; // Return true if none of the above conditions matched
+              if (
+                this.group &&
+                ["All Schools", "School"].includes(this.group)
+              ) {
+                if (this.group === "School") {
+                  isValid =
+                    this.getBatchRequest.schoolOfRecords &&
+                    this.getBatchRequest.schoolOfRecords.length > 0;
+                } else if (this.group === "All Schools") {
+                  isValid = true;
+                } else {
+                  isValid = true; // Return true if none of the above conditions matched
+                }
+                console.log(this.group);
+                console.log(isValid + " VALIDA");
+                return isValid;
               }
-              return isValid;
             } else {
               return false;
             }
@@ -169,9 +218,8 @@ export default {
     };
   },
   components: {
-    PSIInput: PSIInput,
     ScheduleInput: ScheduleInput,
-    Notifications: Notifications,
+    SchoolInput: SchoolInput,
   },
   data: () => ({
     step: 0,
@@ -181,7 +229,6 @@ export default {
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
-      "getBatchRequestCrontime",
     ]),
   },
   methods: {
@@ -189,22 +236,9 @@ export default {
       "clearBatchDetails",
       "clearBatchGroupData",
     ]),
-    closeDialogAndResetForm() {
-      this.group = null;
-      this.dialog = false;
-      this.clearBatchDetails();
-      this.step = 0;
-    },
-    cancel() {
-      this.closeDialogAndResetForm();
-    },
-    changeStep(step) {
-      this.step = step;
-    },
     async submit() {
       try {
-        console.log(this.getBatchRequestCrontime);
-        let response = await BatchProcessingService.runREGALG(
+        let response = await BatchProcessingService.runDISTRUN_YE(
           this.getBatchRequest,
           this.getBatchRequestCrontime
         );
@@ -217,6 +251,15 @@ export default {
           this.notifications.show("An error occurred: " + error.message);
         }
       }
+    },
+    cancel() {
+      this.group = null;
+      this.dialog = false;
+      this.clearBatchDetails();
+      this.step = 0;
+    },
+    changeStep(step) {
+      this.step = step;
     },
   },
 };

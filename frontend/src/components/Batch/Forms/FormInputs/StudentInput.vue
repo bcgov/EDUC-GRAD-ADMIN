@@ -59,31 +59,25 @@
               striped
             >
               <template v-slot:item.remove="{ item }">
-                <v-btn @click="removeStudent(item.columns.pen)" color="primary">
+                <v-btn @click="removeStudent(item.pen)" color="primary">
                   Remove
                 </v-btn>
               </template>
               <template v-slot:item.info="{ item }">
                 <div>
-                  <strong>Name:</strong> {{ item.columns.info.firstName }}
-                  {{ item.columns.info.lastName }}
+                  <strong>Name:</strong> {{ item.info.firstName }}
+                  {{ item.info.lastName }}
                 </div>
-                <div>
-                  <strong>Birthdate:</strong> {{ item.columns.info.dob }}
-                </div>
-                <div>
-                  <strong>Status:</strong> {{ item.columns.info.status }}
-                </div>
-                <div>
-                  <strong>Program:</strong> {{ item.columns.info.program }}
-                </div>
+                <div><strong>Birthdate:</strong> {{ item.info.dob }}</div>
+                <div><strong>Status:</strong> {{ item.info.status }}</div>
+                <div><strong>Program:</strong> {{ item.info.program }}</div>
                 <div>
                   <strong>School of Record:</strong>
-                  {{ item.columns.info.schoolOfRecord }}
+                  {{ item.info.schoolOfRecord }}
                 </div>
                 <div>
                   <strong>School At Graduation:</strong>
-                  {{ item.columns.info.schoolAtGrad }}
+                  {{ item.info.schoolAtGrad }}
                 </div>
               </template>
             </v-data-table>

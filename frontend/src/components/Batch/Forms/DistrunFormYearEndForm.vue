@@ -1,74 +1,281 @@
 <template>
-  <div>
-    <DistrictInput runType="DISTRUN_YE"></DistrictInput>
-  </div>
+  <v-row justify="center">
+    <v-dialog v-model="dialog" persistent width="1024">
+      <template v-slot:activator="{ props }">
+        <v-btn color="primary" v-bind="props"> + </v-btn>
+      </template>
+      <v-card>
+        <v-card-title>
+          <span class="text-h5"
+            >Year-End Credentials and Transcript Distribution Run</span
+          >
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-stepper alt-labels show-actions v-model="step">
+              <template v-slot:default="{ prev, next }">
+                <v-stepper-header>
+                  <v-stepper-item
+                    :rules="[() => false]"
+                    complete
+                    editable
+                    title="Group"
+                    value="1"
+                  ></v-stepper-item>
+
+                  <v-divider></v-divider>
+
+                  <v-stepper-item
+                    complete
+                    editable
+                    title="Run/Schedule"
+                    value="2"
+                  ></v-stepper-item>
+                </v-stepper-header>
+
+                <v-stepper-window>
+                  <v-stepper-window-item value="1">
+                    <v-row>
+                      <v-select
+                        v-model="group"
+                        :items="['School Category']"
+                        label="Select Option"
+                      ></v-select>
+                    </v-row>
+                    <v-row v-if="group == 'Student'">
+                      <StudentInput></StudentInput>
+                    </v-row>
+                    <v-row v-if="group == 'School Category'">
+                      <DistrictInput></DistrictInput>
+                    </v-row>
+                    <v-row v-if="group == 'PSI'">
+                      <DistrictInput></DistrictInput>
+                    </v-row>
+                    <v-row v-if="group == 'Program'">
+                      <ProgramInput></ProgramInput>
+                    </v-row>
+                    <v-row v-if="group == 'School'">
+                      <SchoolInput></SchoolInput>
+                    </v-row>
+                  </v-stepper-window-item>
+
+                  <v-stepper-window-item value="2">
+                    <v-card title="Schedule" flat>
+                      <div v-if="group === 'School Category'">
+                        Districts:
+                        <v-list>
+                          <v-list-item
+                            v-for="(
+                              district, index
+                            ) in getBatchRequest.districts"
+                            :key="index"
+                          >
+                            <v-list-item-content>
+                              <v-list-item-title>{{
+                                district
+                              }}</v-list-item-title>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list>
+                      </div>
+                      <div v-if="group === 'Program'">
+                        Districts: {{ getBatchRequest.programs }}
+                      </div>
+                      <div v-if="group === 'PSI'">
+                        Post Secondary Institutions: REQUEST
+                        {{ getBatchRequest }}
+                      </div>
+                      <v-btn @click="changeStep(0)">Edit</v-btn>
+
+                      <ScheduleInput></ScheduleInput>
+                    </v-card>
+                  </v-stepper-window-item>
+
+                  <v-stepper-window-item value="3">
+                    <span>Step Window 3</span>
+                  </v-stepper-window-item>
+                </v-stepper-window>
+                <v-stepper-actions
+                  @click:prev="prev"
+                  @click:next="next"
+                  @click:submit="submit"
+                ></v-stepper-actions>
+              </template>
+            </v-stepper>
+          </v-container>
+          <small>*indicates required field</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue-darken-1" variant="text" @click="cancel">
+            Cancel
+          </v-btn>
+          <v-btn
+            :disabled="v$.$invalid"
+            color="blue-darken-1"
+            variant="text"
+            @click="submit"
+          >
+            Submit
+          </v-btn>
+        </v-card-actions>
+        STORE - GETBATCHREQUEST
+        {{ getBatchRequest }}
+
+        <br />
+        <br />
+        GRAD FORM VALIDATIONS V$
+        {{ v$.getBatchRequest }}
+        <br />
+        <br />
+        RUN SCHEDULE COMPONENT VALIDATIONS
+        {{ v$.RunLaterScheduleSet }}
+        <br />
+        <br />
+
+        ALL VAIDATIONS V$
+        {{ v$ }}
+        <br />
+        <br />
+        BATCH RUN TIME {{ batchRunTime }}
+        {{ v$.batchRunTime }}
+
+        <p v-for="error of v$.$errors" :key="error.$uid">
+          {{ error.$message }}
+        </p>
+      </v-card>
+    </v-dialog>
+  </v-row>
 </template>
+
 <script>
+import { ref, watch } from "vue";
+import SchoolInput from "@/components/Batch/Forms/FormInputs/SchoolInput.vue";
+import DistrictInput from "@/components/Batch/Forms/FormInputs/DistrictInput.vue";
+import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
+import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
+import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import DistrictInput from "@/components/Batch/Forms/FormInputs/DistrictInput.vue";
+import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
+import { mapActions, mapState } from "pinia";
 export default {
   setup() {
-    return { v$: useVuelidate() };
+    const batchRequestFormStore = useBatchRequestFormStore();
+    const group = ref(batchRequestFormStore.who);
+    watch(group, (newValue) => {
+      batchRequestFormStore.who = newValue;
+    });
+
+    return {
+      group,
+      v$: useVuelidate(),
+    };
   },
+  created() {},
   validations() {
     return {
-      copies: {
-        required: helpers.withMessage("Copies field cannot be empty", required),
-      }, // Matches this.firstName
-      where: {
-        required: helpers.withMessage("where field cannot be empty", required), // Matches this.firstName
+      getBatchRequest: {
+        batchRunTimeSet: helpers.withMessage("Runtime not set", (value) => {
+          if (this.getBatchRunTime) {
+            return true;
+          } else return false;
+        }),
+        hasAtLeastOneGroupValue: helpers.withMessage(
+          "Must contain at least one " + this.group,
+          (value) => {
+            if (this.getBatchRequest) {
+              let isValid = false;
+              if (
+                this.group &&
+                [
+                  "Student",
+                  "School",
+                  "School Category",
+                  "Program",
+                  "Psi",
+                ].includes(this.group)
+              ) {
+                if (this.group === "School") {
+                  isValid =
+                    this.getBatchRequest.schoolOfRecords &&
+                    this.getBatchRequest.schoolOfRecords.length > 0;
+                } else if (this.group === "Student") {
+                  console.log(this.getBatchRequest.students);
+                  isValid =
+                    this.getBatchRequest.pens &&
+                    this.getBatchRequest.pens.length > 0;
+                } else if (this.group === "School Category") {
+                  isValid =
+                    this.getBatchRequest.districts &&
+                    this.getBatchRequest.districts.length > 0;
+                } else if (this.group === "Program") {
+                  isValid =
+                    this.getBatchRequest.programs &&
+                    this.getBatchRequest.programs.length > 0;
+                } else if (this.group === "Psi") {
+                  isValid =
+                    this.getBatchRequest.psiCodes &&
+                    this.getBatchRequest.psiCodes.length > 0;
+                } else {
+                  isValid = true; // Return true if none of the above conditions matched
+                }
+                console.log(this.group);
+                console.log(isValid + " VALIDA");
+                return isValid;
+              }
+            } else {
+              return false;
+            }
+          }
+        ),
       },
     };
   },
-  components: { DistrictInput: DistrictInput },
-  data: function () {
-    return {
-      schedule: "",
-      districts: [],
-      where: "BC Mail",
-      copies: "1",
-      group: "district",
-      groupData: [],
-    };
+  components: {
+    DistrictInput: DistrictInput,
+    ScheduleInput: ScheduleInput,
   },
-  mounted() {},
-  created() {},
-
-  methods: {
-    async validateForm(event) {
-      const result = await this.v$.$validate();
-      if (!result) {
-        console.log("INVALID");
-        return;
-      }
-      console.log("VALID");
-    },
-    runbatch() {
-      console.log("run batch");
-      console.log(payload);
-      console.log(groupData);
-    },
-    clearGroupData() {
-      this.districts = [];
-    },
-  },
+  data: () => ({
+    step: 0,
+    dialog: false,
+  }),
   computed: {
-    isValid() {
-      if (this.where && this.group && this.districts && this.districts.length) {
-        return true;
-      } else {
-        return false;
+    ...mapState(useBatchRequestFormStore, [
+      "getBatchRequest",
+      "getBatchRunTime",
+    ]),
+  },
+  methods: {
+    ...mapActions(useBatchRequestFormStore, [
+      "clearBatchDetails",
+      "clearBatchGroupData",
+    ]),
+    async submit() {
+      try {
+        let response = await BatchProcessingService.runDISTRUN_YE(
+          this.getBatchRequest,
+          this.getBatchRequestCrontime
+        );
+        this.closeDialogAndResetForm();
+        this.activeTab = "batchRuns";
+      } catch (error) {
+        // handle the error and show the notification
+        console.error("Error:", error);
+        if (this.notifications) {
+          this.notifications.show("An error occurred: " + error.message);
+        }
       }
+    },
+    cancel() {
+      this.group = null;
+      this.dialog = false;
+      this.clearBatchDetails();
+      this.step = 0;
+    },
+    changeStep(step) {
+      this.step = step;
     },
   },
 };
 </script>
-<style scoped>
-input {
-  border-radius: 0px;
-}
-.input-errors {
-  color: red;
-}
-</style>

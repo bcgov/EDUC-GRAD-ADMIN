@@ -9,7 +9,7 @@
       pagination="true"
     >
       <template v-slot:item.enabled="{ item }">
-        {{ item.columns.enabled }}
+        {{ item.enabled }}
         {{ getSwitchValue(item) }}
         <v-switch
           :model-value="getSwitchValue(item)"
@@ -89,7 +89,7 @@ export default {
   methods: {
     ...mapActions(useBatchProcessingStore, ["setBatchRoutines"]),
     getSwitchValue(item) {
-      return item.columns.enabled === "Y";
+      return item.enabled === "Y";
     },
     toggleRoutine(jobType, processingId) {
       this.$bvModal

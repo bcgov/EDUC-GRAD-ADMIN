@@ -60,6 +60,11 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
       this.batchDetails[payload].details['blankCertificateDetails']=[{}];
       this.batchDetails[payload].details['blankTranscriptDetails']=[{}];
     },
+    async setCredential(payload){
+      console.log("setting credential")
+      console.log(payload)
+      this.credential = payload
+    }, 
     async updateCredential(credential) {
       this.credential = credential;
       this.resetBlankCertificateDetails();
@@ -75,7 +80,9 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     },
   },
   getters: {
-    
+    getCredential: (state) => {
+      return state.credential
+    },
     getGroup: (state) => {
       return state.who
     },
