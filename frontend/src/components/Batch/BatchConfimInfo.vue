@@ -9,7 +9,7 @@
       variant="warning"
       v-if="details.what === 'TVR_DELETE' && details.who === 'All Students'"
     >
-      <strong>Warning:</strong> You have selected to delete TVRs for all ARC
+      <strong>Warning:</strong> You have selected to delete TVRs for all
       students</b-alert
     >
     <ul class="p-3">
