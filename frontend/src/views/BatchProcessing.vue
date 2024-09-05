@@ -126,6 +126,7 @@
                                       <div
                                         class="row border-bottom p-2"
                                         v-if="
+                                          row.item.jobType != 'TVR_DELETE' &&
                                           row.item.jobType != 'ARC_STUDENTS' &&
                                           row.item.jobType != 'ARC_SCH_REPORTS'
                                         "
@@ -158,6 +159,7 @@
                                           row.item.jobType != 'DISTRUN_YE' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'NONGRADRUN' &&
+                                          row.item.jobType != 'TVR_DELETE' &&
                                           row.item.jobType != 'ARC_STUDENTS' &&
                                           row.item.jobType !=
                                             'ARC_SCH_REPORTS' &&
@@ -214,6 +216,7 @@
                                           row.item.jobType != 'DISTRUN_YE' &&
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
+                                          row.item.jobType != 'TVR_DELETE' &&
                                           row.item.jobType != 'ARC_STUDENTS' &&
                                           row.item.jobType !=
                                             'ARC_SCH_REPORTS' &&
@@ -269,6 +272,7 @@
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'PSIRUN' &&
+                                          row.item.jobType != 'TVR_DELETE' &&
                                           row.item.jobType !=
                                             'ARC_SCH_REPORTS' &&
                                           row.item.jobType != 'ARC_STUDENTS'
@@ -1477,6 +1481,48 @@ export default {
           }
         });
     },
+    runTVR_DELETE(request, id) {
+      let requestId = id.replace("job-", "");
+      this.$set(this.spinners, id, true);
+      let index = id.replace("job-", "") - 1;
+      let value = true;
+      this.setTabLoading({ index, value });
+      if (this.tabContent[id].details["who"] == "All Students") {
+        request.activityCode = "ALL";
+      }
+      request.reportTypes = ["ACHV"];
+
+      BatchProcessingService.runTVR_DELETE(request)
+        .then((response) => {
+          //update the admin dashboard
+          this.getAdminDashboardData();
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.cancelBatchJob(id);
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
     runREGALG(request, id) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
@@ -1667,6 +1713,18 @@ export default {
           this.addScheduledJob(scheduledRequest, id);
         } else {
           this.runTVRRUN(request, id);
+        }
+      } else if (this.tabContent[id].details["what"] == "TVR_DELETE") {
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "DSRBJ";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          scheduledRequest.psiPayload = null;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runTVR_DELETE(request, id);
         }
       } else if (this.tabContent[id].details["what"] == "PSIRUN") {
         if (cronTime) {

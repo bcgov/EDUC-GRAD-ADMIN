@@ -224,6 +224,7 @@
                 batch.details['what'] != 'DISTRUN_YE' &&
                 batch.details['what'] != 'DISTRUN_SUPP' &&
                 batch.details['what'] != 'ARC_STUDENTS' &&
+                batch.details['what'] != 'TVR_DELETE' &&
                 batch.details['what'] != 'ARC_SCH_REPORTS' &&
                 batch.details['what'] != 'CERT_REGEN'
               "
@@ -1387,6 +1388,24 @@ export default {
           copies: true,
           where: true,
         },
+        TVR_DELETE: {
+          group: [
+            {
+              text: "School",
+              value: "School",
+            },
+            {
+              text: "Student",
+              value: "Student",
+            },
+            {
+              text: "All Students",
+              value: "All Students",
+            },
+          ],
+          copies: true,
+          where: true,
+        },
       },
     };
   },
@@ -1564,7 +1583,11 @@ export default {
               (type) => type.code != "ARC_STUDENTS"
             );
           }
-
+          if (!this.allowRunTVRDelete) {
+            this.batchTypes = this.batchTypes.filter(
+              (type) => type.code != "TVR_DELETE"
+            );
+          }
           this.batchTypes = this.batchTypes.map((type) => {
             if (
               type.code === "SCHL_RPT_REGEN" ||
@@ -1592,6 +1615,14 @@ export default {
       if (runType == "") {
         return;
       }
+      if (
+        this.batch.details["what"] == "TVR_DELETE" &&
+        !this.allowRunTVRDeleteSchools
+      ) {
+        return [{ text: "Student", value: "Student" }];
+      }
+
+      // this hits with almost every job and is hard to override, place overrides above
       if (
         this.batch.details["credential"] != "Blank certificate print" &&
         this.batch.details["credential"] != "Blank transcript print"
@@ -2213,6 +2244,8 @@ export default {
       allowSelectProgramGroup: "allowSelectProgramGroup",
       allowSelectCategoryCodeGroup: "allowSelectCategoryCodeGroup",
       allowRunArchiveStudents: "allowRunArchiveStudents",
+      allowRunTVRDelete: "allowRunTVRDelete",
+      allowRunTVRDeleteSchools: "allowRunTVRDeleteSchools",
       allowRunPSI: "allowRunPSI",
     }),
     ...mapState(useAppStore, {

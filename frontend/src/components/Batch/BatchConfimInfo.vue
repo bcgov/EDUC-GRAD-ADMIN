@@ -1,8 +1,16 @@
 <template>
   <div>
     <b-alert show variant="warning" v-if="docWarning || paperWarning"
-      >Warning: You have selected a large volume of documents to be
-      printed</b-alert
+      ><strong>Warning:</strong> You have selected a large volume of documents
+      to be printed</b-alert
+    >
+    <b-alert
+      show
+      variant="warning"
+      v-if="details.what === 'TVR_DELETE' && details.who === 'All Students'"
+    >
+      <strong>Warning:</strong> You have selected to delete TVRs for all
+      students</b-alert
     >
     <ul class="p-3">
       <li v-if="typeLabel"><strong>Run Type: </strong>{{ typeLabel }}</li>
@@ -116,6 +124,7 @@
           details.what != 'TVRRUN' &&
           details.what != 'CERT_REGEN' &&
           details.what != 'ARC_STUDENTS' &&
+          details.what != 'TVR_DELETE' &&
           details.what != 'ARC_SCH_REPORTS'
         "
       >
