@@ -1718,7 +1718,7 @@ export default {
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "STBJ";
+          scheduledRequest.jobName = "DSRBJ";
           scheduledRequest.blankPayLoad = null;
           scheduledRequest.payload = request;
           scheduledRequest.psiPayload = null;
