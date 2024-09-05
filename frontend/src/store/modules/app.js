@@ -56,9 +56,10 @@ export const useAppStore = defineStore('app',{
           const districts = response.data;
           this.districtsList = districts;
         });
-        ApiService.apiAxios.get('/api/v1/institute/school/list').then(response => {
+        ApiService.apiAxios.get('/api/v2/trax/school').then(response => {
           const schools = response.data;
           this.schoolsList = schools;
+          console.log(schools)
         });        
       }
     },

@@ -2,8 +2,7 @@
   <v-container>
     <v-row>
       <v-col sm="12">
-        GROUP
-        {{ getGroup }}
+        <label>Group</label>
         <div v-if="getGroup == 'School'">
           <v-data-table
             :items="getGroupData"
@@ -97,10 +96,15 @@
             ></v-time-picker>
           </div>
         </v-radio-group>
-        {{ batchRunSchedule }}
-        x{{ batchRunCustomDate }}x
       </v-col>
     </v-row>
+    <div>
+      <ul>
+        <li v-for="(error, index) in v$.$silentErrors" :key="index">
+          {{ error.$message }}
+        </li>
+      </ul>
+    </div>
   </v-container>
 </template>
 <script>

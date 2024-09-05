@@ -108,11 +108,25 @@
         <span v-else>{{ details.where }}</span>
       </li>
     </ul>
+    <div v-if="v$.$silentErrors.length">
+      <ul>
+        <li v-for="(error, index) in v$.$silentErrors" :key="index">
+          {{ error.$message }}
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 <script>
+import { useVuelidate } from "@vuelidate/core";
 import sharedMethods from "../../sharedMethods.js";
 export default {
+  setup() {
+    const batchRequestFormStore = useBatchRequestFormStore();
+    return {
+      v$: useVuelidate(),
+    };
+  },
   components: {},
   data: function () {
     return {

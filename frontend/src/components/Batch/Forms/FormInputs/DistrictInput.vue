@@ -4,8 +4,7 @@
       <v-card-title>Include School Category</v-card-title>
       <v-card-text>
         <v-row>
-          <v-col>
-            {{ getDistricts }}
+          <v-col sm="6" lg="9">
             <v-autocomplete
               v-model="district"
               :items="getDistrictList"
@@ -14,10 +13,12 @@
               :item-title="districtTitle"
               item-value="districtNumber"
             ></v-autocomplete>
+          </v-col>
+          <v-col sm="6" lg="3">
             <v-btn
               :disabled="!district"
               @click="addDistrict()"
-              class="float-right"
+              class="float-left bg-primary"
               >Add District</v-btn
             >
           </v-col>

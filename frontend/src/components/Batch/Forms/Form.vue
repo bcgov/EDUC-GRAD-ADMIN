@@ -2,7 +2,7 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props" @click="setCredentialForForm">
+        <v-btn color="primary" v-bind="props" @click="setCredentialForForm()">
           +
         </v-btn>
       </template>
