@@ -2,6 +2,11 @@
   <div>
     <h3>Digitized Signatures</h3>
     <p>Digitized signatures used on students' certificates and transcript.</p>
+    <Snackbar
+      v-model="snackbarVisible"
+      :message="snackbarMessage"
+      color="error"
+    />
     <v-progress-circular
       v-if="isLoading"
       color="primary"
@@ -31,11 +36,13 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
+import Snackbar from "@/components/Common/Snackbar.vue";
 
 export default {
   name: "DigitalSignatures",
   components: {
     DisplayTable: DisplayTable,
+    Snackbar: Snackbar,
   },
   created() {
     GraduationReportService.getDigitalSignatures()
@@ -43,17 +50,19 @@ export default {
         this.digitalSignatures = response.data;
         this.isLoading = false;
       })
-      // eslint-disable-next-line
       .catch((error) => {
-        this.$bvToast.toast("ERROR " + error.response.statusText, {
-          title: "ERROR" + error.response.status,
-          variant: "danger",
-          noAutoHide: true,
-        });
+        // eslint-disable-next-line
+        console.error("API error:", error);
+        this.snackbarMessage = error.message;
+        this.snackbarVisible = true;
+        this.isLoading = false;
       });
   },
+
   data: function () {
     return {
+      snackbarVisible: false,
+      snackbarMessage: "",
       isLoading: true,
       digitalSignatures: [],
       digitalSignaturesFields: [

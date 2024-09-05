@@ -8,6 +8,9 @@
       id="letterGrade"
       showFilter="true"
     >
+      <template v-slot:item.effectiveDate="{ item }">
+        {{ $filters.formatSimpleDate(item.effectiveDate) }}
+      </template>
       <template v-slot:item.expiryDate="{ item }">
         {{ $filters.formatSimpleDate(item.expiryDate) }}
       </template>
@@ -85,6 +88,11 @@ export default {
         {
           key: "description",
           title: "Description",
+          sortable: true,
+        },
+        {
+          key: "effectiveDate",
+          title: "Effective Date",
           sortable: true,
         },
         {
