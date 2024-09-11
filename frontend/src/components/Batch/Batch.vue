@@ -1467,15 +1467,10 @@ export default {
       },
       {
         code: "GRADREG and NONGRADREG",
-        label: "Graduated Students (MM YYYY to MM YYYY) Report",
+        label:
+          "Graduated Students (MM YYYY to MM YYYY) Report and Not-Yet Graduated Students (MM YYYY to MM YYYY) Report",
         description:
           "A daily, cumulative list of student in the current cycle who have graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
-      },
-      {
-        code: "GRADREG and NONGRADREG",
-        label: "Not-Yet Graduated Students (MM YYYY to MM YYYY) Report",
-        description:
-          "A daily, cumulative list of student in the current cycle who have not-yet graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
       },
     ];
   },
