@@ -8,6 +8,11 @@
       id="letterGrade"
       showFilter="true"
     >
+      <template #cell(effectiveDate)="row">
+        <div v-if="row.item.effectiveDate">
+          {{ $filters.formatSimpleDate(row.item.effectiveDate) }}
+        </div>
+      </template>
       <template #cell(expiryDate)="row">
         <div v-if="row.item.expiryDate">
           {{ $filters.formatSimpleDate(row.item.expiryDate) }}
@@ -90,9 +95,16 @@ export default {
           sortable: true,
         },
         {
+          key: "effectiveDate",
+          label: "Effective Date",
+          sortable: true,
+          class: "table-date",
+        },
+        {
           key: "expiryDate",
           label: "Expiry Date",
           sortable: true,
+          class: "table-date",
         },
       ],
     };
@@ -102,6 +114,10 @@ export default {
 </script>
 
 <style>
+.table .table-date {
+  width: 110px;
+}
+
 .table th,
 .table td {
   border-top: none !important;

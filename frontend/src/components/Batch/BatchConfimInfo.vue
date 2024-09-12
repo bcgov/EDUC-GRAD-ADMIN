@@ -1,12 +1,20 @@
 <template>
   <div>
     <b-alert show variant="warning" v-if="docWarning || paperWarning"
-      >Warning: You have selected a large volume of documents to be
-      printed</b-alert
+      ><strong>Warning:</strong> You have selected a large volume of documents
+      to be printed</b-alert
     >
-    <ul>
+    <b-alert
+      show
+      variant="warning"
+      v-if="details.what === 'TVR_DELETE' && details.who === 'All Students'"
+    >
+      <strong>Warning:</strong> You have selected to delete TVRs for all
+      students</b-alert
+    >
+    <ul class="p-3">
       <li v-if="typeLabel"><strong>Run Type: </strong>{{ typeLabel }}</li>
-      <li v-if="details.copies">
+      <li v-if="details.copies && details.what == 'DISTRUNUSER'">
         <strong>Copies: </strong>{{ details.copies }}
       </li>
       <li v-if="details.who">
@@ -28,10 +36,16 @@
             details.gradDate &&
             details.who != 'PSI' &&
             details.who != 'Student' &&
-            details.who != 'District'
+            details.who != 'District' &&
+            details.what != 'SCHL_RPT_REGEN' &&
+            details.what == 'ARC_STUDENTS'
           "
         >
-          <strong>Select Students: </strong>{{ details.gradDate }}
+          <strong>Select Students: </strong>
+          <div v-if="details.what == 'ARC_STUDENTS'">
+            Current and Terminated Students
+          </div>
+          <div v-else>{{ details.gradDate }}</div>
         </li>
         <li v-if="details.who == 'PSI'">
           <strong>PSI: </strong>
@@ -94,7 +108,7 @@
             <strong>Grad End Date: </strong>{{ details.gradDateTo }}
           </li>
         </ul>
-        <li v-if="details.categoryCode">
+        <li v-if="details.categoryCode && details.what != 'SCHL_RPT_REGEN'">
           <strong>School Category: </strong>{{ details.categoryCode }}
         </li>
         <li v-if="details.psiTransmissionMode">
@@ -109,7 +123,11 @@
           details.where &&
           details.what != 'REGALG' &&
           details.what != 'TVRRUN' &&
-          details.what != 'CERT_REGEN'
+          details.what != 'CERT_REGEN' &&
+          details.what != 'SCHL_RPT_REGEN' &&
+          details.what != 'ARC_STUDENTS' &&
+          details.what != 'TVR_DELETE' &&
+          details.what != 'ARC_SCH_REPORTS'
         "
       >
         <strong>Where: </strong>

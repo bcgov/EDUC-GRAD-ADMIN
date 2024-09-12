@@ -123,7 +123,16 @@
                                         <div class="col-9"></div>
                                         <div class="col-3"></div>
                                       </div>
-                                      <div class="row border-bottom p-2">
+                                      <div
+                                        class="row border-bottom p-2"
+                                        v-if="
+                                          row.item.jobType != 'TVR_DELETE' &&
+                                          row.item.jobType != 'ARC_STUDENTS' &&
+                                          row.item.jobType !=
+                                            'ARC_SCH_REPORTS' &&
+                                          row.item.jobType != 'SCHL_RPT_REGEN'
+                                        "
+                                      >
                                         <div class="col-12">
                                           <a
                                             href="#"
@@ -152,6 +161,12 @@
                                           row.item.jobType != 'DISTRUN_YE' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
                                           row.item.jobType != 'NONGRADRUN' &&
+                                          row.item.jobType != 'TVR_DELETE' &&
+                                          row.item.jobType != 'ARC_STUDENTS' &&
+                                          row.item.jobType !=
+                                            'ARC_SCH_REPORTS' &&
+                                          row.item.jobType !=
+                                            'SCHL_RPT_REGEN' &&
                                           row.item.jobType != 'PSIRUN'
                                         "
                                       >
@@ -205,6 +220,12 @@
                                           row.item.jobType != 'DISTRUN_YE' &&
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
+                                          row.item.jobType != 'TVR_DELETE' &&
+                                          row.item.jobType != 'ARC_STUDENTS' &&
+                                          row.item.jobType !=
+                                            'ARC_SCH_REPORTS' &&
+                                          row.item.jobType !=
+                                            'SCHL_RPT_REGEN' &&
                                           row.item.failedStudentsProcessed != 0
                                         "
                                       >
@@ -256,7 +277,12 @@
                                           row.item.jobType != 'DISTRUN_YE' &&
                                           row.item.jobType != 'NONGRADRUN' &&
                                           row.item.jobType != 'DISTRUN_SUPP' &&
-                                          row.item.jobType != 'PSIRUN'
+                                          row.item.jobType != 'PSIRUN' &&
+                                          row.item.jobType != 'TVR_DELETE' &&
+                                          row.item.jobType !=
+                                            'ARC_SCH_REPORTS' &&
+                                          row.item.jobType != 'ARC_STUDENTS' &&
+                                          row.item.jobType != 'SCHL_RPT_REGEN'
                                         "
                                       >
                                         <div class="col-9 p-2">
@@ -1117,6 +1143,44 @@ export default {
           }
         });
     },
+    runSCHL_RPT_REGEN(request, id) {
+      let requestId = id.replace("job-", "");
+      this.$set(this.spinners, id, true);
+      let index = id.replace("job-", "") - 1;
+      let value = true;
+      this.setTabLoading({ index, value });
+      BatchProcessingService.runSCHL_RPT_REGEN(request)
+        .then((response) => {
+          this.getAdminDashboardData();
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.getAdminDashboardData();
+            this.cancelBatchJob(id);
+            this.selectedTab = 0;
+            this.$bvToast.toast("This request is running in the background", {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "success",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
     runCERTREGEN(request, id) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
@@ -1322,7 +1386,10 @@ export default {
       let index = id.replace("job-", "") - 1;
       let value = true;
       this.setTabLoading({ index, value });
-      BatchProcessingService.runYearlyArchiveBatchJobStudents(request)
+      if (this.tabContent[id].details["who"] == "All Students") {
+        request.activityCode = "ALL";
+      }
+      BatchProcessingService.runArchiveStudents(request)
         .then((response) => {
           //update the admin dashboard
           this.getAdminDashboardData();
@@ -1350,13 +1417,17 @@ export default {
           }
         });
     },
-    runManageSchoolReports(request, id) {
+    runArchiveSchoolReports(request, id) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
       let index = id.replace("job-", "") - 1;
       let value = true;
       this.setTabLoading({ index, value });
-      BatchProcessingService.runYearlyArchiveBatchJobSchools(request)
+      if (this.tabContent[id].details["who"] == "All Schools") {
+        request.activityCode = "ALL";
+      }
+      delete request.credentialTypeCode;
+      BatchProcessingService.runArchiveSchoolReports(request)
         .then((response) => {
           //update the admin dashboard
           this.getAdminDashboardData();
@@ -1425,6 +1496,48 @@ export default {
       let value = true;
       this.setTabLoading({ index, value });
       BatchProcessingService.runTVRRUN(request)
+        .then((response) => {
+          //update the admin dashboard
+          this.getAdminDashboardData();
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.cancelBatchJob(id);
+            this.$bvToast.toast("There was an error processing " + requestId, {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "error",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
+    runTVR_DELETE(request, id) {
+      let requestId = id.replace("job-", "");
+      this.$set(this.spinners, id, true);
+      let index = id.replace("job-", "") - 1;
+      let value = true;
+      this.setTabLoading({ index, value });
+      if (this.tabContent[id].details["who"] == "All Students") {
+        request.activityCode = "ALL";
+      }
+      request.reportTypes = ["ACHV"];
+
+      BatchProcessingService.runTVR_DELETE(request)
         .then((response) => {
           //update the admin dashboard
           this.getAdminDashboardData();
@@ -1611,10 +1724,10 @@ export default {
         schoolCategoryCodes: [this.tabContent[id].details["categoryCode"]],
         programs: programs,
         psiCodes: psi,
-        reportType: [this.tabContent[id].details["reportType"]],
+        reportTypes: [this.tabContent[id].details["reportType"]],
         gradDateFrom: gradDateFrom,
         gradDateTo: gradDateTo,
-        validateInput: false,
+        validateInput: true,
         quantity: quantity,
         localDownload: localDownload,
       };
@@ -1645,6 +1758,18 @@ export default {
           this.addScheduledJob(scheduledRequest, id);
         } else {
           this.runTVRRUN(request, id);
+        }
+      } else if (this.tabContent[id].details["what"] == "TVR_DELETE") {
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "DSRBJ";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          scheduledRequest.psiPayload = null;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runTVR_DELETE(request, id);
         }
       } else if (this.tabContent[id].details["what"] == "PSIRUN") {
         if (cronTime) {
@@ -1766,7 +1891,7 @@ export default {
         delete request.gradDateTo;
         delete request.quantity;
         delete request.localDownload;
-        delete request.reportType;
+        delete request.activityCode;
 
         if (cronTime) {
           let scheduledRequest = {};
@@ -1782,6 +1907,22 @@ export default {
             this.runCERTREGEN(request, id);
           }
         }
+      } else if (this.tabContent[id].details["what"] == "SCHL_RPT_REGEN") {
+        delete request.credentialTypeCode;
+        request.reportTypes = [this.tabContent[id].details["reportType"]];
+        if (this.tabContent[id].details["who"] == "All Schools") {
+          request.activityCode = "ALL";
+        }
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "??";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runSCHL_RPT_REGEN(request, id);
+        }
       } else if (this.tabContent[id].details["what"] == "ARC_STUDENTS") {
         if (cronTime) {
           let scheduledRequest = {};
@@ -1793,16 +1934,29 @@ export default {
         } else {
           this.runArchiveStudents(request, id);
         }
-      } else if (this.tabContent[id].details["what"] == "ARC_SCH_REPORTS") {
+      } else if (this.tabContent[id].details["what"] == "ARC_STUDENTS") {
+        delete request.credentialTypeCode;
+
         if (cronTime) {
           let scheduledRequest = {};
           scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "ARCS";
+          scheduledRequest.jobName = "ASBJ";
           scheduledRequest.blankPayLoad = null;
           scheduledRequest.payload = request;
           this.addScheduledJob(scheduledRequest, id);
         } else {
-          this.runManageSchoolReports(request, id);
+          this.runArchiveStudents(request, id);
+        }
+      } else if (this.tabContent[id].details["what"] == "ARC_SCH_REPORTS") {
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "ASRBJ";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runArchiveSchoolReports(request, id);
         }
       }
     },

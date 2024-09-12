@@ -1,8 +1,6 @@
 <template>
   <div>
-    <b-alert :show="batchTypeDesc != ''" variant="info">
-      {{ batchTypeDesc }}
-    </b-alert>
+    <b-alert :show="batchTypeDesc != ''" variant="info"> </b-alert>
     <b-overlay :show="processingBatch">
       <div class="row">
         <div class="col-12 col-md-3 border-right">
@@ -20,19 +18,29 @@
             >
             </b-form-select>
           </div>
-          <div class="mt-2" v-if="batch.details['what'] == 'ARC_SCH_REPORTS'">
+          <div class="mt-2" v-if="batch.details['what'] == 'SCHL_RPT_REGEN'">
             <label class="font-weight-bold">Report Type</label>
             <b-form-select
               id="inline-form-select-audience"
               class="mb-2 mr-sm-2 mb-sm-0 col-12"
-              :options="reportTypes"
+              :options="SCHL_RPT_REGEN_reportTypes"
               value-field="code"
               text-field="label"
               :value="batch.details['reportType']"
               @change="editBatchJob('reportType', $event)"
             ></b-form-select>
           </div>
-
+          <div class="mt-2" v-if="batch.details['what'] == 'ARC_SCH_REPORTS'">
+            <b-form-select
+              id="inline-form-select-audience"
+              class="mb-2 mr-sm-2 mb-sm-0 col-12"
+              :options="ARC_SCH_REPORTS_reportTypes"
+              value-field="code"
+              text-field="label"
+              :value="batch.details['reportType']"
+              @change="editBatchJob('reportType', $event)"
+            ></b-form-select>
+          </div>
           <div class="mt-2" v-if="batch.details['what'] == 'DISTRUNUSER'">
             <label class="font-weight-bold">Credential Type</label>
             <b-form-select
@@ -149,6 +157,15 @@
               @change="editBatchJob('who', $event)"
             ></b-form-select>
           </div>
+
+          <div v-if="batch.details['what'] == 'ARC_SCH_REPORTS'">
+            <b-alert :show="batch.details['what'] == 'ARC_SCH_REPORTS'">
+              This will archive current school reports, which will become static
+              and no longer be updated. School reports must be archived before
+              the new data collection cycle begins so they are not overwritten
+              entirely.
+            </b-alert>
+          </div>
           <div v-if="batch.details['what'] == 'ARC_STUDENTS'">
             <b-alert
               :show="
@@ -157,8 +174,8 @@
               "
             >
               All students with a School of Record matching the entered school
-              and with a student status of CUR will have their status changed to
-              ARC
+              and with a student status of CUR or a student status of TER will
+              have their status changed to ARC
             </b-alert>
             <b-alert
               :show="
@@ -166,8 +183,8 @@
                 batch.details['who'] == 'All Students'
               "
             >
-              All students with a student status of CUR will have their student
-              status changed to ARC
+              All students with a status of CUR (current) and TER (terminated)
+              will have their student status changed to ARC (archived)
             </b-alert>
           </div>
           <div
@@ -214,6 +231,9 @@
                 batch.details['what'] != 'DISTRUN_YE' &&
                 batch.details['what'] != 'DISTRUN_SUPP' &&
                 batch.details['what'] != 'ARC_STUDENTS' &&
+                batch.details['what'] != 'SCHL_RPT_REGEN' &&
+                batch.details['what'] != 'TVR_DELETE' &&
+                batch.details['what'] != 'ARC_SCH_REPORTS' &&
                 batch.details['what'] != 'CERT_REGEN'
               "
             >
@@ -968,6 +988,7 @@
           Schedule/Run Batch
         </b-button>
         <!-- Modal Dialogs -->
+
         <b-modal
           :id="'batch-modal-' + jobId"
           :title="'Run  Request ' + requestId"
@@ -981,6 +1002,47 @@
             :items="batch"
             :batchTypes="batchTypes"
           ></BatchConfirmInfo>
+
+          <b-form-group v-if="batch.details['what'] == 'ARC_STUDENTS'">
+            <h4>
+              Batch Confirmation: please read and accept before submitting
+            </h4>
+            <b-form-checkbox-group
+              v-model="ARC_STUDENTS_confirm"
+              name="checkbox-group"
+            >
+              <b-form-checkbox value="finalGraduation">
+                Final Graduation Algorithm and TVR batch jobs have been run for
+                students from the previous cycle
+              </b-form-checkbox>
+              <b-form-checkbox value="regenerateReports">
+                Regenerate School Reports process has been completed for any
+                schools that require final updates
+              </b-form-checkbox>
+              <b-form-checkbox value="archiveReports">
+                Archive School Reports process has been completed
+              </b-form-checkbox>
+            </b-form-checkbox-group>
+          </b-form-group>
+
+          <b-form-group v-if="batch.details['what'] == 'ARC_SCH_REPORTS'">
+            <h4>
+              Batch Confirmation: please read and accept before submitting
+            </h4>
+            <b-form-checkbox-group
+              v-model="ARC_SCHOOL_REPORTS_confirm"
+              name="checkbox-group"
+            >
+              <b-form-checkbox value="finalGraduation">
+                Final Graduation Algorithm and TVR batch jobs have been run for
+                students from the previous cycle.
+              </b-form-checkbox>
+              <b-form-checkbox value="regenerateReports">
+                Regenerate School Reports are completed for any schools that
+                require final updates
+              </b-form-checkbox>
+            </b-form-checkbox-group>
+          </b-form-group>
           <b-form-group label="Batch Run" v-slot="{ ariaDescribedby }">
             <b-form-radio-group v-model="batchRunTime">
               <b-form-radio
@@ -1030,8 +1092,6 @@
                 >Custom</b-form-radio
               >
               <div class="pl-4" v-if="batchRunSchedule == 'Custom'">
-                <!-- <label for="batch-datepicker">Choose a date:</label> -->
-
                 <b-form-datepicker
                   id="batch-datepicker"
                   v-model="batchRunCustomDate"
@@ -1210,8 +1270,11 @@ export default {
   },
   data: function () {
     return {
+      ARC_STUDENTS_confirm: [],
+      ARC_SCHOOL_REPORTS_confirm: [],
       runType: "",
-      reportTypes: [],
+      ARC_SCH_REPORTS_reportTypes: [],
+      SCHL_RPT_REGEN_reportTypes: [],
       reportType: "",
       batchIsValid: false,
       batchTypes: [],
@@ -1324,17 +1387,42 @@ export default {
             {
               text: "School",
               value: "School",
-              description:
-                "All students with a School of Record matching the entered school and with a student status of CUR or TER will have their status changed to ARC",
             },
             {
               text: "All Schools",
               value: "All Schools",
             },
           ],
+        },
+        SCHL_RPT_REGEN: {
+          group: [
+            {
+              text: "School",
+              value: "School",
+            },
+            { text: "School Category", value: "District" },
+            {
+              text: "All",
+              value: "All Schools",
+            },
+          ],
+        },
+        TVR_DELETE: {
+          group: [
+            {
+              text: "Student",
+              value: "Student",
+            },
+            {
+              text: "School",
+              value: "School",
+            },
 
-          copies: true,
-          where: true,
+            {
+              text: "All Students",
+              value: "All Students",
+            },
+          ],
         },
       },
     };
@@ -1347,27 +1435,42 @@ export default {
     this.transcriptTypes = this.getTranscriptTypes();
     this.certificateTypes = this.getCertificateTypes();
     this.batchTypes = this.getBatchJobTypes();
-    this.reportTypes = [
+
+    this.ARC_SCH_REPORTS_reportTypes = [
       {
-        code: "NONGRADREGARC",
+        code: "NONGRADPRJ",
         label:
-          "Archived Not-Yet Graduated Students (MM YYYY to MM YYYY) Report",
+          "NONGRADPRJ - Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
         description:
-          "The final daily, cumulative list of student in the current cycle who have not-yet graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
+          "A list of all current students reported on a graduation program, in grade 12 or AD, who are not projected to graduate based on missing course registrations or assessment registrations. Produced as part of TVR Batch Run.",
       },
       {
-        code: "GRADREGARC",
-        label:
-          "Archived Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
+        code: "GRADREG",
+        label: "GRADREG - Graduated Students (MM YYYY to MM YYYY) Report",
         description:
-          "The final daily, cumulative list of student in the current cycle who have graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
+          "A daily, cumulative list of student in the current cycle who have graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
       },
       {
-        code: "NONGRADPRJARC",
+        code: "NONGRADREG",
         label:
-          "Archived Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
+          "NONGRADREG - Not-Yet Graduated Students (MM YYYY to MM YYYY) Report",
         description:
-          "The final list of grade 12 or AD students on a graduation program who were not projected to graduate based on missing course registrations or assessment registrations submitted by the school in the reporting cycle.",
+          "A daily, cumulative list of student in the current cycle who have not-yet graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
+      },
+    ];
+    this.SCHL_RPT_REGEN_reportTypes = [
+      {
+        code: "NONGRADPRJ",
+        label: "Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
+        description:
+          "A list of all current students reported on a graduation program, in grade 12 or AD, who are not projected to graduate based on missing course registrations or assessment registrations. Produced as part of TVR Batch Run.",
+      },
+      {
+        code: "GRADREG and NONGRADREG",
+        label:
+          "Graduated Students (MM YYYY to MM YYYY) Report and Not-Yet Graduated Students (MM YYYY to MM YYYY) Report",
+        description:
+          "A daily, cumulative list of student in the current cycle who have graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
       },
     ];
   },
@@ -1444,7 +1547,8 @@ export default {
         }
       }
       if (
-        this.batch.details["what"] == "ARC_SCH_REPORTS" &&
+        (this.batch.details["what"] == "ARC_SCH_REPORTS" ||
+          this.batch.details["what"] == "SCHL_RPT_REGEN") &&
         this.batch.details["reportType"] == ""
       ) {
         this.batchIsValid = false;
@@ -1509,14 +1613,18 @@ export default {
               return type;
             });
           }
-
-          //disable code for release 1.7.0
+          if (!this.allowRunArchiveStudents) {
+            this.batchTypes = this.batchTypes.filter(
+              (type) => type.code != "ARC_STUDENTS"
+            );
+          }
+          if (!this.allowRunTVRDelete) {
+            this.batchTypes = this.batchTypes.filter(
+              (type) => type.code != "TVR_DELETE"
+            );
+          }
           this.batchTypes = this.batchTypes.map((type) => {
-            if (
-              type.code === "ARC_STUDENTS" ||
-              type.code === "ARC_SCH_REPORTS" ||
-              type.code === "EDW_SNAPSHOT"
-            ) {
+            if (type.code === "EDW_SNAPSHOT") {
               type.disabled = true;
             }
             return type;
@@ -1539,6 +1647,14 @@ export default {
       if (runType == "") {
         return;
       }
+      if (
+        this.batch.details["what"] == "TVR_DELETE" &&
+        !this.allowRunTVRDeleteSchools
+      ) {
+        return [{ text: "Student", value: "Student" }];
+      }
+
+      // this hits with almost every job and is hard to override, place overrides above
       if (
         this.batch.details["credential"] != "Blank certificate print" &&
         this.batch.details["credential"] != "Blank transcript print"
@@ -1597,15 +1713,33 @@ export default {
       alert(JSON.stringify(values, null, 2));
     },
     disableConfirm() {
-      if (this.batchRunTime == "Run Now") {
+      if (
+        this.batch.details["what"] == "ARC_STUDENTS" &&
+        this.ARC_STUDENTS_confirm.length !== 3
+      ) {
+        return true;
+      } else if (
+        this.batch.details["what"] == "ARC_SCH_REPORTS" &&
+        this.ARC_SCHOOL_REPORTS_confirm.length !== 2
+      ) {
+        return true;
+      } else if (this.batchRunTime == "Run Now") {
         return false;
-      } else {
-        if (this.batchRunSchedule && this.batchRunSchedule == "Custom") {
-          if (this.batchRunTime && this.batchRunCustomDate) {
+      } else if (this.batchRunTime == "Run Later") {
+        if (this.batchRunSchedule) {
+          if (this.batchRunSchedule != "Custom") {
+            return false;
+          } else if (
+            this.batchRunSchedule == "Custom" &&
+            this.batchRunCustomDate &&
+            this.batchRunCustomTime
+          ) {
             return false;
           } else {
             return true;
           }
+        } else {
+          return true;
         }
       }
     },
@@ -1979,6 +2113,9 @@ export default {
           if (event == "ARC_STUDENTS") {
             batchDetail.details["who"] = "School";
           }
+          if (event == "ARC_SCH_REPORTS") {
+            batchDetail.details["who"] = "School";
+          }
         }
         if (type == "gradDateFrom") {
           event = SharedMethods.dateFormatYYYYMMDD(this.gradDateFrom);
@@ -2127,6 +2264,7 @@ export default {
     ...mapState(useBatchProcessingStore, {
       tabContent: "getBatchDetails",
     }),
+
     batch() {
       return this.tabContent[this.jobId];
     },
@@ -2137,6 +2275,9 @@ export default {
       allowRunDistrunMonthly: "allowRunDistrunMonthly",
       allowSelectProgramGroup: "allowSelectProgramGroup",
       allowSelectCategoryCodeGroup: "allowSelectCategoryCodeGroup",
+      allowRunArchiveStudents: "allowRunArchiveStudents",
+      allowRunTVRDelete: "allowRunTVRDelete",
+      allowRunTVRDeleteSchools: "allowRunTVRDeleteSchools",
       allowRunPSI: "allowRunPSI",
     }),
     ...mapState(useAppStore, {
@@ -2159,5 +2300,8 @@ export default {
 <style scoped>
 input {
   border-radius: 0px;
+}
+.modal-body {
+  margin: 10px !important;
 }
 </style>

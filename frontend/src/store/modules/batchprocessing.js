@@ -178,7 +178,6 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
     getBatchDetailsTypeById: (state) =>{
       return function(args){
         return state.batchDetails[args].details['what']
-        
       }
     },
     getbatchDetailsGroupById: (state) =>{

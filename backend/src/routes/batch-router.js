@@ -31,6 +31,7 @@ async function getBatchInfoAPI(req, res) {
 async function postBatchInfoAPI(req, res) {
   const token = getBackendToken(req);
   try {  
+    console.log(req.body)
     const url = `${config.get('server:batchAPIURL')}/batch` + req.url;
     const data = await postData(token, url, req.body, req.session?.correlationID);
     return res.status(200).json(data);
