@@ -1403,7 +1403,7 @@ export default {
             { text: "School Category", value: "District" },
             {
               text: "All",
-              value: "All Students",
+              value: "All Schools",
             },
           ],
         },

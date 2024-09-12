@@ -1909,10 +1909,8 @@ export default {
         }
       } else if (this.tabContent[id].details["what"] == "SCHL_RPT_REGEN") {
         delete request.credentialTypeCode;
-        request.statuses = null;
-        request.studentIDs = null;
         request.reportTypes = [this.tabContent[id].details["reportType"]];
-        if (this.tabContent[id].details["who"] == "All Students") {
+        if (this.tabContent[id].details["who"] == "All Schools") {
           request.activityCode = "ALL";
         }
         if (cronTime) {
