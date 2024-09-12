@@ -37,6 +37,7 @@
             details.who != 'PSI' &&
             details.who != 'Student' &&
             details.who != 'District' &&
+            details.what != 'SCHL_RPT_REGEN' &&
             details.what == 'ARC_STUDENTS'
           "
         >
@@ -107,7 +108,7 @@
             <strong>Grad End Date: </strong>{{ details.gradDateTo }}
           </li>
         </ul>
-        <li v-if="details.categoryCode">
+        <li v-if="details.categoryCode && details.what != 'SCHL_RPT_REGEN'">
           <strong>School Category: </strong>{{ details.categoryCode }}
         </li>
         <li v-if="details.psiTransmissionMode">
@@ -123,6 +124,7 @@
           details.what != 'REGALG' &&
           details.what != 'TVRRUN' &&
           details.what != 'CERT_REGEN' &&
+          details.what != 'SCHL_RPT_REGEN' &&
           details.what != 'ARC_STUDENTS' &&
           details.what != 'TVR_DELETE' &&
           details.what != 'ARC_SCH_REPORTS'

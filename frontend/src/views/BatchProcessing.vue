@@ -128,7 +128,9 @@
                                         v-if="
                                           row.item.jobType != 'TVR_DELETE' &&
                                           row.item.jobType != 'ARC_STUDENTS' &&
-                                          row.item.jobType != 'ARC_SCH_REPORTS'
+                                          row.item.jobType !=
+                                            'ARC_SCH_REPORTS' &&
+                                          row.item.jobType != 'SCHL_RPT_REGEN'
                                         "
                                       >
                                         <div class="col-12">
@@ -163,6 +165,8 @@
                                           row.item.jobType != 'ARC_STUDENTS' &&
                                           row.item.jobType !=
                                             'ARC_SCH_REPORTS' &&
+                                          row.item.jobType !=
+                                            'SCHL_RPT_REGEN' &&
                                           row.item.jobType != 'PSIRUN'
                                         "
                                       >
@@ -220,6 +224,8 @@
                                           row.item.jobType != 'ARC_STUDENTS' &&
                                           row.item.jobType !=
                                             'ARC_SCH_REPORTS' &&
+                                          row.item.jobType !=
+                                            'SCHL_RPT_REGEN' &&
                                           row.item.failedStudentsProcessed != 0
                                         "
                                       >
@@ -275,7 +281,8 @@
                                           row.item.jobType != 'TVR_DELETE' &&
                                           row.item.jobType !=
                                             'ARC_SCH_REPORTS' &&
-                                          row.item.jobType != 'ARC_STUDENTS'
+                                          row.item.jobType != 'ARC_STUDENTS' &&
+                                          row.item.jobType != 'SCHL_RPT_REGEN'
                                         "
                                       >
                                         <div class="col-9 p-2">
@@ -1136,6 +1143,44 @@ export default {
           }
         });
     },
+    runSCHL_RPT_REGEN(request, id) {
+      let requestId = id.replace("job-", "");
+      this.$set(this.spinners, id, true);
+      let index = id.replace("job-", "") - 1;
+      let value = true;
+      this.setTabLoading({ index, value });
+      BatchProcessingService.runSCHL_RPT_REGEN(request)
+        .then((response) => {
+          this.getAdminDashboardData();
+          this.cancelBatchJob(id);
+          this.selectedTab = 0;
+          if (response.data) {
+            this.$bvToast.toast(
+              "Batch run " +
+                response.data.batchId +
+                " has started for request " +
+                requestId,
+              {
+                title: "BATCH PROCESSING STARTED",
+                variant: "success",
+                noAutoHide: true,
+              }
+            );
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.getAdminDashboardData();
+            this.cancelBatchJob(id);
+            this.selectedTab = 0;
+            this.$bvToast.toast("This request is running in the background", {
+              title: "BATCH PROCESSING UPDATE",
+              variant: "success",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
     runCERTREGEN(request, id) {
       let requestId = id.replace("job-", "");
       this.$set(this.spinners, id, true);
@@ -1846,7 +1891,7 @@ export default {
         delete request.gradDateTo;
         delete request.quantity;
         delete request.localDownload;
-        delete request.reportType;
+        delete request.activityCode;
 
         if (cronTime) {
           let scheduledRequest = {};
@@ -1861,6 +1906,33 @@ export default {
           } else {
             this.runCERTREGEN(request, id);
           }
+        }
+      } else if (this.tabContent[id].details["what"] == "SCHL_RPT_REGEN") {
+        delete request.credentialTypeCode;
+        request.reportTypes = [this.tabContent[id].details["reportType"]];
+        if (this.tabContent[id].details["who"] == "All Schools") {
+          request.activityCode = "ALL";
+        }
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "??";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runSCHL_RPT_REGEN(request, id);
+        }
+      } else if (this.tabContent[id].details["what"] == "ARC_STUDENTS") {
+        if (cronTime) {
+          let scheduledRequest = {};
+          scheduledRequest.cronExpression = cronTime;
+          scheduledRequest.jobName = "ARCS";
+          scheduledRequest.blankPayLoad = null;
+          scheduledRequest.payload = request;
+          this.addScheduledJob(scheduledRequest, id);
+        } else {
+          this.runArchiveStudents(request, id);
         }
       } else if (this.tabContent[id].details["what"] == "ARC_STUDENTS") {
         delete request.credentialTypeCode;

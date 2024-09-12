@@ -62,6 +62,9 @@ export default {
   runDISTRUN_MONTHLY() {
     return ApiService.apiAxios.get("/api/v1/batch/executedisrunbatchjob");
   },
+  runSCHL_RPT_REGEN(request, cronTime=""){
+    return ApiService.apiAxios.post(`/api/v1/batch/regenerate/school-report`,request);
+  },  
   runDISTRUN_SUPP() {
     return ApiService.apiAxios.get("/api/v1/batch/executesuppdisrunbatchjob");
   },

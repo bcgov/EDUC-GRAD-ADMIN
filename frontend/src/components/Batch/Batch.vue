@@ -1,8 +1,6 @@
 <template>
   <div>
-    <b-alert :show="batchTypeDesc != ''" variant="info">
-      {{ batchTypeDesc }}
-    </b-alert>
+    <b-alert :show="batchTypeDesc != ''" variant="info"> </b-alert>
     <b-overlay :show="processingBatch">
       <div class="row">
         <div class="col-12 col-md-3 border-right">
@@ -20,20 +18,29 @@
             >
             </b-form-select>
           </div>
-
-          <div class="mt-2" v-if="batch.details['what'] == 'ARC_SCH_REPORTS'">
+          <div class="mt-2" v-if="batch.details['what'] == 'SCHL_RPT_REGEN'">
             <label class="font-weight-bold">Report Type</label>
             <b-form-select
               id="inline-form-select-audience"
               class="mb-2 mr-sm-2 mb-sm-0 col-12"
-              :options="reportTypes"
+              :options="SCHL_RPT_REGEN_reportTypes"
               value-field="code"
               text-field="label"
               :value="batch.details['reportType']"
               @change="editBatchJob('reportType', $event)"
             ></b-form-select>
           </div>
-
+          <div class="mt-2" v-if="batch.details['what'] == 'ARC_SCH_REPORTS'">
+            <b-form-select
+              id="inline-form-select-audience"
+              class="mb-2 mr-sm-2 mb-sm-0 col-12"
+              :options="ARC_SCH_REPORTS_reportTypes"
+              value-field="code"
+              text-field="label"
+              :value="batch.details['reportType']"
+              @change="editBatchJob('reportType', $event)"
+            ></b-form-select>
+          </div>
           <div class="mt-2" v-if="batch.details['what'] == 'DISTRUNUSER'">
             <label class="font-weight-bold">Credential Type</label>
             <b-form-select
@@ -224,6 +231,7 @@
                 batch.details['what'] != 'DISTRUN_YE' &&
                 batch.details['what'] != 'DISTRUN_SUPP' &&
                 batch.details['what'] != 'ARC_STUDENTS' &&
+                batch.details['what'] != 'SCHL_RPT_REGEN' &&
                 batch.details['what'] != 'TVR_DELETE' &&
                 batch.details['what'] != 'ARC_SCH_REPORTS' &&
                 batch.details['what'] != 'CERT_REGEN'
@@ -1265,7 +1273,8 @@ export default {
       ARC_STUDENTS_confirm: [],
       ARC_SCHOOL_REPORTS_confirm: [],
       runType: "",
-      reportTypes: [],
+      ARC_SCH_REPORTS_reportTypes: [],
+      SCHL_RPT_REGEN_reportTypes: [],
       reportType: "",
       batchIsValid: false,
       batchTypes: [],
@@ -1384,27 +1393,36 @@ export default {
               value: "All Schools",
             },
           ],
-
-          copies: true,
-          where: true,
         },
-        TVR_DELETE: {
+        SCHL_RPT_REGEN: {
           group: [
             {
               text: "School",
               value: "School",
             },
+            { text: "School Category", value: "District" },
+            {
+              text: "All",
+              value: "All Schools",
+            },
+          ],
+        },
+        TVR_DELETE: {
+          group: [
             {
               text: "Student",
               value: "Student",
             },
             {
+              text: "School",
+              value: "School",
+            },
+
+            {
               text: "All Students",
               value: "All Students",
             },
           ],
-          copies: true,
-          where: true,
         },
       },
     };
@@ -1417,7 +1435,8 @@ export default {
     this.transcriptTypes = this.getTranscriptTypes();
     this.certificateTypes = this.getCertificateTypes();
     this.batchTypes = this.getBatchJobTypes();
-    this.reportTypes = [
+
+    this.ARC_SCH_REPORTS_reportTypes = [
       {
         code: "NONGRADPRJ",
         label:
@@ -1437,6 +1456,21 @@ export default {
           "NONGRADREG - Not-Yet Graduated Students (MM YYYY to MM YYYY) Report",
         description:
           "A daily, cumulative list of student in the current cycle who have not-yet graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
+      },
+    ];
+    this.SCHL_RPT_REGEN_reportTypes = [
+      {
+        code: "NONGRADPRJ",
+        label: "Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)",
+        description:
+          "A list of all current students reported on a graduation program, in grade 12 or AD, who are not projected to graduate based on missing course registrations or assessment registrations. Produced as part of TVR Batch Run.",
+      },
+      {
+        code: "GRADREG and NONGRADREG",
+        label:
+          "Graduated Students (MM YYYY to MM YYYY) Report and Not-Yet Graduated Students (MM YYYY to MM YYYY) Report",
+        description:
+          "A daily, cumulative list of student in the current cycle who have graduated, based on the latest information submitted by the school. Produced as part of the Batch Graduation Algorithm Run.",
       },
     ];
   },
@@ -1513,7 +1547,8 @@ export default {
         }
       }
       if (
-        this.batch.details["what"] == "ARC_SCH_REPORTS" &&
+        (this.batch.details["what"] == "ARC_SCH_REPORTS" ||
+          this.batch.details["what"] == "SCHL_RPT_REGEN") &&
         this.batch.details["reportType"] == ""
       ) {
         this.batchIsValid = false;
@@ -1589,10 +1624,7 @@ export default {
             );
           }
           this.batchTypes = this.batchTypes.map((type) => {
-            if (
-              type.code === "SCHL_RPT_REGEN" ||
-              type.code === "EDW_SNAPSHOT"
-            ) {
+            if (type.code === "EDW_SNAPSHOT") {
               type.disabled = true;
             }
             return type;
