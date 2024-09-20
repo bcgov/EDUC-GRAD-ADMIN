@@ -16,7 +16,7 @@
                 :disabled="tabLoading || !hasGradStatus"
                 id="actions"
                 right
-                class="m-md-2 float-right admin-gear-w-text"
+                class="float-right admin-actions"
               >
                 <v-icon icon="mdi-school" start></v-icon>Transcripts &
                 TVRs</v-btn
@@ -792,6 +792,9 @@ export default {
 </script>
 
 <style scoped>
+.admin-actions {
+  top: 50px;
+}
 .last-updated-date {
   position: absolute;
   top: 15px;

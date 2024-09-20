@@ -171,10 +171,13 @@ import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
 import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import Notifications from "@/components/Common/Notifications.vue";
+import Snackbar from "@/components/Common/Snackbar.vue";
+
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchProcessing";
+import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
   setup() {
@@ -268,10 +271,12 @@ export default {
     ProgramInput: ProgramInput,
     ScheduleInput: ScheduleInput,
     Notifications: Notifications,
+    Snackbar: Snackbar,
   },
   data: () => ({
     step: 0,
     dialog: false,
+    snackbarStore: useSnackbarStore(),
   }),
   computed: {
     ...mapState(useBatchRequestFormStore, [
@@ -304,11 +309,21 @@ export default {
           this.getBatchRequestCrontime
         );
         this.closeDialogAndResetForm();
+        this.snackbarStore.showSnackbar(
+          "Batch request submitted",
+          "success",
+          5000
+        );
         nextTick(() => {
           this.activeTab = "batchRuns";
         });
       } catch (error) {
         // handle the error and show the notification
+        this.snackbarStore.showSnackbar(
+          "Batch request submitted",
+          "success",
+          5000
+        );
         console.error("Error:", error);
         if (this.notifications) {
           this.notifications.show("An error occurred: " + error.message);

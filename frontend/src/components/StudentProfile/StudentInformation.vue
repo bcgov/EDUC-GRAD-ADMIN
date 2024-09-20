@@ -8,20 +8,20 @@
         aria-label="student information"
       >
         <tr>
-          <th class="align-top profile-name-header" scope="col"></th>
-          <th class="align-top profile-name-header" scope="col">
+          <th class="align-top px-2" scope="col"></th>
+          <th class="align-top px-2" scope="col">
             <label>PEN</label>
           </th>
-          <th class="align-top profile-name-header" scope="col">
+          <th class="align-top px-2" scope="col">
             <label>Legal Surname</label>
           </th>
-          <th class="align-top profile-name-header" scope="col">
+          <th class="align-top px-2" scope="col">
             <label>Legal Given</label>
           </th>
-          <th class="align-top profile-name-header" scope="col">
+          <th class="align-top px-2" scope="col">
             <label>Legal Middle</label>
           </th>
-          <th class="align-top profile-name-header" scope="col">
+          <th class="align-top px-2" scope="col">
             <label>Birthdate (yyyy-mm-dd)</label>
           </th>
         </tr>

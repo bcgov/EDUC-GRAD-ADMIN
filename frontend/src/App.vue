@@ -17,6 +17,7 @@
 
       <div class="container" style="min-height: 100vh">
         <router-view />
+        <Snackbar></Snackbar>
         <div>{{ timerValue }}</div>
         <div class="overlay-dialog">
           <v-dialog v-model="tokenExpiring" max-width="600px">
@@ -61,12 +62,14 @@ import BCFooter from "@/components/BCFooter.vue";
 import EnvironmentBanner from "@/components/Header/EnvironmentBanner.vue";
 import { Routes } from "@/utils/constants.js";
 import authService from "./common/authService";
+import Snackbar from "@/components/Common/Snackbar.vue";
 export default {
   name: "App",
   components: {
     Bcheader,
     BCFooter,
     EnvironmentBanner,
+    Snackbar,
   },
   setup() {
     const appStore = useAppStore();
