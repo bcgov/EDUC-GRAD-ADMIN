@@ -17,7 +17,9 @@
                 id="actions"
                 right
                 class="m-md-2 float-right admin-gear-w-text"
-                >Transcripts & TVRs</v-btn
+              >
+                <v-icon icon="mdi-school" start></v-icon>Transcripts &
+                TVRs</v-btn
               >
             </template>
             <v-list>
@@ -64,32 +66,10 @@
     <!-- Studnet Demo. end-->
     <div class="row m-0">
       <div class="col-12 px-0">
-        <v-card class="p-0">
-          <!-- Updated info. -->
-          <div class="mb-2 mx-1 row">
-            <div class="col-12 col-lg-4 col-md-5 m-1 p-0">
-              <v-tabs v-model="tab" bg-color="transparent" grow>
-                <v-tab variant="outlined" value="gradStatusTab" color="primary"
-                  >GRAD Status</v-tab
-                >
-                <v-tab
-                  variant="outlined"
-                  value="requirementDetailsTab"
-                  color="primary"
-                  >Requirement Details</v-tab
-                >
-              </v-tabs>
-            </div>
-            <div class="pr-0 col-12 col-lg-8 col-md-7 text-right">
-              <strong>Updated:</strong>
-              {{ $filters.formatTime(studentGradStatus.updateDate) }} by
-              {{ studentGradStatus.updateUser }}
-            </div>
-          </div>
-          <!-- Updated info. end -->
+        <v-card class="p-0" color="#f2f2f2">
           <v-window v-model="tab">
             <v-window-item value="gradStatusTab">
-              <v-tabs v-model="selectedTab">
+              <v-tabs v-model="selectedTab" bg-color="primary">
                 <v-tab value="GRAD">GRAD</v-tab>
                 <v-tab value="Courses">Courses ({{ courses.length }})</v-tab>
                 <v-tab value="Assessments"
@@ -104,19 +84,48 @@
               <v-card-text>
                 <v-window v-model="selectedTab">
                   <v-window-item value="GRAD">
-                    <div v-if="studentGradStatus.studentGradData">
-                      <v-alert
-                        color="Info"
-                        icon="$info"
-                        v-if="
-                          studentGradStatus.studentGradData.gradMessage &&
-                          !studentGradStatus.recalculateGradStatus
-                        "
+                    <v-tabs v-model="selectedSubTab" color="primary">
+                      <v-tab value="gradStatusTab"
+                        ><v-chip>GRAD Status</v-chip></v-tab
                       >
-                        {{ studentGradStatus.studentGradData.gradMessage }}
-                      </v-alert>
+                      <v-tab value="requirementDetailsTab" color="primary"
+                        ><v-chip>Requirement Details</v-chip></v-tab
+                      >
+                    </v-tabs>
+
+                    <div class="last-updated-date">
+                      <v-chip class="ma-2" label>
+                        <v-icon icon="mdi-calendar" start></v-icon>
+                        <strong>Updated:</strong>
+                        {{ $filters.formatTime(studentGradStatus.updateDate) }}
+                        by
+                        {{ studentGradStatus.updateUser }}
+                      </v-chip>
                     </div>
-                    <StudentGraduationStatus></StudentGraduationStatus>
+
+                    <v-window v-model="selectedSubTab">
+                      <v-window-item value="gradStatusTab">
+                        <div v-if="studentGradStatus.studentGradData">
+                          <v-alert
+                            color="Info"
+                            icon="$info"
+                            v-if="
+                              studentGradStatus.studentGradData.gradMessage &&
+                              !studentGradStatus.recalculateGradStatus
+                            "
+                          >
+                            {{ studentGradStatus.studentGradData.gradMessage }}
+                          </v-alert>
+                        </div>
+
+                        <StudentGraduationStatus></StudentGraduationStatus>
+                      </v-window-item>
+
+                      <v-window-item value="requirementDetailsTab">
+                        <GRADRequirementDetails> </GRADRequirementDetails>
+                      </v-window-item>
+                    </v-window>
+
                     <div id="RequirementDetails">
                       <v-progress-circular
                         v-if="tabLoading"
@@ -205,9 +214,6 @@
                 </v-window>
               </v-card-text>
             </v-window-item>
-            <v-window-item value="requirementDetailsTab">
-              <GRADRequirementDetails> </GRADRequirementDetails>
-            </v-window-item>
           </v-window>
         </v-card>
       </div>
@@ -294,6 +300,7 @@ export default {
       studentUngradReasonSelected: "",
       studentUngradReasonDescription: "",
       confirmStudentUndoCompletion: false,
+      selectedSubTab: 0,
       selectedTab: 0,
       projectedGradStatus: [],
       projectedGradStatusWithRegistrations: [],
@@ -785,6 +792,11 @@ export default {
 </script>
 
 <style scoped>
+.last-updated-date {
+  position: absolute;
+  top: 15px;
+  right: 0;
+}
 .student-profile {
   padding-left: 25px;
   padding-right: 25px;
