@@ -9,7 +9,9 @@
           <v-tab>
             <v-menu offset-y>
               <template v-slot:activator="{ props }">
-                <v-btn text v-bind="props">Programs</v-btn>
+                <v-btn text v-bind="props" variant="link"
+                  >Programs <v-icon>mdi-menu-down</v-icon></v-btn
+                >
               </template>
               <v-list>
                 <v-list-item to="/programs/programs">Programs</v-list-item>
@@ -25,7 +27,9 @@
           <v-tab>
             <v-menu offset-y>
               <template v-slot:activator="{ props }">
-                <v-btn text v-bind="props">Optional Programs</v-btn>
+                <v-btn text v-bind="props" variant="link"
+                  >Optional Programs <v-icon>mdi-menu-down</v-icon></v-btn
+                >
               </template>
               <v-list>
                 <v-list-item to="/programs/optional-programs"

@@ -65,11 +65,14 @@
                       <strong>School Name:</strong>
                       {{ mincodeSchoolInfo.schoolName }}<br />
                       <strong>Transcript Eligibility:</strong>
-                      {{ mincodeSchoolInfo.transcriptEligibility }}<br />
+                      {{ mincodeSchoolInfo.transcriptEligibility ? "Y" : "N"
+                      }}<br />
                       <strong>Certificate Eligibility</strong>
-                      {{ mincodeSchoolInfo.certificateEligibility }}<br />
+                      {{ mincodeSchoolInfo.certificateEligibility ? "Y" : "N"
+                      }}<br />
                       <strong>School Category</strong>
-                      {{ mincodeSchoolInfo.transcriptEligibility }}<br />
+                      {{ mincodeSchoolInfo.schoolCategory }}
+                      <br />
                       <strong>TRAX reporting</strong>
                       {{ mincodeSchoolInfo.traxReporting }}<br />
                       <v-btn @click="addSchool()" class="float-right"
@@ -103,15 +106,15 @@
                 </div>
                 <div>
                   <strong>Transcript Eligibility:</strong>
-                  {{ item.info.transcriptEligibility }}
+                  {{ item.info.transcriptEligibility ? "Y" : "N" }}
                 </div>
                 <div>
                   <strong>Certificate Eligibility</strong>
-                  {{ item.info.certificateEligibility }}
+                  {{ item.info.certificateEligibility ? "Y" : "N" }}
                 </div>
                 <div>
                   <strong>School Category</strong>
-                  {{ item.info.transcriptEligibility }}
+                  {{ item.info.schoolCategory }}
                 </div>
                 <div>
                   <strong>TRAX reporting</strong>
@@ -171,12 +174,11 @@ export default {
               let schoolInfo = await SchoolService.getSchoolInfo(value);
               if (schoolInfo.data) {
                 this.mincodeSchoolInfo = {
-                  schoolName: schoolInfo.data.schoolName,
-                  transcriptEligibility: schoolInfo.data.transcriptEligibility,
-                  certificateEligibility:
-                    schoolInfo.data.certificateEligibility,
-                  schoolCategory: schoolInfo.data.schoolCategory,
-                  traxReporting: schoolInfo.data.reportingFlag,
+                  schoolName: schoolInfo.data.displayName,
+                  transcriptEligibility: schoolInfo.data.canIssueTranscripts,
+                  certificateEligibility: schoolInfo.data.canIssueCertificates,
+                  schoolCategory: schoolInfo.data.schoolCategoryCode,
+                  traxReporting: schoolInfo.data.schoolReportingRequirementCode,
                 };
                 return true;
               }

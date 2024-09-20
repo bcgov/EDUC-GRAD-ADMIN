@@ -9,9 +9,7 @@
           "
         >
           <div v-if="!nongradReasons || !nongradReasons.length">
-            <ul>
-              <li>All program requirements have been met</li>
-            </ul>
+            <div class="p-3">All program requirements have been met</div>
           </div>
           <div v-else>
             <v-table density="compact">

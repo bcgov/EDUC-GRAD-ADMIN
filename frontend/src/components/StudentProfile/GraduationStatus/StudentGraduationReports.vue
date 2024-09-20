@@ -1,11 +1,11 @@
 <template>
   <div class="graduation-reports pb-2">
     <v-card title="Student Transcript Reports" no-body>
-      <v-card-text class="py-4">
+      <v-card-text class="py-1">
         <div v-if="studentGradStatus.studentGradData">
           <div v-if="studentGradStatus.studentGradData.school">
             <div v-if="!isTranscriptEligible()">
-              <v-alert type="info" class="p-3 mb-1 mx-3">
+              <v-alert type="info" class="">
                 <h4 class="alert-heading">
                   Ineligible for Ministry transcripts
                 </h4>

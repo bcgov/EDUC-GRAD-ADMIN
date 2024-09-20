@@ -43,7 +43,7 @@
                     class="float-right"
                     color="primary"
                   >
-                    Add
+                    <v-icon>mdi-plus</v-icon>
                   </v-btn>
                 </template>
               </v-overlay>

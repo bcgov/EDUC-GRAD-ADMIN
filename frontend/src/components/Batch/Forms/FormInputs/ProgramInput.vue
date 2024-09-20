@@ -15,7 +15,9 @@
             ></v-autocomplete>
           </v-col>
           <v-col sm="1" class="p-2">
-            <v-btn :disabled="!program" @click="addProgram()">Add</v-btn>
+            <v-btn :disabled="!program" @click="addProgram()" class="bg-primary"
+              ><v-icon>mdi-plus</v-icon></v-btn
+            >
           </v-col>
         </v-row>
         <v-data-table
@@ -24,12 +26,9 @@
           :headers="programInputFields"
         >
           <template v-slot:item.remove="{ item }">
-            <v-btn
-              @click="removeProgram(item.program)"
-              class="btn btn-primary w-100"
-            >
-              Remove
-            </v-btn>
+            <v-icon size="large" @click="removeProgram(item.program)">
+              mdi-delete
+            </v-icon>
           </template>
           <template v-slot:item.info="{ item }">
             <div>
@@ -101,9 +100,9 @@ export default {
         },
         {
           key: "remove",
-          title: "Remove",
+          title: "",
           sortable: true,
-          class: "text-left",
+          class: "text-end",
         },
       ],
     };

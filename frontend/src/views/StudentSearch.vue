@@ -1,11 +1,8 @@
 <template>
   <div class="studentlist">
-    <!-- Vuetify -->
+    <h1>Student Search</h1>
     <v-card>
-      <v-card-title class="">
-        <h1 class="font-weight-bold text-h2 text-basil">Student Search</h1>
-      </v-card-title>
-      <p>
+      <p class="px-1">
         Search by Personal Education Number(PEN) or use the advanced search to
         look up students by other criteria.
       </p>

@@ -2,19 +2,24 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"> + </v-btn>
+        <v-btn color="primary" v-bind="props" @click="setGroup('Psi')">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
       </template>
       <v-card>
         <v-card-title>
           <span class="text-h5">PSI Run FTP / Paper</span>
         </v-card-title>
         <v-card-text>
+          {{ getBatchRequest }}
           <v-container>
             <v-stepper alt-labels show-actions v-model="step">
               <template v-slot:default="{ prev, next }">
                 <v-stepper-header>
                   <v-stepper-item
-                    :rules="[() => false]"
+                    :rules="[
+                      () => !v$.getBatchRequest.hasAtLeastOnePSiValue.$invalid,
+                    ]"
                     complete
                     editable
                     title="Group"
@@ -24,6 +29,9 @@
                   <v-divider></v-divider>
 
                   <v-stepper-item
+                    :rules="[
+                      () => !v$.getBatchRequest.batchRunTimeSet.$invalid,
+                    ]"
                     complete
                     editable
                     title="Run/Schedule"
@@ -144,20 +152,26 @@ export default {
       getBatchRequest: {
         batchRunTimeSet: helpers.withMessage("Runtime not set", (value) => {
           if (this.getBatchRunTime) {
-            return true;
+            if (this.getBatchRunTime == "Run Now") {
+              return true;
+            } else if (this.getBatchRunTime == "Run Later") {
+              if (this.getBatchRequestCrontime) {
+                return true;
+              } else return false;
+            }
           } else return false;
         }),
-        hasPSiValue: helpers.withMessage(
-          "Must contain at least one " + this.group,
+        hasAtLeastOnePSiValue: helpers.withMessage(
+          "Must contain at least one " + this.getGroup,
           (value) => {
             if (this.getBatchRequest) {
               let isValid = false;
-              if (this.group === "Psi") {
+              if (this.getGroup === "Psi") {
                 isValid =
                   this.getBatchRequest.psiCodes &&
                   this.getBatchRequest.psiCodes.length > 0;
               } else {
-                isValid = true; // Return true if none of the above conditions matched
+                isValid = false;
               }
               return isValid;
             } else {
@@ -182,12 +196,14 @@ export default {
       "getBatchRequest",
       "getBatchRunTime",
       "getBatchRequestCrontime",
+      "getGroup",
     ]),
   },
   methods: {
     ...mapActions(useBatchRequestFormStore, [
       "clearBatchDetails",
       "clearBatchGroupData",
+      "setGroup",
     ]),
     closeDialogAndResetForm() {
       this.group = null;

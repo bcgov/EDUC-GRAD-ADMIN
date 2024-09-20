@@ -28,6 +28,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     allDistricts:false,
     distribution: null,
     localDownload: "N",
+    activityCode: null,
 
     batchRunTime: null,
     batchRunSchedule: null,
@@ -78,6 +79,12 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
       console.log("R2")
       this.blankTranscriptDetails = [];
     },
+    async setGroup(payload){
+      this.who = payload;
+    },
+    async setActivityCode(payload){
+      this.activityCode = payload;
+    }
   },
   getters: {
     getCredential: (state) => {
@@ -103,9 +110,19 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         return [];
       }
     },
+    getDistribution: (state) => state.distribution,
+    getCopies: (state) => state.copies,
     getBatchRunTime: (state) => state.batchRunTime,
+    getActivityCode:(state) => state.activityCode,
     getLocalDownload: (state) => state.distribution == "Download"?"Y":"N", 
     getBatchRequestCrontime: (state) => {
+      console.log("getting crontime")
+      console.log(state.batchRunTime)
+      console.log(state.batchRunSchedule)
+      
+      console.log(state.batchRunCustomDate)
+      console.log(state.batchRunCustomTime)
+
    
         if (state.batchRunSchedule == "N") {
           let today = new Date();
@@ -136,20 +153,26 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
             " *"
           );
         } else if (state.batchRunSchedule == "Custom") {
+          console.log("GETTING CUSTOM");
+        
+          // Extract the date part and construct a new date-time string with the custom time
+          let customDate = new Date(state.batchRunCustomDate);
+          let customTime = state.batchRunCustomTime + ":00"; // Append seconds to the time to match format
+        
+          console.log(customDate)
+          console.log(customTime)
+          // Combine the date and custom time into a new Date object
           let dateTime = new Date(
-            state.batchRunCustomDate + "T" + state.batchRunCustomTime
+            customDate.toISOString().split("T")[0] + "T" + customTime
           );
+        
           return (
-            dateTime.getSeconds() +
-            " " +
-            dateTime.getMinutes() +
-            " " +
-            dateTime.getHours() +
-            " " +
-            dateTime.getDate() +
-            " " +
-            (dateTime.getMonth() + 1) +
-            " *"
+            dateTime.getSeconds() +        // Seconds
+            " " + dateTime.getMinutes() +  // Minutes
+            " " + dateTime.getHours() +    // Hours
+            " " + dateTime.getDate() +     // Day of the month
+            " " + (dateTime.getMonth() + 1) + // Month (0-based in JS, hence +1)
+            " *"                           // Wildcard for "day of the week"
           );
         } else {
           return null;
@@ -161,9 +184,27 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     getUserDistributionAddress: (state) =>{
       return MinistryAddress
     },
+    getFormattedGradDateFrom: (state) => {
+      if(state.gradDateFrom){
+      const date = new Date(state.gradDateFrom);
+      return date.toISOString().split('T')[0];
+      }else {
+        return null;
+      }
+    },
+    getFormattedGradDateTo: (state) => {
+      if(state.gradDateTo){
+        const date = new Date(state.gradDateTo);
+        return date.toISOString().split('T')[0];
+      }else{
+        return null;
+      }
+      
+    },
 
     
     getBatchRequest: (state) => {
+      
       let request = {
         runtype: state.runType,
         pens: state.who === "Student" ? state.students.map(student => student.pen) : [],
@@ -173,23 +214,25 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         psiCodes: state.who === "Psi" ? state.psi.map(postSecondaryInstitution => postSecondaryInstitution.psi) : [],
         schoolCategoryCodes: state.categoryCode,
         validateInputs: false,
-
+        activityCode: state.activityCode,
         // gradDateFrom and gradDateTo are empty if "Current Students" is selected
-        gradDateFrom: state.gradDateFrom,
-        gradDateTo: state.gradDateTo,
+        gradDateFrom: state.getFormattedGradDateFrom,
+        gradDateTo: state.getFormattedGradDateTo,
 
         // Include credentialTypeCode based on the credential selected
         ...(state.credential === "Blank certificate print" ? { credentialTypeCode: state.blankCertificateDetails } : {}),
         ...(state.credential === "Blank transcript print" ? { credentialTypeCode: state.blankTranscriptDetails } : {}),
 
         // User distribution run with specific conditions
-        ...(state.runType === "DISTRUNUSER" ? {
+        quantity: state.copies,
             // Check distribution method
-            localDownload: state.getLocalDownload,
-            quantity: state.copies,
-            user: "Shaun2",
-            address: state.getUserDistributionAddress,
-        } : {}),
+           
+          ...(state.distribution === "Download" ? { localDownload: state.getLocalDownload } : {}),
+          ...(state.distribution === "User" ? {   user: "",
+            address: state.getUserDistributionAddress, } : {}),
+
+          
+        
       };
       return request
     },   

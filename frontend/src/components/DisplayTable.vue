@@ -67,11 +67,6 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-pagination
-        v-model="currentPage"
-        :length="Math.ceil(totalRows / perPage)"
-        total-visible="7"
-      ></v-pagination>
     </v-row>
 
     <v-dialog v-model="infoModal.show" max-width="600">

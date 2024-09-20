@@ -1,15 +1,15 @@
 <template>
-  <div class="container">
-    <h3>Batch Processing</h3>
+  <div class="batch-processing-view">
+    <h1>Batch Processing</h1>
     <div>
       <v-btn
         class="position-absolute"
-        style="z-index: 10; right: 0; margin-top: 10px; margin-right: 30px"
-        color="info"
+        style="z-index: 10; right: 0; margin-right: 40px"
+        color="primary"
         small
         @click="updateDashboards"
       >
-        <v-icon left> mdi-sync-alt </v-icon>
+        <v-icon color="white" icon="mdi-refresh" size="large"></v-icon>
         Update
       </v-btn>
 
@@ -42,177 +42,173 @@
         </v-tabs-window-item>
 
         <v-tabs-window-item value="scheduledRuns">
-          <v-container>
-            <v-row v-if="!scheduledJobs.length">
-              <v-col> No Scheduled Jobs </v-col>
-            </v-row>
-            <v-row v-else>
-              <v-col> <ScheduledBatchRuns></ScheduledBatchRuns></v-col>
-            </v-row>
-          </v-container>
+          <v-row v-if="!scheduledJobs.length">
+            <v-col> No Scheduled Jobs </v-col>
+          </v-row>
+          <v-row v-else>
+            <v-col> <ScheduledBatchRuns></ScheduledBatchRuns></v-col>
+          </v-row>
         </v-tabs-window-item>
 
         <v-tabs-window-item value="batchRoutines">
           <BatchRoutines></BatchRoutines>
         </v-tabs-window-item>
         <v-tabs-window-item value="newBatchRequest">
-          <v-container>
-            <v-row>
-              <v-col justify-md="start">
-                <h3>GRAD and TVR</h3>
-                <v-data-table
-                  :items="batchRunGradOptions"
-                  :headers="batchFields"
-                  items-per-page="-1"
-                  :disable-pagination="true"
-                  hide-default-header
-                  hide-default-footer
-                  :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
-                  class="pb-3"
-                >
-                  <template v-slot:item.description="{ item }">
-                    <strong>{{ item.label }} </strong>
-                    <br />
-                    {{ item.description }}
-                  </template>
-                  <template v-slot:item.newRequest="{ item }">
-                    <GraduationAlgorithmForm
-                      v-if="item.code == 'REGALG'"
-                    ></GraduationAlgorithmForm
-                    ><TranscriptAlgorithmForm
-                      v-else-if="item.code == 'TVRRUN'"
-                    ></TranscriptAlgorithmForm>
-                    <v-btn v-else :disabled="true">+ </v-btn>
-                  </template>
-                </v-data-table>
-              </v-col>
-              <v-col sm="12" md="4">
-                <h3>Credentials</h3>
-                <label>User Requests</label>
-                <v-data-table
-                  :items="credentialBatchRunOptions.userRequests"
-                  :headers="batchFields"
-                  items-per-page="-1"
-                  hide-default-header
-                  hide-default-footer
-                  :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
-                  class="pb-3"
-                >
-                </v-data-table>
-                <v-table>
-                  <tbody>
-                    <tr>
-                      <td class="pl-3">Blank certificate print</td>
-                      <td>
-                        <Form
-                          credentialSelected="Blank certificate print"
-                        ></Form>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Reprint certificate – no principal signature block
-                      </td>
-                      <td>
-                        <Form credentialSelected="RC"></Form>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Original certificate – with principal signature block
-                      </td>
-                      <td>
-                        <Form credentialSelected="OC"></Form>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Blank transcript print</td>
-                      <td>
-                        <Form
-                          credentialSelected="Blank transcript print"
-                        ></Form>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Transcript</td>
-                      <td>
-                        <Form credentialSelected="OT"></Form>
-                      </td>
-                    </tr>
-                  </tbody>
-                </v-table>
-                <label>Regeneration</label>
-                <v-data-table
-                  :items="credentialBatchRunOptions.regenerationRequests"
-                  :headers="batchFields"
-                  items-per-page="-1"
-                  :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
-                  hide-default-header
-                  hide-default-footer
-                  class="pb-3"
-                >
-                  <template v-slot:item.description="{ item }">
-                    <strong> {{ item.label }} </strong>
-                    <br />
-                    {{ item.description }}
-                  </template>
-                  <template v-slot:item.newRequest="{ item }">
-                    <RegenerateCertificateForm
-                      v-if="item.code == 'CERT_REGEN'"
-                    ></RegenerateCertificateForm>
-                    <v-btn v-else :disabled="item.disabled">+ </v-btn>
-                  </template>
-                </v-data-table>
-                <label>PSI Requests</label>
-                <v-data-table
-                  :items="credentialBatchRunOptions.PSIRequests"
-                  :headers="batchFields"
-                  items-per-page="-1"
-                  :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
-                  class="pb-3"
-                  hide-default-header
-                  hide-default-footer
-                >
-                  <template v-slot:item.description="{ item }">
-                    <strong> {{ item.label }} </strong>
-                    <br />
-                    {{ item.description }}
-                  </template>
-                  <template v-slot:item.newRequest="{ item }">
-                    <PSIForm></PSIForm>
-                  </template>
-                </v-data-table>
-              </v-col>
-              <v-col sm="12" md="4">
-                <h3>Year-End Administration</h3>
-                <v-data-table
-                  :items="credentialBatchRunOptions.yearEndBatchRunOptions"
-                  :headers="batchFields"
-                  items-per-page="-1"
-                  :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
-                  class="pb-3"
-                  hide-default-header
-                  hide-default-footer
-                >
-                  <template v-slot:item.description="{ item }">
-                    <strong>{{ item.label }}</strong>
-                    <br />
-                    {{ item.description }}
-                  </template>
-                  <template v-slot:item.newRequest="{ item }">
-                    <DistrunFormYearEnd
-                      v-if="item.code == 'DISTRUN_YE'"
-                    ></DistrunFormYearEnd>
-                    <ArchiveStudentsForm
-                      v-if="item.code == 'ARC_STUDENTS'"
-                    ></ArchiveStudentsForm>
-                    <ArchiveSchoolReportsForm
-                      v-if="item.code == 'ARC_SCH_REPORTS'"
-                    ></ArchiveSchoolReportsForm>
-                  </template>
-                </v-data-table> </v-col
-            ></v-row>
-          </v-container>
+          <v-row class="py-4">
+            <v-col justify-md="start">
+              <h4>GRAD and TVR</h4>
+              <v-data-table
+                :items="batchRunGradOptions"
+                :headers="batchFields"
+                items-per-page="-1"
+                :disable-pagination="true"
+                hide-default-header
+                hide-default-footer
+                :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                class="pb-3"
+              >
+                <template v-slot:item.description="{ item }">
+                  <strong>{{ item.label }} </strong>
+                  <br />
+                  {{ item.description }}
+                </template>
+                <template v-slot:item.newRequest="{ item }">
+                  <GraduationAlgorithmForm
+                    v-if="item.code == 'REGALG'"
+                  ></GraduationAlgorithmForm
+                  ><TranscriptAlgorithmForm
+                    v-else-if="item.code == 'TVRRUN'"
+                  ></TranscriptAlgorithmForm>
+                  <v-btn v-else :disabled="true">+ </v-btn>
+                </template>
+              </v-data-table>
+            </v-col>
+            <v-col sm="12" md="4">
+              <label>User Requests</label>
+              <v-data-table
+                :items="credentialBatchRunOptions.userRequests"
+                :headers="batchFields"
+                items-per-page="-1"
+                hide-default-header
+                hide-default-footer
+                :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                class="pb-3"
+              >
+              </v-data-table>
+              <v-table>
+                <tbody>
+                  <tr>
+                    <td class="pl-3">Blank certificate print</td>
+                    <td>
+                      <DistrunForm
+                        credentialSelected="Blank certificate print"
+                      ></DistrunForm>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Reprint certificate – no principal signature block</td>
+                    <td>
+                      <DistrunForm credentialSelected="RC"></DistrunForm>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      Original certificate – with principal signature block
+                    </td>
+                    <td>
+                      <DistrunForm credentialSelected="OC"></DistrunForm>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Blank transcript print</td>
+                    <td>
+                      <DistrunForm
+                        credentialSelected="Blank transcript print"
+                      ></DistrunForm>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Transcript</td>
+                    <td>
+                      <DistrunForm credentialSelected="OT"></DistrunForm>
+                    </td>
+                  </tr>
+                </tbody>
+              </v-table>
+              <label>Regeneration</label>
+              <v-data-table
+                :items="credentialBatchRunOptions.regenerationRequests"
+                :headers="batchFields"
+                items-per-page="-1"
+                :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                hide-default-header
+                hide-default-footer
+                class="pb-3"
+              >
+                <template v-slot:item.description="{ item }">
+                  <strong> {{ item.label }} </strong>
+                  <br />
+                  {{ item.description }}
+                </template>
+                <template v-slot:item.newRequest="{ item }">
+                  <RegenerateCertificateForm
+                    v-if="item.code == 'CERT_REGEN'"
+                  ></RegenerateCertificateForm>
+                  <v-btn v-else :disabled="item.disabled">+ </v-btn>
+                </template>
+              </v-data-table>
+              <label>PSI Requests</label>
+              <v-data-table
+                :items="credentialBatchRunOptions.PSIRequests"
+                :headers="batchFields"
+                items-per-page="-1"
+                :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                class="pb-3"
+                hide-default-header
+                hide-default-footer
+              >
+                <template v-slot:item.description="{ item }">
+                  <strong> {{ item.label }} </strong>
+                  <br />
+                  {{ item.description }}
+                </template>
+                <template v-slot:item.newRequest="{ item }">
+                  <PSIForm></PSIForm>
+                </template>
+              </v-data-table>
+            </v-col>
+            <v-col sm="12" md="4">
+              <h4>Year-End Administration</h4>
+              <v-data-table
+                :items="credentialBatchRunOptions.yearEndBatchRunOptions"
+                :headers="batchFields"
+                items-per-page="-1"
+                :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
+                class="pb-3"
+                hide-default-header
+                hide-default-footer
+              >
+                <template v-slot:item.description="{ item }">
+                  <strong>{{ item.label }}</strong>
+                  <br />
+                  {{ item.description }}
+                </template>
+                <template v-slot:item.newRequest="{ item }">
+                  <DistrunFormYearEnd
+                    v-if="item.code == 'DISTRUN_YE'"
+                  ></DistrunFormYearEnd>
+                  <ArchiveStudentsForm
+                    v-if="item.code == 'ARC_STUDENTS'"
+                  ></ArchiveStudentsForm>
+                  <ArchiveSchoolReportsForm
+                    v-if="item.code == 'ARC_SCH_REPORTS'"
+                  ></ArchiveSchoolReportsForm>
+                  <TranscriptAlgorithmDeleteForm
+                    v-if="item.code == 'TVR_DELETE'"
+                  ></TranscriptAlgorithmDeleteForm>
+                </template>
+              </v-data-table> </v-col
+          ></v-row>
         </v-tabs-window-item>
       </v-tabs-window>
     </div>
@@ -226,11 +222,13 @@ import BatchProcessingService from "@/services/BatchProcessingService.js";
 import DistributionService from "@/services/DistributionService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 import ScheduledBatchRuns from "@/components/Batch/ScheduledBatchRuns.vue";
-import Form from "@/components/Batch/Forms/Form.vue";
+import DistrunForm from "@/components/Batch/Forms/DistrunForm.vue";
 import RegenerateCertificateForm from "@/components/Batch/Forms/RegenerateCertificateForm.vue";
 import GraduationAlgorithmForm from "@/components/Batch/Forms/GraduationAlgorithmForm.vue";
 import TranscriptAlgorithmForm from "@/components/Batch/Forms/TranscriptAlgorithmForm.vue";
 import DistrunFormYearEnd from "@/components/Batch/Forms/DistrunFormYearEndForm.vue";
+
+import TranscriptAlgorithmDeleteForm from "@/components/Batch/Forms/TranscriptAlgorithmDeleteForm.vue";
 import ArchiveStudentsForm from "@/components/Batch/Forms/ArchiveStudentsForm.vue";
 import ArchiveSchoolReportsForm from "@/components/Batch/Forms/ArchiveSchoolReportsForm.vue";
 import PSIForm from "@/components/Batch/Forms/PSIForm.vue";
@@ -290,7 +288,7 @@ export default {
     },
   },
   components: {
-    Form: Form,
+    DistrunForm: DistrunForm,
     DisplayTable: DisplayTable,
     BatchRuns: BatchRuns,
     BatchRoutines: BatchRoutines,
@@ -302,6 +300,7 @@ export default {
     ArchiveStudentsForm: ArchiveStudentsForm,
     ArchiveSchoolReportsForm: ArchiveSchoolReportsForm,
     PSIForm: PSIForm,
+    TranscriptAlgorithmDeleteForm: TranscriptAlgorithmDeleteForm,
   },
   data() {
     return {
@@ -396,6 +395,7 @@ export default {
             "ARC_STUDENTS",
             "ARC_SCH_REPORTS",
             "DISTRUN_YE",
+            "TVR_DELETE",
           ]);
 
         this.distributionBatchRunOptions = this.filterBatchTypes(
@@ -1253,6 +1253,10 @@ export default {
 };
 </script>
 <style scoped>
+.batch-processing-view {
+  padding-left: 25px;
+  padding-right: 25px;
+}
 .downloadIcon {
   min-width: 25px;
   margin-left: 5px;
@@ -1275,7 +1279,6 @@ h6 {
 .v-container {
   max-width: 100%;
 }
-
 label {
   font-weight: bold;
   border-bottom: 1px solid;
