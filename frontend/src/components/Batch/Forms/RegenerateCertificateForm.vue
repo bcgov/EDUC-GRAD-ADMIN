@@ -120,31 +120,6 @@
             Submit
           </v-btn>
         </v-card-actions>
-        {{ activeTab }}
-        STORE - GETBATCHREQUEST
-        {{ getBatchRequest }}
-
-        <br />
-        <br />
-        GRAD FORM VALIDATIONS V$
-        {{ v$.getBatchRequest }}
-        <br />
-        <br />
-        RUN SCHEDULE COMPONENT VALIDATIONS
-        {{ v$.RunLaterScheduleSet }}
-        <br />
-        <br />
-
-        ALL VAIDATIONS V$
-        {{ v$ }}
-        <br />
-        <br />
-        BATCH RUN TIME {{ batchRunTime }}
-        {{ v$.batchRunTime }}
-
-        <p v-for="error of v$.$errors" :key="error.$uid">
-          {{ error.$message }}
-        </p>
       </v-card>
     </v-dialog>
   </v-row>
@@ -215,7 +190,6 @@ export default {
                 ["Student", "School Category", "All"].includes(this.group)
               ) {
                 if (this.group === "Student") {
-                  console.log(this.getBatchRequest.students);
                   isValid =
                     this.getBatchRequest.pens &&
                     this.getBatchRequest.pens.length > 0;
@@ -276,7 +250,6 @@ export default {
     },
     async submit() {
       try {
-        console.log(this.getBatchRequestCrontime);
         let response = await BatchProcessingService.runREGALG(
           this.getBatchRequest,
           this.getBatchRequestCrontime

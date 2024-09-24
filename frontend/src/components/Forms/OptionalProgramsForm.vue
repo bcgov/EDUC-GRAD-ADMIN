@@ -90,13 +90,7 @@ export default {
         if (item.expiryDate) {
           expiryDateUTC = new Date(item.expiryDate).toISOString().split("T")[0];
         }
-        console.log(
-          effectiveDateUTC <= currentDate &&
-            (expiryDateUTC == null || currentDate <= expiryDateUTC)
-        );
-        console.log(effectiveDateUTC);
-        console.log(currentDate);
-        console.log(expiryDateUTC);
+
         return (
           item.graduationProgramCode === studentProgramId &&
           effectiveDateUTC <= currentDate &&

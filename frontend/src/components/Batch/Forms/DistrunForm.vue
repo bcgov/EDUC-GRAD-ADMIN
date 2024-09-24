@@ -252,7 +252,6 @@ export default {
     const batchRequestFormStore = useBatchRequestFormStore();
     const notifications = ref(null);
     const activeTab = ref(batchProcessingStore.activeTab);
-    console.log("open modal");
     watch(activeTab, (newValue) => {
       batchProcessingStore.activeTab = newValue;
     });

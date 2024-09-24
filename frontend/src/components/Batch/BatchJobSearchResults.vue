@@ -127,17 +127,12 @@ export default {
   },
   methods: {
     loadItems({ page, itemsPerPage, sortBy }) {
-      console.log("LOADINGITEMS");
-      console.log(page);
-      console.log(itemsPerPage);
-      console.log(sortBy);
       this.batchLoading = true;
       StudentService.getBatchHistory(this.selectedBatchId, page - 1)
         .then((response) => {
           this.batchData = response.data.content;
           this.totalElements = response.data.totalElements;
           this.batchLoading = false;
-          console.log(this.totalElements);
         })
         .catch((error) => {
           if (error.response.status) {

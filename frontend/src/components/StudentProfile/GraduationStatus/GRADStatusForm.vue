@@ -1199,8 +1199,6 @@ export default {
           this.showNotification("success", "GRAD Status Saved");
         })
         .catch((error) => {
-          //eslint-disable-next-line
-          console.log(error);
           if (this.editedGradStatus.programCompletionDate != null) {
             this.editedGradStatus.programCompletionDate =
               this.editedGradStatus.programCompletionDate
