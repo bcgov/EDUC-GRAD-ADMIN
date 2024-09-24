@@ -1,26 +1,27 @@
 <template>
   <div>
-    <div class="table-responsive">
-      <div v-if="!courses" class="container">
-        This student does not have any courses.
-      </div>
-      <DisplayTable
-        v-if="courses"
-        :items="courses"
-        :fields="fields"
-        :id="id"
-        showFilter="true"
-        title="studentCourse"
-        :delete="{
-          disable: {
-            condition: 'OR',
-            criteria: [],
-          },
-          label: 'Delete',
-          action: 'removeStudentCourse',
-        }"
-      >
-        <!-- <template #thead-top="">
+    <v-card>
+      <v-card-text>
+        <div v-if="!courses" class="container">
+          This student does not have any courses.
+        </div>
+        <DisplayTable
+          v-if="courses"
+          :items="courses"
+          :fields="fields"
+          :id="id"
+          showFilter="true"
+          title="studentCourse"
+          :delete="{
+            disable: {
+              condition: 'OR',
+              criteria: [],
+            },
+            label: 'Delete',
+            action: 'removeStudentCourse',
+          }"
+        >
+          <!-- <template #thead-top="">
           <b-tr class="table-row-header-group top-row">
             <b-th colspan="1" class="table-header-group text-center"></b-th>
             <b-th colspan="3" class="table-header-group text-center">
@@ -37,149 +38,152 @@
             <b-th colspan="1">Fa</b-th>
           </b-tr>
         </template> -->
-        <!-- <template #cell(sessionDate)="row">
+          <!-- <template #cell(sessionDate)="row">
           {{ $filters.formatYYYYMMDate(row.value) }}
         </template> -->
-        <template v-slot:item.courseName="{ item }">
-          <v-dialog max-width="500">
-            <template v-slot:activator="{ props: activatorProps }">
-              <v-dialog max-width="500">
-                <template v-slot:activator="{ props: activatorProps }">
-                  <v-btn
-                    v-bind="activatorProps"
-                    color="surface-variant"
-                    :text="item.courseName"
-                    variant="flat"
-                  ></v-btn>
-                </template>
+          <template v-slot:item.courseName="{ item }">
+            <v-dialog max-width="500">
+              <template v-slot:activator="{ props: activatorProps }">
+                <v-dialog max-width="500">
+                  <template v-slot:activator="{ props: activatorProps }">
+                    <v-btn
+                      v-bind="activatorProps"
+                      color="surface-variant"
+                      :text="item.courseName"
+                      variant="flat"
+                    ></v-btn>
+                  </template>
 
-                <template v-slot:default="{ isActive }">
-                  <v-card :title="item.courseName">
-                    <v-card-text>
-                      <div class="row py-1">
-                        <div class="col">
-                          <strong>Instruction Language:</strong>
+                  <template v-slot:default="{ isActive }">
+                    <v-card :title="item.courseName">
+                      <v-card-text>
+                        <div class="row py-1">
+                          <div class="col">
+                            <strong>Instruction Language:</strong>
+                          </div>
+                          <div class="col">
+                            {{ item.courseDetails.language }}
+                          </div>
                         </div>
-                        <div class="col">
-                          {{ item.courseDetails.language }}
+                        <div class="row py-1">
+                          <div class="col"><strong>Start Date:</strong></div>
+                          <div class="col">
+                            {{
+                              $filters.formatSimpleDate(
+                                item.courseDetails.startDate
+                              )
+                            }}
+                          </div>
                         </div>
-                      </div>
-                      <div class="row py-1">
-                        <div class="col"><strong>Start Date:</strong></div>
-                        <div class="col">
-                          {{
-                            $filters.formatSimpleDate(
-                              item.courseDetails.startDate
-                            )
-                          }}
+                        <div class="row py-1">
+                          <div class="col"><strong>End Date:</strong></div>
+                          <div class="col">
+                            {{
+                              $filters.formatSimpleDate(
+                                item.courseDetails.endDate
+                              )
+                            }}
+                          </div>
                         </div>
-                      </div>
-                      <div class="row py-1">
-                        <div class="col"><strong>End Date:</strong></div>
-                        <div class="col">
-                          {{
-                            $filters.formatSimpleDate(
-                              item.courseDetails.endDate
-                            )
-                          }}
+                        <div class="row py-1">
+                          <div class="col"><strong>Credits:</strong></div>
+                          <div class="col">
+                            {{ item.courseDetails.numCredits }}
+                          </div>
                         </div>
-                      </div>
-                      <div class="row py-1">
-                        <div class="col"><strong>Credits:</strong></div>
-                        <div class="col">
-                          {{ item.courseDetails.numCredits }}
+                        <div class="row py-1">
+                          <div class="col">
+                            <strong>Work Experience:</strong>
+                          </div>
+                          <div class="col">
+                            {{ item.courseDetails.workExpFlag }}
+                          </div>
                         </div>
-                      </div>
-                      <div class="row py-1">
-                        <div class="col"><strong>Work Experience:</strong></div>
-                        <div class="col">
-                          {{ item.courseDetails.workExpFlag }}
+                        <div class="row py-1">
+                          <div class="col">
+                            <strong>Generic Course Type:</strong>
+                          </div>
+                          <div class="col">
+                            {{ item.courseDetails.genericCourseType }}
+                          </div>
                         </div>
-                      </div>
-                      <div class="row py-1">
-                        <div class="col">
-                          <strong>Generic Course Type:</strong>
-                        </div>
-                        <div class="col">
-                          {{ item.courseDetails.genericCourseType }}
-                        </div>
-                      </div>
-                    </v-card-text>
+                      </v-card-text>
 
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
 
-                      <v-btn
-                        text="Close Dialog"
-                        @click="isActive.value = false"
-                      ></v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </template>
-              </v-dialog>
-            </template>
+                        <v-btn
+                          text="Close Dialog"
+                          @click="isActive.value = false"
+                        ></v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </template>
+                </v-dialog>
+              </template>
 
-            <template v-slot:default="{ isActive }">
-              <v-card title="Dialog">
-                <v-card-text> </v-card-text>
+              <template v-slot:default="{ isActive }">
+                <v-card title="Dialog">
+                  <v-card-text> </v-card-text>
 
-                <v-card-actions>
-                  <v-spacer></v-spacer>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
 
-                  <v-btn
-                    text="Close Dialog"
-                    @click="isActive.value = false"
-                  ></v-btn>
-                </v-card-actions>
-              </v-card>
-            </template>
-          </v-dialog>
-        </template>
-        <template v-slot:expanded-row="{ columns, item }">
-          <tr>
-            <td :colspan="columns.length">
-              <ul v-if="item.hasRelatedCourse">
-                <li v-if="item.customizedCourseName">
-                  <strong>Customized Course Title:</strong>
-                  {{ item.customizedCourseName }}
-                </li>
-                <li v-if="item.relatedCourse">
-                  <strong>Related Course:</strong>
-                  {{ item.relatedCourse }}
-                </li>
-                <li v-if="item.relatedLevel">
-                  <strong>Related Course Level:</strong>
-                  {{ item.relatedLevel }}
-                </li>
-                <li v-if="item.relatedCourseName">
-                  <strong>Related Course Name:</strong>
-                  {{ item.relatedCourseName }}
-                </li>
-                <li v-if="item.alternateCourseName">
-                  <strong>Alternate Course Name:</strong>
-                  {{ item.alternateCourseName }}
-                </li>
-                <li v-if="item.bestSchoolPercent">
-                  <strong>Best School Percent:</strong>
-                  {{ item.bestSchoolPercent }}
-                </li>
-                <li v-if="item.bestExamPercent">
-                  <strong>Best Exam Percent:</strong>
-                  {{ item.bestExamPercent }}
-                </li>
-                <li v-if="item.metLitNumRequirement">
-                  <strong>Assessment Equivalent:</strong>
-                  {{ item.metLitNumRequirement }}
-                </li>
-                <li v-if="item.specialCase">
-                  <strong>Special Case:</strong> {{ item.specialCase }}
-                </li>
-              </ul>
-            </td>
-          </tr>
-        </template>
-      </DisplayTable>
-    </div>
+                    <v-btn
+                      text="Close Dialog"
+                      @click="isActive.value = false"
+                    ></v-btn>
+                  </v-card-actions>
+                </v-card>
+              </template>
+            </v-dialog>
+          </template>
+          <template v-slot:expanded-row="{ columns, item }">
+            <tr>
+              <td :colspan="columns.length">
+                <ul v-if="item.hasRelatedCourse">
+                  <li v-if="item.customizedCourseName">
+                    <strong>Customized Course Title:</strong>
+                    {{ item.customizedCourseName }}
+                  </li>
+                  <li v-if="item.relatedCourse">
+                    <strong>Related Course:</strong>
+                    {{ item.relatedCourse }}
+                  </li>
+                  <li v-if="item.relatedLevel">
+                    <strong>Related Course Level:</strong>
+                    {{ item.relatedLevel }}
+                  </li>
+                  <li v-if="item.relatedCourseName">
+                    <strong>Related Course Name:</strong>
+                    {{ item.relatedCourseName }}
+                  </li>
+                  <li v-if="item.alternateCourseName">
+                    <strong>Alternate Course Name:</strong>
+                    {{ item.alternateCourseName }}
+                  </li>
+                  <li v-if="item.bestSchoolPercent">
+                    <strong>Best School Percent:</strong>
+                    {{ item.bestSchoolPercent }}
+                  </li>
+                  <li v-if="item.bestExamPercent">
+                    <strong>Best Exam Percent:</strong>
+                    {{ item.bestExamPercent }}
+                  </li>
+                  <li v-if="item.metLitNumRequirement">
+                    <strong>Assessment Equivalent:</strong>
+                    {{ item.metLitNumRequirement }}
+                  </li>
+                  <li v-if="item.specialCase">
+                    <strong>Special Case:</strong> {{ item.specialCase }}
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </template>
+        </DisplayTable>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 

@@ -2,7 +2,6 @@
   <v-container>
     <v-row>
       <v-col cols="12" sm="6" md="4">
-        {{ copies }}
         <v-text-field
           v-model="copies"
           label="Copies"
@@ -12,10 +11,15 @@
       </v-col>
 
       <v-col cols="12" sm="6" md="4">
-        {{ distribution }}
         <v-select
           v-model="distribution"
-          :items="['Download', 'BC Mail', 'User']"
+          :items="[
+            'BC Mail',
+            'Download',
+            { title: 'User: ' + userFullName, value: 'User' },
+          ]"
+          item-title="title"
+          item-value="value"
           label="Select Option"
           require
         ></v-select>
@@ -25,6 +29,18 @@
         <template #bottom></template>
       </v-col>
     </v-row>
+    <v-card v-if="distribution === 'User'" class="mt-4" title="Mailing Address">
+      <v-card-text>
+        <strong>{{ userFullName }}</strong
+        ><br />
+        {{ getUserDistributionAddress.streetLine1 }}<br />
+        {{ getUserDistributionAddress.streetLine2 }}<br />
+        {{ getUserDistributionAddress.city }}<br />
+        {{ getUserDistributionAddress.region }}<br />
+        {{ getUserDistributionAddress.country }}<br />
+        {{ getUserDistributionAddress.code }}<br />
+      </v-card-text>
+    </v-card>
   </v-container>
 </template>
 <script>
@@ -33,6 +49,8 @@ import SchoolService from "@/services/SchoolService.js";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
+import { useAuthStore } from "../../../../store/modules/auth";
+
 import { mapActions, mapState } from "pinia";
 
 export default {
@@ -81,31 +99,7 @@ export default {
   },
 
   validations() {
-    return {
-      batchRunTime: {
-        required: helpers.withMessage("This field cannot be empty", required),
-        RunLaterScheduleSet: helpers.withMessage(
-          "Schedule date and time not set",
-          (value) => {
-            if (value == "Run Later") {
-              if (this.batchRunSchedule) {
-                return true;
-              } else return false;
-            } else return true;
-          }
-        ),
-        batchRunSchedule: helpers.withMessage(
-          "Set a Custom Date and time",
-          (value) => {
-            if (this.batchRunSchedule == "Custom") {
-              if (this.batchRunCustomDate) {
-                return true;
-              } else return false;
-            } else return true;
-          }
-        ),
-      },
-    };
+    return {};
   },
   data() {
     return {};
@@ -178,7 +172,9 @@ export default {
       "getBatchRunCustomDate",
       "getbatchRunCustomTime",
       "getGroup",
+      "getUserDistributionAddress",
     ]),
+    ...mapState(useAuthStore, ["userFullName"]),
     isEmpty() {
       return this.students.length > 0;
     },

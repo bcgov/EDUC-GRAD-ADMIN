@@ -1,11 +1,11 @@
 <template>
   <v-snackbar
-    v-model="isVisible"
-    :timeout="timeout"
-    :color="color"
+    v-model="snackbarStore.isVisible"
+    :timeout="snackbarStore.timeout"
+    :color="snackbarStore.color"
     location="top right"
   >
-    {{ message }}
+    {{ snackbarStore.message }}
     <template v-slot:action>
       <v-btn color="white" text @click="close">Close</v-btn>
     </template>
@@ -13,41 +13,14 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { useSnackbarStore } from "../../store/modules/snackbar";
 
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    required: true,
-  },
-  message: {
-    type: String,
-    required: true,
-  },
-  color: {
-    type: String,
-    default: "success",
-  },
-  timeout: {
-    type: Number,
-    default: 5000,
-  },
-});
+// Using the snackbar store
+const snackbarStore = useSnackbarStore();
 
-const emit = defineEmits(["update:modelValue"]);
-
-const isVisible = ref(props.modelValue);
-
-watch(
-  () => props.modelValue,
-  (newValue) => {
-    isVisible.value = newValue;
-  }
-);
-
+// Close function to hide the snackbar
 const close = () => {
-  isVisible.value = false;
-  emit("update:modelValue", false);
+  snackbarStore.isVisible = false;
 };
 </script>
 

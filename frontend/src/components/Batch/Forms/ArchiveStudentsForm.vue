@@ -2,7 +2,9 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"> + </v-btn>
+        <v-btn color="primary" v-bind="props">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
       </template>
       <v-card>
         <v-card-title>
@@ -14,7 +16,10 @@
               <template v-slot:default="{ prev, next }">
                 <v-stepper-header>
                   <v-stepper-item
-                    :rules="[() => false]"
+                    :rules="[
+                      () =>
+                        !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
+                    ]"
                     complete
                     editable
                     title="Group"
@@ -24,6 +29,9 @@
                   <v-divider></v-divider>
 
                   <v-stepper-item
+                    :rules="[
+                      () => !v$.getBatchRequest.batchRunTimeSet.$invalid,
+                    ]"
                     complete
                     editable
                     title="Run/Schedule"
@@ -167,8 +175,12 @@ export default {
     const group = ref(batchRequestFormStore.who);
     watch(group, (newValue) => {
       batchRequestFormStore.who = newValue;
+      if (newValue == "All Students") {
+        batchRequestFormStore.setActivityCode("All");
+      } else {
+        batchRequestFormStore.setActivityCode(null);
+      }
     });
-
     return {
       group,
       v$: useVuelidate(),
@@ -180,7 +192,13 @@ export default {
       getBatchRequest: {
         batchRunTimeSet: helpers.withMessage("Runtime not set", (value) => {
           if (this.getBatchRunTime) {
-            return true;
+            if (this.getBatchRunTime == "Run Now") {
+              return true;
+            } else if (this.getBatchRunTime == "Run Later") {
+              if (this.getBatchRequestCrontime) {
+                return true;
+              } else return false;
+            }
           } else return false;
         }),
         hasAtLeastOneGroupValue: helpers.withMessage(
@@ -201,8 +219,6 @@ export default {
                 } else {
                   isValid = true; // Return true if none of the above conditions matched
                 }
-                console.log(this.group);
-                console.log(isValid + " VALIDA");
                 return isValid;
               }
             } else {
@@ -225,6 +241,8 @@ export default {
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
+      "batchRunTimeSet",
+      "getBatchRequestCrontime",
     ]),
   },
   methods: {

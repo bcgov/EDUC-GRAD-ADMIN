@@ -5,7 +5,7 @@
         <div
           v-if="this.studentGradStatus.schoolAtGrad && !isCertificateEligible()"
         >
-          <v-alert type="info" class="p-3 mb-1 mx-3">
+          <v-alert type="info" class="">
             <h4 class="alert-heading">Ineligible for Ministry certificates</h4>
             <p class="locked-message">
               This student's school at graduation is ineligible for Ministry

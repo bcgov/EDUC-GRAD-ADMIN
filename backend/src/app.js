@@ -151,6 +151,7 @@ app.use(morgan(config.get('server:morganFormat'), { 'stream': logStream }));
 //set up routing to auth and main API
 app.use(/(\/api)?/, apiRouter);
 
+//v1 routes
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/v1/batch', batchRouter);
 apiRouter.use('/v1/distribute', distributionRouter);
@@ -159,6 +160,7 @@ apiRouter.use('/v1/course', coursesRouter);
 apiRouter.use('/v1/studentgraduation', studentGraduationRouter);
 apiRouter.use('/v1/assessment', assessmentsRouter);
 apiRouter.use('/v1/trax', TRAXRouter);
+apiRouter.use('/v2/trax', TRAXRouter);
 apiRouter.use('/v1/student', studentRouter);
 apiRouter.use('/v1/graduationreports', graduationReportsRouter);
 apiRouter.use('/v1/graduate', graduationRouter);
@@ -166,6 +168,7 @@ apiRouter.use('/v1/reports', reportsRouter);
 apiRouter.use('/v1/school', TRAXRouter);
 apiRouter.use('/v1/version', commonRouter);
 apiRouter.use('/v1/institute', instituteRouter);
+
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

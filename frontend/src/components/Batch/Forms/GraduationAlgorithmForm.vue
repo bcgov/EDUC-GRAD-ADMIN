@@ -2,7 +2,7 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"> + </v-btn>
+        <v-btn color="primary" v-bind="props"><v-icon>mdi-plus</v-icon></v-btn>
       </template>
       <v-card>
         <v-card-title>
@@ -14,7 +14,10 @@
               <template v-slot:default="{ prev, next }">
                 <v-stepper-header>
                   <v-stepper-item
-                    :rules="[() => false]"
+                    :rules="[
+                      () =>
+                        !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
+                    ]"
                     complete
                     editable
                     title="Group"
@@ -24,6 +27,9 @@
                   <v-divider></v-divider>
 
                   <v-stepper-item
+                    :rules="[
+                      () => !v$.getBatchRequest.batchRunTimeSet.$invalid,
+                    ]"
                     complete
                     editable
                     title="Run/Schedule"
@@ -47,7 +53,6 @@
                             'School',
                             'School Category',
                             'Program',
-                            'PSI',
                           ]"
                           label="Select a group"
                         ></v-select>
@@ -57,9 +62,6 @@
                       <StudentInput></StudentInput>
                     </v-row>
                     <v-row v-if="group == 'School Category'">
-                      <DistrictInput></DistrictInput>
-                    </v-row>
-                    <v-row v-if="group == 'PSI'">
                       <DistrictInput></DistrictInput>
                     </v-row>
                     <v-row v-if="group == 'Program'">
@@ -169,10 +171,13 @@ import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
 import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import Notifications from "@/components/Common/Notifications.vue";
+import Snackbar from "@/components/Common/Snackbar.vue";
+
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchProcessing";
+import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
   setup() {
@@ -204,10 +209,14 @@ export default {
     return {
       getBatchRequest: {
         batchRunTimeSet: helpers.withMessage("Runtime not set", (value) => {
-          console.log("VALIDATE" + this.getBatchRunTime);
           if (this.getBatchRunTime) {
-            console.log("VTRUE");
-            return true;
+            if (this.getBatchRunTime == "Run Now") {
+              return true;
+            } else if (this.getBatchRunTime == "Run Later") {
+              if (this.getBatchRequestCrontime) {
+                return true;
+              } else return false;
+            }
           } else return false;
         }),
         hasAtLeastOneGroupValue: helpers.withMessage(
@@ -217,13 +226,9 @@ export default {
               let isValid = false;
               if (
                 this.group &&
-                [
-                  "Student",
-                  "School",
-                  "School Category",
-                  "Program",
-                  "Psi",
-                ].includes(this.group)
+                ["Student", "School", "School Category", "Program"].includes(
+                  this.group
+                )
               ) {
                 if (this.group === "School") {
                   isValid =
@@ -249,8 +254,6 @@ export default {
                 } else {
                   isValid = true; // Return true if none of the above conditions matched
                 }
-                console.log(this.group);
-                console.log(isValid + " VALIDA");
                 return isValid;
               }
             } else {
@@ -268,10 +271,12 @@ export default {
     ProgramInput: ProgramInput,
     ScheduleInput: ScheduleInput,
     Notifications: Notifications,
+    Snackbar: Snackbar,
   },
   data: () => ({
     step: 0,
     dialog: false,
+    snackbarStore: useSnackbarStore(),
   }),
   computed: {
     ...mapState(useBatchRequestFormStore, [
@@ -299,17 +304,26 @@ export default {
     },
     async submit() {
       try {
-        console.log(this.getBatchRequestCrontime);
         let response = await BatchProcessingService.runREGALG(
           this.getBatchRequest,
           this.getBatchRequestCrontime
         );
         this.closeDialogAndResetForm();
+        this.snackbarStore.showSnackbar(
+          "Batch request submitted",
+          "success",
+          5000
+        );
         nextTick(() => {
           this.activeTab = "batchRuns";
         });
       } catch (error) {
         // handle the error and show the notification
+        this.snackbarStore.showSnackbar(
+          "Batch request submitted",
+          "success",
+          5000
+        );
         console.error("Error:", error);
         if (this.notifications) {
           this.notifications.show("An error occurred: " + error.message);

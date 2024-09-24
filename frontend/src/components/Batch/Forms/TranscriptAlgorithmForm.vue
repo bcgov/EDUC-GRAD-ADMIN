@@ -2,7 +2,9 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"> + </v-btn>
+        <v-btn color="primary" v-bind="props"
+          ><v-icon small>mdi-plus</v-icon></v-btn
+        >
       </template>
       <v-card>
         <v-card-title>
@@ -14,7 +16,10 @@
               <template v-slot:default="{ prev, next }">
                 <v-stepper-header>
                   <v-stepper-item
-                    :rules="[() => false]"
+                    :rules="[
+                      () =>
+                        !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
+                    ]"
                     complete
                     editable
                     title="Group"
@@ -24,6 +29,9 @@
                   <v-divider></v-divider>
 
                   <v-stepper-item
+                    :rules="[
+                      () => !v$.getBatchRequest.batchRunTimeSet.$invalid,
+                    ]"
                     complete
                     editable
                     title="Run/Schedule"
@@ -41,7 +49,6 @@
                           'School',
                           'School Category',
                           'Program',
-                          'PSI',
                         ]"
                         label="Select Option"
                       ></v-select>
@@ -50,9 +57,6 @@
                       <StudentInput></StudentInput>
                     </v-row>
                     <v-row v-if="group == 'School Category'">
-                      <DistrictInput></DistrictInput>
-                    </v-row>
-                    <v-row v-if="group == 'PSI'">
                       <DistrictInput></DistrictInput>
                     </v-row>
                     <v-row v-if="group == 'Program'">
@@ -181,10 +185,14 @@ export default {
     return {
       getBatchRequest: {
         batchRunTimeSet: helpers.withMessage("Runtime not set", (value) => {
-          console.log("VALIDATE" + this.getBatchRunTime);
           if (this.getBatchRunTime) {
-            console.log("VTRUE");
-            return true;
+            if (this.getBatchRunTime == "Run Now") {
+              return true;
+            } else if (this.getBatchRunTime == "Run Later") {
+              if (this.getBatchRequestCrontime) {
+                return true;
+              } else return false;
+            }
           } else return false;
         }),
         hasAtLeastOneGroupValue: helpers.withMessage(

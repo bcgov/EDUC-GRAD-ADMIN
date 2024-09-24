@@ -4,8 +4,21 @@
       <v-card-title>Include School Category</v-card-title>
       <v-card-text>
         <v-row>
-          <v-col>
-            {{ getDistricts }}
+          <v-col sm="6" lg="9">
+            <v-select
+              v-model="schoolCategory"
+              :items="schoolCategoryOptions"
+              item-title="title"
+              item-value="value"
+              label="Choose..."
+              class="my-2"
+              outlined
+            ></v-select>
+          </v-col>
+        </v-row>
+
+        <v-row v-if="schoolCategory !== '04' && schoolCategory !== '09'">
+          <v-col sm="6" lg="9">
             <v-autocomplete
               v-model="district"
               :items="getDistrictList"
@@ -14,10 +27,12 @@
               :item-title="districtTitle"
               item-value="districtNumber"
             ></v-autocomplete>
+          </v-col>
+          <v-col sm="6" lg="3">
             <v-btn
               :disabled="!district"
               @click="addDistrict()"
-              class="float-right"
+              class="float-left bg-primary"
               >Add District</v-btn
             >
           </v-col>
@@ -48,7 +63,7 @@
                     @click="addDistrict()"
                     :disabled="validationMessage !== ''"
                   >
-                    Add
+                    <v-icon>mdi-plus</v-icon>
                   </v-btn>
                 </v-card-actions>
               </v-card>
@@ -63,7 +78,11 @@
           striped
         >
           <template v-slot:item.remove="{ item }">
-            <v-btn @click="removeDistrict(item.district)" color="primary">
+            <v-btn
+              v-if="schoolCategory != '09' && schoolCategory != '04'"
+              @click="removeDistrict(item.district)"
+              color="primary"
+            >
               Remove
             </v-btn>
           </template>
@@ -153,6 +172,13 @@ export default {
   },
   data() {
     return {
+      schoolCategoryOptions: [
+        { title: "01 Public", value: "01" },
+        { title: "02 Independent", value: "02" },
+        { title: "03 Federally Operated Band School", value: "03" },
+        { title: "04 Yukon School", value: "04" },
+        { title: "09 Offshore", value: "09" },
+      ],
       district: "",
       districtInfo: "",
       districtValidating: false,
@@ -185,7 +211,7 @@ export default {
   methods: {
     districtTitle(item) {
       if (item) {
-        return `${item.districtNumber} - ${item.displayName}`;
+        return `${item.districtNumber} - ${item.districtName}`;
       } else {
         return null;
       }
@@ -212,7 +238,7 @@ export default {
       );
       this.districtInfo = {
         districtNumber: info.districtNumber,
-        districtName: info.displayName,
+        districtName: info.districtName,
         activeFlag: info.activeFlag,
       };
       this.districts.splice(0, 0, {

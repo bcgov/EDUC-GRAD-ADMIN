@@ -4,7 +4,6 @@
       <v-card-title>Include Student(s)</v-card-title>
       <v-card-text>
         <v-row>
-          {{ getStudents }}
           <v-col cols="12">
             <v-label>Personal Education Number</v-label>
             <v-text-field
