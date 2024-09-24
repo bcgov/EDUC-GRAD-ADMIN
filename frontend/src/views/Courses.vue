@@ -1,6 +1,11 @@
 <template>
   <div class="courses-all">
     <h1>Courses</h1>
+    <Snackbar
+      v-model="snackbarVisible"
+      :message="snackbarMessage"
+      color="error"
+    />
     <div>
       <v-card no-body>
         <v-tabs v-model="tab" bg-color="transparent" grow>
@@ -355,7 +360,7 @@
 </template>
 
 <script>
-import { showNotification } from "../utils/common.js";
+import Snackbar from "@/components/Common/Snackbar.vue";
 import CourseService from "@/services/CourseService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 import FineArtsAppliedSkillsCodes from "@/components/Courses/FineArtsAppliedSkillsCodes.vue";
@@ -364,13 +369,19 @@ import EquivalentOrChallengeCodes from "@/components/Courses/EquivalentOrChallen
 export default {
   name: "courses",
   components: {
+    Snackbar: Snackbar,
     DisplayTable: DisplayTable,
     FineArtsAppliedSkillsCodes: FineArtsAppliedSkillsCodes,
     ExamSpecialCaseCodes: ExamSpecialCaseCodes,
     EquivalentOrChallengeCodes: EquivalentOrChallengeCodes,
   },
+  created() {
+    this.getAllCourseRestrictions();
+  },
   data() {
     return {
+      snackbarVisible: false,
+      snackbarMessage: "",
       tab: null,
       advancedSearchLoading: false,
       advancedSearchMessage: "",
@@ -591,10 +602,7 @@ export default {
       params: "",
     };
   },
-  created() {
-    this.showNotification = showNotification;
-    this.getAllCourseRestrictions();
-  },
+
   methods: {
     clearInput: function (type) {
       this.penInput = "";
@@ -726,28 +734,24 @@ export default {
             .catch((error) => {
               this.advancedSearchLoading = false;
               if (error.response.status == 422) {
+                this.snackbarMessage =
+                  "Please enter the correct search fields.";
+                this.snackbarVisible = true;
                 this.advancedSearchMessage = "No course record found.";
-                this.showNotification(
-                  "danger",
-                  "Please enter the correct search fields."
-                );
               } else {
                 this.advancedSearchMessage = "No course record found.";
                 // eslint-disable-next-line
                 console.log("There was an error:" + error);
-                this.showNotification(
-                  "danger",
-                  "There was an error with the web service."
-                );
+                this.snackbarMessage =
+                  "There was an error with the web service.";
+                this.snackbarVisible = true;
               }
             });
         } catch (error) {
           this.advancedSearchLoading = false;
           this.advancedSearchMessage = "Search Error" + error;
-          this.showNotification(
-            "danger",
-            "There was an error with the web service."
-          );
+          this.snackbarMessage = "There was an error with the web service.";
+          this.snackbarVisible = true;
         }
       }
     },
@@ -835,20 +839,16 @@ export default {
               this.courseRequirementMessage = "No course requirements found.";
               // eslint-disable-next-line
               console.log("There was an error:" + error);
-              this.showNotification(
-                "danger",
-                "There was an error with the web service."
-              );
+              this.snackbarMessage = "There was an error with the web service.";
+              this.snackbarVisible = true;
             });
         } catch (error) {
           this.courseRequirementLoading = false;
           this.courseRequirementMessage = "Search Error";
           // eslint-disable-next-line
           console.log("There was an error:" + error);
-          this.showNotification(
-            "danger",
-            "There was an error with the web service."
-          );
+          this.snackbarMessage = "There was an error with the web service.";
+          this.snackbarVisible = true;
         }
       }
     },
@@ -860,10 +860,8 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.log("There was an error:" + error);
-          this.showNotification(
-            "danger",
-            "There was an error with the web service."
-          );
+          this.snackbarMessage = "There was an error with the web service.";
+          this.snackbarVisible = true;
         });
     },
     getAllCourses() {
@@ -873,10 +871,8 @@ export default {
         })
         // eslint-disable-next-line
         .catch((error) => {
-          this.showNotification(
-            "danger",
-            "There was an error with the web service."
-          );
+          this.snackbarMessage = "There was an error with the web service.";
+          this.snackbarVisible = true;
           // eslint-disable-next-line
           console.log("There was an error:" + error);
         });
@@ -888,10 +884,8 @@ export default {
         })
         // eslint-disable-next-line no-unused-vars
         .catch((error) => {
-          this.showNotification(
-            "danger",
-            "There was an error with the web service."
-          );
+          this.snackbarMessage = "There was an error with the web service.";
+          this.snackbarVisible = true;
           // eslint-disable-next-line
           console.log("There was an error:" + error);
         });
@@ -903,10 +897,8 @@ export default {
         })
         // eslint-disable-next-line no-unused-vars
         .catch((error) => {
-          this.showNotification(
-            "danger",
-            "There was an error with the web service."
-          );
+          this.snackbarMessage = "There was an error with the web service.";
+          this.snackbarVisible = true;
           // eslint-disable-next-line
           console.log("There was an error:" + error);
         });
@@ -918,10 +910,8 @@ export default {
         })
         // eslint-disable-next-line no-unused-vars
         .catch((error) => {
-          this.showNotification(
-            "danger",
-            "There was an error with the web service."
-          );
+          this.snackbarMessage = "There was an error with the web service.";
+          this.snackbarVisible = true;
           // eslint-disable-next-line
           console.log("There was an error:" + error);
         });
