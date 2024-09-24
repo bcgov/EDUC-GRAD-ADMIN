@@ -2,7 +2,8 @@
   <div class="graduation-status">
     <v-card no-body title="GRAD Status">
       <v-card-text class="p-3">
-        <v-btn-group
+        <GRADStatusForm class="gradstatus-actions float-right"></GRADStatusForm>
+        <!-- <v-btn-group
           v-if="allowUpdateGradStatus"
           class="gradstatus-actions float-right"
         >
@@ -41,7 +42,7 @@
               Cancel
             </v-btn>
           </div>
-        </v-btn-group>
+        </v-btn-group> -->
 
         <!-- Info callout in edit form when student status is MER/Merged -->
         <div
@@ -120,7 +121,6 @@
             </p>
           </v-alert>
         </div>
-        {{ editedGradStatus }}
         <v-table density="compact" aria-label="edit grad status">
           <tbody>
             <tr v-if="!showEdit">
@@ -769,7 +769,7 @@ import {
 import SchoolService from "@/services/SchoolService.js";
 import sharedMethods from "../../../sharedMethods";
 import StudentService from "@/services/StudentService.js";
-
+import GRADStatusForm from "./GRADStatusForm.vue";
 export default {
   name: "GRADStatus",
   created() {
@@ -780,6 +780,9 @@ export default {
   setup() {
     const studentStore = useStudentStore();
     return { studentStore };
+  },
+  components: {
+    GRADStatusForm: GRADStatusForm,
   },
   computed: {
     ...mapState(useStudentStore, {
