@@ -167,7 +167,6 @@ export default {
     return {
       mincode: {
         async isValid(value) {
-          console.log("validatiing " + value);
           if (value === "") return true;
           if (value.length == 8) {
             try {

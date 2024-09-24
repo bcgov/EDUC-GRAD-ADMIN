@@ -427,7 +427,6 @@ export default {
     disableBatchRuns(batchRunOptions, disableList) {
       batchRunOptions.forEach((option, index, array) => {
         if (disableList.includes(option.code)) {
-          console.log(option.code);
           array[index].disabled = true;
         } else {
           array[index].disabled = false;

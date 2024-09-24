@@ -361,7 +361,6 @@ export default {
                     this.getBatchRequest.schoolOfRecords &&
                     this.getBatchRequest.schoolOfRecords.length > 0;
                 } else if (this.group === "Student") {
-                  console.log(this.getBatchRequest.students);
                   isValid =
                     this.getBatchRequest.pens &&
                     this.getBatchRequest.pens.length > 0;

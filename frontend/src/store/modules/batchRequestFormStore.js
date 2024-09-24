@@ -37,7 +37,6 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
   }),
   actions: {
   async setBatchRunType(payload){
-    console.log("setting batch type" + payload)
     this.runType = payload
   },
   async clearBatchGroupData(){
@@ -62,8 +61,6 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
       this.batchDetails[payload].details['blankTranscriptDetails']=[{}];
     },
     async setCredential(payload){
-      console.log("setting credential")
-      console.log(payload)
       this.credential = payload
     }, 
     async updateCredential(credential) {
@@ -72,7 +69,6 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
       this.resetBlankTranscriptDetails();
     },    
     async resetBlankCertificateDetails() {
-      console.log("R1")
       this.blankCertificateDetails = [];
     },
     async resetBlankTranscriptDetails() {
@@ -115,15 +111,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     getBatchRunTime: (state) => state.batchRunTime,
     getActivityCode:(state) => state.activityCode,
     getLocalDownload: (state) => state.distribution == "Download"?"Y":"N", 
-    getBatchRequestCrontime: (state) => {
-      console.log("getting crontime")
-      console.log(state.batchRunTime)
-      console.log(state.batchRunSchedule)
-      
-      console.log(state.batchRunCustomDate)
-      console.log(state.batchRunCustomTime)
-
-   
+    getBatchRequestCrontime: (state) => {   
         if (state.batchRunSchedule == "N") {
           let today = new Date();
           return (

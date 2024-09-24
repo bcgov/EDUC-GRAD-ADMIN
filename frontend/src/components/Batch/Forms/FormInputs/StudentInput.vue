@@ -124,7 +124,6 @@ export default {
       pen: {
         minLength: minLength(9),
         async isValid(value) {
-          console.log("CAIDATIING");
           this.validationMessage = "";
           if (value === "") return true;
           if (value.length == 9) {
@@ -139,7 +138,6 @@ export default {
 
             if (studentGRADStatus.data) {
               //display student
-              console.log(studentGRADStatus.data);
               this.penStudentInfo = {
                 firstName: student.data[0].legalFirstName,
                 lastName: student.data[0].legalLastName,

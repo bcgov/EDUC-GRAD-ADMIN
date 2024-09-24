@@ -245,7 +245,6 @@ export default {
       this.group = null;
       this.dialog = false;
       this.clearBatchDetails();
-      console.log("CLEARING BATCH");
       this.step = 0;
     },
     changeStep(step) {

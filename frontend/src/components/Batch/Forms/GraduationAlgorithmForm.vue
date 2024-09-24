@@ -146,7 +146,6 @@ import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
 import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import Notifications from "@/components/Common/Notifications.vue";
-import Snackbar from "@/components/Common/Snackbar.vue";
 
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
@@ -210,7 +209,6 @@ export default {
                     this.getBatchRequest.schoolOfRecords &&
                     this.getBatchRequest.schoolOfRecords.length > 0;
                 } else if (this.group === "Student") {
-                  console.log(this.getBatchRequest.students);
                   isValid =
                     this.getBatchRequest.pens &&
                     this.getBatchRequest.pens.length > 0;
@@ -246,7 +244,6 @@ export default {
     ProgramInput: ProgramInput,
     ScheduleInput: ScheduleInput,
     Notifications: Notifications,
-    Snackbar: Snackbar,
   },
   data: () => ({
     step: 0,
