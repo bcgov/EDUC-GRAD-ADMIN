@@ -52,19 +52,15 @@ export const useAppStore = defineStore('app',{
             console.log(error)
           }
         });        
-        // ApiService.apiAxios.get('/api/v1/institute/district/list').then(response => {
-        //   const districts = response.data;
-        //   this.districtsList = districts;
-        // });
         ApiService.apiAxios.get('/api/v1/trax/district/schoolCategories').then(response => {
           const districts = response.data;
           this.districtsList = districts;
          });
-        // ApiService.apiAxios.get('/api/v1/trax/school').then(response => {
+        // ApiService.apiAxios.get('/api/v1/institute/school/list').then(response => {
         //   const schools = response.data;
-
-        // });  
-        ApiService.apiAxios.get('/api/v1/institute/school/list').then(response => {
+        //   this.schoolsList = schools;
+        // });           
+        ApiService.apiAxios.get('/api/v2/trax/school').then(response => {
           const schools = response.data;
           this.schoolsList = schools;
         });           

@@ -132,31 +132,6 @@
             Submit
           </v-btn>
         </v-card-actions>
-        {{ activeTab }}
-        STORE - GETBATCHREQUEST
-        <pre>{{ getBatchRequest }}</pre>
-
-        <br />
-        <br />
-        GRAD FORM VALIDATIONS V$
-        {{ v$.getBatchRequest }}
-        <br />
-        <br />
-        RUN SCHEDULE COMPONENT VALIDATIONS
-        {{ v$.RunLaterScheduleSet }}
-        <br />
-        <br />
-
-        ALL VAIDATIONS V$
-        {{ v$ }}
-        <br />
-        <br />
-        BATCH RUN TIME {{ batchRunTime }}
-        {{ v$.batchRunTime }}
-
-        <p v-for="error of v$.$errors" :key="error.$uid">
-          {{ error.$message }}
-        </p>
       </v-card>
     </v-dialog>
   </v-row>
@@ -171,12 +146,11 @@ import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
 import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import Notifications from "@/components/Common/Notifications.vue";
-import Snackbar from "@/components/Common/Snackbar.vue";
 
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
-import { useBatchProcessingStore } from "../../../store/modules/batchProcessing";
+import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
@@ -235,7 +209,6 @@ export default {
                     this.getBatchRequest.schoolOfRecords &&
                     this.getBatchRequest.schoolOfRecords.length > 0;
                 } else if (this.group === "Student") {
-                  console.log(this.getBatchRequest.students);
                   isValid =
                     this.getBatchRequest.pens &&
                     this.getBatchRequest.pens.length > 0;
@@ -271,7 +244,6 @@ export default {
     ProgramInput: ProgramInput,
     ScheduleInput: ScheduleInput,
     Notifications: Notifications,
-    Snackbar: Snackbar,
   },
   data: () => ({
     step: 0,

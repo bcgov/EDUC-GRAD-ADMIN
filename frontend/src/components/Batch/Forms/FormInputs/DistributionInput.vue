@@ -105,9 +105,7 @@ export default {
     return {};
   },
 
-  created() {
-    console.log("STEPPER");
-  },
+  created() {},
   methods: {
     ...mapActions(useBatchRequestFormStore, []),
     resetModal() {},

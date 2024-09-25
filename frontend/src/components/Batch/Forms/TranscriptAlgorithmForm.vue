@@ -127,30 +127,6 @@
             Submit
           </v-btn>
         </v-card-actions>
-        STORE - GETBATCHREQUEST
-        {{ getBatchRequest }}
-
-        <br />
-        <br />
-        GRAD FORM VALIDATIONS V$
-        {{ v$.getBatchRequest }}
-        <br />
-        <br />
-        RUN SCHEDULE COMPONENT VALIDATIONS
-        {{ v$.RunLaterScheduleSet }}
-        <br />
-        <br />
-
-        ALL VAIDATIONS V$
-        {{ v$ }}
-        <br />
-        <br />
-        BATCH RUN TIME {{ batchRunTime }}
-        {{ v$.batchRunTime }}
-
-        <p v-for="error of v$.$errors" :key="error.$uid">
-          {{ error.$message }}
-        </p>
       </v-card>
     </v-dialog>
   </v-row>
@@ -215,7 +191,6 @@ export default {
                     this.getBatchRequest.schoolOfRecords &&
                     this.getBatchRequest.schoolOfRecords.length > 0;
                 } else if (this.group === "Student") {
-                  console.log(this.getBatchRequest.students);
                   isValid =
                     this.getBatchRequest.pens &&
                     this.getBatchRequest.pens.length > 0;
@@ -234,8 +209,6 @@ export default {
                 } else {
                   isValid = true; // Return true if none of the above conditions matched
                 }
-                console.log(this.group);
-                console.log(isValid + " VALIDA");
                 return isValid;
               }
             } else {
@@ -272,7 +245,6 @@ export default {
       this.group = null;
       this.dialog = false;
       this.clearBatchDetails();
-      console.log("CLEARING BATCH");
       this.step = 0;
     },
     changeStep(step) {

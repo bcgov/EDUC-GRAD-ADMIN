@@ -75,10 +75,10 @@ export default {
     //Student Optional Program CRUD
     createStudentOptionalProgram(studentId, optionalProgramPayload, careerProgramCode) {
         if(careerProgramCode){
-            console.log("ADDING CAREERPROGRAM"); return
+            return
             //return ApiService.apiAxios.post(`/api/v1/student/${studentId}/optionalPrograms?careerProgramCode=${careerProgramCode}`,optionalProgramPayload);
         }else{
-            console.log("ADDING OPTIONALPROGRAM")
+            return
             //return ApiService.apiAxios.post(`/api/v1/student/${studentId}/optionalPrograms`,optionalProgramPayload);
         }
     },
@@ -87,10 +87,8 @@ export default {
     },   
     createStudentCareerProgram(studentId, optionalProgramPayload, careerProgramCode) {
         if(careerProgramCode){
-            console.log("ADDING CAREERPROGRAM"); return
             //return ApiService.apiAxios.post(`/api/v1/student/${studentId}/optionalPrograms?careerProgramCode=${careerProgramCode}`,optionalProgramPayload);
         }else{
-            console.log("ADDING OPTIONALPROGRAM")
             //return ApiService.apiAxios.post(`/api/v1/student/${studentId}/optionalPrograms`,optionalProgramPayload);
         }
     },

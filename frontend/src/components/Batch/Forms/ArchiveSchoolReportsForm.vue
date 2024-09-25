@@ -131,30 +131,6 @@
             Submit
           </v-btn>
         </v-card-actions>
-        STORE - GETBATCHREQUEST
-        {{ getBatchRequest }}
-
-        <br />
-        <br />
-        GRAD FORM VALIDATIONS V$
-        {{ v$.getBatchRequest }}
-        <br />
-        <br />
-        RUN SCHEDULE COMPONENT VALIDATIONS
-        {{ v$.RunLaterScheduleSet }}
-        <br />
-        <br />
-
-        ALL VAIDATIONS V$
-        {{ v$ }}
-        <br />
-        <br />
-        BATCH RUN TIME {{ batchRunTime }}
-        {{ v$.batchRunTime }}
-
-        <p v-for="error of v$.$errors" :key="error.$uid">
-          {{ error.$message }}
-        </p>
       </v-card>
     </v-dialog>
   </v-row>
@@ -222,8 +198,6 @@ export default {
                 } else {
                   isValid = true; // Return true if none of the above conditions matched
                 }
-                console.log(this.group);
-                console.log(isValid + " VALIDA");
                 return isValid;
               }
             } else {

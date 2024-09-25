@@ -7,7 +7,6 @@ export default {
   },
   runREGALG(request, cronTime="")
    {
-    console.log(cronTime)
     if(cronTime){
       let scheduledRequest = {};
       scheduledRequest.cronExpression = cronTime
@@ -17,8 +16,6 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return
     }else{
-      console.log("REGALG SERVICE")
-      console.log(request)
       return ApiService.apiAxios.post('/api/v1/batch/specialrun', request);
     }
   },
@@ -113,8 +110,6 @@ export default {
     return ApiService.apiAxios.get('/api/v1/batch/schedule/listjobs');
   },
   addScheduledJob(scheduledJob) {
-    console.log("SCHEDULE")
-    console.log(scheduledJob)
     return ApiService.apiAxios.post('/api/v1/batch/schedule/add?batchJobTypeCode=' + scheduledJob.jobName, scheduledJob);
   },
   removeScheduledJobs(id) {

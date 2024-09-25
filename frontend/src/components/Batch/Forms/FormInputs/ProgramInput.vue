@@ -160,7 +160,6 @@ export default {
   computed: {
     computedProgramList() {
       const programCodesToFilterOut = this.programs.map((p) => p.program);
-      console.log(programCodesToFilterOut);
       return this.getProgramOptions.filter(
         (program) => !programCodesToFilterOut.includes(program.programCode)
       );
