@@ -5,7 +5,7 @@
       <v-btn
         class="position-absolute"
         style="z-index: 10; right: 0; margin-right: 40px"
-        color="primary"
+        color="transparent"
         small
         @click="updateDashboards"
       >

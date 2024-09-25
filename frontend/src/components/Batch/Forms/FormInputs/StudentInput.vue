@@ -1,12 +1,12 @@
 <template>
   <v-container>
     <v-card>
-      <v-card-title>Include Student(s)</v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12">
-            <v-label>Personal Education Number</v-label>
+            <v-label>Include Student(s)</v-label>
             <v-text-field
+              label="Personal Education Number"
               v-model="pen"
               @input="validateStudent"
               type="number"

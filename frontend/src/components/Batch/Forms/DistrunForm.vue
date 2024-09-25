@@ -98,16 +98,11 @@
                   </v-stepper-window-item>
                   <v-stepper-window-item value="2">
                     <v-row>
-                      <v-col md="2">
-                        <label class="font-weight-bold">Group</label>
-                      </v-col>
-                    </v-row>
-                    <v-row>
                       <v-col>
                         <v-select
                           v-model="group"
                           :items="groupItems"
-                          label="Select a group"
+                          label="Select group"
                         ></v-select>
                       </v-col>
                     </v-row>
@@ -183,7 +178,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions class="sticky-footer">
+        <v-card-actions class="batch-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -237,6 +232,7 @@ import { useBatchProcessingStore } from "../../../store/modules/batchprocessing"
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { mapActions, mapState } from "pinia";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
+import { useSnackbarStore } from "../../../store/modules/snackbar";
 export default {
   components: {
     SchoolInput: SchoolInput,
@@ -390,6 +386,7 @@ export default {
     };
   },
   data: () => ({
+    snackbarStore: useSnackbarStore(),
     step: 0,
     dialog: false,
     groupSelected: "",
@@ -495,27 +492,29 @@ export default {
       try {
         let response = await BatchProcessingService.runDISTRUNUSER(
           this.getBatchRequest,
-          this.credentialType,
+          this.getCredential,
           this.getBatchRequestCrontime
         );
+        if (response) {
+          this.snackbarStore.showSnackbar(
+            "Batch request submitted",
+            "success",
+            5000
+          );
+        }
         this.closeDialogAndResetForm();
         this.activeTab = "batchRuns";
       } catch (error) {
         // handle the error and show the notification
         console.error("Error:", error);
-        if (this.notifications) {
-          this.notifications.show("An error occurred: " + error.message);
-        }
+        this.snackbarStore.showSnackbar(
+          "An error occurred: " + error.message,
+          "error",
+          5000
+        );
       }
     },
   },
 };
 </script>
-<style scoped>
-.sticky-footer {
-  position: sticky;
-  bottom: 0;
-  background-color: white; /* Ensure the button area has a background */
-  z-index: 10;
-}
-</style>
+<style scoped></style>

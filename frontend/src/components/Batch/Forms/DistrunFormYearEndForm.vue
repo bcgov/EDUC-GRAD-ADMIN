@@ -52,7 +52,7 @@
                       <v-select
                         v-model="getGroup"
                         :items="['School Category']"
-                        label="Select Option"
+                        label="Select a Group"
                       ></v-select>
                     </v-row>
                     <v-row v-if="getGroup == 'School Category'">
@@ -135,6 +135,7 @@ import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
+import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
   setup() {

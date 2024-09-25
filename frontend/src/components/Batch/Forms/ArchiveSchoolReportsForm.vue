@@ -43,7 +43,7 @@
                       <v-select
                         v-model="group"
                         :items="['School', 'All Schools']"
-                        label="Select Option"
+                        label="Select a group"
                       ></v-select>
                     </v-row>
                     <v-row v-if="group == 'School'">
@@ -117,7 +117,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="batch-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -146,6 +146,7 @@ import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
+import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
   setup() {

@@ -1,30 +1,31 @@
 <template>
-  <div class="container">
-    <v-card no-body>
-      <v-tabs v-model="selectedTab">
-        <v-tab value="studentChangeHistory">Student Change History</v-tab>
-        <v-tab value="optionalProgramChangeHistory"
-          >Optional Program Change History</v-tab
-        >
-      </v-tabs>
-      <v-card-text>
-        <v-window v-model="selectedTab">
-          <v-window-item value="studentChangeHistory">
-            <DisplayTable
-              :items="studentChangeHighlight"
-              :fields="studentChangeFields"
-              showFilter="false"
-              title="Student Change History"
-              :sortDesc="sortDesc"
-              :sortBy="'createDate'"
-            >
-              {{ studentChangeHighlight }}
-              <!-- <template v-slot:item.data="{ item }">
+  <v-card no-body>
+    <v-tabs v-model="selectedTab">
+      <v-tab value="studentChangeHistory"
+        ><v-chip>Student Change History</v-chip></v-tab
+      >
+      <v-tab value="optionalProgramChangeHistory"
+        ><v-chip>Optional Program Change History</v-chip></v-tab
+      >
+    </v-tabs>
+    <v-card-text>
+      <v-window v-model="selectedTab">
+        <v-window-item value="studentChangeHistory">
+          <DisplayTable
+            :items="studentChangeHighlight"
+            :fields="studentChangeFields"
+            showFilter="false"
+            title="Student Change History"
+            :sortDesc="sortDesc"
+            :sortBy="'createDate'"
+          >
+            {{ studentChangeHighlight }}
+            <!-- <template v-slot:item.data="{ item }">
                 <v-card class="px-0 mt-0">
                   {{ item }}
                 </v-card>
               </template> -->
-              <!-- <template #cell(more)="row">
+            <!-- <template #cell(more)="row">
                 <v-btn
                   variant="outlined"
                   size="sm"
@@ -81,12 +82,12 @@
                   {{ row.value.value }}
                 </div>
               </template> -->
-            </DisplayTable>
-          </v-window-item>
+          </DisplayTable>
+        </v-window-item>
 
-          <v-window-item value="optionalProgramChangeHistory">
-            T2
-            <!-- <DisplayTable
+        <v-window-item value="optionalProgramChangeHistory">
+          T2
+          <!-- <DisplayTable
                 :items="optionalProgramChangeHighlight"
                 :fields="optionalProgramChangeFields"
                 showFilter="false"
@@ -149,11 +150,10 @@
                   </div>
                 </template>
               </DisplayTable> -->
-          </v-window-item>
-        </v-window>
-      </v-card-text>
-    </v-card>
-  </div>
+        </v-window-item>
+      </v-window>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>

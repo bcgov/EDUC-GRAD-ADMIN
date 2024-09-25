@@ -8,7 +8,7 @@
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">GRADUATION ALGORITHM</span>
+          <span class="text-h5">Transcript Verification Report</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -50,7 +50,7 @@
                           'School Category',
                           'Program',
                         ]"
-                        label="Select Option"
+                        label="Select a Group"
                       ></v-select>
                     </v-row>
                     <v-row v-if="group == 'Student'">
@@ -113,7 +113,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="batch-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -134,6 +134,7 @@
 
 <script>
 import { ref, watch } from "vue";
+import BatchProcessingService from "@/services/BatchProcessingService.js";
 import SchoolInput from "@/components/Batch/Forms/FormInputs/SchoolInput.vue";
 import DistrictInput from "@/components/Batch/Forms/FormInputs/DistrictInput.vue";
 import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
@@ -142,6 +143,7 @@ import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
+import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
   setup() {
@@ -229,6 +231,7 @@ export default {
   data: () => ({
     step: 0,
     dialog: false,
+    snackbarStore: useSnackbarStore(),
   }),
   computed: {
     ...mapState(useBatchRequestFormStore, [
@@ -241,6 +244,12 @@ export default {
       "clearBatchDetails",
       "clearBatchGroupData",
     ]),
+    closeDialogAndResetForm() {
+      this.group = null;
+      this.dialog = false;
+      this.clearBatchDetails();
+      this.step = 0;
+    },
     cancel() {
       this.group = null;
       this.dialog = false;
@@ -249,6 +258,28 @@ export default {
     },
     changeStep(step) {
       this.step = step;
+    },
+    async submit() {
+      try {
+        let response = await BatchProcessingService.runTVRRUN(
+          this.getBatchRequest,
+          this.getBatchRequestCrontime
+        );
+        this.closeDialogAndResetForm();
+        this.snackbarStore.showSnackbar(
+          "Transcript Verification Report request submitted",
+          "success",
+          5000
+        );
+      } catch (error) {
+        // handle the error and show the notification
+        this.snackbarStore.showSnackbar(
+          "An error occurred: " + error.message,
+          "danger",
+          5000
+        );
+        console.error("Error:", error);
+      }
     },
   },
 };
