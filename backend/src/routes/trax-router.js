@@ -25,6 +25,8 @@ async function getTRAXAPI(req, res) {
     const baseURL = config.get(configKey);
     
     url = baseURL + "/trax" + req.url;
+    console.log(version)
+    console.log(req.baseUrl)
     console.log(configKey)
     console.log(baseURL)
     console.log(url)
