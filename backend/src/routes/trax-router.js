@@ -18,6 +18,9 @@ async function getTRAXAPI(req, res) {
   const urlParts = req.baseUrl.split('/').filter(Boolean); // Split and remove empty parts
   const version = urlParts[0]; // Get the first part which is the version
   // Set the version on the request object
+  if (version === 'api') {
+    version = urlParts[1]; // Skip the 'api' part in OpenShift
+  }
   try {
     const configKey = `server:gradTraxAPIURL${version}`;
 
@@ -25,11 +28,6 @@ async function getTRAXAPI(req, res) {
     const baseURL = config.get(configKey);
     
     url = baseURL + "/trax" + req.url;
-    console.log(version)
-    console.log(req.baseUrl)
-    console.log(configKey)
-    console.log(baseURL)
-    console.log(url)
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
