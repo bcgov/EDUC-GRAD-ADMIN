@@ -4,7 +4,7 @@
     <div v-if="!scheduledJobs.length">No Scheduled Jobs</div>
     <DisplayTable
       title="Job/Runs"
-      :items="scheduledJobs"
+      :items="sortedScheduledJobs"
       :fields="scheduledJobFields"
       id="id"
       :showFilter="false"
@@ -129,6 +129,17 @@ export default {
     ...mapState(useBatchProcessingStore, {
       scheduledJobs: "getScheduledBatchRuns",
     }),
+    sortedScheduledJobs() {
+      // Sort scheduledJobs with QUEUED status at the top
+      return [...this.scheduledJobs].sort((a, b) => {
+        if (a.status === "QUEUED" && b.status !== "QUEUED") {
+          return -1; // Move QUEUED to the top
+        } else if (a.status !== "QUEUED" && b.status === "QUEUED") {
+          return 1; // Move other statuses below QUEUED
+        }
+        return 0; // Maintain order if both have same status
+      });
+    },
   },
   methods: {
     ...mapActions(useBatchProcessingStore, ["setScheduledBatchJobs"]),

@@ -81,8 +81,17 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     async setActivityCode(payload){
       this.activityCode = payload;
     }
+    
   },
   getters: {
+    getCurrentPSIYear() {
+      let date = new Date();
+      if (date.getMonth() + 1 > 8) {
+        return String(date.getFullYear() + 1);
+      } else {
+        return String(date.getFullYear());
+      }
+    },
     getCredential: (state) => {
       return state.credential
     },
@@ -106,6 +115,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         return [];
       }
     },
+    getPsiYear: (state) => state.psiYear,
     getDistribution: (state) => state.distribution,
     getCopies: (state) => state.copies,
     getBatchRunTime: (state) => state.batchRunTime,
@@ -215,7 +225,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         quantity: state.copies,
             // Check distribution method
            
-          ...(state.distribution === "Download" ? { localDownload: state.getLocalDownload } : {}),
+           localDownload: state.getLocalDownload,
           ...(state.distribution === "User" ? {   user: "",
             address: state.getUserDistributionAddress, } : {}),
 

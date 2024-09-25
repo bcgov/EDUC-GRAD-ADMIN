@@ -8,7 +8,7 @@
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">GRADUATION ALGORITHM</span>
+          <span class="text-h5">Transcript Verification Report Delete</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -45,7 +45,7 @@
                       <v-select
                         v-model="group"
                         :items="['Student', 'School', 'All Students']"
-                        label="Select Option"
+                        label="Select a Group"
                       ></v-select>
                     </v-row>
                     <v-row v-if="group == 'Student'">
@@ -137,6 +137,7 @@ import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
+import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
   setup() {

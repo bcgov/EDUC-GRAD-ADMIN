@@ -80,6 +80,16 @@
                   >Optional Programs ({{ optionalPrograms.length }})</v-tab
                 >
                 <v-tab value="Audit">Audit History</v-tab>
+                <v-tab value="Notes"
+                  ><v-icon>mdi-information</v-icon> Notes ({{
+                    studentNotes.length
+                  }})</v-tab
+                >
+                <v-tab value="Undo Completion Reasons"
+                  ><v-icon>mdi-information</v-icon> Undo Completion Reasons ({{
+                    studentUngradReasons.length
+                  }})</v-tab
+                >
               </v-tabs>
               <v-card-text>
                 <v-window v-model="selectedTab">
@@ -179,38 +189,29 @@
                     >
                     </v-progress-circular>
                     <div class="ml-3">
-                      <v-btn
-                        class="mr-2 my-1"
-                        v-on:click="auditTab = 'studentAudit'"
-                        size="sm"
-                        :variant="
-                          auditTab == 'studentAudit' ? 'tonal' : 'outlined'
-                        "
-                        >Student Audit</v-btn
-                      >
-                      <v-btn
-                        class="mr-2 my-1"
-                        v-on:click="auditTab = 'notes'"
-                        size="sm"
-                        :variant="auditTab == 'notes' ? 'tonal' : 'outlined'"
-                        >Notes ({{ studentNotes.length }})</v-btn
-                      >
-                      <v-btn
-                        class="mr-2 my-1"
-                        v-on:click="auditTab = 'undoCompletionReasons'"
-                        size="sm"
-                        :variant="
-                          auditTab == 'undoCompletionReasons'
-                            ? 'tonal'
-                            : 'outlined'
-                        "
-                        >Undo Completion Reasons ({{
-                          studentUngradReasons.length
-                        }})</v-btn
-                      >
                       <StudentAuditHistory v-if="auditTab == 'studentAudit'" />
                     </div>
                   </v-window-item>
+                  <v-window-item value="Notes">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
+                    </v-progress-circular>
+                    Notes ({{ studentNotes.length }})</v-window-item
+                  >
+                  <v-window-item value="Undo Completion Reasons">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
+                    </v-progress-circular>
+                    Undo Completion Reasons ({{
+                      studentUngradReasons.length
+                    }})</v-window-item
+                  >
                 </v-window>
               </v-card-text>
             </v-window-item>

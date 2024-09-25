@@ -1,3 +1,10 @@
+.batch-form-actions {
+  position: sticky;
+  bottom: 0;
+  background-color: white; /* Ensure the button area has a background */
+  z-index: 10;
+  border-top:1px solid #cccc
+}
 /* DisplayTable Component Style*/
 .table-row-header-group{
   border-bottom: none;

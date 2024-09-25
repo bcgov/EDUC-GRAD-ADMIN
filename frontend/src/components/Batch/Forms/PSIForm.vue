@@ -11,7 +11,6 @@
           <span class="text-h5">PSI Run FTP / Paper</span>
         </v-card-title>
         <v-card-text>
-          {{ getBatchRequest }}
           <v-container>
             <v-stepper alt-labels show-actions v-model="step">
               <template v-slot:default="{ prev, next }">
@@ -87,7 +86,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="batch-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -120,6 +119,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
+import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
   setup() {

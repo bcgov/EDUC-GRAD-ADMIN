@@ -34,7 +34,6 @@
         </v-progress-circular>
       </v-btn>
     </v-form>
-    <DevStudents></DevStudents>
   </div>
 </template>
 <script>
@@ -43,7 +42,6 @@ import { useVuelidate } from "@vuelidate/core";
 import { isEnvLocalHost } from "../../utils/common.js";
 import { useStudentStore } from "@/store/modules/student";
 import StudentService from "@/services/StudentService.js";
-import DevStudents from "../DevStudents.vue";
 // const studentStore = useStudentStore();
 
 export default {
@@ -67,9 +65,7 @@ export default {
   //     },
   //   },
   created() {},
-  components: {
-    DevStudents: DevStudents,
-  },
+  components: {},
   computed: {},
   methods: {
     ...mapActions(useStudentStore, ["unsetStudent"]),

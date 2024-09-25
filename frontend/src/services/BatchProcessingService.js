@@ -36,6 +36,8 @@ export default {
   runDISTRUNUSER(request,credentialType, cronTime="") {
     if(cronTime){
       let scheduledRequest = {};
+
+       //For Blank transcript print or Blank certificate print option, the payload must use the blankPayload
       if(credentialType == "Blank transcript print" || credentialType == "Blank certificate print"){
         
         scheduledRequest.payload = request;
@@ -44,11 +46,19 @@ export default {
         scheduledRequest.payload = null;
         scheduledRequest.blankPayLoad = request;
       }
+
+      if(credentialType == "OT" && request.psi && request.psi.length >0){
+        scheduledRequest.psiPayload = request;
+        scheduledRequest.payload = null;
+        scheduledRequest.blankPayLoad = null;
+      }
+
       scheduledRequest.cronExpression = cronTime
       scheduledRequest.jobName = "URDBJ";
       this.addScheduledJob(scheduledRequest);
       return
     }else{
+      console.log(credentialType)
       if(credentialType == "OT"){
         return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT', request);
       }else if(credentialType == "OC"){
@@ -56,7 +66,7 @@ export default {
       }else if(credentialType == "RC"){
         return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/RC', request);
       }else if(credentialType == "Blank transcript print"){
-        return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OT', request);
+        return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OT', request); 
       }else if(credentialType == "Blank certificate print"){
         return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OC', request);
       }
@@ -94,11 +104,84 @@ export default {
       return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
     }
   },
-  // runBlankDISTRUNUSERUserRequest(request, credentialType){
-  //   return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/'+ credentialType, request);
-  // },
-  runPSIRUN(request, transmissionType){
-    return ApiService.apiAxios.post('/api/v1/batch/executepsireportbatchjob/' + transmissionType, request);
+  runSCHL_RPT_REGEN(request, cronTime=""){
+    return ApiService.apiAxios.post(`/api/v1/batch/regenerate/school-report`,request);
+  },  
+  runDISTRUN_SUPP() {
+    return ApiService.apiAxios.get("/api/v1/batch/executesuppdisrunbatchjob");
+  },
+  runCERTREGEN(request, cronTime = "") {
+    if (
+      Array.isArray(request.districts) &&
+      request.districts.length === 1 &&
+      request.districts[0].toLowerCase() === "all"
+    ) {
+      // If the condition is true, set districts to an empty array
+      request.districts = [];
+    }
+    if (cronTime) {
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime;
+      scheduledRequest.jobName = "RCBJ";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      this.addScheduledJob(scheduledRequest);
+      return;
+    } else {
+      return ApiService.apiAxios.post(
+        "/api/v1/batch/executecertregenbatchjob",
+        request
+      );
+    }
+  },
+  runTVR_DELETE(request) {
+    return ApiService.apiAxios.post(
+      "/api/v1/batch/report/student/delete",
+      request
+    );
+  },
+  runArchiveStudents(request, cronTime = "") {
+    if (cronTime) {
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime;
+      scheduledRequest.jobName = "ASBJ";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      this.addScheduledJob(scheduledRequest);
+      return;
+    } else {
+      return ApiService.apiAxios.post("/api/v1/batch/student/archive", request);
+    }
+  },
+  runArchiveSchoolReports(request, cronTime = "") {
+    if (cronTime) {
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime;
+      scheduledRequest.jobName = "ASRBJ";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      this.addScheduledJob(scheduledRequest);
+      return;
+    } else {
+      return ApiService.apiAxios.post(
+        "/api/v1/batch/report/school/archive",
+        request
+      );
+    }
+  },
+  runPSIRUN(request, transmissionType, cronTime=""){
+    if (cronTime) {
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime;
+      scheduledRequest.jobName = "URPDBJ";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      this.addScheduledJob(scheduledRequest);
+      return;
+    } else {
+      return ApiService.apiAxios.post('/api/v1/batch/executepsireportbatchjob/' + transmissionType, request);
+      
+    }
   },
   getBatchErrors(id, page) {
     return ApiService.apiAxios.get('/api/v1/batch/dashboard/errors/'  + id + '?pageNumber=' + page);

@@ -4,7 +4,6 @@
     <v-col :cols="12" :md="isBatchShowing || isErrorShowing ? 7 : 12">
       <v-card>
         <v-card-text>
-          <v-btn @click="showSuccess">Show Success Snackbar</v-btn>
           <DisplayTable
             title="Job/Runs"
             :items="batchRuns"
@@ -277,13 +276,6 @@ export default {
   },
   methods: {
     ...mapActions(useBatchProcessingStore, ["setBatchJobs"]),
-    showSuccess() {
-      this.snackbarStore.showSnackbar(
-        "Operation was successful!",
-        "success",
-        3000
-      );
-    },
     rerunBatch(bid) {
       BatchProcessingService.rerunBatch(bid).then((response) => {
         if (response) {

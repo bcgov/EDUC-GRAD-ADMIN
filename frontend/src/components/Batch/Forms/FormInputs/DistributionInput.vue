@@ -20,7 +20,7 @@
           ]"
           item-title="title"
           item-value="value"
-          label="Select Option"
+          label="Select a Group"
           require
         ></v-select>
       </v-col>

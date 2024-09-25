@@ -49,7 +49,7 @@
                         ]"
                         item-title="name"
                         item-value="value"
-                        label="Select Option"
+                        label="Select a Group"
                       ></v-select>
                     </v-row>
                     <v-row v-if="group == 'Student'">
@@ -106,7 +106,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="batch-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -138,6 +138,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
+import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
   setup() {
@@ -221,6 +222,7 @@ export default {
     Notifications: Notifications,
   },
   data: () => ({
+    snackbarStore: useSnackbarStore(),
     step: 0,
     dialog: false,
   }),
@@ -250,7 +252,7 @@ export default {
     },
     async submit() {
       try {
-        let response = await BatchProcessingService.runREGALG(
+        let response = await BatchProcessingService.runCERTREGEN(
           this.getBatchRequest,
           this.getBatchRequestCrontime
         );
@@ -259,9 +261,6 @@ export default {
       } catch (error) {
         // handle the error and show the notification
         console.error("Error:", error);
-        if (this.notifications) {
-          this.notifications.show("An error occurred: " + error.message);
-        }
       }
     },
   },

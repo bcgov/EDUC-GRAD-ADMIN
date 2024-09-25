@@ -40,11 +40,6 @@
                 <v-stepper-window>
                   <v-stepper-window-item value="1">
                     <v-row>
-                      <v-col md="2">
-                        <label class="font-weight-bold">Group</label>
-                      </v-col>
-                    </v-row>
-                    <v-row>
                       <v-col>
                         <v-select
                           v-model="group"
@@ -54,7 +49,7 @@
                             'School Category',
                             'Program',
                           ]"
-                          label="Select a group"
+                          label="Select group"
                         ></v-select>
                       </v-col>
                     </v-row>
@@ -118,7 +113,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="batch-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -282,24 +277,18 @@ export default {
         );
         this.closeDialogAndResetForm();
         this.snackbarStore.showSnackbar(
-          "Batch request submitted",
+          "Graduation Algorithm request submitted",
           "success",
           5000
         );
-        nextTick(() => {
-          this.activeTab = "batchRuns";
-        });
       } catch (error) {
         // handle the error and show the notification
         this.snackbarStore.showSnackbar(
-          "Batch request submitted",
-          "success",
+          "An error occurred: " + error.message,
+          "danger",
           5000
         );
         console.error("Error:", error);
-        if (this.notifications) {
-          this.notifications.show("An error occurred: " + error.message);
-        }
       }
     },
   },
