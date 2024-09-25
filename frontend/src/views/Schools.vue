@@ -174,6 +174,7 @@
 <script>
 import SchoolService from "@/services/SchoolService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "schools",
   components: {
@@ -181,6 +182,7 @@ export default {
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       courseRequirementLoading: true,
       url: null,
       file: [],
@@ -297,7 +299,9 @@ export default {
             this.searchLoading = false;
             this.courseRequirementLoading = false;
             this.searchMessage = "School cannot be found.";
-            console.log(error);
+            // eslint-disable-next-line
+            console.error(error);
+            this.snackbarStore.showSnackbar(error.message, "error", 5000);
           });
       }
     },

@@ -222,7 +222,6 @@
 </template>
 
 <script>
-import { showNotification } from "../utils/common.js";
 import AssessmentService from "@/services/AssessmentService.js";
 import CourseService from "@/services/CourseService.js";
 import StudentService from "@/services/StudentService.js";
@@ -237,7 +236,7 @@ import StudentOptionalPrograms from "@/components/StudentProfile/StudentOptional
 import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/StudentAuditHistory.vue";
 import StudentNotes from "@/components/StudentProfile/AuditHistory/StudentNotes.vue";
 import DisplayTable from "@/components/DisplayTable.vue";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "../store/modules/student";
 import { useAppStore } from "../store/modules/app";
 import { useAccessStore } from "../store/modules/access";
@@ -261,13 +260,13 @@ export default {
       })
       .catch((error) => {
         if (error.response.status) {
-          this.showNotification(
-            "danger",
-            "There was an error: " + error.response.status
+          this.snackbarStore.showSnackbar(
+            "There was an error: " + error.response.status,
+            "error",
+            5000
           );
         }
       });
-    this.showNotification = showNotification;
     this.window.width = window.innerWidth;
     this.window.height = window.innerHeight;
     if (this.window.width < 768) {
@@ -291,6 +290,7 @@ export default {
   props: {},
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       tab: null,
       pen: "",
       optionalProgramTab: "",
@@ -400,9 +400,10 @@ export default {
       })
       .catch((error) => {
         if (error.response.status) {
-          this.showNotification(
-            "danger",
-            "There was an error: " + error.response.status
+          this.snackbarStore.showSnackbar(
+            "There was an error: " + error.response.status,
+            "error",
+            5000
           );
         }
       });
@@ -452,9 +453,10 @@ export default {
             })
             .catch((error) => {
               if (error.response.status) {
-                this.showNotification(
-                  "danger",
-                  "There was an error: " + error.response.status
+                this.snackbarStore.showSnackbar(
+                  "There was an error: " + error.response.status,
+                  "error",
+                  5000
                 );
               }
             });
@@ -469,20 +471,21 @@ export default {
             .catch((error) => {
               this.tabLoading = false;
               if (error.response.status) {
-                this.$bvToast.toast("ERROR " + error.response.statusText, {
-                  title: "ERROR" + error.response.status,
-                  variant: "danger",
-                  noAutoHide: true,
-                });
+                this.snackbarStore.showSnackbar(
+                  "There was an error: " + error.response.status,
+                  "error",
+                  5000
+                );
               }
             });
           this.loadStudentReportsAndCertificates();
         })
         .catch((error) => {
           this.tabLoading = false;
-          this.showNotification(
-            "danger",
-            "There was an error: " + error.response.data.messages[0].message
+          this.snackbarStore.showSnackbar(
+            "There was an error: " + error.response.status,
+            "error",
+            5000
           );
         });
     },
@@ -498,11 +501,11 @@ export default {
         })
         .catch((error) => {
           if (error.res.status) {
-            this.$bvToast.toast("ERROR " + error.res.statusText, {
-              title: "ERROR" + error.res.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.res.status,
+              "error",
+              5000
+            );
           }
         });
       this.loadStudentReportsAndCertificates();
@@ -518,11 +521,11 @@ export default {
         .catch((error) => {
           this.tabLoading = false;
           if (error.response.status) {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title: "ERROR" + error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
+            );
           }
         });
     },
@@ -539,21 +542,21 @@ export default {
             })
             .catch((error) => {
               if (error.res.status) {
-                this.$bvToast.toast("ERROR " + error.res.statusText, {
-                  title: "ERROR" + error.res.status,
-                  variant: "danger",
-                  noAutoHide: true,
-                });
+                this.snackbarStore.showSnackbar(
+                  "There was an error: " + error.res.status,
+                  "error",
+                  5000
+                );
               }
             });
         })
         .catch((error) => {
           if (error.response.status) {
-            this.$bvToast.toast("ERROR " + error, {
-              title: "ERROR" + error.response.status.response,
-              variant: "danger",
-              noAutoHide: true,
-            });
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
+            );
             this.tabLoading = false;
           }
         });
@@ -579,11 +582,11 @@ export default {
         .catch((error) => {
           this.tabLoading = false;
           if (error.response.status) {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title: "ERROR" + error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
+            );
           }
         });
     },
@@ -614,10 +617,10 @@ export default {
         .catch((error) => {
           if (error.response.status) {
             this.tabLoading = false;
-            this.showNotification(
-              "danger",
-              "There was an error with the Graduation Service (projected Grad Status with Final and Reg): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -662,10 +665,10 @@ export default {
               })
               .catch((error) => {
                 if (error.response.status) {
-                  this.showNotification(
-                    "danger",
-                    "There was an error getting the Student Service (Getting the true student ID): " +
-                      error.response.status
+                  this.snackbarStore.showSnackbar(
+                    "There was an error: " + error.response.status,
+                    "error",
+                    5000
                   );
                 }
               });
@@ -674,10 +677,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student using PEN): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -689,10 +692,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Assessment Service: " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -704,10 +707,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Graduation Status): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -719,10 +722,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student Career Programs): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -734,10 +737,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student Course Achievements): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -749,10 +752,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student Exam Details): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -764,10 +767,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student Notes): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -779,10 +782,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Undo Completion Reasons): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });

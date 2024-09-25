@@ -52,11 +52,6 @@
                 <v-btn @click="clearInput" class="btn btn-outline-primary mx-2">
                   Reset
                 </v-btn>
-                <v-progress-circular
-                  v-if="searchLoading"
-                  indeterminate
-                  color="green"
-                ></v-progress-circular>
               </div>
             </div>
 
@@ -118,7 +113,7 @@
 import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import sharedMethods from "../sharedMethods";
-import { showNotification } from "../utils/common.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 
 export default {
   name: "SchoolReports",
@@ -127,6 +122,7 @@ export default {
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       url: null,
       file: [],
       mincode: {
@@ -182,9 +178,6 @@ export default {
     };
   },
   computed: {},
-  created() {
-    this.showNotification = showNotification;
-  },
   methods: {
     keyHandler: function (e) {
       if (e.keyCode === 13) {
@@ -217,10 +210,7 @@ export default {
           .catch((error) => {
             this.searchLoading = false;
             this.searchMessage = "No reports found for this school";
-            this.showNotification(
-              "danger",
-              "There was an error with the web service." + error.response
-            );
+            this.snackbarStore.showSnackbar(error.message, "error", 5000);
           });
       }
     },

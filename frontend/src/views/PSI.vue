@@ -215,7 +215,7 @@
 <script>
 import TRAXService from "../services/TRAXService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
-import { showNotification } from "../utils/common.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "psi",
   components: {
@@ -223,6 +223,7 @@ export default {
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       advancedSearchLoading: false,
       advancedSearchMessage: "",
       totalResults: "",
@@ -302,9 +303,6 @@ export default {
         },
       },
     };
-  },
-  created() {
-    this.showNotification = showNotification;
   },
   methods: {
     clearInput: function () {
@@ -445,18 +443,12 @@ export default {
               this.advancedSearchMessage = "No PSIs found.";
               // eslint-disable-next-line
               console.log("There was an error:" + error);
-              this.showNotification(
-                "danger",
-                "There was an error with the web service."
-              );
+              this.snackbarStore.showSnackbar(error.message, "error", 5000);
             }); //TRAXService
         } catch (error) {
           this.advancedSearchLoading = false;
           this.advancedSearchMessage = "Search Error" + error;
-          this.showNotification(
-            "danger",
-            "There was an error with the web service."
-          );
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         }
       }
     },
