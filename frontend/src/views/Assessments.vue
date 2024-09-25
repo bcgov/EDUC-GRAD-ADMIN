@@ -1,11 +1,6 @@
 <template>
   <div class="assessments-view">
     <h1>Assessments</h1>
-    <Snackbar
-      v-model="snackbarVisible"
-      :message="snackbarMessage"
-      color="error"
-    />
     <div>
       <v-card no-body>
         <v-tabs v-model="tab" bg-color="transparent" grow>
@@ -46,18 +41,16 @@
 <script>
 import AssessmentService from "@/services/AssessmentService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
-import Snackbar from "@/components/Common/Snackbar.vue";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "assessments",
   components: {
     DisplayTable: DisplayTable,
-    Snackbar: Snackbar,
   },
   data() {
     return {
       tab: null,
-      snackbarVisible: false,
-      snackbarMessage: "",
+      snackbarStore: useSnackbarStore(),
       assessments: [],
       assessmentRequirements: [],
       assmtCode: "",
@@ -144,8 +137,7 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error("API error:", error);
-          this.snackbarMessage = error.message;
-          this.snackbarVisible = true;
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         });
     },
     getAllAssessmentReqs() {
@@ -156,8 +148,7 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error("API error:", error);
-          this.snackbarMessage = error.message;
-          this.snackbarVisible = true;
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         });
     },
   },
