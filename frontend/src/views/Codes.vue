@@ -49,7 +49,7 @@
 <script>
 import { mapState } from "pinia";
 import { useAuthStore } from "../store/modules/auth";
-import Snackbar from "@/components/Common/Snackbar.vue";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import StudentService from "@/services/StudentService.js";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
@@ -57,9 +57,9 @@ import BatchProcessingService from "@/services/BatchProcessingService.js";
 
 export default {
   name: "codes",
-  components: { Snackbar: Snackbar },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       url: null,
       file: [],
       tab: 1,
@@ -278,8 +278,7 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error("API error:", error);
-          this.snackbarMessage = error.message;
-          this.snackbarVisible = true;
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         });
     },
     getCertificateTypes() {
@@ -291,8 +290,7 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error("API error:", error);
-          this.snackbarMessage = error.message;
-          this.snackbarVisible = true;
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         });
     },
     getReportTypes() {
@@ -304,8 +302,7 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error("API error:", error);
-          this.snackbarMessage = error.message;
-          this.snackbarVisible = true;
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         });
     },
     getRequirementTypes() {
@@ -317,8 +314,7 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error("API error:", error);
-          this.snackbarMessage = error.message;
-          this.snackbarVisible = true;
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         });
     },
     getStudentStatusCodes() {
@@ -330,8 +326,7 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error("API error:", error);
-          this.snackbarMessage = error.message;
-          this.snackbarVisible = true;
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         });
     },
     getBatchJobTypes() {
@@ -342,8 +337,7 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error("API error:", error);
-          this.snackbarMessage = error.message;
-          this.snackbarVisible = true;
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         });
     },
     getUngradReasons() {
@@ -355,8 +349,7 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error("API error:", error);
-          this.snackbarMessage = error.message;
-          this.snackbarVisible = true;
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         });
     },
     getReportSignatures() {
@@ -368,8 +361,7 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error("API error:", error);
-          this.snackbarMessage = error.message;
-          this.snackbarVisible = true;
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         });
     },
   },

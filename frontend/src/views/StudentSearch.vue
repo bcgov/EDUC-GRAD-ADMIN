@@ -334,7 +334,7 @@
 <script>
 import { mapState, mapActions, mapWritableState, storeToRefs } from "pinia";
 import { useVuelidate } from "@vuelidate/core";
-import { showNotification } from "../utils/common.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "@/store/modules/student";
 import StudentService from "@/services/StudentService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
@@ -350,6 +350,7 @@ export default {
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       tab: null,
       advancedSearchAPIMessage: "",
       resultsPerPageOptions: [
@@ -516,7 +517,6 @@ export default {
   watch: {},
   validations() {},
   created() {
-    this.showNotification = showNotification;
     if (this.savedAdvSearchInput != "") {
       this.advancedSearchInput = this.savedAdvSearchInput;
       this.findStudentsByAdvancedSearch();
@@ -595,9 +595,10 @@ export default {
                   }
                 }
               } else {
-                this.showNotification(
-                  "warning",
-                  "Please refine your search criteria"
+                this.snackbarStore.showSnackbar(
+                  "Please refine your search criteria",
+                  "error",
+                  5000
                 );
               }
             })
@@ -605,18 +606,12 @@ export default {
               this.advancedSearchLoading = false;
               this.advancedSearchMessage = "Student not found";
               this.errorMessage = err;
-              this.showNotification(
-                "danger",
-                "There was an error with the web service."
-              );
+              this.snackbarStore.showSnackbar(err.message, "error", 5000);
             });
         } catch (error) {
           this.advancedSearchLoading = false;
           this.advancedSearchMessage = "Advanced Search Error";
-          this.showNotification(
-            "danger",
-            "There was an error with the web service."
-          );
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         }
       }
     },
