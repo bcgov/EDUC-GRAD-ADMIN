@@ -23,7 +23,10 @@ async function getTRAXAPI(req, res) {
 
     // Fetch the base URL from the config using the dynamic key
     const baseURL = config.get(configKey);
+    
     url = baseURL + "/trax" + req.url;
+    console.log(configKey)
+    console.log(baseURL)
     console.log(url)
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
