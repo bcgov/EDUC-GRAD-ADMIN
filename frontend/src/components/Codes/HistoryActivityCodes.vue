@@ -25,7 +25,7 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import StudentService from "@/services/StudentService.js";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "HistoryActivityCodes",
   components: {
@@ -37,15 +37,12 @@ export default {
         this.historyActivityCode = response.data;
       })
       .catch((error) => {
-        this.$bvToast.toast("ERROR " + error.response.statusText, {
-          title: "ERROR" + error.response.status,
-          variant: "danger",
-          noAutoHide: true,
-        });
+        this.snackbarStore.showSnackbar(error.message, "error", 5000);
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       historyActivityCode: [],
       historyActivityCodeFields: [
         {
