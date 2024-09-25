@@ -16,7 +16,7 @@ router.get('*',
 async function getTRAXAPI(req, res) {
   const token = getBackendToken(req);
   const urlParts = req.baseUrl.split('/').filter(Boolean); // Split and remove empty parts
-  const version = urlParts[0]; // Get the first part which is the version
+  let version = urlParts[0]; // Get the first part which is the version
   // Set the version on the request object
   if (version === 'api') {
     version = urlParts[1]; // Skip the 'api' part in OpenShift
