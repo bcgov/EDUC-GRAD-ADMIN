@@ -13,12 +13,12 @@
       <v-card-title> Add Optional Program </v-card-title>
       <v-stepper :items="['Select Optional Programs', 'Confirmation']">
         <template v-slot:item.1>
-          {{ careerProgramCodeSelect }}
+          {{ selectedCareerPrograms }}
           Student Program {{ studentProgramId }}
           <v-form @submit.prevent="submitForm">
             <!-- Program Name Input -->
             <v-autocomplete
-              v-model="optionalProgramCodeSelect"
+              v-model="selectedOptionalProgram"
               :items="activeOptionalPrograms"
               :item-title="optionalProgramTitle"
               item-value="optionalProgramID"
@@ -31,8 +31,8 @@
               multiple
               clearable
               chips
-              v-if="isCareerProgram(optionalProgramCodeSelect)"
-              v-model="careerProgramCodeSelect"
+              v-if="isCareerProgram(selectedOptionalProgram)"
+              v-model="selectedCareerPrograms"
               :items="activeCareerPrograms"
               :item-title="careerProgramTitle"
               item-value="code"
@@ -43,10 +43,43 @@
           </v-form>
         </template>
         <template v-slot:item.2>
-          OPTIONAL PROGRAM:
-          <pre>{{ optionalProgramCodeSelect }}</pre>
+          <slot name="text">
+            <p>
+              You are about to add the
+              <strong>
+                {{
+                  getOptionalProgramByID(selectedOptionalProgram)
+                    .optionalProgramName
+                }}
+                ({{
+                  getOptionalProgramByID(selectedOptionalProgram)
+                    .optProgramCode
+                }})
+              </strong>
+              Optional Program
+              {{
+                isCareerProgram(selectedOptionalProgram)
+                  ? "with the following Career Programs"
+                  : ""
+              }}
+              for this student.
+            </p>
+
+            <ul v-if="isCareerProgram(selectedOptionalProgram)">
+              <li
+                v-for="item in selectedCareerPrograms"
+                :key="item"
+                class="my-1"
+              >
+                {{ item }} - {{ getCareerProgramByCode(item).name }}
+              </li>
+            </ul>
+          </slot>
+          <v-alert color="warning"> </v-alert>
+          <!-- OPTIONAL PROGRAM:
+          <pre>{{ selectedOptionalProgram }}</pre>
           CAREER PROGRAM:
-          <pre>{{ careerProgramCodeSelect }}</pre>
+          <pre>{{ selectedCareerPrograms }}</pre> -->
         </template>
       </v-stepper>
       <template v-slot:actions>
@@ -73,7 +106,7 @@ import { useStudentStore } from "../../store/modules/student";
 import { mapActions, mapState } from "pinia";
 export default {
   watch: {
-    optionalProgramCodeSelect(newVal) {
+    selectedOptionalProgram(newVal) {
       // The function to be executed when isCareerProgram changes
       if (!this.isCareerProgram(newVal)) {
         this.clearCareerPrograms();
@@ -128,7 +161,7 @@ export default {
         )
         // ?.filter(
         //   (activeCareerProgram) =>
-        //     !this.careerProgramsToAdd.some(
+        //     !this.selectedCareerPrograms.some(
         //       (careerProgram) => careerProgram == activeCareerProgram.code
         //     )
         // )
@@ -140,8 +173,8 @@ export default {
       dialog: false,
       optionalProgramList: [],
       careerProgramList: [],
-      optionalProgramCodeSelect: "",
-      careerProgramCodeSelect: "",
+      selectedOptionalProgram: "",
+      selectedCareerPrograms: "",
       // Add other data properties as needed
     };
   },
@@ -163,7 +196,7 @@ export default {
       return activeProgram && activeProgram.optProgramCode === "CP";
     },
     clearCareerPrograms() {
-      this.careerProgramCodeSelect = [];
+      this.selectedCareerPrograms = [];
     },
     optionalProgramTitle(item) {
       if (item) {
@@ -190,6 +223,17 @@ export default {
         console.error("Error fetching optional programs:", error);
       }
     },
+    // getters
+    getOptionalProgramByID(selectedID) {
+      return this.optionalProgramList.find(
+        (optProgram) => optProgram.optionalProgramID === selectedID
+      );
+    },
+    getCareerProgramByCode(selectedCode) {
+      return this.careerProgramList.find(
+        (careerProgram) => careerProgram.code === selectedCode
+      );
+    },
     openCreateOptionalProgramDialog() {
       this.clearForm();
       this.dialog = true;
@@ -200,13 +244,13 @@ export default {
     },
     clearForm() {
       console.log("form cleared");
-      this.optionalProgramCodeSelect = "";
-      this.careerProgramCodeSelect = "";
+      this.selectedOptionalProgram = "";
+      this.selectedCareerPrograms = "";
     },
     submitForm() {
       this.addStudentOptionalProgram(
-        this.optionalProgramCodeSelect,
-        this.careerProgramCodeSelect
+        this.selectedOptionalProgram,
+        this.selectedCareerPrograms
       );
       this.closeCreateOptionalProgramDialog();
     },
