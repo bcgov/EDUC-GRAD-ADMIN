@@ -153,6 +153,7 @@ export default {
     const batchProcessingStore = useBatchProcessingStore();
     const batchRequestFormStore = useBatchRequestFormStore();
     const notifications = ref(null);
+
     const activeTab = ref(batchProcessingStore.activeTab);
     watch(activeTab, (newValue) => {
       batchRequestFormStore.activeTab = newValue;
@@ -244,6 +245,7 @@ export default {
     step: 0,
     dialog: false,
     snackbarStore: useSnackbarStore(),
+    batchProcessingStore: useBatchProcessingStore(),
   }),
   computed: {
     ...mapState(useBatchRequestFormStore, [
@@ -256,6 +258,10 @@ export default {
     ...mapActions(useBatchRequestFormStore, [
       "clearBatchDetails",
       "clearBatchGroupData",
+    ]),
+    ...mapActions(useBatchProcessingStore, [
+      "setActiveTab",
+      "updateDashboards",
     ]),
     closeDialogAndResetForm() {
       this.group = null;
@@ -277,10 +283,13 @@ export default {
         );
         this.closeDialogAndResetForm();
         this.snackbarStore.showSnackbar(
-          "Graduation Algorithm request submitted",
+          "Batch " +
+            response.data.batchId +
+            "- Graduation Algorithm request submitted",
           "success",
           5000
         );
+        this.setActiveTab("batchRuns");
       } catch (error) {
         // handle the error and show the notification
         this.snackbarStore.showSnackbar(

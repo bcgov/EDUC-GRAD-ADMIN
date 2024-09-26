@@ -29,6 +29,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     distribution: null,
     localDownload: "N",
     activityCode: null,
+    reportType: null,
 
     batchRunTime: null,
     batchRunSchedule: null,
@@ -115,6 +116,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         return [];
       }
     },
+    getReportType: (state) => state.reportType,
     getPsiYear: (state) => state.psiYear,
     getDistribution: (state) => state.distribution,
     getCopies: (state) => state.copies,
@@ -213,6 +215,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         schoolCategoryCodes: state.categoryCode,
         validateInputs: false,
         activityCode: state.activityCode,
+        reportTypes: [state.reportType],
         // gradDateFrom and gradDateTo are empty if "Current Students" is selected
         gradDateFrom: state.getFormattedGradDateFrom,
         gradDateTo: state.getFormattedGradDateTo,

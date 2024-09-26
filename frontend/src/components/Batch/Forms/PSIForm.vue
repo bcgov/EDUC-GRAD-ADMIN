@@ -205,6 +205,10 @@ export default {
       "clearBatchGroupData",
       "setGroup",
     ]),
+    ...mapActions(useBatchProcessingStore, [
+      "setActiveTab",
+      "updateDashboards",
+    ]),
     closeDialogAndResetForm() {
       this.group = null;
       this.dialog = false;
@@ -219,18 +223,24 @@ export default {
     },
     async submit() {
       try {
-        let response = await BatchProcessingService.runREGALG(
+        let response = await BatchProcessingService.runPSIRun(
           this.getBatchRequest,
           this.getBatchRequestCrontime
         );
         this.closeDialogAndResetForm();
-        this.activeTab = "batchRuns";
+        this.snackbarStore.showSnackbar(
+          "Batch " + response.data.batchId + "- PSI Run FTP / Paper submitted",
+          "success",
+          5000
+        );
+        this.setActiveTab("batchRuns");
+        this.updateDashboards();
       } catch (error) {
-        // handle the error and show the notification
-        console.error("Error:", error);
-        if (this.notifications) {
-          this.notifications.show("An error occurred: " + error.message);
-        }
+        this.snackbarStore.showSnackbar(
+          "An error occurred: " + error.message,
+          "danger",
+          5000
+        );
       }
     },
   },

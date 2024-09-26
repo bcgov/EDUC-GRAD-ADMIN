@@ -448,6 +448,10 @@ export default {
       "setBatchRunType",
       "setCredential",
     ]),
+    ...mapActions(useBatchProcessingStore, [
+      "setActiveTab",
+      "updateDashboards",
+    ]),
     getTranscriptTypes() {
       GraduationReportService.getTranscriptTypes()
         .then((response) => {
@@ -497,13 +501,15 @@ export default {
         );
         if (response) {
           this.snackbarStore.showSnackbar(
-            "Batch request submitted",
+            "Batch " +
+              response.data.batchId +
+              "- User distribution batch request submitted",
             "success",
             5000
           );
         }
         this.closeDialogAndResetForm();
-        this.activeTab = "batchRuns";
+        this.updateDashboards();
       } catch (error) {
         // handle the error and show the notification
         console.error("Error:", error);

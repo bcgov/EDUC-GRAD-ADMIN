@@ -238,6 +238,10 @@ export default {
       "clearBatchDetails",
       "clearBatchGroupData",
     ]),
+    ...mapActions(useBatchProcessingStore, [
+      "setActiveTab",
+      "updateDashboards",
+    ]),
     closeDialogAndResetForm() {
       this.group = null;
       this.dialog = false;
@@ -257,10 +261,21 @@ export default {
           this.getBatchRequestCrontime
         );
         this.closeDialogAndResetForm();
-        this.activeTab = "batchRuns";
+        this.snackbarStore.showSnackbar(
+          "Batch " +
+            response.data.batchId +
+            "- User Request Certificate Regeneration submitted",
+          "success",
+          5000
+        );
+        this.setActiveTab("batchRuns");
+        this.updateDashboards();
       } catch (error) {
-        // handle the error and show the notification
-        console.error("Error:", error);
+        this.snackbarStore.showSnackbar(
+          "An error occurred: " + error.message,
+          "danger",
+          5000
+        );
       }
     },
   },

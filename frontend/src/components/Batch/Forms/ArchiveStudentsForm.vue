@@ -136,14 +136,13 @@
 
 <script>
 import { ref, watch } from "vue";
+import BatchProcessingService from "@/services/BatchProcessingService.js";
 import SchoolInput from "@/components/Batch/Forms/FormInputs/SchoolInput.vue";
-import DistrictInput from "@/components/Batch/Forms/FormInputs/DistrictInput.vue";
-import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
-import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
+import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
@@ -158,6 +157,7 @@ export default {
         batchRequestFormStore.setActivityCode(null);
       }
     });
+
     return {
       group,
       v$: useVuelidate(),
@@ -227,21 +227,15 @@ export default {
       "clearBatchDetails",
       "clearBatchGroupData",
     ]),
-    async submit() {
-      try {
-        let response = await BatchProcessingService.runDISTRUN_YE(
-          this.getBatchRequest,
-          this.getBatchRequestCrontime
-        );
-        this.closeDialogAndResetForm();
-        this.activeTab = "batchRuns";
-      } catch (error) {
-        // handle the error and show the notification
-        console.error("Error:", error);
-        if (this.notifications) {
-          this.notifications.show("An error occurred: " + error.message);
-        }
-      }
+    ...mapActions(useBatchProcessingStore, [
+      "setActiveTab",
+      "updateDashboards",
+    ]),
+    closeDialogAndResetForm() {
+      this.group = null;
+      this.dialog = false;
+      this.clearBatchDetails();
+      this.step = 0;
     },
     cancel() {
       this.group = null;
@@ -251,6 +245,31 @@ export default {
     },
     changeStep(step) {
       this.step = step;
+    },
+    async submit() {
+      try {
+        let response = await BatchProcessingService.runArchiveStudents(
+          this.getBatchRequest,
+          this.getBatchRequestCrontime
+        );
+        this.closeDialogAndResetForm();
+        this.snackbarStore.showSnackbar(
+          "Batch " +
+            response.data.batchId +
+            "- Archive student batch process submitted",
+          "success",
+          5000
+        );
+        this.setActiveTab("batchRuns");
+        this.updateDashboards();
+      } catch (error) {
+        // handle the error and show the notification
+        this.snackbarStore.showSnackbar(
+          "An error occurred: " + error.message,
+          "danger",
+          5000
+        );
+      }
     },
   },
 };

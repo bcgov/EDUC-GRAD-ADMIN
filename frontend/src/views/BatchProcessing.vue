@@ -12,15 +12,29 @@
         <v-icon color="white" icon="mdi-refresh" size="large"></v-icon>
         Update
       </v-btn>
-
-      <v-tabs v-model="tab" bg-color="transparent">
-        <v-tab value="batchRuns" @click="getJwtToken"
+      <v-tabs v-model="activeTab" bg-color="transparent">
+        <v-tab
+          value="batchRuns"
+          @click="
+            getJwtToken;
+            activeTab = 'batchRuns';
+          "
           >Batch Runs ({{ batchRuns.length }})</v-tab
         >
-        <v-tab value="scheduledRuns" @click="getJwtToken"
+        <v-tab
+          value="scheduledRuns"
+          @click="
+            getJwtToken;
+            activeTab = 'scheduledRuns';
+          "
           >User Scheduled ({{ queueScheduledJobs.length }} Queued)</v-tab
         >
-        <v-tab @click="getJwtToken" value="batchRoutines"
+        <v-tab
+          @click="
+            getJwtToken;
+            activeTab = 'batchRoutines';
+          "
+          value="batchRoutines"
           >Scheduled Routines</v-tab
         >
         <v-tab
@@ -36,7 +50,7 @@
         >
       </v-tabs>
 
-      <v-tabs-window v-model="tab">
+      <v-tabs-window v-model="getActiveTab">
         <v-tabs-window-item value="batchRuns">
           <BatchRuns></BatchRuns>
         </v-tabs-window-item>
@@ -216,8 +230,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
-
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import DistributionService from "@/services/DistributionService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
@@ -335,19 +347,7 @@ export default {
       displayMessage: null,
       adminDashboardLoading: false,
       dashboardData: "",
-      processed: "",
-      lastRunStatus: "",
-      lastExpectedStudentsProcessed: "",
-      processedLastRun: "",
-      errors: "32",
-      expected: "56",
-      processingTime: "",
-      lastJobstartTime: "",
-      lastJobendTime: "",
-      processedLastJobstartTime: "",
-      processedLastJobendTime: "",
-      timespan: "6:00pm to 7:12pm",
-      timePerRecord: "18s",
+
       isErrorShowing: false,
       isBatchShowing: false,
       certificateTypes: [],
@@ -361,7 +361,6 @@ export default {
       batchValid: false,
       batchRunGradOptions: [],
       credentialBatchRunOptions: [],
-
       distributionBatchRunOptions: [],
       PSIBatchRunOptions: [],
       yearEndBatchRunOptions: [],
@@ -1128,7 +1127,6 @@ export default {
           }
           this.addScheduledJob(scheduledRequest, id);
         } else if (this.tabContent[id].details["where"] == "User") {
-          console.log("user");
           request.user = this.userFullName;
           request.address = {
             streetLine1: "4TH FLOOR 620 SUPERIOR",

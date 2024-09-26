@@ -1,7 +1,6 @@
 <template>
   <v-container>
     <v-card>
-      <v-card-title>Include School Category</v-card-title>
       <v-card-text>
         <v-row>
           <v-col sm="6" lg="9">
@@ -10,7 +9,7 @@
               :items="schoolCategoryOptions"
               item-title="title"
               item-value="value"
-              label="Choose..."
+              label="School Category."
               class="my-2"
               outlined
             ></v-select>

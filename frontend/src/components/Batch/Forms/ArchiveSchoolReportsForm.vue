@@ -41,6 +41,28 @@
                   <v-stepper-window-item value="1">
                     <v-row>
                       <v-select
+                        v-model="reportType"
+                        :items="[
+                          {
+                            text: 'NONGRADPRJ - Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)',
+                            value: 'NONGRADPRJ',
+                          },
+                          {
+                            text: 'GRADREG - Graduated Students (MM YYYY to MM YYYY) Report',
+                            value: 'GRADREG',
+                          },
+                          {
+                            text: 'NONGRADREG - Not-Yet Graduated Students (MM YYYY to MM YYYY) Report',
+                            value: 'NONGRADREG',
+                          },
+                        ]"
+                        item-title="text"
+                        item-value="value"
+                        label="Select a report type"
+                      ></v-select>
+                    </v-row>
+                    <v-row>
+                      <v-select
                         v-model="group"
                         :items="['School', 'All Schools']"
                         label="Select a group"
@@ -138,20 +160,20 @@
 
 <script>
 import { ref, watch } from "vue";
+import BatchProcessingService from "@/services/BatchProcessingService.js";
 import SchoolInput from "@/components/Batch/Forms/FormInputs/SchoolInput.vue";
-import DistrictInput from "@/components/Batch/Forms/FormInputs/DistrictInput.vue";
-import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
-import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
+import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
     const group = ref(batchRequestFormStore.who);
+    const reportType = ref(batchRequestFormStore.reportType);
     watch(group, (newValue) => {
       batchRequestFormStore.who = newValue;
       if (newValue == "All Schools") {
@@ -160,8 +182,11 @@ export default {
         batchRequestFormStore.setActivityCode(null);
       }
     });
-
+    watch(reportType, (newValue) => {
+      batchRequestFormStore.reportType = newValue;
+    });
     return {
+      reportType,
       group,
       v$: useVuelidate(),
     };
@@ -216,12 +241,15 @@ export default {
   data: () => ({
     step: 0,
     dialog: false,
+    snackbarStore: useSnackbarStore(),
+    batchProcessingStore: useBatchProcessingStore(),
   }),
   computed: {
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
       "batchRunTimeSet",
+      "getReportType",
       "getBatchRequestCrontime",
     ]),
   },
@@ -230,21 +258,16 @@ export default {
       "clearBatchDetails",
       "clearBatchGroupData",
     ]),
-    async submit() {
-      try {
-        let response = await BatchProcessingService.runDISTRUN_YE(
-          this.getBatchRequest,
-          this.getBatchRequestCrontime
-        );
-        this.closeDialogAndResetForm();
-        this.activeTab = "batchRuns";
-      } catch (error) {
-        // handle the error and show the notification
-        console.error("Error:", error);
-        if (this.notifications) {
-          this.notifications.show("An error occurred: " + error.message);
-        }
-      }
+    ...mapActions(useBatchProcessingStore, [
+      "setActiveTab",
+      "updateDashboards",
+    ]),
+
+    closeDialogAndResetForm() {
+      this.group = null;
+      this.dialog = false;
+      this.clearBatchDetails();
+      this.step = 0;
     },
     cancel() {
       this.group = null;
@@ -254,6 +277,30 @@ export default {
     },
     changeStep(step) {
       this.step = step;
+    },
+    async submit() {
+      try {
+        let response = await BatchProcessingService.runArchiveSchoolReports(
+          this.getBatchRequest,
+          this.getBatchRequestCrontime
+        );
+        this.closeDialogAndResetForm();
+        this.snackbarStore.showSnackbar(
+          "Batch " +
+            response.data.batchId +
+            "- Archive School Reports Process submitted",
+          "success",
+          5000
+        );
+        this.setActiveTab("batchRuns");
+        this.updateDashboards();
+      } catch (error) {
+        this.snackbarStore.showSnackbar(
+          "An error occurred: " + error.message,
+          "danger",
+          5000
+        );
+      }
     },
   },
 };

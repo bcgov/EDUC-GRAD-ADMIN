@@ -143,6 +143,7 @@ import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
+import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
@@ -244,6 +245,10 @@ export default {
       "clearBatchDetails",
       "clearBatchGroupData",
     ]),
+    ...mapActions(useBatchProcessingStore, [
+      "setActiveTab",
+      "updateDashboards",
+    ]),
     closeDialogAndResetForm() {
       this.group = null;
       this.dialog = false;
@@ -266,8 +271,9 @@ export default {
           this.getBatchRequestCrontime
         );
         this.closeDialogAndResetForm();
+        this.activeTab = "batchRuns";
         this.snackbarStore.showSnackbar(
-          "Transcript Verification Report request submitted",
+          "Transcript verification report request submitted",
           "success",
           5000
         );
