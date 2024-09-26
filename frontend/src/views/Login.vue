@@ -1,6 +1,7 @@
 <template>
   <v-container class="d-flex justify-center">
     <v-row>
+      <v-spacer />
       <v-col cols="12" md="4" lg="4">
         <v-card class="pt-3 pb-4">
           <v-card-title>
@@ -17,6 +18,7 @@
           </v-card-actions>
         </v-card>
       </v-col>
+      <v-spacer />
     </v-row>
   </v-container>
 </template>
