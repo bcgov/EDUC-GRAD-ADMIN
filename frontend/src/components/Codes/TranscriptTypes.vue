@@ -22,7 +22,7 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "TranscriptsTypes",
   components: {
@@ -35,15 +35,12 @@ export default {
       })
       // eslint-disable-next-line
       .catch((error) => {
-        this.$bvToast.toast("ERROR " + error.response.statusText, {
-          title: "ERROR" + error.response.status,
-          variant: "danger",
-          noAutoHide: true,
-        });
+        this.snackbarStore.showSnackbar(error.message, "error", 5000);
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       transcriptTypes: [],
       transcriptTypesFields: [
         {

@@ -31,7 +31,7 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "DocumentStatusCode",
   components: {
@@ -43,15 +43,14 @@ export default {
         this.documentStatusCodes = response.data;
       })
       .catch((error) => {
-        this.$bvToast.toast("ERROR " + error.response.statusText, {
-          title: "ERROR" + error.response.status,
-          variant: "danger",
-          noAutoHide: true,
-        });
+        // eslint-disable-next-line
+        console.error(error);
+        this.snackbarStore.showSnackbar(error.message, "error", 5000);
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       documentStatusCodes: [],
       documentStatusCodesFields: [
         {
