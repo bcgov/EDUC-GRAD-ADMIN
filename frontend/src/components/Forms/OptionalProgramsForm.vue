@@ -11,41 +11,44 @@
 
     <v-card>
       <v-card-title> Add Optional Program </v-card-title>
-      <v-card-text>
-        {{ careerProgramCodeSelect }}
-        Student Program {{ studentProgramId }}
-        <v-form @submit.prevent="submitForm">
-          <!-- Program Name Input -->
-          <v-autocomplete
-            v-model="optionalProgramCodeSelect"
-            :items="activeOptionalPrograms"
-            :item-title="optionalProgramTitle"
-            item-value="optionalProgramID"
-            label="Choose an Optional Program to add"
-            required
-            @keyup.enter="submitForm"
-          >
-          </v-autocomplete>
-          <v-autocomplete
-            multiple
-            clearable
-            chips
-            v-if="isCareerProgram(optionalProgramCodeSelect)"
-            v-model="careerProgramCodeSelect"
-            :items="careerProgramList"
-            item-title="name"
-            item-value="code"
-            label="Choose an Optional Program to add"
-            required
-            @keyup.enter="submitForm"
-          ></v-autocomplete>
-
-          <!-- Other form fields go here -->
-
-          <!-- Submit Button -->
-          <v-btn type="submit" color="primary">Submit</v-btn>
-        </v-form>
-      </v-card-text>
+      <v-stepper :items="['Select Optional Programs', 'Confirmation']">
+        <template v-slot:item.1>
+          {{ careerProgramCodeSelect }}
+          Student Program {{ studentProgramId }}
+          <v-form @submit.prevent="submitForm">
+            <!-- Program Name Input -->
+            <v-autocomplete
+              v-model="optionalProgramCodeSelect"
+              :items="activeOptionalPrograms"
+              :item-title="optionalProgramTitle"
+              item-value="optionalProgramID"
+              label="Choose an Optional Program to add"
+              required
+              @keyup.enter="submitForm"
+            >
+            </v-autocomplete>
+            <v-autocomplete
+              multiple
+              clearable
+              chips
+              v-if="isCareerProgram(optionalProgramCodeSelect)"
+              v-model="careerProgramCodeSelect"
+              :items="activeCareerPrograms"
+              :item-title="careerProgramTitle"
+              item-value="code"
+              label="Choose an Optional Program to add"
+              required
+              @keyup.enter="submitForm"
+            ></v-autocomplete>
+          </v-form>
+        </template>
+        <template v-slot:item.2>
+          OPTIONAL PROGRAM:
+          <pre>{{ optionalProgramCodeSelect }}</pre>
+          CAREER PROGRAM:
+          <pre>{{ careerProgramCodeSelect }}</pre>
+        </template>
+      </v-stepper>
       <template v-slot:actions>
         <v-row justify="end">
           <!-- Use v-btn with @click to close the dialog -->
@@ -59,7 +62,13 @@
 </template>
 
 <script>
+// API service
 import ProgramManagementService from "@/services/ProgramManagementService.js";
+
+// Shared functions & validations
+import { isProgramComplete, applyDisplayOrder } from "@/utils/common.js";
+
+// Pinia store
 import { useStudentStore } from "../../store/modules/student";
 import { mapActions, mapState } from "pinia";
 export default {
@@ -75,28 +84,55 @@ export default {
     this.fetchPrograms();
   },
   computed: {
+    ...mapState(useStudentStore, {
+      studentOptionalPrograms: "getStudentOptionalPrograms",
+      studentCareerPrograms: "getStudentCareerPrograms",
+      studentGradStatus: "getStudentGradStatus",
+    }),
     activeOptionalPrograms() {
       const studentProgramId = this.studentProgramId;
 
       const currentDate = new Date().toISOString().split("T")[0];
-      return this.optionalProgramList.filter((item) => {
-        let effectiveDateUTC = null;
-        let expiryDateUTC = null;
-        if (item.effectiveDate) {
-          effectiveDateUTC = new Date(item.effectiveDate)
-            .toISOString()
-            .split("T")[0];
-        }
-        if (item.expiryDate) {
-          expiryDateUTC = new Date(item.expiryDate).toISOString().split("T")[0];
-        }
-
-        return (
-          item.graduationProgramCode === studentProgramId &&
-          effectiveDateUTC <= currentDate &&
-          (expiryDateUTC == null || currentDate <= expiryDateUTC)
-        );
-      });
+      return applyDisplayOrder(
+        this.optionalProgramList
+          ?.filter((item) => {
+            return item.graduationProgramCode === studentProgramId;
+          })
+          ?.filter((activeOptionalProgram) => {
+            // If student optional programs exist, filter out existing programs. Otherwise returns all possible opt programs for grad program
+            if (
+              !!this.studentOptionalPrograms &&
+              this.studentOptionalPrograms.length > 0
+            ) {
+              return !this.studentOptionalPrograms.some(
+                (studentOptionalProgram) =>
+                  studentOptionalProgram.optionalProgramID ==
+                    activeOptionalProgram.optionalProgramID &&
+                  studentOptionalProgram.optionalProgramCode !== "CP"
+              );
+            } else {
+              return true;
+            }
+          })
+      );
+    },
+    activeCareerPrograms() {
+      return applyDisplayOrder(
+        this.careerProgramList?.filter(
+          (activeCareerProgram) =>
+            !this.studentCareerPrograms.some(
+              (studentCareerProgram) =>
+                studentCareerProgram.careerProgramCode ==
+                activeCareerProgram.code
+            )
+        )
+        // ?.filter(
+        //   (activeCareerProgram) =>
+        //     !this.careerProgramsToAdd.some(
+        //       (careerProgram) => careerProgram == activeCareerProgram.code
+        //     )
+        // )
+      );
     },
   },
   data() {
@@ -133,6 +169,11 @@ export default {
       if (item) {
         return `${item.graduationProgramCode} - ${item.optionalProgramName}`;
       } else return "";
+    },
+    careerProgramTitle(item) {
+      if (item) {
+        return `${item.code} - ${item.name}`;
+      }
     },
     ...mapActions(useStudentStore, ["addStudentOptionalProgram"]),
     async fetchPrograms() {
