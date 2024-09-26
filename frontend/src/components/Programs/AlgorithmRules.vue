@@ -1,6 +1,6 @@
 <template>
   <div id="algorithm-rules">
-    <h3>Algorithm Rules</h3>
+    <h3 class="ml-3 mt-5">Algorithm Rules</h3>
     <v-progress-circular
       v-if="isLoading"
       color="primary"

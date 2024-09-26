@@ -198,7 +198,7 @@
               ></DisplayTable>
             </v-window-item>
             <v-window-item value="courseRestrictionsTab">
-              <v-card-text>
+              <v-card-text class="mt-12">
                 <DisplayTable
                   title="Course restrictions"
                   v-bind:items="courseRestrictions"
