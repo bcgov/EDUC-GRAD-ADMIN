@@ -47,27 +47,6 @@
 
                   <v-stepper-window-item value="2">
                     <v-card title="Schedule" flat>
-                      Post Secondary Institutions:
-                      <v-list>
-                        <v-list-item
-                          v-for="(district, index) in getBatchRequest.psis"
-                          :key="index"
-                        >
-                          <v-list-item-content>
-                            <v-list-item-title>{{ psis }}</v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list>
-
-                      <div v-if="group === 'Program'">
-                        Districts: {{ getBatchRequest.programs }}
-                      </div>
-                      <div v-if="group === 'PSI'">
-                        Post Secondary Institutions: REQUEST
-                        {{ getBatchRequest }}
-                      </div>
-                      <v-btn @click="changeStep(0)">Edit</v-btn>
-
                       <ScheduleInput></ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>

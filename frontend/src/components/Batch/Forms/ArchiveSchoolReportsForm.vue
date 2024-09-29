@@ -95,31 +95,46 @@
 
                   <v-stepper-window-item value="2">
                     <v-card title="Schedule" flat>
-                      <div v-if="group === 'School Category'">
-                        Districts:
-                        <v-list>
-                          <v-list-item
-                            v-for="(
-                              district, index
-                            ) in getBatchRequest.districts"
-                            :key="index"
-                          >
-                            <v-list-item-content>
-                              <v-list-item-title>{{
-                                district
-                              }}</v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list>
-                      </div>
-                      <div v-if="group === 'Program'">
-                        Districts: {{ getBatchRequest.programs }}
-                      </div>
-                      <div v-if="group === 'PSI'">
-                        Post Secondary Institutions: REQUEST
-                        {{ getBatchRequest }}
-                      </div>
-                      <v-btn @click="changeStep(0)">Edit</v-btn>
+                      Confirmation
+                      <v-table>
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th>Confirm</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <!-- First Confirmation Checkbox -->
+                          <tr>
+                            <td>
+                              Final Graduation Algorithm and TVR batch jobs have
+                              been run for students from the previous cycle
+                            </td>
+                            <td>
+                              <v-checkbox
+                                v-model="selectedConfirmations"
+                                value="REQUIRED_CONFIRMATION_1"
+                                hide-details
+                              ></v-checkbox>
+                            </td>
+                          </tr>
+
+                          <!-- Second Confirmation Checkbox -->
+                          <tr>
+                            <td>
+                              Regenerate School Reports are completed for any
+                              schools that require final updates
+                            </td>
+                            <td>
+                              <v-checkbox
+                                v-model="selectedConfirmations"
+                                value="REQUIRED_CONFIRMATION_2"
+                                hide-details
+                              ></v-checkbox>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </v-table>
 
                       <ScheduleInput></ScheduleInput>
                     </v-card>
@@ -194,6 +209,18 @@ export default {
   created() {},
   validations() {
     return {
+      selectedConfirmations: {
+        required,
+        allConfirmationsSelected: helpers.withMessage(
+          "You must check both confirmations",
+          (value) => {
+            return (
+              value.includes("REQUIRED_CONFIRMATION_1") &&
+              value.includes("REQUIRED_CONFIRMATION_2")
+            );
+          }
+        ),
+      },
       getBatchRequest: {
         batchRunTimeSet: helpers.withMessage("Runtime not set", (value) => {
           if (this.getBatchRunTime) {
@@ -241,6 +268,8 @@ export default {
   data: () => ({
     step: 0,
     dialog: false,
+    selectedConfirmations: [],
+
     snackbarStore: useSnackbarStore(),
     batchProcessingStore: useBatchProcessingStore(),
   }),

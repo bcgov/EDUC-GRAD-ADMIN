@@ -58,7 +58,6 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return
     }else{
-      console.log(credentialType)
       if(credentialType == "OT"){
         return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT', request);
       }else if(credentialType == "OC"){

@@ -93,10 +93,68 @@
                       </div>
                       <div v-if="group === 'PSI'">
                         Post Secondary Institutions: REQUEST
-                        {{ getBatchRequest }}
+                        {{ getBatchRequest.psi }}
                       </div>
-                      <v-btn @click="changeStep(0)">Edit</v-btn>
+                      <v-card class="">
+                        <v-card-text>
+                          <v-table>
+                            <thead>
+                              <tr>
+                                <th></th>
+                                <th>Confirm</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <!-- First Confirmation Checkbox -->
+                              <tr>
+                                <td>
+                                  Final Graduation Algorithm and TVR batch jobs
+                                  have been run for students from the previous
+                                  cycle
+                                </td>
+                                <td>
+                                  <v-checkbox
+                                    v-model="selectedConfirmations"
+                                    value="REQUIRED_CONFIRMATION_1"
+                                    hide-details
+                                  ></v-checkbox>
+                                </td>
+                              </tr>
 
+                              <!-- Second Confirmation Checkbox -->
+                              <tr>
+                                <td>
+                                  Regenerate School Reports process has been
+                                  completed for any schools that require final
+                                  updates
+                                </td>
+                                <td>
+                                  <v-checkbox
+                                    v-model="selectedConfirmations"
+                                    value="REQUIRED_CONFIRMATION_2"
+                                    hide-details
+                                  ></v-checkbox>
+                                </td>
+                              </tr>
+
+                              <!-- Third Confirmation Checkbox -->
+                              <tr>
+                                <td>
+                                  Archive School Reports process has been
+                                  completed
+                                </td>
+                                <td>
+                                  <v-checkbox
+                                    v-model="selectedConfirmations"
+                                    value="REQUIRED_CONFIRMATION_3"
+                                    hide-details
+                                  ></v-checkbox>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </v-table>
+                        </v-card-text>
+                      </v-card>
                       <ScheduleInput></ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
@@ -166,6 +224,19 @@ export default {
   created() {},
   validations() {
     return {
+      selectedConfirmations: {
+        required,
+        allConfirmationsSelected: helpers.withMessage(
+          "You must check all 3 confirmations",
+          (value) => {
+            return (
+              value.includes("REQUIRED_CONFIRMATION_1") &&
+              value.includes("REQUIRED_CONFIRMATION_2") &&
+              value.includes("REQUIRED_CONFIRMATION_3")
+            );
+          }
+        ),
+      },
       getBatchRequest: {
         batchRunTimeSet: helpers.withMessage("Runtime not set", (value) => {
           if (this.getBatchRunTime) {
@@ -213,6 +284,7 @@ export default {
   data: () => ({
     step: 0,
     dialog: false,
+    selectedConfirmations: [],
   }),
   computed: {
     ...mapState(useBatchRequestFormStore, [

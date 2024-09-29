@@ -226,7 +226,6 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
       }
     }, 
     async addBatchJob(id){
-      console.log(id)
       this.batchAutoIncrement++;
       this.tabs.push(id);
     }, 

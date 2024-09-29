@@ -2,9 +2,19 @@
   <v-container>
     <v-row>
       <v-col sm="12">
-        <v-card title="Group">
+        <v-card>
           <v-text>
             <div v-if="getGroup == 'School'">
+              <div
+                v-if="
+                  getBatchRequest.gradDateFrom && getBatchRequest.gradDateFrom
+                "
+              >
+                Grad Start Date: {{ getBatchRequest.gradDateFrom }} Grad End
+                Date:
+                {{ getBatchRequest.gradDateTo }}
+              </div>
+              <div v-else>Current Students</div>
               <v-data-table
                 :items="getGroupData"
                 :headers="[
@@ -26,7 +36,6 @@
               ></v-data-table>
             </div>
             <div v-if="getGroup == 'School Category'">
-              {{ getGroupData }}
               <v-data-table
                 :items="getGroupData"
                 :headers="[
@@ -113,8 +122,6 @@
 
                       <VTimePicker format="24hr" v-model="batchRunCustomTime" />
                     </v-col>
-
-                    custom CRONTIME{{ getBatchRequestCrontime }}
                   </v-row>
                 </v-radio-group>
               </v-col>

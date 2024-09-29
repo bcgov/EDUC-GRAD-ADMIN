@@ -1,9 +1,15 @@
 <template>
   <v-container>
     <v-card>
+      <v-alert v-if="$slots.inputWarning" type="info" class="pb-2">
+        <slot name="inputWarning"></slot>
+      </v-alert>
       <v-card-text>
         <v-row>
-          <v-col sm="6" lg="9">
+          <v-col md="2">
+            <label class="font-weight-bold">Category</label>
+          </v-col>
+          <v-col md="10">
             <v-select
               v-model="schoolCategory"
               :items="schoolCategoryOptions"
@@ -12,12 +18,20 @@
               label="School Category."
               class="my-2"
               outlined
+              hide-details
             ></v-select>
           </v-col>
         </v-row>
-
+        <v-row>
+          <v-col md="12">
+            <DateRangeInput></DateRangeInput>
+          </v-col>
+        </v-row>
         <v-row v-if="schoolCategory !== '04' && schoolCategory !== '09'">
-          <v-col sm="6" lg="9">
+          <v-col md="2">
+            <label class="font-weight-bold">District</label>
+          </v-col>
+          <v-col sm="5" lg="8">
             <v-autocomplete
               v-model="district"
               :items="getDistrictList"
@@ -27,7 +41,7 @@
               item-value="districtNumber"
             ></v-autocomplete>
           </v-col>
-          <v-col sm="6" lg="3">
+          <v-col sm="5" lg="2">
             <v-btn
               :disabled="!district"
               @click="addDistrict()"
@@ -36,11 +50,8 @@
             >
           </v-col>
         </v-row>
-
         <v-row>
           <v-col>
-            <label class="font-weight-bold pt-2">District</label>
-
             <v-row v-if="districtInfo" class="float-left col-10">
               <v-card>
                 <v-card-text>
@@ -93,6 +104,93 @@
             <div><strong>Active Flag:</strong> {{ item.info.activeFlag }}</div>
           </template>
         </v-data-table>
+
+        <!-- <v-data-table :items="districts" :headers="districtInputFields" striped>
+          <template v-slot:top>
+            <v-row>
+              <v-col sm="9"></v-col>
+              <v-col sm="3">
+                <v-btn @click="addMode = true" :disabled="addMode"
+                  ><v-icon>mdi-plus</v-icon> Add
+                </v-btn>
+              </v-col>
+            </v-row></template
+          >
+          <template v-slot:item.remove="{ item }">
+            <v-btn
+              v-if="schoolCategory != '09' && schoolCategory != '04'"
+              @click="removeDistrict(item.district)"
+              color="primary"
+            >
+              Remove
+            </v-btn>
+          </template>
+
+   
+          <template v-slot:item.info="{ item }">
+            <div>
+              <strong>District Name:</strong> {{ item.info.districtName }}
+            </div>
+            <div><strong>Active Flag:</strong> {{ item.info.activeFlag }}</div>
+          </template>
+
+          <template v-slot:body.prepend>
+            <tr v-if="addMode">
+              <td>Include</td>
+              <td>
+                <v-row
+                  v-if="schoolCategory !== '04' && schoolCategory !== '09'"
+                >
+                  <v-col sm="12" lg="12">
+                    <v-autocomplete
+                      v-model="district"
+                      :items="getDistrictList"
+                      label="Include District"
+                      outlined
+                      :item-title="districtTitle"
+                      item-value="districtNumber"
+                      hide-details
+                    ></v-autocomplete>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <v-row v-if="districtInfo" class="float-left col-10">
+                      <v-card>
+                        <v-card-text>
+                          <v-alert
+                            v-if="validationMessage"
+                            dismissible
+                            type="danger"
+                            >{{ validationMessage }}</v-alert
+                          >
+                          <v-overlay :value="districtValidating">
+                            <div v-if="!districtInfo">NOT VALID</div>
+                            <div v-else>
+                              <strong>District:</strong>
+                              {{ districtInfo.districtName }}<br />
+                              <strong>Active Flag:</strong>
+                              {{ districtInfo.activeFlag }}<br />
+                            </div>
+                          </v-overlay>
+                        </v-card-text>
+                      </v-card>
+                    </v-row>
+                  </v-col>
+                </v-row>
+              </td>
+              <td>
+                <v-btn
+                  :disabled="!district"
+                  @click="addDistrict()"
+                  class="float-left bg-primary"
+                >
+                  Add
+                </v-btn>
+              </td>
+            </tr>
+          </template>
+        </v-data-table> -->
       </v-card-text>
     </v-card>
   </v-container>
@@ -102,11 +200,12 @@ import { isProxy, toRaw, ref, watch } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { mapActions, mapState } from "pinia";
 import { useAppStore } from "../../../../store/modules/app";
+import DateRangeInput from "./DateRangeInput.vue";
 import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
 import { required, minLength, helpers } from "@vuelidate/validators";
 
 export default {
-  components: {},
+  components: { DateRangeInput: DateRangeInput },
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
     const gradDateFrom = ref(batchRequestFormStore.gradDateFrom);
@@ -171,6 +270,8 @@ export default {
   },
   data() {
     return {
+      addMode: true,
+      includeStudents: "Current Students",
       schoolCategoryOptions: [
         { title: "01 Public", value: "01" },
         { title: "02 Independent", value: "02" },
@@ -246,12 +347,16 @@ export default {
       });
 
       this.clearDistrictInput();
+      this.addMode = false;
     },
     removeDistrict(district) {
       for (const [index] in this.districts) {
         if (this.districts[index].district == district) {
           this.districts.splice(index, 1);
         }
+      }
+      if (this.districts.length == 0) {
+        this.addMode = true;
       }
     },
   },

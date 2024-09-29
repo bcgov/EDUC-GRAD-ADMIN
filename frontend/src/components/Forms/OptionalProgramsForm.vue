@@ -115,9 +115,7 @@ export default {
       default: "",
     },
   },
-  create() {
-    console.log("OP created");
-  },
+  create() {},
   methods: {
     isCareerProgram(optionalProgramID) {
       const activeProgram = this.activeOptionalPrograms.find(
@@ -158,7 +156,6 @@ export default {
       this.dialog = false;
     },
     clearForm() {
-      console.log("form cleared");
       this.optionalProgramCodeSelect = "";
       this.careerProgramCodeSelect = "";
     },

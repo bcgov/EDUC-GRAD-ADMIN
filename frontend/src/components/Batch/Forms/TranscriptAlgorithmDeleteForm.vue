@@ -64,32 +64,6 @@
 
                   <v-stepper-window-item value="2">
                     <v-card title="Schedule" flat>
-                      <div v-if="group === 'School Category'">
-                        Districts:
-                        <v-list>
-                          <v-list-item
-                            v-for="(
-                              district, index
-                            ) in getBatchRequest.districts"
-                            :key="index"
-                          >
-                            <v-list-item-content>
-                              <v-list-item-title>{{
-                                district
-                              }}</v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list>
-                      </div>
-                      <div v-if="group === 'Program'">
-                        Districts: {{ getBatchRequest.programs }}
-                      </div>
-                      <div v-if="group === 'PSI'">
-                        Post Secondary Institutions: REQUEST
-                        {{ getBatchRequest }}
-                      </div>
-                      <v-btn @click="changeStep(0)">Edit</v-btn>
-
                       <ScheduleInput></ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
@@ -238,7 +212,6 @@ export default {
       this.group = null;
       this.dialog = false;
       this.clearBatchDetails();
-      console.log("CLEARING BATCH");
       this.step = 0;
     },
     changeStep(step) {

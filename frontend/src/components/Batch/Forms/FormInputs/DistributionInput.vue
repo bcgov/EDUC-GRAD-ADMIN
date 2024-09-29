@@ -8,8 +8,8 @@
           type="number"
           required
         ></v-text-field>
-      </v-col>
-
+      </v-col> </v-row
+    ><v-row>
       <v-col cols="12" sm="6" md="4">
         <v-select
           v-model="distribution"
@@ -20,8 +20,9 @@
           ]"
           item-title="title"
           item-value="value"
-          label="Select a Group"
+          label="Where"
           require
+          hide-details
         ></v-select>
       </v-col>
 

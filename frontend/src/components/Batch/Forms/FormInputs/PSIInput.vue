@@ -17,6 +17,7 @@
         :items="['Paper', 'FTP']"
         outlined
         small
+        hide-details
       >
       </v-select>
 
