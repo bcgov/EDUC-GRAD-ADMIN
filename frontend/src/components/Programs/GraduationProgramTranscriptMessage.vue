@@ -1,6 +1,6 @@
 <template>
   <div id="transcript-message">
-    <h3>Transcript Messaging</h3>
+    <h3 class="ml-3 mt-5">Transcript Messaging</h3>
     <v-progress-circular
       v-if="isLoading"
       color="primary"

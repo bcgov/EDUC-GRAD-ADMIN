@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>Letter Grades</h3>
+    <h3 class="ml-3 mt-5">Letter Grades</h3>
     <DisplayTable
       v-bind:items="letterGrades"
       v-bind:filterOn="toFilterItem"

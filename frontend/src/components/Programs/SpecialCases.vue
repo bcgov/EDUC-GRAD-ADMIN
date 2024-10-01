@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>Assessment Special Case Codes</h3>
+    <h3 class="ml-3 mt-5">Assessment Special Case Codes</h3>
     <DisplayTable
       v-bind:items="specialCases"
       v-bind:filterOn="toFilterItem"
