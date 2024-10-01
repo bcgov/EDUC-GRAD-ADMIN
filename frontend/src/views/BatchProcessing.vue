@@ -168,6 +168,9 @@
                   <RegenerateCertificateForm
                     v-if="item.code == 'CERT_REGEN'"
                   ></RegenerateCertificateForm>
+                  <RegenerateSchoolReportForm
+                    v-else-if="item.code == 'SCHL_RPT_REGEN'"
+                  ></RegenerateSchoolReportForm>
                   <v-btn v-else :disabled="item.disabled">+ </v-btn>
                 </template>
               </v-data-table>
@@ -224,7 +227,7 @@ import RegenerateCertificateForm from "@/components/Batch/Forms/RegenerateCertif
 import GraduationAlgorithmForm from "@/components/Batch/Forms/GraduationAlgorithmForm.vue";
 import TranscriptAlgorithmForm from "@/components/Batch/Forms/TranscriptAlgorithmForm.vue";
 import DistrunFormYearEnd from "@/components/Batch/Forms/DistrunFormYearEndForm.vue";
-
+import RegenerateSchoolReportForm from "@/components/Batch/Forms/RegenerateSchoolReportForm.vue";
 import TranscriptAlgorithmDeleteForm from "@/components/Batch/Forms/TranscriptAlgorithmDeleteForm.vue";
 import ArchiveStudentsForm from "@/components/Batch/Forms/ArchiveStudentsForm.vue";
 import ArchiveSchoolReportsForm from "@/components/Batch/Forms/ArchiveSchoolReportsForm.vue";
@@ -301,6 +304,7 @@ export default {
     PSIForm: PSIForm,
     NongradDistrunForm: NongradDistrunForm,
     TranscriptAlgorithmDeleteForm: TranscriptAlgorithmDeleteForm,
+    RegenerateSchoolReportForm: RegenerateSchoolReportForm,
   },
   data() {
     return {
