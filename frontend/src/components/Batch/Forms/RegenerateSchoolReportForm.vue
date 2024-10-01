@@ -41,33 +41,31 @@
                   <v-stepper-window-item value="1">
                     <v-row>
                       <v-col sm="2">
-                      <v-select
-                        v-model="reportType"
-                        :items="[
-                          {
-                            text: 'Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)',
-                            value: 'NONGRADPRJ',
-                          },
-                          {
-                            text: 'Graduated Students (MM YYYY to MM YYYY) Report and Not-Yet Graduated Students (MM YYYY to MM YYYY) Report',
-                            value: 'GRADREG and NONGRADREG',
-                          },
-                        ]"
-                        item-title="text"
-                        item-value="value"
-                        label="Select a report type"
-                      ></v-select>
+                        <v-select
+                          v-model="reportType"
+                          :items="[
+                            {
+                              text: 'Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)',
+                              value: 'NONGRADPRJ',
+                            },
+                            {
+                              text: 'Graduated Students (MM YYYY to MM YYYY) Report and Not-Yet Graduated Students (MM YYYY to MM YYYY) Report',
+                              value: 'GRADREG and NONGRADREG',
+                            },
+                          ]"
+                          item-title="text"
+                          item-value="value"
+                          label="Select a report type"
+                        ></v-select>
                       </v-col>
-                      <v-col>
-                        Shaiu  
-                      </v-col>
+                      <v-col> Shaiu </v-col>
                     </v-row>
                     <v-row>
                       <v-select
                         v-model="group"
                         item-title="title"
                         item-value="value"
-                        :items="['School', 'School Category', {title:'All', value="All Schools"} ]"
+                        :items="['School', 'School Category', {title:'All', value='All Schools'} ]"
                         label="Select a group"
                       ></v-select>
                     </v-row>
