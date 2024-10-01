@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>Optional Programs</h3>
+    <h3 class="ml-3 mt-5">Optional Programs</h3>
     <DisplayTable
       v-bind:items="graduationOptionalPrograms"
       v-bind:fields="graduationOptionalProgramsFields"

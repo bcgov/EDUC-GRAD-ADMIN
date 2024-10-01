@@ -1,11 +1,11 @@
 <template>
   <v-container fluid>
     <!-- User Interface controls -->
-    <v-row>
+    <v-row class="mt-n16">
       <slot name="create"></slot>
       <v-row v-if="showFilter" id="filter">
         <v-col lg="8" class="px-0 float-left"></v-col>
-        <v-col sm="12" lg="4" class="my-1 table-filter p-0">
+        <v-col sm="12" lg="4" class="my-1 pr-3 table-filter p-0">
           <v-row>
             <v-col cols="12">
               <v-form>

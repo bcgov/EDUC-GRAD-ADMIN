@@ -1,6 +1,6 @@
 <template>
   <div id="graduation-programs">
-    <h3>Programs</h3>
+    <h3 class="ml-3 mt-5">Programs</h3>
     <v-progress-circular
       v-if="isLoading"
       color="primary"
