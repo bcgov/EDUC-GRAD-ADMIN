@@ -3,20 +3,8 @@
     <v-card>
       <v-card-text>
         <v-row>
-          <v-col md="2">
-            <label class="font-weight-bold">Include</label>
-          </v-col>
-          <v-col md="10">
-            <v-select
-              v-model="includeStudents"
-              :items="['Current Students', 'Date Range']"
-              label="Select which students to include"
-              class=""
-              hide-details
-            ></v-select>
-            <div v-if="includeStudents === 'Date Range'" class="py-2" md>
-              <DateRangeInput></DateRangeInput>
-            </div>
+          <v-col md="12">
+            <DateRangeInput></DateRangeInput>
           </v-col>
         </v-row>
         <v-row>
@@ -43,7 +31,7 @@
           :headers="programInputFields"
         >
           <template v-slot:item.remove="{ item }">
-            <v-btn @click="removeProgram(item.program)"> Delete </v-btn>
+            <v-btn @click="removeProgram(item.program)"> Remove </v-btn>
           </template>
           <template v-slot:item.info="{ item }">
             <div>
