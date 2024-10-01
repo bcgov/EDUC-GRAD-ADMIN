@@ -40,7 +40,8 @@
                 <v-stepper-window>
                   <v-stepper-window-item value="1">
                     <v-row>
-                      <v-col sm="2">
+                      <v-col sm="2"> Report Type </v-col>
+                      <v-col sm="10">
                         <v-select
                           v-model="reportType"
                           :items="[
@@ -58,16 +59,20 @@
                           label="Select a report type"
                         ></v-select>
                       </v-col>
-                      <v-col> Shaiu </v-col>
+                      <v-col> </v-col>
                     </v-row>
                     <v-row>
                       <v-select
                         v-model="group"
-                        item-title="title"
-                        item-value="value"
-                        :items="['School', 'School Category', {title:'All', value='All Schools'} ]"
+                        :item-title="title"
+                        :item-value="value"
+                        :items="[
+                          'School',
+                          'School Category',
+                          { title: 'All', value: 'All Schools' },
+                        ]"
                         label="Select a group"
-                      ></v-select>
+                      />
                     </v-row>
                     <v-row v-if="group == 'School'">
                       <SchoolInput>

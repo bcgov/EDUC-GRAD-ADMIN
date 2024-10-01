@@ -40,26 +40,29 @@
                 <v-stepper-window>
                   <v-stepper-window-item value="1">
                     <v-row>
-                      <v-select
-                        v-model="reportType"
-                        :items="[
-                          {
-                            text: 'NONGRADPRJ - Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)',
-                            value: 'NONGRADPRJ',
-                          },
-                          {
-                            text: 'GRADREG - Graduated Students (MM YYYY to MM YYYY) Report',
-                            value: 'GRADREG',
-                          },
-                          {
-                            text: 'NONGRADREG - Not-Yet Graduated Students (MM YYYY to MM YYYY) Report',
-                            value: 'NONGRADREG',
-                          },
-                        ]"
-                        item-title="text"
-                        item-value="value"
-                        label="Select a report type"
-                      ></v-select>
+                      <v-col sm="2"> Report Type </v-col>
+                      <v-col sm="10">
+                        <v-select
+                          v-model="reportType"
+                          :items="[
+                            {
+                              text: 'NONGRADPRJ - Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)',
+                              value: 'NONGRADPRJ',
+                            },
+                            {
+                              text: 'GRADREG - Graduated Students (MM YYYY to MM YYYY) Report',
+                              value: 'GRADREG',
+                            },
+                            {
+                              text: 'NONGRADREG - Not-Yet Graduated Students (MM YYYY to MM YYYY) Report',
+                              value: 'NONGRADREG',
+                            },
+                          ]"
+                          item-title="text"
+                          item-value="value"
+                          label="Select a report type"
+                        ></v-select>
+                      </v-col>
                     </v-row>
                     <v-row>
                       <v-select
