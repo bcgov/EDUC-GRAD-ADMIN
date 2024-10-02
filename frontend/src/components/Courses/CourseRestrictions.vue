@@ -84,37 +84,4 @@ export default {
   },
 };
 </script>
-<style scoped>
-.table-filter {
-  top: 0px !important;
-}
-.advanced-search-form {
-  background-color: #fff;
-  margin-bottom: 20px;
-}
-.wild-card-button:hover {
-  cursor: pointer;
-}
-.wild-card-button {
-  color: #dee2eb;
-  position: absolute;
-  right: 21px;
-  top: 10px;
-  z-index: 10;
-  text-decoration: none;
-}
-.wild-card-button:visited {
-  color: #dee2eb;
-  text-decoration: none;
-}
-.wild-card-button.active {
-  color: green;
-}
-.search-results-message {
-  float: left;
-  clear: both;
-}
-.advanced-search-button {
-  padding-left: 15px;
-}
-</style>
+<style scoped></style>

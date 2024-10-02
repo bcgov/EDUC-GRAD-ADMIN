@@ -12,9 +12,12 @@ import styles from "vuetify/styles?inline";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 import "@mdi/font/css/materialdesignicons.css";
+import Snackbar from "./components/Common/Snackbar.vue";
+
+// Custom CSS
+import "@bcgov/bc-sans/css/BCSans.css";
 import "./assets/css/bcgov.css";
 import "./assets/css/global.css";
-import Snackbar from "./components/Common/Snackbar.vue";
 
 //define custom theme
 const bcGovTheme = {
@@ -94,7 +97,5 @@ app.config.globalProperties.$filters = {
     }
   },
 };
-app.component('Snackbar', Snackbar);
+app.component("Snackbar", Snackbar);
 app.use(createPinia()).use(router).use(vuetify).mount("#app");
-
-
