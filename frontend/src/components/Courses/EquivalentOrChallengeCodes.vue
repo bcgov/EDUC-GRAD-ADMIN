@@ -1,6 +1,7 @@
 <template>
   <div>
-    <p>
+    <h3 class="ml-2 mt-5">Equivalency or Challenge Codes</h3>
+    <p class="ml-2">
       Indicates if credit for the course was granted through the Equivalency (E)
       or Challenge (C) process.
     </p>

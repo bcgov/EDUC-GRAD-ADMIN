@@ -1,5 +1,6 @@
 <template>
-  <v-card-text class="mt-12">
+  <div>
+    <h3 class="ml-2 mt-5">Course Restrictions</h3>
     <DisplayTable
       title="Course restrictions"
       v-bind:items="courseRestrictions"
@@ -9,7 +10,7 @@
       pagination="true"
     >
     </DisplayTable>
-  </v-card-text>
+  </div>
 </template>
 <script>
 import { useSnackbarStore } from "@/store/modules/snackbar";

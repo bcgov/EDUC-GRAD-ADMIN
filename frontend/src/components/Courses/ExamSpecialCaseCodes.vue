@@ -1,6 +1,7 @@
 <template>
   <div>
-    <p>
+    <h3 class="ml-2 mt-5">Exam Special Case Codes</h3>
+    <p class="ml-2">
       Identifies the special cases associated with writing the exam or allowing
       an exemption from exam writing.
     </p>

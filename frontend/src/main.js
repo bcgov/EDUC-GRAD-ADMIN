@@ -15,7 +15,6 @@ import "@mdi/font/css/materialdesignicons.css";
 import Snackbar from "./components/Common/Snackbar.vue";
 
 // Custom CSS
-import "@bcgov/bc-sans/css/BCSans.css";
 import "./assets/css/bcgov.css";
 import "./assets/css/global.css";
 

@@ -57,6 +57,9 @@
 .nav-link{
   cursor: pointer;
 }
+.width-fit-content {
+  width: fit-content !important;
+}
 option:disabled{
   color: #ccc !important;
 }
