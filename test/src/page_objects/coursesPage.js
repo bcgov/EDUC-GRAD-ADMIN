@@ -89,7 +89,6 @@ class CoursesPage {
     // course restrictions table
     async getCellValue(col, row) {
         let t = await Selector(`tr[aria-rowindex="${row}"]>td[aria-colindex="${col}"]>div>div`).innerText;
-        //console.log('debug output of cell: ', t);
         return t;
     }
 }

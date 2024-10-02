@@ -103,6 +103,7 @@
                           v-model="group"
                           :items="groupItems"
                           label="Select group"
+                          hide-details
                         ></v-select>
                       </v-col>
                     </v-row>
@@ -128,38 +129,6 @@
                   </v-stepper-window-item>
                   <v-stepper-window-item value="4">
                     <v-card title="Schedule" flat>
-                      <div v-if="group === 'School Category'">
-                        Districts:
-                        <v-list>
-                          <v-list-item
-                            v-for="(
-                              district, index
-                            ) in getBatchRequest.districts"
-                            :key="index"
-                          >
-                            <v-list-item-content>
-                              <v-list-item-title>{{
-                                district
-                              }}</v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list>
-                      </div>
-                      <div v-if="group === 'Program'">
-                        Districts: {{ getBatchRequest.programs }}
-                      </div>
-                      <div v-if="group === 'PSI'">
-                        Post Secondary Institutions: REQUEST
-                        {{ getBatchRequest }}
-                      </div>
-                      <v-btn
-                        @click="
-                          changeStep(0);
-                          setBatchRunType('DISTRUNUSER');
-                        "
-                        >Edit</v-btn
-                      >
-
                       <ScheduleInput></ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
@@ -448,6 +417,10 @@ export default {
       "setBatchRunType",
       "setCredential",
     ]),
+    ...mapActions(useBatchProcessingStore, [
+      "setActiveTab",
+      "updateDashboards",
+    ]),
     getTranscriptTypes() {
       GraduationReportService.getTranscriptTypes()
         .then((response) => {
@@ -497,13 +470,15 @@ export default {
         );
         if (response) {
           this.snackbarStore.showSnackbar(
-            "Batch request submitted",
+            "Batch " +
+              response.data.batchId +
+              "- User distribution batch request submitted",
             "success",
             5000
           );
         }
         this.closeDialogAndResetForm();
-        this.activeTab = "batchRuns";
+        this.updateDashboards();
       } catch (error) {
         // handle the error and show the notification
         console.error("Error:", error);

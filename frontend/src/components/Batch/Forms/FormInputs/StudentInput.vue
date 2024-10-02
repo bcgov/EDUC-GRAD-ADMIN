@@ -3,8 +3,8 @@
     <v-card>
       <v-card-text>
         <v-row>
-          <v-col cols="12">
-            <v-label>Include Student(s)</v-label>
+          <v-col sm="2"><strong>Personal Education Number</strong></v-col>
+          <v-col cols="10">
             <v-text-field
               label="Personal Education Number"
               v-model="pen"
@@ -17,38 +17,77 @@
                 <v-alert type="error">{{ error.$message }}</v-alert>
               </v-col>
             </v-row>
+            <v-row v-if="penStudentInfo">
+              <v-col sm="12">
+                <v-card>
+                  <v-card-text>
+                    <v-alert v-if="validationMessage" dismissible type="error">
+                      {{ validationMessage }}
+                    </v-alert>
+
+                    <div v-if="!penStudentInfo">NOT VALID</div>
+                    <div v-else>
+                      <v-simple-table class="w-100">
+                        <tbody>
+                          <tr>
+                            <td class="p-1"><strong>First Name</strong></td>
+                            <td class="p-1">{{ penStudentInfo.firstName }}</td>
+                          </tr>
+                          <tr>
+                            <td class="p-1"><strong>Last Name</strong></td>
+                            <td class="p-1">{{ penStudentInfo.lastName }}</td>
+                          </tr>
+                          <tr>
+                            <td class="p-1"><strong>Birthdate</strong></td>
+                            <td class="p-1">{{ penStudentInfo.dob }}</td>
+                          </tr>
+                          <tr>
+                            <td class="p-1"><strong>Status</strong></td>
+                            <td class="p-1">{{ penStudentInfo.status }}</td>
+                          </tr>
+                        </tbody>
+                      </v-simple-table>
+                      <v-simple-table class="p-3">
+                        <tbody>
+                          <tr>
+                            <td class="p-1"><strong>Program</strong></td>
+                            <td class="p-1">{{ penStudentInfo.program }}</td>
+                          </tr>
+                          <tr>
+                            <td class="p-1">
+                              <strong>School of Record</strong>
+                            </td>
+                            <td class="p-1">
+                              {{ penStudentInfo.schoolOfRecord }}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="p-1">
+                              <strong>School at Graduation</strong>
+                            </td>
+                            <td class="p-1">
+                              {{ penStudentInfo.schoolAtGrad }}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </v-simple-table>
+                    </div>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn
+                      @click="addStudent()"
+                      :disabled="validationMessage !== ''"
+                    >
+                      Add Student
+                    </v-btn>
+                    <v-btn @click="clearPen" text> Clear </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
 
-        <v-row v-if="penStudentInfo">
-          <v-card>
-            <v-card-text>
-              <v-alert v-if="validationMessage" dismissible type="error">
-                {{ validationMessage }}
-              </v-alert>
-
-              <div v-if="!penStudentInfo">NOT VALID</div>
-              <div v-else>
-                <strong>First Name:</strong> {{ penStudentInfo.firstName
-                }}<br />
-                <strong>Last Name:</strong> {{ penStudentInfo.lastName }}<br />
-                <strong>Birthdate:</strong> {{ penStudentInfo.dob }}<br />
-                <strong>Status:</strong> {{ penStudentInfo.status }}<br />
-                <strong>Program:</strong> {{ penStudentInfo.program }}<br />
-                <strong>School of Record</strong>
-                {{ penStudentInfo.schoolOfRecord }}<br />
-                <strong>School at Graduation</strong>
-                {{ penStudentInfo.schoolAtGrad }}
-              </div>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn @click="addStudent()" :disabled="validationMessage !== ''">
-                Add Student
-              </v-btn>
-              <v-btn @click="clearPen" text> Clear </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-row>
         <v-row>
           <v-col>
             <v-data-table
@@ -154,9 +193,6 @@ export default {
               }
               if (this.runType == "CERT_REGEN") {
                 //when User is entereing PENs for the REGEN process, error if the student has a null PROGRAM COMPLETION DATE
-                console.log(
-                  "PCD" + studentGRADStatus.data.programCompletionDate
-                );
                 if (!studentGRADStatus.data.programCompletionDate) {
                   this.validationMessage =
                     "Error: Cannot regenerate a certificate for this student - this student has not completed their program";

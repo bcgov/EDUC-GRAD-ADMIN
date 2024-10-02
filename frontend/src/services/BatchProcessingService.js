@@ -58,7 +58,6 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return
     }else{
-      console.log(credentialType)
       if(credentialType == "OT"){
         return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT', request);
       }else if(credentialType == "OC"){
@@ -134,11 +133,22 @@ export default {
       );
     }
   },
-  runTVR_DELETE(request) {
-    return ApiService.apiAxios.post(
-      "/api/v1/batch/report/student/delete",
-      request
-    );
+  runTVR_DELETE(request, cronTime="" ) {
+    request.reportTypes = ["ACHV"];
+    if(cronTime){
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime;
+      scheduledRequest.jobName = "DSRBJ";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      scheduledRequest.psiPayload = null;
+      this.addScheduledJob(scheduledRequest);
+    }else{
+      return ApiService.apiAxios.post(
+        "/api/v1/batch/report/student/delete",
+        request
+      );
+    }
   },
   runArchiveStudents(request, cronTime = "") {
     if (cronTime) {

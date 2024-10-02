@@ -2,13 +2,11 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props">
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
+        <v-btn color="primary" v-bind="props"><v-icon>mdi-plus</v-icon></v-btn>
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">Archive Student Batch Process</span>
+          <span class="text-h5">User Request School Report Regeneration</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -42,119 +40,108 @@
                 <v-stepper-window>
                   <v-stepper-window-item value="1">
                     <v-row>
+                      <v-col sm="2"> Report Type </v-col>
+                      <v-col sm="10">
+                        <v-select
+                          v-model="reportType"
+                          :items="[
+                            {
+                              text: 'Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)',
+                              value: 'NONGRADPRJ',
+                            },
+                            {
+                              text: 'Graduated Students (MM YYYY to MM YYYY) Report and Not-Yet Graduated Students (MM YYYY to MM YYYY) Report',
+                              value: 'GRADREG and NONGRADREG',
+                            },
+                          ]"
+                          item-title="text"
+                          item-value="value"
+                          label="Select a report type"
+                        ></v-select>
+                      </v-col>
+                      <v-col> </v-col>
+                    </v-row>
+                    <v-row>
                       <v-select
                         v-model="group"
-                        :items="['School', 'All Students']"
-                        label="Select a Group"
-                      ></v-select>
+                        :item-title="title"
+                        :item-value="value"
+                        :items="[
+                          'School',
+                          'School Category',
+                          { title: 'All', value: 'All Schools' },
+                        ]"
+                        label="Select a group"
+                      />
                     </v-row>
                     <v-row v-if="group == 'School'">
                       <SchoolInput>
                         <template #inputWarning>
                           <p>
-                            All students with a School of Record matching the
-                            entered school and with a student status of CUR or a
-                            student status of TER will have their status changed
-                            to ARC
+                            This will archive current school reports, which will
+                            become static and no longer be updated. School
+                            reports must be archived before the new data
+                            collection cycle begins so they are not overwritten
+                            entirely.
                           </p>
                         </template>
                       </SchoolInput>
                     </v-row>
-                    <v-row v-if="group == 'All Students'">
-                      <v-alert>
-                        All students with a status of CUR (current) and TER
-                        (terminated) will have their student status changed to
-                        ARC (archived)
+                    <v-row v-if="group == 'All Schools'">
+                      <v-alert type="info" class="pb-2">
+                        <p>
+                          This will archive current school reports, which will
+                          become static and no longer be updated. School reports
+                          must be archived before the new data collection cycle
+                          begins so they are not overwritten entirely.
+                        </p>
                       </v-alert>
                     </v-row>
                   </v-stepper-window-item>
 
                   <v-stepper-window-item value="2">
                     <v-card title="Schedule" flat>
-                      <div v-if="group === 'School Category'">
-                        Districts:
-                        <v-list>
-                          <v-list-item
-                            v-for="(
-                              district, index
-                            ) in getBatchRequest.districts"
-                            :key="index"
-                          >
-                            <v-list-item-content>
-                              <v-list-item-title>{{
-                                district
-                              }}</v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list>
-                      </div>
-                      <div v-if="group === 'Program'">
-                        Districts: {{ getBatchRequest.programs }}
-                      </div>
-                      <div v-if="group === 'PSI'">
-                        Post Secondary Institutions: REQUEST
-                        {{ getBatchRequest.psi }}
-                      </div>
-                      <v-card class="">
-                        <v-card-text>
-                          <v-table>
-                            <thead>
-                              <tr>
-                                <th></th>
-                                <th>Confirm</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <!-- First Confirmation Checkbox -->
-                              <tr>
-                                <td>
-                                  Final Graduation Algorithm and TVR batch jobs
-                                  have been run for students from the previous
-                                  cycle
-                                </td>
-                                <td>
-                                  <v-checkbox
-                                    v-model="selectedConfirmations"
-                                    value="REQUIRED_CONFIRMATION_1"
-                                    hide-details
-                                  ></v-checkbox>
-                                </td>
-                              </tr>
+                      Confirmation
+                      <v-table>
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th>Confirm</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <!-- First Confirmation Checkbox -->
+                          <tr>
+                            <td>
+                              Final Graduation Algorithm and TVR batch jobs have
+                              been run for students from the previous cycle
+                            </td>
+                            <td>
+                              <v-checkbox
+                                v-model="selectedConfirmations"
+                                value="REQUIRED_CONFIRMATION_1"
+                                hide-details
+                              ></v-checkbox>
+                            </td>
+                          </tr>
 
-                              <!-- Second Confirmation Checkbox -->
-                              <tr>
-                                <td>
-                                  Regenerate School Reports process has been
-                                  completed for any schools that require final
-                                  updates
-                                </td>
-                                <td>
-                                  <v-checkbox
-                                    v-model="selectedConfirmations"
-                                    value="REQUIRED_CONFIRMATION_2"
-                                    hide-details
-                                  ></v-checkbox>
-                                </td>
-                              </tr>
+                          <!-- Second Confirmation Checkbox -->
+                          <tr>
+                            <td>
+                              Regenerate School Reports are completed for any
+                              schools that require final updates
+                            </td>
+                            <td>
+                              <v-checkbox
+                                v-model="selectedConfirmations"
+                                value="REQUIRED_CONFIRMATION_2"
+                                hide-details
+                              ></v-checkbox>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </v-table>
 
-                              <!-- Third Confirmation Checkbox -->
-                              <tr>
-                                <td>
-                                  Archive School Reports process has been
-                                  completed
-                                </td>
-                                <td>
-                                  <v-checkbox
-                                    v-model="selectedConfirmations"
-                                    value="REQUIRED_CONFIRMATION_3"
-                                    hide-details
-                                  ></v-checkbox>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </v-table>
-                        </v-card-text>
-                      </v-card>
                       <ScheduleInput></ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
@@ -207,16 +194,20 @@ export default {
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
     const group = ref(batchRequestFormStore.who);
+    const reportType = ref(batchRequestFormStore.reportType);
     watch(group, (newValue) => {
       batchRequestFormStore.who = newValue;
-      if (newValue == "All Students") {
+      if (newValue == "All Schools") {
         batchRequestFormStore.setActivityCode("All");
       } else {
         batchRequestFormStore.setActivityCode(null);
       }
     });
-
+    watch(reportType, (newValue) => {
+      batchRequestFormStore.reportType = newValue;
+    });
     return {
+      reportType,
       group,
       v$: useVuelidate(),
     };
@@ -227,12 +218,11 @@ export default {
       selectedConfirmations: {
         required,
         allConfirmationsSelected: helpers.withMessage(
-          "You must check all 3 confirmations",
+          "You must check both confirmations",
           (value) => {
             return (
               value.includes("REQUIRED_CONFIRMATION_1") &&
-              value.includes("REQUIRED_CONFIRMATION_2") &&
-              value.includes("REQUIRED_CONFIRMATION_3")
+              value.includes("REQUIRED_CONFIRMATION_2")
             );
           }
         ),
@@ -256,13 +246,13 @@ export default {
               let isValid = false;
               if (
                 this.group &&
-                ["All Students", "School"].includes(this.group)
+                ["All Schools", "School"].includes(this.group)
               ) {
                 if (this.group === "School") {
                   isValid =
                     this.getBatchRequest.schoolOfRecords &&
                     this.getBatchRequest.schoolOfRecords.length > 0;
-                } else if (this.group === "All Students") {
+                } else if (this.group === "All Schools") {
                   isValid = true;
                 } else {
                   isValid = true; // Return true if none of the above conditions matched
@@ -285,12 +275,16 @@ export default {
     step: 0,
     dialog: false,
     selectedConfirmations: [],
+
+    snackbarStore: useSnackbarStore(),
+    batchProcessingStore: useBatchProcessingStore(),
   }),
   computed: {
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
       "batchRunTimeSet",
+      "getReportType",
       "getBatchRequestCrontime",
     ]),
   },
@@ -303,6 +297,7 @@ export default {
       "setActiveTab",
       "updateDashboards",
     ]),
+
     closeDialogAndResetForm() {
       this.group = null;
       this.dialog = false;
@@ -320,7 +315,7 @@ export default {
     },
     async submit() {
       try {
-        let response = await BatchProcessingService.runArchiveStudents(
+        let response = await BatchProcessingService.runArchiveSchoolReports(
           this.getBatchRequest,
           this.getBatchRequestCrontime
         );
@@ -328,14 +323,13 @@ export default {
         this.snackbarStore.showSnackbar(
           "Batch " +
             response.data.batchId +
-            "- Archive student batch process submitted",
+            "- Archive School Reports Process submitted",
           "success",
           5000
         );
         this.setActiveTab("batchRuns");
         this.updateDashboards();
       } catch (error) {
-        // handle the error and show the notification
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "danger",

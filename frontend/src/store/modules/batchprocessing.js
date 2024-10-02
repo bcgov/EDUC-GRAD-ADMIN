@@ -49,6 +49,9 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
       const batchRunRoutines = await BatchProcessingService.batchProcessingRoutines()
       this.setBatchRoutines(batchRunRoutines.data);      
     },
+    async setActiveTab(payload){
+      this.activeTab=payload
+    },    
     async setGroup(payload) {
       this.who = payload;
     },
@@ -223,7 +226,6 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
       }
     }, 
     async addBatchJob(id){
-      console.log(id)
       this.batchAutoIncrement++;
       this.tabs.push(id);
     }, 

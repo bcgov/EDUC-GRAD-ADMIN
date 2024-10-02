@@ -29,6 +29,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     distribution: null,
     localDownload: "N",
     activityCode: null,
+    reportType: null,
 
     batchRunTime: null,
     batchRunSchedule: null,
@@ -72,7 +73,6 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
       this.blankCertificateDetails = [];
     },
     async resetBlankTranscriptDetails() {
-      console.log("R2")
       this.blankTranscriptDetails = [];
     },
     async setGroup(payload){
@@ -115,6 +115,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         return [];
       }
     },
+    getReportType: (state) => state.reportType,
     getPsiYear: (state) => state.psiYear,
     getDistribution: (state) => state.distribution,
     getCopies: (state) => state.copies,
@@ -151,14 +152,10 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
             " *"
           );
         } else if (state.batchRunSchedule == "Custom") {
-          console.log("GETTING CUSTOM");
         
           // Extract the date part and construct a new date-time string with the custom time
           let customDate = new Date(state.batchRunCustomDate);
           let customTime = state.batchRunCustomTime + ":00"; // Append seconds to the time to match format
-        
-          console.log(customDate)
-          console.log(customTime)
           // Combine the date and custom time into a new Date object
           let dateTime = new Date(
             customDate.toISOString().split("T")[0] + "T" + customTime
@@ -213,6 +210,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         schoolCategoryCodes: state.categoryCode,
         validateInputs: false,
         activityCode: state.activityCode,
+        reportTypes: [state.reportType],
         // gradDateFrom and gradDateTo are empty if "Current Students" is selected
         gradDateFrom: state.getFormattedGradDateFrom,
         gradDateTo: state.getFormattedGradDateTo,

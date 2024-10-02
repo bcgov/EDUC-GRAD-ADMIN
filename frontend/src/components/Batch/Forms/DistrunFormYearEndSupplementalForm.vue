@@ -5,7 +5,7 @@
 </template>
 <script>
 import GraduationReportService from "@/services/GraduationReportService.js";
-
+import BatchProcessingService from "@/services/BatchProcessingService.js";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import DistrictInput from "@/components/Batch/Forms/FormInputs/DistrictInput.vue";
@@ -41,10 +41,8 @@ export default {
     async validateForm(event) {
       const result = await this.v$.$validate();
       if (!result) {
-        console.log("INVALID");
         return;
       }
-      console.log("VALID");
     },
     runbatch() {
       console.log("run batch");

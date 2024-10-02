@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div v-if="!assessments" class="container">
+    <v-alert v-if="!assessments" class="container">
       This student does not have any assessments.
-    </div>
+    </v-alert>
     <DisplayTable
       v-if="assessments"
       :items="assessments"

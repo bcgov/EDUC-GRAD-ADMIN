@@ -2,11 +2,17 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"><v-icon>mdi-plus</v-icon></v-btn>
+        <v-btn
+          color="primary"
+          v-bind="props"
+          @click="setGroup('School Category')"
+        >
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">User Request Certificate Regeneration</span>
+          <span class="text-h5">Non-Graduate Transcript Distribution Run</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -41,22 +47,13 @@
                   <v-stepper-window-item value="1">
                     <v-row>
                       <v-select
-                        v-model="group"
-                        :items="[
-                          'All',
-                          'Student',
-                          { name: 'District', value: 'School Category' },
-                        ]"
-                        item-title="name"
-                        item-value="value"
+                        v-model="getGroup"
+                        :items="['School Category']"
                         label="Select a Group"
                       ></v-select>
                     </v-row>
-                    <v-row v-if="group == 'Student'">
-                      <StudentInput runType="CERT_REGEN"></StudentInput>
-                    </v-row>
-                    <v-row v-if="group == 'School Category'">
-                      <DistrictInput runType="CERT_REGEN"></DistrictInput>
+                    <v-row v-if="getGroup == 'School Category'">
+                      <DistrictInput></DistrictInput>
                     </v-row>
                   </v-stepper-window-item>
 
@@ -80,7 +77,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions class="batch-form-actions">
+        <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -102,41 +99,24 @@
 <script>
 import { ref, watch } from "vue";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
-import SchoolInput from "@/components/Batch/Forms/FormInputs/SchoolInput.vue";
 import DistrictInput from "@/components/Batch/Forms/FormInputs/DistrictInput.vue";
-import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
-import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
-import Notifications from "@/components/Common/Notifications.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
+import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
   setup() {
-    const batchProcessingStore = useBatchProcessingStore();
     const batchRequestFormStore = useBatchRequestFormStore();
-
-    const notifications = ref(null);
-    const activeTab = ref(batchProcessingStore.activeTab);
-    watch(activeTab, (newValue) => {
-      batchRequestFormStore.activeTab = newValue;
-    });
-    const changeTab = (tabName) => {
-      activeTab.value = tabName;
-    };
     const group = ref(batchRequestFormStore.who);
     watch(group, (newValue) => {
       batchRequestFormStore.who = newValue;
     });
 
     return {
-      activeTab,
       group,
-      notifications,
-      changeTab,
       v$: useVuelidate(),
     };
   },
@@ -156,29 +136,16 @@ export default {
           } else return false;
         }),
         hasAtLeastOneGroupValue: helpers.withMessage(
-          "Must contain at least one " + this.group,
+          "Must contain at least one " + this.getGroup,
           (value) => {
             if (this.getBatchRequest) {
               let isValid = false;
-              if (
-                this.group &&
-                ["Student", "School Category", "All"].includes(this.group)
-              ) {
-                if (this.group === "Student") {
-                  isValid =
-                    this.getBatchRequest.pens &&
-                    this.getBatchRequest.pens.length > 0;
-                } else if (this.group === "School Category") {
-                  isValid =
-                    this.getBatchRequest.districts &&
-                    this.getBatchRequest.districts.length > 0;
-                } else if (this.group === "All") {
-                  isValid = true;
-                } else {
-                  isValid = true; // Return true if none of the above conditions matched
-                }
-                return isValid;
+              if (this.getGroup == "School Category") {
+                isValid =
+                  this.getBatchRequest.districts &&
+                  this.getBatchRequest.districts.length > 0;
               }
+              return isValid;
             } else {
               return false;
             }
@@ -188,15 +155,10 @@ export default {
     };
   },
   components: {
-    SchoolInput: SchoolInput,
     DistrictInput: DistrictInput,
-    StudentInput: StudentInput,
-    ProgramInput: ProgramInput,
     ScheduleInput: ScheduleInput,
-    Notifications: Notifications,
   },
   data: () => ({
-    snackbarStore: useSnackbarStore(),
     step: 0,
     dialog: false,
   }),
@@ -204,6 +166,8 @@ export default {
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
+      "getGroup",
+      "batchRunTimeSet",
       "getBatchRequestCrontime",
     ]),
   },
@@ -211,6 +175,7 @@ export default {
     ...mapActions(useBatchRequestFormStore, [
       "clearBatchDetails",
       "clearBatchGroupData",
+      "setGroup",
     ]),
     ...mapActions(useBatchProcessingStore, [
       "setActiveTab",
@@ -223,14 +188,17 @@ export default {
       this.step = 0;
     },
     cancel() {
-      this.closeDialogAndResetForm();
+      this.group = null;
+      this.dialog = false;
+      this.clearBatchDetails();
+      this.step = 0;
     },
     changeStep(step) {
       this.step = step;
     },
     async submit() {
       try {
-        let response = await BatchProcessingService.runCERTREGEN(
+        let response = await BatchProcessingService.runDISTRUN_YE(
           this.getBatchRequest,
           this.getBatchRequestCrontime
         );
@@ -238,7 +206,7 @@ export default {
         this.snackbarStore.showSnackbar(
           "Batch " +
             response.data.batchId +
-            "- User Request Certificate Regeneration submitted",
+            "- Year-End Credentials and Transcript Distribution Run submitted",
           "success",
           5000
         );

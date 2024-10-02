@@ -47,27 +47,6 @@
 
                   <v-stepper-window-item value="2">
                     <v-card title="Schedule" flat>
-                      Post Secondary Institutions:
-                      <v-list>
-                        <v-list-item
-                          v-for="(district, index) in getBatchRequest.psis"
-                          :key="index"
-                        >
-                          <v-list-item-content>
-                            <v-list-item-title>{{ psis }}</v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list>
-
-                      <div v-if="group === 'Program'">
-                        Districts: {{ getBatchRequest.programs }}
-                      </div>
-                      <div v-if="group === 'PSI'">
-                        Post Secondary Institutions: REQUEST
-                        {{ getBatchRequest }}
-                      </div>
-                      <v-btn @click="changeStep(0)">Edit</v-btn>
-
                       <ScheduleInput></ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
@@ -205,6 +184,10 @@ export default {
       "clearBatchGroupData",
       "setGroup",
     ]),
+    ...mapActions(useBatchProcessingStore, [
+      "setActiveTab",
+      "updateDashboards",
+    ]),
     closeDialogAndResetForm() {
       this.group = null;
       this.dialog = false;
@@ -219,18 +202,24 @@ export default {
     },
     async submit() {
       try {
-        let response = await BatchProcessingService.runREGALG(
+        let response = await BatchProcessingService.runPSIRun(
           this.getBatchRequest,
           this.getBatchRequestCrontime
         );
         this.closeDialogAndResetForm();
-        this.activeTab = "batchRuns";
+        this.snackbarStore.showSnackbar(
+          "Batch " + response.data.batchId + "- PSI Run FTP / Paper submitted",
+          "success",
+          5000
+        );
+        this.setActiveTab("batchRuns");
+        this.updateDashboards();
       } catch (error) {
-        // handle the error and show the notification
-        console.error("Error:", error);
-        if (this.notifications) {
-          this.notifications.show("An error occurred: " + error.message);
-        }
+        this.snackbarStore.showSnackbar(
+          "An error occurred: " + error.message,
+          "danger",
+          5000
+        );
       }
     },
   },

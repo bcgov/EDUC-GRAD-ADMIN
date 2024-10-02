@@ -2,77 +2,91 @@
   <v-card>
     <v-card-title>Include Post Secondary Institute(s)</v-card-title>
     <v-card-text>
-      <v-text-field
-        v-model="psiYear"
-        type="number"
-        label="Enter PSI Year"
-        outlined
-        small
-      >
-      </v-text-field>
+      <v-row>
+        <v-col sm="2">PSI Year</v-col>
+        <v-col
+          ><v-text-field
+            v-model="psiYear"
+            type="number"
+            label="Enter PSI Year"
+            outlined
+            small
+          >
+          </v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col sm="2">Transmission Mode</v-col>
+        <v-col>
+          <v-select
+            v-model="transmissionMode"
+            label="Select a Transmission Mode"
+            :items="['Paper', 'FTP']"
+            outlined
+            small
+            hide-details
+          >
+          </v-select
+        ></v-col>
+      </v-row>
+      <v-row>
+        <v-col sm="2">PSI</v-col>
+        <v-col sm="10">
+          <div v-if="schoolCategory !== '04' && schoolCategory !== '09'">
+            <v-text-field
+              label="Post Secondary Institution Code"
+              v-model="psi"
+              maxlength="3"
+              @input="validatePSI"
+              outlined
+            />
+            <div
+              v-for="error in v$.psi.$errors"
+              :key="error.$uid"
+              class="input-errors"
+            >
+              <div class="error-msg">{{ error.$message }}</div>
+            </div>
 
-      <v-select
-        v-model="transmissionMode"
-        label="Select a Transmission Mode"
-        :items="['Paper', 'FTP']"
-        outlined
-        small
-      >
-      </v-select>
-
-      <div v-if="schoolCategory !== '04' && schoolCategory !== '09'">
-        <v-text-field
-          label="Post Secondary Institution Code"
-          v-model="psi"
-          maxlength="3"
-          @input="validatePSI"
-          class="w-25"
-          outlined
-        />
-        <div
-          v-for="error in v$.psi.$errors"
-          :key="error.$uid"
-          class="input-errors"
+            <div v-if="psiInfo">
+              <v-card>
+                <v-card-text>
+                  <v-alert
+                    v-if="validationMessage"
+                    type="error"
+                    dismissible
+                    v-model="showAlert"
+                  >
+                    {{ validationMessage }}
+                  </v-alert>
+                  <v-overlay :value="psiValidating">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-row>
+                        <v-col auto>
+                          <strong>Post Secondary Institute:</strong>
+                          {{ psiInfo.psiName }}<br />
+                        </v-col>
+                        <v-col>
+                          <v-btn
+                            @click="addPSI"
+                            :disabled="validationMessage !== ''"
+                            class="float-right"
+                            color="primary"
+                            small
+                          >
+                            <v-icon>mdi-plus</v-icon>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </template>
+                  </v-overlay>
+                </v-card-text>
+              </v-card>
+            </div>
+          </div></v-col
         >
-          <div class="error-msg">{{ error.$message }}</div>
-        </div>
+      </v-row>
 
-        <div v-if="psiInfo">
-          <v-card>
-            <v-card-text>
-              <v-alert
-                v-if="validationMessage"
-                type="error"
-                dismissible
-                v-model="showAlert"
-              >
-                {{ validationMessage }}
-              </v-alert>
-              <v-overlay :value="psiValidating">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-row>
-                    <v-col auto>
-                      <strong>Post Secondary Institute:</strong>
-                      {{ psiInfo.psiName }}<br />
-                    </v-col>
-                    <v-col>
-                      <v-btn
-                        @click="addPSI"
-                        :disabled="validationMessage !== ''"
-                        class="float-right"
-                        color="primary"
-                        small
-                      >
-                        <v-icon>mdi-plus</v-icon>
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </template>
-              </v-overlay>
-            </v-card-text>
-          </v-card>
-        </div>
-      </div>
       <v-data-table
         v-if="psis.length > 0"
         :items="psis"
