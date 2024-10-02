@@ -53,27 +53,27 @@ export default {
       fineArtsAppliedSkillsTypesFields: [
         {
           key: "fineArtsAppliedSkillsCode",
-          label: "Code",
+          title: "Code",
           sortable: true,
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],
