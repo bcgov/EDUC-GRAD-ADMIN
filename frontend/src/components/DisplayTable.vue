@@ -275,9 +275,8 @@ export default {
 </script>
 
 <style scoped>
-.table-filter {
-  /* position: absolute;
-  top: -15px;
-  right: 0; */
+/* style display table headers here */
+:deep(th) {
+  font-weight: bold !important;
 }
 </style>

@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div class="advanced-search-form">
+    <h3 class="ml-2 mt-5">Course Search</h3>
+    <div class="advanced-search-form ml-1">
       <v-form v-on:submit.prevent>
         <v-row class="row my-3">
           <div class="advanced-search-field col-12 col-md-2">
@@ -112,7 +113,7 @@
             ></v-text-field>
           </div>
         </v-row>
-        <v-row>
+        <v-row class="mt-n3">
           <div class="advanced-search-button">
             <v-btn
               v-on:click="advanceCourseSearch"
@@ -122,7 +123,7 @@
               tabindex="7"
             >
               <i class="fas fa-search" aria-hidden="true"></i>
-              Search
+              &nbsp;Search
             </v-btn>
             <v-btn
               class="btn"
@@ -130,7 +131,7 @@
               v-if="advancedSearchLoading"
               tabindex="7"
               ><i class="fas fa-search" aria-hidden="true"></i>
-              Search
+              &nbsp;Search
               <v-progress-circular
                 v-if="advancedSearchLoading"
                 indeterminate
@@ -149,20 +150,28 @@
         </v-row>
 
         <div v-if="courses">
-          <div v-if="totalResults > 0" class="row">
-            <div class="search-results-message my-3 col-12 col-md-8">
-              <strong>{{ totalResults }}</strong> course records found.
-            </div>
-          </div>
-          <div v-if="advancedSearchMessage" class="row">
-            <div class="search-results-message my-5 col-12 col-md-8">
-              <strong>{{ advancedSearchMessage }}</strong>
-            </div>
-          </div>
+          <v-alert
+            type="success"
+            variant="tonal"
+            border="start"
+            class="mt-8 mb-0 ml-1 py-3 width-fit-content"
+            v-if="totalResults > 0"
+            :text="`${totalResults} course records found`"
+          >
+          </v-alert>
+          <v-alert
+            type="error"
+            variant="tonal"
+            border="start"
+            class="mt-8 mb-0 ml-1 py-3 width-fit-content"
+            v-if="!!advancedSearchMessage"
+            :text="advancedSearchMessage"
+          ></v-alert>
         </div>
       </v-form>
     </div>
     <DisplayTable
+      class="mt-n5"
       v-if="courses.length"
       title="Courses"
       v-bind:items="courses"

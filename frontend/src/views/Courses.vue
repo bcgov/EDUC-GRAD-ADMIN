@@ -3,21 +3,24 @@
     <h1>Courses</h1>
     <div>
       <v-card no-body>
-        <v-tabs v-model="tab" bg-color="transparent" grow>
-          <v-tab value="courseTab" color="primary">Course</v-tab>
-          <v-tab value="courseRestrictionsTab" color="primary"
-            >Course restrictions</v-tab
+        <v-tabs v-model="tab" bg-color="primary">
+          <v-tab value="courseTab" class="text-none" size="large">Course</v-tab>
+          <v-tab value="courseRestrictionsTab" class="text-none" size="large"
+            >Course Restrictions</v-tab
           >
-          <v-tab value="courseRequirementsTab" color="primary"
-            >Course requirements</v-tab
+          <v-tab value="courseRequirementsTab" class="text-none" size="large"
+            >Course Requirements</v-tab
           >
-          <v-tab value="fineArtsAppliedSkillsTab" color="primary"
+          <v-tab value="fineArtsAppliedSkillsTab" class="text-none" size="large"
             >Fine Arts Applied Skills</v-tab
           >
-          <v-tab value="examSpecialCaseCodesTab" color="primary"
+          <v-tab value="examSpecialCaseCodesTab" class="text-none" size="large"
             >Exam Special Cases</v-tab
           >
-          <v-tab value="equivalentOrChallengeCodesTab" color="primary"
+          <v-tab
+            value="equivalentOrChallengeCodesTab"
+            class="text-none"
+            size="large"
             >Equivalency or Challenge</v-tab
           >
         </v-tabs>
@@ -79,55 +82,7 @@ export default {
     };
   },
 
-  methods: {
-    // searchCourseByCourseCode() {
-    //   CourseService.getCourses(this.courseCode)
-    //     .then((response) => {
-    //       this.courses = response.data;
-    //     })
-    //     .catch((error) => {
-    //       // eslint-disable-next-line
-    //       console.log("There was an error:" + error);
-    //       this.snackbarStore.showSnackbar(error.message, "error", 5000);
-    //     });
-    // },
-    // getAllCourses() {
-    //   CourseService.getAllCourses()
-    //     .then((response) => {
-    //       this.courses = response.data;
-    //     })
-    //     // eslint-disable-next-line
-    //     .catch((error) => {
-    //       this.snackbarStore.showSnackbar(error.message, "error", 5000);
-    //       // eslint-disable-next-line
-    //       console.log("There was an error:" + error);
-    //     });
-    // },
-    // getAllCourseRequirements() {
-    //   CourseService.getAllCourseRequirements()
-    //     .then((response) => {
-    //       this.courseRequirements = response.data;
-    //     })
-    //     // eslint-disable-next-line no-unused-vars
-    //     .catch((error) => {
-    //       this.snackbarStore.showSnackbar(error.message, "error", 5000);
-    //       // eslint-disable-next-line
-    //       console.log("There was an error:" + error);
-    //     });
-    // },
-    // getAllCourseRestriction(mainCourseLevel, mainCourseCode) {
-    //   CourseService.getCourseRestriction(mainCourseLevel, mainCourseCode)
-    //     .then((response) => {
-    //       this.courseRestrictions = response.data;
-    //     })
-    //     // eslint-disable-next-line no-unused-vars
-    //     .catch((error) => {
-    //       this.snackbarStore.showSnackbar(error.message, "error", 5000);
-    //       // eslint-disable-next-line
-    //       console.log("There was an error:" + error);
-    //     });
-    // },
-  },
+  methods: {},
 };
 </script>
 
@@ -148,7 +103,7 @@ export default {
 .table-filter {
   top: 0px !important;
 }
-.advanced-search-form {
+/* .advanced-search-form {
   background-color: #fff;
   margin-bottom: 20px;
 }
@@ -176,5 +131,5 @@ export default {
 }
 .advanced-search-button {
   padding-left: 15px;
-}
+} */
 </style>
