@@ -22,7 +22,7 @@ import "./assets/css/global.css";
 const bcGovTheme = {
   dark: false,
   colors: {
-    background: "#F9F9F9",
+    background: "#FFFFFF", //formerly #F9F9F9
     surface: "#FFFFFF",
     primary: "#38598A",
     secondary: "#7490BA",
