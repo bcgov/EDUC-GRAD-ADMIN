@@ -6,9 +6,11 @@
         Search by Personal Education Number(PEN) or use the advanced search to
         look up students by other criteria.
       </p>
-      <v-tabs v-model="tab" bg-color="transparent" grow>
-        <v-tab value="pen" color="primary"> PEN Search </v-tab>
-        <v-tab value="advance" color="primary"> Advanced Search </v-tab>
+      <v-tabs v-model="tab" bg-color="primary" grow>
+        <v-tab value="pen" class="text-none" size="large"> PEN Search </v-tab>
+        <v-tab value="advance" class="text-none" size="large">
+          Advanced Search
+        </v-tab>
       </v-tabs>
       <v-card-text>
         <v-window v-model="tab">

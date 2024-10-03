@@ -3,7 +3,7 @@
     <h1>Courses</h1>
     <div>
       <v-card no-body>
-        <v-tabs v-model="tab" bg-color="primary">
+        <v-tabs v-model="tab" bg-color="primary" grow>
           <v-tab value="courseTab" class="text-none" size="large">Course</v-tab>
           <v-tab value="courseRestrictionsTab" class="text-none" size="large"
             >Course Restrictions</v-tab

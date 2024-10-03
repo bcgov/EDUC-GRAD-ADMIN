@@ -63,7 +63,7 @@
             ></v-text-field>
           </div>
         </v-row>
-        <v-row>
+        <v-row class="mt-n3">
           <div class="advanced-search-button">
             <v-btn
               v-on:click="courseRequirementsSearch"
@@ -114,6 +114,7 @@
       </div>
     </v-form>
     <DisplayTable
+      class="mt-n5"
       v-if="courseRequirements.length"
       title="Course requirements"
       v-bind:items="courseRequirements"
