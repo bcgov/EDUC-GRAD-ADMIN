@@ -2,43 +2,60 @@
   <div class="codes-view">
     <h1>Codes</h1>
     <v-card no-body>
-      <v-card-title>
-        <v-tabs v-model="tab" bg-color="transparent" grow>
-          <v-tab to="/codes/career-programs">Career Program Codes</v-tab>
-          <v-tab>
-            <v-menu offset-y>
-              <template v-slot:activator="{ props }">
-                <v-btn text v-bind="props">Credentials</v-btn>
-              </template>
-              <v-list>
-                <v-list-item to="/codes/certificates-types"
-                  >Certificate Types</v-list-item
-                >
-                <v-list-item to="/codes/transcript-types"
-                  >Transcript Types</v-list-item
-                >
-                <v-list-item to="/codes/program-certificate-transcript"
-                  >Program Certificate Transcript</v-list-item
-                >
-                <v-list-item to="/codes/digital-signatures"
-                  >Digital Signature</v-list-item
-                >
-                <v-list-item to="/codes/signature-blocks"
-                  >Signature Block</v-list-item
-                >
-                <v-list-item to="/codes/document-status-codes"
-                  >Document Status Codes</v-list-item
-                >
-              </v-list>
-            </v-menu>
-          </v-tab>
-          <v-tab to="/codes/report-types">Report Types</v-tab>
-          <v-tab to="/codes/student-status-codes">Student Status Codes</v-tab>
-          <v-tab to="/codes/ungrad-reasons">Undo Completion Reason Codes</v-tab>
-          <v-tab to="/codes/history-activity">History Activity Codes</v-tab>
-          <v-tab to="/codes/batch-types">Batch Type Codes</v-tab>
-        </v-tabs>
-      </v-card-title>
+      <v-tabs v-model="tab" bg-color="primary" grow>
+        <v-tab to="/codes/career-programs" class="text-none" size="large"
+          >Career Program Codes</v-tab
+        >
+        <v-tab class="text-none" size="large">
+          <v-menu offset-y>
+            <template v-slot:activator="{ props }">
+              <v-btn
+                text
+                v-bind="props"
+                variant="link"
+                class="text-none"
+                size="large"
+                >Credentials</v-btn
+              >
+            </template>
+            <v-list>
+              <v-list-item to="/codes/certificates-types"
+                >Certificate Types</v-list-item
+              >
+              <v-list-item to="/codes/transcript-types"
+                >Transcript Types</v-list-item
+              >
+              <v-list-item to="/codes/program-certificate-transcript"
+                >Program Certificate Transcript</v-list-item
+              >
+              <v-list-item to="/codes/digital-signatures"
+                >Digital Signature</v-list-item
+              >
+              <v-list-item to="/codes/signature-blocks"
+                >Signature Block</v-list-item
+              >
+              <v-list-item to="/codes/document-status-codes"
+                >Document Status Codes</v-list-item
+              >
+            </v-list>
+          </v-menu>
+        </v-tab>
+        <v-tab to="/codes/report-types" class="text-none" size="large"
+          >Report Types</v-tab
+        >
+        <v-tab to="/codes/student-status-codes" class="text-none" size="large"
+          >Student Status Codes</v-tab
+        >
+        <v-tab to="/codes/ungrad-reasons" class="text-none" size="large"
+          >Undo Completion Reason Codes</v-tab
+        >
+        <v-tab to="/codes/history-activity" class="text-none" size="large"
+          >History Activity Codes</v-tab
+        >
+        <v-tab to="/codes/batch-types" class="text-none" size="large"
+          >Batch Type Codes</v-tab
+        >
+      </v-tabs>
       <v-card-text>
         <router-view v-bind:key="$route.fullPath"></router-view>
       </v-card-text>
@@ -383,5 +400,11 @@ export default {
 
 .profile-name {
   padding-bottom: 10px;
+}
+
+:deep(a.v-btn),
+:deep(a.v-btn.v-tab-item--selected) {
+  text-decoration: none;
+  color: #fff;
 }
 </style>

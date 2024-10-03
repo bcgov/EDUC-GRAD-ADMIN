@@ -1,5 +1,6 @@
 <template>
-  <v-card-text class="mt-12">
+  <div>
+    <h3 class="ml-2 mt-5">Course Restrictions</h3>
     <DisplayTable
       title="Course restrictions"
       v-bind:items="courseRestrictions"
@@ -9,7 +10,7 @@
       pagination="true"
     >
     </DisplayTable>
-  </v-card-text>
+  </div>
 </template>
 <script>
 import { useSnackbarStore } from "@/store/modules/snackbar";
@@ -84,37 +85,4 @@ export default {
   },
 };
 </script>
-<style scoped>
-.table-filter {
-  top: 0px !important;
-}
-.advanced-search-form {
-  background-color: #fff;
-  margin-bottom: 20px;
-}
-.wild-card-button:hover {
-  cursor: pointer;
-}
-.wild-card-button {
-  color: #dee2eb;
-  position: absolute;
-  right: 21px;
-  top: 10px;
-  z-index: 10;
-  text-decoration: none;
-}
-.wild-card-button:visited {
-  color: #dee2eb;
-  text-decoration: none;
-}
-.wild-card-button.active {
-  color: green;
-}
-.search-results-message {
-  float: left;
-  clear: both;
-}
-.advanced-search-button {
-  padding-left: 15px;
-}
-</style>
+<style scoped></style>

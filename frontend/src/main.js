@@ -12,15 +12,17 @@ import styles from "vuetify/styles?inline";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 import "@mdi/font/css/materialdesignicons.css";
+import Snackbar from "./components/Common/Snackbar.vue";
+
+// Custom CSS
 import "./assets/css/bcgov.css";
 import "./assets/css/global.css";
-import Snackbar from "./components/Common/Snackbar.vue";
 
 //define custom theme
 const bcGovTheme = {
   dark: false,
   colors: {
-    background: "#F9F9F9",
+    background: "#FFFFFF", //formerly #F9F9F9
     surface: "#FFFFFF",
     primary: "#38598A",
     secondary: "#7490BA",
@@ -94,7 +96,5 @@ app.config.globalProperties.$filters = {
     }
   },
 };
-app.component('Snackbar', Snackbar);
+app.component("Snackbar", Snackbar);
 app.use(createPinia()).use(router).use(vuetify).mount("#app");
-
-

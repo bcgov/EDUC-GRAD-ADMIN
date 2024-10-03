@@ -1,5 +1,6 @@
 <template>
-  <v-card-text>
+  <div>
+    <h3 class="ml-2 mt-5">Course Requirements Search</h3>
     <v-form v-on:submit.prevent id="courseReqForm">
       <div class="advanced-search-form">
         <v-row class="row my-3">
@@ -62,7 +63,7 @@
             ></v-text-field>
           </div>
         </v-row>
-        <v-row>
+        <v-row class="mt-n3">
           <div class="advanced-search-button">
             <v-btn
               v-on:click="courseRequirementsSearch"
@@ -71,11 +72,11 @@
               tabindex="6"
             >
               <i class="fas fa-search" aria-hidden="true"></i>
-              Search
+              &nbsp;Search
             </v-btn>
             <v-btn color="success" v-if="courseRequirementLoading" tabindex="6">
               <i class="fas fa-search" aria-hidden="true"></i>
-              Search
+              &nbsp;Search
               <v-progress-circular
                 v-if="courseRequirementLoading"
                 indeterminate
@@ -92,21 +93,28 @@
           </div>
         </v-row>
         <div v-if="courseRequirements">
-          <div v-if="totalRequirementResults > 0" class="row">
-            <div class="search-results-message my-3 col-12 col-md-8">
-              <strong>{{ totalRequirementResults }}</strong> course requirements
-              found.
-            </div>
-          </div>
-          <v-row v-if="courseRequirementMessage">
-            <div class="search-results-message my-5 col-12 col-md-8">
-              <strong>{{ courseRequirementMessage }}</strong>
-            </div>
-          </v-row>
+          <v-alert
+            type="success"
+            variant="tonal"
+            border="start"
+            class="mt-8 mb-0 ml-1 py-3 width-fit-content"
+            v-if="totalRequirementResults > 0"
+            :text="`${totalRequirementResults} course requirements
+              found`"
+          ></v-alert>
+          <v-alert
+            type="error"
+            variant="tonal"
+            border="start"
+            class="mt-8 mb-0 ml-1 py-3 width-fit-content"
+            v-if="!!courseRequirementMessage"
+            :text="courseRequirementMessage"
+          ></v-alert>
         </div>
       </div>
     </v-form>
     <DisplayTable
+      class="mt-n5"
       v-if="courseRequirements.length"
       title="Course requirements"
       v-bind:items="courseRequirements"
@@ -116,7 +124,7 @@
       pagination="true"
     >
     </DisplayTable>
-  </v-card-text>
+  </div>
 </template>
 <script>
 import { useSnackbarStore } from "@/store/modules/snackbar";

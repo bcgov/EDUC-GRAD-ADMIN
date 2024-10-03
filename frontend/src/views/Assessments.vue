@@ -3,9 +3,14 @@
     <h1>Assessments</h1>
     <div>
       <v-card no-body>
-        <v-tabs v-model="tab" bg-color="transparent" grow>
-          <v-tab value="assessmentTab" color="primary">Assessments</v-tab>
-          <v-tab value="assessmentRequirementsTab" color="primary"
+        <v-tabs v-model="tab" bg-color="primary" grow>
+          <v-tab value="assessmentTab" class="text-none" size="large"
+            >Assessments</v-tab
+          >
+          <v-tab
+            value="assessmentRequirementsTab"
+            class="text-none"
+            size="large"
             >Assessment Requirements</v-tab
           >
         </v-tabs>

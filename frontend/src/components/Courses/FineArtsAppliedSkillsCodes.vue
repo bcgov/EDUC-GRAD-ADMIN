@@ -1,6 +1,7 @@
 <template>
   <div>
-    <p>
+    <h3 class="ml-2 mt-5">Fine Arts Applied Skills Codes</h3>
+    <p class="ml-2">
       Fine Arts Applied Skills codes indicates that a course is being used for
       the Fine Arts and/or Applied Skills graduation requirement.
     </p>
