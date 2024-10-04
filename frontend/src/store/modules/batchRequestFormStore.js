@@ -22,7 +22,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     blankCertificateDetails:[],
     blankTranscriptDetails:[],
     credential:null,
-    categoryCode:[],
+    categoryCode:"",
     copies:"1",
     allPsi:false,
     allDistricts:false,
@@ -121,6 +121,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     getCopies: (state) => state.copies,
     getBatchRunTime: (state) => state.batchRunTime,
     getActivityCode:(state) => state.activityCode,
+    getSchoolCategory: (state) => state.categoryCode,
     getLocalDownload: (state) => state.distribution == "Download"?"Y":"N", 
     getBatchRequestCrontime: (state) => {   
         if (state.batchRunSchedule == "N") {
@@ -207,8 +208,8 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         districts: state.who === "School Category" ? state.districts.map(district => district.district) : [],
         programs: state.who === "Program" ? state.programs.map(program => program.program) : [],
         psiCodes: state.who === "Psi" ? state.psi.map(postSecondaryInstitution => postSecondaryInstitution.psi) : [],
-        schoolCategoryCodes: state.categoryCode,
-        validateInputs: false,
+        schoolCategoryCodes: state.categoryCode ? [state.categoryCode] : [],
+        validateInputs: true,
         activityCode: state.activityCode,
         reportTypes: [state.reportType],
         // gradDateFrom and gradDateTo are empty if "Current Students" is selected
@@ -216,8 +217,8 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         gradDateTo: state.getFormattedGradDateTo,
 
         // Include credentialTypeCode based on the credential selected
-        ...(state.credential === "Blank certificate print" ? { credentialTypeCode: state.blankCertificateDetails } : {}),
-        ...(state.credential === "Blank transcript print" ? { credentialTypeCode: state.blankTranscriptDetails } : {}),
+        ...(state.credential === "Blank certificate print" ? { credentialTypeCode: [...state.blankCertificateDetails] } : {}),
+        ...(state.credential === "Blank transcript print" ? { credentialTypeCode: [...state.blankTranscriptDetails] } : {}),
 
         // User distribution run with specific conditions
         quantity: state.copies,

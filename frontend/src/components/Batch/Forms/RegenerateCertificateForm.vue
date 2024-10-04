@@ -56,7 +56,10 @@
                       <StudentInput runType="CERT_REGEN"></StudentInput>
                     </v-row>
                     <v-row v-if="group == 'School Category'">
-                      <DistrictInput runType="CERT_REGEN"></DistrictInput>
+                      <DistrictInput
+                        runType="CERT_REGEN"
+                        disableSelectStudents
+                      ></DistrictInput>
                     </v-row>
                   </v-stepper-window-item>
 
