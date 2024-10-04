@@ -57,6 +57,7 @@
 
 <script>
 import { required, helpers } from "@vuelidate/validators";
+import { ref, watch } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
 import { debounce } from "lodash";
@@ -102,26 +103,30 @@ export default {
       },
     };
   },
-  created() {
-    this.gradDateFrom = this.batchRequestFormStore.gradDateFrom;
-    this.gradDateTo = this.batchRequestFormStore.gradDateTo;
 
-    // Initialize Vuelidate
-    this.v$ = useVuelidate();
+  setup() {
+    const batchRequestFormStore = useBatchRequestFormStore();
+    const gradDateFrom = ref(batchRequestFormStore.gradDateFrom);
+    const gradDateTo = ref(batchRequestFormStore.gradDateTo);
+
+    watch(gradDateFrom, (newValue) => {
+      batchRequestFormStore.gradDateFrom = newValue;
+    });
+    watch(gradDateTo, (newValue) => {
+      batchRequestFormStore.gradDateTo = newValue;
+    });
+    return {
+      gradDateFrom,
+      gradDateTo,
+      v$: useVuelidate(),
+    };
   },
+
   watch: {
-    "batchRequestFormStore.gradDateFrom"(newValue) {
-      this.gradDateFrom = newValue;
-    },
-    "batchRequestFormStore.gradDateTo"(newValue) {
-      this.gradDateTo = newValue;
-    },
     includeStudents(newValue) {
       if (newValue === "Current Students") {
         this.clearDateFields();
       }
-      // Re-evaluate validations when the selection changes
-      this.v$.$reset();
     },
   },
   methods: {

@@ -16,7 +16,8 @@
                   <v-stepper-item
                     :rules="[
                       () =>
-                        !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
+                        !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid &&
+                        !v$.getBatchRequest.reportTypeRequired.$invalid,
                     ]"
                     complete
                     editable
@@ -75,17 +76,10 @@
                       />
                     </v-row>
                     <v-row v-if="group == 'School'">
-                      <SchoolInput>
-                        <template #inputWarning>
-                          <p>
-                            This will archive current school reports, which will
-                            become static and no longer be updated. School
-                            reports must be archived before the new data
-                            collection cycle begins so they are not overwritten
-                            entirely.
-                          </p>
-                        </template>
-                      </SchoolInput>
+                      <SchoolInput> </SchoolInput>
+                    </v-row>
+                    <v-row v-if="group == 'School Category'">
+                      <DistrictInput> </DistrictInput>
                     </v-row>
                     <v-row v-if="group == 'All Schools'">
                       <v-alert type="info" class="pb-2">
@@ -183,6 +177,7 @@
 import { ref, watch } from "vue";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import SchoolInput from "@/components/Batch/Forms/FormInputs/SchoolInput.vue";
+import DistrictInput from "@/components/Batch/Forms/FormInputs/DistrictInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
@@ -228,6 +223,16 @@ export default {
         ),
       },
       getBatchRequest: {
+        reportTypeRequired: helpers.withMessage(
+          "Select a Report Type",
+          (value) => {
+            if (this.getReportType.length > 0) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+        ),
         batchRunTimeSet: helpers.withMessage("Runtime not set", (value) => {
           if (this.getBatchRunTime) {
             if (this.getBatchRunTime == "Run Now") {
@@ -246,16 +251,20 @@ export default {
               let isValid = false;
               if (
                 this.group &&
-                ["All Schools", "School"].includes(this.group)
+                ["All Schools", "School", "School Category"].includes(
+                  this.group
+                )
               ) {
                 if (this.group === "School") {
                   isValid =
                     this.getBatchRequest.schoolOfRecords &&
                     this.getBatchRequest.schoolOfRecords.length > 0;
+                } else if (this.group === "School Category") {
+                  isValid =
+                    this.getBatchRequest.districts &&
+                    this.getBatchRequest.districts.length > 0;
                 } else if (this.group === "All Schools") {
                   isValid = true;
-                } else {
-                  isValid = true; // Return true if none of the above conditions matched
                 }
                 return isValid;
               }
@@ -270,6 +279,7 @@ export default {
   components: {
     ScheduleInput: ScheduleInput,
     SchoolInput: SchoolInput,
+    DistrictInput: DistrictInput,
   },
   data: () => ({
     step: 0,

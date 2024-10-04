@@ -121,7 +121,12 @@
                       <ProgramInput></ProgramInput>
                     </v-row>
                     <v-row v-if="group == 'School'">
-                      <SchoolInput></SchoolInput>
+                      <SchoolInput
+                        :disableSelectStudents="
+                          getCredential == 'Blank certificate print' ||
+                          getCredential == 'Blank transcript print'
+                        "
+                      ></SchoolInput>
                     </v-row>
                   </v-stepper-window-item>
                   <v-stepper-window-item value="3">

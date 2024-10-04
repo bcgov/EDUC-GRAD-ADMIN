@@ -8,7 +8,7 @@
               <slot name="inputWarning"></slot>
             </v-alert>
 
-            <v-row>
+            <v-row v-if="!disableSelectStudents">
               <v-col sm="12">
                 <DateRangeInput></DateRangeInput>
               </v-col>
@@ -270,7 +270,14 @@ export default {
       }
     },
   },
-  props: {},
+
+  props: {
+    disableSelectStudents: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
 
   computed: {
     ...mapState(useAppStore, ["getSchoolsList"]),
