@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Transcript Type Codes</h3>
-    <p>A list of transcript types used by the GRAD system.</p>
+    <h3 class="ml-2 mt-5">Transcript Type Codes</h3>
+    <p class="ml-2 w-66">A list of transcript types used by the GRAD system.</p>
     <DisplayTable
       title="Transcript Type Codes"
       v-bind:items="transcriptTypes"

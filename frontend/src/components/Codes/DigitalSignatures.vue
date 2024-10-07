@@ -1,7 +1,9 @@
 <template>
   <div>
-    <h3>Digitized Signatures</h3>
-    <p>Digitized signatures used on students' certificates and transcript.</p>
+    <h3 class="ml-2 mt-5">Digitized Signatures</h3>
+    <p class="ml-2 w-66">
+      Digitized signatures used on students' certificates and transcript.
+    </p>
     <v-progress-circular
       v-if="isLoading"
       color="primary"

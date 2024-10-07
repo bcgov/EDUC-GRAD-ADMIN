@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Report Types</h3>
-    <p>
+    <h3 class="ml-2 mt-5">Report Types</h3>
+    <p class="ml-2 w-66">
       Students' in the GRAD system may have several types of individual reports
       associated with their GRAD data. Schools also have several types of
       reports associated with their school and students' GRAD data. The list of

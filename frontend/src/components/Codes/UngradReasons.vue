@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Undo Completion Reasons</h3>
-    <p>
+    <h3 class="ml-2 mt-5">Undo Completion Reasons</h3>
+    <p class="ml-2 w-66">
       When a User performs the "Undo Completion" process (security permissions
       needed), the User must select an "Undo Completion" reason. The list of
       Undo Completion reasons are maintained in this table.

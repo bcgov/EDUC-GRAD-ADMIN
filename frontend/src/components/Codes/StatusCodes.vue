@@ -1,7 +1,9 @@
 <template>
   <div>
-    <h3>Student Status Codes</h3>
-    <p>Student status codes refer to a students' status in the GRAD system.</p>
+    <h3 class="ml-2 mt-5">Student Status Codes</h3>
+    <p class="ml-2 w-66">
+      Student status codes refer to a students' status in the GRAD system.
+    </p>
     <DisplayTable
       v-bind:items="studentStatusCodes"
       v-bind:fields="studentStatusCodesFields"

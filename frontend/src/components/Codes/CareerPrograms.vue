@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Career Program Codes</h3>
-    <p>
+    <h3 class="ml-2 mt-5">Career Program Codes</h3>
+    <p class="ml-2 w-66">
       The optional program Career Program in GRAD can be broken down further by
       specific career program code. A Student on the optional program CP, Career
       Program, would also be assigned a Career Program code(s) to identify what
@@ -89,8 +89,8 @@ export default {
 </script>
 
 <style>
-.table th,
+/* .table th,
 .table td {
   border-top: none !important;
-}
+} */
 </style>

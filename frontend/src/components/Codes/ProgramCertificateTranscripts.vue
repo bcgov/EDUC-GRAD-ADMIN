@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Program Certificate Transcripts</h3>
-    <p>
+    <h3 class="ml-2 mt-5">Program Certificate Transcripts</h3>
+    <p class="ml-2 w-66">
       The rules governing which certificate type or transcript type will be used
       for a student.
     </p>

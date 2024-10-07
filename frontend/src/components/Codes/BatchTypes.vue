@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Batch Type Codes</h3>
-    <p>A list of Batch Runs used by the GRAD system.</p>
+    <h3 class="ml-2 mt-5">Batch Type Codes</h3>
+    <p class="ml-2 w-66">A list of Batch Runs used by the GRAD system.</p>
     <DisplayTable
       v-bind:items="batchTypes"
       v-bind:fields="batchTypesFields"

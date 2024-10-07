@@ -137,7 +137,7 @@ export default {
       tableFields: "notloaded",
       editItem: "notloaded",
       currentPage: 1,
-      perPage: 1000,
+      perPage: 25,
       striped: true,
       pageOptions: [
         10,
