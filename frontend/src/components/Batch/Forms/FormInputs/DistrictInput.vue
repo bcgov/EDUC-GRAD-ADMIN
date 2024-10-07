@@ -22,7 +22,7 @@
             ></v-select>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="!disableSelectStudents">
           <v-col md="12">
             <DateRangeInput></DateRangeInput>
           </v-col>
@@ -104,93 +104,6 @@
             <div><strong>Active Flag:</strong> {{ item.info.activeFlag }}</div>
           </template>
         </v-data-table>
-
-        <!-- <v-data-table :items="districts" :headers="districtInputFields" striped>
-          <template v-slot:top>
-            <v-row>
-              <v-col sm="9"></v-col>
-              <v-col sm="3">
-                <v-btn @click="addMode = true" :disabled="addMode"
-                  ><v-icon>mdi-plus</v-icon> Add
-                </v-btn>
-              </v-col>
-            </v-row></template
-          >
-          <template v-slot:item.remove="{ item }">
-            <v-btn
-              v-if="schoolCategory != '09' && schoolCategory != '04'"
-              @click="removeDistrict(item.district)"
-              color="primary"
-            >
-              Remove
-            </v-btn>
-          </template>
-
-   
-          <template v-slot:item.info="{ item }">
-            <div>
-              <strong>District Name:</strong> {{ item.info.districtName }}
-            </div>
-            <div><strong>Active Flag:</strong> {{ item.info.activeFlag }}</div>
-          </template>
-
-          <template v-slot:body.prepend>
-            <tr v-if="addMode">
-              <td>Include</td>
-              <td>
-                <v-row
-                  v-if="schoolCategory !== '04' && schoolCategory !== '09'"
-                >
-                  <v-col sm="12" lg="12">
-                    <v-autocomplete
-                      v-model="district"
-                      :items="getDistrictList"
-                      label="Include District"
-                      outlined
-                      :item-title="districtTitle"
-                      item-value="districtNumber"
-                      hide-details
-                    ></v-autocomplete>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <v-row v-if="districtInfo" class="float-left col-10">
-                      <v-card>
-                        <v-card-text>
-                          <v-alert
-                            v-if="validationMessage"
-                            dismissible
-                            type="danger"
-                            >{{ validationMessage }}</v-alert
-                          >
-                          <v-overlay :value="districtValidating">
-                            <div v-if="!districtInfo">NOT VALID</div>
-                            <div v-else>
-                              <strong>District:</strong>
-                              {{ districtInfo.districtName }}<br />
-                              <strong>Active Flag:</strong>
-                              {{ districtInfo.activeFlag }}<br />
-                            </div>
-                          </v-overlay>
-                        </v-card-text>
-                      </v-card>
-                    </v-row>
-                  </v-col>
-                </v-row>
-              </td>
-              <td>
-                <v-btn
-                  :disabled="!district"
-                  @click="addDistrict()"
-                  class="float-left bg-primary"
-                >
-                  Add
-                </v-btn>
-              </td>
-            </tr>
-          </template>
-        </v-data-table> -->
       </v-card-text>
     </v-card>
   </v-container>
@@ -211,7 +124,10 @@ export default {
     const gradDateFrom = ref(batchRequestFormStore.gradDateFrom);
     const gradDateTo = ref(batchRequestFormStore.gradDateTo);
     const districts = ref(batchRequestFormStore.districts);
-
+    const schoolCategory = ref(batchRequestFormStore.categoryCode);
+    watch(schoolCategory, (newValue) => {
+      batchRequestFormStore.categoryCode = newValue;
+    });
     watch(gradDateFrom, (newValue) => {
       batchRequestFormStore.gradDateFrom = newValue;
     });
@@ -220,6 +136,7 @@ export default {
     });
 
     return {
+      schoolCategory,
       gradDateTo,
       gradDateFrom,
       districts,
@@ -283,7 +200,6 @@ export default {
       districtInfo: "",
       districtValidating: false,
       validationMessage: "",
-      schoolCategory: "",
       districtInputFields: [
         {
           key: "district",
@@ -363,11 +279,20 @@ export default {
   props: {
     credentialType: String,
     runType: String,
+    disableSelectStudents: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 
   computed: {
     ...mapState(useAppStore, ["getDistrictList"]),
-    ...mapState(useBatchRequestFormStore, ["getDistricts", "getBatchRequest"]),
+    ...mapState(useBatchRequestFormStore, [
+      "getDistricts",
+      "getBatchRequest",
+      "getSchoolCategory",
+    ]),
 
     isEmpty() {
       return this.districts.length > 0;
