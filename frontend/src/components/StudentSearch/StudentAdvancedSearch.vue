@@ -280,7 +280,6 @@
           v-bind:fields="studentSearchResultsFields"
           id="pen"
           v-bind:showFilter="false"
-          v-bind:pagination="true"
         >
           <template v-slot:item.pen="{ item }">
             <router-link :to="'/student-profile/' + item.studentID">
@@ -340,6 +339,7 @@ export default {
         { value: 25, text: "25" },
         { value: 50, text: "50" },
         { value: 100, text: "100" },
+        { value: -1, text: "All" },
       ],
       genderOptions: [
         { value: "M", text: "Male (M)" },

@@ -1,7 +1,9 @@
 <template>
   <div>
-    <h3>Signature Block</h3>
-    <p>Signature block(s) used on students' certificates and transcript.</p>
+    <h3 class="ml-2 mt-5">Signature Block</h3>
+    <p class="ml-2 w-66">
+      Signature block(s) used on students' certificates and transcript.
+    </p>
     <DisplayTable
       v-bind:items="signatureBlock"
       v-bind:fields="signatureBlockFields"

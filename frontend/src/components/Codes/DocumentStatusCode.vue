@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Document Status Codes</h3>
-    <p>
+    <h3 class="ml-2 mt-5">Document Status Codes</h3>
+    <p class="ml-2 w-66">
       A student's Transcript, Student Achievement Report (TVR) and
       Certificate(s) will show a status as the student progresses through the
       system. The list of document statuses are maintained in this table.

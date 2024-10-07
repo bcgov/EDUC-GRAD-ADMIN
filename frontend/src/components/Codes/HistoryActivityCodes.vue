@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>History Activity Codes</h3>
-    <p>
+    <h3 class="ml-2 mt-5">History Activity Codes</h3>
+    <p class="ml-2 w-66">
       Student history records are created by certain GRAD processes and User
       initiated activity. Each record will be associated with a history activity
       code.

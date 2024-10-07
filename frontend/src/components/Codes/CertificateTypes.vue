@@ -1,7 +1,9 @@
 <template>
   <div>
-    <h3>Certificate Types</h3>
-    <p>A list of certificate types used by the GRAD system.</p>
+    <h3 class="ml-2 mt-5">Certificate Types</h3>
+    <p class="ml-2 w-66">
+      A list of certificate types used by the GRAD system.
+    </p>
     <DisplayTable
       v-bind:items="certificateTypes"
       v-bind:fields="certificateTypesFields"
