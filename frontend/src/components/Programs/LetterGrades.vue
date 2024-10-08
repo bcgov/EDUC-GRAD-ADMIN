@@ -94,11 +94,13 @@ export default {
           key: "effectiveDate",
           title: "Effective Date",
           sortable: true,
+          width: "115px",
         },
         {
           key: "expiryDate",
           title: "Expiry Date",
           sortable: true,
+          width: "115px",
         },
       ],
     };
