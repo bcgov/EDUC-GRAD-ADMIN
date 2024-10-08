@@ -23,6 +23,8 @@
         </v-col>
       </v-row>
 
+      <slot name="create"></slot>
+
       <v-data-table
         v-if="items && items.length"
         :headers="fields"

@@ -6,17 +6,50 @@
     max-width="500px"
   >
     <template v-slot:activator="{ props }">
-      <v-btn v-bind="props" text="NewOptionalProgram"> </v-btn>
+      <v-btn class="float-right" v-bind="props" text="Add Optional Program">
+      </v-btn>
     </template>
 
-    <v-card>
+    <v-stepper :items="['Select Optional Programs', 'Confirmation']">
+      <template v-slot:item.1>
+        <v-card title="Add Optional Program" flat>
+          <v-form @submit.prevent="submitForm">
+            <v-autocomplete
+              v-model="optionalProgramCodeSelect"
+              :items="activeOptionalPrograms"
+              :item-title="optionalProgramTitle"
+              item-value="optionalProgramID"
+              label="Choose an Optional Program to add"
+              required
+              @keyup.enter="submitForm"
+            >
+            </v-autocomplete>
+            <v-autocomplete
+              multiple
+              clearable
+              chips
+              v-if="isCareerProgram(optionalProgramCodeSelect)"
+              v-model="careerProgramCodeSelect"
+              :items="careerProgramList"
+              item-title="name"
+              item-value="code"
+              label="Choose an Optional Program to add"
+              required
+              @keyup.enter="submitForm"
+            ></v-autocomplete>
+          </v-form>
+        </v-card>
+      </template>
+    </v-stepper>
+
+    <!-- <v-card>
       <v-card-title> Add Optional Program </v-card-title>
       <v-stepper :items="['Select Optional Programs', 'Confirmation']">
         <template v-slot:item.1>
           {{ selectedCareerPrograms }}
           Student Program {{ studentProgramId }}
           <v-form @submit.prevent="submitForm">
-            <!-- Program Name Input -->
+            <!- Program Name Input ->
             <v-autocomplete
               v-model="selectedOptionalProgram"
               :items="activeOptionalPrograms"
@@ -76,21 +109,20 @@
             </ul>
           </slot>
           <v-alert color="warning"> </v-alert>
-          <!-- OPTIONAL PROGRAM:
+          <!- OPTIONAL PROGRAM:
           <pre>{{ selectedOptionalProgram }}</pre>
           CAREER PROGRAM:
-          <pre>{{ selectedCareerPrograms }}</pre> -->
+          <pre>{{ selectedCareerPrograms }}</pre> ->
         </template>
       </v-stepper>
       <template v-slot:actions>
         <v-row justify="end">
-          <!-- Use v-btn with @click to close the dialog -->
           <v-btn @click="closeCreateOptionalProgramDialog" color="secondary"
             >Close</v-btn
           >
         </v-row>
       </template>
-    </v-card>
+    </v-card> -->
   </v-dialog>
 </template>
 
@@ -102,8 +134,10 @@ import ProgramManagementService from "@/services/ProgramManagementService.js";
 import { isProgramComplete, applyDisplayOrder } from "@/utils/common.js";
 
 // Pinia store
-import { useStudentStore } from "../../store/modules/student";
+import { useStudentStore } from "@/store/modules/student";
+import { useAccessStore } from "@/store/modules/access";
 import { mapActions, mapState } from "pinia";
+
 export default {
   watch: {
     selectedOptionalProgram(newVal) {
@@ -122,8 +156,17 @@ export default {
       studentCareerPrograms: "getStudentCareerPrograms",
       studentGradStatus: "getStudentGradStatus",
     }),
+    ...mapState(useAccessStore, {
+      allowOptionalProgramUpdate: "allowOptionalProgramUpdate",
+    }),
+    optionalProgramChange() {
+      return this.selectedOptionalProgram;
+    },
+    careerProgramChange() {
+      return this.selectedCareerProgram;
+    },
     activeOptionalPrograms() {
-      const studentProgramId = this.studentProgramId;
+      const studentProgramId = this.studentGradStatus.program;
 
       const currentDate = new Date().toISOString().split("T")[0];
       return applyDisplayOrder(

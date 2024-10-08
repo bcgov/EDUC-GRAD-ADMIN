@@ -6,9 +6,10 @@
       </v-alert>
 
       <DisplayTable
+        class="mt-12"
         :items="optionalPrograms"
         :fields="optionalProgramsfields"
-        showFilter="true"
+        :showFilter="false"
         title="Optional Programs"
         :delete="{
           disable: {
@@ -25,10 +26,8 @@
         }"
       >
         <template v-slot:create>
-          <OptionalProgramsForm
-            :studentProgramId="studentProgramId"
-          ></OptionalProgramsForm
-        ></template>
+          <OptionalProgramsForm />
+        </template>
         <template #bottom></template>
         <template #cell(optionalNonGradReasons)="row">
           <div v-if="row.item.studentOptionalProgramData">
