@@ -84,7 +84,7 @@
           </div>
         </v-form>
         <v-row>
-          <div class="advanced-search-button">
+          <div class="advanced-search-button ml-4 mb-4">
             <v-btn
               v-on:click="advancedSchoolSearch"
               v-if="!searchLoading"
@@ -92,10 +92,10 @@
               tabindex="4"
             >
               <i class="fas fa-search" aria-hidden="true"></i>
-              Search
+              &nbsp;Search
             </v-btn>
             <v-btn color="success" v-if="searchLoading" tabindex="3"
-              ><i class="fas fa-search" aria-hidden="true"></i>Search
+              ><i class="fas fa-search" aria-hidden="true"></i>&nbsp;Search
               <v-progress-circular
                 v-if="courseRequirementLoading"
                 indeterminate
@@ -112,16 +112,25 @@
           </div>
         </v-row>
         <div v-if="schools">
-          <div v-if="totalResults > 0 && !searchLoading" class="row">
-            <div class="search-results-message my-3 col-12 col-md-8">
-              <strong>{{ totalResults }}</strong> school record(s) found.
-            </div>
-          </div>
-          <div v-if="searchMessage" class="row">
-            <div class="search-results-message my-2 col-12 col-md-8">
-              <strong>{{ searchMessage }}</strong>
-            </div>
-          </div>
+          <v-alert
+            type="success"
+            variant="tonal"
+            border="start"
+            class="mt-8 mb-0 ml-1 py-3 width-fit-content"
+            v-if="totalResults > 0 && !searchLoading"
+            :text="`${totalResults} school record${
+              totalResults > 1 ? 's' : ''
+            } found`"
+          >
+          </v-alert>
+          <v-alert
+            type="error"
+            variant="tonal"
+            border="start"
+            class="mt-8 mb-0 ml-1 py-3 width-fit-content"
+            v-if="!!searchMessage"
+            :text="searchMessage"
+          ></v-alert>
         </div>
         <DisplayTable
           v-if="schools.length"

@@ -70,11 +70,6 @@ export default {
           sortable: true,
         },
         {
-          key: "sortOrder",
-          title: "Sort Order",
-          sortable: true,
-        },
-        {
           key: "algorithmRuleCode.isActiveRule",
           title: "Active Flag",
           sortable: true,
