@@ -198,7 +198,6 @@ export default {
             })
             .catch((error) => {
               // eslint-disable-next-line
-              console.log("BCHeader: " + error);
               this.searchLoading = false;
               this.showNotification(
                 "danger",

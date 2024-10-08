@@ -3,8 +3,8 @@
     <h1>Post Secondary Institutions</h1>
     <v-card no-body>
       <v-form v-on:submit.prevent id="psiReqForm">
-        <div class="advanced-search-form">
-          <div class="row my-3">
+        <div class="advanced-search-form mt-7">
+          <div class="row mt-3 ml-1">
             <div class="advanced-search-field col-12 col-md-2">
               <div
                 href="#"
@@ -125,7 +125,7 @@
               ></v-text-field>
             </div>
           </div>
-          <div class="row">
+          <div class="row ml-1">
             <div class="advanced-search-button">
               <v-btn
                 v-on:click="advancePSISearch"
@@ -150,23 +150,29 @@
             </div>
           </div>
 
-          <div v-if="psiResults">
-            <div v-if="totalResults > 0" class="row">
-              <div class="search-results-message my-3 col-12 col-md-8">
-                <strong>{{ totalResults }}</strong> Post Secondary Institutions
-                found.
-              </div>
-            </div>
-            <div v-if="advancedSearchMessage" class="row">
-              <div class="search-results-message my-5 col-12 col-md-8">
-                <strong>{{ advancedSearchMessage }}</strong>
-              </div>
-            </div>
+          <div v-if="psiResults" class="ml-4">
+            <v-alert
+              type="success"
+              variant="tonal"
+              border="start"
+              class="mt-8 mb-0 ml-1 py-3 width-fit-content"
+              v-if="totalResults > 0"
+              :text="`${totalResults} Post Secondary Institutions found`"
+            ></v-alert>
+            <v-alert
+              type="error"
+              variant="tonal"
+              border="start"
+              class="mt-8 mb-0 ml-1 py-3 width-fit-content"
+              v-if="!!searchMessage"
+              :text="searchMessage"
+            ></v-alert>
           </div>
         </div>
       </v-form>
       <v-card-text>
         <DisplayTable
+          v-if="psiResults.length"
           :items="psiResults"
           :fields="psiFields"
           :id="'psiCode'"
@@ -215,7 +221,7 @@
 <script>
 import TRAXService from "../services/TRAXService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
-import { showNotification } from "../utils/common.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "psi",
   components: {
@@ -223,6 +229,7 @@ export default {
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       advancedSearchLoading: false,
       advancedSearchMessage: "",
       totalResults: "",
@@ -302,9 +309,6 @@ export default {
         },
       },
     };
-  },
-  created() {
-    this.showNotification = showNotification;
   },
   methods: {
     clearInput: function () {
@@ -445,18 +449,12 @@ export default {
               this.advancedSearchMessage = "No PSIs found.";
               // eslint-disable-next-line
               console.log("There was an error:" + error);
-              this.showNotification(
-                "danger",
-                "There was an error with the web service."
-              );
+              this.snackbarStore.showSnackbar(error.message, "error", 5000);
             }); //TRAXService
         } catch (error) {
           this.advancedSearchLoading = false;
           this.advancedSearchMessage = "Search Error" + error;
-          this.showNotification(
-            "danger",
-            "There was an error with the web service."
-          );
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         }
       }
     },

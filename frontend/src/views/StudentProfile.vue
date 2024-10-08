@@ -80,6 +80,16 @@
                   >Optional Programs ({{ optionalPrograms.length }})</v-tab
                 >
                 <v-tab value="Audit">Audit History</v-tab>
+                <v-tab value="Notes"
+                  ><v-icon>mdi-information</v-icon> Notes ({{
+                    studentNotes.length
+                  }})</v-tab
+                >
+                <v-tab value="Undo Completion Reasons"
+                  ><v-icon>mdi-information</v-icon> Undo Completion Reasons ({{
+                    studentUngradReasons.length
+                  }})</v-tab
+                >
               </v-tabs>
               <v-card-text>
                 <v-window v-model="selectedTab">
@@ -179,38 +189,29 @@
                     >
                     </v-progress-circular>
                     <div class="ml-3">
-                      <v-btn
-                        class="mr-2 my-1"
-                        v-on:click="auditTab = 'studentAudit'"
-                        size="sm"
-                        :variant="
-                          auditTab == 'studentAudit' ? 'tonal' : 'outlined'
-                        "
-                        >Student Audit</v-btn
-                      >
-                      <v-btn
-                        class="mr-2 my-1"
-                        v-on:click="auditTab = 'notes'"
-                        size="sm"
-                        :variant="auditTab == 'notes' ? 'tonal' : 'outlined'"
-                        >Notes ({{ studentNotes.length }})</v-btn
-                      >
-                      <v-btn
-                        class="mr-2 my-1"
-                        v-on:click="auditTab = 'undoCompletionReasons'"
-                        size="sm"
-                        :variant="
-                          auditTab == 'undoCompletionReasons'
-                            ? 'tonal'
-                            : 'outlined'
-                        "
-                        >Undo Completion Reasons ({{
-                          studentUngradReasons.length
-                        }})</v-btn
-                      >
                       <StudentAuditHistory v-if="auditTab == 'studentAudit'" />
                     </div>
                   </v-window-item>
+                  <v-window-item value="Notes">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
+                    </v-progress-circular>
+                    Notes ({{ studentNotes.length }})</v-window-item
+                  >
+                  <v-window-item value="Undo Completion Reasons">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
+                    </v-progress-circular>
+                    Undo Completion Reasons ({{
+                      studentUngradReasons.length
+                    }})</v-window-item
+                  >
                 </v-window>
               </v-card-text>
             </v-window-item>
@@ -218,11 +219,312 @@
         </v-card>
       </div>
     </div>
+    <v-dialog
+      v-model="projectedGradStatusWithFinalMarksDialog"
+      max-width="1200px"
+    >
+      <v-card>
+        <v-card-title class="text-h5">
+          Projected Grad Status with Final Marks
+        </v-card-title>
+        <v-card-text>
+          <v-alert
+            v-if="projectedGradStatus && projectedGradStatus.gradStatus"
+            type="info"
+            dense
+            outlined
+          >
+            {{ projectedGradStatus.gradMessage }}
+          </v-alert>
+          <v-row v-if="projectedGradStatus && projectedGradStatus.gradStatus">
+            <v-col cols="6">
+              <v-card>
+                <v-card-title>Requirements met</v-card-title>
+                <v-card-text>
+                  <v-data-table
+                    dense
+                    :items="projectedGradStatus.requirementsMet"
+                    :headers="requirementsMetFields"
+                    class="elevation-1"
+                  />
+                </v-card-text>
+              </v-card>
+            </v-col>
+            <v-col cols="6">
+              <v-card>
+                <v-card-title>Noncompletion reasons</v-card-title>
+                <v-card-text v-if="projectedGradStatus.nonGradReasons">
+                  <v-data-table
+                    dense
+                    :items="projectedGradStatus.nonGradReasons"
+                    :headers="noncompletionReasonsFields"
+                    class="elevation-1"
+                  />
+                </v-card-text>
+                <v-card-text v-else>
+                  All program requirements have been met
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+
+          <div v-if="projectedOptionalGradStatus">
+            <div
+              v-for="optionalProgram in projectedOptionalGradStatus"
+              :key="optionalProgram.optionalProgramCode"
+            >
+              <h3 class="optionalProgramName">
+                {{ optionalProgram.optionalProgramName }}
+              </h3>
+              <v-row>
+                <v-col cols="6">
+                  <v-card>
+                    <v-card-title>Requirements met</v-card-title>
+                    <v-card-text>
+                      <v-data-table
+                        dense
+                        :items="
+                          optionalProgram.studentOptionalProgramData
+                            .optionalRequirementsMet
+                        "
+                        :headers="[
+                          { text: 'Rule', value: 'rule', class: 'px-0 py-2' },
+                          {
+                            text: 'Description',
+                            value: 'description',
+                            class: 'px-0 py-2',
+                          },
+                        ]"
+                        class="elevation-1"
+                      />
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+                <v-col cols="6">
+                  <v-card>
+                    <v-card-title>Requirements not met</v-card-title>
+                    <v-card-text
+                      v-if="
+                        optionalProgram.studentOptionalProgramData
+                          .optionalNonGradReasons
+                      "
+                    >
+                      <v-data-table
+                        dense
+                        :items="
+                          optionalProgram.studentOptionalProgramData
+                            .optionalNonGradReasons
+                        "
+                        class="elevation-1"
+                      />
+                    </v-card-text>
+                    <v-card-text v-else>
+                      All requirements have been met
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </div>
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn text @click="projectedGradStatusWithFinalMarksDialog = false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- Projected Grad status and registrations Modal -->
+    <v-dialog v-model="projectedGradStatusDialog" max-width="1200px">
+      <v-card>
+        <v-card-title class="text-h5">
+          Projected Grad Status with Final Marks and Registrations
+        </v-card-title>
+
+        <v-card-text>
+          <v-alert type="info" outlined>
+            {{ projectedGradStatusWithRegistrations.gradMessage }}
+          </v-alert>
+
+          <v-row
+            v-if="
+              projectedGradStatusWithRegistrations &&
+              projectedGradStatusWithRegistrations.gradStatus
+            "
+          >
+            <v-col cols="6">
+              <v-card>
+                <v-card-title>Requirements met</v-card-title>
+                <v-card-text>
+                  <v-data-table
+                    dense
+                    :items="
+                      projectedGradStatusWithRegistrations.requirementsMet
+                    "
+                    :headers="requirementsMetFields"
+                    class="elevation-1"
+                  >
+                    <template v-slot:item.rule="{ item }">
+                      <div
+                        :style="
+                          item.projected
+                            ? 'background-color: #eaf2fa; width: 100%'
+                            : ''
+                        "
+                      >
+                        {{ item.rule }}
+                      </div>
+                    </template>
+                    <template v-slot:item.description="{ item }">
+                      <div
+                        :style="
+                          item.projected
+                            ? 'background-color: #eaf2fa; width: 100%'
+                            : ''
+                        "
+                      >
+                        {{ item.description }} (Projected)
+                      </div>
+                    </template>
+                  </v-data-table>
+                </v-card-text>
+              </v-card>
+            </v-col>
+            <v-col cols="6">
+              <v-card>
+                <v-card-title>Noncompletion reasons</v-card-title>
+                <v-card-text>
+                  <v-data-table
+                    dense
+                    v-if="projectedGradStatusWithRegistrations.nonGradReasons"
+                    :items="projectedGradStatusWithRegistrations.nonGradReasons"
+                    :headers="noncompletionReasonsFields"
+                    class="elevation-1"
+                  />
+                  <div v-else>All program requirements have been met</div>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+
+          <div v-if="projectedOptionalGradStatus">
+            <div
+              v-for="optionalProgram in projectedOptionalGradStatus"
+              :key="optionalProgram.optionalProgramCode"
+            >
+              <h3 class="optionalProgramName">
+                {{ optionalProgram.optionalProgramName }}
+              </h3>
+              <v-row>
+                <v-col cols="6">
+                  <v-card>
+                    <v-card-title>Requirements met</v-card-title>
+                    <v-card-text>
+                      <v-data-table
+                        dense
+                        :items="
+                          optionalProgram.studentOptionalProgramData
+                            .optionalRequirementsMet
+                        "
+                        :headers="[
+                          { text: 'Rule', value: 'rule', class: 'px-0 py-2' },
+                          {
+                            text: 'Description',
+                            value: 'description',
+                            class: 'px-0 py-2',
+                          },
+                        ]"
+                        class="elevation-1"
+                      />
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+                <v-col cols="6">
+                  <v-card>
+                    <v-card-title>Requirements not met</v-card-title>
+                    <v-card-text>
+                      <v-data-table
+                        dense
+                        v-if="
+                          optionalProgram.studentOptionalProgramData
+                            .optionalNonGradReasons
+                        "
+                        :items="
+                          optionalProgram.studentOptionalProgramData
+                            .optionalNonGradReasons
+                        "
+                        class="elevation-1"
+                      />
+                      <div v-else>All requirements have been met</div>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </div>
+          </div>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-btn text @click="projectedGradStatusDialog = false"> Close </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Undo Completion Modal -->
+    <v-dialog v-model="UndoCompletionDialog" max-width="600px">
+      <v-card>
+        <v-card-title class="text-h5">Undo Completion</v-card-title>
+        <v-card-text>
+          <p>Undo Completion Reason</p>
+          <v-select
+            v-model="studentUngradReasonSelected"
+            :items="ungradReasons"
+            item-value="code"
+            item-text="label"
+            label="Select an Undo Completion Reason"
+          ></v-select>
+
+          <div class="mt-3" v-if="studentUngradReasonSelected">
+            <v-alert type="warning" v-if="ungradReasons.length > 0">
+              {{
+                ungradReasons.find(
+                  (element) => element.code === studentUngradReasonSelected
+                ).description
+              }}
+            </v-alert>
+          </div>
+
+          <div v-if="studentUngradReasonSelected === 'OTH'" class="mt-3">
+            <v-textarea
+              v-model="studentUngradReasonDescription"
+              label="Reason for running undo completion on this student..."
+              :rules="[(v) => !!v || 'Description is required']"
+            ></v-textarea>
+          </div>
+
+          <v-checkbox
+            v-if="studentUngradReasonSelected"
+            v-model="confirmStudentUndoCompletion"
+            label="I confirm that I am authorized to undo completion for this student"
+          ></v-checkbox>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-btn text @click="cancelUndoCompletion"> Cancel </v-btn>
+          <v-btn
+            color="primary"
+            :disabled="isUndoCompletionButtonDisabled"
+            @click="confirmUndoCompletion"
+          >
+            Undo Completion
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
-import { showNotification } from "../utils/common.js";
 import AssessmentService from "@/services/AssessmentService.js";
 import CourseService from "@/services/CourseService.js";
 import StudentService from "@/services/StudentService.js";
@@ -237,7 +539,7 @@ import StudentOptionalPrograms from "@/components/StudentProfile/StudentOptional
 import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/StudentAuditHistory.vue";
 import StudentNotes from "@/components/StudentProfile/AuditHistory/StudentNotes.vue";
 import DisplayTable from "@/components/DisplayTable.vue";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "../store/modules/student";
 import { useAppStore } from "../store/modules/app";
 import { useAccessStore } from "../store/modules/access";
@@ -261,13 +563,13 @@ export default {
       })
       .catch((error) => {
         if (error.response.status) {
-          this.showNotification(
-            "danger",
-            "There was an error: " + error.response.status
+          this.snackbarStore.showSnackbar(
+            "There was an error: " + error.response.status,
+            "error",
+            5000
           );
         }
       });
-    this.showNotification = showNotification;
     this.window.width = window.innerWidth;
     this.window.height = window.innerHeight;
     if (this.window.width < 768) {
@@ -291,6 +593,9 @@ export default {
   props: {},
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
+      projectedGradStatusWithFinalMarksDialog: false,
+      projectedGradStatusDialog: false,
       tab: null,
       pen: "",
       optionalProgramTab: "",
@@ -400,9 +705,10 @@ export default {
       })
       .catch((error) => {
         if (error.response.status) {
-          this.showNotification(
-            "danger",
-            "There was an error: " + error.response.status
+          this.snackbarStore.showSnackbar(
+            "There was an error: " + error.response.status,
+            "error",
+            5000
           );
         }
       });
@@ -452,9 +758,10 @@ export default {
             })
             .catch((error) => {
               if (error.response.status) {
-                this.showNotification(
-                  "danger",
-                  "There was an error: " + error.response.status
+                this.snackbarStore.showSnackbar(
+                  "There was an error: " + error.response.status,
+                  "error",
+                  5000
                 );
               }
             });
@@ -469,20 +776,21 @@ export default {
             .catch((error) => {
               this.tabLoading = false;
               if (error.response.status) {
-                this.$bvToast.toast("ERROR " + error.response.statusText, {
-                  title: "ERROR" + error.response.status,
-                  variant: "danger",
-                  noAutoHide: true,
-                });
+                this.snackbarStore.showSnackbar(
+                  "There was an error: " + error.response.status,
+                  "error",
+                  5000
+                );
               }
             });
           this.loadStudentReportsAndCertificates();
         })
         .catch((error) => {
           this.tabLoading = false;
-          this.showNotification(
-            "danger",
-            "There was an error: " + error.response.data.messages[0].message
+          this.snackbarStore.showSnackbar(
+            "There was an error: " + error.response.status,
+            "error",
+            5000
           );
         });
     },
@@ -498,11 +806,11 @@ export default {
         })
         .catch((error) => {
           if (error.res.status) {
-            this.$bvToast.toast("ERROR " + error.res.statusText, {
-              title: "ERROR" + error.res.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.res.status,
+              "error",
+              5000
+            );
           }
         });
       this.loadStudentReportsAndCertificates();
@@ -518,11 +826,11 @@ export default {
         .catch((error) => {
           this.tabLoading = false;
           if (error.response.status) {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title: "ERROR" + error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
+            );
           }
         });
     },
@@ -539,21 +847,21 @@ export default {
             })
             .catch((error) => {
               if (error.res.status) {
-                this.$bvToast.toast("ERROR " + error.res.statusText, {
-                  title: "ERROR" + error.res.status,
-                  variant: "danger",
-                  noAutoHide: true,
-                });
+                this.snackbarStore.showSnackbar(
+                  "There was an error: " + error.res.status,
+                  "error",
+                  5000
+                );
               }
             });
         })
         .catch((error) => {
           if (error.response.status) {
-            this.$bvToast.toast("ERROR " + error, {
-              title: "ERROR" + error.response.status.response,
-              variant: "danger",
-              noAutoHide: true,
-            });
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
+            );
             this.tabLoading = false;
           }
         });
@@ -572,18 +880,18 @@ export default {
               projectedOptGradStatus.studentOptionalProgramData
             );
           }
-          this.$refs["projectedGradStatusWithFinalMarks"].show();
+          this.projectedGradStatusWithFinalMarksDialog = true;
           this.tabLoading = false;
           this.loadStudentReportsAndCertificates();
         })
         .catch((error) => {
           this.tabLoading = false;
           if (error.response.status) {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title: "ERROR" + error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
+            );
           }
         });
     },
@@ -607,17 +915,18 @@ export default {
           }
           this.projectedrequirementsMet =
             this.projectedGradStatusWithRegistrations.requirementsMet;
-          this.$refs["projectedGradStatusWithFinalAndReg"].show();
+          this.projectedGradStatusDialog = true;
+
           this.tabLoading = false;
           this.loadStudentReportsAndCertificates();
         })
         .catch((error) => {
           if (error.response.status) {
             this.tabLoading = false;
-            this.showNotification(
-              "danger",
-              "There was an error with the Graduation Service (projected Grad Status with Final and Reg): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -662,10 +971,10 @@ export default {
               })
               .catch((error) => {
                 if (error.response.status) {
-                  this.showNotification(
-                    "danger",
-                    "There was an error getting the Student Service (Getting the true student ID): " +
-                      error.response.status
+                  this.snackbarStore.showSnackbar(
+                    "There was an error: " + error.response.status,
+                    "error",
+                    5000
                   );
                 }
               });
@@ -674,10 +983,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student using PEN): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -689,10 +998,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Assessment Service: " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -704,10 +1013,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Graduation Status): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -719,10 +1028,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student Career Programs): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -734,10 +1043,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student Course Achievements): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -749,10 +1058,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student Exam Details): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -764,10 +1073,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Student Notes): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -779,10 +1088,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error with the Student Service (getting the Undo Completion Reasons): " +
-                error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });

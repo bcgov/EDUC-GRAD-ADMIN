@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Program Certificate Transcripts</h3>
-    <p>
+    <h3 class="ml-2 mt-5">Program Certificate Transcripts</h3>
+    <p class="ml-2 w-66">
       The rules governing which certificate type or transcript type will be used
       for a student.
     </p>
@@ -27,7 +27,7 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "ProgramCertificateTranscripts",
   components: {
@@ -40,15 +40,12 @@ export default {
       })
       // eslint-disable-next-line
       .catch((error) => {
-        this.$bvToast.toast("ERROR " + error.response.statusText, {
-          title: "ERROR" + error.response.status,
-          variant: "danger",
-          noAutoHide: true,
-        });
+        this.snackbarStore.showSnackbar(error.message, "error", 5000);
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       programCertificateTranscripts: [],
       programCertificateTranscriptsFields: [
         {

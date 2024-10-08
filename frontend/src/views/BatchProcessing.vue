@@ -5,22 +5,36 @@
       <v-btn
         class="position-absolute"
         style="z-index: 10; right: 0; margin-right: 40px"
-        color="primary"
+        color="transparent"
         small
         @click="updateDashboards"
       >
         <v-icon color="white" icon="mdi-refresh" size="large"></v-icon>
         Update
       </v-btn>
-
-      <v-tabs v-model="tab" bg-color="transparent">
-        <v-tab value="batchRuns" @click="getJwtToken"
+      <v-tabs v-model="activeTab" bg-color="transparent">
+        <v-tab
+          value="batchRuns"
+          @click="
+            getJwtToken;
+            activeTab = 'batchRuns';
+          "
           >Batch Runs ({{ batchRuns.length }})</v-tab
         >
-        <v-tab value="scheduledRuns" @click="getJwtToken"
+        <v-tab
+          value="scheduledRuns"
+          @click="
+            getJwtToken;
+            activeTab = 'scheduledRuns';
+          "
           >User Scheduled ({{ queueScheduledJobs.length }} Queued)</v-tab
         >
-        <v-tab @click="getJwtToken" value="batchRoutines"
+        <v-tab
+          @click="
+            getJwtToken;
+            activeTab = 'batchRoutines';
+          "
+          value="batchRoutines"
           >Scheduled Routines</v-tab
         >
         <v-tab
@@ -36,7 +50,7 @@
         >
       </v-tabs>
 
-      <v-tabs-window v-model="tab">
+      <v-tabs-window v-model="getActiveTab">
         <v-tabs-window-item value="batchRuns">
           <BatchRuns></BatchRuns>
         </v-tabs-window-item>
@@ -154,26 +168,10 @@
                   <RegenerateCertificateForm
                     v-if="item.code == 'CERT_REGEN'"
                   ></RegenerateCertificateForm>
+                  <RegenerateSchoolReportForm
+                    v-else-if="item.code == 'SCHL_RPT_REGEN'"
+                  ></RegenerateSchoolReportForm>
                   <v-btn v-else :disabled="item.disabled">+ </v-btn>
-                </template>
-              </v-data-table>
-              <label>PSI Requests</label>
-              <v-data-table
-                :items="credentialBatchRunOptions.PSIRequests"
-                :headers="batchFields"
-                items-per-page="-1"
-                :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
-                class="pb-3"
-                hide-default-header
-                hide-default-footer
-              >
-                <template v-slot:item.description="{ item }">
-                  <strong> {{ item.label }} </strong>
-                  <br />
-                  {{ item.description }}
-                </template>
-                <template v-slot:item.newRequest="{ item }">
-                  <PSIForm></PSIForm>
                 </template>
               </v-data-table>
             </v-col>
@@ -197,6 +195,9 @@
                   <DistrunFormYearEnd
                     v-if="item.code == 'DISTRUN_YE'"
                   ></DistrunFormYearEnd>
+                  <NongradDistrunForm
+                    v-if="item.code == 'NONGRADRUN'"
+                  ></NongradDistrunForm>
                   <ArchiveStudentsForm
                     v-if="item.code == 'ARC_STUDENTS'"
                   ></ArchiveStudentsForm>
@@ -206,6 +207,7 @@
                   <TranscriptAlgorithmDeleteForm
                     v-if="item.code == 'TVR_DELETE'"
                   ></TranscriptAlgorithmDeleteForm>
+                  <PSIForm v-if="item.code == 'PSIRUN'"></PSIForm>
                 </template>
               </v-data-table> </v-col
           ></v-row>
@@ -216,8 +218,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
-
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import DistributionService from "@/services/DistributionService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
@@ -227,13 +227,15 @@ import RegenerateCertificateForm from "@/components/Batch/Forms/RegenerateCertif
 import GraduationAlgorithmForm from "@/components/Batch/Forms/GraduationAlgorithmForm.vue";
 import TranscriptAlgorithmForm from "@/components/Batch/Forms/TranscriptAlgorithmForm.vue";
 import DistrunFormYearEnd from "@/components/Batch/Forms/DistrunFormYearEndForm.vue";
-
+import RegenerateSchoolReportForm from "@/components/Batch/Forms/RegenerateSchoolReportForm.vue";
 import TranscriptAlgorithmDeleteForm from "@/components/Batch/Forms/TranscriptAlgorithmDeleteForm.vue";
 import ArchiveStudentsForm from "@/components/Batch/Forms/ArchiveStudentsForm.vue";
 import ArchiveSchoolReportsForm from "@/components/Batch/Forms/ArchiveSchoolReportsForm.vue";
+import NongradDistrunForm from "@/components/Batch/Forms/NongradDistrunForm.vue";
 import PSIForm from "@/components/Batch/Forms/PSIForm.vue";
 import BatchRuns from "@/components/Batch/BatchRuns.vue";
 import BatchRoutines from "@/components/Batch/BatchRoutines.vue";
+
 import sharedMethods from "../sharedMethods";
 
 import { useAccessStore } from "../store/modules/access";
@@ -300,7 +302,9 @@ export default {
     ArchiveStudentsForm: ArchiveStudentsForm,
     ArchiveSchoolReportsForm: ArchiveSchoolReportsForm,
     PSIForm: PSIForm,
+    NongradDistrunForm: NongradDistrunForm,
     TranscriptAlgorithmDeleteForm: TranscriptAlgorithmDeleteForm,
+    RegenerateSchoolReportForm: RegenerateSchoolReportForm,
   },
   data() {
     return {
@@ -335,19 +339,7 @@ export default {
       displayMessage: null,
       adminDashboardLoading: false,
       dashboardData: "",
-      processed: "",
-      lastRunStatus: "",
-      lastExpectedStudentsProcessed: "",
-      processedLastRun: "",
-      errors: "32",
-      expected: "56",
-      processingTime: "",
-      lastJobstartTime: "",
-      lastJobendTime: "",
-      processedLastJobstartTime: "",
-      processedLastJobendTime: "",
-      timespan: "6:00pm to 7:12pm",
-      timePerRecord: "18s",
+
       isErrorShowing: false,
       isBatchShowing: false,
       certificateTypes: [],
@@ -361,7 +353,6 @@ export default {
       batchValid: false,
       batchRunGradOptions: [],
       credentialBatchRunOptions: [],
-
       distributionBatchRunOptions: [],
       PSIBatchRunOptions: [],
       yearEndBatchRunOptions: [],
@@ -386,16 +377,14 @@ export default {
             "CERT_REGEN",
             "SCHL_RPT_REGEN",
           ]);
-        this.credentialBatchRunOptions.PSIRequests = this.filterBatchTypes(
-          this.batchTypes,
-          ["PSIRUN"]
-        );
         this.credentialBatchRunOptions.yearEndBatchRunOptions =
           this.filterBatchTypes(this.batchTypes, [
             "ARC_STUDENTS",
             "ARC_SCH_REPORTS",
             "DISTRUN_YE",
             "TVR_DELETE",
+            "PSIRUN",
+            "NONGRADRUN",
           ]);
 
         this.distributionBatchRunOptions = this.filterBatchTypes(
@@ -427,7 +416,6 @@ export default {
     disableBatchRuns(batchRunOptions, disableList) {
       batchRunOptions.forEach((option, index, array) => {
         if (disableList.includes(option.code)) {
-          console.log(option.code);
           array[index].disabled = true;
         } else {
           array[index].disabled = false;
@@ -942,313 +930,12 @@ export default {
       });
     },
     //delete
-    runbatch(id, cronTime) {
-      let pens = [],
-        schools = [],
-        districts = [],
-        programs = [],
-        psi = [],
-        districtCategoryCode = "";
-
-      if (this.tabContent[id].details["who"] == "School") {
-        schools = this.tabContent[id].schools.map(this.getBatchData);
-        schools.pop();
-        if (!schools.length) {
-          this.validationMessage = "Please select a school.";
-          return;
-        }
-      } else if (this.tabContent[id].details["who"] == "Student") {
-        pens = this.tabContent[id].students.map(this.getBatchData);
-        pens.pop();
-        if (!pens.length) {
-          this.validationMessage = "Please select a student.";
-          return;
-        }
-      } else if (this.tabContent[id].details["who"] == "District") {
-        districts = this.tabContent[id].districts.map(this.getBatchData);
-        districtCategoryCode = this.tabContent[id]["details"].categoryCode;
-        if (this.tabContent[id]["details"].categoryCode == "") {
-          districtCategoryCode = [];
-        }
-        if (!districtCategoryCode.length) {
-          this.validationMessage = "Please select a district category";
-          return;
-        }
-        districts.pop();
-        if (!districts.length) {
-          this.validationMessage = "Please select a district.";
-          return;
-        }
-      } else if (this.tabContent[id].details["who"] == "PSI") {
-        psi = this.tabContent[id].psi.map(this.getBatchData);
-        psi.pop();
-        if (!psi.length) {
-          this.validationMessage =
-            "Please select a Post Secondary Institution.";
-          return;
-        }
-      } else if (this.tabContent[id].details["who"] == "Program") {
-        programs = this.tabContent[id].programs.map(this.getBatchData);
-        programs.pop();
-        if (!programs.length) {
-          this.validationMessage = "Please select a program.";
-          return;
-        }
-      }
-      let gradDateFrom = this.tabContent[id].details["gradDateFrom"];
-      let gradDateTo = this.tabContent[id].details["gradDateTo"];
-      let localDownload =
-        this.tabContent[id].details["where"] == "localDownload" ? "Y" : "N";
-      let credentialTypeCode = [];
-      let quantity = this.tabContent[id].details["copies"];
-
-      if (this.tabContent[id].details["blankCertificateDetails"].length) {
-        credentialTypeCode =
-          this.tabContent[id].details["blankCertificateDetails"];
-      }
-      if (this.tabContent[id].details["blankTranscriptDetails"].length) {
-        credentialTypeCode =
-          this.tabContent[id].details["blankTranscriptDetails"];
-      }
-      let request = {
-        pens: pens,
-        schoolOfRecords: schools,
-        districts: districts,
-        credentialTypeCode: credentialTypeCode,
-        schoolCategoryCodes: [this.tabContent[id].details["categoryCode"]],
-        programs: programs,
-        psiCodes: psi,
-        reportType: [this.tabContent[id].details["reportType"]],
-        gradDateFrom: gradDateFrom,
-        gradDateTo: gradDateTo,
-        validateInput: false,
-        quantity: quantity,
-        localDownload: localDownload,
-      };
-
-      if (this.batchHasErrors(this.tabContent[id])) {
-        return;
-      }
-      if (this.tabContent[id].details["what"] == "REGALG") {
-        if (cronTime) {
-          let scheduledRequest = {};
-          scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "SGBJ";
-          scheduledRequest.blankPayLoad = null;
-          scheduledRequest.payload = request;
-          this.addScheduledJob(scheduledRequest, id);
-        } else {
-          this.runREGALG(request, id);
-        }
-      } else if (this.tabContent[id].details["what"] == "TVRRUN") {
-        if (cronTime) {
-          let scheduledRequest = {};
-          scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "STBJ";
-          scheduledRequest.blankPayLoad = null;
-          scheduledRequest.payload = request;
-          scheduledRequest.psiPayload = null;
-          this.addScheduledJob(scheduledRequest, id);
-        } else {
-          this.runTVRRUN(request, id);
-        }
-      } else if (this.tabContent[id].details["what"] == "PSIRUN") {
-        if (cronTime) {
-          let scheduledRequest = {};
-          scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "URPDBJ";
-          scheduledRequest.blankPayLoad = null;
-          scheduledRequest.payload = null;
-          scheduledRequest.psiPayLoad = request;
-          scheduledRequest.psiYear = this.tabContent[id].details["psiYear"];
-          this.addScheduledJob(scheduledRequest, id);
-        } else {
-          request.psiYear = this.tabContent[id].details["psiYear"];
-          this.runPSIRUN(
-            request,
-            id,
-            this.tabContent[id].details["psiTransmissionMode"]
-          );
-        }
-      } else if (this.tabContent[id].details["what"] == "DISTRUN") {
-        if (cronTime) {
-          let scheduledRequest = {};
-          scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "MDBJ";
-          scheduledRequest.blankPayLoad = null;
-          scheduledRequest.payload = request;
-          this.addScheduledJob(scheduledRequest, id);
-        } else {
-          this.runDISTRUN_MONTHLY(id);
-        }
-      } else if (this.tabContent[id].details["what"] == "NONGRADRUN") {
-        if (cronTime) {
-          let scheduledRequest = {};
-          scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "NDBJ";
-          scheduledRequest.blankPayLoad = null;
-          scheduledRequest.payload = request;
-          this.addScheduledJob(scheduledRequest, id);
-        } else {
-          this.runNONGRADRUN(request, id);
-        }
-      } else if (this.tabContent[id].details["what"] == "DISTRUN_YE") {
-        if (cronTime) {
-          let scheduledRequest = {};
-          scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "YDBJ";
-          scheduledRequest.blankPayLoad = null;
-          scheduledRequest.payload = request;
-          this.addScheduledJob(scheduledRequest, id);
-        } else {
-          this.runDISTRUN_YE(request, id);
-        }
-      } else if (this.tabContent[id].details["what"] == "DISTRUNUSER") {
-        if (cronTime) {
-          let scheduledRequest = {};
-          scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "URDBJ";
-          scheduledRequest.blankPayLoad = null;
-          scheduledRequest.payload = null;
-          scheduledRequest.psiPayLoad = null;
-
-          if (
-            this.tabContent[id].details["credential"] ==
-              "Blank certificate print" ||
-            this.tabContent[id].details["credential"] ==
-              "Blank transcript print"
-          ) {
-            scheduledRequest.blankPayLoad = request;
-          } else if (
-            this.tabContent[id].details["credential"] == "Transcript" &&
-            this.tabContent[id].details["who"] == "PSI"
-          ) {
-            scheduledRequest.psiPayLoad = request;
-          } else {
-            scheduledRequest.payload = request;
-          }
-          this.addScheduledJob(scheduledRequest, id);
-        } else if (this.tabContent[id].details["where"] == "User") {
-          console.log("user");
-          request.user = this.userFullName;
-          request.address = {
-            streetLine1: "4TH FLOOR 620 SUPERIOR",
-            streetLine2: "PO BOX 9886 STN PROV GOVT",
-            city: "VICTORIA",
-            region: "BRITISH COLUMBIA",
-            country: "CANADA",
-            code: "V8W9T6",
-          };
-
-          this.runBlankDISTRUNUSERUserRequest(
-            request,
-            id,
-            this.tabContent[id].details["credential"]
-          );
-        } else {
-          this.runDISTRUNUSER(
-            request,
-            id,
-            this.tabContent[id].details["credential"]
-          );
-        }
-        this.validationMessage = "";
-      } else if (this.tabContent[id].details["what"] == "DISTRUN_SUPP") {
-        if (cronTime) {
-          let scheduledRequest = {};
-          scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "SDBJ";
-          scheduledRequest.blankPayLoad = null;
-          scheduledRequest.payload = request;
-          this.addScheduledJob(scheduledRequest, id);
-        } else {
-          this.runDISTRUN_SUPP(request, id);
-        }
-      } else if (this.tabContent[id].details["what"] == "ARC_STUDENTS") {
-        if (cronTime) {
-          let scheduledRequest = {};
-          scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "ARCS";
-          scheduledRequest.blankPayLoad = null;
-          scheduledRequest.payload = request;
-          this.addScheduledJob(scheduledRequest, id);
-        } else {
-          this.runArchiveStudents(request, id);
-        }
-      } else if (this.tabContent[id].details["what"] == "ARC_SCH_REPORTS") {
-        if (cronTime) {
-          let scheduledRequest = {};
-          scheduledRequest.cronExpression = cronTime;
-          scheduledRequest.jobName = "ARCS";
-          scheduledRequest.blankPayLoad = null;
-          scheduledRequest.payload = request;
-          this.addScheduledJob(scheduledRequest, id);
-        } else {
-          this.runManageSchoolReports(request, id);
-        }
-      }
-    },
-    rerunBatchSchoolReports(bid) {
-      this.$refs["popover-" + bid].$emit("close");
-      BatchProcessingService.rerunBatchSchoolReports(bid).then((response) => {
-        if (response) {
-          this.$bvToast.toast("Running school reports for batch job #" + bid, {
-            title: "SCHOOL REPORTS BATCH",
-            variant: "success",
-            noAutoHide: true,
-          });
-        }
-        this.getAdminDashboardData();
-      });
-    },
-    rerunBatch(bid) {
-      this.$refs["popover-" + bid].$emit("close");
-      BatchProcessingService.rerunBatch(bid).then((response) => {
-        if (response) {
-          this.$bvToast.toast(
-            "Created a new batch job based on batch #" + bid,
-            {
-              title: "NEW BATCH JOB STARTED",
-              variant: "success",
-              noAutoHide: true,
-            }
-          );
-        }
-        this.getAdminDashboardData();
-      });
-    },
-    rerunBatchStudentErrors(bid) {
-      this.$refs["popover-" + bid].$emit("close");
-
-      BatchProcessingService.rerunBatchStudentErrors(bid).then((response) => {
-        if (response) {
-          this.$bvToast.toast(
-            "Created an new batch job for batch #" + bid + " errors",
-            {
-              title: "NEW BATCH JOB STARTED",
-              variant: "success",
-              noAutoHide: true,
-            }
-          );
-        }
-        this.getAdminDashboardData();
-      });
-    },
-    displaySearchResults(value) {
-      this.searchResults = value;
-    },
-    setBatchId(id, type) {
-      if (type == "batch") {
-        this.isBatchShowing = true;
-        this.isErrorShowing = false;
-        this.adminSelectedBatchId = id.toString();
-      }
-      if (type == "error") {
-        this.isBatchShowing = false;
-        this.isErrorShowing = true;
-        this.adminSelectedErrorId = id.toString();
-      }
-    },
+    runbatch(id, cronTime) {},
+    rerunBatchSchoolReports(bid) {},
+    rerunBatch(bid) {},
+    rerunBatchStudentErrors(bid) {},
+    displaySearchResults(value) {},
+    setBatchId(id, type) {},
   },
 };
 </script>

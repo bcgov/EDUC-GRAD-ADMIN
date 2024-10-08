@@ -1,7 +1,9 @@
 <template>
   <div>
-    <h3>Certificate Types</h3>
-    <p>A list of certificate types used by the GRAD system.</p>
+    <h3 class="ml-2 mt-5">Certificate Types</h3>
+    <p class="ml-2 w-66">
+      A list of certificate types used by the GRAD system.
+    </p>
     <DisplayTable
       v-bind:items="certificateTypes"
       v-bind:fields="certificateTypesFields"
@@ -24,7 +26,7 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "CertificateTypes",
   components: {
@@ -37,15 +39,12 @@ export default {
       })
       // eslint-disable-next-line
       .catch((error) => {
-        this.$bvToast.toast("ERROR " + error.response.statusText, {
-          title: "ERROR" + error.response.status,
-          variant: "danger",
-          noAutoHide: true,
-        });
+        this.snackbarStore.showSnackbar(error.response.status, "error", 5000);
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       certificateTypes: [],
       certificateTypesFields: [
         {

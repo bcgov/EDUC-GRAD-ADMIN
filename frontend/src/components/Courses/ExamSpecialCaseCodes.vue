@@ -1,6 +1,7 @@
 <template>
   <div>
-    <p>
+    <h3 class="ml-2 mt-5">Exam Special Case Codes</h3>
+    <p class="ml-2">
       Identifies the special cases associated with writing the exam or allowing
       an exemption from exam writing.
     </p>
@@ -54,28 +55,28 @@ export default {
       examSpecialCaseCodesFields: [
         {
           key: "examSpecialCaseCode",
-          label: "Code",
+          title: "Code",
           sortable: true,
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
           class: "w-25",
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
           class: "w-25",
         },

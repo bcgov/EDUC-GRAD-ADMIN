@@ -1,12 +1,9 @@
 <template>
   <div>
-    <h3>Digitized Signatures</h3>
-    <p>Digitized signatures used on students' certificates and transcript.</p>
-    <Snackbar
-      v-model="snackbarVisible"
-      :message="snackbarMessage"
-      color="error"
-    />
+    <h3 class="ml-2 mt-5">Digitized Signatures</h3>
+    <p class="ml-2 w-66">
+      Digitized signatures used on students' certificates and transcript.
+    </p>
     <v-progress-circular
       v-if="isLoading"
       color="primary"
@@ -36,31 +33,30 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
-import Snackbar from "@/components/Common/Snackbar.vue";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 
 export default {
   name: "DigitalSignatures",
   components: {
     DisplayTable: DisplayTable,
-    Snackbar: Snackbar,
   },
   created() {
     GraduationReportService.getDigitalSignatures()
       .then((response) => {
-        this.digitalSignatures = response.data;
         this.isLoading = false;
+        this.digitalSignatures = response.data;
       })
       .catch((error) => {
+        this.isLoading = false;
         // eslint-disable-next-line
         console.error("API error:", error);
-        this.snackbarMessage = error.message;
-        this.snackbarVisible = true;
-        this.isLoading = false;
+        this.snackbarStore.showSnackbar(error.message, "error", 5000);
       });
   },
 
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       snackbarVisible: false,
       snackbarMessage: "",
       isLoading: true,

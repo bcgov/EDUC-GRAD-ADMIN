@@ -1,7 +1,9 @@
 <template>
   <div>
-    <h3>Student Status Codes</h3>
-    <p>Student status codes refer to a students' status in the GRAD system.</p>
+    <h3 class="ml-2 mt-5">Student Status Codes</h3>
+    <p class="ml-2 w-66">
+      Student status codes refer to a students' status in the GRAD system.
+    </p>
     <DisplayTable
       v-bind:items="studentStatusCodes"
       v-bind:fields="studentStatusCodesFields"
@@ -21,7 +23,7 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import StudentService from "@/services/StudentService.js";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "StatusCodes",
   components: {
@@ -34,15 +36,12 @@ export default {
       })
       // eslint-disable-next-line
       .catch((error) => {
-        this.$bvToast.toast("ERROR " + error.response.statusText, {
-          title: "ERROR" + error.response.status,
-          variant: "danger",
-          noAutoHide: true,
-        });
+        this.snackbarStore.showSnackbar(error.message, "error", 5000);
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       studentStatusCodes: [],
       studentStatusCodesFields: [
         {

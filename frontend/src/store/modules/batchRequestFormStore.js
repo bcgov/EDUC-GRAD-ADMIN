@@ -22,13 +22,14 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     blankCertificateDetails:[],
     blankTranscriptDetails:[],
     credential:null,
-    categoryCode:[],
+    categoryCode:"",
     copies:"1",
     allPsi:false,
     allDistricts:false,
     distribution: null,
     localDownload: "N",
     activityCode: null,
+    reportType: null,
 
     batchRunTime: null,
     batchRunSchedule: null,
@@ -37,7 +38,6 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
   }),
   actions: {
   async setBatchRunType(payload){
-    console.log("setting batch type" + payload)
     this.runType = payload
   },
   async clearBatchGroupData(){
@@ -62,8 +62,6 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
       this.batchDetails[payload].details['blankTranscriptDetails']=[{}];
     },
     async setCredential(payload){
-      console.log("setting credential")
-      console.log(payload)
       this.credential = payload
     }, 
     async updateCredential(credential) {
@@ -72,11 +70,9 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
       this.resetBlankTranscriptDetails();
     },    
     async resetBlankCertificateDetails() {
-      console.log("R1")
       this.blankCertificateDetails = [];
     },
     async resetBlankTranscriptDetails() {
-      console.log("R2")
       this.blankTranscriptDetails = [];
     },
     async setGroup(payload){
@@ -85,8 +81,17 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     async setActivityCode(payload){
       this.activityCode = payload;
     }
+    
   },
   getters: {
+    getCurrentPSIYear() {
+      let date = new Date();
+      if (date.getMonth() + 1 > 8) {
+        return String(date.getFullYear() + 1);
+      } else {
+        return String(date.getFullYear());
+      }
+    },
     getCredential: (state) => {
       return state.credential
     },
@@ -110,20 +115,15 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         return [];
       }
     },
+    getReportType: (state) => state.reportType,
+    getPsiYear: (state) => state.psiYear,
     getDistribution: (state) => state.distribution,
     getCopies: (state) => state.copies,
     getBatchRunTime: (state) => state.batchRunTime,
     getActivityCode:(state) => state.activityCode,
+    getSchoolCategory: (state) => state.categoryCode,
     getLocalDownload: (state) => state.distribution == "Download"?"Y":"N", 
-    getBatchRequestCrontime: (state) => {
-      console.log("getting crontime")
-      console.log(state.batchRunTime)
-      console.log(state.batchRunSchedule)
-      
-      console.log(state.batchRunCustomDate)
-      console.log(state.batchRunCustomTime)
-
-   
+    getBatchRequestCrontime: (state) => {   
         if (state.batchRunSchedule == "N") {
           let today = new Date();
           return (
@@ -153,14 +153,10 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
             " *"
           );
         } else if (state.batchRunSchedule == "Custom") {
-          console.log("GETTING CUSTOM");
         
           // Extract the date part and construct a new date-time string with the custom time
           let customDate = new Date(state.batchRunCustomDate);
           let customTime = state.batchRunCustomTime + ":00"; // Append seconds to the time to match format
-        
-          console.log(customDate)
-          console.log(customTime)
           // Combine the date and custom time into a new Date object
           let dateTime = new Date(
             customDate.toISOString().split("T")[0] + "T" + customTime
@@ -212,22 +208,23 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         districts: state.who === "School Category" ? state.districts.map(district => district.district) : [],
         programs: state.who === "Program" ? state.programs.map(program => program.program) : [],
         psiCodes: state.who === "Psi" ? state.psi.map(postSecondaryInstitution => postSecondaryInstitution.psi) : [],
-        schoolCategoryCodes: state.categoryCode,
-        validateInputs: false,
+        schoolCategoryCodes: state.categoryCode ? [state.categoryCode] : [],
+        validateInputs: true,
         activityCode: state.activityCode,
+        reportTypes: [state.reportType],
         // gradDateFrom and gradDateTo are empty if "Current Students" is selected
         gradDateFrom: state.getFormattedGradDateFrom,
         gradDateTo: state.getFormattedGradDateTo,
 
         // Include credentialTypeCode based on the credential selected
-        ...(state.credential === "Blank certificate print" ? { credentialTypeCode: state.blankCertificateDetails } : {}),
-        ...(state.credential === "Blank transcript print" ? { credentialTypeCode: state.blankTranscriptDetails } : {}),
+        ...(state.credential === "Blank certificate print" ? { credentialTypeCode: [...state.blankCertificateDetails] } : {}),
+        ...(state.credential === "Blank transcript print" ? { credentialTypeCode: [...state.blankTranscriptDetails] } : {}),
 
         // User distribution run with specific conditions
         quantity: state.copies,
             // Check distribution method
            
-          ...(state.distribution === "Download" ? { localDownload: state.getLocalDownload } : {}),
+           localDownload: state.getLocalDownload,
           ...(state.distribution === "User" ? {   user: "",
             address: state.getUserDistributionAddress, } : {}),
 

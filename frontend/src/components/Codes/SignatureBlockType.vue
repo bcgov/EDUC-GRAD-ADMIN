@@ -1,7 +1,9 @@
 <template>
   <div>
-    <h3>Signature Block</h3>
-    <p>Signature block(s) used on students' certificates and transcript.</p>
+    <h3 class="ml-2 mt-5">Signature Block</h3>
+    <p class="ml-2 w-66">
+      Signature block(s) used on students' certificates and transcript.
+    </p>
     <DisplayTable
       v-bind:items="signatureBlock"
       v-bind:fields="signatureBlockFields"
@@ -15,7 +17,7 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "SignatureBlockType",
   components: {
@@ -28,15 +30,12 @@ export default {
       })
       // eslint-disable-next-line
       .catch((error) => {
-        this.$bvToast.toast("ERROR " + error.response.statusText, {
-          title: "ERROR" + error.response.status,
-          variant: "danger",
-          noAutoHide: true,
-        });
+        this.snackbarStore.showSnackbar(error.message, "error", 5000);
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       signatureBlock: [],
       signatureBlockFields: [
         {
@@ -55,16 +54,6 @@ export default {
           title: "Description",
           sortable: true,
         },
-        // {
-        //   key: "effectiveDate",
-        //   label: "Effective date",
-        //   sortable: true,
-        // },
-        // {
-        //   key: "expiryDate",
-        //   label: "Expiry date",
-        //   sortable: true,
-        // },
       ],
     };
   },

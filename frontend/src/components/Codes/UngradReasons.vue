@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Undo Completion Reasons</h3>
-    <p>
+    <h3 class="ml-2 mt-5">Undo Completion Reasons</h3>
+    <p class="ml-2 w-66">
       When a User performs the "Undo Completion" process (security permissions
       needed), the User must select an "Undo Completion" reason. The list of
       Undo Completion reasons are maintained in this table.
@@ -25,7 +25,7 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import StudentService from "@/services/StudentService.js";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "UngradReasons",
   components: {
@@ -38,15 +38,12 @@ export default {
       })
       // eslint-disable-next-line
       .catch((error) => {
-        this.$bvToast.toast("ERROR " + error.response.statusText, {
-          title: "ERROR" + error.response.status,
-          variant: "danger",
-          noAutoHide: true,
-        });
+        this.snackbarStore.showSnackbar(error.message, "error", 5000);
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       ungradReasons: [],
       ungradReasonsFields: [
         {

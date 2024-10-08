@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Batch Type Codes</h3>
-    <p>A list of Batch Runs used by the GRAD system.</p>
+    <h3 class="ml-2 mt-5">Batch Type Codes</h3>
+    <p class="ml-2 w-66">A list of Batch Runs used by the GRAD system.</p>
     <DisplayTable
       v-bind:items="batchTypes"
       v-bind:fields="batchTypesFields"
@@ -21,7 +21,7 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "BatchTypes",
   components: {
@@ -34,15 +34,16 @@ export default {
       })
       // eslint-disable-next-line
       .catch((error) => {
-        this.$bvToast.toast("ERROR " + error.response.statusText, {
-          title: "ERROR" + error.response.status,
-          variant: "danger",
-          noAutoHide: true,
-        });
+        this.snackbarStore.showSnackbar(
+          "ERROR " + error.response.status,
+          "error",
+          5000
+        );
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       batchTypes: [],
       batchTypesFields: [
         {

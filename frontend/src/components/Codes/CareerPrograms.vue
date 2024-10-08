@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Career Program Codes</h3>
-    <p>
+    <h3 class="ml-2 mt-5">Career Program Codes</h3>
+    <p class="ml-2 w-66">
       The optional program Career Program in GRAD can be broken down further by
       specific career program code. A Student on the optional program CP, Career
       Program, would also be assigned a Career Program code(s) to identify what
@@ -32,7 +32,7 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "CareerPrograms",
   components: {
@@ -46,15 +46,16 @@ export default {
       })
       // eslint-disable-next-line
       .catch((error) => {
-        this.$bvToast.toast("ERROR " + error.response.statusText, {
-          title: "ERROR" + error.response.status,
-          variant: "danger",
-          noAutoHide: true,
-        });
+        this.snackbarStore.showSnackbar(
+          "ERROR" + error.response.status,
+          "error",
+          5000
+        );
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       isLoading: true,
       careerPrograms: [],
       careerProgramFields: [
@@ -88,8 +89,8 @@ export default {
 </script>
 
 <style>
-.table th,
+/* .table th,
 .table td {
   border-top: none !important;
-}
+} */
 </style>

@@ -49,45 +49,22 @@
                         ]"
                         item-title="name"
                         item-value="value"
-                        label="Select Option"
+                        label="Select a Group"
                       ></v-select>
                     </v-row>
                     <v-row v-if="group == 'Student'">
                       <StudentInput runType="CERT_REGEN"></StudentInput>
                     </v-row>
                     <v-row v-if="group == 'School Category'">
-                      <DistrictInput runType="CERT_REGEN"></DistrictInput>
+                      <DistrictInput
+                        runType="CERT_REGEN"
+                        disableSelectStudents
+                      ></DistrictInput>
                     </v-row>
                   </v-stepper-window-item>
 
                   <v-stepper-window-item value="2">
                     <v-card title="Schedule" flat>
-                      <div v-if="group === 'School Category'">
-                        Districts:
-                        <v-list>
-                          <v-list-item
-                            v-for="(
-                              district, index
-                            ) in getBatchRequest.districts"
-                            :key="index"
-                          >
-                            <v-list-item-content>
-                              <v-list-item-title>{{
-                                district
-                              }}</v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list>
-                      </div>
-                      <div v-if="group === 'Program'">
-                        Districts: {{ getBatchRequest.programs }}
-                      </div>
-                      <div v-if="group === 'PSI'">
-                        Post Secondary Institutions: REQUEST
-                        {{ getBatchRequest }}
-                      </div>
-                      <v-btn @click="changeStep(0)">Edit</v-btn>
-
                       <ScheduleInput></ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
@@ -106,7 +83,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="batch-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -138,6 +115,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
+import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
 export default {
   setup() {
@@ -221,6 +199,7 @@ export default {
     Notifications: Notifications,
   },
   data: () => ({
+    snackbarStore: useSnackbarStore(),
     step: 0,
     dialog: false,
   }),
@@ -236,6 +215,10 @@ export default {
       "clearBatchDetails",
       "clearBatchGroupData",
     ]),
+    ...mapActions(useBatchProcessingStore, [
+      "setActiveTab",
+      "updateDashboards",
+    ]),
     closeDialogAndResetForm() {
       this.group = null;
       this.dialog = false;
@@ -250,18 +233,26 @@ export default {
     },
     async submit() {
       try {
-        let response = await BatchProcessingService.runREGALG(
+        let response = await BatchProcessingService.runCERTREGEN(
           this.getBatchRequest,
           this.getBatchRequestCrontime
         );
         this.closeDialogAndResetForm();
-        this.activeTab = "batchRuns";
+        this.snackbarStore.showSnackbar(
+          "Batch " +
+            response.data.batchId +
+            "- User Request Certificate Regeneration submitted",
+          "success",
+          5000
+        );
+        this.setActiveTab("batchRuns");
+        this.updateDashboards();
       } catch (error) {
-        // handle the error and show the notification
-        console.error("Error:", error);
-        if (this.notifications) {
-          this.notifications.show("An error occurred: " + error.message);
-        }
+        this.snackbarStore.showSnackbar(
+          "An error occurred: " + error.message,
+          "danger",
+          5000
+        );
       }
     },
   },

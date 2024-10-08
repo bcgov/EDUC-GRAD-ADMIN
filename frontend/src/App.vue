@@ -18,7 +18,6 @@
       <div class="container" style="min-height: 100vh">
         <router-view />
         <Snackbar></Snackbar>
-        <div>{{ timerValue }}</div>
         <div class="overlay-dialog">
           <v-dialog v-model="tokenExpiring" max-width="600px">
             <v-card>
@@ -136,7 +135,7 @@ export default {
           if (this.timerValue < 300) this.tokenExpiring = true;
           this.tokenExpired = await this.checkJWTTokenExpired();
         }
-      }, 10000); // Update every 10000 milliseconds (10 seconds)
+      }, 30000); // Update every 10000 milliseconds (30 seconds)
     },
     async resumeSession() {
       // Handle the logic to resume the session

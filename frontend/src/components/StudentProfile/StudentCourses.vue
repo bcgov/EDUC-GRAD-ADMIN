@@ -2,9 +2,9 @@
   <div>
     <v-card>
       <v-card-text>
-        <div v-if="!courses" class="container">
+        <v-alert v-if="!courses" class="container">
           This student does not have any courses.
-        </div>
+        </v-alert>
         <DisplayTable
           v-if="courses"
           :items="courses"

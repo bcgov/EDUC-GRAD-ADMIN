@@ -1,24 +1,37 @@
 <template>
   <v-container>
     <v-card>
-      <v-card-title>Include School Category</v-card-title>
+      <v-alert v-if="$slots.inputWarning" type="info" class="pb-2">
+        <slot name="inputWarning"></slot>
+      </v-alert>
       <v-card-text>
         <v-row>
-          <v-col sm="6" lg="9">
+          <v-col md="2">
+            <label class="font-weight-bold">Category</label>
+          </v-col>
+          <v-col md="10">
             <v-select
               v-model="schoolCategory"
               :items="schoolCategoryOptions"
               item-title="title"
               item-value="value"
-              label="Choose..."
+              label="School Category."
               class="my-2"
               outlined
+              hide-details
             ></v-select>
           </v-col>
         </v-row>
-
+        <v-row v-if="!disableSelectStudents">
+          <v-col md="12">
+            <DateRangeInput></DateRangeInput>
+          </v-col>
+        </v-row>
         <v-row v-if="schoolCategory !== '04' && schoolCategory !== '09'">
-          <v-col sm="6" lg="9">
+          <v-col md="2">
+            <label class="font-weight-bold">District</label>
+          </v-col>
+          <v-col sm="5" lg="8">
             <v-autocomplete
               v-model="district"
               :items="getDistrictList"
@@ -28,7 +41,7 @@
               item-value="districtNumber"
             ></v-autocomplete>
           </v-col>
-          <v-col sm="6" lg="3">
+          <v-col sm="5" lg="2">
             <v-btn
               :disabled="!district"
               @click="addDistrict()"
@@ -37,11 +50,8 @@
             >
           </v-col>
         </v-row>
-
         <v-row>
           <v-col>
-            <label class="font-weight-bold pt-2">District</label>
-
             <v-row v-if="districtInfo" class="float-left col-10">
               <v-card>
                 <v-card-text>
@@ -103,17 +113,21 @@ import { isProxy, toRaw, ref, watch } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { mapActions, mapState } from "pinia";
 import { useAppStore } from "../../../../store/modules/app";
+import DateRangeInput from "./DateRangeInput.vue";
 import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
 import { required, minLength, helpers } from "@vuelidate/validators";
 
 export default {
-  components: {},
+  components: { DateRangeInput: DateRangeInput },
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
     const gradDateFrom = ref(batchRequestFormStore.gradDateFrom);
     const gradDateTo = ref(batchRequestFormStore.gradDateTo);
     const districts = ref(batchRequestFormStore.districts);
-
+    const schoolCategory = ref(batchRequestFormStore.categoryCode);
+    watch(schoolCategory, (newValue) => {
+      batchRequestFormStore.categoryCode = newValue;
+    });
     watch(gradDateFrom, (newValue) => {
       batchRequestFormStore.gradDateFrom = newValue;
     });
@@ -122,6 +136,7 @@ export default {
     });
 
     return {
+      schoolCategory,
       gradDateTo,
       gradDateFrom,
       districts,
@@ -172,6 +187,8 @@ export default {
   },
   data() {
     return {
+      addMode: true,
+      includeStudents: "Current Students",
       schoolCategoryOptions: [
         { title: "01 Public", value: "01" },
         { title: "02 Independent", value: "02" },
@@ -183,7 +200,6 @@ export default {
       districtInfo: "",
       districtValidating: false,
       validationMessage: "",
-      schoolCategory: "",
       districtInputFields: [
         {
           key: "district",
@@ -247,6 +263,7 @@ export default {
       });
 
       this.clearDistrictInput();
+      this.addMode = false;
     },
     removeDistrict(district) {
       for (const [index] in this.districts) {
@@ -254,16 +271,28 @@ export default {
           this.districts.splice(index, 1);
         }
       }
+      if (this.districts.length == 0) {
+        this.addMode = true;
+      }
     },
   },
   props: {
     credentialType: String,
     runType: String,
+    disableSelectStudents: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 
   computed: {
     ...mapState(useAppStore, ["getDistrictList"]),
-    ...mapState(useBatchRequestFormStore, ["getDistricts", "getBatchRequest"]),
+    ...mapState(useBatchRequestFormStore, [
+      "getDistricts",
+      "getBatchRequest",
+      "getSchoolCategory",
+    ]),
 
     isEmpty() {
       return this.districts.length > 0;

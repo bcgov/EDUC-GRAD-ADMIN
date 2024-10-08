@@ -8,44 +8,15 @@
               <slot name="inputWarning"></slot>
             </v-alert>
 
-            <v-row>
-              <v-col md="2">
-                <label class="font-weight-bold">Include</label>
-              </v-col>
-              <v-col md="10">
-                <v-select
-                  v-model="includeStudents"
-                  :items="['Current Students', 'Date Range']"
-                  label="Select which students to include"
-                  class=""
-                ></v-select>
-              </v-col>
-            </v-row>
-            <v-row
-              v-if="includeStudents === 'Date Range'"
-              class="date-ranges"
-              md
-            >
-              <v-col class="row float-left col-3 m-0 p-0">
-                <strong><label class="pt-1">Grad Start Date</label></strong>
-                <v-date-picker
-                  v-model="gradDateFrom"
-                  :max="gradDateTo"
-                ></v-date-picker>
-              </v-col>
-
-              <v-col class="float-left col-4">
-                <strong><label class="pt-1">Grad End Date</label></strong>
-                <v-date-picker
-                  v-model="gradDateTo"
-                  :min="gradDateFrom"
-                ></v-date-picker>
+            <v-row v-if="!disableSelectStudents">
+              <v-col sm="12">
+                <DateRangeInput></DateRangeInput>
               </v-col>
             </v-row>
 
             <v-row>
               <v-col md="2">
-                <label class="font-weight-bold">Mincode</label>
+                <label class="font-weight-bold">School</label>
               </v-col>
               <v-col>
                 <v-autocomplete
@@ -62,24 +33,61 @@
                 <v-card v-if="mincodeSchoolInfo">
                   <v-card-text>
                     <div>
-                      <strong>School Name:</strong>
-                      {{ mincodeSchoolInfo.schoolName }}<br />
-                      <strong>Transcript Eligibility:</strong>
-                      {{ mincodeSchoolInfo.transcriptEligibility ? "Y" : "N"
-                      }}<br />
-                      <strong>Certificate Eligibility</strong>
-                      {{ mincodeSchoolInfo.certificateEligibility ? "Y" : "N"
-                      }}<br />
-                      <strong>School Category</strong>
-                      {{ mincodeSchoolInfo.schoolCategory }}
-                      <br />
-                      <strong>TRAX reporting</strong>
-                      {{ mincodeSchoolInfo.traxReporting }}<br />
-                      <v-btn @click="addSchool()" class="float-right"
-                        >Add School</v-btn
-                      >
+                      <v-simple-table class="w-100">
+                        <tbody>
+                          <tr>
+                            <td class="p-1"><strong>School Name:</strong></td>
+                            <td class="p-1">
+                              {{ mincodeSchoolInfo.schoolName }}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="p-1">
+                              <strong>Transcript Eligibility:</strong>
+                            </td>
+                            <td class="p-1">
+                              {{
+                                mincodeSchoolInfo.transcriptEligibility
+                                  ? "Y"
+                                  : "N"
+                              }}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="p-1">
+                              <strong>Certificate Eligibility:</strong>
+                            </td>
+                            <td class="p-1">
+                              {{
+                                mincodeSchoolInfo.certificateEligibility
+                                  ? "Y"
+                                  : "N"
+                              }}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="p-1">
+                              <strong>School Category:</strong>
+                            </td>
+                            <td class="p-1">
+                              {{ mincodeSchoolInfo.schoolCategory }}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="p-1">
+                              <strong>TRAX Reporting:</strong>
+                            </td>
+                            <td class="p-1">
+                              {{ mincodeSchoolInfo.traxReporting }}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </v-simple-table>
                     </div>
                   </v-card-text>
+                  <v-card-actions>
+                    <v-btn @click="addSchool()">Add School</v-btn>
+                  </v-card-actions>
                 </v-card>
 
                 <v-row v-for="error in v$.mincode.$errors" :key="error.$uid">
@@ -135,6 +143,7 @@ import TRAXService from "@/services/TRAXService.js";
 import SchoolService from "@/services/SchoolService.js";
 import StudentService from "@/services/StudentService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
+import DateRangeInput from "./DateRangeInput.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
 import { useAppStore } from "../../../../store/modules/app";
@@ -142,7 +151,7 @@ import { mapActions, mapState } from "pinia";
 import { required, minLength, helpers } from "@vuelidate/validators";
 
 export default {
-  components: {},
+  components: { DateRangeInput: DateRangeInput },
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
     const gradDateFrom = ref(batchRequestFormStore.gradDateFrom);
@@ -167,7 +176,6 @@ export default {
     return {
       mincode: {
         async isValid(value) {
-          console.log("validatiing " + value);
           if (value === "") return true;
           if (value.length == 8) {
             try {
@@ -194,7 +202,6 @@ export default {
   },
   data() {
     return {
-      includeStudents: "Current Students",
       selectedSchool: "",
       mincode: "",
       mincodeSchoolInfo: "",
@@ -232,6 +239,14 @@ export default {
         return null;
       }
     },
+    schoolTitle(item) {
+      // Customize this method to return the desired format
+      if (item) {
+        return `${item.mincode} - ${item.displayName}`;
+      } else {
+        return null;
+      }
+    },
     clearmincodeSchoolInfo() {
       this.mincodeSchoolInfo = "";
     },
@@ -255,7 +270,14 @@ export default {
       }
     },
   },
-  props: {},
+
+  props: {
+    disableSelectStudents: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
 
   computed: {
     ...mapState(useAppStore, ["getSchoolsList"]),
@@ -268,5 +290,8 @@ export default {
 <style scoped>
 input {
   border-radius: 0px;
+}
+.w-100 {
+  width: 100%;
 }
 </style>

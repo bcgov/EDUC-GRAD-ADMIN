@@ -6,7 +6,7 @@
       <v-card-text>
         <v-form v-on:submit.prevent id="psiReqForm">
           <div class="advanced-search-form">
-            <div class="row my-3">
+            <div class="row mt-3">
               <div class="advanced-search-field col-12 col-md-2">
                 <div
                   href="#"
@@ -30,7 +30,7 @@
                 />
               </div>
             </div>
-            <div class="row">
+            <div class="row ml-1">
               <div class="advanced-search-button">
                 <v-btn
                   v-on:click="schoolReportSearch"
@@ -39,10 +39,10 @@
                   tabindex="6"
                 >
                   <i class="fas fa-search" aria-hidden="true"></i>
-                  Search
+                  &nbsp;Search
                 </v-btn>
                 <v-btn color="success" v-if="searchLoading" tabindex="6"
-                  ><i class="fas fa-search" aria-hidden="true"></i>Search
+                  ><i class="fas fa-search" aria-hidden="true"></i>&nbsp;Search
                   <v-progress-circular
                     v-if="searchLoading"
                     indeterminate
@@ -52,39 +52,42 @@
                 <v-btn @click="clearInput" class="btn btn-outline-primary mx-2">
                   Reset
                 </v-btn>
-                <v-progress-circular
-                  v-if="searchLoading"
-                  indeterminate
-                  color="green"
-                ></v-progress-circular>
               </div>
             </div>
 
             <div v-if="reports">
-              <div v-if="totalResults > 0 && !searchLoading" class="row">
-                <div class="search-results-message my-3 col-12 col-md-8">
-                  <strong>{{ totalResults }}</strong> report{{
-                    totalResults === 1 ? "" : "s"
-                  }}
-                  found.
-                </div>
-              </div>
-            </div>
-            <div v-if="searchMessage" class="row">
-              <div class="search-results-message my-2 col-12 col-md-8">
-                <strong>{{ searchMessage }}</strong>
-              </div>
+              <v-alert
+                type="success"
+                variant="tonal"
+                border="start"
+                class="mt-6 mb-0 ml-1 py-3 width-fit-content"
+                v-if="totalResults > 0 && !searchLoading"
+                :text="`${totalResults} report${
+                  totalResults > 1 ? 's' : ''
+                } found`"
+              >
+              </v-alert>
+              <v-alert
+                type="error"
+                variant="tonal"
+                border="start"
+                class="mt-6 mb-0 ml-1 py-3 width-fit-content"
+                v-if="!!searchMessage"
+                :text="searchMessage"
+              ></v-alert>
             </div>
           </div>
         </v-form>
 
         <DisplayTable
+          v-if="reports.length"
+          class="mt-12"
           title="Results"
           v-bind:items="reports"
           v-bind:fields="reportFields"
           sortKey="report"
           id="mincode"
-          v-bind:showFileter="true"
+          v-bind:showFilter="true"
           pagination="true"
         >
           <template v-slot:item.report="{ item }">
@@ -118,7 +121,7 @@
 import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import sharedMethods from "../sharedMethods";
-import { showNotification } from "../utils/common.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 
 export default {
   name: "SchoolReports",
@@ -127,6 +130,7 @@ export default {
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       url: null,
       file: [],
       mincode: {
@@ -182,9 +186,6 @@ export default {
     };
   },
   computed: {},
-  created() {
-    this.showNotification = showNotification;
-  },
   methods: {
     keyHandler: function (e) {
       if (e.keyCode === 13) {
@@ -217,10 +218,7 @@ export default {
           .catch((error) => {
             this.searchLoading = false;
             this.searchMessage = "No reports found for this school";
-            this.showNotification(
-              "danger",
-              "There was an error with the web service." + error.response
-            );
+            this.snackbarStore.showSnackbar(error.message, "error", 5000);
           });
       }
     },

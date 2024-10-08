@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Report Types</h3>
-    <p>
+    <h3 class="ml-2 mt-5">Report Types</h3>
+    <p class="ml-2 w-66">
       Students' in the GRAD system may have several types of individual reports
       associated with their GRAD data. Schools also have several types of
       reports associated with their school and students' GRAD data. The list of
@@ -27,7 +27,7 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "ReportTypes",
   components: {
@@ -40,15 +40,12 @@ export default {
       })
       // eslint-disable-next-line
       .catch((error) => {
-        this.$bvToast.toast("ERROR " + error.response.statusText, {
-          title: "ERROR" + error.response.status,
-          variant: "danger",
-          noAutoHide: true,
-        });
+        this.snackbarStore.showSnackbar(error.message, "error", 5000);
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       reportTypes: [],
       reportTypesFields: [
         {

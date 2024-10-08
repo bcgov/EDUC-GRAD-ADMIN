@@ -34,7 +34,14 @@
         </v-progress-circular>
       </v-btn>
     </v-form>
-    <DevStudents></DevStudents>
+    <v-alert
+      v-if="searchMessage"
+      type="error"
+      variant="tonal"
+      border="start"
+      class="mt-4 mb-0 py-3 width-fit-content"
+      :text="searchMessage"
+    ></v-alert>
   </div>
 </template>
 <script>
@@ -43,7 +50,6 @@ import { useVuelidate } from "@vuelidate/core";
 import { isEnvLocalHost } from "../../utils/common.js";
 import { useStudentStore } from "@/store/modules/student";
 import StudentService from "@/services/StudentService.js";
-import DevStudents from "../DevStudents.vue";
 // const studentStore = useStudentStore();
 
 export default {
@@ -58,6 +64,7 @@ export default {
       isEnvLocalHost: isEnvLocalHost(),
       penInput: "",
       searchLoading: false,
+      searchMessage: "", //TODO?
     };
   },
   //   watch: {
@@ -67,9 +74,7 @@ export default {
   //     },
   //   },
   created() {},
-  components: {
-    DevStudents: DevStudents,
-  },
+  components: {},
   computed: {},
   methods: {
     ...mapActions(useStudentStore, ["unsetStudent"]),
@@ -105,7 +110,7 @@ export default {
     findStudentByPen: function () {
       if (this.penInput) {
         this.closeRecord();
-        this.searchByPenMessage = "";
+        this.searchMessage = "";
         this.searchLoading = true;
         this.studentSearchResults = [];
         StudentService.getStudentByPen(this.penInput)
@@ -114,7 +119,7 @@ export default {
               var studentLastName = response.data[0].legalLastName;
               if (response.data[0].program == null || "") {
                 this.studentHasProgram = false;
-                this.searchByPenMessage =
+                this.searchMessage =
                   "Student " +
                   studentLastName +
                   " has a PEN but does not have a GRAD system record. Use TRAX to conduct a PEN student inquiry.";
@@ -124,7 +129,7 @@ export default {
                 this.selectStudent(response.data);
               }
             } else {
-              this.searchByPenMessage =
+              this.searchMessage =
                 "Student cannot be found on the GRAD or PEN database";
               this.searchLoading = false;
               //hides the Pen inqury message
@@ -133,7 +138,7 @@ export default {
           })
           .catch((err) => {
             this.searchLoading = false;
-            this.searchByPenMessage = "";
+            this.searchMessage = "";
             this.showNotification("danger", err);
           });
         //pen input check

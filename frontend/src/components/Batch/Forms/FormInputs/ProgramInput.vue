@@ -1,11 +1,15 @@
 <template>
   <v-container>
     <v-card>
-      <v-card-title>Include Program(s)</v-card-title>
       <v-card-text>
-        <label>Program</label>
         <v-row>
-          <v-col sm="11">
+          <v-col md="12">
+            <DateRangeInput></DateRangeInput>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col sm="2"><strong>Program</strong></v-col>
+          <v-col sm="8">
             <v-autocomplete
               v-model="program"
               :items="computedProgramList"
@@ -14,21 +18,20 @@
               :item-disabled="true"
             ></v-autocomplete>
           </v-col>
-          <v-col sm="1" class="p-2">
+          <v-col sm="2" class="p-2 my-2">
             <v-btn :disabled="!program" @click="addProgram()" class="bg-primary"
-              ><v-icon>mdi-plus</v-icon></v-btn
+              >Add Program</v-btn
             >
           </v-col>
         </v-row>
+
         <v-data-table
           v-if="programs.length > 0"
           :items="programs"
           :headers="programInputFields"
         >
           <template v-slot:item.remove="{ item }">
-            <v-icon size="large" @click="removeProgram(item.program)">
-              mdi-delete
-            </v-icon>
+            <v-btn @click="removeProgram(item.program)"> Remove </v-btn>
           </template>
           <template v-slot:item.info="{ item }">
             <div>
@@ -45,12 +48,13 @@ import { isProxy, toRaw, ref, watch } from "vue";
 import TRAXService from "@/services/TRAXService.js";
 import { useVuelidate } from "@vuelidate/core";
 import { required, minLength, helpers } from "@vuelidate/validators";
+import DateRangeInput from "./DateRangeInput.vue";
 import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
 import { useAppStore } from "../../../../store/modules/app";
 import { mapActions, mapState } from "pinia";
 
 export default {
-  components: {},
+  components: { DateRangeInput: DateRangeInput },
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
     const gradDateFrom = ref(batchRequestFormStore.gradDateFrom);
@@ -80,6 +84,7 @@ export default {
   },
   data() {
     return {
+      includeStudents: "Current Students",
       program: "",
       programInfo: {},
       programValidating: false,
@@ -160,7 +165,6 @@ export default {
   computed: {
     computedProgramList() {
       const programCodesToFilterOut = this.programs.map((p) => p.program);
-      console.log(programCodesToFilterOut);
       return this.getProgramOptions.filter(
         (program) => !programCodesToFilterOut.includes(program.programCode)
       );

@@ -1,159 +1,155 @@
 <template>
-  <div class="container">
-    <v-card no-body>
-      <v-tabs v-model="selectedTab">
-        <v-tab value="studentChangeHistory">Student Change History</v-tab>
-        <v-tab value="optionalProgramChangeHistory"
-          >Optional Program Change History</v-tab
-        >
-      </v-tabs>
-      <v-card-text>
-        <v-window v-model="selectedTab">
-          <v-window-item value="studentChangeHistory">
-            <DisplayTable
-              :items="studentChangeHighlight"
-              :fields="studentChangeFields"
-              showFilter="false"
-              title="Student Change History"
-              :sortDesc="sortDesc"
-              :sortBy="'createDate'"
-            >
-              {{ studentChangeHighlight }}
-              <!-- <template v-slot:item.data="{ item }">
-                <v-card class="px-0 mt-0">
-                  {{ item }}
-                </v-card>
-              </template> -->
-              <!-- <template #cell(more)="row">
-                <v-btn
-                  variant="outlined"
-                  size="sm"
-                  @click="row.toggleDetails"
-                  class="more-button"
-                >
-                  <img
-                    v-show="!row.detailsShowing"
-                    src="../../../assets/images/icon-right.svg"
-                    width="9"
-                    aria-hidden="true"
-                    alt=""
-                  />
-                  <img
-                    v-show="row.detailsShowing"
-                    src="../../../assets/images/icon-down.svg"
-                    height="5"
-                    aria-hidden="true"
-                    alt=""
-                  />
-                </v-btn>
-              </template>
-
-              <template #row-details="row">
-                <v-card class="px-0 mt-0">
-                  <p>
-                    <strong
-                      >Changed By {{ row.item.data.updateUser }} on
-                      {{
-                        $filters.formatTime(row.item.data.updateDate)
-                      }}</strong
-                    >
-                  </p>
-                  <pre>
-                    {{ JSON.stringify(row.item.data, null, "\t") }}
-                  </pre>
-                </v-card>
-              </template>
-
-              <template #cell(programCompletionDate)="row">
-                {{ $filters.formatYYYYMMDate(row.value.value) }}
-              </template>
-
-              <template #cell(createDate)="row">
-                {{ $filters.formatTime(row.value.value) }}
-              </template>
-
-              <template #cell(activityCode)="row">
-                {{ row.item.data.activityCodeDescription }}
-              </template>
-
-              <template #cell()="row">
-                <div :class="row.value.changed ? 'value-changed' : ''">
-                  {{ row.value.value }}
-                </div>
-              </template> -->
-            </DisplayTable>
-          </v-window-item>
-
-          <v-window-item value="optionalProgramChangeHistory">
-            T2
-            <!-- <DisplayTable
-                :items="optionalProgramChangeHighlight"
-                :fields="optionalProgramChangeFields"
-                showFilter="false"
-                title="Optional Program Change History"
-                :sort-desc="true"
-                :sortBy="'createDate'"
+  <v-card no-body>
+    <v-tabs v-model="selectedTab">
+      <v-tab value="studentChangeHistory"
+        ><v-chip>Student Change History</v-chip></v-tab
+      >
+      <v-tab value="optionalProgramChangeHistory"
+        ><v-chip>Optional Program Change History</v-chip></v-tab
+      >
+    </v-tabs>
+    <v-card-text>
+      <v-window v-model="selectedTab">
+        <v-window-item value="studentChangeHistory">
+          <DisplayTable
+            :items="studentChangeHighlight"
+            :fields="studentChangeFields"
+            showFilter="false"
+            title="Student Change History"
+            :sortDesc="sortDesc"
+            :sortBy="'createDate'"
+          >
+            {{ studentChangeHighlight }}
+            <template v-slot:item.data="{ item }">
+              <v-card class="px-0 mt-0">
+                {{ item }}
+              </v-card>
+            </template>
+            <template #cell(more)="row">
+              <v-btn
+                variant="outlined"
+                size="sm"
+                @click="row.toggleDetails"
+                class="more-button"
               >
-                <template #cell(more)="row">
-                  <v-btn
-                    variant="outlined"
-                    size="sm"
-                    @click="row.toggleDetails"
-                    class="more-button"
-                  >
-                    <img
-                      v-show="!row.detailsShowing"
-                      src="../../../assets/images/icon-right.svg"
-                      width="9"
-                      aria-hidden="true"
-                      alt=""
-                    />
-                    <img
-                      v-show="row.detailsShowing"
-                      src="../../../assets/images/icon-down.svg"
-                      height="5"
-                      aria-hidden="true"
-                      alt=""
-                    />
-                  </v-btn>
-                </template>
+                <img
+                  v-show="!row.detailsShowing"
+                  src="../../../assets/images/icon-right.svg"
+                  width="9"
+                  aria-hidden="true"
+                  alt=""
+                />
+                <img
+                  v-show="row.detailsShowing"
+                  src="../../../assets/images/icon-down.svg"
+                  height="5"
+                  aria-hidden="true"
+                  alt=""
+                />
+              </v-btn>
+            </template>
 
-                <template #row-details="row">
-                  <v-card class="px-0 mt-0">
-                    <p>
-                      <strong
-                        >Changed By {{ row.item.data.updateUser }} on
-                        {{
-                          $filters.formatTime(row.item.data.updateDate)
-                        }}</strong
-                      >
-                    </p>
-                    <pre>
+            <template #row-details="row">
+              <v-card class="px-0 mt-0">
+                <p>
+                  <strong
+                    >Changed By {{ row.item.data.updateUser }} on
+                    {{ $filters.formatTime(row.item.data.updateDate) }}</strong
+                  >
+                </p>
+                <pre>
                     {{ JSON.stringify(row.item.data, null, "\t") }}
                   </pre
-                    >
-                  </v-card>
-                </template>
+                >
+              </v-card>
+            </template>
 
-                <template #cell(createDate)="row">
-                  {{ $filters.formatTime(row.value.value) }}
-                </template>
+            <template #cell(programCompletionDate)="row">
+              {{ $filters.formatYYYYMMDate(row.value.value) }}
+            </template>
 
-                <template #cell(activityCode)="row">
-                  {{ row.item.data.activityCodeDescription }}
-                </template>
+            <template #cell(createDate)="row">
+              {{ $filters.formatTime(row.value.value) }}
+            </template>
 
-                <template #cell()="row">
-                  <div :class="row.value.changed ? 'value-changed' : ''">
-                    {{ row.value.value }}
-                  </div>
-                </template>
-              </DisplayTable> -->
-          </v-window-item>
-        </v-window>
-      </v-card-text>
-    </v-card>
-  </div>
+            <template #cell(activityCode)="row">
+              {{ row.item.data.activityCodeDescription }}
+            </template>
+
+            <template #cell()="row">
+              <div :class="row.value.changed ? 'value-changed' : ''">
+                {{ row.value.value }}
+              </div>
+            </template>
+          </DisplayTable>
+        </v-window-item>
+
+        <v-window-item value="optionalProgramChangeHistory">
+          <DisplayTable
+            :items="optionalProgramChangeHighlight"
+            :fields="optionalProgramChangeFields"
+            showFilter="false"
+            title="Optional Program Change History"
+            :sort-desc="true"
+            :sortBy="'createDate'"
+          >
+            <template #cell(more)="row">
+              <v-btn
+                variant="outlined"
+                size="sm"
+                @click="row.toggleDetails"
+                class="more-button"
+              >
+                <img
+                  v-show="!row.detailsShowing"
+                  src="../../../assets/images/icon-right.svg"
+                  width="9"
+                  aria-hidden="true"
+                  alt=""
+                />
+                <img
+                  v-show="row.detailsShowing"
+                  src="../../../assets/images/icon-down.svg"
+                  height="5"
+                  aria-hidden="true"
+                  alt=""
+                />
+              </v-btn>
+            </template>
+
+            <template #row-details="row">
+              <v-card class="px-0 mt-0">
+                <p>
+                  <strong
+                    >Changed By {{ row.item.data.updateUser }} on
+                    {{ $filters.formatTime(row.item.data.updateDate) }}</strong
+                  >
+                </p>
+                <pre>
+                    {{ JSON.stringify(row.item.data, null, "\t") }}
+                  </pre
+                >
+              </v-card>
+            </template>
+
+            <template v-slot:item.createDate="{ item }">
+              {{ $filters.formatTime(item.createDate.value) }}
+            </template>
+            <template v-slot:item.activityCode="{ item }">
+              {{ item.data.activityCodeDescription }}
+            </template>
+
+            <template v-slot:item="{ item }">
+              {{ item }}
+              <div :class="row.value.changed ? 'value-changed' : ''">
+                {{ item.row.value }}
+              </div>
+            </template>
+          </DisplayTable>
+        </v-window-item>
+      </v-window>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>

@@ -40,11 +40,6 @@
                 <v-stepper-window>
                   <v-stepper-window-item value="1">
                     <v-row>
-                      <v-col md="2">
-                        <label class="font-weight-bold">Group</label>
-                      </v-col>
-                    </v-row>
-                    <v-row>
                       <v-col>
                         <v-select
                           v-model="group"
@@ -54,7 +49,8 @@
                             'School Category',
                             'Program',
                           ]"
-                          label="Select a group"
+                          label="Select group"
+                          hide-details
                         ></v-select>
                       </v-col>
                     </v-row>
@@ -73,33 +69,7 @@
                   </v-stepper-window-item>
 
                   <v-stepper-window-item value="2">
-                    <v-card title="Schedule" flat>
-                      <div v-if="group === 'School Category'">
-                        Districts:
-                        <v-list>
-                          <v-list-item
-                            v-for="(
-                              district, index
-                            ) in getBatchRequest.districts"
-                            :key="index"
-                          >
-                            <v-list-item-content>
-                              <v-list-item-title>{{
-                                district
-                              }}</v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list>
-                      </div>
-                      <div v-if="group === 'Program'">
-                        Districts: {{ getBatchRequest.programs }}
-                      </div>
-                      <div v-if="group === 'PSI'">
-                        Post Secondary Institutions: REQUEST
-                        {{ getBatchRequest }}
-                      </div>
-                      <v-btn @click="changeStep(0)">Edit</v-btn>
-
+                    <v-card flat>
                       <ScheduleInput></ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
@@ -118,7 +88,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="batch-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -146,7 +116,6 @@ import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
 import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import Notifications from "@/components/Common/Notifications.vue";
-import Snackbar from "@/components/Common/Snackbar.vue";
 
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
@@ -159,6 +128,7 @@ export default {
     const batchProcessingStore = useBatchProcessingStore();
     const batchRequestFormStore = useBatchRequestFormStore();
     const notifications = ref(null);
+
     const activeTab = ref(batchProcessingStore.activeTab);
     watch(activeTab, (newValue) => {
       batchRequestFormStore.activeTab = newValue;
@@ -210,7 +180,6 @@ export default {
                     this.getBatchRequest.schoolOfRecords &&
                     this.getBatchRequest.schoolOfRecords.length > 0;
                 } else if (this.group === "Student") {
-                  console.log(this.getBatchRequest.students);
                   isValid =
                     this.getBatchRequest.pens &&
                     this.getBatchRequest.pens.length > 0;
@@ -246,12 +215,12 @@ export default {
     ProgramInput: ProgramInput,
     ScheduleInput: ScheduleInput,
     Notifications: Notifications,
-    Snackbar: Snackbar,
   },
   data: () => ({
     step: 0,
     dialog: false,
     snackbarStore: useSnackbarStore(),
+    batchProcessingStore: useBatchProcessingStore(),
   }),
   computed: {
     ...mapState(useBatchRequestFormStore, [
@@ -264,6 +233,10 @@ export default {
     ...mapActions(useBatchRequestFormStore, [
       "clearBatchDetails",
       "clearBatchGroupData",
+    ]),
+    ...mapActions(useBatchProcessingStore, [
+      "setActiveTab",
+      "updateDashboards",
     ]),
     closeDialogAndResetForm() {
       this.group = null;
@@ -285,24 +258,21 @@ export default {
         );
         this.closeDialogAndResetForm();
         this.snackbarStore.showSnackbar(
-          "Batch request submitted",
+          "Batch " +
+            response.data.batchId +
+            "- Graduation Algorithm request submitted",
           "success",
           5000
         );
-        nextTick(() => {
-          this.activeTab = "batchRuns";
-        });
+        this.setActiveTab("batchRuns");
       } catch (error) {
         // handle the error and show the notification
         this.snackbarStore.showSnackbar(
-          "Batch request submitted",
-          "success",
+          "An error occurred: " + error.message,
+          "danger",
           5000
         );
         console.error("Error:", error);
-        if (this.notifications) {
-          this.notifications.show("An error occurred: " + error.message);
-        }
       }
     },
   },

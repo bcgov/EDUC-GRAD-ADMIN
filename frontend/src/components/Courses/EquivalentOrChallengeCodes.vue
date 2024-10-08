@@ -1,6 +1,7 @@
 <template>
   <div>
-    <p>
+    <h3 class="ml-2 mt-5">Equivalency or Challenge Codes</h3>
+    <p class="ml-2">
       Indicates if credit for the course was granted through the Equivalency (E)
       or Challenge (C) process.
     </p>
@@ -54,27 +55,27 @@ export default {
       equivalentOrChallengeCodesFields: [
         {
           key: "equivalentOrChallengeCode",
-          label: "Code",
+          title: "Code",
           sortable: true,
         },
         {
           key: "label",
-          label: "Label",
+          title: "Label",
           sortable: true,
         },
         {
           key: "description",
-          label: "Description",
+          title: "Description",
           sortable: true,
         },
         {
           key: "effectiveDate",
-          label: "Effective Date",
+          title: "Effective Date",
           sortable: true,
         },
         {
           key: "expiryDate",
-          label: "Expiry Date",
+          title: "Expiry Date",
           sortable: true,
         },
       ],

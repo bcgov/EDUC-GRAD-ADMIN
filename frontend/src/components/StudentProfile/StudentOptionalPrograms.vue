@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="table-responsive">
-      <div v-if="!optionalPrograms" class="container">
+      <v-alert v-if="!optionalPrograms">
         This student does not have any optional programs.
-      </div>
+      </v-alert>
 
       <DisplayTable
         :items="optionalPrograms"

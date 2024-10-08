@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Requirement Type Codes</h3>
-    <p>
+    <h3 class="ml-3 mt-5">Requirement Type Codes</h3>
+    <p class="ml-3">
       Requirement type codes support how the algorithm runs program rules and
       optional program rules.
     </p>
