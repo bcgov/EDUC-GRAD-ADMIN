@@ -2,7 +2,11 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn small color="primary" v-bind="props"
+        <v-btn
+          v-if="hasPermissions('BATCH', 'runTVRDelete')"
+          small
+          color="primary"
+          v-bind="props"
           ><v-icon>mdi-plus</v-icon></v-btn
         >
       </template>
@@ -44,14 +48,42 @@
                     <v-row>
                       <v-select
                         v-model="group"
-                        :items="['Student', 'School', 'All Students']"
+                        :items="[
+                          { title: 'Student', value: 'Student' },
+                          {
+                            title: 'School',
+                            value: 'School',
+                            disabled: !hasPermissions(
+                              'BATCH',
+                              'selectTVRDeleteSchools'
+                            ),
+                          },
+                          {
+                            title: 'All Students',
+                            value: 'All Students',
+                            disabled: !hasPermissions(
+                              'BATCH',
+                              'selectAllOption'
+                            ),
+                          },
+                        ]"
                         label="Select a Group"
+                        ><template v-slot:item="{ props, item }">
+                          <v-list-item
+                            v-bind="props"
+                            :disabled="item.raw.disabled"
+                          ></v-list-item> </template
                       ></v-select>
                     </v-row>
                     <v-row v-if="group == 'Student'">
                       <StudentInput></StudentInput>
                     </v-row>
-                    <v-row v-if="group == 'School Category'">
+                    <v-row
+                      v-if="
+                        group == 'School Category' &&
+                        hasPermissions('BATCH', 'allowSelectCategoryCodeGroup')
+                      "
+                    >
                       <DistrictInput></DistrictInput>
                     </v-row>
                     <v-row v-if="group == 'Program'">
@@ -82,7 +114,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions class="batch-form-actions">
+        <v-card-actions class="sticky-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -109,10 +141,12 @@ import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
+import { useAccessStore } from "../../../store/modules/access";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
+import { generateRequestPayload } from "@/utils/common.js";
 export default {
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
@@ -188,10 +222,36 @@ export default {
     batchProcessingStore: useBatchProcessingStore(),
   }),
   computed: {
+    ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
     ]),
+    requestPayload() {
+      const requestTemplate = [
+        "districts",
+        "gradDateFrom",
+        "gradDateTo",
+        "localDownload",
+        "pens",
+        "programs",
+        "psiCodes",
+        "quantity",
+        "reportTypes",
+        "schoolCategoryCodes",
+        "schoolOfRecords",
+        "validateInput",
+      ];
+      const batchRequest = this.getBatchRequest;
+
+      // Filter the batch request using the requestTemplate array
+      return requestTemplate.reduce((acc, field) => {
+        if (batchRequest[field] !== undefined) {
+          acc[field] = batchRequest[field];
+        }
+        return acc;
+      }, {});
+    },
   },
   methods: {
     ...mapActions(useBatchRequestFormStore, [
@@ -219,8 +279,27 @@ export default {
     },
     async submit() {
       try {
-        let response = await BatchProcessingService.runTVR_DELETE(
+        const requestTemplate = [
+          "credentialTypeCode",
+          "districts",
+          "gradDateFrom",
+          "gradDateTo",
+          "localDownload",
+          "pens",
+          "programs",
+          "psiCodes",
+          "quantity",
+          "reportTypes",
+          "schoolCategoryCodes",
+          "schoolOfRecords",
+          "validateInput",
+        ];
+        const requestPayload = generateRequestPayload(
           this.getBatchRequest,
+          requestTemplate
+        );
+        let response = await BatchProcessingService.runTVR_DELETE(
+          requestPayload,
           this.getBatchRequestCrontime
         );
         this.closeDialogAndResetForm();

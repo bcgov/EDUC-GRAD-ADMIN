@@ -5,7 +5,7 @@
         <slot name="inputWarning"></slot>
       </v-alert>
       <v-card-text>
-        <v-row>
+        <v-row v-if="!disableSelectCategory">
           <v-col md="2">
             <label class="font-weight-bold">Category</label>
           </v-col>
@@ -15,7 +15,7 @@
               :items="schoolCategoryOptions"
               item-title="title"
               item-value="value"
-              label="School Category."
+              label="School Category"
               class="my-2"
               outlined
               hide-details
@@ -280,6 +280,11 @@ export default {
     credentialType: String,
     runType: String,
     disableSelectStudents: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    disableSelectCategory: {
       type: Boolean,
       required: false,
       default: false,

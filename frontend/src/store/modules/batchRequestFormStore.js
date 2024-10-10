@@ -2,7 +2,14 @@ import { defineStore } from "pinia";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import { isProxy, toRaw } from "vue";
 import {MinistryAddress} from "@/utils/constants.js"
-
+function  getCurrentPSIYear() {
+  let date = new Date();
+  if (date.getMonth() + 1 > 8) {
+    return String(date.getFullYear() + 1);
+  } else {
+    return String(date.getFullYear());
+  }
+}
 export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
   namespaced: true,
   state: () => ({
@@ -17,7 +24,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     gradDate:"Current Students",
     gradDateFrom: null,
     gradDateTo: null,
-    psiYear: null,
+    psiYear:  getCurrentPSIYear(),
     psiTransmissionMode:null,     
     blankCertificateDetails:[],
     blankTranscriptDetails:[],
@@ -85,12 +92,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
   },
   getters: {
     getCurrentPSIYear() {
-      let date = new Date();
-      if (date.getMonth() + 1 > 8) {
-        return String(date.getFullYear() + 1);
-      } else {
-        return String(date.getFullYear());
-      }
+      return getCurrentPSIYear();  // Still available as a getter
     },
     getCredential: (state) => {
       return state.credential
@@ -117,6 +119,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     },
     getReportType: (state) => state.reportType,
     getPsiYear: (state) => state.psiYear,
+    getPsiTrasmissionMode: (state) => state.psiTransmissionMode,
     getDistribution: (state) => state.distribution,
     getCopies: (state) => state.copies,
     getBatchRunTime: (state) => state.batchRunTime,
@@ -200,7 +203,6 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
 
     
     getBatchRequest: (state) => {
-      
       let request = {
         runtype: state.runType,
         pens: state.who === "Student" ? state.students.map(student => student.pen) : [],
@@ -208,31 +210,35 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         districts: state.who === "School Category" ? state.districts.map(district => district.district) : [],
         programs: state.who === "Program" ? state.programs.map(program => program.program) : [],
         psiCodes: state.who === "Psi" ? state.psi.map(postSecondaryInstitution => postSecondaryInstitution.psi) : [],
+        psiYear: state.psiYear ? state.psiYear : "",
         schoolCategoryCodes: state.categoryCode ? [state.categoryCode] : [],
-        validateInputs: true,
+        validateInput: true,
         activityCode: state.activityCode,
-        reportTypes: [state.reportType],
-        // gradDateFrom and gradDateTo are empty if "Current Students" is selected
+        reportTypes: state.reportType ? [state.reportType] : [],
         gradDateFrom: state.getFormattedGradDateFrom,
         gradDateTo: state.getFormattedGradDateTo,
-
-        // Include credentialTypeCode based on the credential selected
-        ...(state.credential === "Blank certificate print" ? { credentialTypeCode: [...state.blankCertificateDetails] } : {}),
-        ...(state.credential === "Blank transcript print" ? { credentialTypeCode: [...state.blankTranscriptDetails] } : {}),
-
-        // User distribution run with specific conditions
+    
+        credentialTypeCode: [...state.blankCertificateDetails],
+    
         quantity: state.copies,
-            // Check distribution method
-           
-           localDownload: state.getLocalDownload,
-          ...(state.distribution === "User" ? {   user: "",
-            address: state.getUserDistributionAddress, } : {}),
-
-          
-        
+        localDownload: state.getLocalDownload,
+        ...(state.distribution === "User" ? { user: "", address: state.getUserDistributionAddress } : {}),
+        runMode: "Y",
       };
-      return request
-    },   
+    
+      // Remove activityCode if null
+      if (request.activityCode === null) {
+        delete request.activityCode;
+      }
+    
+      // Remove psiYear if psiCodes is empty
+      if (request.psiCodes.length === 0) {
+        delete request.psiYear;
+      }
+    
+      return request;
+    },
+    
   }
 
 });

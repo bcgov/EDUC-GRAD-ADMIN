@@ -9,9 +9,8 @@
       pagination="true"
     >
       <template v-slot:item.enabled="{ item }">
-        {{ item.enabled }}
-        {{ getSwitchValue(item) }}
         <v-switch
+          :disabled="!hasPermissions('BATCH', 'toggleBatchRoutines')"
           :model-value="getSwitchValue(item)"
           label="Enable"
           @change="toggleRoutine(item.jobType, item.id)"
@@ -24,6 +23,7 @@
 import DisplayTable from "@/components/DisplayTable.vue";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import { useBatchProcessingStore } from "../../store/modules/batchprocessing";
+import { useAccessStore } from "../../store/modules/access";
 import { mapState, mapActions } from "pinia";
 export default {
   components: {
@@ -138,6 +138,7 @@ export default {
     ...mapState(useBatchProcessingStore, {
       batchRoutines: "getBatchRoutines",
     }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
   },
 };
 </script>

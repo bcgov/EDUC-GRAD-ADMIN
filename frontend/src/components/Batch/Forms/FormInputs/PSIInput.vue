@@ -3,6 +3,20 @@
     <v-card-title>Include Post Secondary Institute(s)</v-card-title>
     <v-card-text>
       <v-row>
+        <v-col sm="2">Transmission Mode</v-col>
+        <v-col>
+          <v-select
+            v-model="transmissionMode"
+            label="Select a Transmission Mode"
+            :items="[{ title: 'Paper', value: 'PAPER' }, 'FTP']"
+            outlined
+            small
+            hide-details
+          >
+          </v-select
+        ></v-col>
+      </v-row>
+      <v-row>
         <v-col sm="2">PSI Year</v-col>
         <v-col
           ><v-text-field
@@ -15,20 +29,7 @@
           </v-text-field>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col sm="2">Transmission Mode</v-col>
-        <v-col>
-          <v-select
-            v-model="transmissionMode"
-            label="Select a Transmission Mode"
-            :items="['Paper', 'FTP']"
-            outlined
-            small
-            hide-details
-          >
-          </v-select
-        ></v-col>
-      </v-row>
+
       <v-row>
         <v-col sm="2">PSI</v-col>
         <v-col sm="10">
@@ -118,7 +119,7 @@ export default {
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
     const psis = ref(batchRequestFormStore.psi);
-    const transmissionMode = ref(batchRequestFormStore.transmissionMode);
+    const transmissionMode = ref(batchRequestFormStore.psiTransmissionMode);
     const psiYear = ref(batchRequestFormStore.getCurrentPSIYear);
 
     watch(psiYear, (newValue) => {
@@ -126,7 +127,7 @@ export default {
     });
 
     watch(transmissionMode, (newValue) => {
-      batchRequestFormStore.transmissionMode = newValue;
+      batchRequestFormStore.psiTransmissionMode = newValue;
     });
 
     watch(psis, (newValue) => {

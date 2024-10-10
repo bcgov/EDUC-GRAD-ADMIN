@@ -2,7 +2,12 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props" @click="setCredentialForForm()">
+        <v-btn
+          v-if="hasPermissions('BATCH', 'runDistrun')"
+          color="primary"
+          v-bind="props"
+          @click="setCredentialForForm()"
+        >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </template>
@@ -152,7 +157,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions class="batch-form-actions">
+        <v-card-actions class="sticky-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -176,17 +181,6 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-      <v-bottom-sheet>
-        <template v-slot:activator="{ props }">
-          <v-btn v-bind="props" text="DEBUG"></v-btn>
-        </template>
-
-        <v-card title="Batch Request Payload" text="">
-          <v-text>
-            <pre>{{ getBatchRequest }}</pre>
-          </v-text>
-        </v-card>
-      </v-bottom-sheet>
     </v-dialog>
   </v-row>
 </template>
@@ -202,11 +196,14 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import DistributionInput from "@/components/Batch/Forms/FormInputs/DistributionInput.vue";
-import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
-import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
+
 import { mapActions, mapState } from "pinia";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
+import { useAccessStore } from "../../../store/modules/access";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
+import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
+import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
+import { generateRequestPayload } from "@/utils/common.js";
 export default {
   components: {
     SchoolInput: SchoolInput,
@@ -382,6 +379,7 @@ export default {
     ],
   }),
   computed: {
+    ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
@@ -392,6 +390,31 @@ export default {
       "getDistribution",
       "getCopies",
     ]),
+    requestPayload() {
+      const requestTemplate = [
+        "districts",
+        "gradDateFrom",
+        "gradDateTo",
+        "localDownload",
+        "pens",
+        "programs",
+        "psiCodes",
+        "quantity",
+        "reportTypes",
+        "schoolCategoryCodes",
+        "schoolOfRecords",
+        "validateInput",
+      ];
+      const batchRequest = this.getBatchRequest;
+
+      // Filter the batch request using the requestTemplate array
+      return requestTemplate.reduce((acc, field) => {
+        if (batchRequest[field] !== undefined) {
+          acc[field] = batchRequest[field];
+        }
+        return acc;
+      }, {});
+    },
     groupItems() {
       if (this.getCredential === "Blank certificate print") {
         if (
@@ -408,7 +431,18 @@ export default {
           ? ["School", "Ministry of Advanced Education"]
           : ["Select a credential type"];
       } else {
-        return ["Student", "School", "School Category", "Program"];
+        let groupOptions = [
+          { title: "Student", value: "Student" },
+          { title: "School", value: "School" },
+        ];
+        if (this.hasPermissions("BATCH", "selectSchoolCategoryGroup"))
+          groupOptions.push({
+            title: "School Category",
+            value: "School Category",
+          });
+        if (this.hasPermissions("BATCH", "selectProgramGroup"))
+          groupOptions.push({ title: "Program", value: "Program" });
+        return groupOptions;
       }
     },
   },
@@ -468,8 +502,27 @@ export default {
     },
     async submit() {
       try {
-        let response = await BatchProcessingService.runDISTRUNUSER(
+        const requestTemplate = [
+          "credentialTypeCode",
+          "districts",
+          "gradDateFrom",
+          "gradDateTo",
+          "localDownload",
+          "pens",
+          "programs",
+          "psiCodes",
+          "quantity",
+          "reportTypes",
+          "schoolCategoryCodes",
+          "schoolOfRecords",
+          "validateInput",
+        ];
+        const requestPayload = generateRequestPayload(
           this.getBatchRequest,
+          requestTemplate
+        );
+        let response = await BatchProcessingService.runDISTRUNUSER(
+          requestPayload,
           this.getCredential,
           this.getBatchRequestCrontime
         );
