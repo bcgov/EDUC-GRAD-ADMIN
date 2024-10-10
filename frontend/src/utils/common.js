@@ -102,3 +102,11 @@ export function isProgramComplete(completionDate, programCode) {
 export function isProgramPF(program) {
   return program.includes("PF");
 }
+export function generateRequestPayload(batchRequest, template) {
+  return template.reduce((acc, field) => {
+    if (batchRequest[field] !== undefined) {
+      acc[field] = batchRequest[field];
+    }
+    return acc;
+  }, {});
+}

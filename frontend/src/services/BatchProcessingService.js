@@ -59,62 +59,62 @@ export default {
       return
     }else{
       if(credentialType == "OT"){
-        // console.log("/api/v1/batch/userrequestdisrun/OT");
-        // console.log(request)
-        // return;
-        return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT', request);
+        console.log("/api/v1/batch/userrequestdisrun/OT");
+        console.log(request)
+        return;
+        // return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OT', request);
       }else if(credentialType == "OC"){
-        // console.log("/api/v1/batch/userrequestdisrun/OC");
-        // console.log(request);
-        // return;
-        return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OC', request);
+        console.log("/api/v1/batch/userrequestdisrun/OC");
+        console.log(request);
+        return;
+        // return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/OC', request);
       }else if(credentialType == "RC"){
-        // console.log("/api/v1/batch/userrequestdisrun/RC");
-        // console.log(request);
-        // return;
-        return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/RC', request);
+        console.log("/api/v1/batch/userrequestdisrun/RC");
+        console.log(request);
+        return;
+        // return ApiService.apiAxios.post('/api/v1/batch/userrequestdisrun/RC', request);
       }else if(credentialType == "Blank transcript print"){
-        // console.log("/api/v1/batch/userrequestblankdisrun/OT");
-        // console.log(request);
-        // return;
-        return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OT', request); 
+        console.log("/api/v1/batch/userrequestblankdisrun/OT");
+        console.log(request);
+        return;
+        // return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OT', request); 
       }else if(credentialType == "Blank certificate print"){
-        // console.log("userrequestblankdisrun/OC");
-        // console.log(request);
-        // return;
-        return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OC', request);
+        console.log("userrequestblankdisrun/OC");
+        console.log(request);
+        return;
+        // return ApiService.apiAxios.post('/api/v1/batch/userrequestblankdisrun/OC', request);
       }
     }
 
     
   },     
   runDISTRUN_MONTHLY(){
-    // console.log("/api/v1/batch/executedisrunbatchjob");
-    // console.log(request);
-    // return;
-    return ApiService.apiAxios.get('/api/v1/batch/executedisrunbatchjob');
+    console.log("/api/v1/batch/executedisrunbatchjob");
+    console.log(request);
+    return;
+    // return ApiService.apiAxios.get('/api/v1/batch/executedisrunbatchjob');
   },
   runSCHL_RPT_REGEN(request, cronTime=""){
-    // console.log(`/api/v1/batch/regenerate/school-report`)
-    //   console.log(request)
-    //   return;
-    return ApiService.apiAxios.post(`/api/v1/batch/regenerate/school-report`,request);
+    console.log(`/api/v1/batch/regenerate/school-report`)
+      console.log(request)
+      return;
+    // return ApiService.apiAxios.post(`/api/v1/batch/regenerate/school-report`,request);
   },  
   runDISTRUN_SUPP(){
-    // console.log("/api/v1/batch/executesuppdisrunbatchjob");
-    // console.log(request);
-    // return;
-    return ApiService.apiAxios.get('/api/v1/batch/executesuppdisrunbatchjob');
+    console.log("/api/v1/batch/executesuppdisrunbatchjob");
+    console.log(request);
+    return;
+    // return ApiService.apiAxios.get('/api/v1/batch/executesuppdisrunbatchjob');
   },
   runNONGRADRUN(request, cronTime=""){
     if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
       // If the condition is true, set districts to an empty array
       request.districts = [];
     }
-    // console.log("/api/v1/batch/executenongraddisrunbatchjob");
-    // console.log(request);
-    // return;    
-    return ApiService.apiAxios.post('/api/v1/batch/executenongraddisrunbatchjob',request);
+    console.log("/api/v1/batch/executenongraddisrunbatchjob");
+    console.log(request);
+    return;    
+    // return ApiService.apiAxios.post('/api/v1/batch/executenongraddisrunbatchjob',request);
   },  
   runDISTRUN_YE(request, cronTime=""){
     if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
@@ -130,20 +130,20 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return
     }else{
-      // console.log("/api/v1/batch/executeyearlydisrunbatchjob");
-      // console.log(request);
-      // return;    
-      return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
+      console.log("/api/v1/batch/executeyearlydisrunbatchjob");
+      console.log(request);
+      return;    
+      // return ApiService.apiAxios.post('/api/v1/batch/executeyearlydisrunbatchjob', request);
     }
   },
   runBlankDISTRUNUSERUserRequest(request, credentialType) {
-    // console.log("/api/v1/batch/userrequestblankdisrun/" + credentialType)
-    //   console.log(request)
-    //   return;
-    return ApiService.apiAxios.post(
-      "/api/v1/batch/userrequestblankdisrun/" + credentialType,
-      request
-    );
+    console.log("/api/v1/batch/userrequestblankdisrun/" + credentialType)
+      console.log(request)
+      return;
+    // return ApiService.apiAxios.post(
+    //   "/api/v1/batch/userrequestblankdisrun/" + credentialType,
+    //   request
+    // );
   },
   runSCHL_RPT_REGEN(request, cronTime=""){
     if (cronTime) {
@@ -154,18 +154,18 @@ export default {
       scheduledRequest.payload = request;
       this.addScheduledJob(scheduledRequest, id);
     } else {
-      this.runSCHL_RPT_REGEN(request, id);
+      console.log("/api/v1/batch/regenerate/school-report");
+      console.log(request);
+      return;    
+     // return ApiService.apiAxios.post(`/api/v1/batch/regenerate/school-report`,request);
     }
-    // console.log("/api/v1/batch/regenerate/school-report");
-    // console.log(request);
-    // return;    
-    return ApiService.apiAxios.post(`/api/v1/batch/regenerate/school-report`,request);
+    
   },  
   runDISTRUN_SUPP() {
-    // console.log("/api/v1/batch/executesuppdisrunbatchjob");
-    // console.log(request);
-    // return;    
-    return ApiService.apiAxios.get("/api/v1/batch/executesuppdisrunbatchjob");
+    console.log("/api/v1/batch/executesuppdisrunbatchjob");
+    console.log(request);
+    return;    
+    // return ApiService.apiAxios.get("/api/v1/batch/executesuppdisrunbatchjob");
   },
   runCERTREGEN(request, cronTime = "") {
     if (
@@ -185,13 +185,13 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return;
     } else {
-      // console.log("/api/v1/batch/executecertregenbatchjob");
-      // console.log(request);
-      // return;    
-      return ApiService.apiAxios.post(
-        "/api/v1/batch/executecertregenbatchjob",
-        request
-      );
+      console.log("/api/v1/batch/executecertregenbatchjob");
+      console.log(request);
+      return;    
+      // return ApiService.apiAxios.post(
+      //   "/api/v1/batch/executecertregenbatchjob",
+      //   request
+      // );
     }
   },
   runTVR_DELETE(request, cronTime="" ) {
@@ -205,13 +205,13 @@ export default {
       scheduledRequest.psiPayload = null;
       this.addScheduledJob(scheduledRequest);
     }else{
-      // console.log("/api/v1/batch/report/student/delete");
-      // console.log(request);
-      // return;  
-      return ApiService.apiAxios.post(
-        "/api/v1/batch/report/student/delete",
-        request
-      );
+      console.log("/api/v1/batch/report/student/delete");
+      console.log(request);
+      return;  
+      // return ApiService.apiAxios.post(
+      //   "/api/v1/batch/report/student/delete",
+      //   request
+      // );
     }
   },
   runArchiveStudents(request, cronTime = "") {
@@ -224,10 +224,10 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return;
     } else {
-      // console.log("/api/v1/batch/student/archive");
-      // console.log(request);
-      // return;  
-      return ApiService.apiAxios.post("/api/v1/batch/student/archive", request);
+      console.log("/api/v1/batch/student/archive");
+      console.log(request);
+      return;  
+      // return ApiService.apiAxios.post("/api/v1/batch/student/archive", request);
     }
   },
   runArchiveSchoolReports(request, cronTime = "") {
@@ -240,16 +240,16 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return;
     } else {
-      // console.log("/api/v1/batch/report/school/archive");
-      // console.log(request);
-      // return;  
-      return ApiService.apiAxios.post(
-        "/api/v1/batch/report/school/archive",
-        request
-      );
+      console.log("/api/v1/batch/report/school/archive");
+      console.log(request);
+      return;  
+      // return ApiService.apiAxios.post(
+      //   "/api/v1/batch/report/school/archive",
+      //   request
+      // );
     }
   },
-  runPSIRUN(request, transmissionType, cronTime=""){
+  runPSIRun(request, transmissionType, cronTime=""){
     if (cronTime) {
       let scheduledRequest = {};
       scheduledRequest.cronExpression = cronTime;
@@ -259,10 +259,10 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return;
     } else {
-      // console.log('/api/v1/batch/executepsireportbatchjob/' + transmissionType);
-      // console.log(request);
-      // return;  
-      return ApiService.apiAxios.post('/api/v1/batch/executepsireportbatchjob/' + transmissionType, request);
+      console.log('/api/v1/batch/executepsireportbatchjob/' + transmissionType);
+      console.log(request);
+      return;  
+      // return ApiService.apiAxios.post('/api/v1/batch/executepsireportbatchjob/' + transmissionType, request);
       
     }
   },

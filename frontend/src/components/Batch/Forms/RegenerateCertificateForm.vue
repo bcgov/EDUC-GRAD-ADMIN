@@ -2,7 +2,12 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"><v-icon>mdi-plus</v-icon></v-btn>
+        <v-btn
+          v-if="hasPermissions('BATCH', 'runCertificateRegeneration')"
+          color="primary"
+          v-bind="props"
+          ><v-icon>mdi-plus</v-icon></v-btn
+        >
       </template>
       <v-card>
         <v-card-title>
@@ -43,13 +48,29 @@
                       <v-select
                         v-model="group"
                         :items="[
-                          'All',
-                          'Student',
-                          { name: 'District', value: 'School Category' },
+                          {
+                            title: 'All',
+                            value: 'all',
+                            disabled: !hasPermissions(
+                              'BATCH',
+                              'selectAllOption'
+                            ),
+                          },
+                          {
+                            title: 'Student',
+                            value: 'Student',
+                          },
+                          {
+                            title: 'District',
+                            value: 'School Category',
+                          },
                         ]"
-                        item-title="name"
-                        item-value="value"
                         label="Select a Group"
+                        ><template v-slot:item="{ props, item }">
+                          <v-list-item
+                            v-bind="props"
+                            :disabled="item.raw.disabled"
+                          ></v-list-item> </template
                       ></v-select>
                     </v-row>
                     <v-row v-if="group == 'Student'">
@@ -59,6 +80,7 @@
                       <DistrictInput
                         runType="CERT_REGEN"
                         disableSelectStudents
+                        disableSelectCategory
                       ></DistrictInput>
                     </v-row>
                   </v-stepper-window-item>
@@ -83,7 +105,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions class="batch-form-actions">
+        <v-card-actions class="sticky-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -113,10 +135,12 @@ import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue
 import Notifications from "@/components/Common/Notifications.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
+import { useAccessStore } from "../../../store/modules/access";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
+import { generateRequestPayload } from "@/utils/common.js";
 export default {
   setup() {
     const batchProcessingStore = useBatchProcessingStore();
@@ -204,6 +228,7 @@ export default {
     dialog: false,
   }),
   computed: {
+    ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
@@ -232,9 +257,23 @@ export default {
       this.step = step;
     },
     async submit() {
+      const requestTemplate = [
+        "districts",
+        "pens",
+        "programs",
+        "psiCodes",
+        "reportTypes",
+        "runMode",
+        "schoolOfRecords",
+        "validateInput",
+      ];
+      const requestPayload = generateRequestPayload(
+        this.getBatchRequest,
+        requestTemplate
+      );
       try {
         let response = await BatchProcessingService.runCERTREGEN(
-          this.getBatchRequest,
+          requestPayload,
           this.getBatchRequestCrontime
         );
         this.closeDialogAndResetForm();

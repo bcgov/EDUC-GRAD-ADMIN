@@ -168,7 +168,6 @@ export default {
         localStorage.removeItem("refresh");
       }
       this.studentStore.unsetStudent();
-      // this.$store.commit("logout");
       this.$router.push("/logout");
     },
     selectStudent() {

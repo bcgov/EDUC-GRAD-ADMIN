@@ -5,7 +5,31 @@
 
       <Bcheader class="bcheader" style="margin-bottom: 15px">
         <div v-if="isAuthenticatedGet && dataReady">
-          {{ userInfoGet.userName }}
+          <v-btn @click="dialog = true">{{ userInfoGet.userName }}</v-btn>
+
+          <!-- Dialog component -->
+          <v-dialog v-model="dialog" max-width="500px">
+            <template v-slot:activator="{ on, attrs }">
+              <!-- The button opens the dialog, already set up above -->
+            </template>
+
+            <v-card>
+              <v-card-title> User Information </v-card-title>
+
+              <v-card-text>
+                <!-- You can display more user info here or switch roles -->
+                <p>Username: {{ userInfoGet.userName }}</p>
+                <p>Current Role: {{ roles }}</p>
+                <v-btn @click="switchRole">Switch Role</v-btn>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-btn color="primary" text @click="dialog = false"
+                  >Close</v-btn
+                >
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
 
           |
           <a :href="authRoutes.LOGOUT" class="text-white">Logout</a>
@@ -70,12 +94,6 @@ export default {
     EnvironmentBanner,
     Snackbar,
   },
-  setup() {
-    const appStore = useAppStore();
-    const authStore = useAuthStore();
-    const accessStore = useAccessStore();
-    return { appStore, authStore, accessStore };
-  },
   async created() {
     this.getJwtToken()
       .then(() => this.setApplicationVariables())
@@ -97,7 +115,7 @@ export default {
       timerValue: 0,
       tokenExpired: false,
       tokenExpiring: false,
-      dialog: true,
+      dialog: false,
     };
   },
   mounted() {
@@ -128,6 +146,16 @@ export default {
       "logout",
     ]),
     ...mapActions(useAppStore, ["setApplicationVariables"]),
+    ...mapActions(useAccessStore, ["setUserRoles"]),
+    switchRole() {
+      if (this.roles.includes("GRAD_SYSTEM_COORDINATOR")) {
+        this.setUserRoles(["GRAD_INFO_OFFICER"]);
+      } else if (this.roles.includes("GRAD_INFO_OFFICER")) {
+        this.setUserRoles(["GRAD_BA"]);
+      } else if (this.roles.includes("GRAD_BA")) {
+        this.setUserRoles(["GRAD_SYSTEM_COORDINATOR"]);
+      }
+    },
     setupTimer() {
       setInterval(async () => {
         if (this.jwtTokenGet) {

@@ -1,8 +1,14 @@
 <template>
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
+      {{ getBatchRequest }}
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props" @click="setGroup('Psi')">
+        <v-btn
+          v-if="hasPermissions('BATCH', 'runPSIBatch')"
+          color="primary"
+          v-bind="props"
+          @click="setGroup('Psi')"
+        >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </template>
@@ -65,7 +71,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions class="batch-form-actions">
+        <v-card-actions class="sticky-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -98,8 +104,10 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
+import { useAccessStore } from "../../../store/modules/access";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
+import { generateRequestPayload } from "@/utils/common.js";
 export default {
   setup() {
     const batchProcessingStore = useBatchProcessingStore();
@@ -169,14 +177,42 @@ export default {
   data: () => ({
     step: 0,
     dialog: false,
+    snackbarStore: useSnackbarStore(),
   }),
   computed: {
+    ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
       "getBatchRequestCrontime",
       "getGroup",
+      "getPsiTrasmissionMode",
     ]),
+    requestPayload() {
+      const requestTemplate = [
+        "districts",
+        "gradDateFrom",
+        "gradDateTo",
+        "localDownload",
+        "pens",
+        "programs",
+        "psiCodes",
+        "quantity",
+        "reportTypes",
+        "schoolCategoryCodes",
+        "schoolOfRecords",
+        "validateInput",
+      ];
+      const batchRequest = this.getBatchRequest;
+
+      // Filter the batch request using the requestTemplate array
+      return requestTemplate.reduce((acc, field) => {
+        if (batchRequest[field] !== undefined) {
+          acc[field] = batchRequest[field];
+        }
+        return acc;
+      }, {});
+    },
   },
   methods: {
     ...mapActions(useBatchRequestFormStore, [
@@ -202,8 +238,29 @@ export default {
     },
     async submit() {
       try {
-        let response = await BatchProcessingService.runPSIRun(
+        const requestTemplate = [
+          "credentialTypeCode",
+          "districts",
+          "gradDateFrom",
+          "gradDateTo",
+          "localDownload",
+          "pens",
+          "programs",
+          "psiCodes",
+          "psiYear",
+          "quantity",
+          "reportTypes",
+          "schoolCategoryCodes",
+          "schoolOfRecords",
+          "validateInput",
+        ];
+        const requestPayload = generateRequestPayload(
           this.getBatchRequest,
+          requestTemplate
+        );
+        let response = await BatchProcessingService.runPSIRun(
+          requestPayload,
+          this.getPsiTrasmissionMode,
           this.getBatchRequestCrontime
         );
         this.closeDialogAndResetForm();

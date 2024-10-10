@@ -45,9 +45,6 @@
           value="newBatchRequest"
           >New Batch Request</v-tab
         >
-        <v-tab @click="getJwtToken" value="administration"
-          >Administration</v-tab
-        >
       </v-tabs>
 
       <v-tabs-window v-model="getActiveTab">

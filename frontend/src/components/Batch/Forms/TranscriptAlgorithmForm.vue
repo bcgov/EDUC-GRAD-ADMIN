@@ -2,7 +2,10 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"
+        <v-btn
+          v-if="hasPermissions('BATCH', 'runTVR')"
+          color="primary"
+          v-bind="props"
           ><v-icon small>mdi-plus</v-icon></v-btn
         >
       </template>
@@ -45,12 +48,34 @@
                       <v-select
                         v-model="group"
                         :items="[
-                          'Student',
-                          'School',
-                          'School Category',
-                          'Program',
+                          { title: 'Student', value: 'Student' },
+                          { title: 'School', value: 'School' },
+                          {
+                            title: 'School Category',
+                            value: 'School Category',
+                            disabled: !this.hasPermissions(
+                              'BATCH',
+                              'selectSchoolCategoryGroup'
+                            ),
+                          },
+                          {
+                            title: 'Program',
+                            value: 'Program',
+                            disabled: !this.hasPermissions(
+                              'BATCH',
+                              'selectProgramGroup'
+                            ),
+                          },
                         ]"
-                        label="Select a Group"
+                        label="Select group"
+                        hide-details
+                      >
+                        <template v-slot:item="{ props, item }">
+                          <v-list-item
+                            v-bind="props"
+                            :subtitle="item.raw.department"
+                            :disabled="item.raw.disabled"
+                          ></v-list-item> </template
                       ></v-select>
                     </v-row>
                     <v-row v-if="group == 'Student'">
@@ -87,7 +112,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions class="batch-form-actions">
+        <v-card-actions class="sticky-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -116,10 +141,12 @@ import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
+import { useAccessStore } from "../../../store/modules/access";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
+import { generateRequestPayload } from "@/utils/common.js";
 export default {
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
@@ -209,10 +236,36 @@ export default {
     snackbarStore: useSnackbarStore(),
   }),
   computed: {
+    ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
     ]),
+    requestPayload() {
+      const requestTemplate = [
+        "districts",
+        "gradDateFrom",
+        "gradDateTo",
+        "localDownload",
+        "pens",
+        "programs",
+        "psiCodes",
+        "quantity",
+        "reportTypes",
+        "schoolCategoryCodes",
+        "schoolOfRecords",
+        "validateInput",
+      ];
+      const batchRequest = this.getBatchRequest;
+
+      // Filter the batch request using the requestTemplate array
+      return requestTemplate.reduce((acc, field) => {
+        if (batchRequest[field] !== undefined) {
+          acc[field] = batchRequest[field];
+        }
+        return acc;
+      }, {});
+    },
   },
   methods: {
     ...mapActions(useBatchRequestFormStore, [
@@ -223,6 +276,7 @@ export default {
       "setActiveTab",
       "updateDashboards",
     ]),
+
     closeDialogAndResetForm() {
       this.group = null;
       this.dialog = false;
@@ -240,8 +294,26 @@ export default {
     },
     async submit() {
       try {
-        let response = await BatchProcessingService.runTVRRUN(
+        const requestTemplate = [
+          "districts",
+          "gradDateFrom",
+          "gradDateTo",
+          "localDownload",
+          "pens",
+          "programs",
+          "psiCodes",
+          "quantity",
+          "reportTypes",
+          "schoolCategoryCodes",
+          "schoolOfRecords",
+          "validateInput",
+        ];
+        const requestPayload = generateRequestPayload(
           this.getBatchRequest,
+          requestTemplate
+        );
+        let response = await BatchProcessingService.runTVRRUN(
+          requestPayload,
           this.getBatchRequestCrontime
         );
         this.closeDialogAndResetForm();
