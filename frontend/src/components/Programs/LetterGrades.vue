@@ -21,24 +21,24 @@
 <script>
 import DisplayTable from "../DisplayTable.vue";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
-import { showNotification } from "../../utils/common.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "LetterGrades",
   components: {
     DisplayTable: DisplayTable,
   },
   created() {
-    this.showNotification = showNotification;
     ProgramManagementService.getLetterGrades()
       .then((response) => {
         this.letterGrades = response.data;
       })
       .catch((error) => {
-        this.showNotification("danger", "There was an error: " + error);
+        this.snackbarStore.showSnackbar(error.message, "error", 5000);
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       letterGrades: [],
       toFilterItem: [
         "grade",

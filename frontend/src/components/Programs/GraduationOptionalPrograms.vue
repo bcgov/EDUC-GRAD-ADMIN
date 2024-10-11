@@ -21,7 +21,7 @@
 <script>
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import DisplayTable from "../DisplayTable.vue";
-import { showNotification } from "../../utils/common.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 
 export default {
   name: "GraduationOptionalProgram",
@@ -32,6 +32,7 @@ export default {
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       opened: [],
       graduationOptionalPrograms: [],
       selectedProgramId: "",
@@ -88,16 +89,12 @@ export default {
     };
   },
   created() {
-    this.showNotification = showNotification;
     ProgramManagementService.getOptionalPrograms()
       .then((response) => {
         this.graduationOptionalPrograms = response.data;
       })
-      .catch(() => {
-        this.showNotification(
-          "danger",
-          "There was an error with the web service."
-        );
+      .catch((error) => {
+        this.snackbarStore.showSnackbar(error.message, "error", 5000);
       });
   },
   methods: {

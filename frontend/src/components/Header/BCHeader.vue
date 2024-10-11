@@ -118,7 +118,7 @@
 <script>
 import StudentService from "@/services/StudentService.js";
 import CommonService from "@/services/CommonService.js";
-import { loadStudent, showNotification } from "../../utils/common.js";
+import { loadStudent } from "../../utils/common.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "@/store/modules/student";
 import { mapState } from "pinia";
@@ -178,8 +178,8 @@ export default {
       if (this.penInput) {
         if (this.penInput == this.profile.pen) {
           this.snackbarStore.showSnackbar(
-            warning,
             "The entered PEN is the same as the currently loaded student",
+            "warning",
             5000
           );
         } else {
@@ -199,14 +199,11 @@ export default {
             })
             .catch((error) => {
               // eslint-disable-next-line
+              console.log(error);
               this.searchLoading = false;
-              // this.showNotification(
-              //   "danger",
-              //   `Student ${this.penInput} cannot be found on the GRAD or PEN database`
-              // );
               this.snackbarStore.showSnackbar(
-                error,
                 `Student ${this.penInput} cannot be found on the GRAD or PEN database`,
+                "error",
                 5000
               );
             })

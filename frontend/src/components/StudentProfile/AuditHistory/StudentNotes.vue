@@ -107,7 +107,7 @@ import { useAuthStore } from "../../../store/modules/auth";
 
 import { mapState } from "pinia";
 import StudentService from "@/services/StudentService.js";
-import { showNotification } from "../../../utils/common.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "StudentNotes",
   computed: {
@@ -124,10 +124,10 @@ export default {
   },
   created() {
     this.studentProfile = this.profile;
-    this.showNotification = showNotification;
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       showForm: true,
       showAddButton: true,
       showSave: false,
@@ -149,7 +149,11 @@ export default {
       if (this.editedNote.note.length <= 255) {
         StudentService.addStudentNotes(editedNote)
           .then((response) => {
-            this.showNotification("success", "Student note saved");
+            this.snackbarStore.showSnackbar(
+              "Student note saved",
+              "success",
+              5000
+            );
             if (response.data && response.data.value) {
               this.studentNotes.splice(
                 studentNoteIndex,
@@ -162,13 +166,18 @@ export default {
           .catch((error) => {
             // eslint-disable-next-line
             console.log("There was an error:" + error);
-            this.showNotification(
-              "danger",
-              "There was an error with the web service."
+            this.snackbarStore.showSnackbar(
+              "There was an error:" + error.message,
+              "error",
+              5000
             );
           });
       } else {
-        this.showNotification("danger", "Max character 255 limit exceeded.");
+        this.snackbarStore.showSnackbar(
+          "Max character 255 limit exceeded.",
+          "error",
+          5000
+        );
       }
     },
     onEditNote(note) {
@@ -201,19 +210,30 @@ export default {
             if (response.data && response.data.value) {
               this.studentNotes.unshift(response.data.value);
               this.newNote.note = "";
-              this.showNotification("success", "Student note added");
+
+              this.snackbarStore.showSnackbar(
+                "Student note added",
+                "success",
+                5000
+              );
             }
           })
           .catch((error) => {
             // eslint-disable-next-line
             console.log("There was an error:" + error);
-            this.showNotification(
-              "danger",
-              "There was an error with the web service."
+
+            this.snackbarStore.showSnackbar(
+              "There was an error with the web service.",
+              "error",
+              5000
             );
           });
       } else {
-        this.showNotification("danger", "Max character 255 limit exceeded.");
+        this.snackbarStore.showSnackbar(
+          "Max character 255 limit exceeded.",
+          "error",
+          5000
+        );
       }
     },
     onReset(event) {
@@ -229,7 +249,6 @@ export default {
         })
         .indexOf(noteID);
       this.studentNotes.splice(removeIndex, 1);
-      this.showNotification("success", "Student note deleted");
     },
     getNotes() {
       StudentService.getStudentNotes(this.$route.params.studentid)
@@ -239,9 +258,11 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.log("There was an error:" + error);
-          this.showNotification(
-            "danger",
-            "There was an error with the web service."
+
+          this.snackbarStore.showSnackbar(
+            "There was an error with the web service.",
+            "error",
+            5000
           );
         });
     },
