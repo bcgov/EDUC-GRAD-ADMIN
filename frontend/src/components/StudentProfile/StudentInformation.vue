@@ -30,22 +30,20 @@
             <v-btn
               v-on:click="moreStudentInfo = !moreStudentInfo"
               text
-              variant="plain"
+              elevation="0"
+              variant="flat"
+              class="no-outline-btn"
             >
-              <img
+              <v-icon
                 v-show="!moreStudentInfo"
-                src="../../assets/images/icon-right.svg"
-                width="14"
-                aria-hidden="true"
-                alt=""
-              />
-              <img
+                icon="mdi-chevron-right"
+                size="large"
+              ></v-icon>
+              <v-icon
                 v-show="moreStudentInfo"
-                src="../../assets/images/icon-down.svg"
-                height="8"
-                aria-hidden="true"
-                alt=""
-              />
+                icon="mdi-chevron-down"
+                size="large"
+              ></v-icon>
             </v-btn>
           </td>
           <td

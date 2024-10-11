@@ -520,7 +520,6 @@ import { useAccessStore } from "../../../store/modules/access";
 import {
   containsAnyLetters,
   parseStudentStatus,
-  showNotification,
 } from "../../../utils/common.js";
 
 import SchoolService from "@/services/SchoolService.js";
@@ -530,7 +529,6 @@ import StudentService from "@/services/StudentService.js";
 export default {
   name: "GRADStatusForm",
   created() {
-    this.showNotification = showNotification;
     this.containsAnyLetters = containsAnyLetters;
     this.parseStudentStatus = parseStudentStatus;
   },

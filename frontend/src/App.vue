@@ -225,6 +225,10 @@ ul.sidebar-panel-nav > li > a {
 .container {
   max-width: 100% !important;
 }
+.no-outline-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
 @media (min-width: 1300px) {
   .container {
     /* max-width: 1300px !important; */
