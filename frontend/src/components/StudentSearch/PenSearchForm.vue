@@ -50,7 +50,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { isEnvLocalHost } from "../../utils/common.js";
 import { useStudentStore } from "@/store/modules/student";
 import StudentService from "@/services/StudentService.js";
-// const studentStore = useStudentStore();
+import { useSnackbarStore } from "@/store/modules/snackbar";
 
 export default {
   name: "penSearchForm",
@@ -61,18 +61,13 @@ export default {
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       isEnvLocalHost: isEnvLocalHost(),
       penInput: "",
       searchLoading: false,
       searchMessage: "", //TODO?
     };
   },
-  //   watch: {
-  //     searchLoading(val) {
-  //       if (!val) return;
-  //       setTimeout(() => (this.searchLoading = false), 2000);
-  //     },
-  //   },
   created() {},
   components: {},
   computed: {},
@@ -100,9 +95,10 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.showNotification(
-              "danger",
-              "There was an error: " + error.response.status
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
             );
           }
         });
@@ -139,7 +135,11 @@ export default {
           .catch((err) => {
             this.searchLoading = false;
             this.searchMessage = "";
-            this.showNotification("danger", err);
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + err.response.status,
+              "error",
+              5000
+            );
           });
         //pen input check
       }

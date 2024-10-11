@@ -55,6 +55,7 @@
 import sharedMethods from "../../sharedMethods";
 import StudentService from "@/services/StudentService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "batchJobSearch",
   components: {
@@ -63,6 +64,7 @@ export default {
   props: ["selectedBatchId"],
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       batchData: [],
       perPage: 10,
       rows: 0,
@@ -112,7 +114,6 @@ export default {
   },
   created() {
     this.loadStudent = sharedMethods.loadStudent;
-    this.showNotification = sharedMethods.showNotification;
     this.getAdminDashboardData(this.selectedBatchId, 0);
   },
   watch: {
@@ -174,9 +175,10 @@ export default {
           .catch((error) => {
             // eslint-disable-next-line
             console.log("Batch Admin Load: " + error);
-            this.showNotification(
-              "danger",
-              "Student cannot be found on the GRAD or PEN database"
+            this.snackbarStore.showSnackbar(
+              "Student cannot be found on the GRAD or PEN database",
+              "error",
+              5000
             );
           });
       }
@@ -184,5 +186,3 @@ export default {
   },
 };
 </script>
-
-<style scoped></style>

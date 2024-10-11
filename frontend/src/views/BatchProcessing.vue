@@ -232,7 +232,7 @@ import NongradDistrunForm from "@/components/Batch/Forms/NongradDistrunForm.vue"
 import PSIForm from "@/components/Batch/Forms/PSIForm.vue";
 import BatchRuns from "@/components/Batch/BatchRuns.vue";
 import BatchRoutines from "@/components/Batch/BatchRoutines.vue";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import sharedMethods from "../sharedMethods";
 
 import { useAccessStore } from "../store/modules/access";
@@ -305,6 +305,7 @@ export default {
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       tab: "",
       value: "",
       batchTypes: [],
@@ -450,7 +451,11 @@ export default {
             "application/zip",
             bid
           );
-          this.showNotification("success", "Download Completed");
+          this.snackbarStore.showSnackbar(
+            "Download completed",
+            "success",
+            5000
+          );
         }
       );
     },

@@ -56,22 +56,19 @@
 <script>
 import { mapState } from "pinia";
 import { useStudentStore } from "../../../store/modules/student";
-import sharedMethods from "../../../sharedMethods";
-import {
-  showNotification,
-  base64ToFileTypeAndOpenWindow,
-} from "../../../utils/common.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
+import { base64ToFileTypeAndOpenWindow } from "../../../utils/common.js";
 import SchoolService from "@/services/SchoolService.js";
 
 export default {
   name: "CertificationDogwoods",
   created() {
-    this.showNotification = showNotification;
     this.base64ToFileTypeAndOpenWindow = base64ToFileTypeAndOpenWindow;
     this.isCertificateEligible();
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       certificateEligible: true,
     };
   },
@@ -96,7 +93,11 @@ export default {
           })
           .catch((error) => {
             if (error.response.data.code == "404") {
-              this.showNotification("danger", "School at grad cannot be found");
+              this.snackbarStore.showSnackbar(
+                "School at grad cannot be found",
+                "error",
+                5000
+              );
             }
           });
       }

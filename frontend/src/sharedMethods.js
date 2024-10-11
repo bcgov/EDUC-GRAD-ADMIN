@@ -21,31 +21,21 @@ export default {
   getCronTime() {
     if (this.batchRunSchedule == "N") {
       let today = new Date();
-      return (
-        "0 30 18 " + today.getDate() + " " + (today.getMonth() + 1) + " *"
-      );
+      return "0 30 18 " + today.getDate() + " " + (today.getMonth() + 1) + " *";
     } else if (this.batchRunSchedule == "W") {
       const today = new Date();
       const first = today.getDate() - today.getDay() + 1;
       const sixth = first + 5;
       const saturday = new Date(today.setDate(sixth));
       return (
-        "0 30 18 " +
-        saturday.getDate() +
-        " " +
-        (saturday.getMonth() + 1) +
-        " *"
+        "0 30 18 " + saturday.getDate() + " " + (saturday.getMonth() + 1) + " *"
       );
     } else if (this.batchRunSchedule == "M") {
       const today = new Date();
       let tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
       return (
-        "0 30 18 " +
-        tomorrow.getDate() +
-        " " +
-        (tomorrow.getMonth() + 1) +
-        " *"
+        "0 30 18 " + tomorrow.getDate() + " " + (tomorrow.getMonth() + 1) + " *"
       );
     } else if (this.batchRunSchedule == "Custom") {
       let dateTime = new Date(
@@ -66,24 +56,6 @@ export default {
     } else {
       return null;
     }
-  },
-  showNotification: function (variant, bodyContent) {
-    let title = variant;
-    let delay = 30000;
-    if (title == "success") {
-      title = "success";
-      delay = 5000;
-    } else if (title == "danger") {
-      title = "Error";
-    } else if (title == "warning") {
-      title = "Warning";
-    }
-    this.$bvToast.toast(bodyContent, {
-      title: title,
-      variant: variant,
-      solid: true,
-      autoHideDelay: delay,
-    });
   },
   base64ToFileTypeAndOpenWindow: function (data, mimeType) {
     let byteCharacters = atob(data);
