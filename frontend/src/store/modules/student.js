@@ -41,7 +41,24 @@ export const useStudentStore = defineStore("student", {
       auditHistory: [],
       auditHistoryOptionalPrograms: [],
     },
-    editedGradStatus: {},
+    editedGradStatus: {
+      programCompletionDate: "",
+      pen: "",
+      program: "",
+      studentGrade: "",
+      schoolName: "",
+      schoolOfRecord: "",
+      schoolAtGrad: "",
+      schoolAtGradName: "",
+      studentStatus: "",
+      studentID: "",
+      gpa: "",
+      honoursStanding: "",
+      adultStartDate: "",
+      consumerEducationRequirementMet: "",
+      recalculateGradStatus: "",
+      recalculateProjectedGrad: "",
+    },
   }),
   actions: {
     loadStudentReportsAndCertificates() {
@@ -348,6 +365,9 @@ export const useStudentStore = defineStore("student", {
     // updateStudentOptionalProgram
   },
   getters: {
+    getEditedGradStatus() {
+      return this.editedGradStatus;
+    },
     getStudentAuditHistory() {
       return this.student.auditHistory;
     },

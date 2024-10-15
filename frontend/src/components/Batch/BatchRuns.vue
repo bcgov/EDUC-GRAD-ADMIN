@@ -169,7 +169,6 @@ import BatchJobSearchResults from "@/components/Batch/BatchJobSearchResults.vue"
 import BatchJobErrorResults from "@/components/Batch/BatchJobErrorResults.vue";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import DistributionService from "@/services/DistributionService.js";
-import { isProxy, toRaw } from "vue";
 import sharedMethods from "../../sharedMethods.js";
 import { useBatchProcessingStore } from "../../store/modules/batchprocessing";
 import { mapState, mapActions } from "pinia";
@@ -300,7 +299,11 @@ export default {
       DistributionService.downloadDISTRUNUSER(bid, transmissionMode)
         .then((response) => {
           if (!response.data || response.data.length === 0) {
-            this.showNotification("error", "This file is not available");
+            this.snackbarStore.showSnackbar(
+              "This file is not available",
+              "error",
+              5000
+            );
             return; // Exit the function if the file is not available
           }
 
@@ -309,14 +312,14 @@ export default {
             "application/zip",
             bid
           );
-
-          this.showNotification("success", "Download Completed");
+          this.snackbarStore.showSnackbar(
+            "Download Completed",
+            "success",
+            5000
+          );
         })
         .catch((error) => {
-          this.showNotification(
-            "error",
-            "An error occurred while downloading the file"
-          );
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         });
     },
     setBatchId(id, type) {

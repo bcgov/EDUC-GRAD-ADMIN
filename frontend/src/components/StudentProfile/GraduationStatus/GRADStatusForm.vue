@@ -1,31 +1,13 @@
 <template>
   <div class="graduation-status">
-    <v-btn @click="editGradStatus"> Edit </v-btn>
+    <v-btn @click="editGradStatus" :disabled="allSet">
+      Edit
+      <v-progress-circular v-if="searchLoading" indeterminate color="green">
+      </v-progress-circular>
+    </v-btn>
     <v-dialog v-model="dialog" width="auto">
       <v-card no-body title="GRAD Status">
         <v-card-text class="p-3">
-          <!-- Save an cancel buttons -->
-          <v-btn-group v-if="allowUpdateGradStatus">
-            <div>
-              <v-btn
-                :disabled="disableSaveButton"
-                @click="saveGraduationStatus(studentId)"
-                density="comfortable"
-                variant="flat"
-                color="primary"
-              >
-                Save
-              </v-btn>
-              <v-btn
-                @click="cancelGradStatus"
-                density="comfortable"
-                variant="flat"
-              >
-                Cancel
-              </v-btn>
-            </div>
-          </v-btn-group>
-          <!-- Save an cancel buttons End-->
           <!-- Alerts -->
           <div class="alerts">
             <!-- Info callout in edit form when student status is MER/Merged -->
@@ -34,7 +16,12 @@
                 studentGradStatus && studentGradStatus.studentStatus == 'MER'
               "
             >
-              <v-alert show variant="info" class="p-3 mb-1">
+              <v-alert
+                type="info"
+                variant="tonal"
+                border="start"
+                class="width-fix-content"
+              >
                 <h4 class="alert-heading">Student status: Merged</h4>
                 <p class="locked-message">
                   This student's status is set to 'Merged'. Their data cannot be
@@ -50,7 +37,12 @@
                 showEdit
               "
             >
-              <v-alert show variant="warning" class="p-3 mb-1">
+              <v-alert
+                type="warning"
+                variant="tonal"
+                border="start"
+                class="width-fix-content"
+              >
                 <h4 class="alert-heading">Student status: Not active</h4>
                 <p class="locked-message">
                   This student's status is set to 'Not active'. Re-activate
@@ -67,7 +59,12 @@
                 showEdit
               "
             >
-              <v-alert show variant="warning" class="p-3 mb-1">
+              <v-alert
+                type="warning"
+                variant="tonal"
+                border="start"
+                class="width-fix-content"
+              >
                 <h4 class="alert-heading">Student status: Terminated</h4>
                 <p class="locked-message">
                   This student's status is set to 'Terminated'. Re-activate
@@ -84,7 +81,12 @@
                 showEdit
               "
             >
-              <v-alert show variant="warning" class="p-3 mb-1">
+              <v-alert
+                type="warning"
+                variant="tonal"
+                border="start"
+                class="width-fix-content"
+              >
                 <h4 class="alert-heading">Student status: Archived</h4>
                 <p class="locked-message">
                   This student is not active. Re-activate by setting their
@@ -100,7 +102,12 @@
                 showEdit
               "
             >
-              <v-alert show variant="warning" class="p-3 mb-1">
+              <v-alert
+                type="warning"
+                variant="tonal"
+                border="start"
+                class="width-fix-content"
+              >
                 <h4 class="alert-heading">Student status: Deceased</h4>
                 <p class="locked-message">
                   Warning: This student is showing as "Deceased".
@@ -109,55 +116,54 @@
             </div>
           </div>
           <!-- Alerts End -->
-          {{ editedGradStatus }}
-          <v-table density="compact" aria-label="edit grad status">
+          <!-- <p>$v: {{ v$ }}</p>
+          <p>editedGradStatus: {{ editedGradStatus }}</p> -->
+          <v-table class="pt-3" density="compact" aria-label="edit grad status">
             <tbody class="w-50">
               <!-- Program -->
-              <tr>
+              <tr class="">
                 <td class="w-50">
                   <strong>Program: </strong>
-                  <div v-if="editedGradStatus.program == '1950'">
-                    <!-- Warning if student grade is not AN or AD when on 1950 program -->
-                    <div
-                      class="form-validation-message text-danger"
-                      v-if="
-                        !(
-                          editedGradStatus.studentGrade == 'AD' ||
-                          editedGradStatus.studentGrade == 'AN'
-                        )
-                      "
-                    >
-                      Student grade should be one of
-                      <strong>AD or AN</strong> if the student program is 1950
-                    </div>
-                  </div>
-
-                  <!-- Warnig if program changes that optional programs will be dropped from the student -->
+                  <!-- Warning if student grade is not AN or AD when on 1950 program -->
                   <div
-                    v-if="editedGradStatus.program != studentGradStatus.program"
+                    class="bg-error"
+                    v-if="
+                      v$.editedGradStatus
+                        .ifProgramIs1950studentGradeMustbeADorAN.$invalid ==
+                      true
+                    "
                   >
-                    <div
-                      v-if="warningFlags.programChangeWarning"
-                      class="form-validation-message text-danger"
-                    >
-                      Warning, any optional programs associated with the
-                      original program will be <strong>deleted</strong>. You
-                      must add back in any pertinent optional programs once you
-                      have saved the changes to Program.
-                    </div>
+                    {{
+                      v$.editedGradStatus
+                        .ifProgramIs1950studentGradeMustbeADorAN.$message
+                    }}
+                  </div>
+                  <!-- Warning if program changes that optional programs will be dropped from the student -->
+                  <div
+                    class="bg-warning"
+                    v-if="
+                      v$.editedGradStatus
+                        .ifEditedGradStatusProgramHasChangedWarning.$invalid ==
+                      true
+                    "
+                  >
+                    {{
+                      v$.editedGradStatus
+                        .ifEditedGradStatusProgramHasChangedWarning.$message
+                    }}
                   </div>
                   <!-- Warning if student is moved to a program that is closed-->
                   <div
-                    v-if="warningFlags.closedProgramWarning"
-                    class="form-validation-message text-warning"
+                    class="bg-warning"
+                    v-if="
+                      v$.editedGradStatus.ifClosedProgramWarning.$invalid ==
+                      true
+                    "
                   >
-                    Warning: This program is closed.
+                    {{ v$.editedGradStatus.ifClosedProgramWarning.$message }}
                   </div>
                 </td>
                 <td>
-                  <!-- <span v-if="v$.program.$invalid && v$.program.$dirty"
-                    >Program is required</span
-                  > -->
                   <v-select
                     :disabled="disableProgramInput"
                     v-model="editedGradStatus.program"
@@ -177,34 +183,36 @@
                   <strong>Program completion date: (YYYY-MM)</strong><br />
                   <!-- Warning if program completion date for SCCP is out of range -->
                   <div
-                    v-if="errorFlags.rangeError.programCompletionDate"
-                    class="form-validation-message text-danger"
+                    class="bg-warning"
+                    v-if="
+                      v$.editedGradStatus
+                        .ifProgramCompletionDatePriorToStartOfProgram
+                        .$invalid == true
+                    "
                   >
-                    The program completion date cannot be prior to the start of
-                    the program&nbsp;&nbsp;<i
-                      class="fas fa-exclamation-triangle"
-                      aria-hidden="true"
-                    ></i>
+                    {{
+                      v$.editedGradStatus
+                        .ifProgramCompletionDatePriorToStartOfProgram.$message
+                    }}
                   </div>
                   <!-- Warning if program completion date contains non-numeric values -->
                   <div
-                    v-if="errorFlags.numberError.programCompletionDate"
-                    class="form-validation-message text-danger"
+                    class="bg-warning"
+                    v-if="
+                      v$.editedGradStatus.ifProgramCompletionDateInvalid
+                        .$invalid == true
+                    "
                   >
-                    The program completion date format is invalid. Please follow
-                    the date format <strong>YYYY/MM</strong>
+                    {{
+                      v$.editedGradStatus.ifProgramCompletionDateInvalid
+                        .$message
+                    }}
                   </div>
                 </td>
                 <td>
                   <v-text-field
                     v-model="editedGradStatus.programCompletionDate"
                     label=""
-                    :disabled="
-                      editedGradStatus.program != 'SCCP' ||
-                      (studentGradStatus.programCompletionDate &&
-                        new Date(studentGradStatus.programCompletionDate) <=
-                          new Date())
-                    "
                     maxLength="7"
                     :formatter="formatYYYYMMDate"
                     density="compact"
@@ -218,7 +226,6 @@
                 <td><strong>Student status: </strong></td>
                 <td>
                   <v-select
-                    :disabled="disableStudentStatus"
                     v-model="editedGradStatus.studentStatus"
                     :items="studentStatusOptions"
                     item-title="label"
@@ -236,21 +243,22 @@
                   <strong>Student grade: </strong>
                   <!-- Warning if student is not on 1950 program and grade is AN/AD.
                   *Note that we have existing SCCP students with AD/AN, but future students on SCCP program should not have a grade of AN/AD -->
-                  <div v-if="editedGradStatus.program != '1950'">
-                    <div
-                      class="form-validation-message text-danger"
-                      v-if="
-                        editedGradStatus.studentGrade == 'AD' ||
-                        editedGradStatus.studentGrade == 'AN'
-                      "
-                    >
-                      Student grade should not be AD or AN for this program
-                    </div>
+                  <div
+                    class="bg-error"
+                    v-if="
+                      v$.editedGradStatus
+                        .ifProgramIsNot1950studentGradeCannotBeADorAN
+                        .$invalid == true
+                    "
+                  >
+                    {{
+                      v$.editedGradStatus
+                        .ifProgramIsNot1950studentGradeCannotBeADorAN.$message
+                    }}
                   </div>
                 </td>
                 <td>
                   <v-select
-                    :disabled="disableStudentGrade"
                     v-model="editedGradStatus.studentGrade"
                     :items="gradeOptions"
                     item-title="text"
@@ -268,64 +276,44 @@
                   <strong>School of record:</strong><br />
                   <!-- Warning if school of record missing; Samara to investigate if we use this since msg is same as scoolOfRecordWarning -->
                   <div
-                    v-if="errorFlags.emptyError.schoolOfRecordMissing"
-                    class="form-validation-message text-warning"
+                    class="bg-error"
+                    v-if="
+                      v$.editedGradStatus.ifSchoolOfRecordIsEmpty.$invalid ==
+                      true
+                    "
                   >
-                    A student <strong>must</strong> have a school of record.
-                    Please enter a school code &nbsp;&nbsp;<i
-                      class="fas fa-exclamation-triangle"
-                      aria-hidden="true"
-                    ></i>
+                    {{ v$.editedGradStatus.ifSchoolOfRecordIsEmpty.$message }}
                   </div>
-                  <!-- Warning if school of record is closed -->
-                  <div
-                    v-if="warningFlags.schoolOfRecordWarning"
-                    class="form-validation-message text-warning"
-                  >
+                  <!-- Warning if school of record is closed NEW-->
+                  <div v-if="warningFlags.schoolWarning" class="bg-warning">
                     This School is closed, changes should be to historical
-                    activity only&nbsp;&nbsp;<i
-                      class="fas fa-exclamation-triangle"
-                      aria-hidden="true"
-                    ></i>
-                  </div>
-                  <!-- Warning if school does not exist/school not found -->
-                  <div
-                    v-if="warningFlags.schoolNotFoundWarning"
-                    class="form-validation-message text-danger"
-                  >
-                    Invalid school entered, school does not exist on the school
-                    table&nbsp;&nbsp;<i
-                      class="fas fa-exclamation-triangle"
-                      aria-hidden="true"
-                    ></i>
-                  </div>
-                  <!-- Warning if school code for school of record is not 8 digits -->
-                  <div
-                    v-if="warningFlags.schoolOfRecordInputWarning"
-                    class="form-validation-message text-danger"
-                  >
-                    Please enter at least 8 digits&nbsp;&nbsp;<i
-                      class="fas fa-exclamation-triangle"
-                      aria-hidden="true"
-                    ></i>
+                    activity only
                   </div>
                   <div
-                    v-if="schoolFound"
-                    class="form-validation-message text-success"
+                    class="bg-error"
+                    v-if="
+                      v$.editedGradStatus.ifProgramIs1950AndOffshore.$invalid ==
+                      true
+                    "
                   >
-                    {{ editedGradStatus.schoolName }} found.
+                    {{
+                      v$.editedGradStatus.ifProgramIs1950AndOffshore.$message
+                    }}
                   </div>
                 </td>
                 <td>
-                  <v-text-field
+                  <v-autocomplete
                     v-model="editedGradStatus.schoolOfRecord"
-                    label=""
                     :disabled="disableSchoolOfRecord"
-                    maxlength="8"
-                    minength="8"
-                    density="compact"
-                    clearable
-                  ></v-text-field>
+                    label="Select a school"
+                    :items="getSchoolsList"
+                    :item-title="schoolTitle"
+                    item-value="mincode"
+                  >
+                    <template v-slot:label="label">
+                      {{ label.label }}
+                    </template>
+                  </v-autocomplete>
                 </td>
               </tr>
               <!-- School of record End-->
@@ -333,74 +321,36 @@
               <tr>
                 <td>
                   <strong>School at graduation:</strong><br />
-                  <div
-                    v-if="warningFlags.schoolAtGraduationWarning"
-                    class="form-validation-message text-warning"
-                  >
-                    Warning: This School is closed, changes should be to
-                    historical activity only&nbsp;&nbsp;<i
-                      class="fas fa-exclamation-triangle"
-                      aria-hidden="true"
-                    ></i>
-                  </div>
-                  <div
-                    v-if="errorFlags.emptyError.schoolAtGraduation"
-                    class="form-validation-message text-danger"
-                  >
-                    If program completion date is not blank, school at
-                    graduation cannot be blank&nbsp;&nbsp;<i
-                      class="fas fa-exclamation-triangle"
-                      aria-hidden="true"
-                    ></i>
-                  </div>
-                  <div
-                    v-if="warningFlags.schoolAtGraduationNotFoundWarning"
-                    class="form-validation-message text-warning"
-                  >
-                    Invalid school entered, school does not exist on the school
-                    table&nbsp;&nbsp;<i
-                      class="fas fa-exclamation-triangle"
-                      aria-hidden="true"
-                    ></i>
-                  </div>
-                  <div
-                    v-if="warningFlags.schoolAtGraduationInputWarning"
-                    class="form-validation-message text-danger"
-                  >
-                    Please enter at least 8 digits&nbsp;&nbsp;<i
-                      class="fas fa-exclamation-triangle"
-                      aria-hidden="true"
-                    ></i>
-                  </div>
-                  <div
-                    v-if="schoolAtGraduationFound"
-                    class="form-validation-message text-success"
-                  >
-                    {{ editedGradStatus.schoolAtGradName }} found.
-                  </div>
 
-                  <!-- Warning if school code for school of record is Offshore and program is 1950 -->
                   <div
-                    v-if="errorFlags.other.offshore1950"
-                    class="form-validation-message text-danger"
+                    class="bg-error"
+                    v-if="
+                      v$.editedGradStatus
+                        .ifSchoolAtGraduationEmptyAndProgramCompletionNotEmpty
+                        .$invalid == true
+                    "
                   >
-                    Offshore schools do not support the Adult Graduation
-                    Program&nbsp;&nbsp;<i
-                      class="fas fa-exclamation-triangle"
-                      aria-hidden="true"
-                    ></i>
+                    {{
+                      v$.editedGradStatus
+                        .ifSchoolAtGraduationEmptyAndProgramCompletionNotEmpty
+                        .$message
+                    }}
                   </div>
                 </td>
+
                 <td>
-                  <v-text-field
-                    v-model="editedGradStatus.schoolAtGrad"
-                    label=""
+                  <v-autocomplete
                     :disabled="disableSchoolAtGrad"
-                    maxlength="8"
-                    minength="8"
-                    density="compact"
-                    clearable
-                  ></v-text-field>
+                    v-model="editedGradStatus.schoolAtGrad"
+                    label="Select a school"
+                    :items="getSchoolsList"
+                    :item-title="schoolTitle"
+                    item-value="mincode"
+                  >
+                    <template v-slot:label="label">
+                      {{ label.label }}
+                    </template>
+                  </v-autocomplete>
                 </td>
               </tr>
               <!-- School at graduation End-->
@@ -453,25 +403,32 @@
                   <strong>Adult start date: (YYYY-MM-DD)</strong>
                   <!-- Warning if adult start date contains non-numeric values -->
                   <div
-                    v-if="errorFlags.numberError.adultStartDate"
-                    class="form-validation-message text-danger"
+                    class="bg-error"
+                    v-if="
+                      v$.editedGradStatus.ifAdultStartDateInvalid.$invalid ==
+                      true
+                    "
                   >
-                    The adult start date format is invalid. Please follow the
-                    date format <strong>YYYY-MM-DD</strong>
+                    {{ v$.editedGradStatus.ifAdultStartDateInvalid.$message }}
                   </div>
                   <div
-                    v-if="errorFlags.emptyError.adultStartDate"
-                    class="form-validation-message text-danger"
+                    class="bg-error"
+                    v-if="
+                      v$.editedGradStatus.ifProgramIs1950ButNoAdultStartDate
+                        .$invalid == true
+                    "
                   >
-                    Students on the 1950 Program <strong>must</strong> have an
-                    adult start date. Please enter a valid date.
+                    {{
+                      v$.editedGradStatus.ifProgramIs1950ButNoAdultStartDate
+                        .$message
+                    }}
                   </div>
                 </td>
                 <td>
                   <v-text-field
+                    :disabled="editedGradStatus.program != '1950'"
                     v-model="editedGradStatus.adultStartDate"
                     label=""
-                    :disabled="editedGradStatus.program != '1950'"
                     maxLength="10"
                     density="compact"
                     clearable
@@ -530,6 +487,20 @@
             </tbody>
           </v-table>
         </v-card-text>
+        <v-card-actions class="batch-form-actions" v-if="allowUpdateGradStatus">
+          <v-spacer></v-spacer>
+          <v-btn color="blue-darken-1" variant="text" @click="cancelGradStatus">
+            Cancel
+          </v-btn>
+          <v-btn
+            color="blue-darken-1"
+            variant="text"
+            :disabled="blockSave"
+            @click="saveGraduationStatus(studentId)"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
       </v-card>
       <template v-slot:actions>
         <v-btn class="ms-auto" text="Ok" @click="dialog = false"></v-btn>
@@ -540,15 +511,17 @@
 
 <script>
 import useVuelidate from "@vuelidate/core";
+import { helpers } from "@vuelidate/validators";
 import { mapState, mapActions } from "pinia";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useAppStore } from "../../../store/modules/app";
 import { useStudentStore } from "../../../store/modules/student";
 import { useAccessStore } from "../../../store/modules/access";
 import {
   containsAnyLetters,
   parseStudentStatus,
-  showNotification,
 } from "../../../utils/common.js";
+
 import SchoolService from "@/services/SchoolService.js";
 import sharedMethods from "../../../sharedMethods";
 import StudentService from "@/services/StudentService.js";
@@ -556,7 +529,6 @@ import StudentService from "@/services/StudentService.js";
 export default {
   name: "GRADStatusForm",
   created() {
-    this.showNotification = showNotification;
     this.containsAnyLetters = containsAnyLetters;
     this.parseStudentStatus = parseStudentStatus;
   },
@@ -569,10 +541,12 @@ export default {
       optionalPrograms: "getStudentOptionalPrograms",
       studentId: "getStudentId",
       studentGradStatus: "getStudentGradStatus",
+      editedGradStatus: "getEditedGradStatus",
     }),
     ...mapState(useAppStore, {
       programOptions: "getProgramOptions",
       studentStatusOptions: "getStudentStatusOptions",
+      getSchoolsList: "getSchoolsList",
     }),
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
@@ -596,28 +570,30 @@ export default {
     adultStartDateChange() {
       return this.editedGradStatus.adultStartDate;
     },
-    disableSaveButton() {
-      return this.disableSave;
-    },
     recalculateFlag() {
       return this.studentGradStatus.recalculateGradStatus;
     },
     recalculateProjectedGradFlag() {
       return this.studentGradStatus.recalculateProjectedGrad;
     },
+    allSet() {
+      if (this.getSchoolsList.length == 0) {
+        return true;
+      } else {
+        this.searchLoading = false;
+        return false;
+      }
+    },
   },
   data() {
     return {
+      searchLoading: true,
+      snackbarStore: useSnackbarStore(),
       dialog: false,
-      programCompletionEffectiveDateList: [],
       programEffectiveDate: "",
       programExpiryDate: "",
-      dismissSecs: 3, // remove?
-      dismissCountDown: 0, // remove?
-      showModal: false,
       showEdit: false,
       show: false,
-      notificationMessage: "",
       // Validation flags that PREVENT submission of GRAD Status form
       errorFlags: {
         numberError: {
@@ -632,56 +608,20 @@ export default {
           schoolOfRecordMissing: false,
           schoolAtGraduation: false,
         },
-        other: {
-          programGrade: false,
-          programComplete: false,
-          offshore1950: false,
-        },
       },
       // Validation flags that do NOT prevent submission of GRAD status form
       warningFlags: {
         closedProgramWarning: false,
-        programChangeWarning: false,
-        schoolOfRecordWarning: false,
-        schoolNotFoundWarning: false,
-        schoolOfRecordInputWarning: false, //look at moving to error flags, but fine for now since backend prevents submission
-        schoolAtGraduationWarning: false,
-        schoolAtGraduationNotFoundWarning: false,
-        schoolAtGraduationInputWarning: false,
+        schoolWarning: false, //look at moving to error flags, but fine for now since backend prevents submission
       },
-      projectedStudentGradStatus: [],
       updateStatus: [],
       schoolOfRecord: "",
-      schoolOfRecordStatus: "",
-      schoolFound: false,
       schoolAtGraduation: "",
-      schoolAtGraduationStatus: "",
-      schoolAtGraduationFound: false,
-      editedGradStatus: {
-        programCompletionDate: "",
-        pen: "",
-        program: "",
-        studentGrade: "",
-        schoolName: "",
-        schoolOfRecord: "",
-        schoolAtGrad: "",
-        schoolAtGradName: "",
-        studentStatus: "",
-        studentID: "",
-        gpa: "",
-        honoursStanding: "",
-        adultStartDate: "",
-        consumerEducationRequirementMet: "",
-        recalculateGradStatus: "",
-        recalculateProjectedGrad: "",
-      },
-      studentUngradReason: "",
-      disableSave: false,
+      blockSave: false,
       disableSchoolAtGrad: false,
       disableStudentGrade: false,
       disableProgramInput: false,
       disableConsumerEdReqMet: false,
-      disableStudentStatus: false,
       disableSchoolOfRecord: false,
       gradeOptions: [
         { text: "08", value: "8" },
@@ -693,10 +633,6 @@ export default {
         { text: "OT - Other", value: "OT" },
         { text: "AD - Adult expected to graduate", value: "AD" },
         { text: "AN - Adult not expected to graduate", value: "AN" },
-      ],
-      consumerEducRecMet: [
-        { text: "Y", value: "Y" },
-        { text: "N", value: "N" },
       ],
       recalcFlags: [
         { text: "Y", value: "Y" },
@@ -713,110 +649,143 @@ export default {
   },
   validations() {
     return {
-      // program: { required },
+      editedGradStatus: {
+        ifProgramIs1950studentGradeMustbeADorAN: helpers.withMessage(
+          "Student grade should be one of AD or AN if the student program is 1950",
+          (value) => {
+            let { program, studentGrade } = this.editedGradStatus;
+            return program !== "1950" || ["AD", "AN"].includes(studentGrade);
+          }
+        ),
+        ifEditedGradStatusProgramHasChangedWarning: helpers.withMessage(
+          "Warning, any optional programs associated with the original program will be deleted. You must add back in any pertinent optional programs once you have saved the changes to Program.",
+          (value) => {
+            return (
+              this.editedGradStatus.program === this.studentGradStatus.program
+            );
+          }
+        ),
+        ifClosedProgramWarning: helpers.withMessage(
+          "Warning: This program is closed.",
+          (value) => {
+            return !this.warningFlags.closedProgramWarning;
+          }
+        ),
+        ifProgramIs1950ButNoAdultStartDate: helpers.withMessage(
+          "Students on the 1950 Program must have an adult start date. Please enter a valid date.",
+          (value) => {
+            return (
+              this.editedGradStatus.program !== "1950" ||
+              this.editedGradStatus.adultStartDate
+            );
+          }
+        ),
+        ifProgramIs1950AndOffshore: helpers.withMessage(
+          "Offshore schools do not support the Adult Graduation Program.",
+          (value) => {
+            return (
+              this.editedGradStatus.program !== "1950" ||
+              !(this.editedGradStatus.schoolOfRecord.search(/^103.*/) >= 0)
+            );
+          }
+        ),
+        // End of Program Validations
+        // Program Completion Date
+        ifProgramCompletionDatePriorToStartOfProgram: helpers.withMessage(
+          "The program completion date cannot be prior to the start of the program",
+          (value) => {
+            return !this.errorFlags.rangeError.programCompletionDate;
+          }
+        ),
+        ifProgramCompletionDateInvalid: helpers.withMessage(
+          "The program completion date format is invalid. Please follow the date format YYYY/MM",
+          (value) => {
+            return (
+              !this.errorFlags.numberError.programCompletionDate ||
+              !this.containsAnyLetters(
+                this.editedGradStatus.programCompletionDate
+              )
+            );
+          }
+        ),
+
+        ifEditedGradStatusProgramNotSCCP: helpers.withMessage(
+          "Student Grade Validation message",
+          (value) => {
+            let { program } = this.editedGradStatus;
+            let { programCompletionDate } = this.studentGradStatus;
+            return (
+              program === "SCCP" ||
+              (programCompletionDate &&
+                new Date(programCompletionDate) <= new Date())
+            );
+          }
+        ),
+        // End Program Completion Date
+        ifProgramIsNot1950studentGradeCannotBeADorAN: helpers.withMessage(
+          "Student grade should not be AD or AN for this program",
+          (value) => {
+            let { program, studentGrade } = this.editedGradStatus;
+            return program === "1950" || !["AD", "AN"].includes(studentGrade);
+          }
+        ),
+        // SchoolOfRecord
+        ifSchoolOfRecordIsEmpty: helpers.withMessage(
+          "A student must have a school of record. Please enter a school code",
+          (value) => {
+            return this.editedGradStatus.schoolOfRecord;
+          }
+        ),
+        ifSchoolOfRecordIsValid: helpers.withMessage(
+          () => {
+            if (this.editedGradStatus.schoolOfRecord) {
+              return this.validateSchoolInfo(
+                this.editedGradStatus.schoolOfRecord
+              );
+            }
+          },
+          (value) => {
+            return this.editedGradStatus.schoolOfRecord;
+          }
+        ),
+        //School at Grad
+        ifSchoolAtGraduation: helpers.withMessage(
+          () => {
+            if (this.editedGradStatus.schoolAtGrad) {
+              return this.validateSchoolInfo(
+                this.editedGradStatus.schoolAtGrad
+              ); // Call your dynamic function here
+            }
+          },
+          (value) => {
+            return this.editedGradStatus.schoolAtGrad;
+          }
+        ),
+        ifSchoolAtGraduationEmptyAndProgramCompletionNotEmpty:
+          helpers.withMessage(
+            "If program completion date is not blank, school at graduation cannot be blank",
+            (value) => {
+              let { programCompletionDate, schoolAtGrad } =
+                this.editedGradStatus;
+              return !programCompletionDate || schoolAtGrad;
+            }
+          ),
+        ifAdultStartDateInvalid: helpers.withMessage(
+          "The adult start date format is invalid. Please follow the date format YYYY-MM-DD",
+          (value) => {
+            let adultStartDate = this.editedGradStatus.adultStartDate;
+            return (
+              !adultStartDate ||
+              (!this.containsAnyLetters(adultStartDate) &&
+                !adultStartDate.length < 8)
+            );
+          }
+        ),
+      },
     };
   },
   watch: {
-    studentGradeChange: function () {
-      if (
-        this.editedGradStatus.studentGrade == "AD" ||
-        this.editedGradStatus.studentGrade == "AN"
-      ) {
-        if (this.editedGradStatus.program == "1950") {
-          this.errorFlags.other.programGrade = false;
-          if (this.editedGradStatus.schoolOfRecord == "") {
-            this.errorFlags.emptyError.schoolOfRecordMissing = true;
-          } else {
-            this.errorFlags.emptyError.schoolOfRecordMissing = false;
-          }
-        } else {
-          this.errorFlags.other.programGrade = true;
-        }
-      }
-      if (
-        this.editedGradStatus.studentGrade != "AD" &&
-        this.editedGradStatus.studentGrade != "AN"
-      ) {
-        if (this.editedGradStatus.program !== "1950") {
-          this.errorFlags.other.programGrade = false;
-          if (this.editedGradStatus.schoolOfRecord == "") {
-            this.errorFlags.emptyError.schoolOfRecordMissing = true;
-          } else {
-            this.errorFlags.emptyError.schoolOfRecordMissing = false;
-          }
-        } else {
-          this.errorFlags.other.programGrade = true;
-        }
-      }
-      this.validateFields();
-    },
     programChange: function () {
-      // Samara to look at cleaning this up
-      this.warningFlags.programChangeWarning = true;
-      if (
-        this.studentGradStatus.programCompletionDate &&
-        this.studentGradStatus.program != "SCCP"
-      ) {
-        this.disableProgramInput = true;
-        this.disableStudentGrade = true;
-        this.disableConsumerEdReqMet = true;
-        this.disableSchoolAtGrad = false;
-      } else {
-        this.disableProgramInput = false;
-        this.disableStudentGrade = false;
-        this.disableConsumerEdReqMet = false;
-        this.disableSchoolAtGrad = true;
-      }
-      if (this.editedGradStatus.program == "1950") {
-        // check adult start date
-        if (this.editedGradStatus.adultStartDate) {
-          this.errorFlags.emptyError.adultStartDate = false;
-        } else {
-          this.errorFlags.emptyError.adultStartDate = true;
-        }
-        // check that grade is AN or AD for 1950 program
-        if (
-          this.editedGradStatus.studentGrade == "AD" ||
-          this.editedGradStatus.studentGrade == "AN"
-        ) {
-          this.errorFlags.other.programGrade = false;
-        } else {
-          this.errorFlags.other.programGrade = true;
-        }
-        // check that school of record is NOT offshore
-        if (this.editedGradStatus.schoolOfRecord.search(/^103.*/) >= 0) {
-          this.errorFlags.other.offshore1950 = true;
-        } else {
-          this.errorFlags.other.offshore1950 = false;
-        }
-      } else {
-        this.errorFlags.emptyError.adultStartDate = false;
-        if (
-          this.editedGradStatus.studentGrade == "AD" ||
-          this.editedGradStatus.studentGrade == "AN"
-        ) {
-          this.errorFlags.other.programGrade = true;
-        } else {
-          this.errorFlags.other.programGrade = false;
-        }
-      }
-      if (this.ifProgramsWithExpiry(this.editedGradStatus.program)) {
-        this.warningFlags.closedProgramWarning = true;
-      } else {
-        this.warningFlags.closedProgramWarning = false;
-      }
-
-      //clear out whatever the user had for the program completion date
-      if (
-        this.editedGradStatus.hasOwnProperty("programCompletionDate") &&
-        this.studentGradStatus.programCompletionDate !=
-          this.editedGradStatus.programCompletionDate
-      ) {
-        this.editedGradStatus.programCompletionDate =
-          this.studentGradStatus.programCompletionDate;
-      }
-
-      // clear out whatever the user had for the adult start date
       if (
         this.editedGradStatus.hasOwnProperty("adultStartDate") &&
         this.studentGradStatus.adultStartDate !=
@@ -825,9 +794,10 @@ export default {
         this.editedGradStatus.adultStartDate =
           this.studentGradStatus.adultStartDate;
       }
-      this.validateFields();
+      this.checkForErrors();
     },
     programCompletionDateChange: function () {
+      //not a validation function
       let programNameSearch = this.editedGradStatus.program;
       for (let programOpt of this.programOptions) {
         if (programOpt.programCode == programNameSearch) {
@@ -835,174 +805,34 @@ export default {
           this.programExpiryDate = programOpt.expiryDate;
         }
       }
-
       if (this.editedGradStatus.programCompletionDate) {
         if (
-          this.containsAnyLetters(this.editedGradStatus.programCompletionDate)
+          !this.containsAnyLetters(this.editedGradStatus.programCompletionDate)
         ) {
-          this.errorFlags.numberError.programCompletionDate = true;
-        } else {
           this.errorFlags.numberError.programCompletionDate = false;
           this.validCompletionDate(this.editedGradStatus.programCompletionDate);
         }
       } else {
         this.errorFlags.numberError.programCompletionDate = false;
       }
-      this.validateFields();
-    },
-    schoolOfRecordChange: function () {
-      if (this.editedGradStatus.schoolOfRecord == "") {
-        this.errorFlags.emptyError.schoolOfRecordMissing = true;
-      } else {
-        this.errorFlags.emptyError.schoolOfRecordMissing = false;
-      }
-      if (this.editedGradStatus.schoolOfRecord?.length < 8) {
-        this.warningFlags.schoolOfRecordWarning = false;
-        this.warningFlags.schoolNotFoundWarning = false;
-        this.warningFlags.schoolOfRecordInputWarning = true;
-        this.validateFields();
-        this.disableSave = true;
-        return;
-      } else if (
-        this.studentGradStatus.program == "1950" &&
-        this.editedGradStatus.schoolOfRecord.search(/^103.*/) >= 0
-      ) {
-        this.errorFlags.other.offshore1950 = true;
-      } else {
-        this.errorFlags.other.offshore1950 = false;
-        this.disableSave = false;
-      }
-
-      if (
-        this.editedGradStatus.schoolOfRecord ==
-        this.studentGradStatus.schoolOfRecord
-      ) {
-        this.warningFlags.schoolOfRecordWarning = false;
-        this.warningFlags.schoolNotFoundWarning = false;
-        this.warningFlags.schoolOfRecordInputWarning = false;
-        this.schoolFound = false;
-      } else {
-        if (this.editedGradStatus.schoolOfRecord?.length == 8) {
-          this.warningFlags.schoolNotFoundWarning = false;
-          this.warningFlags.schoolOfRecordWarning = false;
-          this.warningFlags.schoolOfRecordInputWarning = false;
-          this.schoolFound = false;
-          SchoolService.getSchoolInfo(this.editedGradStatus.schoolOfRecord)
-            .then((response) => {
-              this.schoolOfRecordStatus = response.data.openFlag;
-              if (response.statusText == "No Content") {
-                this.warningFlags.schoolNotFoundWarning = true;
-              } else {
-                this.warningFlags.schoolNotFoundWarning = false;
-                if (this.schoolOfRecordStatus == "N") {
-                  this.warningFlags.schoolOfRecordWarning = true;
-                }
-                this.schoolFound = true;
-                this.editedGradStatus.schoolName = response.data.schoolName;
-                this.disableSave = false;
-              }
-            })
-            .catch((error) => {
-              if (error.response.data.code == "404") {
-                this.showNotification("danger", "School cannot be found");
-                this.disableSave = true;
-              }
-            });
-        } else {
-          this.warningFlags.schoolNotFoundWarning = true;
-        }
-      }
-      this.validateFields();
-    },
-    schoolAtGradChange: function () {
-      if (this.editedGradStatus.schoolAtGrad == "") {
-        if (this.editedGradStatus.programCompletionDate != "") {
-          this.errorFlags.emptyError.schoolAtGraduation = true;
-        } else {
-          this.errorFlags.emptyError.schoolAtGraduation = false;
-        }
-      } else {
-        this.errorFlags.emptyError.schoolAtGraduation = false;
-      }
-
-      if (
-        this.editedGradStatus.schoolAtGrad &&
-        this.editedGradStatus.schoolAtGrad.length < 8
-      ) {
-        this.warningFlags.schoolAtGraduationWarning = false;
-        this.warningFlags.schoolAtGraduationNotFoundWarning = false;
-        this.warningFlags.schoolAtGraduationInputWarning = true;
-        this.schoolAtGraduationFound = false;
-        this.disableSave = true;
-        return;
-      } else {
-        this.warningFlags.schoolAtGraduationInputWarning = false;
-        this.disableSave = false;
-      }
-      if (
-        this.editedGradStatus.schoolAtGrad ==
-        this.studentGradStatus.schoolAtGrad
-      ) {
-        this.warningFlags.schoolAtGraduationWarning = false;
-        this.warningFlags.schoolAtGraduationNotFoundWarning = false;
-        this.warningFlags.schoolAtGraduationInputWarning = false;
-        this.schoolAtGraduationFound = false;
-      } else {
-        if (this.editedGradStatus.schoolAtGrad.length == 8) {
-          this.warningFlags.schoolAtGraduationNotFoundWarning = false;
-          this.warningFlags.schoolAtGraduationWarning = false;
-          this.warningFlags.schoolAtGraduationInputWarning = false;
-          this.schoolAtGraduationFound = false;
-          this.disableSave = false;
-          SchoolService.getSchoolInfo(this.editedGradStatus.schoolAtGrad)
-            .then((response) => {
-              this.schoolAtGraduationStatus = response.data.openFlag;
-              if (response.statusText == "No Content") {
-                this.warningFlags.schoolAtGraduationNotFoundWarning = true;
-              } else {
-                this.warningFlags.schoolAtGraduationNotFoundWarning = false;
-                if (this.schoolAtGraduationStatus == "N") {
-                  this.warningFlags.schoolAtGraduationWarning = true;
-                }
-                this.schoolAtGraduationFound = true;
-                this.editedGradStatus.schoolAtGradName =
-                  response.data.schoolName;
-              }
-            })
-            .catch((error) => {
-              if (error.response.data.code == "404") {
-                this.showNotification("danger", "School cannot be found");
-                this.disableSave = true;
-              }
-            });
-        } else {
-          this.warningFlags.schoolAtGraduationInputWarning = true;
-        }
-      }
-      this.validateFields();
+      this.checkForErrors();
     },
     adultStartDateChange: function () {
-      if (
-        this.editedGradStatus.program == "1950" &&
-        !this.editedGradStatus.adultStartDate
-      ) {
-        this.errorFlags.emptyError.adultStartDate = true;
-      } else {
-        this.errorFlags.emptyError.adultStartDate = false;
-      }
-
       if (this.editedGradStatus.adultStartDate) {
         if (
-          this.containsAnyLetters(this.editedGradStatus.adultStartDate) ||
-          this.editedGradStatus.adultStartDate.length < 8
+          !this.containsAnyLetters(this.editedGradStatus.adultStartDate) ||
+          this.editedGradStatus.adultStartDate.length > 8
         ) {
-          this.errorFlags.numberError.adultStartDate = true;
-        } else {
-          this.errorFlags.numberError.adultStartDate = false;
           this.validAdultStartDate(this.editedGradStatus.adultStartDate);
         }
       }
-      this.validateFields();
+      this.checkForErrors();
+    },
+    studentGradeChange: function () {
+      this.checkForErrors();
+    },
+    schoolOfRecordChange: function () {
+      this.checkForErrors();
     },
   },
 
@@ -1014,14 +844,13 @@ export default {
       "loadStudentHistory",
       "loadStudentOptionalProgramHistory",
     ]),
-    // getStudentReportsAndCertificates: function () {
-    //   this.$root.$emit("studentProfile");
-    // },
-    // getStudentGraduationOptionalPrograms: function () {
-    //   this.$root.$emit("refreshStudentGraduationOptionalPrograms");
-    // },
-    refreshStudentHistory: function () {
-      this.$root.$emit("refreshStudentHistory");
+    schoolTitle(item) {
+      // Customize this method to return the desired format
+      if (item) {
+        return `${item.mincode} - ${item.displayName}`;
+      } else {
+        return null;
+      }
     },
     sortStudentStatus(code) {
       return this.parseStudentStatus(code, this.studentStatusOptions);
@@ -1032,7 +861,6 @@ export default {
         this.editedGradStatus.programCompletionDate =
           sharedMethods.dateFormatYYYYMM(date);
       }
-
       let start = this.programEffectiveDate
         ? new Date(this.programEffectiveDate)
         : null;
@@ -1052,60 +880,10 @@ export default {
       this.editedGradStatus.adultStartDate =
         sharedMethods.dateFormatYYYYMMDD(date);
     },
-    validateFields() {
-      // assume able to save until positive error flag
-      this.disableSave = false;
-
-      for (let errorType in this.errorFlags) {
-        for (let flag in this.errorFlags[errorType]) {
-          if (this.errorFlags[errorType][flag] === true) {
-            this.disableSave = true;
-            return;
-          }
-        }
-        if (this.disableSave) {
-          return;
-        }
-      }
-    },
     editGradStatus() {
       // reset object
       this.editedGradStatus = {};
       this.dialog = true;
-      //If the student has a programCompletionDate disable input fields
-      this.warningFlags.schoolOfRecordWarning = false;
-      this.warningFlags.schoolNotFoundWarning = false;
-      if (this.studentGradStatus.program != "1986-EN") {
-        this.disableConsumerEdReqMet = true;
-      } else {
-        this.disableConsumerEdReqMet = false;
-      }
-      if (
-        this.studentGradStatus.programCompletionDate != null &&
-        this.studentGradStatus.program !== "SCCP"
-      ) {
-        this.disableProgramInput = true;
-        this.disableStudentStatus = false;
-      } else {
-        this.disableProgramInput = false;
-        this.disableStudentStatus = false;
-      }
-
-      if (
-        this.studentGradStatus.studentStatus == "TER" ||
-        this.studentGradStatus.studentStatus == "N"
-      ) {
-        this.disableProgramInput = false;
-        this.disableStudentStatus = false;
-      }
-      this.showEdit = true;
-      if (this.studentGradStatus.programCompletionDate) {
-        this.editedGradStatus.programCompletionDate =
-          this.studentGradStatus.programCompletionDate;
-      } else {
-        this.editedGradStatus.programCompletionDate = null;
-      }
-
       this.editedGradStatus.pen = this.studentGradStatus.pen;
       this.editedGradStatus.program = this.studentGradStatus.program;
       this.editedGradStatus.studentGrade = this.studentGradStatus.studentGrade;
@@ -1129,20 +907,72 @@ export default {
         this.studentGradStatus.recalculateGradStatus;
       this.editedGradStatus.recalculateProjectedGrad =
         this.studentGradStatus.recalculateProjectedGrad;
-      this.validateFields();
-    },
+      if (
+        this.studentGradStatus.programCompletionDate &&
+        this.studentGradStatus.program != "SCCP"
+      ) {
+        this.disableProgramInput = true;
+        this.disableStudentGrade = true;
+        this.disableConsumerEdReqMet = true;
+        this.disableSchoolAtGrad = false;
+      } else {
+        this.disableProgramInput = false;
+        this.disableStudentGrade = false;
+        this.disableConsumerEdReqMet = false;
+        this.disableSchoolAtGrad = true;
+      }
+      if (this.studentGradStatus.program != "1986-EN") {
+        this.disableConsumerEdReqMet = true;
+      } else {
+        this.disableConsumerEdReqMet = false;
+      }
+      if (
+        this.studentGradStatus.programCompletionDate != null &&
+        this.studentGradStatus.program !== "SCCP"
+      ) {
+        this.disableProgramInput = true;
+      } else {
+        this.disableProgramInput = false;
+      }
 
+      if (
+        this.studentGradStatus.studentStatus == "TER" ||
+        this.studentGradStatus.studentStatus == "N"
+      ) {
+        this.disableProgramInput = false;
+      }
+      this.showEdit = true;
+      if (this.studentGradStatus.programCompletionDate) {
+        this.editedGradStatus.programCompletionDate =
+          this.studentGradStatus.programCompletionDate;
+      } else {
+        this.editedGradStatus.programCompletionDate = null;
+      }
+
+      this.checkForErrors();
+    },
     cancelGradStatus() {
       this.dialog = false;
       this.editedGradStatus = {};
-      this.warningFlags.schoolOfRecordWarning = false;
-      this.warningFlags.schoolNotFoundWarning = false;
-      this.errorFlags.numberError.adultStartDate = false;
       this.errorFlags.numberError.programCompletionDate = false;
+    },
+    checkForErrors() {
+      const validationChecks = [
+        this.v$.editedGradStatus.ifAdultStartDateInvalid,
+        this.v$.editedGradStatus.ifProgramIs1950ButNoAdultStartDate,
+        this.v$.editedGradStatus.ifSchoolOfRecordIsEmpty,
+        this.v$.editedGradStatus
+          .ifSchoolAtGraduationEmptyAndProgramCompletionNotEmpty,
+        this.v$.editedGradStatus.ifProgramIs1950studentGradeMustbeADorAN,
+        this.v$.editedGradStatus.ifProgramIsNot1950studentGradeCannotBeADorAN,
+        this.v$.editedGradStatus.ifProgramIs1950AndOffshore,
+      ];
+
+      // If any of the validations are invalid, blockSave will be true
+      this.blockSave = validationChecks.some((check) => check.$invalid);
     },
     saveGraduationStatus(id) {
       //add the user info
-
       this.editedGradStatus.updatedBy = this.username;
       this.editedGradStatus.studentID = id;
       this.editedGradStatus.pen = this.studentPen;
@@ -1162,6 +992,7 @@ export default {
         } catch (error) {
           // eslint-disable-next-line
           console.log(error);
+          this.snackbarStore.showSnackbar(error, "error", 5000);
         }
       }
       if (this.editedGradStatus.schoolOfRecord == "") {
@@ -1195,8 +1026,7 @@ export default {
           this.getSchoolInfo(response.data.schoolAtGrad, "schoolAtGrad");
           this.showEdit = false;
           this.editedGradStatus = {};
-
-          this.showNotification("success", "GRAD Status Saved");
+          this.snackbarStore.showSnackbar("GRAD Status Saved", "success", 5000);
         })
         .catch((error) => {
           if (this.editedGradStatus.programCompletionDate != null) {
@@ -1205,15 +1035,9 @@ export default {
                 .replace("-", "/")
                 .substring(0, 7);
           }
-          if (error.response) {
-            if (error.response.data) {
-              this.notificationMessage = error.response.data.message;
-            }
-          }
-          this.showNotification("danger", this.notificationMessage);
+          this.snackbarStore.showSnackbar(error, "error", 5000);
         });
     },
-
     getSchoolInfo(mincode, type) {
       if (mincode != null) {
         SchoolService.getSchoolInfo(mincode)
@@ -1227,9 +1051,31 @@ export default {
           })
           .catch((error) => {
             // eslint-disable-next-line
-            console.log("There was an error:" + error.response);
+            console.log("There was an error:" + error?.response);
+            this.snackbarStore.showSnackbar(error?.response, "error", 5000);
           });
       }
+    },
+    validateSchoolInfo(schoolToValidate) {
+      this.warningFlags.schoolWarning = false;
+      let schoolInfo = this.getSchoolByMincode(
+        this.getSchoolsList,
+        schoolToValidate
+      );
+      this.warningFlags.schoolWarning = !this.isSchoolOpen(schoolInfo);
+    },
+    getSchoolByMincode(schools, mincode) {
+      return schools.find((school) => school.mincode === mincode) || null;
+    },
+    isSchoolOpen(school) {
+      const openedDate = new Date(school?.openedDate);
+      const closedDate = school?.closedDate
+        ? new Date(school?.closedDate)
+        : null;
+      const currentDate = new Date();
+
+      // Check if the openedDate is in the past and closedDate is null
+      return openedDate < currentDate && closedDate === null;
     },
     ifProgramsWithExpiry(program) {
       for (let p of this.programsWithExpiry) {
@@ -1241,7 +1087,6 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 :deep(.graduation-status) table tr td {
   vertical-align: top;

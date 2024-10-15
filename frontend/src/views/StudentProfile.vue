@@ -471,7 +471,7 @@
     </v-dialog>
 
     <!-- Undo Completion Modal -->
-    <v-dialog v-model="UndoCompletionDialog" max-width="600px">
+    <v-dialog max-width="600px">
       <v-card>
         <v-card-title class="text-h5">Undo Completion</v-card-title>
         <v-card-text>

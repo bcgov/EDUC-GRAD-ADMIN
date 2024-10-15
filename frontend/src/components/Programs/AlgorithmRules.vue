@@ -27,28 +27,27 @@
 </template>
 
 <script>
-import { showNotification } from "../../utils/common.js";
 import DisplayTable from "../DisplayTable.vue";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "AlgorithmRules",
   components: {
     DisplayTable: DisplayTable,
   },
   created() {
-    this.showNotification = showNotification;
     ProgramManagementService.getAlgorithmRules()
       .then((response) => {
         this.algorithmRules = response.data;
         this.isLoading = false;
       })
       .catch((error) => {
-        this.showNotification("danger", "There was an error: " + error);
+        this.snackbarStore.showSnackbar(error?.message, "error", 5000);
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       isLoading: true,
       algorithmRules: [],
       toFilterItem: ["graduationProgramCode", "isActive"],

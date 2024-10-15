@@ -98,14 +98,8 @@
 import { mapState } from "pinia";
 import { useStudentStore } from "../../../store/modules/student";
 import sharedMethods from "../../../sharedMethods.js";
-import { showNotification } from "../../../utils/common.js";
-
 export default {
   name: "StudentGraduationReports",
-  props: {},
-  created() {
-    this.showNotification = showNotification;
-  },
   computed: {
     ...mapState(useStudentStore, {
       transcripts: "getStudentTranscripts",

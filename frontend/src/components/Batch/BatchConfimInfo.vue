@@ -119,7 +119,6 @@
 </template>
 <script>
 import { useVuelidate } from "@vuelidate/core";
-import sharedMethods from "../../sharedMethods.js";
 export default {
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
@@ -139,7 +138,6 @@ export default {
   },
   mounted() {},
   created() {
-    this.showNotification = sharedMethods.showNotification;
     if (this.items) {
       this.details = this.items.details;
     } else {
