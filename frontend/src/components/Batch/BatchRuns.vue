@@ -53,7 +53,10 @@
                       {{ item.jobExecutionId }}
                     </v-btn>
                   </template>
-                  <v-card max-width="500" title="Batch Details">
+                  <v-card
+                    max-width="500"
+                    :title="'Batch Job #' + item.jobExecutionId"
+                  >
                     <v-list>
                       <v-list-item
                         @click="setBatchId(item.jobExecutionId, 'batch')"
@@ -63,7 +66,6 @@
                           Results</v-list-item-title
                         >
                       </v-list-item>
-
                       <v-list-item>
                         <v-list-item-title>
                           <div class="" v-if="item.jobType != 'DISTRUNUSER'">
@@ -92,6 +94,54 @@
                           </div>
                         </v-list-item-title>
                       </v-list-item>
+                      <v-list-item v-if="item.failedStudentsProcessed > 0">
+                        <v-list-item-title>
+                          <div>
+                            <v-btn
+                              :id="
+                                'batch-job-id-rerun-btn' + item.jobExecutionId
+                              "
+                              class=""
+                              variant="link"
+                              size="xs"
+                              @click="rerunBatch(item.jobExecutionId)"
+                            >
+                              <v-icon>mdi-play-circle-outline</v-icon>
+                            </v-btn>
+                            Rerun
+                            {{
+                              item.failedStudentsProcessed != 0
+                                ? item.failedStudentsProcessed
+                                : ""
+                            }}
+                            students with errors
+                          </div>
+                        </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item
+                        v-if="
+                          item.jobType == 'TVRRUN' || item.jobType == 'REGALG'
+                        "
+                      >
+                        <v-list-item-title>
+                          <div>
+                            <v-btn
+                              :id="
+                                'batch-job-id-rerun-btn' + item.jobExecutionId
+                              "
+                              class=""
+                              variant="link"
+                              size="xs"
+                              @click="
+                                rerunBatchSchoolReports(item.jobExecutionId)
+                              "
+                            >
+                              <v-icon>mdi-play-circle-outline</v-icon>
+                            </v-btn>
+                            Rerun School Reports
+                          </div>
+                        </v-list-item-title>
+                      </v-list-item>
                     </v-list>
 
                     <v-divider></v-divider>
@@ -99,9 +149,8 @@
                       v-if="item.jobParameters"
                       style="height: 200px; overflow-y: scroll"
                     >
-  {{ JSON.stringify(item.jobParameters, null, "\t") }}
-</pre
-                    >
+                      {{ JSON.stringify(item.jobParameters, null, "\t") }}
+                    </pre>
                   </v-card>
                 </v-menu>
 
