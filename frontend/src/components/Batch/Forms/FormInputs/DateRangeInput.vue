@@ -173,9 +173,7 @@ export default {
       return "";
     },
     handleStudentSelectionChange(newValue) {
-      console.log("Student selection changed:", newValue);
       if (newValue === "Current Students") {
-        console.log("Clearing gradDateFrom and gradDateTo");
         this.clearDateFields();
       }
     },
