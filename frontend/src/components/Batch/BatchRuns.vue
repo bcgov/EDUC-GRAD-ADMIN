@@ -12,6 +12,7 @@
               id="id"
               :showFilter="false"
               pagination="true"
+              class="mt-5"
             >
               <template v-slot:item.data-table-expand="{ item }"> </template>
               <template v-slot:item.jobDownload="{ item }">

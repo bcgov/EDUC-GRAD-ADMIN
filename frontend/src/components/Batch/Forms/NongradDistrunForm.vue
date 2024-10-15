@@ -54,13 +54,34 @@
                       ></v-select>
                     </v-row>
                     <v-row v-if="getGroup == 'School Category'">
-                      <DistrictInput></DistrictInput>
+                      <DistrictInput
+                        disableSelectStudents
+                        disableSelectDistrict
+                      ></DistrictInput>
                     </v-row>
                   </v-stepper-window-item>
 
                   <v-stepper-window-item value="2">
-                    <v-card title="Schedule" flat>
-                      <ScheduleInput></ScheduleInput>
+                    <v-card flat>
+                      <ScheduleInput
+                        ><template #batchDetails>
+                          <v-data-table
+                            :items="[
+                              {
+                                label: 'Run Type',
+                                value:
+                                  'Non-Graduate Transcript Distribution Run',
+                              },
+                              {
+                                label: 'Where',
+                                value: 'BC Mail',
+                              },
+                            ]"
+                            hide-default-header
+                            hide-default-footer
+                          >
+                          </v-data-table> </template
+                      ></ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
 

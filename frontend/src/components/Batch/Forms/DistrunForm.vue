@@ -138,8 +138,37 @@
                     <DistributionInput></DistributionInput>
                   </v-stepper-window-item>
                   <v-stepper-window-item value="4">
-                    <v-card title="Schedule" flat>
-                      <ScheduleInput></ScheduleInput>
+                    <v-card flat>
+                      <ScheduleInput
+                        warning="Warning: You have selected a large volume of documents to be printed"
+                      >
+                        <template #batchDetails>
+                          <v-data-table
+                            :items="[
+                              {
+                                label: 'Run Type',
+                                value: 'User Request Distribution Run',
+                              },
+                              {
+                                label: 'Copies',
+                                value: getBatchRequest.quantity,
+                              },
+                              {
+                                label: 'Credential Type',
+                                value:
+                                  getBatchRequest.credentialTypeCode.join(', '),
+                              },
+                              {
+                                label: 'Where',
+                                value: getDistribution,
+                              },
+                            ]"
+                            hide-default-header
+                            hide-default-footer
+                          >
+                          </v-data-table>
+                        </template>
+                      </ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
 

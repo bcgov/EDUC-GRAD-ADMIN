@@ -33,7 +33,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     copies:"1",
     allPsi:false,
     allDistricts:false,
-    distribution: null,
+    distribution: "BC Mail",
     localDownload: "N",
     activityCode: null,
     reportType: null,
@@ -211,6 +211,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         programs: state.who === "Program" ? state.programs.map(program => program.program) : [],
         psiCodes: state.who === "Psi" ? state.psi.map(postSecondaryInstitution => postSecondaryInstitution.psi) : [],
         psiYear: state.psiYear ? state.psiYear : "",
+        psiTransmissionMode: state.psiTransmissionMode,
         schoolCategoryCodes: state.categoryCode ? [state.categoryCode] : [],
         validateInput: true,
         activityCode: state.activityCode,
@@ -226,15 +227,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         runMode: "Y",
       };
     
-      // Remove activityCode if null
-      if (request.activityCode === null) {
-        delete request.activityCode;
-      }
-    
-      // Remove psiYear if psiCodes is empty
-      if (request.psiCodes.length === 0) {
-        delete request.psiYear;
-      }
+
     
       return request;
     },

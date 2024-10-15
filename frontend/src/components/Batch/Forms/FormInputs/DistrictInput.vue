@@ -27,19 +27,31 @@
             <DateRangeInput></DateRangeInput>
           </v-col>
         </v-row>
-        <v-row v-if="schoolCategory !== '04' && schoolCategory !== '09'">
+        <v-row
+          v-if="
+            schoolCategory !== '04' &&
+            schoolCategory !== '09' &&
+            !disableSelectDistrict
+          "
+        >
           <v-col md="2">
             <label class="font-weight-bold">District</label>
           </v-col>
           <v-col sm="5" lg="8">
             <v-autocomplete
               v-model="district"
+              v-if="!selectAllDistricts"
               :items="getDistrictList"
               label="Category"
               outlined
               :item-title="districtTitle"
               item-value="districtNumber"
             ></v-autocomplete>
+            <v-checkbox
+              v-model="selectAllDistricts"
+              @change="selectAllDistrictsCheckbox($event)"
+              label="Select all districts"
+            ></v-checkbox>
           </v-col>
           <v-col sm="5" lg="2">
             <v-btn
@@ -50,6 +62,7 @@
             >
           </v-col>
         </v-row>
+
         <v-row>
           <v-col>
             <v-row v-if="districtInfo" class="float-left col-10">
@@ -187,6 +200,7 @@ export default {
   },
   data() {
     return {
+      selectAllDistricts: false,
       addMode: true,
       includeStudents: "Current Students",
       schoolCategoryOptions: [
@@ -248,6 +262,27 @@ export default {
       this.district = "";
       this.clearDistrictInfo();
     },
+    selectAllDistrictsCheckbox(event) {
+      const AllDistrictChecked = event.target.checked;
+      if (AllDistrictChecked) {
+        // Remove all psis and automatically add the All PSI
+        this.selectAllDistricts = true;
+        this.districts.splice(0, this.districts.length, {
+          district: "all",
+          info: {
+            districtNumber: "all",
+            districtName: "All School Districts",
+            activeFlag: "ALL",
+          },
+        });
+      } else {
+        // Remove the "ALL" PSIs and clear the array using splice
+        this.selectAllDistricts = false;
+
+        // Clear the array using splice
+        this.districts.splice(0, this.districts.length);
+      }
+    },
     addDistrict() {
       let info = this.getDistrictList.find(
         (districtObject) => districtObject.districtNumber === this.district
@@ -285,6 +320,11 @@ export default {
       default: false,
     },
     disableSelectCategory: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    disableSelectDistrict: {
       type: Boolean,
       required: false,
       default: false,
