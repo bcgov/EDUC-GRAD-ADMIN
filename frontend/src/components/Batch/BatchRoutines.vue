@@ -1,79 +1,79 @@
 <template>
-  <div>
-    <DisplayTable
-      title="Routines"
-      :items="this.batchRoutines"
-      v-bind:fields="scheduledRoutinesFields"
-      id="id"
-      :showFilter="false"
-      pagination="true"
+  <v-container>
+    <v-data-table
+      :headers="scheduledRoutinesFields"
+      :items="batchRoutines"
+      :items-per-page="5"
+      class="elevation-1"
+      :show-filter="false"
     >
       <template v-slot:item.enabled="{ item }">
         <v-switch
           :disabled="!hasPermissions('BATCH', 'toggleBatchRoutines')"
-          :model-value="getSwitchValue(item)"
-          label="Enable"
-          @change="toggleRoutine(item.jobType, item.id)"
+          v-model="switchState[item.id]"
+          :label="switchState[item.id] ? 'Enabled' : 'Disabled'"
+          :color="switchState[item.id] ? 'green' : ''"
+          @click="prepareToggleRoutine(item)"
         ></v-switch>
       </template>
-    </DisplayTable>
-  </div>
+    </v-data-table>
+
+    <!-- Confirmation Dialog -->
+    <v-dialog v-model="dialogVisible" max-width="300">
+      <v-card>
+        <v-card-title class="headline">Please Confirm</v-card-title>
+        <v-card-text>
+          <p>Please confirm that you want to update.</p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="confirmToggle">Confirm</v-btn>
+          <v-btn color="grey" text @click="cancelToggle">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Snackbar for Notifications -->
+    <v-snackbar
+      v-model="snackbarVisible"
+      :timeout="3000"
+      :color="snackbarColor"
+    >
+      {{ snackbarMessage }}
+      <v-btn text @click="snackbarVisible = false">Close</v-btn>
+    </v-snackbar>
+  </v-container>
 </template>
+
 <script>
-import DisplayTable from "@/components/DisplayTable.vue";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import { useBatchProcessingStore } from "../../store/modules/batchprocessing";
 import { useAccessStore } from "../../store/modules/access";
 import { mapState, mapActions } from "pinia";
+
 export default {
-  components: {
-    DisplayTable: DisplayTable,
-  },
-  data: function () {
+  data() {
     return {
+      dialogVisible: false,
+      snackbarVisible: false,
+      snackbarMessage: "",
+      snackbarColor: "",
+      jobTypeToToggle: null,
+      processingIdToToggle: null,
+      switchState: {}, // Store the visual state of the switches
+      originalState: null, // Store the original state of the toggle
       scheduledRoutinesFields: [
-        {
-          key: "jobType",
-          title: "Type",
-          sortable: true,
-          class: "text-left",
-        },
-        {
-          key: "cronExpression",
-          title: "Cron Expression",
-          sortable: true,
-          class: "text-left",
-        },
+        { key: "jobType", title: "Type", sortable: true },
+        { key: "cronExpression", title: "Cron Expression", sortable: true },
         {
           key: "scheduleOccurrence",
-          title: "Scheduled Occurence",
+          title: "Scheduled Occurrence",
           sortable: true,
-          class: "text-left",
         },
-        {
-          key: "createUser",
-          title: "Created By",
-          sortable: true,
-          class: "text-left",
-        },
-        {
-          key: "updateUser",
-          title: "Updated By",
-          sortable: true,
-          class: "text-left",
-        },
-        {
-          key: "updateDate",
-          title: "Updated Date/Time",
-          sortable: true,
-          class: "text-left",
-        },
-        {
-          key: "enabled",
-          title: "Enabled",
-          sortable: true,
-          class: "text-left",
-        },
+        { key: "createUser", title: "Created By", sortable: true },
+        { key: "updateUser", title: "Updated By", sortable: true },
+        { key: "updateDate", title: "Updated Date/Time", sortable: true },
+        { key: "enabled", title: "Enabled", sortable: true },
       ],
     };
   },
@@ -81,57 +81,70 @@ export default {
     BatchProcessingService.batchProcessingRoutines()
       .then((response) => {
         this.setBatchRoutines(response.data);
+
+        // Initialize switch state for each routine based on the enabled status using slice
+        let updatedSwitchState = { ...this.switchState };
+        response.data.forEach((item) => {
+          updatedSwitchState = {
+            ...updatedSwitchState,
+            [item.id]: item.enabled === "Y",
+          };
+        });
+        this.switchState = updatedSwitchState;
       })
       .catch((error) => {
-        this.makeToast("ERROR " + error.response.statusText, "danger");
+        this.showSnackbar("ERROR " + error.response.statusText, "error");
       });
   },
   methods: {
     ...mapActions(useBatchProcessingStore, ["setBatchRoutines"]),
-    getSwitchValue(item) {
-      return item.enabled === "Y";
+
+    prepareToggleRoutine(item) {
+      this.jobTypeToToggle = item.jobType;
+      this.processingIdToToggle = item.id;
+      this.originalState = item.enabled; // Store the original state
+      this.dialogVisible = true; // Show the confirmation dialog
     },
-    toggleRoutine(jobType, processingId) {
-      this.$bvModal
-        .msgBoxConfirm("Please confirm that you want to update.", {
-          title: "Please Confirm",
-          size: "sm",
-          buttonSize: "sm",
-          okVariant: "success",
-          okTitle: "Confirm",
-          cancelTitle: "Cancel",
-          footerClass: "p-2",
-          hideHeaderClose: false,
-          centered: true,
+
+    confirmToggle() {
+      const item = this.batchRoutines.find(
+        (routine) => routine.jobType === this.jobTypeToToggle
+      );
+      if (item) {
+        // Update the actual enabled state after confirmation
+        item.enabled = item.enabled === "Y" ? "N" : "Y";
+        this.switchState[item.id] = item.enabled === "Y"; // Reflect in UI
+      }
+
+      BatchProcessingService.batchProcessingToggleRoutine(
+        this.jobTypeToToggle,
+        this.processingIdToToggle
+      )
+        .then(() => {
+          this.showSnackbar("Job Updated", "success");
+          this.dialogVisible = false; // Hide the dialog after confirming
         })
-        .then((confirm) => {
-          if (confirm) {
-            BatchProcessingService.batchProcessingToggleRoutine(
-              jobType,
-              processingId
-            )
-              .then(() => {
-                this.makeToast("Job Updated", "success");
-              })
-              .catch((error) => {
-                this.makeToast("ERROR " + error.response.statusText, "danger");
-              });
-          } else {
-            let r = "routine" + jobType + "Enabled";
-            this.$refs[r].localChecked = !this.$refs[r].localChecked;
-          }
-        })
-        .catch((err) => {
-          // eslint-disable-next-line
-          console.log(err);
+        .catch((error) => {
+          this.showSnackbar("ERROR " + error.response.statusText, "error");
+          this.dialogVisible = false; // Hide the dialog in case of an error
         });
     },
-    makeToast(message, variant) {
-      this.$bvToast.toast(message, {
-        title: message,
-        variant: variant,
-        noAutoHide: true,
-      });
+
+    cancelToggle() {
+      // Revert the visual switch state to the original state
+      const item = this.batchRoutines.find(
+        (routine) => routine.jobType === this.jobTypeToToggle
+      );
+      if (item) {
+        this.switchState[item.id] = this.originalState === "Y"; // Revert to original state
+      }
+      this.dialogVisible = false; // Close the dialog
+    },
+
+    showSnackbar(message, type) {
+      this.snackbarMessage = message;
+      this.snackbarVisible = true;
+      this.snackbarColor = type === "error" ? "red" : "success";
     },
   },
   computed: {
@@ -142,8 +155,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
-input {
-  border-radius: 0px;
-}
+/* Add any additional styles if needed */
 </style>
