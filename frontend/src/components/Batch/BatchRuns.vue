@@ -35,6 +35,9 @@
                   <v-icon>mdi-download</v-icon>
                 </v-btn>
               </template>
+              <template v-slot:item.updateDate="{ item }">
+                {{ item.updateDate.replace("T", ", ") }}
+              </template>
               <template v-slot:item.jobExecutionId="{ item }">
                 <v-menu
                   :close-on-content-click="true"
@@ -42,7 +45,11 @@
                   :width="item.jobParameters ? 600 : 350"
                 >
                   <template v-slot:activator="{ props }">
-                    <v-btn color="indigo" v-bind="props">
+                    <v-btn
+                      variant="plain"
+                      v-bind="props"
+                      class="no-outline-btn v-btn-link"
+                    >
                       {{ item.jobExecutionId }}
                     </v-btn>
                   </template>
@@ -108,17 +115,21 @@
               </template>
 
               <template v-slot:item.failedStudentsProcessed="{ item }">
-                <v-btn
-                  v-if="item.failedStudentsProcessed !== 0"
-                  text
-                  small
-                  class="v-btn v-btn--text v-btn--small v-btn--link"
-                  @click="setBatchId(item.jobExecutionId, 'error')"
-                >
-                  {{ item.failedStudentsProcessed }}
-                </v-btn>
-                <div v-else>
-                  {{ item.failedStudentsProcessed }}
+                <div class="text-center">
+                  <v-btn
+                    v-if="item.failedStudentsProcessed != 0"
+                    text
+                    small
+                    variant="plain"
+                    class="no-outline-btn v-btn-link"
+                    @click="setBatchId(item.jobExecutionId, 'error')"
+                  >
+                    {{ item.failedStudentsProcessed }}
+                  </v-btn>
+
+                  <div v-else>
+                    {{ item.failedStudentsProcessed }}
+                  </div>
                 </div>
               </template>
             </DisplayTable>
