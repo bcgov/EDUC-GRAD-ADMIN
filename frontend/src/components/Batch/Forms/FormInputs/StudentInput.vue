@@ -12,7 +12,17 @@
               type="number"
               class="mr-2"
             ></v-text-field>
+            <v-row v-if="validationMessage">
+              <v-alert dismissible type="error">
+                {{ validationMessage }}
+              </v-alert>
+            </v-row>
             <v-row v-for="error in v$.pen.$errors" :key="error.$uid">
+              <v-col v-if="validationMessage">
+                <v-alert dismissible type="error">
+                  {{ validationMessage }}
+                </v-alert>
+              </v-col>
               <v-col>
                 <v-alert type="error">{{ error.$message }}</v-alert>
               </v-col>
@@ -21,10 +31,6 @@
               <v-col sm="12">
                 <v-card>
                   <v-card-text>
-                    <v-alert v-if="validationMessage" dismissible type="error">
-                      {{ validationMessage }}
-                    </v-alert>
-
                     <div v-if="!penStudentInfo">NOT VALID</div>
                     <div v-else>
                       <v-simple-table class="w-100">
@@ -167,10 +173,13 @@ export default {
           if (value === "") return true;
           if (value.length == 9) {
             let student = await StudentService.getStudentByPen(value);
-            let studentID = student.data[0].studentID;
+            if (student.data && student.data.length === 0) {
+              this.validationMessage = "Student not found";
+              return false;
+            }
 
             let studentGRADStatus = await StudentService.getGraduationStatus(
-              studentID
+              student.data[0].studentID
             );
 
             //check is student is status = MER
@@ -210,7 +219,7 @@ export default {
                     studentID
                   );
                 if (certificate.data.length) {
-                  //check that certificate has does nto have a null distribution date
+                  //check that certificate has does not have a null distribution date
 
                   if (
                     !certificate.data.distributionDate &&

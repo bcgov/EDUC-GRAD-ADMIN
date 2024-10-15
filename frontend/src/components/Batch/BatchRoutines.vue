@@ -16,6 +16,9 @@
           @click="prepareToggleRoutine(item)"
         ></v-switch>
       </template>
+      <template v-slot:item.updateDate="{ item }">
+        {{ item.updateDate.replace("T", ", ") }}
+      </template>
     </v-data-table>
 
     <!-- Confirmation Dialog -->
