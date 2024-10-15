@@ -29,65 +29,67 @@
           </v-text-field>
         </v-col>
       </v-row>
-
       <v-row>
         <v-col sm="2">PSI</v-col>
         <v-col sm="10">
-          <div v-if="schoolCategory !== '04' && schoolCategory !== '09'">
-            <v-text-field
-              label="Post Secondary Institution Code"
-              v-model="psi"
-              maxlength="3"
-              @input="validatePSI"
-              outlined
-            />
-            <div
-              v-for="error in v$.psi.$errors"
-              :key="error.$uid"
-              class="input-errors"
-            >
-              <div class="error-msg">{{ error.$message }}</div>
-            </div>
+          <v-text-field
+            v-if="!selectAllPSI"
+            label="Post Secondary Institution Code"
+            v-model="psi"
+            maxlength="3"
+            @input="validatePSI"
+            outlined />
 
-            <div v-if="psiInfo">
-              <v-card>
-                <v-card-text>
-                  <v-alert
-                    v-if="validationMessage"
-                    type="error"
-                    dismissible
-                    v-model="showAlert"
-                  >
-                    {{ validationMessage }}
-                  </v-alert>
-                  <v-overlay :value="psiValidating">
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-row>
-                        <v-col auto>
-                          <strong>Post Secondary Institute:</strong>
-                          {{ psiInfo.psiName }}<br />
-                        </v-col>
-                        <v-col>
-                          <v-btn
-                            @click="addPSI"
-                            :disabled="validationMessage !== ''"
-                            class="float-right"
-                            color="primary"
-                            small
-                          >
-                            <v-icon>mdi-plus</v-icon>
-                          </v-btn>
-                        </v-col>
-                      </v-row>
-                    </template>
-                  </v-overlay>
-                </v-card-text>
-              </v-card>
-            </div>
-          </div></v-col
-        >
+          <div
+            v-for="error in v$.psi.$errors"
+            :key="error.$uid"
+            class="input-errors"
+          >
+            <div class="error-msg">{{ error.$message }}</div>
+          </div>
+
+          <div v-if="psiInfo">
+            <v-card>
+              <v-card-text>
+                <v-alert
+                  v-if="validationMessage"
+                  type="error"
+                  dismissible
+                  v-model="showAlert"
+                >
+                  {{ validationMessage }}
+                </v-alert>
+                <v-overlay :value="psiValidating">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-row>
+                      <v-col auto>
+                        <strong>Post Secondary Institute:</strong>
+                        {{ psiInfo.psiName }}<br />
+                      </v-col>
+                      <v-col>
+                        <v-btn
+                          @click="addPSI"
+                          :disabled="validationMessage !== ''"
+                          class="float-right"
+                          color="primary"
+                          small
+                        >
+                          <v-icon>mdi-plus</v-icon>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </template>
+                </v-overlay>
+              </v-card-text>
+            </v-card>
+          </div>
+          <v-checkbox
+            v-model="selectAll"
+            @change="selectAllPSICheckbox($event)"
+            label="Select all post secondary institutes"
+          ></v-checkbox
+        ></v-col>
       </v-row>
-
       <v-data-table
         v-if="psis.length > 0"
         :items="psis"
@@ -142,6 +144,7 @@ export default {
   },
   data() {
     return {
+      selectAllPSI: false,
       psi: "",
       psiInfo: "",
       psiValidating: false,
@@ -199,6 +202,26 @@ export default {
     clearPSI() {
       this.psi = "";
       this.clearPSIInfo();
+    },
+    selectAllPSICheckbox(event) {
+      const AllPSIChecked = event.target.checked;
+      if (AllPSIChecked) {
+        // Remove all psis and automatically add the All PSI
+        this.selectAllPSI = true;
+        this.psis.splice(0, this.psis.length, {
+          psi: "all",
+          info: {
+            psiCode: "All",
+            psiName: "All Post Secondary Institutes",
+          },
+        });
+      } else {
+        // Remove the "ALL" PSIs and clear the array using splice
+        this.selectAllPSI = false;
+
+        // Clear the array using splice
+        this.psis.splice(0, this.psis.length);
+      }
     },
     addPSI() {
       let info = this.psiInfo;

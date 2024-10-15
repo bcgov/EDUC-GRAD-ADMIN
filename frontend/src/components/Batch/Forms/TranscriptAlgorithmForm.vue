@@ -93,7 +93,7 @@
                   </v-stepper-window-item>
 
                   <v-stepper-window-item value="2">
-                    <v-card title="Schedule" flat>
+                    <v-card flat>
                       <ScheduleInput></ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>

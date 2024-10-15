@@ -1,7 +1,6 @@
 <template>
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
-      {{ getBatchRequest }}
       <template v-slot:activator="{ props }">
         <v-btn
           v-if="hasPermissions('BATCH', 'runPSIBatch')"
@@ -52,8 +51,34 @@
                   </v-stepper-window-item>
 
                   <v-stepper-window-item value="2">
-                    <v-card title="Schedule" flat>
-                      <ScheduleInput></ScheduleInput>
+                    <v-card flat>
+                      <ScheduleInput>
+                        <template #batchDetails>
+                          <v-data-table
+                            :items="[
+                              {
+                                label: 'Run Type',
+                                value: 'PSI Run FTP / PAPER',
+                              },
+                              {
+                                label: 'Transmission Mode',
+                                value: getBatchRequest.psiTransmissionMode,
+                              },
+                              {
+                                label: 'PSI Year',
+                                value: getBatchRequest.psiYear,
+                              },
+                              {
+                                label: 'Where',
+                                value: 'BC Mail',
+                              },
+                            ]"
+                            hide-default-header
+                            hide-default-footer
+                          >
+                          </v-data-table>
+                        </template>
+                      </ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
 
@@ -153,13 +178,10 @@ export default {
           (value) => {
             if (this.getBatchRequest) {
               let isValid = false;
-              if (this.getGroup === "Psi") {
-                isValid =
-                  this.getBatchRequest.psiCodes &&
-                  this.getBatchRequest.psiCodes.length > 0;
-              } else {
-                isValid = false;
-              }
+              isValid =
+                this.getBatchRequest.psiCodes &&
+                this.getBatchRequest.psiCodes.length > 0;
+
               return isValid;
             } else {
               return false;

@@ -95,7 +95,20 @@
 
                   <v-stepper-window-item value="2">
                     <v-card flat>
-                      <ScheduleInput></ScheduleInput>
+                      <ScheduleInput>
+                        <template #batchDetails>
+                          <v-data-table
+                            :items="[
+                              {
+                                label: 'Run Type',
+                                value: 'Graduation Algorithm',
+                              },
+                            ]"
+                            hide-default-header
+                            hide-default-footer
+                          >
+                          </v-data-table> </template
+                      ></ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
 

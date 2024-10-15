@@ -1,144 +1,155 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col sm="12">
-        <v-card>
-          <v-text>
-            <div v-if="getGroup == 'School'">
-              <div
-                v-if="
-                  getBatchRequest.gradDateFrom && getBatchRequest.gradDateFrom
-                "
-              >
-                Grad Start Date: {{ getBatchRequest.gradDateFrom }} Grad End
-                Date:
-                {{ getBatchRequest.gradDateTo }}
-              </div>
-              <div v-else>Current Students</div>
-              <v-data-table
-                :items="getGroupData"
-                :headers="[
-                  {
-                    key: 'mincode',
-                    title: 'Mincode',
-                    sortable: true,
-                    class: 'text-left',
-                  },
-                  {
-                    key: 'info.schoolName',
-                    title: 'School',
-                    sortable: true,
-                    class: 'text-left',
-                  },
-                ]"
-              >
-                <template #bottom></template
-              ></v-data-table>
-            </div>
-            <div v-if="getGroup == 'School Category'">
-              <v-data-table
-                :items="getGroupData"
-                :headers="[
-                  {
-                    key: 'district',
-                    title: 'District',
-                    sortable: true,
-                    class: 'text-left',
-                  },
-                  {
-                    key: 'info.districtName',
-                    title: 'District Name',
-                    sortable: true,
-                    class: 'text-left',
-                  },
-                ]"
-              >
-                <template #bottom></template
-              ></v-data-table>
-            </div>
-            <div v-if="getGroup == 'Program'">
-              <v-data-table
-                :items="getGroupData"
-                :headers="[
-                  {
-                    key: 'program',
-                    title: 'Program',
-                    sortable: true,
-                    class: 'text-left',
-                  },
-                  {
-                    key: 'info',
-                    title: 'Program Name',
-                    sortable: true,
-                    class: 'text-left',
-                  },
-                ]"
-              >
-                <template #bottom></template
-              ></v-data-table>
-            </div>
-            <div v-if="getGroup == 'PSI'">
-              Schools: {{ getBatchRequest.psis }}
-            </div>
-          </v-text>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <v-card>
-          <v-card-title>Select Batch Run Time</v-card-title>
-          <v-card-text>
-            <v-row>
-              <v-radio-group v-model="batchRunTime">
-                <v-radio label="Run Now" value="Run Now"></v-radio>
-                <v-radio label="Run Later" value="Run Later"></v-radio>
-              </v-radio-group>
-            </v-row>
-            <v-row v-if="batchRunTime == 'Run Later'">
-              <v-col cols="12">
-                <v-radio-group v-model="batchRunSchedule">
-                  <label>Time to schedule</label>
-                  <v-radio label="Tonight at 6:30PM" value="N"></v-radio>
-                  <v-radio
-                    label="Weekend Batch - Saturday 12:00PM"
-                    value="W"
-                  ></v-radio>
-                  <v-radio label="Tomorrow at 6:30AM" value="M"></v-radio>
-                  <v-radio label="Custom" value="Custom"></v-radio>
-                  <v-row v-if="batchRunSchedule == 'Custom'" class="pl-4">
-                    <v-col>
-                      {{ batchRunCustomDate }}
+  <v-alert v-if="warning" type="info" dense text border="left" color="orange">
+    {{ warning }}
+  </v-alert>
+  <v-card
+    title="Batch Details"
+    class="text-h5 font-weight-regular bg-blue-grey"
+  >
+    <slot name="batchDetails"></slot>
+  </v-card>
+  <v-card
+    :title="'Group - ' + getGroup"
+    class="text-h5 font-weight-regular bg-blue-grey"
+  >
+    <v-card-text>
+      <v-row
+        class="pl-3"
+        v-if="getBatchRequest.gradDateFrom && getBatchRequest.gradDateTo"
+      >
+        <v-col>
+          <ul>
+            <li>Grad Start Date: {{ getBatchRequest.gradDateFrom }}</li>
+            <li>Grad End Date: {{ getBatchRequest.gradDateTo }}</li>
+          </ul>
+        </v-col>
+      </v-row>
 
-                      <v-container>
-                        <v-date-input label="Date input"></v-date-input>
-                      </v-container>
-                      <v-date-picker
-                        v-model="batchRunCustomDate"
-                        label="Choose a date"
-                      ></v-date-picker> </v-col
-                    ><v-col>
-                      {{ batchRunCustomTime }}
+      <!-- Group-specific details -->
+      <div v-if="getGroup == 'School'">
+        <v-data-table
+          :items="getGroupData"
+          :headers="[
+            { text: 'Mincode', value: 'mincode' },
+            { text: 'School', value: 'info.schoolName' },
+          ]"
+          hide-default-header
+          hide-default-footer
+          ><template #no-data>
+            <v-icon>mdi-information</v-icon> Group not selected
+          </template></v-data-table
+        >
+      </div>
 
-                      <VTimePicker format="24hr" v-model="batchRunCustomTime" />
-                    </v-col>
-                  </v-row>
-                </v-radio-group>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+      <div v-if="getGroup == 'School Category'">
+        <div
+          v-if="
+            getBatchRequest.schoolCategoryCodes &&
+            getBatchRequest.schoolCategoryCodes.length
+          "
+        >
+          School Category: {{ getBatchRequest.schoolCategoryCodes }}
+        </div>
+        <v-data-table
+          :items="getGroupData"
+          :headers="[
+            { text: 'District', value: 'district' },
+            { text: 'District Name', value: 'info.districtName' },
+          ]"
+          hide-default-header
+          hide-default-footer
+          ><template #no-data>
+            <v-icon>mdi-information</v-icon> Group not selected
+          </template></v-data-table
+        >
+      </div>
 
+      <div v-if="getGroup == 'Program'">
+        <v-data-table
+          :items="getGroupData"
+          :headers="[
+            { text: 'Program', value: 'program' },
+            { text: 'Program Name', value: 'info' },
+          ]"
+          hide-default-header
+          hide-default-footer
+          ><template #no-data>
+            <v-icon>mdi-information</v-icon> Group not selected
+          </template></v-data-table
+        >
+      </div>
+      <div v-if="getGroup === 'Psi'">
+        <v-data-table
+          :items="getGroupData"
+          hide-default-header
+          hide-default-footer
+        >
+          <template #item="{ item }">
+            <tr>
+              <td>{{ item.info.psiCode }} ({{ item.info.psiName }})</td>
+            </tr>
+          </template>
+
+          <template #no-data>
+            <div class="d-flex align-start text-left">
+              <v-icon left class="mr-2">mdi-information</v-icon>
+              Group not selected
+            </div>
+          </template>
+        </v-data-table>
+      </div>
+    </v-card-text>
+  </v-card>
+
+  <slot name="confirmations"></slot>
+
+  <v-card
+    title="Select Batch Run Time"
+    class="text-h5 font-weight-regular bg-blue-grey"
+  >
     <div>
-      <ul>
-        <li v-for="(error, index) in v$.$silentErrors" :key="index">
-          {{ error.$message }}
-        </li>
-      </ul>
+      <v-radio-group v-model="batchRunTime">
+        <v-radio label="Run Now" value="Run Now"></v-radio>
+        <v-radio label="Run Later" value="Run Later"></v-radio>
+      </v-radio-group>
     </div>
-  </v-container>
+    <v-row v-if="batchRunTime == 'Run Later'">
+      <v-col cols="12">
+        <v-radio-group v-model="batchRunSchedule">
+          <label>Time to schedule</label>
+          <v-radio label="Tonight at 6:30PM" value="N"></v-radio>
+          <v-radio label="Weekend Batch - Saturday 12:00PM" value="W"></v-radio>
+          <v-radio label="Tomorrow at 6:30AM" value="M"></v-radio>
+          <v-radio label="Custom" value="Custom"></v-radio>
+          <v-row v-if="batchRunSchedule == 'Custom'" class="pl-4">
+            <v-col>
+              {{ batchRunCustomDate }}
+
+              <v-container>
+                <v-date-input label="Date input"></v-date-input>
+              </v-container>
+              <v-date-picker
+                v-model="batchRunCustomDate"
+                label="Choose a date"
+              ></v-date-picker> </v-col
+            ><v-col>
+              {{ batchRunCustomTime }}
+
+              <VTimePicker format="24hr" v-model="batchRunCustomTime" />
+            </v-col>
+          </v-row>
+        </v-radio-group>
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <div>
+    <ul>
+      <li v-for="(error, index) in v$.$silentErrors" :key="index">
+        {{ error.$message }}
+      </li>
+    </ul>
+  </div>
 </template>
 <script>
 import { isProxy, toRaw, ref, watch } from "vue";
@@ -228,7 +239,13 @@ export default {
     ...mapActions(useBatchRequestFormStore, []),
     resetModal() {},
   },
-  props: {},
+  props: {
+    // Define the warning prop
+    warning: {
+      type: String, // You can change the type if needed
+      required: false, // Make it optional
+    },
+  },
 
   computed: {
     ...mapState(useBatchRequestFormStore, [
@@ -240,6 +257,7 @@ export default {
       "getbatchRunCustomTime",
       "getGroupData",
       "getGroup",
+      "getDistribution",
     ]),
     isEmpty() {
       return this.students.length > 0;

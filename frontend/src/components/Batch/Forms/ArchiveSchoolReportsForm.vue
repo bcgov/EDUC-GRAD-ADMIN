@@ -102,49 +102,74 @@
                   </v-stepper-window-item>
 
                   <v-stepper-window-item value="2">
-                    <v-card title="Schedule" flat>
-                      Confirmation
-                      <v-table>
-                        <thead>
-                          <tr>
-                            <th></th>
-                            <th>Confirm</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <!-- First Confirmation Checkbox -->
-                          <tr>
-                            <td>
-                              Final Graduation Algorithm and TVR batch jobs have
-                              been run for students from the previous cycle
-                            </td>
-                            <td>
-                              <v-checkbox
-                                v-model="selectedConfirmations"
-                                value="REQUIRED_CONFIRMATION_1"
-                                hide-details
-                              ></v-checkbox>
-                            </td>
-                          </tr>
+                    <v-card flat>
+                      <ScheduleInput warning="">
+                        <template #confirmations>
+                          <v-card
+                            title="Confirmations"
+                            class="text-h5 font-weight-regular bg-blue-grey"
+                          >
+                            <v-table>
+                              <thead>
+                                <tr>
+                                  <th>
+                                    <strong
+                                      >Batch Confirmation: please read and
+                                      accept before submitting</strong
+                                    >
+                                  </th>
+                                  <th>Confirm</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <!-- First Confirmation Checkbox -->
+                                <tr>
+                                  <td>
+                                    Final Graduation Algorithm and TVR batch
+                                    jobs have been run for students from the
+                                    previous cycle
+                                  </td>
+                                  <td>
+                                    <v-checkbox
+                                      v-model="selectedConfirmations"
+                                      value="REQUIRED_CONFIRMATION_1"
+                                      hide-details
+                                    ></v-checkbox>
+                                  </td>
+                                </tr>
 
-                          <!-- Second Confirmation Checkbox -->
-                          <tr>
-                            <td>
-                              Regenerate School Reports are completed for any
-                              schools that require final updates
-                            </td>
-                            <td>
-                              <v-checkbox
-                                v-model="selectedConfirmations"
-                                value="REQUIRED_CONFIRMATION_2"
-                                hide-details
-                              ></v-checkbox>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </v-table>
-
-                      <ScheduleInput></ScheduleInput>
+                                <!-- Second Confirmation Checkbox -->
+                                <tr>
+                                  <td>
+                                    Regenerate School Reports are completed for
+                                    any schools that require final updates
+                                  </td>
+                                  <td>
+                                    <v-checkbox
+                                      v-model="selectedConfirmations"
+                                      value="REQUIRED_CONFIRMATION_2"
+                                      hide-details
+                                    ></v-checkbox>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </v-table>
+                          </v-card>
+                        </template>
+                        <template #batchDetails>
+                          <v-data-table
+                            :items="[
+                              {
+                                label: 'Run Type',
+                                value: 'Archive School Reports Process',
+                              },
+                            ]"
+                            hide-default-header
+                            hide-default-footer
+                          >
+                          </v-data-table>
+                        </template>
+                      </ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
 
