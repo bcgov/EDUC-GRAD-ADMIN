@@ -2,16 +2,12 @@
   <v-alert v-if="warning" type="info" dense text border="left" color="orange">
     {{ warning }}
   </v-alert>
-  <v-card
-    title="Batch Details"
-    class="text-h5 font-weight-regular bg-blue-grey"
-  >
-    <slot name="batchDetails"></slot>
+  <v-card title="Batch Details" class="">
+    <v-card-text>
+      <slot name="batchDetails"></slot>
+    </v-card-text>
   </v-card>
-  <v-card
-    :title="'Group - ' + getGroup"
-    class="text-h5 font-weight-regular bg-blue-grey"
-  >
+  <v-card :title="'Group - ' + getGroup" class="">
     <v-card-text>
       <v-row
         class="pl-3"
@@ -103,10 +99,7 @@
 
   <slot name="confirmations"></slot>
 
-  <v-card
-    title="Select Batch Run Time"
-    class="text-h5 font-weight-regular bg-blue-grey"
-  >
+  <v-card title="Select Batch Run Time" class="">
     <div>
       <v-radio-group v-model="batchRunTime">
         <v-radio label="Run Now" value="Run Now"></v-radio>
@@ -202,7 +195,7 @@ export default {
   validations() {
     return {
       batchRunTime: {
-        required: helpers.withMessage("This field cannot be empty", required),
+        required: helpers.withMessage("Select a run time", required),
         RunLaterScheduleSet: helpers.withMessage(
           "Schedule date and time not set",
           (value) => {
