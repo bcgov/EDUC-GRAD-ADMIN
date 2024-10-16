@@ -1,6 +1,10 @@
 <template>
   <div class="graduation-status">
-    <v-btn @click="editGradStatus" :disabled="allSet">
+    <v-btn
+      v-if="hasPermissions('STUDENT', 'updateGradStatus')"
+      @click="editGradStatus"
+      :disabled="allSet"
+    >
       Edit
       <v-progress-circular v-if="searchLoading" indeterminate color="green">
       </v-progress-circular>
@@ -552,6 +556,7 @@ export default {
       allowUpdateGradStatus: "allowUpdateGradStatus",
       allowUpdateRecalcFlags: "allowUpdateRecalcFlags",
     }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
     studentGradeChange() {
       return this.editedGradStatus.studentGrade;
     },

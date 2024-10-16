@@ -2,9 +2,11 @@ import { defineStore } from "pinia";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import StudentService from "@/services/StudentService.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export const useStudentStore = defineStore("student", {
   namespaced: true,
   state: () => ({
+    snackbarStore: useSnackbarStore(),
     pen: "",
     id: "",
     advancedSearchProps: "",
@@ -77,11 +79,7 @@ export const useStudentStore = defineStore("student", {
             // eslint-disable-next-line
             console.log(error);
           } else {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title: "Service ERROR" + error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
+            this.snackbarStore.showSnackbar(error.response, "error", 5000);
           }
         });
     },
