@@ -6,9 +6,9 @@
       needed), the User must select an "Undo Completion" reason. The list of
       Undo Completion reasons are maintained in this table.
     </p>
-    <DisplayTable
-      v-bind:items="ungradReasons"
-      v-bind:fields="ungradReasonsFields"
+    <v-data-table
+      :items="ungradReasons"
+      :headers="ungradReasonsFields"
       id=""
       showFilter="true"
     >
@@ -18,19 +18,16 @@
       <template v-slot:item.expiryDate="{ item }">
         {{ $filters.formatSimpleDate(item.expiryDate) }}
       </template>
-    </DisplayTable>
+    </v-data-table>
   </div>
 </template>
 
 <script>
-import DisplayTable from "@/components/DisplayTable.vue";
 import StudentService from "@/services/StudentService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
-  name: "UngradReasons",
-  components: {
-    DisplayTable: DisplayTable,
-  },
+  name: "Undo Completion Reasons",
+  components: {},
   created() {
     StudentService.getUngradReasons()
       .then((response) => {
