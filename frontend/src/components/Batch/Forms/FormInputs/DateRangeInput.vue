@@ -16,24 +16,50 @@
         <v-row v-if="includeStudents === 'Date Range'">
           <v-col sm="6">
             <v-text-field
-              v-model="gradDateFrom"
               label="Graduation Date From:"
-              placeholder="yyyy-mm-dd"
+              class="form__input"
+              id="datepicker-birthdate-from"
+              v-model="gradDateFrom"
+              type="date"
+              placeholder="YYYY-MM-DD"
+              max="9999-12-30"
+              :date-format-options="{ year: '4-digit' }"
+              autocomplete="off"
+              tabindex="6"
               @blur="validateAndFormatDate('gradDateFrom')"
               @input="debouncedCheckAndConvertDate('from')"
             ></v-text-field>
+            <div
+              v-if="
+                gradDateTo &&
+                gradDateFrom &&
+                new Date(gradDateFrom) > new Date(gradDateTo)
+              "
+            >
+              <span class="text-red"
+                >Start Date cannot be before the end date.</span
+              >
+            </div>
             <div v-if="v$.gradDateFrom.$invalid && !v$.gradDateFrom.$pending">
               <span class="text-red">Start Date is invalid or required.</span>
             </div>
           </v-col>
           <v-col sm="6">
             <v-text-field
-              v-model="gradDateTo"
               label="Graduation Date To:"
-              placeholder="yyyy-mm-dd"
+              class="form__input"
+              id="datepicker-birthdate-from"
+              v-model="gradDateTo"
+              type="date"
+              placeholder="YYYY-MM-DD"
+              max="9999-12-30"
+              :date-format-options="{ year: '4-digit' }"
+              autocomplete="off"
+              tabindex="6"
               @blur="validateAndFormatDate('gradDateTo')"
               @input="debouncedCheckAndConvertDate('to')"
             ></v-text-field>
+
             <div
               v-if="
                 gradDateTo &&
