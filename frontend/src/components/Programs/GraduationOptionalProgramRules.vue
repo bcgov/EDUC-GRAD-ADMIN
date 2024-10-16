@@ -17,7 +17,7 @@
           <v-dialog max-width="600px">
             <template v-slot:default="{ isActive }">
               <v-card>
-                <v-card-title>
+                <v-card-title class="mb-12">
                   {{
                     (item.optionalProgramRequirementCode.requirementCategory ===
                     "C"
