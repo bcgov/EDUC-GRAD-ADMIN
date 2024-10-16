@@ -556,13 +556,20 @@ export default {
           this.getBatchRequestCrontime
         );
         if (response) {
-          this.snackbarStore.showSnackbar(
-            "Batch " +
-              response.data.batchId +
-              "- User distribution batch request submitted",
-            "success",
-            5000
-          );
+          if (this.getBatchRequestCrontime) {
+            this.snackbarStore.showSnackbar(
+              "User distribution batch request has been successfully scheduled",
+              5000
+            );
+          } else {
+            this.snackbarStore.showSnackbar(
+              "Batch " +
+                response.data.batchId +
+                "- User distribution batch request submitted",
+              "success",
+              5000
+            );
+          }
         }
         this.closeDialogAndResetForm();
         this.updateDashboards();

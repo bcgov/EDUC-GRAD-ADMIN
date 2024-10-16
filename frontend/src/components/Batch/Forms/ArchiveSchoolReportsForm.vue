@@ -368,14 +368,22 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
+
+        if (this.getBatchRequestCrontime) {
+          this.snackbarStore.showSnackbar(
+            "Archive School Reports Process has been successfully scheduled",
+            5000
+          );
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Batch " +
+              response.data.batchId +
+              "- Archive School Reports Process submitted",
+            "success",
+            5000
+          );
+        }
         this.closeDialogAndResetForm();
-        this.snackbarStore.showSnackbar(
-          "Batch " +
-            response.data.batchId +
-            "- Archive School Reports Process submitted",
-          "success",
-          5000
-        );
         this.setActiveTab("batchRuns");
         this.updateDashboards();
       } catch (error) {

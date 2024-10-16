@@ -402,14 +402,22 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
+
+        if (this.getBatchRequestCrontime) {
+          this.snackbarStore.showSnackbar(
+            "Archive student batch process has been successfully scheduled",
+            5000
+          );
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Batch " +
+              response.data.batchId +
+              "- Archive student batch process submitted",
+            "success",
+            5000
+          );
+        }
         this.closeDialogAndResetForm();
-        this.snackbarStore.showSnackbar(
-          "Batch " +
-            response.data.batchId +
-            "- Archive student batch process submitted",
-          "success",
-          5000
-        );
         this.setActiveTab("batchRuns");
         this.updateDashboards();
       } catch (error) {

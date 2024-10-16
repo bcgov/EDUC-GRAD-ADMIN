@@ -14,7 +14,7 @@ export default {
       scheduledRequest.blankPayLoad = null;
       scheduledRequest.payload = request;
       this.addScheduledJob(scheduledRequest);
-      return
+      return 
     }else{
       return ApiService.apiAxios.post('/api/v1/batch/specialrun', request);
     }
