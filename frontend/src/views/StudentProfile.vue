@@ -218,6 +218,7 @@
         </v-card>
       </div>
     </div>
+    <!-- projectedGradStatusWithFinalMarksDialog Modal -->
     <v-dialog
       v-model="projectedGradStatusWithFinalMarksDialog"
       max-width="1200px"
@@ -228,21 +229,21 @@
         </v-card-title>
         <v-card-text>
           <v-alert
-            v-if="projectedGradStatus && projectedGradStatus.gradStatus"
+            v-if="projectedGradStatus && projectedGradStatus?.gradStatus"
             type="info"
             dense
             outlined
           >
-            {{ projectedGradStatus.gradMessage }}
+            {{ projectedGradStatus?.gradMessage }}
           </v-alert>
-          <v-row v-if="projectedGradStatus && projectedGradStatus.gradStatus">
+          <v-row v-if="projectedGradStatus && projectedGradStatus?.gradStatus">
             <v-col cols="6">
               <v-card>
                 <v-card-title>Requirements met</v-card-title>
-                <v-card-text>
+                <v-card-text v-if="projectedGradStatus?.requirementsMet">
                   <v-data-table
                     dense
-                    :items="projectedGradStatus.requirementsMet"
+                    :items="projectedGradStatus?.requirementsMet"
                     :headers="requirementsMetFields"
                     class="elevation-1"
                   />
@@ -252,10 +253,10 @@
             <v-col cols="6">
               <v-card>
                 <v-card-title>Noncompletion reasons</v-card-title>
-                <v-card-text v-if="projectedGradStatus.nonGradReasons">
+                <v-card-text v-if="projectedGradStatus?.nonGradReasons">
                   <v-data-table
                     dense
-                    :items="projectedGradStatus.nonGradReasons"
+                    :items="projectedGradStatus?.nonGradReasons"
                     :headers="noncompletionReasonsFields"
                     class="elevation-1"
                   />
@@ -270,21 +271,26 @@
           <div v-if="projectedOptionalGradStatus">
             <div
               v-for="optionalProgram in projectedOptionalGradStatus"
-              :key="optionalProgram.optionalProgramCode"
+              :key="optionalProgram?.optionalProgramCode"
             >
               <h3 class="optionalProgramName">
-                {{ optionalProgram.optionalProgramName }}
+                {{ optionalProgram?.optionalProgramName }}
               </h3>
               <v-row>
                 <v-col cols="6">
                   <v-card>
                     <v-card-title>Requirements met</v-card-title>
-                    <v-card-text>
+                    <v-card-text
+                      v-if="
+                        optionalProgram?.studentOptionalProgramData
+                          ?.optionalRequirementsMet
+                      "
+                    >
                       <v-data-table
                         dense
                         :items="
-                          optionalProgram.studentOptionalProgramData
-                            .optionalRequirementsMet
+                          optionalProgram?.studentOptionalProgramData
+                            ?.optionalRequirementsMet
                         "
                         :headers="[
                           { text: 'Rule', value: 'rule', class: 'px-0 py-2' },
@@ -304,15 +310,15 @@
                     <v-card-title>Requirements not met</v-card-title>
                     <v-card-text
                       v-if="
-                        optionalProgram.studentOptionalProgramData
-                          .optionalNonGradReasons
+                        optionalProgram?.studentOptionalProgramData
+                          ?.optionalNonGradReasons
                       "
                     >
                       <v-data-table
                         dense
                         :items="
-                          optionalProgram.studentOptionalProgramData
-                            .optionalNonGradReasons
+                          optionalProgram?.studentOptionalProgramData
+                            ?.optionalNonGradReasons
                         "
                         class="elevation-1"
                       />
@@ -342,23 +348,25 @@
 
         <v-card-text>
           <v-alert type="info" outlined>
-            {{ projectedGradStatusWithRegistrations.gradMessage }}
+            {{ projectedGradStatusWithRegistrations?.gradMessage }}
           </v-alert>
 
           <v-row
             v-if="
               projectedGradStatusWithRegistrations &&
-              projectedGradStatusWithRegistrations.gradStatus
+              projectedGradStatusWithRegistrations?.gradStatus
             "
           >
             <v-col cols="6">
               <v-card>
                 <v-card-title>Requirements met</v-card-title>
-                <v-card-text>
+                <v-card-text
+                  v-if="projectedGradStatusWithRegistrations?.requirementsMet"
+                >
                   <v-data-table
                     dense
                     :items="
-                      projectedGradStatusWithRegistrations.requirementsMet
+                      projectedGradStatusWithRegistrations?.requirementsMet
                     "
                     :headers="requirementsMetFields"
                     class="elevation-1"
@@ -366,23 +374,23 @@
                     <template v-slot:item.rule="{ item }">
                       <div
                         :style="
-                          item.projected
+                          item?.projected
                             ? 'background-color: #eaf2fa; width: 100%'
                             : ''
                         "
                       >
-                        {{ item.rule }}
+                        {{ item?.rule }}
                       </div>
                     </template>
                     <template v-slot:item.description="{ item }">
                       <div
                         :style="
-                          item.projected
+                          item?.projected
                             ? 'background-color: #eaf2fa; width: 100%'
                             : ''
                         "
                       >
-                        {{ item.description }} (Projected)
+                        {{ item?.description }} (Projected)
                       </div>
                     </template>
                   </v-data-table>
@@ -392,15 +400,20 @@
             <v-col cols="6">
               <v-card>
                 <v-card-title>Noncompletion reasons</v-card-title>
-                <v-card-text>
+                <v-card-text
+                  v-if="projectedGradStatusWithRegistrations?.nonGradReasons"
+                >
                   <v-data-table
                     dense
-                    v-if="projectedGradStatusWithRegistrations.nonGradReasons"
-                    :items="projectedGradStatusWithRegistrations.nonGradReasons"
+                    :items="
+                      projectedGradStatusWithRegistrations?.nonGradReasons
+                    "
                     :headers="noncompletionReasonsFields"
                     class="elevation-1"
                   />
-                  <div v-else>All program requirements have been met</div>
+                </v-card-text>
+                <v-card-text v-else>
+                  All program requirements have been met
                 </v-card-text>
               </v-card>
             </v-col>
@@ -409,21 +422,26 @@
           <div v-if="projectedOptionalGradStatus">
             <div
               v-for="optionalProgram in projectedOptionalGradStatus"
-              :key="optionalProgram.optionalProgramCode"
+              :key="optionalProgram?.optionalProgramCode"
             >
               <h3 class="optionalProgramName">
-                {{ optionalProgram.optionalProgramName }}
+                {{ optionalProgram?.optionalProgramName }}
               </h3>
               <v-row>
                 <v-col cols="6">
                   <v-card>
                     <v-card-title>Requirements met</v-card-title>
-                    <v-card-text>
+                    <v-card-text
+                      v-if="
+                        optionalProgram?.studentOptionalProgramData
+                          ?.optionalRequirementsMet
+                      "
+                    >
                       <v-data-table
                         dense
                         :items="
-                          optionalProgram.studentOptionalProgramData
-                            .optionalRequirementsMet
+                          optionalProgram?.studentOptionalProgramData
+                            ?.optionalRequirementsMet
                         "
                         :headers="[
                           { text: 'Rule', value: 'rule', class: 'px-0 py-2' },
@@ -441,21 +459,24 @@
                 <v-col cols="6">
                   <v-card>
                     <v-card-title>Requirements not met</v-card-title>
-                    <v-card-text>
+                    <v-card-text
+                      v-if="
+                        optionalProgram?.studentOptionalProgramData
+                          ?.optionalNonGradReasons
+                      "
+                    >
                       <v-data-table
                         dense
-                        v-if="
-                          optionalProgram.studentOptionalProgramData
-                            .optionalNonGradReasons
-                        "
                         :items="
                           optionalProgram.studentOptionalProgramData
                             .optionalNonGradReasons
                         "
                         class="elevation-1"
                       />
-                      <div v-else>All requirements have been met</div>
                     </v-card-text>
+                    <v-card-text v-else
+                      >All requirements have been met</v-card-text
+                    >
                   </v-card>
                 </v-col>
               </v-row>

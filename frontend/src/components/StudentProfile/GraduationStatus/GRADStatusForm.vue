@@ -1,7 +1,7 @@
 <template>
   <div class="graduation-status">
     <v-btn
-      v-if="allowUpdateGradStatus"
+      v-if="hasPermissions('STUDENT', 'updateGradStatus')"
       @click="editGradStatus"
       :disabled="allSet"
     >
@@ -556,6 +556,7 @@ export default {
       allowUpdateGradStatus: "allowUpdateGradStatus",
       allowUpdateRecalcFlags: "allowUpdateRecalcFlags",
     }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
     studentGradeChange() {
       return this.editedGradStatus.studentGrade;
     },
