@@ -272,14 +272,23 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
+
+        if (this.getBatchRequestCrontime) {
+          this.snackbarStore.showSnackbar(
+            "Year-End Credentials and Transcript Distribution Run has been successfully scheduled",
+            5000
+          );
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Batch " +
+              response.data.batchId +
+              "- Year-End Credentials and Transcript Distribution Run submitted",
+            "success",
+            5000
+          );
+        }
         this.closeDialogAndResetForm();
-        this.snackbarStore.showSnackbar(
-          "Batch " +
-            response.data.batchId +
-            "- Year-End Credentials and Transcript Distribution Run submitted",
-          "success",
-          5000
-        );
+
         this.setActiveTab("batchRuns");
         this.updateDashboards();
       } catch (error) {

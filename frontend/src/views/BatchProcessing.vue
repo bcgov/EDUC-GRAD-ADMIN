@@ -2,16 +2,16 @@
   <div class="batch-processing-view">
     <h1>Batch Processing</h1>
     <div>
-      <v-btn
+      <!-- <v-btn
         class="position-absolute"
         style="z-index: 10; right: 0; margin-right: 40px"
         color="transparent"
         small
         @click="updateDashboards"
       >
-        <v-icon color="white" icon="mdi-refresh" size="large"></v-icon>
+        <v-icon icon="mdi-refresh" size="large"></v-icon>
         Update
-      </v-btn>
+      </v-btn> -->
       <v-tabs v-model="activeTab" bg-color="transparent">
         <v-tab
           value="batchRuns"
@@ -45,6 +45,12 @@
           value="newBatchRequest"
           >New Batch Request</v-tab
         >
+
+        <v-tab @click.prevent class="ml-auto">
+          <v-btn @click.stop="updateDashboards">
+            Update <v-icon>mdi-refresh</v-icon>
+          </v-btn>
+        </v-tab>
       </v-tabs>
 
       <v-tabs-window v-model="getActiveTab">
@@ -402,12 +408,6 @@ export default {
       .catch((error) => {
         // Handle errors during the asynchronous call
         console.error("Error fetching batch job types:", error);
-
-        // this.$bvToast.toast("ERROR " + error.response.statusText, {
-        //   title: "ERROR " + error.response.status,
-        //   variant: "danger",
-        //   noAutoHide: true,
-        // });
       });
   },
   methods: {

@@ -2,43 +2,61 @@
   <div>
     <div v-if="adminDashboardLoading">LOADING</div>
     <div v-if="!scheduledJobs.length">No Scheduled Jobs</div>
-    <DisplayTable
+
+    <v-data-table
       title="Job/Runs"
       :items="sortedScheduledJobs"
-      :fields="scheduledJobFields"
+      :headers="scheduledJobFields"
       id="id"
       :showFilter="false"
       :sortBy="[{ key: 'status', order: 'desc' }]"
-      :delete="{
-        disable: {
-          condition: 'OR',
-          criteria: [
-            {
-              field: 'status',
-              value: 'COMPLETED',
-            },
-          ],
-        },
-        label: 'Cancel',
-        action: 'removeScheduledJobs',
-      }"
       store="batchprocessing"
     >
-      <template v-slot:item.jobParameters="{ value }">
+      <!-- Slot for job parameters display -->
+      <template v-slot:item.jobParameters="{ item }">
         {{ item.jobParameters }}
         <v-btn
           v-if="item.status == 'COMPLETED'"
           :id="'batch-job-id-btn' + item.jobExecutionId"
-          size="xs"
+          small
         >
           {{ item.jobExecutionId }}
         </v-btn>
 
-        <v-btn v-else disabled size="xs">
+        <v-btn v-else disabled small>
           {{ item.jobExecutionId }}
         </v-btn>
       </template>
 
+      <!-- Slot for actions (delete button) -->
+      <template v-slot:item.actions="{ item }">
+        <v-btn
+          variant="plain"
+          v-if="item.status == 'QUEUED'"
+          color="error"
+          @click="openDeleteDialog(item)"
+          ><v-icon>mdi-delete</v-icon></v-btn
+        >
+
+        <!-- Dialog for delete confirmation -->
+        <v-dialog v-model="deleteDialog" max-width="400">
+          <v-card>
+            <v-card-title class="headline">Delete Job</v-card-title>
+            <v-card-text
+              >Are you sure you want to delete job "{{
+                selectedJob.jobName
+              }}"?</v-card-text
+            >
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn text @click="deleteDialog = false">Cancel</v-btn>
+              <v-btn color="error" @click="confirmDelete">Delete</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </template>
+
+      <!-- Expanded row content -->
       <template v-slot:expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length">
@@ -48,48 +66,52 @@
                   v-for="(value, key) in item.jobParameters.payload"
                   :key="key"
                 >
-                  <span v-if="value != null"
-                    ><span v-if="value.length != 0"
+                  <span v-if="value != null">
+                    <span v-if="value.length != 0"
                       >{{ key }} : {{ value }}</span
-                    ></span
-                  >
+                    >
+                  </span>
                 </div>
               </v-card-text>
             </v-card>
           </td>
         </tr>
       </template>
-    </DisplayTable>
+    </v-data-table>
+
+    <!-- Snackbar for notifications -->
+    <v-snackbar
+      v-model="snackbar.show"
+      :color="snackbar.color"
+      :timeout="snackbar.timeout"
+    >
+      {{ snackbar.message }}
+      <v-btn text @click="snackbar.show = false">Close</v-btn>
+    </v-snackbar>
   </div>
 </template>
+
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
-import { isProxy, toRaw } from "vue";
 import { useBatchProcessingStore } from "../../store/modules/batchprocessing";
 import { mapState, mapActions } from "pinia";
+
 export default {
   components: {
-    DisplayTable: DisplayTable,
+    DisplayTable,
   },
-  data: function () {
+  data() {
     return {
       adminDashboardLoading: false,
       scheduledJobFields: [
         {
           key: "data-table-expand",
           title: "",
-
-          sortable: true,
+          sortable: false,
           class: "text-left",
         },
-
-        {
-          key: "id",
-          title: "ID",
-          sortable: true,
-          class: "text-left",
-        },
+        { key: "id", title: "ID", sortable: true, class: "text-left" },
         {
           key: "jobName",
           title: "Job Name",
@@ -102,78 +124,75 @@ export default {
           sortable: true,
           class: "text-left",
         },
-
         {
           key: "createUser",
           title: "Scheduled By",
           sortable: true,
           class: "text-left",
         },
+        { key: "status", title: "Status", sortable: true, class: "text-left" },
         {
-          key: "status",
-          title: "Status",
-          sortable: true,
+          key: "actions",
+          title: "Actions",
+          sortable: false,
           class: "text-left",
-        },
-        {
-          key: "delete",
-          title: "Delete",
-          sortable: true,
-          class: "text-left",
-        },
+        }, // Added actions column
       ],
+      deleteDialog: false, // Controls dialog visibility
+      selectedJob: null, // Holds the job selected for deletion
+      snackbar: {
+        show: false,
+        message: "",
+        color: "",
+        timeout: 3000, // Snackbar timeout in milliseconds
+      },
     };
   },
-  created() {},
   computed: {
     ...mapState(useBatchProcessingStore, {
       scheduledJobs: "getScheduledBatchRuns",
     }),
     sortedScheduledJobs() {
-      // Sort scheduledJobs with QUEUED status at the top
       return [...this.scheduledJobs].sort((a, b) => {
-        if (a.status === "QUEUED" && b.status !== "QUEUED") {
-          return -1; // Move QUEUED to the top
-        } else if (a.status !== "QUEUED" && b.status === "QUEUED") {
-          return 1; // Move other statuses below QUEUED
-        }
-        return 0; // Maintain order if both have same status
+        if (a.status === "QUEUED" && b.status !== "QUEUED") return -1;
+        if (a.status !== "QUEUED" && b.status === "QUEUED") return 1;
+        return 0;
       });
     },
   },
   methods: {
-    ...mapActions(useBatchProcessingStore, ["setScheduledBatchJobs"]),
+    ...mapActions(useBatchProcessingStore, [
+      "setScheduledBatchJobs",
+      "removeScheduledJobs",
+    ]),
 
-    addScheduledJob(request) {
-      BatchProcessingService.addScheduledJob(request)
+    openDeleteDialog(item) {
+      this.selectedJob = item;
+      this.deleteDialog = true;
+    },
+
+    confirmDelete() {
+      this.removeScheduledJobs(this.selectedJob.id)
         .then(() => {
-          //update the admin dashboard
-          this.$bvToast.toast("Request has successfully been scheduled", {
-            title: "SCHEDULING USER REQUEST",
-            variant: "success",
-            noAutoHide: true,
-          });
+          this.showSnackbar("Job successfully cancelled", "success");
         })
-        .catch((error) => {
-          if (error) {
-            this.$bvToast.toast("There was an error scheduling your request", {
-              title: "SCHEDULING ERROR",
-              variant: "success",
-              noAutoHide: true,
-            });
-          }
+        .catch(() => {
+          this.showSnackbar("Error deleting job", "error");
+        })
+        .finally(() => {
+          this.deleteDialog = false;
         });
     },
-    makeToast(message, variant) {
-      this.$bvToast.toast(message, {
-        title: message,
-        variant: variant,
-        noAutoHide: true,
-      });
+
+    showSnackbar(message, color) {
+      this.snackbar.message = message;
+      this.snackbar.color = color;
+      this.snackbar.show = true;
     },
   },
 };
 </script>
+
 <style scoped>
 input {
   border-radius: 0px;

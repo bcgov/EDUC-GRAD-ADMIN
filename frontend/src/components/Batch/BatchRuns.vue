@@ -3,187 +3,173 @@
     <v-row>
       <!-- First Column (col-5 for medium screens, col-12 for small screens) -->
       <v-col :cols="12" :md="isBatchShowing || isErrorShowing ? 7 : 12">
-        <v-card>
-          <v-card-text>
-            <DisplayTable
-              title="Job/Runs"
-              :items="batchRuns"
-              :fields="batchRunsFields"
-              id="id"
-              :showFilter="false"
-              pagination="true"
-              class="mt-5"
+        <DisplayTable
+          title="Job/Runs"
+          :items="batchRuns"
+          :fields="batchRunsFields"
+          id="id"
+          :showFilter="false"
+          pagination="true"
+          class="mt-5"
+        >
+          <template v-slot:item.data-table-expand="{ item }"> </template>
+          <template v-slot:item.jobDownload="{ item }">
+            <v-btn
+              size="small"
+              v-if="
+                (item?.jobParameters?.payload?.localDownload === 'Y' ||
+                  (item?.jobParameters?.transmissionType &&
+                    item?.jobParameters?.transmissionType === 'FTP')) &&
+                item.status === 'COMPLETED'
+              "
+              :disabled="item.status !== 'COMPLETED'"
+              @click="
+                downloadDISTRUNUSER(
+                  item.jobExecutionId,
+                  item.jobParameters.transmissionType
+                )
+              "
             >
-              <template v-slot:item.data-table-expand="{ item }"> </template>
-              <template v-slot:item.jobDownload="{ item }">
+              <v-icon>mdi-download</v-icon>
+            </v-btn>
+          </template>
+          <template v-slot:item.updateDate="{ item }">
+            {{ item.updateDate.replace("T", ", ") }}
+          </template>
+          <template v-slot:item.jobExecutionId="{ item }">
+            <v-menu
+              :close-on-content-click="true"
+              location="end"
+              :width="item.jobParameters ? 600 : 350"
+            >
+              <template v-slot:activator="{ props }">
                 <v-btn
-                  size="small"
-                  v-if="
-                    (item?.jobParameters?.payload?.localDownload === 'Y' ||
-                      (item?.jobParameters?.transmissionType &&
-                        item?.jobParameters?.transmissionType === 'FTP')) &&
-                    item.status === 'COMPLETED'
-                  "
-                  :disabled="item.status !== 'COMPLETED'"
-                  @click="
-                    downloadDISTRUNUSER(
-                      item.jobExecutionId,
-                      item.jobParameters.transmissionType
-                    )
-                  "
+                  variant="plain"
+                  v-bind="props"
+                  class="no-outline-btn v-btn-link"
                 >
-                  <v-icon>mdi-download</v-icon>
+                  {{ item.jobExecutionId }}
                 </v-btn>
               </template>
-              <template v-slot:item.updateDate="{ item }">
-                {{ item.updateDate.replace("T", ", ") }}
-              </template>
-              <template v-slot:item.jobExecutionId="{ item }">
-                <v-menu
-                  :close-on-content-click="true"
-                  location="end"
-                  :width="item.jobParameters ? 600 : 350"
-                >
-                  <template v-slot:activator="{ props }">
-                    <v-btn
-                      variant="plain"
-                      v-bind="props"
-                      class="no-outline-btn v-btn-link"
-                    >
-                      {{ item.jobExecutionId }}
-                    </v-btn>
-                  </template>
-                  <v-card
-                    max-width="500"
-                    :title="'Batch Job #' + item.jobExecutionId"
+              <v-card
+                max-width="500"
+                :title="'Batch Job #' + item.jobExecutionId"
+              >
+                <v-list>
+                  <v-list-item
+                    @click="setBatchId(item.jobExecutionId, 'batch')"
                   >
-                    <v-list>
-                      <v-list-item
-                        @click="setBatchId(item.jobExecutionId, 'batch')"
-                      >
-                        <v-list-item-title>
-                          <v-icon>mdi-play-circle-outline</v-icon> View Batch
-                          Results</v-list-item-title
+                    <v-list-item-title>
+                      <v-icon>mdi-play-circle-outline</v-icon> View Batch
+                      Results</v-list-item-title
+                    >
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-title>
+                      <div class="" v-if="item.jobType != 'DISTRUNUSER'">
+                        <v-btn
+                          :id="'batch-job-id-rerun-btn' + item.jobExecutionId"
+                          :disabled="
+                            item.jobType != 'TVRRUN' && item.jobType != 'REGALG'
+                          "
+                          class=""
+                          variant="link"
+                          size="xs"
+                          @click="rerunBatch(item.jobExecutionId)"
                         >
-                      </v-list-item>
-                      <v-list-item>
-                        <v-list-item-title>
-                          <div class="" v-if="item.jobType != 'DISTRUNUSER'">
-                            <v-btn
-                              :id="
-                                'batch-job-id-rerun-btn' + item.jobExecutionId
-                              "
-                              :disabled="
-                                item.jobType != 'TVRRUN' &&
-                                item.jobType != 'REGALG'
-                              "
-                              class=""
-                              variant="link"
-                              size="xs"
-                              @click="rerunBatch(item.jobExecutionId)"
-                            >
-                              <v-icon>mdi-play-circle-outline</v-icon>
-                            </v-btn>
-                            Rerun this batch for
-                            {{
-                              item.expectedStudentsProcessed != 0
-                                ? item.expectedStudentsProcessed
-                                : ""
-                            }}
-                            students
-                          </div>
-                        </v-list-item-title>
-                      </v-list-item>
-                      <v-list-item v-if="item.failedStudentsProcessed > 0">
-                        <v-list-item-title>
-                          <div>
-                            <v-btn
-                              :id="
-                                'batch-job-id-rerun-btn' + item.jobExecutionId
-                              "
-                              class=""
-                              variant="link"
-                              size="xs"
-                              @click="rerunBatch(item.jobExecutionId)"
-                            >
-                              <v-icon>mdi-play-circle-outline</v-icon>
-                            </v-btn>
-                            Rerun
-                            {{
-                              item.failedStudentsProcessed != 0
-                                ? item.failedStudentsProcessed
-                                : ""
-                            }}
-                            students with errors
-                          </div>
-                        </v-list-item-title>
-                      </v-list-item>
-                      <v-list-item
-                        v-if="
-                          item.jobType == 'TVRRUN' || item.jobType == 'REGALG'
-                        "
-                      >
-                        <v-list-item-title>
-                          <div>
-                            <v-btn
-                              :id="
-                                'batch-job-id-rerun-btn' + item.jobExecutionId
-                              "
-                              class=""
-                              variant="link"
-                              size="xs"
-                              @click="
-                                rerunBatchSchoolReports(item.jobExecutionId)
-                              "
-                            >
-                              <v-icon>mdi-play-circle-outline</v-icon>
-                            </v-btn>
-                            Rerun School Reports
-                          </div>
-                        </v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-
-                    <v-divider></v-divider>
-                    <pre
-                      v-if="item.jobParameters"
-                      style="height: 200px; overflow-y: scroll"
-                    >
-                      {{ JSON.stringify(item.jobParameters, null, "\t") }}
-                    </pre>
-                  </v-card>
-                </v-menu>
-
-                <v-popover
-                  :target="'batch-job-id-btn' + item.jobExecutionId"
-                  triggers="focus"
-                  :ref="'popover-' + item.jobExecutionId"
-                  class="w-40"
-                >
-                </v-popover>
-              </template>
-
-              <template v-slot:item.failedStudentsProcessed="{ item }">
-                <div class="text-center">
-                  <v-btn
-                    v-if="item.failedStudentsProcessed != 0"
-                    text
-                    small
-                    variant="plain"
-                    class="no-outline-btn v-btn-link"
-                    @click="setBatchId(item.jobExecutionId, 'error')"
+                          <v-icon>mdi-play-circle-outline</v-icon>
+                        </v-btn>
+                        Rerun this batch for
+                        {{
+                          item.expectedStudentsProcessed != 0
+                            ? item.expectedStudentsProcessed
+                            : ""
+                        }}
+                        students
+                      </div>
+                    </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item v-if="item.failedStudentsProcessed > 0">
+                    <v-list-item-title>
+                      <div>
+                        <v-btn
+                          :id="'batch-job-id-rerun-btn' + item.jobExecutionId"
+                          class=""
+                          variant="link"
+                          size="xs"
+                          @click="rerunBatch(item.jobExecutionId)"
+                        >
+                          <v-icon>mdi-play-circle-outline</v-icon>
+                        </v-btn>
+                        Rerun
+                        {{
+                          item.failedStudentsProcessed != 0
+                            ? item.failedStudentsProcessed
+                            : ""
+                        }}
+                        students with errors
+                      </div>
+                    </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    v-if="item.jobType == 'TVRRUN' || item.jobType == 'REGALG'"
                   >
-                    {{ item.failedStudentsProcessed }}
-                  </v-btn>
+                    <v-list-item-title>
+                      <div>
+                        <v-btn
+                          :id="'batch-job-id-rerun-btn' + item.jobExecutionId"
+                          class=""
+                          variant="link"
+                          size="xs"
+                          @click="rerunBatchSchoolReports(item.jobExecutionId)"
+                        >
+                          <v-icon>mdi-play-circle-outline</v-icon>
+                        </v-btn>
+                        Rerun School Reports
+                      </div>
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
 
-                  <div v-else>
-                    {{ item.failedStudentsProcessed }}
-                  </div>
-                </div>
-              </template>
-            </DisplayTable>
-          </v-card-text>
-        </v-card>
+                <v-divider></v-divider>
+                <pre
+                  v-if="item.jobParameters"
+                  style="height: 200px; overflow-y: scroll"
+                >
+                      {{ JSON.stringify(item.jobParameters, null, "\t") }}
+                    </pre
+                >
+              </v-card>
+            </v-menu>
+
+            <v-popover
+              :target="'batch-job-id-btn' + item.jobExecutionId"
+              triggers="focus"
+              :ref="'popover-' + item.jobExecutionId"
+              class="w-40"
+            >
+            </v-popover>
+          </template>
+
+          <template v-slot:item.failedStudentsProcessed="{ item }">
+            <div class="text-center">
+              <v-btn
+                v-if="item.failedStudentsProcessed != 0"
+                text
+                small
+                variant="plain"
+                class="no-outline-btn v-btn-link"
+                @click="setBatchId(item.jobExecutionId, 'error')"
+              >
+                {{ item.failedStudentsProcessed }}
+              </v-btn>
+
+              <div v-else>
+                {{ item.failedStudentsProcessed }}
+              </div>
+            </div>
+          </template>
+        </DisplayTable>
       </v-col>
       <v-col cols="12" md="5" v-if="isBatchShowing">
         <v-card>

@@ -285,12 +285,23 @@ export default {
           this.getPsiTrasmissionMode,
           this.getBatchRequestCrontime
         );
+
+        if (this.getBatchRequestCrontime) {
+          this.snackbarStore.showSnackbar(
+            "PSI Run FTP / Paper has been successfully scheduled",
+            5000
+          );
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Batch " +
+              response.data.batchId +
+              "- PSI Run FTP / Paper submitted",
+            "success",
+            5000
+          );
+        }
         this.closeDialogAndResetForm();
-        this.snackbarStore.showSnackbar(
-          "Batch " + response.data.batchId + "- PSI Run FTP / Paper submitted",
-          "success",
-          5000
-        );
+
         this.setActiveTab("batchRuns");
         this.updateDashboards();
       } catch (error) {

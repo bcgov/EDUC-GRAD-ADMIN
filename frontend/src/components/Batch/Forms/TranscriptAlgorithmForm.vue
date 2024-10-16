@@ -316,13 +316,21 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
-        this.closeDialogAndResetForm();
+
         this.activeTab = "batchRuns";
-        this.snackbarStore.showSnackbar(
-          "Transcript verification report request submitted",
-          "success",
-          5000
-        );
+        if (this.getBatchRequestCrontime) {
+          this.snackbarStore.showSnackbar(
+            "Transcript verification report has been successfully scheduled",
+            5000
+          );
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Transcript verification report request submitted",
+            "success",
+            5000
+          );
+        }
+        this.closeDialogAndResetForm();
       } catch (error) {
         // handle the error and show the notification
         this.snackbarStore.showSnackbar(

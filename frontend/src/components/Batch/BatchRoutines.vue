@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div>
     <v-data-table
       :headers="scheduledRoutinesFields"
       :items="batchRoutines"
@@ -45,7 +45,7 @@
       {{ snackbarMessage }}
       <v-btn text @click="snackbarVisible = false">Close</v-btn>
     </v-snackbar>
-  </v-container>
+  </div>
 </template>
 
 <script>

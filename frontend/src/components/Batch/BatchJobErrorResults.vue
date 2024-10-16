@@ -1,14 +1,7 @@
 <template>
   <div>
     <v-progress-circular model-value="batchLoading"></v-progress-circular>
-    <v-progress-circular
-      v-if="isLoading"
-      indeterminate
-      color="primary"
-      size="64"
-    >
-      Loading...
-    </v-progress-circular>
+
     <!-- No results message-->
     <p v-if="rows < 1">
       There are no results to display.<br />
