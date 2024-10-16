@@ -86,14 +86,15 @@
                   <v-row class="align-center">
                     <v-col class="d-flex align-center">
                       <v-text-field
+                        density="compact"
                         type="search"
                         v-model="penInput"
                         maxlength="9"
                         minlength="9"
                         outlined
                         dense
-                        placeholder=""
-                        class=""
+                        placeholder="PEN"
+                        class="headerSearch"
                         ref="penSearch"
                       ></v-text-field>
                       <v-btn
@@ -101,7 +102,7 @@
                         @click="findStudentByPen"
                         variant="flat"
                         color="primary"
-                        class="px-2"
+                        class="px-2 header-search-btn"
                         >Search
                       </v-btn>
                     </v-col>
@@ -189,7 +190,13 @@ export default {
             .then((response) => {
               if (response.data) {
                 if (response.data.length == 0) {
-                  throw new Error("Student not found");
+                  throw new Error(
+                    `Student ${this.penInput} cannot be found on the GRAD or PEN database`
+                  );
+                } else if (response.data[0].program == null || "") {
+                  throw new Error(
+                    `Student ${this.penInput} exists in PEN but does not have a GRAD system record.`
+                  );
                 }
                 this.studentStore.unsetStudent();
                 this.studentStore.setQuickSearchId(response.data[0].studentID);
@@ -199,13 +206,9 @@ export default {
             })
             .catch((error) => {
               // eslint-disable-next-line
-              console.log(error);
+              console.error("Header Search: ", error?.message);
               this.searchLoading = false;
-              this.snackbarStore.showSnackbar(
-                `Student ${this.penInput} cannot be found on the GRAD or PEN database`,
-                "error",
-                5000
-              );
+              this.snackbarStore.showSnackbar(error?.message, "error", 5000);
             })
             .finally(() => {
               this.penInput = "";
@@ -229,7 +232,7 @@ export default {
   z-index: 99;
 }
 header#navbar {
-  top: 55px !important;
+  top: 41px !important;
   height: 56px;
 }
 button.v-btn.v-theme--light.bg-primary.v-btn--density-default.v-btn--size-default.v-btn--variant-flat.px-2 {
@@ -387,10 +390,13 @@ header .nav-btn {
   header h1 {
     display: inline;
   }
+  .header-search-btn {
+    top: -9px;
+  }
   .top-search {
     width: 100px;
     position: absolute;
-    top: -78px;
+    top: 5px;
     right: 20px;
   }
   .burgernav {
@@ -441,11 +447,11 @@ header .nav-btn {
   .top-search {
     position: absolute;
     width: 230px;
-    top: -11px;
+    top: 5px;
     right: 0px;
   }
   .user-profile {
-    margin-top: -20px;
+    margin-top: -36px;
   }
 }
 </style>
