@@ -1013,9 +1013,9 @@ export default {
           this.setStudentGradStatus(response.data);
         })
         .catch((error) => {
-          if (error.response.status) {
+          if (error.response) {
             this.snackbarStore.showSnackbar(
-              "There was an error: " + error.response.status,
+              "There was an error: " + error.response,
               "error",
               5000
             );

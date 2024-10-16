@@ -504,9 +504,9 @@ export const useStudentStore = defineStore("student", {
     isAdmin() {
       return this.roles == "administrator";
     },
-    isAuthenticated() {
-      return this.roles == "authenticated";
-    },
+    // isAuthenticated() {
+    //   return this.roles == "authenticated";
+    // },
     getPermissions() {
       return this.permissions;
     },
