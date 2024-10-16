@@ -1,14 +1,98 @@
 <template>
   <div>
-    <div class="table-responsive">
-      <v-alert v-if="!optionalPrograms">
+    <v-alert
+      type="info"
+      variant="tonal"
+      border="start"
+      class="width-fit-content"
+      >This student is on the
+      <strong>{{ studentGradStatus.program }}</strong> Graduation
+      Program</v-alert
+    >
+    <div>
+      <v-alert v-if="!studentOptionalPrograms">
         This student does not have any optional programs.
       </v-alert>
-
-      <DisplayTable
+      <OptionalProgramsForm />
+      <v-data-table
+        :items="studentOptionalPrograms"
+        :headers="studentOptionalProgramsFields"
+      >
+        <template v-slot:item.actions="{ item }">
+          <!-- {{ item }} -->
+          <v-dialog
+            v-model="deleteDialog"
+            :key="item.id"
+            v-if="
+              item?.studentOptionalProgramData?.optionalProgramCode !== 'CP'
+            "
+          >
+            <template v-slot:activator="{ props }">
+              {{ props }}
+              <v-btn
+                v-bind="props"
+                color="error"
+                icon="mdi-delete-forever"
+                density="compact"
+                variant="outline"
+              ></v-btn>
+            </template>
+            <v-card> DELETE? </v-card>
+          </v-dialog>
+        </template>
+        <template
+          v-slot:item.data-table-expand="{
+            item,
+            internalItem,
+            toggleExpand,
+            isExpanded,
+          }"
+        >
+          <td v-if="item?.optionalProgramCode == 'CP'">
+            <v-btn
+              variant="text"
+              density="comfortable"
+              @click="toggleExpand(internalItem)"
+              class="v-data-table__expand-icon"
+              :class="{ 'v-data-table__expand-icon--active': isExpanded }"
+              :icon="
+                isExpanded(internalItem)
+                  ? 'mdi-chevron-down'
+                  : 'mdi-chevron-right'
+              "
+            >
+            </v-btn>
+          </td>
+        </template>
+        <template v-slot:expanded-row="{ columns, item }">
+          <tr>
+            <td :colspan="columns.length">
+              <v-card class="my-3 mx-0">
+                <v-data-table
+                  :items="studentCareerPrograms"
+                  :headers="studentCareerProgramsFields"
+                >
+                  <template v-slot:item.actions="{ item }">
+                    <v-btn
+                      icon="mdi-delete-forever"
+                      density="compact"
+                      color="error"
+                      variant="outline"
+                      @click="
+                        removeStudentCareerProgram(item.careerProgramCode)
+                      "
+                    ></v-btn>
+                  </template>
+                </v-data-table>
+              </v-card>
+            </td>
+          </tr>
+        </template>
+      </v-data-table>
+      <!-- <DisplayTable
         class="mt-12"
         :items="optionalPrograms"
-        :fields="optionalProgramsfields"
+        :fields="studentOptionalProgramsFields"
         :showFilter="false"
         title="Optional Programs"
         :delete="{
@@ -210,14 +294,14 @@
             </td>
           </tr>
         </template>
-      </DisplayTable>
+      </DisplayTable> -->
     </div>
   </div>
 </template>
 
 <script>
 import { useStudentStore } from "../../store/modules/student";
-import { mapState } from "pinia";
+import { mapState, mapActions } from "pinia";
 import DisplayTable from "@/components/DisplayTable.vue";
 import OptionalProgramsForm from "@/components/Forms/OptionalProgramsForm.vue";
 export default {
@@ -229,13 +313,15 @@ export default {
 
   computed: {
     ...mapState(useStudentStore, {
-      optionalPrograms: "getStudentOptionalPrograms",
-      careerPrograms: "getStudentCareerPrograms",
-      studentProgramId: "getStudentProgram",
+      studentOptionalPrograms: "getStudentOptionalPrograms",
+      studentCareerPrograms: "getStudentCareerPrograms",
+      studentGradStatus: "getStudentGradStatus",
+      studentProgramId: "getStudentProgram", // Remove?
     }),
   },
   data: function () {
     return {
+      deleteDialog: null,
       fields: [
         {
           key: "gradReqMetDetail",
@@ -244,27 +330,35 @@ export default {
         },
       ],
 
-      careerProgramsfields: [
+      studentCareerProgramsFields: [
         { key: "careerProgramCode", title: "Career Program Code" },
         { key: "careerProgramName", title: "Career Program Name" },
-        { key: "delete", title: "delete" },
+        { key: "actions", title: "Actions" },
       ],
-      optionalProgramsfields: [
+      studentOptionalProgramsFields: [
         {
           key: "data-table-expand",
           title: "",
-
           sortable: true,
           class: "text-left",
         },
+        { key: "programCode", title: "Graduation Program" },
         { key: "optionalProgramName", title: "Optional Program" },
         { key: "optionalReqMet", title: "Requirements Met" },
         { key: "optionalNonGradReasons", title: "Requirements Not Met" },
-        { key: "delete", title: "delete" },
+        {
+          key: "optionalProgramCompletionDate",
+          title: "Optional Program Completion Date",
+        },
+        { key: "actions", title: "Actions" },
       ],
     };
   },
   methods: {
+    ...mapActions(useStudentStore, {
+      removeStudentOptionalProgram: "removeStudentOptionalProgram",
+      removeStudentCareerProgram: "removeStudentCareerProgram",
+    }),
     filterGradReqCourses(row) {
       if (row.gradReqMet.length > 0) {
         return true;
@@ -303,5 +397,9 @@ export default {
 }
 .gradReqsMet span + span::before {
   content: ", ";
+}
+
+:deep(th) {
+  font-weight: bold !important;
 }
 </style>

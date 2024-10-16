@@ -6,39 +6,78 @@
     max-width="500px"
   >
     <template v-slot:activator="{ props }">
-      <v-btn class="float-right" v-bind="props" text="Add Optional Program">
+      <v-btn color="bcGovBlue" prepend-icon="mdi-plus" class="float-right text-none mt-n12 mb-8" v-bind="props" text="Add Optional Program">
       </v-btn>
     </template>
 
     <v-stepper :items="['Select Optional Programs', 'Confirmation']">
       <template v-slot:item.1>
-        <v-card title="Add Optional Program" flat>
-          <v-form @submit.prevent="submitForm">
-            <v-autocomplete
-              v-model="optionalProgramCodeSelect"
-              :items="activeOptionalPrograms"
-              :item-title="optionalProgramTitle"
-              item-value="optionalProgramID"
-              label="Choose an Optional Program to add"
-              required
-              @keyup.enter="submitForm"
-            >
-            </v-autocomplete>
-            <v-autocomplete
-              multiple
-              clearable
-              chips
-              v-if="isCareerProgram(optionalProgramCodeSelect)"
-              v-model="careerProgramCodeSelect"
-              :items="careerProgramList"
-              item-title="name"
-              item-value="code"
-              label="Choose an Optional Program to add"
-              required
-              @keyup.enter="submitForm"
-            ></v-autocomplete>
-          </v-form>
-        </v-card>
+        <v-form @submit.prevent="submitForm">
+          <!-- Program Name Input -->
+          <v-autocomplete
+            v-model="selectedOptionalProgram"
+            :items="activeOptionalPrograms"
+            :item-title="optionalProgramTitle"
+            item-value="optionalProgramID"
+            label="Choose an Optional Program to add"
+            required
+            @keyup.enter="submitForm"
+          >
+          </v-autocomplete>
+          <v-autocomplete
+            multiple
+            clearable
+            chips
+            v-if="isCareerProgram(selectedOptionalProgram)"
+            v-model="selectedCareerPrograms"
+            :items="activeCareerPrograms"
+            :item-title="careerProgramTitle"
+            item-value="code"
+            label="Choose an Optional Program to add"
+            required
+            @keyup.enter="submitForm"
+          ></v-autocomplete>
+        </v-form>
+      </template>
+      <template v-slot:item.2>
+        <slot name="text">
+          <v-alert type="info" variant="tonal" border="start" class="pb-0">
+            <p v-if="isCareerProgram(selectedOptionalProgram)">
+              You are about to add the following Career Program{{
+                selectedCareerPrograms.length === 1 ? "" : "s"
+              }}
+              for this student:
+              
+              <ul v-if="isCareerProgram(selectedOptionalProgram)">
+                <li
+                v-for="item in selectedCareerPrograms"
+                :key="item"
+                class="my-1"
+                >
+                {{ item }} - {{ getCareerProgramByCode(item).name }}
+              </li>
+            </ul>
+          </p>
+          <p v-else>
+            You are about to add the
+              <strong>
+                {{
+                  getOptionalProgramByID(selectedOptionalProgram)
+                    .optionalProgramName
+                }}
+                ({{
+                  getOptionalProgramByID(selectedOptionalProgram)
+                    .optProgramCode
+                }})
+              </strong>
+              Optional Program for this student.
+          </p>
+          </v-alert>
+        </slot>
+        <!-- OPTIONAL PROGRAM:
+          <pre>{{ selectedOptionalProgram }}</pre>
+          CAREER PROGRAM:
+          <pre>{{ selectedCareerPrograms }}</pre> -->
       </template>
     </v-stepper>
 
@@ -202,12 +241,6 @@ export default {
                 activeCareerProgram.code
             )
         )
-        // ?.filter(
-        //   (activeCareerProgram) =>
-        //     !this.selectedCareerPrograms.some(
-        //       (careerProgram) => careerProgram == activeCareerProgram.code
-        //     )
-        // )
       );
     },
   },
@@ -216,9 +249,8 @@ export default {
       dialog: false,
       optionalProgramList: [],
       careerProgramList: [],
-      selectedOptionalProgram: "",
-      selectedCareerPrograms: "",
-      // Add other data properties as needed
+      selectedOptionalProgram: null,
+      selectedCareerPrograms: null,
     };
   },
   props: {
