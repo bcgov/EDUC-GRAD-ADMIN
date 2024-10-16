@@ -26,28 +26,6 @@
       item-value="id"
       @update:options="loadItems"
     ></v-data-table-server>
-
-    <!-- <DisplayTable
-      title="Job/Runs"
-      v-bind:items="batchData"
-      v-bind:fields="batchDataFields"
-      id="id"
-      :showFilter="false"
-      :pagination="false"
-      ><template v-slot:item.pen="{ item }">
-        <b-btn
-          :id="'pen' + item.pen"
-          variant="link"
-          size="xs"
-          @click="findStudentByPen(item.pen)"
-        >
-          {{ item.pen }}
-        </b-btn>
-      </template>
-      <template v-slot:item.schoolOfRecord="{ item }">
-        <div v-if="item.schoolOfRecord">{{ item.schoolOfRecord }}</div>
-      </template>
-    </DisplayTable> -->
   </div>
 </template>
 
@@ -174,7 +152,6 @@ export default {
           })
           .catch((error) => {
             // eslint-disable-next-line
-            console.log("Batch Admin Load: " + error);
             this.snackbarStore.showSnackbar(
               "Student cannot be found on the GRAD or PEN database",
               "error",
