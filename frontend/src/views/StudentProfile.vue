@@ -208,10 +208,9 @@
                       color="green"
                     >
                     </v-progress-circular>
-                    Undo Completion Reasons ({{
-                      studentUngradReasons.length
-                    }})</v-window-item
-                  >
+
+                    <StudentUndoCompletionReasons></StudentUndoCompletionReasons>
+                  </v-window-item>
                 </v-window>
               </v-card-text>
             </v-window-item>
@@ -537,6 +536,7 @@ import StudentExams from "@/components/StudentProfile/StudentExams.vue";
 import StudentGraduationStatus from "@/components/StudentProfile/StudentGraduationStatus.vue";
 import StudentOptionalPrograms from "@/components/StudentProfile/StudentOptionalPrograms.vue";
 import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/StudentAuditHistory.vue";
+import StudentUndoCompletionReasons from "@/components/StudentProfile/StudentUndoCompletionReasons.vue";
 import StudentNotes from "@/components/StudentProfile/AuditHistory/StudentNotes.vue";
 import DisplayTable from "@/components/DisplayTable.vue";
 import { useSnackbarStore } from "@/store/modules/snackbar";
@@ -580,6 +580,7 @@ export default {
   },
   components: {
     StudentInformation: StudentInformation,
+    StudentUndoCompletionReasons: StudentUndoCompletionReasons,
     StudentCourses: StudentCourses,
     GRADRequirementDetails: GRADRequirementDetails,
     StudentAssessments: StudentAssessments,
