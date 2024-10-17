@@ -1,7 +1,8 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" sm="6" md="4">
+      <v-col sm="2"><strong>Copies</strong></v-col>
+      <v-col sm="10" md="4">
         <v-text-field
           v-model="copies"
           label="Copies"
@@ -10,7 +11,8 @@
         ></v-text-field>
       </v-col> </v-row
     ><v-row>
-      <v-col cols="12" sm="6" md="4">
+      <v-col sm="2"><strong>Where</strong></v-col>
+      <v-col sm="10" md="4">
         <v-select
           v-model="distribution"
           :items="[
@@ -110,55 +112,6 @@ export default {
   methods: {
     ...mapActions(useBatchRequestFormStore, []),
     resetModal() {},
-    getCronTime() {
-      if (this.getBatchRunSchedule == "N") {
-        let today = new Date();
-        return (
-          "0 30 18 " + today.getDate() + " " + (today.getMonth() + 1) + " *"
-        );
-      } else if (this.getBatchRunSchedule == "W") {
-        const today = new Date();
-        const first = today.getDate() - today.getDay() + 1;
-        const sixth = first + 5;
-        const saturday = new Date(today.setDate(sixth));
-        return (
-          "0 30 18 " +
-          saturday.getDate() +
-          " " +
-          (saturday.getMonth() + 1) +
-          " *"
-        );
-      } else if (this.getBatchRunSchedule == "M") {
-        const today = new Date();
-        let tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        return (
-          "0 30 18 " +
-          tomorrow.getDate() +
-          " " +
-          (tomorrow.getMonth() + 1) +
-          " *"
-        );
-      } else if (this.getBatchRunSchedule == "Custom") {
-        let dateTime = new Date(
-          this.getBatchRunCustomDate + "T" + this.getBatchRunCustomTime
-        );
-        return (
-          dateTime.getSeconds() +
-          " " +
-          dateTime.getMinutes() +
-          " " +
-          dateTime.getHours() +
-          " " +
-          dateTime.getDate() +
-          " " +
-          (dateTime.getMonth() + 1) +
-          " *"
-        );
-      } else {
-        return null;
-      }
-    },
   },
   props: {},
 

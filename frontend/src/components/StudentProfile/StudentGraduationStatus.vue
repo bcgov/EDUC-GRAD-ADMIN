@@ -10,7 +10,7 @@
         >
           <v-card-text>
             <div v-if="!hasGradStatus">
-              {{ studentFullName.legalFirstName }} found on the PEN database
+              {{ studentFullName?.legalFirstName }} found on the PEN database
               <strong>but does not have a GRAD system record</strong>
             </div>
           </v-card-text>
@@ -39,7 +39,6 @@
 import { mapState } from "pinia";
 import { useAppStore } from "../../store/modules/app";
 import { useStudentStore } from "../../store/modules/student";
-import { showNotification } from "../../utils/common.js";
 import NoncompletionReasons from "@/components/StudentProfile/GraduationStatus/NoncompletionReasons.vue";
 import StudentGraduationReports from "@/components/StudentProfile/GraduationStatus/StudentGraduationReports.vue";
 import CertificationDogwoods from "@/components/StudentProfile/GraduationStatus/CertificationDogwoods.vue";
@@ -79,7 +78,6 @@ export default {
   created() {
     this.programDropdownList = this.programOptions;
     this.disableButton = false;
-    this.showNotification = showNotification;
   },
   // methods: {
   //   getStudentStatus(code) {

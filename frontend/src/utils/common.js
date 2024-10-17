@@ -25,24 +25,7 @@ export function parseStudentStatus(code, studentStatusOptions) {
   }
   return "";
 }
-export function showNotification(variant, bodyContent) {
-  let title = variant;
-  let delay = 30000;
-  if (title == "success") {
-    title = "success";
-    delay = 5000;
-  } else if (title == "danger") {
-    title = "Error";
-  } else if (title == "warning") {
-    title = "Warning";
-  }
-  this.$bvToast.toast(bodyContent, {
-    title: title,
-    variant: variant,
-    solid: true,
-    autoHideDelay: delay,
-  });
-}
+
 /**
  * SORTING
  */
@@ -101,4 +84,12 @@ export function isProgramComplete(completionDate, programCode) {
 
 export function isProgramPF(program) {
   return program.includes("PF");
+}
+export function generateRequestPayload(batchRequest, template) {
+  return template.reduce((acc, field) => {
+    if (batchRequest[field] !== undefined) {
+      acc[field] = batchRequest[field];
+    }
+    return acc;
+  }, {});
 }

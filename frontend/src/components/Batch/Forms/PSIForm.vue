@@ -2,7 +2,12 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props" @click="setGroup('Psi')">
+        <v-btn
+          v-if="hasPermissions('BATCH', 'runPSIBatch')"
+          color="primary"
+          v-bind="props"
+          @click="setGroup('Psi')"
+        >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </template>
@@ -46,8 +51,34 @@
                   </v-stepper-window-item>
 
                   <v-stepper-window-item value="2">
-                    <v-card title="Schedule" flat>
-                      <ScheduleInput></ScheduleInput>
+                    <v-card flat>
+                      <ScheduleInput>
+                        <template #batchDetails>
+                          <v-data-table
+                            :items="[
+                              {
+                                label: 'Run Type',
+                                value: 'PSI Run FTP / PAPER',
+                              },
+                              {
+                                label: 'Transmission Mode',
+                                value: getBatchRequest.psiTransmissionMode,
+                              },
+                              {
+                                label: 'PSI Year',
+                                value: getBatchRequest.psiYear,
+                              },
+                              {
+                                label: 'Where',
+                                value: 'BC Mail',
+                              },
+                            ]"
+                            hide-default-header
+                            hide-default-footer
+                          >
+                          </v-data-table>
+                        </template>
+                      </ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
 
@@ -65,7 +96,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions class="batch-form-actions">
+        <v-card-actions class="sticky-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -98,8 +129,10 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
+import { useAccessStore } from "../../../store/modules/access";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
+import { generateRequestPayload } from "@/utils/common.js";
 export default {
   setup() {
     const batchProcessingStore = useBatchProcessingStore();
@@ -145,13 +178,10 @@ export default {
           (value) => {
             if (this.getBatchRequest) {
               let isValid = false;
-              if (this.getGroup === "Psi") {
-                isValid =
-                  this.getBatchRequest.psiCodes &&
-                  this.getBatchRequest.psiCodes.length > 0;
-              } else {
-                isValid = false;
-              }
+              isValid =
+                this.getBatchRequest.psiCodes &&
+                this.getBatchRequest.psiCodes.length > 0;
+
               return isValid;
             } else {
               return false;
@@ -169,14 +199,42 @@ export default {
   data: () => ({
     step: 0,
     dialog: false,
+    snackbarStore: useSnackbarStore(),
   }),
   computed: {
+    ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
       "getBatchRequestCrontime",
       "getGroup",
+      "getPsiTrasmissionMode",
     ]),
+    requestPayload() {
+      const requestTemplate = [
+        "districts",
+        "gradDateFrom",
+        "gradDateTo",
+        "localDownload",
+        "pens",
+        "programs",
+        "psiCodes",
+        "quantity",
+        "reportTypes",
+        "schoolCategoryCodes",
+        "schoolOfRecords",
+        "validateInput",
+      ];
+      const batchRequest = this.getBatchRequest;
+
+      // Filter the batch request using the requestTemplate array
+      return requestTemplate.reduce((acc, field) => {
+        if (batchRequest[field] !== undefined) {
+          acc[field] = batchRequest[field];
+        }
+        return acc;
+      }, {});
+    },
   },
   methods: {
     ...mapActions(useBatchRequestFormStore, [
@@ -202,16 +260,48 @@ export default {
     },
     async submit() {
       try {
-        let response = await BatchProcessingService.runPSIRun(
+        const requestTemplate = [
+          "credentialTypeCode",
+          "districts",
+          "gradDateFrom",
+          "gradDateTo",
+          "localDownload",
+          "pens",
+          "programs",
+          "psiCodes",
+          "psiYear",
+          "quantity",
+          "reportTypes",
+          "schoolCategoryCodes",
+          "schoolOfRecords",
+          "validateInput",
+        ];
+        const requestPayload = generateRequestPayload(
           this.getBatchRequest,
+          requestTemplate
+        );
+        let response = await BatchProcessingService.runPSIRun(
+          requestPayload,
+          this.getPsiTrasmissionMode,
           this.getBatchRequestCrontime
         );
+
+        if (this.getBatchRequestCrontime) {
+          this.snackbarStore.showSnackbar(
+            "PSI Run FTP / Paper has been successfully scheduled",
+            5000
+          );
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Batch " +
+              response.data.batchId +
+              "- PSI Run FTP / Paper submitted",
+            "success",
+            5000
+          );
+        }
         this.closeDialogAndResetForm();
-        this.snackbarStore.showSnackbar(
-          "Batch " + response.data.batchId + "- PSI Run FTP / Paper submitted",
-          "success",
-          5000
-        );
+
         this.setActiveTab("batchRuns");
         this.updateDashboards();
       } catch (error) {

@@ -3,6 +3,7 @@
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
         <v-btn
+          v-if="hasPermissions('BATCH', 'runDistrunYE')"
           color="primary"
           v-bind="props"
           @click="setGroup('School Category')"
@@ -17,7 +18,6 @@
           >
         </v-card-title>
         <v-card-text>
-          {{ getGroup }}
           <v-container>
             <v-stepper alt-labels show-actions v-model="step">
               <template v-slot:default="{ prev, next }">
@@ -56,13 +56,33 @@
                       ></v-select>
                     </v-row>
                     <v-row v-if="getGroup == 'School Category'">
-                      <DistrictInput></DistrictInput>
+                      <DistrictInput disableSelectStudents></DistrictInput>
                     </v-row>
                   </v-stepper-window-item>
 
                   <v-stepper-window-item value="2">
-                    <v-card title="Schedule" flat>
-                      <ScheduleInput></ScheduleInput>
+                    <v-card flat>
+                      <ScheduleInput>
+                        <template #batchDetails>
+                          <v-data-table
+                            :items="[
+                              {
+                                label: 'Run Type',
+                                value:
+                                  'Non-Graduate Transcript Distribution Run',
+                              },
+
+                              {
+                                label: 'Where',
+                                value: 'BC Mail',
+                              },
+                            ]"
+                            hide-default-header
+                            hide-default-footer
+                          >
+                          </v-data-table>
+                        </template>
+                      </ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
 
@@ -108,8 +128,10 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
+import { useAccessStore } from "../../../store/modules/access";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
+import { generateRequestPayload } from "@/utils/common.js";
 export default {
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
@@ -166,6 +188,7 @@ export default {
     dialog: false,
   }),
   computed: {
+    ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
@@ -173,6 +196,31 @@ export default {
       "batchRunTimeSet",
       "getBatchRequestCrontime",
     ]),
+    requestPayload() {
+      const requestTemplate = [
+        "districts",
+        "gradDateFrom",
+        "gradDateTo",
+        "localDownload",
+        "pens",
+        "programs",
+        "psiCodes",
+        "quantity",
+        "reportTypes",
+        "schoolCategoryCodes",
+        "schoolOfRecords",
+        "validateInput",
+      ];
+      const batchRequest = this.getBatchRequest;
+
+      // Filter the batch request using the requestTemplate array
+      return requestTemplate.reduce((acc, field) => {
+        if (batchRequest[field] !== undefined) {
+          acc[field] = batchRequest[field];
+        }
+        return acc;
+      }, {});
+    },
   },
   methods: {
     ...mapActions(useBatchRequestFormStore, [
@@ -200,19 +248,47 @@ export default {
       this.step = step;
     },
     async submit() {
+      const requestTemplate = [
+        "credentialTypeCode",
+        "districts",
+        "gradDateFrom",
+        "gradDateTo",
+        "localDownload",
+        "pens",
+        "programs",
+        "psiCodes",
+        "quantity",
+        "reportTypes",
+        "schoolCategoryCodes",
+        "schoolOfRecords",
+        "validateInput",
+      ];
+      const requestPayload = generateRequestPayload(
+        this.getBatchRequest,
+        requestTemplate
+      );
       try {
         let response = await BatchProcessingService.runDISTRUN_YE(
-          this.getBatchRequest,
+          requestPayload,
           this.getBatchRequestCrontime
         );
+
+        if (this.getBatchRequestCrontime) {
+          this.snackbarStore.showSnackbar(
+            "Year-End Credentials and Transcript Distribution Run has been successfully scheduled",
+            5000
+          );
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Batch " +
+              response.data.batchId +
+              "- Year-End Credentials and Transcript Distribution Run submitted",
+            "success",
+            5000
+          );
+        }
         this.closeDialogAndResetForm();
-        this.snackbarStore.showSnackbar(
-          "Batch " +
-            response.data.batchId +
-            "- Year-End Credentials and Transcript Distribution Run submitted",
-          "success",
-          5000
-        );
+
         this.setActiveTab("batchRuns");
         this.updateDashboards();
       } catch (error) {

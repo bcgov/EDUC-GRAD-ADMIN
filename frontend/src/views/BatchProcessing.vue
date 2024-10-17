@@ -2,16 +2,16 @@
   <div class="batch-processing-view">
     <h1>Batch Processing</h1>
     <div>
-      <v-btn
+      <!-- <v-btn
         class="position-absolute"
         style="z-index: 10; right: 0; margin-right: 40px"
         color="transparent"
         small
         @click="updateDashboards"
       >
-        <v-icon color="white" icon="mdi-refresh" size="large"></v-icon>
+        <v-icon icon="mdi-refresh" size="large"></v-icon>
         Update
-      </v-btn>
+      </v-btn> -->
       <v-tabs v-model="activeTab" bg-color="transparent">
         <v-tab
           value="batchRuns"
@@ -45,9 +45,12 @@
           value="newBatchRequest"
           >New Batch Request</v-tab
         >
-        <v-tab @click="getJwtToken" value="administration"
-          >Administration</v-tab
-        >
+
+        <v-tab @click.prevent class="ml-auto">
+          <v-btn @click.stop="updateDashboards">
+            Update <v-icon>mdi-refresh</v-icon>
+          </v-btn>
+        </v-tab>
       </v-tabs>
 
       <v-tabs-window v-model="getActiveTab">
@@ -235,7 +238,7 @@ import NongradDistrunForm from "@/components/Batch/Forms/NongradDistrunForm.vue"
 import PSIForm from "@/components/Batch/Forms/PSIForm.vue";
 import BatchRuns from "@/components/Batch/BatchRuns.vue";
 import BatchRoutines from "@/components/Batch/BatchRoutines.vue";
-
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import sharedMethods from "../sharedMethods";
 
 import { useAccessStore } from "../store/modules/access";
@@ -308,6 +311,7 @@ export default {
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       tab: "",
       value: "",
       batchTypes: [],
@@ -404,12 +408,6 @@ export default {
       .catch((error) => {
         // Handle errors during the asynchronous call
         console.error("Error fetching batch job types:", error);
-
-        // this.$bvToast.toast("ERROR " + error.response.statusText, {
-        //   title: "ERROR " + error.response.status,
-        //   variant: "danger",
-        //   noAutoHide: true,
-        // });
       });
   },
   methods: {
@@ -453,7 +451,11 @@ export default {
             "application/zip",
             bid
           );
-          this.showNotification("success", "Download Completed");
+          this.snackbarStore.showSnackbar(
+            "Download completed",
+            "success",
+            5000
+          );
         }
       );
     },

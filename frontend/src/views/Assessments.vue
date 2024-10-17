@@ -30,8 +30,8 @@
 </template>
 
 <script>
-import AssessmentRequirements from "@/components/assessments/AssessmentRequirements.vue";
-import Assessments from "@/components/assessments/Assessments.vue";
+import AssessmentRequirements from "@/components/Assessments/AssessmentRequirements.vue";
+import Assessments from "@/components/Assessments/Assessments.vue";
 export default {
   name: "assessments",
   components: {

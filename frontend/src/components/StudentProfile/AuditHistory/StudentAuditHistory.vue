@@ -11,81 +11,71 @@
     <v-card-text>
       <v-window v-model="selectedTab">
         <v-window-item value="studentChangeHistory">
-          <DisplayTable
-            :items="studentChangeHighlight"
-            :fields="studentChangeFields"
-            showFilter="false"
-            title="Student Change History"
-            :sortDesc="sortDesc"
-            :sortBy="'createDate'"
+          <v-data-table
+            :items="flattenedStudentChangeHighlight"
+            :headers="studentChangeFields"
+            :item-key="createDate"
+            :sort-desc="true"
           >
-            {{ studentChangeHighlight }}
-            <template v-slot:item.data="{ item }">
-              <v-card class="px-0 mt-0">
-                {{ item }}
-              </v-card>
-            </template>
-            <template #cell(more)="row">
-              <v-btn
-                variant="outlined"
-                size="sm"
-                @click="row.toggleDetails"
-                class="more-button"
-              >
-                <img
-                  v-show="!row.detailsShowing"
-                  src="../../../assets/images/icon-right.svg"
-                  width="9"
-                  aria-hidden="true"
-                  alt=""
-                />
-                <img
-                  v-show="row.detailsShowing"
-                  src="../../../assets/images/icon-down.svg"
-                  height="5"
-                  aria-hidden="true"
-                  alt=""
-                />
-              </v-btn>
+            <template v-slot:item.programCompletionDate="{ item }">
+              {{ item.programCompletionDate.value }}
             </template>
 
-            <template #row-details="row">
-              <v-card class="px-0 mt-0">
-                <p>
-                  <strong
-                    >Changed By {{ row.item.data.updateUser }} on
-                    {{ $filters.formatTime(row.item.data.updateDate) }}</strong
-                  >
-                </p>
-                <pre>
-                    {{ JSON.stringify(row.item.data, null, "\t") }}
-                  </pre
-                >
-              </v-card>
+            <template v-slot:item.createDate="{ item }">
+              {{ item.createDate.value }}
             </template>
 
-            <template #cell(programCompletionDate)="row">
-              {{ $filters.formatYYYYMMDate(row.value.value) }}
+            <template v-slot:item.activityCode="{ item }">
+              {{ item.data.activityCodeDescription }}
             </template>
 
-            <template #cell(createDate)="row">
-              {{ $filters.formatTime(row.value.value) }}
+            <template v-slot:item.updateUser="{ item }">
+              {{ item.updateUser.value }}
+            </template>
+            <template v-slot:item.program="{ item }">
+              {{ item.program.value }}
+            </template>
+            <template v-slot:item.studentStatus="{ item }">
+              {{ item.studentStatus.value }}
+            </template>
+            <template v-slot:item.studentGrade="{ item }">
+              {{ item.studentGrade.value }}
             </template>
 
-            <template #cell(activityCode)="row">
-              {{ row.item.data.activityCodeDescription }}
+            <template v-slot:item.schoolOfRecord="{ item }">
+              {{ item.schoolOfRecord.value }}
             </template>
 
-            <template #cell()="row">
-              <div :class="row.value.changed ? 'value-changed' : ''">
-                {{ row.value.value }}
-              </div>
+            <template v-slot:item.schoolAtGrad="{ item }">
+              {{ item.schoolAtGrad.value }}
             </template>
-          </DisplayTable>
+
+            <template v-slot:item.consumerEducationRequirementMet="{ item }">
+              {{ item.consumerEducationRequirementMet.value }}
+            </template>
+
+            <template v-slot:item.honoursStanding="{ item }">
+              {{ item.honoursStanding.value }}
+            </template>
+
+            <template v-slot:item.gpa="{ item }">
+              {{ item.gpa.value }}
+            </template>
+
+            <template v-slot:item.recalculateProjectedGrad="{ item }">
+              {{ item.recalculateProjectedGrad.value }}
+            </template>
+            <template v-slot:item.recalculateGradStatus="{ item }">
+              {{ item.recalculateGradStatus.value }}
+            </template>
+            <template v-slot:item.batchId="{ item }">
+              {{ item.batchId.value }}
+            </template>
+          </v-data-table>
         </v-window-item>
 
         <v-window-item value="optionalProgramChangeHistory">
-          <DisplayTable
+          <v-data-table
             :items="optionalProgramChangeHighlight"
             :fields="optionalProgramChangeFields"
             showFilter="false"
@@ -145,7 +135,7 @@
                 {{ item.row.value }}
               </div>
             </template>
-          </DisplayTable>
+          </v-data-table>
         </v-window-item>
       </v-window>
     </v-card-text>
@@ -155,7 +145,6 @@
 <script>
 import { useStudentStore } from "../../../store/modules/student";
 import { mapState } from "pinia";
-import { showNotification } from "../../../utils/common.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 
 export default {
@@ -172,6 +161,12 @@ export default {
       studentUngradReasons: "getStudentUngradReasons",
       studentNotes: "getStudentNotes",
     }),
+    flattenedStudentChangeHighlight() {
+      return this.studentChangeHighlight.map((item) => ({
+        ...item,
+        createDateValue: item.createDate.value,
+      }));
+    },
   },
   data: function () {
     return {
@@ -186,6 +181,7 @@ export default {
       smallScreen: false,
       window: { width: 0, height: 0 },
       studentChangeFields: [
+        { text: "Index", value: "index", sortable: false }, // Added index column
         {
           key: "data-table-expand",
           title: "",
@@ -336,7 +332,6 @@ export default {
     };
   },
   mounted() {
-    this.showNotification = showNotification;
     this.highlightStudentHistoryChanges();
     this.highlightOptionalProgramHistoryChanges();
   },

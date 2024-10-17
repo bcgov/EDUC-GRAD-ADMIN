@@ -2,7 +2,12 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"><v-icon>mdi-plus</v-icon></v-btn>
+        <v-btn
+          v-if="hasPermissions('BATCH', 'runArchiveSchoolReports')"
+          color="primary"
+          v-bind="props"
+          ><v-icon>mdi-plus</v-icon></v-btn
+        >
       </template>
       <v-card>
         <v-card-title>
@@ -97,49 +102,74 @@
                   </v-stepper-window-item>
 
                   <v-stepper-window-item value="2">
-                    <v-card title="Schedule" flat>
-                      Confirmation
-                      <v-table>
-                        <thead>
-                          <tr>
-                            <th></th>
-                            <th>Confirm</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <!-- First Confirmation Checkbox -->
-                          <tr>
-                            <td>
-                              Final Graduation Algorithm and TVR batch jobs have
-                              been run for students from the previous cycle
-                            </td>
-                            <td>
-                              <v-checkbox
-                                v-model="selectedConfirmations"
-                                value="REQUIRED_CONFIRMATION_1"
-                                hide-details
-                              ></v-checkbox>
-                            </td>
-                          </tr>
+                    <v-card flat>
+                      <ScheduleInput warning="">
+                        <template #confirmations>
+                          <v-card
+                            title="Confirmations"
+                            class="text-h5 font-weight-regular bg-blue-grey"
+                          >
+                            <v-table>
+                              <thead>
+                                <tr>
+                                  <th>
+                                    <strong
+                                      >Batch Confirmation: please read and
+                                      accept before submitting</strong
+                                    >
+                                  </th>
+                                  <th>Confirm</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <!-- First Confirmation Checkbox -->
+                                <tr>
+                                  <td>
+                                    Final Graduation Algorithm and TVR batch
+                                    jobs have been run for students from the
+                                    previous cycle
+                                  </td>
+                                  <td>
+                                    <v-checkbox
+                                      v-model="selectedConfirmations"
+                                      value="REQUIRED_CONFIRMATION_1"
+                                      hide-details
+                                    ></v-checkbox>
+                                  </td>
+                                </tr>
 
-                          <!-- Second Confirmation Checkbox -->
-                          <tr>
-                            <td>
-                              Regenerate School Reports are completed for any
-                              schools that require final updates
-                            </td>
-                            <td>
-                              <v-checkbox
-                                v-model="selectedConfirmations"
-                                value="REQUIRED_CONFIRMATION_2"
-                                hide-details
-                              ></v-checkbox>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </v-table>
-
-                      <ScheduleInput></ScheduleInput>
+                                <!-- Second Confirmation Checkbox -->
+                                <tr>
+                                  <td>
+                                    Regenerate School Reports are completed for
+                                    any schools that require final updates
+                                  </td>
+                                  <td>
+                                    <v-checkbox
+                                      v-model="selectedConfirmations"
+                                      value="REQUIRED_CONFIRMATION_2"
+                                      hide-details
+                                    ></v-checkbox>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </v-table>
+                          </v-card>
+                        </template>
+                        <template #batchDetails>
+                          <v-data-table
+                            :items="[
+                              {
+                                label: 'Run Type',
+                                value: 'Archive School Reports Process',
+                              },
+                            ]"
+                            hide-default-header
+                            hide-default-footer
+                          >
+                          </v-data-table>
+                        </template>
+                      </ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
 
@@ -157,7 +187,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions class="batch-form-actions">
+        <v-card-actions class="sticky-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -183,9 +213,11 @@ import SchoolInput from "@/components/Batch/Forms/FormInputs/SchoolInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
+import { useAccessStore } from "../../../store/modules/access";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
+import { generateRequestPayload } from "@/utils/common.js";
 import { mapActions, mapState } from "pinia";
 export default {
   setup() {
@@ -277,6 +309,7 @@ export default {
     batchProcessingStore: useBatchProcessingStore(),
   }),
   computed: {
+    ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
@@ -310,20 +343,47 @@ export default {
     changeStep(step) {
       this.step = step;
     },
+
     async submit() {
+      const requestTemplate = [
+        "districts",
+        "gradDateFrom",
+        "gradDateTo",
+        "localDownload",
+        "pens",
+        "programs",
+        "psiCodes",
+        "quantity",
+        "reportTypes",
+        "schoolCategoryCodes",
+        "schoolOfRecords",
+        "validateInput",
+      ];
+      const requestPayload = generateRequestPayload(
+        this.getBatchRequest,
+        requestTemplate
+      );
       try {
         let response = await BatchProcessingService.runArchiveSchoolReports(
-          this.getBatchRequest,
+          requestPayload,
           this.getBatchRequestCrontime
         );
+
+        if (this.getBatchRequestCrontime) {
+          this.snackbarStore.showSnackbar(
+            "Archive School Reports Process has been successfully scheduled",
+            5000
+          );
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Batch " +
+              response.data.batchId +
+              "- Archive School Reports Process submitted",
+            "success",
+            5000
+          );
+        }
         this.closeDialogAndResetForm();
-        this.snackbarStore.showSnackbar(
-          "Batch " +
-            response.data.batchId +
-            "- Archive School Reports Process submitted",
-          "success",
-          5000
-        );
         this.setActiveTab("batchRuns");
         this.updateDashboards();
       } catch (error) {

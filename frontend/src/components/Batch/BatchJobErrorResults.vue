@@ -1,14 +1,7 @@
 <template>
   <div>
     <v-progress-circular model-value="batchLoading"></v-progress-circular>
-    <v-progress-circular
-      v-if="isLoading"
-      indeterminate
-      color="primary"
-      size="64"
-    >
-      Loading...
-    </v-progress-circular>
+
     <!-- No results message-->
     <p v-if="rows < 1">
       There are no results to display.<br />
@@ -45,6 +38,7 @@ import sharedMethods from "../../sharedMethods";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import StudentService from "@/services/StudentService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "batchJobSearch",
   components: {
@@ -53,6 +47,7 @@ export default {
   props: ["selectedErrorId"],
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       batchData: [],
       perPage: 10,
       rows: 0,
@@ -100,7 +95,6 @@ export default {
     },
   },
   created() {
-    this.showNotification = sharedMethods.showNotification;
     this.loadStudent = sharedMethods.loadStudent;
     this.getAdminDashboardData(this.selectedErrorId, 0);
   },
@@ -131,14 +125,7 @@ export default {
           this.batchLoading = false;
         })
         .catch((error) => {
-          // if (error.response.status) {
-          //   this.$bvToast.toast("ERROR " + error.response.statusText, {
-          //     title: "ERROR" + error.response.status,
-          //     variant: "danger",
-          //     noAutoHide: true,
-          //   });
-          //   this.isBatchLoading = false;
-          // }
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
         });
     },
     findStudentByPen: function (pen) {
@@ -150,17 +137,10 @@ export default {
             }
           })
           .catch((error) => {
-            // eslint-disable-next-line
-            // console.log("Batch Admin Load: " + error);
-            // this.showNotification(
-            //   "danger",
-            //   "Student cannot be found on the GRAD or PEN database"
-            // );
+            this.snackbarStore.showSnackbar(error.message, "error", 5000);
           });
       }
     },
   },
 };
 </script>
-
-<style scoped></style>

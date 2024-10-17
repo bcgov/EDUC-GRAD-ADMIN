@@ -1,4 +1,4 @@
-.batch-form-actions {
+.sticky-form-actions {
   position: sticky;
   bottom: 0;
   background-color: white; /* Ensure the button area has a background */
@@ -121,4 +121,12 @@ button.collapsed, button.not-collapsed, button.more-button {
 }
 tbody tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, .05) !important
+}
+.v-btn-link{
+  color: #1a5a96 !important;
+  text-decoration: underline !important;
+  opacity: 1 !important
+}
+.v-btn-link:hover{
+  color: #0000f3 !important;
 }

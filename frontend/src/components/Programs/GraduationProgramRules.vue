@@ -19,6 +19,7 @@
           <v-dialog max-width="800px">
             <template v-slot:default="{ isActive }">
               <v-card>
+                <!-- <h3>Courses Matching Rule #</h3> -->
                 <v-progress-circular
                   v-if="loadingRuleMatch"
                   indeterminate
@@ -26,7 +27,7 @@
                 ></v-progress-circular>
                 <div v-else-if="!ruleMatchList.length">Not applicable</div>
                 <div v-else>
-                  <v-card-title>
+                  <v-card-title class="mb-12">
                     <!-- :id="
                 'modal-' +
                 row.item.graduationProgramCode +

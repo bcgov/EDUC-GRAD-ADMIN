@@ -568,6 +568,12 @@ export default {
                     this.advancedSearchMessage =
                       this.totalElements + " student records found. ";
                   }
+                } else {
+                  this.snackbarStore.showSnackbar(
+                    "There are [0] more matches on PEN. Please refine your search criteria",
+                    "error",
+                    5000
+                  );
                 }
               } else {
                 this.snackbarStore.showSnackbar(

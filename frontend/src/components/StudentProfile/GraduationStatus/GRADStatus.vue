@@ -301,6 +301,12 @@
             <tr v-if="!showEdit">
               <td><strong>School of record: </strong></td>
               <td>
+                {{
+                  studentGradStatus.schoolName
+                    ? studentGradStatus.schoolName
+                    : schoolOfRecord.schoolName
+                }}<br />
+                {{ studentGradStatus.schoolOfRecord }}
                 <!-- <b-button
                   class="p-0 text-left"
                   v-b-modal.modal-1
@@ -448,6 +454,14 @@
             </tr>
             <tr v-if="!showEdit">
               <td><strong>School at graduation: </strong></td>
+              <td>
+                {{
+                  studentGradStatus.schoolAtGradName
+                    ? studentGradStatus.schoolAtGradName
+                    : schoolAtGraduation.schoolName
+                }}<br />
+                {{ studentGradStatus.schoolAtGrad }}
+              </td>
               <!-- <td>
                 <b-button
                   v-if="studentGradStatus && studentGradStatus.schoolAtGrad"
@@ -757,23 +771,21 @@
 
 <script>
 import { mapState, mapActions } from "pinia";
-import { onUpdated, onMounted } from "vue";
 import { useAppStore } from "../../../store/modules/app";
 import { useStudentStore } from "../../../store/modules/student";
 import { useAccessStore } from "../../../store/modules/access";
 import {
   containsAnyLetters,
   parseStudentStatus,
-  showNotification,
 } from "../../../utils/common.js";
 import SchoolService from "@/services/SchoolService.js";
 import sharedMethods from "../../../sharedMethods";
 import StudentService from "@/services/StudentService.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import GRADStatusForm from "./GRADStatusForm.vue";
 export default {
   name: "GRADStatus",
   created() {
-    this.showNotification = showNotification;
     this.containsAnyLetters = containsAnyLetters;
     this.parseStudentStatus = parseStudentStatus;
   },
@@ -828,6 +840,7 @@ export default {
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       programCompletionEffectiveDateList: [],
       programEffectiveDate: "",
       programExpiryDate: "",
@@ -1102,7 +1115,11 @@ export default {
             })
             .catch((error) => {
               if (error.response.data.code == "404") {
-                this.showNotification("danger", "School cannot be found");
+                this.snackbarStore.showSnackbar(
+                  "School cannot be found",
+                  "error",
+                  5000
+                );
                 this.disableSave = true;
               }
             });
@@ -1169,7 +1186,11 @@ export default {
             })
             .catch((error) => {
               if (error.response.data.code == "404") {
-                this.showNotification("danger", "School cannot be found");
+                this.snackbarStore.showSnackbar(
+                  "School cannot be found",
+                  "error",
+                  5000
+                );
                 this.disableSave = true;
               }
             });
@@ -1436,8 +1457,7 @@ export default {
           this.getSchoolInfo(response.data.schoolAtGrad, "schoolAtGrad");
           this.showEdit = false;
           this.editedGradStatus = {};
-
-          this.showNotification("success", "GRAD Status Saved");
+          this.snackbarStore.showSnackbar("GRAD Status Saved", "success", 5000);
         })
         .catch((error) => {
           //eslint-disable-next-line
@@ -1453,7 +1473,11 @@ export default {
               this.notificationMessage = error.response.data.message;
             }
           }
-          this.showNotification("danger", this.notificationMessage);
+          this.snackbarStore.showSnackbar(
+            this.notificationMessage,
+            "danger",
+            5000
+          );
         });
     },
 

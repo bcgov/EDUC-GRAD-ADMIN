@@ -2,9 +2,11 @@ import { defineStore } from "pinia";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import StudentService from "@/services/StudentService.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export const useStudentStore = defineStore("student", {
   namespaced: true,
   state: () => ({
+    snackbarStore: useSnackbarStore(),
     pen: "",
     id: "",
     advancedSearchProps: "",
@@ -41,7 +43,24 @@ export const useStudentStore = defineStore("student", {
       auditHistory: [],
       auditHistoryOptionalPrograms: [],
     },
-    editedGradStatus: {},
+    editedGradStatus: {
+      programCompletionDate: "",
+      pen: "",
+      program: "",
+      studentGrade: "",
+      schoolName: "",
+      schoolOfRecord: "",
+      schoolAtGrad: "",
+      schoolAtGradName: "",
+      studentStatus: "",
+      studentID: "",
+      gpa: "",
+      honoursStanding: "",
+      adultStartDate: "",
+      consumerEducationRequirementMet: "",
+      recalculateGradStatus: "",
+      recalculateProjectedGrad: "",
+    },
   }),
   actions: {
     loadStudentReportsAndCertificates() {
@@ -60,11 +79,7 @@ export const useStudentStore = defineStore("student", {
             // eslint-disable-next-line
             console.log(error);
           } else {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title: "Service ERROR" + error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
+            this.snackbarStore.showSnackbar(error.response, "error", 5000);
           }
         });
     },
@@ -415,6 +430,9 @@ export const useStudentStore = defineStore("student", {
     },
   },
   getters: {
+    getEditedGradStatus() {
+      return this.editedGradStatus;
+    },
     getStudentAuditHistory() {
       return this.student.auditHistory;
     },
@@ -551,9 +569,9 @@ export const useStudentStore = defineStore("student", {
     isAdmin() {
       return this.roles == "administrator";
     },
-    isAuthenticated() {
-      return this.roles == "authenticated";
-    },
+    // isAuthenticated() {
+    //   return this.roles == "authenticated";
+    // },
     getPermissions() {
       return this.permissions;
     },

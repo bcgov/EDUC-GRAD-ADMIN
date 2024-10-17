@@ -2,7 +2,12 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"><v-icon>mdi-plus</v-icon></v-btn>
+        <v-btn
+          v-if="hasPermissions('BATCH', 'runSchoolReportRegeneration')"
+          color="primary"
+          v-bind="props"
+          ><v-icon>mdi-plus</v-icon></v-btn
+        >
       </template>
       <v-card>
         <v-card-title>
@@ -94,7 +99,7 @@
                   </v-stepper-window-item>
 
                   <v-stepper-window-item value="2">
-                    <v-card title="Schedule" flat>
+                    <v-card flat>
                       Confirmation
                       <v-table>
                         <thead>
@@ -154,7 +159,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions class="batch-form-actions">
+        <v-card-actions class="sticky-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -181,10 +186,12 @@ import DistrictInput from "@/components/Batch/Forms/FormInputs/DistrictInput.vue
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
+import { useAccessStore } from "../../../store/modules/access";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
+import { generateRequestPayload } from "@/utils/common.js";
 export default {
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
@@ -285,11 +292,11 @@ export default {
     step: 0,
     dialog: false,
     selectedConfirmations: [],
-
     snackbarStore: useSnackbarStore(),
     batchProcessingStore: useBatchProcessingStore(),
   }),
   computed: {
+    ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
@@ -325,18 +332,44 @@ export default {
     },
     async submit() {
       try {
-        let response = await BatchProcessingService.runArchiveSchoolReports(
+        const requestTemplate = [
+          "districts",
+          "gradDateFrom",
+          "gradDateTo",
+          "localDownload",
+          "pens",
+          "programs",
+          "psiCodes",
+          "quantity",
+          "reportTypes",
+          "schoolCategoryCodes",
+          "schoolOfRecords",
+          "validateInput",
+        ];
+        const requestPayload = generateRequestPayload(
           this.getBatchRequest,
+          requestTemplate
+        );
+        let response = await BatchProcessingService.runArchiveSchoolReports(
+          requestPayload,
           this.getBatchRequestCrontime
         );
+
+        if (this.getBatchRequestCrontime) {
+          this.snackbarStore.showSnackbar(
+            "User Request School Report Regeneration has been successfully scheduled",
+            5000
+          );
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Batch " +
+              response.data.batchId +
+              "- User Request School Report Regeneration submitted",
+            "success",
+            5000
+          );
+        }
         this.closeDialogAndResetForm();
-        this.snackbarStore.showSnackbar(
-          "Batch " +
-            response.data.batchId +
-            "- Archive School Reports Process submitted",
-          "success",
-          5000
-        );
         this.setActiveTab("batchRuns");
         this.updateDashboards();
       } catch (error) {

@@ -5,10 +5,10 @@
         <v-alert v-if="!courses" class="container">
           This student does not have any courses.
         </v-alert>
-        <DisplayTable
+        <v-data-table
           v-if="courses"
           :items="courses"
-          :fields="fields"
+          :headers="fields"
           :id="id"
           showFilter="true"
           title="studentCourse"
@@ -21,26 +21,30 @@
             action: 'removeStudentCourse',
           }"
         >
-          <!-- <template #thead-top="">
-          <b-tr class="table-row-header-group top-row">
-            <b-th colspan="1" class="table-header-group text-center"></b-th>
-            <b-th colspan="3" class="table-header-group text-center">
-              <div></div
-            ></b-th>
-            <b-th colspan="2" class="table-header-group text-center">
-              <div>Interim</div>
-            </b-th>
-            <b-th colspan="2" class="table-header-group text-center"
-              ><div>Final</div></b-th
-            >
-            <b-th colspan="1">Eq/</b-th>
-            <b-th colspan="1"></b-th>
-            <b-th colspan="1">Fa</b-th>
-          </b-tr>
-        </template> -->
-          <!-- <template #cell(sessionDate)="row">
-          {{ $filters.formatYYYYMMDate(row.value) }}
-        </template> -->
+          <template
+            v-slot:item.data-table-expand="{
+              item,
+              internalItem,
+              toggleExpand,
+              isExpanded,
+            }"
+          >
+            <td v-if="item.hasRelatedCourse == 'Y'">
+              <v-btn
+                variant="text"
+                density="comfortable"
+                @click="toggleExpand(internalItem)"
+                class="v-data-table__expand-icon"
+                :class="{ 'v-data-table__expand-icon--active': isExpanded }"
+                :icon="
+                  isExpanded(internalItem)
+                    ? 'mdi-chevron-down'
+                    : 'mdi-chevron-right'
+                "
+              >
+              </v-btn>
+            </td>
+          </template>
           <template v-slot:item.courseName="{ item }">
             <v-dialog max-width="500">
               <template v-slot:activator="{ props: activatorProps }">
@@ -48,9 +52,9 @@
                   <template v-slot:activator="{ props: activatorProps }">
                     <v-btn
                       v-bind="activatorProps"
-                      color="surface-variant"
                       :text="item.courseName"
-                      variant="flat"
+                      variant="plain"
+                      class="v-btn-link"
                     ></v-btn>
                   </template>
 
@@ -113,7 +117,7 @@
                         <v-spacer></v-spacer>
 
                         <v-btn
-                          text="Close Dialog"
+                          text="Close"
                           @click="isActive.value = false"
                         ></v-btn>
                       </v-card-actions>
@@ -129,15 +133,13 @@
                   <v-card-actions>
                     <v-spacer></v-spacer>
 
-                    <v-btn
-                      text="Close Dialog"
-                      @click="isActive.value = false"
-                    ></v-btn>
+                    <v-btn text="Close" @click="isActive.value = false"></v-btn>
                   </v-card-actions>
                 </v-card>
               </template>
             </v-dialog>
           </template>
+
           <template v-slot:expanded-row="{ columns, item }">
             <tr>
               <td :colspan="columns.length">
@@ -181,7 +183,7 @@
               </td>
             </tr>
           </template>
-        </DisplayTable>
+        </v-data-table>
       </v-card-text>
     </v-card>
   </div>
@@ -190,12 +192,9 @@
 <script>
 import { useStudentStore } from "../../store/modules/student";
 import { mapState, mapActions } from "pinia";
-import DisplayTable from "@/components/DisplayTable.vue";
 export default {
   name: "StudentCourses",
-  components: {
-    DisplayTable: DisplayTable,
-  },
+  components: {},
   computed: {
     ...mapState(useStudentStore, {
       courses: "getStudentCourses",

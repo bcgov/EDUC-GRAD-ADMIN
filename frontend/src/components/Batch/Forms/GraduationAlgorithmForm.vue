@@ -2,7 +2,12 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"><v-icon>mdi-plus</v-icon></v-btn>
+        <v-btn
+          v-if="hasPermissions('BATCH', 'createBatchJob')"
+          color="primary"
+          v-bind="props"
+          ><v-icon>mdi-plus</v-icon></v-btn
+        >
       </template>
       <v-card>
         <v-card-title>
@@ -44,13 +49,33 @@
                         <v-select
                           v-model="group"
                           :items="[
-                            'Student',
-                            'School',
-                            'School Category',
-                            'Program',
+                            { title: 'Student', value: 'Student' },
+                            { title: 'School', value: 'School' },
+                            {
+                              title: 'School Category',
+                              value: 'School Category',
+                              disabled: !hasPermissions(
+                                'BATCH',
+                                'selectSchoolCategoryGroup'
+                              ),
+                            },
+                            {
+                              title: 'Program',
+                              value: 'Program',
+                              disabled: !hasPermissions(
+                                'BATCH',
+                                'selectProgramGroup'
+                              ),
+                            },
                           ]"
                           label="Select group"
                           hide-details
+                        >
+                          <template v-slot:item="{ props, item }">
+                            <v-list-item
+                              v-bind="props"
+                              :disabled="item.raw.disabled"
+                            ></v-list-item> </template
                         ></v-select>
                       </v-col>
                     </v-row>
@@ -70,7 +95,20 @@
 
                   <v-stepper-window-item value="2">
                     <v-card flat>
-                      <ScheduleInput></ScheduleInput>
+                      <ScheduleInput>
+                        <template #batchDetails>
+                          <v-data-table
+                            :items="[
+                              {
+                                label: 'Run Type',
+                                value: 'Graduation Algorithm',
+                              },
+                            ]"
+                            hide-default-header
+                            hide-default-footer
+                          >
+                          </v-data-table> </template
+                      ></ScheduleInput>
                     </v-card>
                   </v-stepper-window-item>
 
@@ -88,7 +126,7 @@
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions class="batch-form-actions">
+        <v-card-actions class="sticky-form-actions">
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancel">
             Cancel
@@ -121,8 +159,11 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
+import { useAccessStore } from "../../../store/modules/access";
+
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { mapActions, mapState } from "pinia";
+import { generateRequestPayload } from "@/utils/common.js";
 export default {
   setup() {
     const batchProcessingStore = useBatchProcessingStore();
@@ -228,6 +269,32 @@ export default {
       "getBatchRunTime",
       "getBatchRequestCrontime",
     ]),
+    ...mapState(useAccessStore, ["hasPermissions"]),
+    requestPayload() {
+      const requestTemplate = [
+        "districts",
+        "gradDateFrom",
+        "gradDateTo",
+        "localDownload",
+        "pens",
+        "programs",
+        "psiCodes",
+        "quantity",
+        "reportTypes",
+        "schoolCategoryCodes",
+        "schoolOfRecords",
+        "validateInput",
+      ];
+      const batchRequest = this.getBatchRequest;
+
+      // Filter the batch request using the requestTemplate array
+      return requestTemplate.reduce((acc, field) => {
+        if (batchRequest[field] !== undefined) {
+          acc[field] = batchRequest[field];
+        }
+        return acc;
+      }, {});
+    },
   },
   methods: {
     ...mapActions(useBatchRequestFormStore, [
@@ -252,18 +319,44 @@ export default {
     },
     async submit() {
       try {
-        let response = await BatchProcessingService.runREGALG(
+        const requestTemplate = [
+          "districts",
+          "gradDateFrom",
+          "gradDateTo",
+          "localDownload",
+          "pens",
+          "programs",
+          "psiCodes",
+          "quantity",
+          "reportTypes",
+          "schoolCategoryCodes",
+          "schoolOfRecords",
+          "validateInput",
+        ];
+        const requestPayload = generateRequestPayload(
           this.getBatchRequest,
+          requestTemplate
+        );
+        let response = await BatchProcessingService.runREGALG(
+          requestPayload,
           this.getBatchRequestCrontime
         );
+        if (this.getBatchRequestCrontime) {
+          this.snackbarStore.showSnackbar(
+            "Graduation Algorithm request has been successfully scheduled",
+            5000
+          );
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Batch " +
+              response.data.batchId +
+              "- Graduation Algorithm request submitted",
+            "success",
+            5000
+          );
+        }
         this.closeDialogAndResetForm();
-        this.snackbarStore.showSnackbar(
-          "Batch " +
-            response.data.batchId +
-            "- Graduation Algorithm request submitted",
-          "success",
-          5000
-        );
+
         this.setActiveTab("batchRuns");
       } catch (error) {
         // handle the error and show the notification

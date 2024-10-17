@@ -86,14 +86,15 @@
                   <v-row class="align-center">
                     <v-col class="d-flex align-center">
                       <v-text-field
+                        density="compact"
                         type="search"
                         v-model="penInput"
                         maxlength="9"
                         minlength="9"
                         outlined
                         dense
-                        placeholder=""
-                        class=""
+                        placeholder="PEN"
+                        class="headerSearch"
                         ref="penSearch"
                       ></v-text-field>
                       <v-btn
@@ -101,7 +102,7 @@
                         @click="findStudentByPen"
                         variant="flat"
                         color="primary"
-                        class="px-2"
+                        class="px-2 header-search-btn"
                         >Search
                       </v-btn>
                     </v-col>
@@ -118,7 +119,8 @@
 <script>
 import StudentService from "@/services/StudentService.js";
 import CommonService from "@/services/CommonService.js";
-import { loadStudent, showNotification } from "../../utils/common.js";
+import { loadStudent } from "../../utils/common.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "@/store/modules/student";
 import { mapState } from "pinia";
 
@@ -130,6 +132,7 @@ export default {
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       pen: "",
       searchLoading: false,
       penInput: "",
@@ -152,7 +155,6 @@ export default {
   },
   async created() {
     this.loadStudent = loadStudent;
-    this.showNotification = showNotification;
     let versionResponse = await CommonService.getVersion();
     this.version = versionResponse.data;
   },
@@ -168,7 +170,6 @@ export default {
         localStorage.removeItem("refresh");
       }
       this.studentStore.unsetStudent();
-      // this.$store.commit("logout");
       this.$router.push("/logout");
     },
     selectStudent() {
@@ -177,9 +178,10 @@ export default {
     findStudentByPen: function () {
       if (this.penInput) {
         if (this.penInput == this.profile.pen) {
-          this.showNotification(
+          this.snackbarStore.showSnackbar(
+            "The entered PEN is the same as the currently loaded student",
             "warning",
-            "The entered PEN is the same as the currently loaded student"
+            5000
           );
         } else {
           this.searchLoading = true;
@@ -188,7 +190,13 @@ export default {
             .then((response) => {
               if (response.data) {
                 if (response.data.length == 0) {
-                  throw new Error("Student not found");
+                  throw new Error(
+                    `Student ${this.penInput} cannot be found on the GRAD or PEN database`
+                  );
+                } else if (response.data[0].program == null || "") {
+                  throw new Error(
+                    `Student ${this.penInput} exists in PEN but does not have a GRAD system record.`
+                  );
                 }
                 this.studentStore.unsetStudent();
                 this.studentStore.setQuickSearchId(response.data[0].studentID);
@@ -198,11 +206,9 @@ export default {
             })
             .catch((error) => {
               // eslint-disable-next-line
+              console.error("Header Search: ", error?.message);
               this.searchLoading = false;
-              this.showNotification(
-                "danger",
-                `Student ${this.penInput} cannot be found on the GRAD or PEN database`
-              );
+              this.snackbarStore.showSnackbar(error?.message, "error", 5000);
             })
             .finally(() => {
               this.penInput = "";
@@ -226,7 +232,7 @@ export default {
   z-index: 99;
 }
 header#navbar {
-  top: 55px !important;
+  top: 41px !important;
   height: 56px;
 }
 button.v-btn.v-theme--light.bg-primary.v-btn--density-default.v-btn--size-default.v-btn--variant-flat.px-2 {
@@ -384,10 +390,13 @@ header .nav-btn {
   header h1 {
     display: inline;
   }
+  .header-search-btn {
+    top: -9px;
+  }
   .top-search {
     width: 100px;
     position: absolute;
-    top: -78px;
+    top: 5px;
     right: 20px;
   }
   .burgernav {
@@ -438,11 +447,11 @@ header .nav-btn {
   .top-search {
     position: absolute;
     width: 230px;
-    top: -11px;
+    top: 5px;
     right: 0px;
   }
   .user-profile {
-    margin-top: -20px;
+    margin-top: -36px;
   }
 }
 </style>

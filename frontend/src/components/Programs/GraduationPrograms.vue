@@ -29,8 +29,8 @@
 <script>
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import DisplayTable from "../DisplayTable.vue";
-import { showNotification } from "../../utils/common.js";
-import { mapGetters } from "vuex";
+import { useSnackbarStore } from "@/store/modules/snackbar";
+
 export default {
   name: "GraduationPrograms",
   components: {
@@ -40,6 +40,7 @@ export default {
   computed: {},
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       isLoading: true,
       show: false,
       isHidden: false,
@@ -93,7 +94,6 @@ export default {
     };
   },
   created() {
-    this.showNotification = showNotification;
     ProgramManagementService.getGraduationPrograms()
       .then((response) => {
         // filters out the "No Program" option until business is ready to implement
@@ -104,10 +104,7 @@ export default {
         this.isLoading = false;
       })
       .catch((error) => {
-        this.showNotification(
-          "danger",
-          "There was an error: " + error.response
-        );
+        this.snackbarStore.showSnackbar(error.message, "error", 5000);
       });
   },
   methods: {

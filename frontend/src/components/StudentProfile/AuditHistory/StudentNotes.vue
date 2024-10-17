@@ -1,102 +1,94 @@
 <template>
   <div>
-    <div class="student-note px-3">
-      <!-- Add new Note form -->
-      <b-card
-        title=""
-        tag="article"
-        class="col-12 note-card mb-3"
-        v-if="showForm"
-      >
-        <b-form
-          @submit="onSubmit"
-          @reset="onReset"
-          v-if="allowCreateStudentNotes"
-        >
-          <b-form-group id="note-form" label="Add note:" label-for="comment">
-            <b-form-textarea
-              id="comment"
-              v-model="newNote.note"
-              placeholder="Max 255 Characters"
-              :state="newNote.note.length <= 255"
-              required
-            ></b-form-textarea>
-          </b-form-group>
-          <b-button-group>
-            <b-button type="submit" variant="primary" size="sm" class="mr-1"
-              >Add</b-button
-            >
-            <b-button
-              type="reset"
-              variant="outline-secondary"
-              size="sm"
-              class=""
-              >Reset</b-button
-            >
-          </b-button-group>
-        </b-form>
-      </b-card>
-      <!-- Notes from the store pull from the database -->
-      <div
-        v-for="(studentNote, studentNoteIndex) in studentNotes"
-        :key="studentNote.id"
-      >
-        <b-card
-          title=""
-          no-body
-          tag="article"
-          class="col-12 mb-2"
-          :header="'Created by ' + studentNote.createUser"
-        >
-          <b-card-text>
-            <strong>Created:</strong>
-            {{ $filters.formatTime(studentNote.createDate) }}
-            <p v-if="showEditForm != studentNote.id">{{ studentNote.note }}</p>
-            <b-form-textarea
-              id="textarea"
-              v-if="showEditForm == studentNote.id"
-              v-model="editedNote.note"
-              placeholder="Max 255 Characters"
-              :state="editedNote.note.length <= 255"
-              rows="3"
-              max-rows="6"
-            ></b-form-textarea>
-            <b-button
-              variant="primary"
-              size="sm"
-              v-if="showSave && showEditForm == studentNote.id"
-              @click="onSaveEditedNote(studentNoteIndex, editedNote)"
-              class=""
-              >Save
-            </b-button>
-            <b-button
-              variant="link"
-              v-if="showEditForm == studentNote.id"
-              size="sm"
-              @click="cancelEdit()"
-              class=""
-              >Cancel
-            </b-button>
+    <!-- Button to open the dialog -->
+    <v-btn color="primary" @click="showDialog = true">Add Note</v-btn>
 
-            <b-button
-              variant="link"
-              size="sm"
-              @click="onEditNote(studentNote)"
-              class="float-right edit-button"
-              >Edit
-            </b-button>
-            <b-button
-              v-if="showAddButton"
-              variant="danger"
-              size="sm"
-              @click="onDelete(studentNote.id)"
-              class="float-right delete-button"
-              >Delete
-            </b-button>
-          </b-card-text>
-        </b-card>
-      </div>
-    </div>
+    <!-- v-dialog for adding notes -->
+    <v-dialog v-model="showDialog" max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Add Note</span>
+        </v-card-title>
+        <v-card-text>
+          <v-form @submit.prevent="onSubmit" @reset="onReset">
+            <v-textarea
+              v-model="newNote.note"
+              label="Add note:"
+              placeholder="Max 255 Characters"
+              :rules="[
+                (value) =>
+                  !value || value.length <= 255 || 'Max 255 characters',
+              ]"
+              required
+            ></v-textarea>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" @click="onSubmit">Add</v-btn>
+          <v-btn text @click="showDialog = false">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-list>
+      <v-list-item-group>
+        <v-list-item
+          v-for="(studentNote, studentNoteIndex) in studentNotes"
+          :key="studentNote.id"
+        >
+          <v-card class="mb-2" outlined>
+            <v-card-title>
+              <span>{{ studentNote.createUser }}</span>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="onEditNote(studentNote)">
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+              <v-btn
+                v-if="showAddButton"
+                icon
+                @click="onDelete(studentNote.id)"
+              >
+                <v-icon color="red">mdi-delete</v-icon>
+              </v-btn>
+            </v-card-title>
+            <v-card-subtitle>
+              <strong>Created:</strong>
+              {{ $filters.formatTime(studentNote.createDate) }}
+            </v-card-subtitle>
+            <v-card-text>
+              <div v-if="showEditForm != studentNote.id">
+                {{ studentNote.note }}
+              </div>
+              <v-textarea
+                v-if="showEditForm == studentNote.id"
+                v-model="editedNote.note"
+                placeholder="Max 255 Characters"
+                :rules="[
+                  (value) =>
+                    !value || value.length <= 255 || 'Max 255 characters',
+                ]"
+                rows="3"
+                max-rows="6"
+              ></v-textarea>
+              <v-btn
+                v-if="showSave && showEditForm == studentNote.id"
+                color="primary"
+                @click="onSaveEditedNote(studentNoteIndex, editedNote)"
+              >
+                Save
+              </v-btn>
+              <v-btn
+                v-if="showEditForm == studentNote.id"
+                text
+                @click="cancelEdit()"
+              >
+                Cancel
+              </v-btn>
+            </v-card-text>
+          </v-card>
+        </v-list-item>
+      </v-list-item-group>
+    </v-list>
   </div>
 </template>
 
@@ -104,10 +96,10 @@
 import { useStudentStore } from "../../../store/modules/student";
 import { useAccessStore } from "../../../store/modules/access";
 import { useAuthStore } from "../../../store/modules/auth";
-
 import { mapState } from "pinia";
 import StudentService from "@/services/StudentService.js";
-import { showNotification } from "../../../utils/common.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
+
 export default {
   name: "StudentNotes",
   computed: {
@@ -122,13 +114,10 @@ export default {
       userInfo: "userInfo",
     }),
   },
-  created() {
-    this.studentProfile = this.profile;
-    this.showNotification = showNotification;
-  },
   data() {
     return {
-      showForm: true,
+      snackbarStore: useSnackbarStore(),
+      showDialog: false, // State to control the dialog visibility
       showAddButton: true,
       showSave: false,
       showEditForm: "",
@@ -141,7 +130,6 @@ export default {
         note: "",
         studentID: "",
       },
-      studentProfile: {},
     };
   },
   methods: {
@@ -149,7 +137,11 @@ export default {
       if (this.editedNote.note.length <= 255) {
         StudentService.addStudentNotes(editedNote)
           .then((response) => {
-            this.showNotification("success", "Student note saved");
+            this.snackbarStore.showSnackbar(
+              "Student note saved",
+              "success",
+              5000
+            );
             if (response.data && response.data.value) {
               this.studentNotes.splice(
                 studentNoteIndex,
@@ -160,15 +152,19 @@ export default {
             this.showEditForm = false;
           })
           .catch((error) => {
-            // eslint-disable-next-line
             console.log("There was an error:" + error);
-            this.showNotification(
-              "danger",
-              "There was an error with the web service."
+            this.snackbarStore.showSnackbar(
+              "There was an error:" + error.message,
+              "error",
+              5000
             );
           });
       } else {
-        this.showNotification("danger", "Max character 255 limit exceeded.");
+        this.snackbarStore.showSnackbar(
+          "Max character 255 limit exceeded.",
+          "error",
+          5000
+        );
       }
     },
     onEditNote(note) {
@@ -183,79 +179,56 @@ export default {
       this.showEditForm = "";
       this.editedNote = {};
     },
-    showSubmitForm() {
-      this.showForm = !this.showForm;
-      this.showAddButton = !this.showAddButton;
-    },
-    onSubmit(event) {
-      event.preventDefault();
+    onSubmit() {
       if (this.newNote.note.length <= 255) {
-        this.showAddButton = true;
-        this.showForm = true;
-        let current = new Date().toISOString().slice(0, 10);
         this.newNote.studentID = this.$route.params.studentId;
         this.newNote.createUser = this.userInfo.userName;
-        this.newNote.createDate = current;
+        this.newNote.createDate = new Date().toISOString();
         StudentService.addStudentNotes(this.newNote)
           .then((response) => {
             if (response.data && response.data.value) {
               this.studentNotes.unshift(response.data.value);
               this.newNote.note = "";
-              this.showNotification("success", "Student note added");
+              this.snackbarStore.showSnackbar(
+                "Student note added",
+                "success",
+                5000
+              );
+              // Close the dialog after successfully adding the note
+              this.showDialog = false;
             }
           })
           .catch((error) => {
-            // eslint-disable-next-line
             console.log("There was an error:" + error);
-            this.showNotification(
-              "danger",
-              "There was an error with the web service."
+            this.snackbarStore.showSnackbar(
+              "There was an error with the web service.",
+              "error",
+              5000
             );
           });
       } else {
-        this.showNotification("danger", "Max character 255 limit exceeded.");
+        this.snackbarStore.showSnackbar(
+          "Max character 255 limit exceeded.",
+          "error",
+          5000
+        );
       }
     },
-    onReset(event) {
-      event.preventDefault();
-      // Reset our form values
+    onReset() {
       this.newNote.note = "";
     },
     onDelete(noteID) {
       StudentService.deleteStudentNotes(noteID);
-      let removeIndex = this.studentNotes
-        .map(function (item) {
-          return item.id;
-        })
+      const removeIndex = this.studentNotes
+        .map((item) => item.id)
         .indexOf(noteID);
       this.studentNotes.splice(removeIndex, 1);
-      this.showNotification("success", "Student note deleted");
-    },
-    getNotes() {
-      StudentService.getStudentNotes(this.$route.params.studentid)
-        .then((response) => {
-          this.studentNotes = response.data;
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.log("There was an error:" + error);
-          this.showNotification(
-            "danger",
-            "There was an error with the web service."
-          );
-        });
     },
   },
 };
 </script>
 
 <style scoped>
-.card {
-  padding: 0px;
-}
-.card-text {
-  padding: 19px;
-}
 .delete-button {
   position: absolute;
   right: 10px;

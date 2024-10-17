@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import ApiService from "@/common/apiService";
-import { Routes, Roles } from "@/utils/constants";
+import { Routes, Roles, RolePermissions } from "@/utils/constants";
 
 export const useAccessStore = defineStore("access", {
   namespaced: true,
@@ -10,6 +10,7 @@ export const useAccessStore = defineStore("access", {
   }),
   getters: {
     getRoles: (state) => state.roles,
+
     allowUpdateGradStatus: (state) => {
       return (
         state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) ||
@@ -67,17 +68,31 @@ export const useAccessStore = defineStore("access", {
         state.roles.includes(Roles.GRAD_INFO_OFFICER)
       );
     },
+    hasPermissions: (state) => {
+      return (section, permission) => {
+        // Check if the specified section and permission exist
+        const permissionData = RolePermissions[section]?.[permission];
+        if (!permissionData) {
+          return false; // Section or permission does not exist
+        }
+
+        // Check if any allowed role matches the user's roles
+        return permissionData.allowed.some((role) =>
+          state.roles.includes(role)
+        );
+      };
+    },
   },
 
   actions: {
-    setUserAccess(userAccess) {
+    async setUserAccess(userAccess) {
       if (userAccess) {
         this.userAccess = userAccess;
       } else {
         this.userAccess = null;
       }
     },
-    setUserRoles(role) {
+    async setUserRoles(role) {
       if (role) {
         this.roles = role;
       } else {
@@ -85,7 +100,7 @@ export const useAccessStore = defineStore("access", {
       }
     },
     //sets the token required for refreshing expired json web tokens
-    logoutState() {
+    async logoutState() {
       localStorage.removeItem("jwtToken");
       this.userAccess = null;
       this.isAuthenticated = false;
