@@ -128,6 +128,19 @@ export const useStudentStore = defineStore("student", {
           }
         });
     },
+    loadStudentGradStatus(studentId) {
+      StudentService.getGraduationStatus(studentId)
+        .then((response) => {
+          this.setStudentGradStatus(response.data);
+          this.showEdit = false;
+        })
+        .catch((error) => {
+          console.error(
+            "There was an error loading student grad status",
+            error
+          );
+        });
+    },
     loadStudentOptionalPrograms(studentId) {
       StudentService.getGraduationStatusOptionalPrograms(studentId)
         .then((response) => {
@@ -138,6 +151,23 @@ export const useStudentStore = defineStore("student", {
             this.$bvToast.toast("ERROR " + error.response.statusText, {
               title:
                 "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
+                error.response.status,
+              variant: "danger",
+              noAutoHide: true,
+            });
+          }
+        });
+    },
+    loadStudentCareerPrograms(studentId) {
+      StudentService.getStudentCareerPrograms(studentId)
+        .then((response) => {
+          this.setStudentCareerPrograms(response.data);
+        })
+        .catch((error) => {
+          if (error.response.status) {
+            this.$bvToast.toast("ERROR " + error.response.statusText, {
+              title:
+                "There was an error with the Student Service (getting the student's Career Programs): " +
                 error.response.status,
               variant: "danger",
               noAutoHide: true,
