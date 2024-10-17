@@ -62,6 +62,12 @@ export const useAccessStore = defineStore("access", {
     allowUpdateRecalcFlags: (state) => {
       return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
     },
+    allowOptionalProgramUpdate: (state) => {
+      return (
+        state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) ||
+        state.roles.includes(Roles.GRAD_INFO_OFFICER)
+      );
+    },
     hasPermissions: (state) => {
       return (section, permission) => {
         // Check if the specified section and permission exist
@@ -71,13 +77,14 @@ export const useAccessStore = defineStore("access", {
         }
 
         // Check if any allowed role matches the user's roles
-        return permissionData.allowed.some(role => state.roles.includes(role));
+        return permissionData.allowed.some((role) =>
+          state.roles.includes(role)
+        );
       };
     },
   },
 
   actions: {
-   
     async setUserAccess(userAccess) {
       if (userAccess) {
         this.userAccess = userAccess;

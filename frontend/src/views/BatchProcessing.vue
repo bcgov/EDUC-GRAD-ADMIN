@@ -2,16 +2,6 @@
   <div class="batch-processing-view">
     <h1>Batch Processing</h1>
     <div>
-      <!-- <v-btn
-        class="position-absolute"
-        style="z-index: 10; right: 0; margin-right: 40px"
-        color="transparent"
-        small
-        @click="updateDashboards"
-      >
-        <v-icon icon="mdi-refresh" size="large"></v-icon>
-        Update
-      </v-btn> -->
       <v-tabs v-model="activeTab" bg-color="transparent">
         <v-tab
           value="batchRuns"
@@ -20,6 +10,14 @@
             activeTab = 'batchRuns';
           "
           >Batch Runs ({{ batchRuns.length }})</v-tab
+        >
+        <v-tab
+          @click="
+            getJwtToken;
+            clearBatchDetails;
+          "
+          value="newBatchRequest"
+          >New Batch Request</v-tab
         >
         <v-tab
           value="scheduledRuns"
@@ -36,14 +34,6 @@
           "
           value="batchRoutines"
           >Scheduled Routines</v-tab
-        >
-        <v-tab
-          @click="
-            getJwtToken;
-            clearBatchDetails;
-          "
-          value="newBatchRequest"
-          >New Batch Request</v-tab
         >
 
         <v-tab @click.prevent class="ml-auto">
@@ -96,6 +86,7 @@
                   ><TranscriptAlgorithmForm
                     v-else-if="item.code == 'TVRRUN'"
                   ></TranscriptAlgorithmForm>
+                  <DistrunForm v-else-if="item.code == 'DISTRUN'"></DistrunForm>
                   <v-btn v-else :disabled="true">+ </v-btn>
                 </template>
               </v-data-table>
@@ -117,15 +108,17 @@
                   <tr>
                     <td class="pl-3">Blank certificate print</td>
                     <td>
-                      <DistrunForm
+                      <DistrunUserForm
                         credentialSelected="Blank certificate print"
-                      ></DistrunForm>
+                      ></DistrunUserForm>
                     </td>
                   </tr>
                   <tr>
                     <td>Reprint certificate – no principal signature block</td>
                     <td>
-                      <DistrunForm credentialSelected="RC"></DistrunForm>
+                      <DistrunUserForm
+                        credentialSelected="RC"
+                      ></DistrunUserForm>
                     </td>
                   </tr>
                   <tr>
@@ -133,21 +126,25 @@
                       Original certificate – with principal signature block
                     </td>
                     <td>
-                      <DistrunForm credentialSelected="OC"></DistrunForm>
+                      <DistrunUserForm
+                        credentialSelected="OC"
+                      ></DistrunUserForm>
                     </td>
                   </tr>
                   <tr>
                     <td>Blank transcript print</td>
                     <td>
-                      <DistrunForm
+                      <DistrunUserForm
                         credentialSelected="Blank transcript print"
-                      ></DistrunForm>
+                      ></DistrunUserForm>
                     </td>
                   </tr>
                   <tr>
                     <td>Transcript</td>
                     <td>
-                      <DistrunForm credentialSelected="OT"></DistrunForm>
+                      <DistrunUserForm
+                        credentialSelected="OT"
+                      ></DistrunUserForm>
                     </td>
                   </tr>
                 </tbody>
@@ -225,6 +222,7 @@ import BatchProcessingService from "@/services/BatchProcessingService.js";
 import DistributionService from "@/services/DistributionService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 import ScheduledBatchRuns from "@/components/Batch/ScheduledBatchRuns.vue";
+import DistrunUserForm from "@/components/Batch/Forms/DistrunUserForm.vue";
 import DistrunForm from "@/components/Batch/Forms/DistrunForm.vue";
 import RegenerateCertificateForm from "@/components/Batch/Forms/RegenerateCertificateForm.vue";
 import GraduationAlgorithmForm from "@/components/Batch/Forms/GraduationAlgorithmForm.vue";
@@ -293,6 +291,7 @@ export default {
     },
   },
   components: {
+    DistrunUserForm: DistrunUserForm,
     DistrunForm: DistrunForm,
     DisplayTable: DisplayTable,
     BatchRuns: BatchRuns,
@@ -370,6 +369,7 @@ export default {
         this.batchRunGradOptions = this.filterBatchTypes(this.batchTypes, [
           "REGALG",
           "TVRRUN",
+          "DISTRUN",
         ]);
         this.credentialBatchRunOptions.userRequests = this.filterBatchTypes(
           this.batchTypes,

@@ -268,7 +268,7 @@ export default {
         requestTemplate
       );
       try {
-        let response = await BatchProcessingService.runDISTRUN_YE(
+        let response = await BatchProcessingService.runNONGRADRUN(
           requestPayload,
           this.getBatchRequestCrontime
         );

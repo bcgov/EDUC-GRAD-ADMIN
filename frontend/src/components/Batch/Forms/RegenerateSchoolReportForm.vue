@@ -350,7 +350,7 @@ export default {
           this.getBatchRequest,
           requestTemplate
         );
-        let response = await BatchProcessingService.runArchiveSchoolReports(
+        let response = await BatchProcessingService.runSCHL_RPT_REGEN(
           requestPayload,
           this.getBatchRequestCrontime
         );

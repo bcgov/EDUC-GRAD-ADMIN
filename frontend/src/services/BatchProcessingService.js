@@ -73,21 +73,49 @@ export default {
 
     
   },     
-  runDISTRUN_MONTHLY(){
-    return ApiService.apiAxios.get('/api/v1/batch/executedisrunbatchjob');
+  runDISTRUN_MONTHLY(request, cronTime=""){
+    if (cronTime) {
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime;
+      scheduledRequest.jobName = "MDBJ";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      this.addScheduledJob(scheduledRequest);
+    } else {
+      return ApiService.apiAxios.get('/api/v1/batch/executedisrunbatchjob');
+    }
   },
   runSCHL_RPT_REGEN(request, cronTime=""){
-    return ApiService.apiAxios.post(`/api/v1/batch/regenerate/school-report`,request);
+    if (cronTime) {
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime;
+      scheduledRequest.jobName = "??";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      this.addScheduledJob(scheduledRequest);
+    } else {
+      return ApiService.apiAxios.post(`/api/v1/batch/regenerate/school-report`,request);
+    }
   },  
   runDISTRUN_SUPP(){
     return ApiService.apiAxios.get('/api/v1/batch/executesuppdisrunbatchjob');
   },
   runNONGRADRUN(request, cronTime=""){
+    
     if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
       // If the condition is true, set districts to an empty array
       request.districts = [];
     }
-    return ApiService.apiAxios.post('/api/v1/batch/executenongraddisrunbatchjob',request);
+    if (cronTime) {
+      let scheduledRequest = {};
+      scheduledRequest.cronExpression = cronTime;
+      scheduledRequest.jobName = "NDBJ";
+      scheduledRequest.blankPayLoad = null;
+      scheduledRequest.payload = request;
+      this.addScheduledJob(scheduledRequest, id);
+    } else {
+      return ApiService.apiAxios.post('/api/v1/batch/executenongraddisrunbatchjob',request);
+    }
   },  
   runDISTRUN_YE(request, cronTime=""){
     if (Array.isArray(request.districts) && request.districts.length === 1 && request.districts[0].toLowerCase() === "all") {
@@ -112,19 +140,6 @@ export default {
       request
     );
   },
-  runSCHL_RPT_REGEN(request, cronTime=""){
-    if (cronTime) {
-      let scheduledRequest = {};
-      scheduledRequest.cronExpression = cronTime;
-      scheduledRequest.jobName = "??";
-      scheduledRequest.blankPayLoad = null;
-      scheduledRequest.payload = request;
-      this.addScheduledJob(scheduledRequest, id);
-    } else {
-     return ApiService.apiAxios.post(`/api/v1/batch/regenerate/school-report`,request);
-    }
-    
-  },  
   runDISTRUN_SUPP() {
   
     return ApiService.apiAxios.get("/api/v1/batch/executesuppdisrunbatchjob");

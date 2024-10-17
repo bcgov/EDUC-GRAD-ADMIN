@@ -2,7 +2,7 @@ import ApiService from "../common/apiService";
 
 export default {
   getSchoolInfo(mincode) {
-    return ApiService.apiAxios.get("/api/v2/trax/school/" + mincode);
+    return ApiService.apiAxios.get("/api/v1/trax/school/" + mincode);
   },
   searchSchools(searchInput) {
     let queryString = "";
