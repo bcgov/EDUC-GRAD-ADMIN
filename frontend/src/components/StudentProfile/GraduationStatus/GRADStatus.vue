@@ -301,6 +301,12 @@
             <tr v-if="!showEdit">
               <td><strong>School of record: </strong></td>
               <td>
+                {{
+                  studentGradStatus.schoolName
+                    ? studentGradStatus.schoolName
+                    : schoolOfRecord.schoolName
+                }}<br />
+                {{ studentGradStatus.schoolOfRecord }}
                 <!-- <b-button
                   class="p-0 text-left"
                   v-b-modal.modal-1
@@ -448,6 +454,14 @@
             </tr>
             <tr v-if="!showEdit">
               <td><strong>School at graduation: </strong></td>
+              <td>
+                {{
+                  studentGradStatus.schoolAtGradName
+                    ? studentGradStatus.schoolAtGradName
+                    : schoolAtGraduation.schoolName
+                }}<br />
+                {{ studentGradStatus.schoolAtGrad }}
+              </td>
               <!-- <td>
                 <b-button
                   v-if="studentGradStatus && studentGradStatus.schoolAtGrad"
