@@ -29,8 +29,9 @@ const bcGovTheme = {
     bcGovBlue: "#003366",
     bcGovGold: "#FCBA19",
     error: "#D8292F",
+    info: "#003366",
     success: "#2E8540",
-    warning: "#FFCC51",
+    warning: "#926700",
     debug: "#C582FF",
   },
 };
