@@ -22,6 +22,14 @@
           >Batch Runs ({{ batchRuns.length }})</v-tab
         >
         <v-tab
+          @click="
+            getJwtToken;
+            clearBatchDetails;
+          "
+          value="newBatchRequest"
+          >New Batch Request</v-tab
+        >
+        <v-tab
           value="scheduledRuns"
           @click="
             getJwtToken;
@@ -36,14 +44,6 @@
           "
           value="batchRoutines"
           >Scheduled Routines</v-tab
-        >
-        <v-tab
-          @click="
-            getJwtToken;
-            clearBatchDetails;
-          "
-          value="newBatchRequest"
-          >New Batch Request</v-tab
         >
       </v-tabs>
 
