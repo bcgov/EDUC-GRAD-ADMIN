@@ -310,7 +310,7 @@ export default {
       studentCareerProgramsFields: [
         { key: "careerProgramCode", title: "Career Program Code" },
         { key: "careerProgramName", title: "Career Program Name" },
-        { key: "actions", title: "Actions" },
+        { key: "actions", title: "Delete" },
       ],
       studentOptionalProgramsFields: [
         {
@@ -327,7 +327,7 @@ export default {
           key: "optionalProgramCompletionDate",
           title: "Optional Program Completion Date",
         },
-        { key: "actions", title: "Actions" },
+        { key: "actions", title: "Delete" },
       ],
     };
   },
