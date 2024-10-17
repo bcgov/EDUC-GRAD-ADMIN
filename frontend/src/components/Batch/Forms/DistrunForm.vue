@@ -13,177 +13,30 @@
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">User Request Distribution Run</span>
+          <span class="text-h5"
+            >Credentials and Transcript Distribution Run</span
+          >
         </v-card-title>
         <v-card-text>
-          <v-container>
-            <v-stepper alt-labels show-actions v-model="step">
-              <template v-slot:default="{ prev, next }">
-                <v-stepper-header>
-                  <v-stepper-item
-                    :rules="[
-                      () => !v$.getBatchRequest.credentialTypeSelected.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Credential Type"
-                    value="1"
-                  ></v-stepper-item>
-
-                  <v-divider></v-divider>
-                  <v-stepper-item
-                    :rules="[
-                      () =>
-                        !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Group"
-                    value="2"
-                  ></v-stepper-item>
-                  <v-stepper-item
-                    :rules="[() => !v$.getBatchRequest.distribution.$invalid]"
-                    complete
-                    editable
-                    title="Distribution"
-                    value="3"
-                  ></v-stepper-item>
-                  <v-stepper-item
-                    :rules="[
-                      () => !v$.getBatchRequest.batchRunTimeSet.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Run/Schedule"
-                    value="4"
-                  ></v-stepper-item>
-                </v-stepper-header>
-
-                <v-stepper-window>
-                  <v-stepper-window-item value="1">
-                    <div v-if="getCredential === 'Blank transcript print'">
-                      Select transcript type
-                      <v-row>
-                        <v-col
-                          v-for="(option, index) in transcriptTypes"
-                          :key="index"
-                          cols="auto"
-                          class="p-0 m-0"
-                          :style="{ minWidth: '500px' }"
-                        >
-                          <v-checkbox
-                            :label="option.description"
-                            :value="option.code"
-                            v-model="blankTranscriptDetails"
-                            hide-details
-                          ></v-checkbox>
-                        </v-col>
-                      </v-row>
-                    </div>
-
-                    <div v-if="getCredential === 'Blank certificate print'">
-                      Select certificate type
-                      <v-row>
-                        <v-col
-                          v-for="(option, index) in certificateTypes"
-                          :key="index"
-                          cols="auto"
-                          class="p-0 m-0"
-                          :style="{ minWidth: '450px' }"
-                        >
-                          <v-checkbox
-                            :label="option.label"
-                            :value="option.code"
-                            v-model="blankCertificateDetails"
-                            hide-details
-                          ></v-checkbox>
-                        </v-col>
-                      </v-row>
-                    </div>
-                  </v-stepper-window-item>
-                  <v-stepper-window-item value="2">
-                    <v-row>
-                      <v-col>
-                        <v-select
-                          v-model="group"
-                          :items="groupItems"
-                          label="Select group"
-                          hide-details
-                        ></v-select>
-                      </v-col>
-                    </v-row>
-
-                    <v-row v-if="group == 'Student'">
-                      <StudentInput></StudentInput>
-                    </v-row>
-                    <v-row v-if="group == 'School Category'">
-                      <DistrictInput></DistrictInput>
-                    </v-row>
-                    <v-row v-if="group == 'PSI'">
-                      <DistrictInput></DistrictInput>
-                    </v-row>
-                    <v-row v-if="group == 'Program'">
-                      <ProgramInput></ProgramInput>
-                    </v-row>
-                    <v-row v-if="group == 'School'">
-                      <SchoolInput
-                        :disableSelectStudents="
-                          getCredential == 'Blank certificate print' ||
-                          getCredential == 'Blank transcript print'
-                        "
-                      ></SchoolInput>
-                    </v-row>
-                  </v-stepper-window-item>
-                  <v-stepper-window-item value="3">
-                    <DistributionInput></DistributionInput>
-                  </v-stepper-window-item>
-                  <v-stepper-window-item value="4">
-                    <v-card flat>
-                      <ScheduleInput
-                        warning="Warning: You have selected a large volume of documents to be printed"
-                      >
-                        <template #batchDetails>
-                          <v-data-table
-                            :items="[
-                              {
-                                label: 'Run Type',
-                                value: 'User Request Distribution Run',
-                              },
-                              {
-                                label: 'Copies',
-                                value: getBatchRequest.quantity,
-                              },
-                              {
-                                label: 'Credential Type',
-                                value:
-                                  getBatchRequest.credentialTypeCode.join(', '),
-                              },
-                              {
-                                label: 'Where',
-                                value: getDistribution,
-                              },
-                            ]"
-                            hide-default-header
-                            hide-default-footer
-                          >
-                          </v-data-table>
-                        </template>
-                      </ScheduleInput>
-                    </v-card>
-                  </v-stepper-window-item>
-
-                  <v-stepper-window-item value="3">
-                    <span>Step Window 3</span>
-                  </v-stepper-window-item>
-                </v-stepper-window>
-                <v-stepper-actions
-                  @click:prev="prev"
-                  @click:next="next"
-                  @click:submit="submit"
-                ></v-stepper-actions>
-              </template>
-            </v-stepper>
-          </v-container>
+          <ScheduleInput hideGroup>
+            <template #batchDetails>
+              <v-data-table
+                :items="[
+                  {
+                    label: 'Run Type',
+                    value: 'User Request Distribution Run',
+                  },
+                  {
+                    label: 'Where',
+                    value: getDistribution,
+                  },
+                ]"
+                hide-default-header
+                hide-default-footer
+              >
+              </v-data-table>
+            </template>
+          </ScheduleInput>
           <small>*indicates required field</small>
         </v-card-text>
         <v-card-actions class="sticky-form-actions">
@@ -295,11 +148,6 @@ export default {
   validations() {
     return {
       getBatchRequest: {
-        distribution: helpers.withMessage("Select a distribution", (value) => {
-          if (this.getDistribution && this.getCopies) {
-            return true;
-          } else return false;
-        }),
         batchRunTimeSet: helpers.withMessage("Runtime not set", (value) => {
           if (this.getBatchRunTime) {
             if (this.getBatchRunTime == "Run Now") {
@@ -311,77 +159,6 @@ export default {
             }
           } else return false;
         }),
-        credentialTypeSelected: helpers.withMessage(
-          "Credential type not selected",
-          (value) => {
-            if (this.getCredential) {
-              if (this.getCredential == "Blank certificate print") {
-                if (
-                  this.blankCertificateDetails &&
-                  this.blankCertificateDetails.length == 0
-                ) {
-                  return false;
-                }
-              }
-              if (this.getCredential == "Blank transcript print") {
-                if (
-                  this.blankTranscriptDetails &&
-                  this.blankTranscriptDetails.length == 0
-                ) {
-                  return false;
-                }
-              }
-
-              return true;
-            } else return false;
-          }
-        ),
-
-        hasAtLeastOneGroupValue: helpers.withMessage(
-          "Must contain at least one " + this.group,
-          (value) => {
-            if (this.getBatchRequest) {
-              let isValid = false;
-              if (
-                this.group &&
-                [
-                  "Student",
-                  "School",
-                  "School Category",
-                  "Program",
-                  "Ministry of Advanced Education",
-                ].includes(this.group)
-              ) {
-                if (this.group === "School") {
-                  isValid =
-                    this.getBatchRequest.schoolOfRecords &&
-                    this.getBatchRequest.schoolOfRecords.length > 0;
-                } else if (this.group === "Student") {
-                  isValid =
-                    this.getBatchRequest.pens &&
-                    this.getBatchRequest.pens.length > 0;
-                } else if (this.group === "School Category") {
-                  isValid =
-                    this.getBatchRequest.districts &&
-                    this.getBatchRequest.districts.length > 0;
-                } else if (this.group === "Program") {
-                  isValid =
-                    this.getBatchRequest.programs &&
-                    this.getBatchRequest.programs.length > 0;
-                } else if (this.group === "Psi") {
-                  isValid =
-                    this.getBatchRequest.psiCodes &&
-                    this.getBatchRequest.psiCodes.length > 0;
-                } else {
-                  isValid = true; // Return true if none of the above conditions matched
-                }
-                return isValid;
-              }
-            } else {
-              return false;
-            }
-          }
-        ),
       },
     };
   },
@@ -532,40 +309,39 @@ export default {
     async submit() {
       try {
         const requestTemplate = [
-          "credentialTypeCode",
-          "districts",
-          "gradDateFrom",
-          "gradDateTo",
-          "localDownload",
           "pens",
+          "schoolOfRecords",
+          "districts",
+          "credentialTypeCode",
+          "schoolCategoryCodes",
           "programs",
           "psiCodes",
-          "quantity",
           "reportTypes",
-          "schoolCategoryCodes",
-          "schoolOfRecords",
+          "gradDateFrom",
+          "gradDateTo",
           "validateInput",
+          "quantity",
+          "localDownload",
         ];
         const requestPayload = generateRequestPayload(
           this.getBatchRequest,
           requestTemplate
         );
-        let response = await BatchProcessingService.runDISTRUNUSER(
+        let response = await BatchProcessingService.runDISTRUN_MONTHLY(
           requestPayload,
-          this.getCredential,
           this.getBatchRequestCrontime
         );
         if (response) {
           if (this.getBatchRequestCrontime) {
             this.snackbarStore.showSnackbar(
-              "User distribution batch request has been successfully scheduled",
+              "Credentials and Transcript Distribution Run request has been successfully scheduled",
               5000
             );
           } else {
             this.snackbarStore.showSnackbar(
               "Batch " +
                 response.data.batchId +
-                "- User distribution batch request submitted",
+                "- Credentials and Transcript Distribution Run request submitted",
               "success",
               5000
             );
