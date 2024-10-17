@@ -491,7 +491,10 @@
             </tbody>
           </v-table>
         </v-card-text>
-        <v-card-actions class="batch-form-actions" v-if="allowUpdateGradStatus">
+        <v-card-actions
+          class="sticky-form-actions"
+          v-if="allowUpdateGradStatus"
+        >
           <v-spacer></v-spacer>
           <v-btn color="blue-darken-1" variant="text" @click="cancelGradStatus">
             Cancel

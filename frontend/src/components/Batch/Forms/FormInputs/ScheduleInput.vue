@@ -7,7 +7,11 @@
       <slot name="batchDetails"></slot>
     </v-card-text>
   </v-card>
-  <v-card :title="'Group - ' + getGroup" class="">
+  <v-card
+    v-if="!hideGroup"
+    :title="getGroup ? 'Group - ' + getGroup : 'Group - Not Selected'"
+    class=""
+  >
     <v-card-text>
       <v-row
         class="pl-3"
@@ -237,6 +241,11 @@ export default {
     warning: {
       type: String, // You can change the type if needed
       required: false, // Make it optional
+    },
+    hideGroup: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
 
