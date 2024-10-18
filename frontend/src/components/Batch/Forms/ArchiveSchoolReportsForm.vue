@@ -11,11 +11,18 @@
         >
       </template>
       <v-card>
-        <v-card-title>
-          <span class="text-h5">Archive School Reports Process</span>
-        </v-card-title>
+        <div class="d-flex justify-space-between align-center">
+          <v-card-title>Archive School Reports Process</v-card-title>
+          <v-btn
+            @click="closeDialogAndResetForm()"
+            color="error"
+            variant="outlined"
+            class="m-4"
+            >Cancel</v-btn
+          >
+        </div>
         <v-card-text>
-          <v-stepper alt-labels show-actions v-model="step">
+          <v-stepper show-actions v-model="step">
             <template v-slot:default="{ prev, next }">
               <v-stepper-header>
                 <v-stepper-item
@@ -25,7 +32,7 @@
                   complete
                   editable
                   title="Group"
-                  value="1"
+                  value="0"
                 ></v-stepper-item>
 
                 <v-divider></v-divider>
@@ -35,12 +42,12 @@
                   complete
                   editable
                   title="Run/Schedule"
-                  value="2"
+                  value="1"
                 ></v-stepper-item>
               </v-stepper-header>
 
               <v-stepper-window>
-                <v-stepper-window-item value="1">
+                <v-stepper-window-item value="0">
                   <v-row>
                     <v-col sm="2"> Report Type </v-col>
                     <v-col sm="10">
@@ -97,7 +104,7 @@
                   </v-row>
                 </v-stepper-window-item>
 
-                <v-stepper-window-item value="2">
+                <v-stepper-window-item value="1">
                   <v-card flat>
                     <ScheduleInput warning="">
                       <template #confirmations>
@@ -165,16 +172,42 @@
                     </ScheduleInput>
                   </v-card>
                 </v-stepper-window-item>
-
-                <v-stepper-window-item value="3">
-                  <span>Step Window 3</span>
-                </v-stepper-window-item>
               </v-stepper-window>
-              <v-stepper-actions
-                @click:prev="prev"
-                @click:next="next"
-                @click:submit="submit"
-              ></v-stepper-actions>
+            </template>
+            <template v-slot:actions>
+              <div class="row mx-6 mb-6">
+                <!-- Left Action Button -->
+                <v-btn
+                  @click="step--"
+                  color="bcGovBlue"
+                  :disabled="step == 0"
+                  variant="outlined"
+                  >Back</v-btn
+                >
+                <v-spacer />
+                <!-- Right Action Button -->
+                <v-btn v-if="step < 3" @click="step++" color="bcGovBlue"
+                  >Next</v-btn
+                >
+                <v-btn
+                  v-else-if="getBatchRequest.localDownload == 'Y'"
+                  color="bcGovBlue"
+                  variant="text"
+                  @click="submit"
+                >
+                  Download
+                </v-btn>
+                <v-btn
+                  v-else
+                  color="error"
+                  variant="flat"
+                  class="text-none"
+                  density="default"
+                  @click="submit"
+                  :disabled="v$.$invalid"
+                  >Submit</v-btn
+                >
+              </div>
             </template>
           </v-stepper>
           <small>*indicates required field</small>

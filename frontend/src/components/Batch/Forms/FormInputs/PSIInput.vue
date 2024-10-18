@@ -55,7 +55,7 @@
       <v-col sm="2">
         <v-btn
           @click="addPSI"
-          :disabled="validationMessage !== ''"
+          :disabled="!psi || selectAll"
           class="float-right"
           color="bcGovBlue"
           small
@@ -177,6 +177,7 @@ export default {
       this.clearPSIInfo();
     },
     selectAllPSICheckbox(event) {
+      this.clearPSI();
       const AllPSIChecked = event.target.checked;
       if (AllPSIChecked) {
         // Remove all psis and automatically add the All PSI

@@ -12,11 +12,19 @@
         </v-btn>
       </template>
       <v-card>
-        <v-card-title>
-          <span class="text-h5">User Request Distribution Run</span>
-        </v-card-title>
+        <div class="d-flex justify-space-between align-center">
+          <v-card-title>User Request Distribution Run</v-card-title>
+          <v-btn
+            @click="closeDialogAndResetForm()"
+            color="error"
+            variant="outlined"
+            class="m-4"
+            >Cancel</v-btn
+          >
+        </div>
+
         <v-card-text>
-          <v-stepper alt-labels show-actions v-model="step">
+          <v-stepper v-model="step">
             <template v-slot:default="{ prev, next }">
               <v-stepper-header>
                 <v-stepper-item
@@ -26,7 +34,7 @@
                   complete
                   editable
                   title="Credential Type"
-                  value="1"
+                  value="0"
                 ></v-stepper-item>
 
                 <v-divider></v-divider>
@@ -37,26 +45,26 @@
                   complete
                   editable
                   title="Group"
-                  value="2"
+                  value="1"
                 ></v-stepper-item>
                 <v-stepper-item
                   :rules="[() => !v$.getBatchRequest.distribution.$invalid]"
                   complete
                   editable
                   title="Distribution"
-                  value="3"
+                  value="2"
                 ></v-stepper-item>
                 <v-stepper-item
                   :rules="[() => !v$.getBatchRequest.batchRunTimeSet.$invalid]"
                   complete
                   editable
                   title="Run/Schedule"
-                  value="4"
+                  value="3"
                 ></v-stepper-item>
               </v-stepper-header>
 
               <v-stepper-window>
-                <v-stepper-window-item value="1">
+                <v-stepper-window-item value="0">
                   <div v-if="getCredential === 'Blank transcript print'">
                     Select transcript type
                     <v-row>
@@ -97,7 +105,7 @@
                     </v-row>
                   </div>
                 </v-stepper-window-item>
-                <v-stepper-window-item value="2">
+                <v-stepper-window-item value="1">
                   <v-row>
                     <v-col>
                       <v-select
@@ -130,88 +138,81 @@
                     ></SchoolInput>
                   </v-row>
                 </v-stepper-window-item>
-                <v-stepper-window-item value="3">
+                <v-stepper-window-item value="2">
                   <DistributionInput></DistributionInput>
                 </v-stepper-window-item>
-                <v-stepper-window-item value="4">
-                  <v-card flat>
-                    <ScheduleInput
-                      warning="Warning: You have selected a large volume of documents to be printed"
-                    >
-                      <template #batchDetails>
-                        <v-data-table
-                          :items="[
-                            {
-                              label: 'Run Type',
-                              value: 'User Request Distribution Run',
-                            },
-                            {
-                              label: 'Copies',
-                              value: getBatchRequest.quantity,
-                            },
-                            {
-                              label: 'Credential Type',
-                              value:
-                                getBatchRequest.credentialTypeCode.join(', '),
-                            },
-                            {
-                              label: 'Where',
-                              value: getDistribution,
-                            },
-                          ]"
-                          hide-default-header
-                          hide-default-footer
-                        >
-                        </v-data-table>
-                      </template>
-                    </ScheduleInput>
-                  </v-card>
-                </v-stepper-window-item>
-
                 <v-stepper-window-item value="3">
-                  <span>Step Window 3</span>
+                  <ScheduleInput
+                    warning="Warning: You have selected a large volume of documents to be printed"
+                  >
+                    <template #batchDetails>
+                      <v-data-table
+                        :items="[
+                          {
+                            label: 'Run Type',
+                            value: 'User Request Distribution Run',
+                          },
+                          {
+                            label: 'Copies',
+                            value: getBatchRequest.quantity,
+                          },
+                          {
+                            label: 'Credential Type',
+                            value:
+                              getBatchRequest.credentialTypeCode.join(', '),
+                          },
+                          {
+                            label: 'Where',
+                            value: getDistribution,
+                          },
+                        ]"
+                        hide-default-header
+                        hide-default-footer
+                      >
+                      </v-data-table>
+                    </template>
+                  </ScheduleInput>
                 </v-stepper-window-item>
               </v-stepper-window>
-              <v-stepper-actions
-                @click:prev="prev"
-                @click:next="next"
-                @click:submit="submit"
-              ></v-stepper-actions>
+            </template>
+            <template v-slot:actions>
+              <div class="row mx-6 mb-6">
+                <!-- Left Action Button -->
+                <v-btn
+                  @click="step--"
+                  color="bcGovBlue"
+                  :disabled="step == 0"
+                  variant="outlined"
+                  >Back</v-btn
+                >
+                <v-spacer />
+                <!-- Right Action Button -->
+                <v-btn v-if="step < 3" @click="step++" color="bcGovBlue"
+                  >Next</v-btn
+                >
+                <v-btn
+                  v-else-if="getBatchRequest.localDownload == 'Y'"
+                  color="bcGovBlue"
+                  variant="text"
+                  @click="submit"
+                >
+                  Download
+                </v-btn>
+                <v-btn
+                  v-else
+                  color="error"
+                  variant="flat"
+                  class="text-none"
+                  density="default"
+                  @click="submit"
+                  :disabled="v$.$invalid"
+                  >Submit</v-btn
+                >
+              </div>
             </template>
           </v-stepper>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions class="sticky-form-actions">
-          <v-spacer></v-spacer>
-          <v-btn
-            color="bcGovBlue"
-            variant="outlined"
-            class="text-none"
-            density="default"
-            @click="cancel"
-          >
-            Cancel
-          </v-btn>
-          <v-btn
-            v-if="getBatchRequest.localDownload == 'Y'"
-            color="bcGovBlue"
-            variant="text"
-            @click="submit"
-          >
-            Download
-          </v-btn>
-          <v-btn
-            v-else
-            color="error"
-            variant="flat"
-            class="text-none"
-            density="default"
-            @click="submit"
-            :disabled="v$.$invalid"
-          >
-            Submit
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-row>
