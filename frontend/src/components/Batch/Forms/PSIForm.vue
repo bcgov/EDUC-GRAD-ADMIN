@@ -6,6 +6,7 @@
           v-if="hasPermissions('BATCH', 'runPSIBatch')"
           color="primary"
           v-bind="props"
+          class="mr-2"
           @click="setGroup('Psi')"
         >
           <v-icon>mdi-plus</v-icon>

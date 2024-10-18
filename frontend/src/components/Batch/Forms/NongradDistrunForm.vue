@@ -6,6 +6,7 @@
           v-if="hasPermissions('BATCH', 'runNonGradRun')"
           color="primary"
           v-bind="props"
+          class="mr-2"
           @click="setGroup('School Category')"
         >
           <v-icon>mdi-plus</v-icon>

@@ -6,6 +6,7 @@
           v-if="hasPermissions('BATCH', 'runTVR')"
           color="primary"
           v-bind="props"
+          class="mr-2"
           ><v-icon small>mdi-plus</v-icon></v-btn
         >
       </template>
