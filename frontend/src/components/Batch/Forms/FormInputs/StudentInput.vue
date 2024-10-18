@@ -1,68 +1,65 @@
 <template>
   <v-container>
-    <v-card>
-      <v-card-text>
-        <v-row>
-          <v-col sm="2"><strong>Personal Education Number</strong></v-col>
-          <v-col cols="7">
-            <v-text-field
-              label="Personal Education Number"
-              v-model="pen"
-              @input="validateStudent"
-              type="number"
-              class="mr-2"
-            ></v-text-field>
-          </v-col>
-          <v-col md="3">
-            <v-btn
-              @click="addStudent()"
-              :disabled="v$.pen.$invalid || pen == ''"
-            >
-              Add Student
+    <v-row>
+      <v-col sm="2"><strong>Personal Education Number</strong></v-col>
+      <v-col cols="7">
+        <v-text-field
+          label="Personal Education Number"
+          v-model="pen"
+          @input="validateStudent"
+          type="number"
+          class="mr-2"
+        ></v-text-field>
+      </v-col>
+      <v-col md="3">
+        <v-btn
+          color="bcGovBlue"
+          @click="addStudent()"
+          :disabled="v$.pen.$invalid || pen == ''"
+        >
+          Add Student
+        </v-btn>
+        <!-- <v-btn @click="clearPen" text> Clear </v-btn> -->
+      </v-col>
+    </v-row>
+    <v-row v-if="validationMessage">
+      <v-alert dismissible type="error">
+        {{ validationMessage }}
+      </v-alert>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-data-table
+          v-if="students.length"
+          :items="students"
+          :headers="studentInputFields"
+          striped
+        >
+          <template v-slot:item.remove="{ item }">
+            <v-btn @click="removeStudent(item.pen)" color="primary">
+              Remove
             </v-btn>
-            <!-- <v-btn @click="clearPen" text> Clear </v-btn> -->
-          </v-col>
-        </v-row>
-        <v-row v-if="validationMessage">
-          <v-alert dismissible type="error">
-            {{ validationMessage }}
-          </v-alert>
-        </v-row>
-        <v-row>
-          <v-col>
-            <v-data-table
-              v-if="students.length"
-              :items="students"
-              :headers="studentInputFields"
-              striped
-            >
-              <template v-slot:item.remove="{ item }">
-                <v-btn @click="removeStudent(item.pen)" color="primary">
-                  Remove
-                </v-btn>
-              </template>
-              <template v-slot:item.info="{ item }">
-                <div>
-                  <strong>Name:</strong> {{ item.info.firstName }}
-                  {{ item.info.lastName }}
-                </div>
-                <div><strong>Birthdate:</strong> {{ item.info.dob }}</div>
-                <div><strong>Status:</strong> {{ item.info.status }}</div>
-                <div><strong>Program:</strong> {{ item.info.program }}</div>
-                <div>
-                  <strong>School of Record:</strong>
-                  {{ item.info.schoolOfRecord }}
-                </div>
-                <div>
-                  <strong>School At Graduation:</strong>
-                  {{ item.info.schoolAtGrad }}
-                </div>
-              </template>
-            </v-data-table>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
+          </template>
+          <template v-slot:item.info="{ item }">
+            <div>
+              <strong>Name:</strong> {{ item.info.firstName }}
+              {{ item.info.lastName }}
+            </div>
+            <div><strong>Birthdate:</strong> {{ item.info.dob }}</div>
+            <div><strong>Status:</strong> {{ item.info.status }}</div>
+            <div><strong>Program:</strong> {{ item.info.program }}</div>
+            <div>
+              <strong>School of Record:</strong>
+              {{ item.info.schoolOfRecord }}
+            </div>
+            <div>
+              <strong>School At Graduation:</strong>
+              {{ item.info.schoolAtGrad }}
+            </div>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 <script>

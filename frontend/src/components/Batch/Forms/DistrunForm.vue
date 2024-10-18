@@ -42,7 +42,13 @@
         </v-card-text>
         <v-card-actions class="sticky-form-actions">
           <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="cancel">
+          <v-btn
+            color="bcGovBlue"
+            variant="outlined"
+            class="text-none"
+            density="default"
+            @click="cancel"
+          >
             Cancel
           </v-btn>
           <v-btn
@@ -55,8 +61,10 @@
           </v-btn>
           <v-btn
             v-else
-            color="blue-darken-1"
-            variant="text"
+            color="error"
+            variant="flat"
+            class="text-none"
+            density="default"
             @click="submit"
             :disabled="v$.$invalid"
           >

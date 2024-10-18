@@ -16,128 +16,128 @@
           <span class="text-h5">Transcript Verification Report Delete</span>
         </v-card-title>
         <v-card-text>
-          <v-container>
-            <v-stepper alt-labels show-actions v-model="step">
-              <template v-slot:default="{ prev, next }">
-                <v-stepper-header>
-                  <v-stepper-item
-                    :rules="[
-                      () =>
-                        !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Group"
-                    value="1"
-                  ></v-stepper-item>
+          <v-stepper alt-labels show-actions v-model="step">
+            <template v-slot:default="{ prev, next }">
+              <v-stepper-header>
+                <v-stepper-item
+                  :rules="[
+                    () => !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
+                  ]"
+                  complete
+                  editable
+                  title="Group"
+                  value="1"
+                ></v-stepper-item>
 
-                  <v-divider></v-divider>
+                <v-divider></v-divider>
 
-                  <v-stepper-item
-                    :rules="[
-                      () => !v$.getBatchRequest.batchRunTimeSet.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Run/Schedule"
-                    value="2"
-                  ></v-stepper-item>
-                </v-stepper-header>
+                <v-stepper-item
+                  :rules="[() => !v$.getBatchRequest.batchRunTimeSet.$invalid]"
+                  complete
+                  editable
+                  title="Run/Schedule"
+                  value="2"
+                ></v-stepper-item>
+              </v-stepper-header>
 
-                <v-stepper-window>
-                  <v-stepper-window-item value="1">
-                    <v-row>
-                      <v-select
-                        v-model="group"
-                        :items="[
-                          { title: 'Student', value: 'Student' },
-                          {
-                            title: 'School',
-                            value: 'School',
-                            disabled: !hasPermissions(
-                              'BATCH',
-                              'selectTVRDeleteSchools'
-                            ),
-                          },
-                          {
-                            title: 'All Students',
-                            value: 'All Students',
-                            disabled: !hasPermissions(
-                              'BATCH',
-                              'selectAllOption'
-                            ),
-                          },
-                        ]"
-                        label="Select a Group"
-                        ><template v-slot:item="{ props, item }">
-                          <v-list-item
-                            v-bind="props"
-                            :disabled="item.raw.disabled"
-                          ></v-list-item> </template
-                      ></v-select>
-                    </v-row>
-                    <v-row v-if="group == 'Student'">
-                      <StudentInput></StudentInput>
-                    </v-row>
-                    <v-row
-                      v-if="
-                        group == 'School Category' &&
-                        hasPermissions('BATCH', 'allowSelectCategoryCodeGroup')
-                      "
-                    >
-                      <DistrictInput></DistrictInput>
-                    </v-row>
-                    <v-row v-if="group == 'Program'">
-                      <ProgramInput></ProgramInput>
-                    </v-row>
-                    <v-row v-if="group == 'School'">
-                      <SchoolInput></SchoolInput>
-                    </v-row>
-                  </v-stepper-window-item>
+              <v-stepper-window>
+                <v-stepper-window-item value="1">
+                  <v-row>
+                    <v-select
+                      v-model="group"
+                      :items="[
+                        { title: 'Student', value: 'Student' },
+                        {
+                          title: 'School',
+                          value: 'School',
+                          disabled: !hasPermissions(
+                            'BATCH',
+                            'selectTVRDeleteSchools'
+                          ),
+                        },
+                        {
+                          title: 'All Students',
+                          value: 'All Students',
+                          disabled: !hasPermissions('BATCH', 'selectAllOption'),
+                        },
+                      ]"
+                      label="Select a Group"
+                      ><template v-slot:item="{ props, item }">
+                        <v-list-item
+                          v-bind="props"
+                          :disabled="item.raw.disabled"
+                        ></v-list-item> </template
+                    ></v-select>
+                  </v-row>
+                  <v-row v-if="group == 'Student'">
+                    <StudentInput></StudentInput>
+                  </v-row>
+                  <v-row
+                    v-if="
+                      group == 'School Category' &&
+                      hasPermissions('BATCH', 'allowSelectCategoryCodeGroup')
+                    "
+                  >
+                    <DistrictInput></DistrictInput>
+                  </v-row>
+                  <v-row v-if="group == 'Program'">
+                    <ProgramInput></ProgramInput>
+                  </v-row>
+                  <v-row v-if="group == 'School'">
+                    <SchoolInput></SchoolInput>
+                  </v-row>
+                </v-stepper-window-item>
 
-                  <v-stepper-window-item value="2">
-                    <v-card flat>
-                      <ScheduleInput>
-                        ><template #batchDetails>
-                          <v-data-table
-                            :items="[
-                              {
-                                label: 'Run Type',
-                                value: 'Delete Student TVR Process',
-                              },
-                            ]"
-                            hide-default-header
-                            hide-default-footer
-                          >
-                          </v-data-table>
-                        </template>
-                      </ScheduleInput>
-                    </v-card>
-                  </v-stepper-window-item>
+                <v-stepper-window-item value="2">
+                  <v-card flat>
+                    <ScheduleInput>
+                      ><template #batchDetails>
+                        <v-data-table
+                          :items="[
+                            {
+                              label: 'Run Type',
+                              value: 'Delete Student TVR Process',
+                            },
+                          ]"
+                          hide-default-header
+                          hide-default-footer
+                        >
+                        </v-data-table>
+                      </template>
+                    </ScheduleInput>
+                  </v-card>
+                </v-stepper-window-item>
 
-                  <v-stepper-window-item value="3">
-                    <span>Step Window 3</span>
-                  </v-stepper-window-item>
-                </v-stepper-window>
-                <v-stepper-actions
-                  @click:prev="prev"
-                  @click:next="next"
-                  @click:submit="submit"
-                ></v-stepper-actions>
-              </template>
-            </v-stepper>
-          </v-container>
+                <v-stepper-window-item value="3">
+                  <span>Step Window 3</span>
+                </v-stepper-window-item>
+              </v-stepper-window>
+              <v-stepper-actions
+                @click:prev="prev"
+                @click:next="next"
+                @click:submit="submit"
+              ></v-stepper-actions>
+            </template>
+          </v-stepper>
           <small>*indicates required field</small>
         </v-card-text>
         <v-card-actions class="sticky-form-actions">
           <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="cancel">
+          <v-btn
+            color="bcGovBlue"
+            variant="outlined"
+            class="text-none"
+            density="default"
+            @click="cancel"
+          >
             Cancel
           </v-btn>
           <v-btn
             :disabled="v$.$invalid"
-            color="blue-darken-1"
-            variant="text"
+            color="error"
+            variant="flat"
+            class="text-none"
+            density="default"
             @click="submit"
           >
             Submit
