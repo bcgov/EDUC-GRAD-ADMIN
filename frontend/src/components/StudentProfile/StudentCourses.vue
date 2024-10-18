@@ -52,9 +52,10 @@
                   <template v-slot:activator="{ props: activatorProps }">
                     <v-btn
                       v-bind="activatorProps"
+                      color="surface-variant"
                       :text="item.courseName"
                       variant="plain"
-                      class="v-btn-link"
+                      class="m-1 p-1 text-left v-btn-link"
                     ></v-btn>
                   </template>
 
