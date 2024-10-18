@@ -3,10 +3,10 @@
     <v-row>
       <!-- First Column (col-5 for medium screens, col-12 for small screens) -->
       <v-col :cols="12" :md="isBatchShowing || isErrorShowing ? 7 : 12">
-        <DisplayTable
+        <v-data-table
           title="Job/Runs"
           :items="batchRuns"
-          :fields="batchRunsFields"
+          :headers="batchRunsFields"
           id="id"
           :showFilter="false"
           pagination="true"
@@ -169,42 +169,21 @@
               </div>
             </div>
           </template>
-        </DisplayTable>
+        </v-data-table>
       </v-col>
       <v-col cols="12" md="5" v-if="isBatchShowing">
-        <v-card>
-          <v-card-text>
-            <v-btn
-              variant="danger"
-              size="xs"
-              class="float-right"
-              @click="isBatchShowing ^= true"
-            >
-              Close
-            </v-btn>
-            <BatchJobSearchResults
-              :selectedBatchId="adminSelectedBatchId"
-            ></BatchJobSearchResults>
-          </v-card-text>
-        </v-card>
+        <BatchJobSearchResults :selectedBatchId="adminSelectedBatchId"
+          ><template v-slot:close>
+            <v-btn @click="isBatchShowing ^= true"> Close </v-btn></template
+          ></BatchJobSearchResults
+        >
       </v-col>
       <v-col cols="12" md="5" v-if="isErrorShowing">
-        <v-card>
-          <v-card-text>
-            <BatchJobErrorResults
-              :selectedErrorId="adminSelectedErrorId"
-            ></BatchJobErrorResults>
-
-            <v-btn
-              variant="danger"
-              size="xs"
-              class="float-right"
-              @click="isErrorShowing ^= true"
-            >
-              Close
-            </v-btn>
-          </v-card-text>
-        </v-card>
+        <BatchJobErrorResults :selectedErrorId="adminSelectedErrorId">
+          <template v-slot:close>
+            <v-btn @click="isErrorShowing ^= true"> Close </v-btn>
+          </template>
+        </BatchJobErrorResults>
       </v-col>
     </v-row>
   </v-container>

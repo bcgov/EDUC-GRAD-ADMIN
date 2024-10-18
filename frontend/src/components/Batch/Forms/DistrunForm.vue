@@ -6,6 +6,7 @@
           v-if="hasPermissions('BATCH', 'runDistrun')"
           color="primary"
           v-bind="props"
+          class="mr-2"
           @click="setCredentialForForm()"
         >
           <v-icon>mdi-plus</v-icon>

@@ -6,6 +6,7 @@
           v-if="hasPermissions('BATCH', 'runArchiveStudents')"
           color="primary"
           v-bind="props"
+          class="mr-2"
         >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
