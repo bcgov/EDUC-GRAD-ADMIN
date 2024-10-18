@@ -28,8 +28,6 @@
 
         <template v-slot:item.optionalReqMet="{ item }">
           <div v-if="item.studentOptionalProgramData">
-            <!-- {{ item.optionalProgramCode }}
-            {{ item.studentOptionalProgramData.optionalRequirementsMet }} -->
             <v-data-table
               v-if="
                 item.optionalProgramCode == 'BC' ||
@@ -44,9 +42,9 @@
               :hide-default-footer="true"
             >
               <template v-slot:item.rule="{ item }">
-                <p class="ml-2 pt-2">
+                <div class="p-2">
                   <strong>{{ item.rule }}</strong> - {{ item.description }}
-                </p>
+                </div>
               </template>
             </v-data-table>
             <v-data-table
@@ -68,7 +66,6 @@
               :hide-default-footer="true"
             >
               <template v-slot:item.gradReqMetDetail="{ item }">
-                <!-- {{ item }} -->
                 <div class="p-2">
                   <strong>{{ item.gradReqMetDetail }}</strong
                   ><br />
@@ -368,11 +365,6 @@ export default {
           label: "Grad Requirement Met",
           class: "text-left",
         },
-        // {
-        //   key: "description",
-        //   label: "Grad Requirement Met",
-        //   class: "text-left",
-        // },
       ],
       studentCourseListHeaders: [
         {
