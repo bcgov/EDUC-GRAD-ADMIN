@@ -11,7 +11,7 @@
     </template>
 
     <v-stepper alt-labels show-actions v-model="step">
-      <template v-slot:default="{ prev, next }">
+      <template v-slot:default>
         <v-stepper-header>
           <v-stepper-item :rules="[ ()=> !v$.form.$invalid]" title="Select Optional Programs" value="1"></v-stepper-item>
           <v-stepper-item  title="Confirmation" value="2"></v-stepper-item>
@@ -47,19 +47,6 @@
                 @keyup.enter="submitForm"
               ></v-autocomplete>
             </v-form>
-                          <!-- DEBUG -->
-                          <v-expansion-panels class="mb-4">
-                <v-expansion-panel title="DEBUG" color="debug">
-                  <template v-slot:text>
-                    <pre>{{ v$.form }}</pre>
-
-                  </template>
-
-                </v-expansion-panel>
-
-              </v-expansion-panels>
-
-              <!-- END DEBUG -->
           </v-stepper-window-item>
     
           <v-stepper-window-item value="2">
@@ -67,13 +54,13 @@
               <v-alert type="info" variant="tonal" border="start" class="pb-0">
                 <p v-if="isCareerProgram(form.selectedOptionalProgram)">
                   You are about to add the following Career Program{{
-                    selectedCareerPrograms.length === 1 ? "" : "s"
+                    form.selectedCareerPrograms?.length === 1 ? "" : "s"
                   }}
                   for this student:
                   
                   <ul v-if="isCareerProgram(form.selectedOptionalProgram)">
                     <li
-                    v-for="item in selectedCareerPrograms"
+                    v-for="item in form.selectedCareerPrograms"
                     :key="item"
                     class="my-1"
                     >
@@ -99,12 +86,19 @@
             </slot>
           </v-stepper-window-item>
         </v-stepper-window>
-
-        <v-stepper-actions
-                  @click:prev="prev"
-                  @click:next="next"
-                ></v-stepper-actions>
-      </template>
+        
+        </template>
+        <template v-slot:actions>
+          <div class="row mx-6 mb-6">
+            <!-- Left Action Button -->
+            <v-btn v-if="step == 0" @click="closeCreateOptionalProgramDialog()" color="error" variant="outlined">Cancel</v-btn>
+            <v-btn v-else @click="step--" color="bcGovBlue" variant="outlined">Back</v-btn>
+            <v-spacer />
+            <!-- Right Action Button -->
+            <v-btn v-if="step < 1" @click="step++" color="bcGovBlue" :disabled="v$.form.$invalid">Next</v-btn>
+            <v-btn v-else @click="submitForm()" color="error">Add Optional Program</v-btn>
+          </div>
+        </template>
     </v-stepper>
 
   </v-dialog>
@@ -133,12 +127,12 @@ export default {
     }
   },
   watch: {
-    // selectedOptionalProgram(newVal) {
-    //   // The function to be executed when isCareerProgram changes
-    //   if (!this.isCareerProgram(newVal)) {
-    //     this.clearCareerPrograms();
-    //   }
-    // },
+    optionalProgramChange: function (newVal) {
+      // The function to be executed when isCareerProgram changes
+      if (!this.isCareerProgram(newVal)) {
+        this.clearCareerPrograms();
+      }
+    },
   },
   mounted() {
     this.fetchPrograms();
@@ -163,10 +157,10 @@ export default {
       allowOptionalProgramUpdate: "allowOptionalProgramUpdate",
     }),
     optionalProgramChange() {
-      return this.selectedOptionalProgram;
+      return this.form.selectedOptionalProgram;
     },
     careerProgramChange() {
-      return this.selectedCareerProgram;
+      return this.form.selectedCareerProgram;
     },
     activeOptionalPrograms() {
       const studentProgramId = this.studentGradStatus.program;
@@ -235,7 +229,11 @@ export default {
       return activeProgram && activeProgram.optProgramCode === "CP";
     },
     clearCareerPrograms() {
-      this.selectedCareerPrograms = [];
+      console.log('clear career programs')
+      this.form.selectedCareerPrograms = null;
+    },
+    clearOptionalProgram() {
+      this.form.selectedOptionalProgram = null;
     },
     optionalProgramTitle(item) {
       if (item) {
@@ -283,13 +281,13 @@ export default {
     },
     clearForm() {
       console.log("form cleared");
-      this.selectedOptionalProgram = "";
-      this.selectedCareerPrograms = "";
+      this.clearOptionalProgram()
+      this.clearCareerPrograms()
     },
     submitForm() {
       this.addStudentOptionalProgram(
-        this.selectedOptionalProgram,
-        this.selectedCareerPrograms
+        this.form.selectedOptionalProgram,
+        this.form.selectedCareerPrograms
       );
       this.closeCreateOptionalProgramDialog();
     },
