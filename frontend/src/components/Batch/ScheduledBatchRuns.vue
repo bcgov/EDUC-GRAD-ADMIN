@@ -93,7 +93,6 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
-import BatchProcessingService from "@/services/BatchProcessingService.js";
 import { useBatchProcessingStore } from "../../store/modules/batchprocessing";
 import { mapState, mapActions } from "pinia";
 

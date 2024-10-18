@@ -7,7 +7,11 @@
       <slot name="batchDetails"></slot>
     </v-card-text>
   </v-card>
-  <v-card :title="'Group - ' + getGroup" class="">
+  <v-card
+    v-if="!hideGroup"
+    :title="getGroup ? 'Group - ' + getGroup : 'Group - Not Selected'"
+    class=""
+  >
     <v-card-text>
       <v-row
         class="pl-3"
@@ -59,7 +63,25 @@
           </template></v-data-table
         >
       </div>
-
+      <div v-if="getGroup == 'Student'">
+        <v-data-table
+          :items="getGroupData"
+          :headers="[
+            { title: 'Pen', value: 'pen' },
+            { title: 'Student Name', value: 'name' },
+            { title: 'DOB', value: 'info.dob' },
+            { title: 'status', value: 'info.status' },
+          ]"
+          hide-default-footer
+        >
+          <template #item.name="{ item }">
+            {{ item.info.firstName }} {{ item.info.lastName }}
+          </template>
+          <template #no-data>
+            <v-icon>mdi-information</v-icon> Group not selected
+          </template></v-data-table
+        >
+      </div>
       <div v-if="getGroup == 'Program'">
         <v-data-table
           :items="getGroupData"
@@ -238,6 +260,11 @@ export default {
       type: String, // You can change the type if needed
       required: false, // Make it optional
     },
+    hideGroup: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 
   computed: {
@@ -252,9 +279,6 @@ export default {
       "getGroup",
       "getDistribution",
     ]),
-    isEmpty() {
-      return this.students.length > 0;
-    },
   },
 };
 </script>

@@ -80,13 +80,9 @@
                   >Optional Programs ({{ optionalPrograms.length }})</v-tab
                 >
                 <v-tab value="Audit">Audit History</v-tab>
-                <v-tab value="Notes"
-                  ><v-icon>mdi-information</v-icon> Notes ({{
-                    studentNotes.length
-                  }})
-                </v-tab>
+                <v-tab value="Notes">Notes ({{ studentNotes.length }}) </v-tab>
                 <v-tab value="Undo Completion Reasons"
-                  ><v-icon>mdi-information</v-icon> Undo Completion Reasons ({{
+                  >Undo Completion Reasons ({{
                     studentUngradReasons.length
                   }})</v-tab
                 >
