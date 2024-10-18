@@ -133,8 +133,14 @@
                 <v-dialog v-model="schoolOfRecordDialog" max-width="600px">
                   <v-card>
                     <v-card-title class="text-h6"
-                      >School of record</v-card-title
-                    >
+                      >School of record
+                      <v-progress-circular
+                        v-if="schoolSearchLoading"
+                        indeterminate
+                        color="green"
+                      >
+                      </v-progress-circular
+                    ></v-card-title>
                     <v-card-text>
                       <v-table role="presentation" aria-label="grad status">
                         <template v-if="schoolOfRecord.districtName">
@@ -225,6 +231,12 @@
                       : schoolAtGraduation.schoolName
                   }}<br />
                   {{ studentGradStatus.schoolAtGrad }}
+                  <v-progress-circular
+                    v-if="schoolSearchLoading"
+                    indeterminate
+                    color="green"
+                  >
+                  </v-progress-circular>
                 </v-btn>
 
                 <v-dialog v-model="schoolAtGradDialog" max-width="600px">
@@ -423,6 +435,7 @@ export default {
   },
   data() {
     return {
+      schoolSearchLoading: false,
       schoolAtGradDialog: false,
       schoolOfRecordDialog: false,
       snackbarStore: useSnackbarStore(),
@@ -455,13 +468,16 @@ export default {
     },
     getSchoolInfo(mincode, type) {
       if (mincode != null) {
+        this.schoolSearchLoading = true;
         SchoolService.getSchoolInfo(mincode)
           .then((response) => {
             if (type == "schoolOfRecord") {
               this.schoolOfRecord = response.data;
+              this.schoolSearchLoading = false;
             }
             if (type == "schoolAtGrad") {
               this.schoolAtGraduation = response.data;
+              this.schoolSearchLoading = false;
             }
           })
           .catch((error) => {
