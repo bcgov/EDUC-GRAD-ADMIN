@@ -3,17 +3,38 @@
     <v-alert v-if="!assessments" class="container">
       This student does not have any assessments.
     </v-alert>
-    <DisplayTable
+    <v-data-table
       v-if="assessments"
       :items="assessments"
-      :fields="fields"
+      :headers="fields"
       showFilter="true"
       title="Assessments"
       :id="id"
     >
-      <!-- <template v-slot:item.sessionDate="{ item }">
-        {{ $filters.formatYYYYMMDate(item.value) }}
-      </template> -->
+      <template
+        v-slot:item.data-table-expand="{
+          item,
+          internalItem,
+          toggleExpand,
+          isExpanded,
+        }"
+      >
+        <td v-if="item.hasMoreInfo == 'Y'">
+          <v-btn
+            variant="text"
+            density="comfortable"
+            @click="toggleExpand(internalItem)"
+            class="v-data-table__expand-icon"
+            :class="{ 'v-data-table__expand-icon--active': isExpanded }"
+            :icon="
+              isExpanded(internalItem)
+                ? 'mdi-chevron-down'
+                : 'mdi-chevron-right'
+            "
+          >
+          </v-btn>
+        </td>
+      </template>
       <template v-slot:item.assessmentName="{ item }">
         <v-dialog max-width="500">
           <template v-slot:activator="{ props: activatorProps }">
@@ -23,8 +44,8 @@
                   v-bind="activatorProps"
                   color="surface-variant"
                   :text="item.assessmentName"
-                  variant="flat"
-                  class="m-1 p-1 text-left"
+                  variant="plain"
+                  class="m-1 p-1 text-left v-btn-link"
                 >
                 </v-btn>
               </template>
@@ -64,10 +85,7 @@
                   <v-card-actions>
                     <v-spacer></v-spacer>
 
-                    <v-btn
-                      text="Close Dialog"
-                      @click="isActive.value = false"
-                    ></v-btn>
+                    <v-btn text="Close" @click="isActive.value = false"></v-btn>
                   </v-card-actions>
                 </v-card>
               </template>
@@ -91,7 +109,7 @@
           </td>
         </tr>
       </template>
-    </DisplayTable>
+    </v-data-table>
   </div>
 </template>
 

@@ -6,6 +6,7 @@
           v-if="hasPermissions('BATCH', 'runSchoolReportRegeneration')"
           color="primary"
           v-bind="props"
+          class="mr-2"
           ><v-icon>mdi-plus</v-icon></v-btn
         >
       </template>
@@ -350,7 +351,7 @@ export default {
           this.getBatchRequest,
           requestTemplate
         );
-        let response = await BatchProcessingService.runArchiveSchoolReports(
+        let response = await BatchProcessingService.runSCHL_RPT_REGEN(
           requestPayload,
           this.getBatchRequestCrontime
         );

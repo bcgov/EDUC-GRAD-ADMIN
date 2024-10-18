@@ -1,16 +1,20 @@
 <template>
-  <div>
-    <v-progress-circular model-value="batchLoading"></v-progress-circular>
+  <v-card :title="'Batch Job #' + selectedErrorId + ' Error(s)'">
+    <div class="d-flex justify-space-between align-center">
+      <v-card-title> Batch Job #{{ selectedErrorId }} Error(s) </v-card-title>
 
+      <!-- Slot for close button -->
+      <slot name="close"></slot>
+    </div>
     <!-- No results message-->
     <p v-if="rows < 1">
       There are no results to display.<br />
       Please select another Job Execution ID.
     </p>
-    <DisplayTable
+    <v-data-table
       title="Job/Runs"
       :items="batchData"
-      :fields="batchDataFields"
+      :headers="batchDataFields"
       id="id"
       :showFilter="false"
       :pagination="true"
@@ -20,6 +24,8 @@
           :id="'pen' + item.pen"
           text
           small
+          variant="plain"
+          class="v-btn-link"
           @click="findStudentByPen(item.pen)"
         >
           {{ item.pen }}
@@ -28,8 +34,8 @@
       <template v-slot:item.schoolOfRecord="{ item }">
         <div v-if="item.schoolOfRecord">{{ item.schoolOfRecord }}</div>
       </template>
-    </DisplayTable>
-  </div>
+    </v-data-table>
+  </v-card>
 </template>
 
 <script>

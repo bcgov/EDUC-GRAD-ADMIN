@@ -18,7 +18,7 @@
               <v-col md="2">
                 <label class="font-weight-bold">School</label>
               </v-col>
-              <v-col>
+              <v-col md="8">
                 <v-autocomplete
                   v-model="mincode"
                   label="Select a school to include"
@@ -30,66 +30,9 @@
                     {{ label.label }}
                   </template>
                 </v-autocomplete>
-                <v-card v-if="mincodeSchoolInfo">
-                  <v-card-text>
-                    <div>
-                      <v-simple-table class="w-100">
-                        <tbody>
-                          <tr>
-                            <td class="p-1"><strong>School Name:</strong></td>
-                            <td class="p-1">
-                              {{ mincodeSchoolInfo.schoolName }}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="p-1">
-                              <strong>Transcript Eligibility:</strong>
-                            </td>
-                            <td class="p-1">
-                              {{
-                                mincodeSchoolInfo.transcriptEligibility
-                                  ? "Y"
-                                  : "N"
-                              }}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="p-1">
-                              <strong>Certificate Eligibility:</strong>
-                            </td>
-                            <td class="p-1">
-                              {{
-                                mincodeSchoolInfo.certificateEligibility
-                                  ? "Y"
-                                  : "N"
-                              }}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="p-1">
-                              <strong>School Category:</strong>
-                            </td>
-                            <td class="p-1">
-                              {{ mincodeSchoolInfo.schoolCategory }}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="p-1">
-                              <strong>TRAX Reporting:</strong>
-                            </td>
-                            <td class="p-1">
-                              {{ mincodeSchoolInfo.traxReporting }}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </v-simple-table>
-                    </div>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-btn @click="addSchool()">Add School</v-btn>
-                  </v-card-actions>
-                </v-card>
-
+              </v-col>
+              <v-col md="2">
+                <v-btn @click="addSchool()">Add School</v-btn>
                 <v-row v-for="error in v$.mincode.$errors" :key="error.$uid">
                   <div class="error-msg">{{ error.$message }}</div>
                 </v-row>
@@ -176,26 +119,7 @@ export default {
     return {
       mincode: {
         async isValid(value) {
-          if (value === "") return true;
-          if (value.length == 8) {
-            try {
-              let schoolInfo = await SchoolService.getSchoolInfo(value);
-              if (schoolInfo.data) {
-                this.mincodeSchoolInfo = {
-                  schoolName: schoolInfo.data.displayName,
-                  transcriptEligibility: schoolInfo.data.canIssueTranscripts,
-                  certificateEligibility: schoolInfo.data.canIssueCertificates,
-                  schoolCategory: schoolInfo.data.schoolCategoryCode,
-                  traxReporting: schoolInfo.data.schoolReportingRequirementCode,
-                };
-                return true;
-              }
-            } catch (error) {
-              console.log(error);
-              this.mincodeSchoolInfo = null;
-              return false;
-            }
-          }
+          return true;
         },
       }, // Matches this.firstName
     };
@@ -254,13 +178,33 @@ export default {
       this.mincode = "";
       this.clearmincodeSchoolInfo();
     },
-
-    addSchool() {
-      this.schools.splice(0, 0, {
-        mincode: this.mincode,
-        info: this.mincodeSchoolInfo,
-      });
-      this.clearMincode();
+    async addSchool() {
+      if (this.mincode === "") return true;
+      if (this.mincode.length == 8) {
+        console.log("8");
+        try {
+          let schoolInfo = await SchoolService.getSchoolInfo(this.mincode);
+          if (schoolInfo.data) {
+            this.mincodeSchoolInfo = {
+              schoolName: schoolInfo.data.schoolName,
+              transcriptEligibility: schoolInfo.data.transcriptEligibility,
+              certificateEligibility: schoolInfo.data.certificateEligibility,
+              schoolCategory: schoolInfo.data.schoolCategory,
+              traxReporting: schoolInfo.data.reportingFlag,
+            };
+            this.schools.splice(0, 0, {
+              mincode: this.mincode,
+              info: this.mincodeSchoolInfo,
+            });
+            this.clearMincode();
+            return true;
+          }
+        } catch (error) {
+          console.log(error);
+          this.mincodeSchoolInfo = null;
+          return false;
+        }
+      }
     },
     removeSchool(mincode) {
       for (const [index, school] in this.schools) {

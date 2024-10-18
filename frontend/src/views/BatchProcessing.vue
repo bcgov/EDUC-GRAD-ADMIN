@@ -1,17 +1,7 @@
 <template>
-  <div class="batch-processing-view">
+  <div>
     <h1>Batch Processing</h1>
     <div>
-      <!-- <v-btn
-        class="position-absolute"
-        style="z-index: 10; right: 0; margin-right: 40px"
-        color="transparent"
-        small
-        @click="updateDashboards"
-      >
-        <v-icon icon="mdi-refresh" size="large"></v-icon>
-        Update
-      </v-btn> -->
       <v-tabs v-model="activeTab" bg-color="transparent">
         <v-tab
           value="batchRuns"
@@ -20,6 +10,14 @@
             activeTab = 'batchRuns';
           "
           >Batch Runs ({{ batchRuns.length }})</v-tab
+        >
+        <v-tab
+          @click="
+            getJwtToken;
+            clearBatchDetails;
+          "
+          value="newBatchRequest"
+          >New Batch Request</v-tab
         >
         <v-tab
           value="scheduledRuns"
@@ -37,14 +35,6 @@
           value="batchRoutines"
           >Scheduled Routines</v-tab
         >
-        <v-tab
-          @click="
-            getJwtToken;
-            clearBatchDetails;
-          "
-          value="newBatchRequest"
-          >New Batch Request</v-tab
-        >
 
         <v-tab @click.prevent class="ml-auto">
           <v-btn @click.stop="updateDashboards">
@@ -57,12 +47,8 @@
         <v-tabs-window-item value="batchRuns">
           <BatchRuns></BatchRuns>
         </v-tabs-window-item>
-
         <v-tabs-window-item value="scheduledRuns">
-          <v-row v-if="!scheduledJobs.length">
-            <v-col> No Scheduled Jobs </v-col>
-          </v-row>
-          <v-row v-else>
+          <v-row>
             <v-col> <ScheduledBatchRuns></ScheduledBatchRuns></v-col>
           </v-row>
         </v-tabs-window-item>
@@ -96,6 +82,7 @@
                   ><TranscriptAlgorithmForm
                     v-else-if="item.code == 'TVRRUN'"
                   ></TranscriptAlgorithmForm>
+                  <DistrunForm v-else-if="item.code == 'DISTRUN'"></DistrunForm>
                   <v-btn v-else :disabled="true">+ </v-btn>
                 </template>
               </v-data-table>
@@ -115,17 +102,19 @@
               <v-table>
                 <tbody>
                   <tr>
-                    <td class="pl-3">Blank certificate print</td>
+                    <td>Blank certificate print</td>
                     <td>
-                      <DistrunForm
+                      <DistrunUserForm
                         credentialSelected="Blank certificate print"
-                      ></DistrunForm>
+                      ></DistrunUserForm>
                     </td>
                   </tr>
                   <tr>
                     <td>Reprint certificate – no principal signature block</td>
                     <td>
-                      <DistrunForm credentialSelected="RC"></DistrunForm>
+                      <DistrunUserForm
+                        credentialSelected="RC"
+                      ></DistrunUserForm>
                     </td>
                   </tr>
                   <tr>
@@ -133,21 +122,25 @@
                       Original certificate – with principal signature block
                     </td>
                     <td>
-                      <DistrunForm credentialSelected="OC"></DistrunForm>
+                      <DistrunUserForm
+                        credentialSelected="OC"
+                      ></DistrunUserForm>
                     </td>
                   </tr>
                   <tr>
                     <td>Blank transcript print</td>
                     <td>
-                      <DistrunForm
+                      <DistrunUserForm
                         credentialSelected="Blank transcript print"
-                      ></DistrunForm>
+                      ></DistrunUserForm>
                     </td>
                   </tr>
                   <tr>
                     <td>Transcript</td>
                     <td>
-                      <DistrunForm credentialSelected="OT"></DistrunForm>
+                      <DistrunUserForm
+                        credentialSelected="OT"
+                      ></DistrunUserForm>
                     </td>
                   </tr>
                 </tbody>
@@ -225,6 +218,7 @@ import BatchProcessingService from "@/services/BatchProcessingService.js";
 import DistributionService from "@/services/DistributionService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 import ScheduledBatchRuns from "@/components/Batch/ScheduledBatchRuns.vue";
+import DistrunUserForm from "@/components/Batch/Forms/DistrunUserForm.vue";
 import DistrunForm from "@/components/Batch/Forms/DistrunForm.vue";
 import RegenerateCertificateForm from "@/components/Batch/Forms/RegenerateCertificateForm.vue";
 import GraduationAlgorithmForm from "@/components/Batch/Forms/GraduationAlgorithmForm.vue";
@@ -293,6 +287,7 @@ export default {
     },
   },
   components: {
+    DistrunUserForm: DistrunUserForm,
     DistrunForm: DistrunForm,
     DisplayTable: DisplayTable,
     BatchRuns: BatchRuns,
@@ -370,6 +365,7 @@ export default {
         this.batchRunGradOptions = this.filterBatchTypes(this.batchTypes, [
           "REGALG",
           "TVRRUN",
+          "DISTRUN",
         ]);
         this.credentialBatchRunOptions.userRequests = this.filterBatchTypes(
           this.batchTypes,
@@ -476,492 +472,17 @@ export default {
     formatDate(value) {
       return value.toLocaleString("en-CA", { timeZone: "PST" });
     },
-    getAdminDashboardData() {},
     updateAllDashboards() {
       this.updateDashboards();
     },
-    getBatchData(item) {
-      if (item.value) {
-        return item.value;
-      } else {
-        return item;
-      }
-    },
-    runDISTRUN_MONTHLY(id) {
-      let requestId = id.replace("job-", "");
-      this.$set(this.spinners, id, true);
-      let index = id.replace("job-", "") - 1;
-      let value = true;
-      this.setTabLoading({ index, value });
-      BatchProcessingService.runDISTRUN_MONTHLY()
-        .then((response) => {
-          this.getAdminDashboardData();
-          this.cancelBatchJob(id);
-          this.selectedTab = 0;
-          if (response.data) {
-            alert(
-              "Batch run " +
-                response.data.batchId +
-                " has started for request " +
-                requestId +
-                "BATCH PROCESSING STARTED"
-            );
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            this.getAdminDashboardData();
-            this.cancelBatchJob(id);
-            this.selectedTab = 0;
-            alert(
-              "This request is running in the background" +
-                "BATCH PROCESSING UPDATE"
-            );
-          }
-        });
-    },
-    runDISTRUN_YE(request, id) {
-      let requestId = id.replace("job-", "");
-      this.$set(this.spinners, id, true);
-      let index = id.replace("job-", "") - 1;
-      let value = true;
-      this.setTabLoading({ index, value });
-      BatchProcessingService.runDISTRUN_YE(request)
-        .then((response) => {
-          this.getAdminDashboardData();
-          this.cancelBatchJob(id);
-          this.selectedTab = 0;
-          if (response.data) {
-            this.$bvToast.toast(
-              "Batch run " +
-                response.data.batchId +
-                " has started for request " +
-                requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            this.getAdminDashboardData();
-            this.cancelBatchJob(id);
-            this.selectedTab = 0;
-            this.$bvToast.toast("This request is running in the background", {
-              title: "BATCH PROCESSING UPDATE",
-              variant: "success",
-              noAutoHide: true,
-            });
-          }
-        });
-    },
-    runDISTRUN_SUPP(request, id) {
-      let requestId = id.replace("job-", "");
-      this.$set(this.spinners, id, true);
-      let index = id.replace("job-", "") - 1;
-      let value = true;
-      this.setTabLoading({ index, value });
-      BatchProcessingService.runDISTRUN_SUPP(request)
-        .then((response) => {
-          this.getAdminDashboardData();
-          this.cancelBatchJob(id);
-          this.selectedTab = 0;
-          if (response.data) {
-            this.$bvToast.toast(
-              "Batch run " +
-                response.data.batchId +
-                " has started for request " +
-                requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            this.getAdminDashboardData();
-            this.cancelBatchJob(id);
-            this.selectedTab = 0;
-            this.$bvToast.toast("This request is running in the background", {
-              title: "BATCH PROCESSING UPDATE",
-              variant: "success",
-              noAutoHide: true,
-            });
-          }
-        });
-    },
-    runNONGRADRUN(request, id) {
-      let requestId = id.replace("job-", "");
-      this.$set(this.spinners, id, true);
-      let index = id.replace("job-", "") - 1;
-      let value = true;
-      this.setTabLoading({ index, value });
-      BatchProcessingService.runNONGRADRUN(request)
-        .then((response) => {
-          this.getAdminDashboardData();
-          this.cancelBatchJob(id);
-          this.selectedTab = 0;
-          if (response.data) {
-            this.$bvToast.toast(
-              "Batch run " +
-                response.data.batchId +
-                " has started for request " +
-                requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            this.getAdminDashboardData();
-            this.cancelBatchJob(id);
-            this.selectedTab = 0;
-            this.$bvToast.toast("This request is running in the background", {
-              title: "BATCH PROCESSING UPDATE",
-              variant: "success",
-              noAutoHide: true,
-            });
-          }
-        });
-    },
-    runBlankDISTRUNUSERUserRequest(request, id, credentialType) {
-      let requestId = id.replace("job-", "");
-      this.$set(this.spinners, id, true);
-      let index = id.replace("job-", "") - 1;
-      let value = true;
-      this.setTabLoading({ index, value });
-      BatchProcessingService.runDISTRUNUSER(request, credentialType)
-        .then((response) => {
-          //update the admin dashboard
-          this.getAdminDashboardData();
-          this.cancelBatchJob(id);
-          this.selectedTab = 0;
-
-          if (request.localDownload == "Y") {
-            let bid = response.data.batchId;
-            setTimeout(this.downloadDISTRUNUSER, 3000, bid);
-          } else {
-            if (response.data) {
-              this.$bvToast.toast(
-                "Batch run " +
-                  response.data.batchId +
-                  " has started for request " +
-                  requestId,
-                {
-                  title: "BATCH PROCESSING STARTED",
-                  variant: "success",
-                  noAutoHide: true,
-                }
-              );
-            }
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            this.cancelBatchJob(id);
-            this.$bvToast.toast("There was an error processing " + requestId, {
-              title: "BATCH PROCESSING UPDATE",
-              variant: "error",
-              noAutoHide: true,
-            });
-          }
-        });
-    },
-    runDISTRUNUSER(request, id, credentialType) {
-      let requestId = id.replace("job-", "");
-      this.$set(this.spinners, id, true);
-      let index = id.replace("job-", "") - 1;
-      let value = true;
-      this.setTabLoading({ index, value });
-      BatchProcessingService.runDISTRUNUSER(request, credentialType)
-        .then((response) => {
-          //update the admin dashboard
-          this.getAdminDashboardData();
-          this.cancelBatchJob(id);
-          this.selectedTab = 0;
-          if (request.localDownload == "Y") {
-            let bid = response.data.batchId;
-            setTimeout(this.downloadDISTRUNUSER, 3000, bid);
-          } else {
-            if (response.data) {
-              this.$bvToast.toast(
-                "Batch run " +
-                  response.data.batchId +
-                  " has started for request " +
-                  requestId,
-                {
-                  title: "BATCH PROCESSING STARTED",
-                  variant: "success",
-                  noAutoHide: true,
-                }
-              );
-            }
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            this.cancelBatchJob(id);
-            this.$bvToast.toast("There was an error processing " + requestId, {
-              title: "BATCH PROCESSING UPDATE",
-              variant: "error",
-              noAutoHide: true,
-            });
-          }
-        });
-    },
-    runArchiveStudents(request, id) {
-      let requestId = id.replace("job-", "");
-      this.$set(this.spinners, id, true);
-      let index = id.replace("job-", "") - 1;
-      let value = true;
-      this.setTabLoading({ index, value });
-      BatchProcessingService.runYearlyArchiveBatchJobStudents(request)
-        .then((response) => {
-          //update the admin dashboard
-          this.getAdminDashboardData();
-          this.cancelBatchJob(id);
-          this.selectedTab = 0;
-          if (response) {
-            this.$bvToast.toast(
-              "Batch run has started for request " + requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            this.cancelBatchJob(id);
-            this.$bvToast.toast("There was an error processing " + requestId, {
-              title: "BATCH PROCESSING UPDATE",
-              variant: "error",
-              noAutoHide: true,
-            });
-          }
-        });
-    },
-    runManageSchoolReports(request, id) {
-      let requestId = id.replace("job-", "");
-      this.$set(this.spinners, id, true);
-      let index = id.replace("job-", "") - 1;
-      let value = true;
-      this.setTabLoading({ index, value });
-      BatchProcessingService.runYearlyArchiveBatchJobSchools(request)
-        .then((response) => {
-          //update the admin dashboard
-          this.getAdminDashboardData();
-          this.cancelBatchJob(id);
-          this.selectedTab = 0;
-          if (response) {
-            this.$bvToast.toast(
-              "Batch run has started for request " + requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            this.cancelBatchJob(id);
-            this.$bvToast.toast("There was an error processing " + requestId, {
-              title: "BATCH PROCESSING UPDATE",
-              variant: "error",
-              noAutoHide: true,
-            });
-          }
-        });
-    },
-    runPSIRUN(request, id, transmissionType) {
-      let requestId = id.replace("job-", "");
-      this.$set(this.spinners, id, true);
-      let index = id.replace("job-", "") - 1;
-      let value = true;
-      this.setTabLoading({ index, value });
-      BatchProcessingService.runPSIRUN(request, transmissionType)
-        .then((response) => {
-          //update the admin dashboard
-          this.getAdminDashboardData();
-          this.cancelBatchJob(id);
-          this.selectedTab = 0;
-          if (response) {
-            this.$bvToast.toast(
-              "Batch run has started for request " + requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            this.cancelBatchJob(id);
-            this.$bvToast.toast("There was an error processing " + requestId, {
-              title: "BATCH PROCESSING UPDATE",
-              variant: "error",
-              noAutoHide: true,
-            });
-          }
-        });
-    },
-    runTVRRUN(request, id) {
-      let requestId = id.replace("job-", "");
-      this.$set(this.spinners, id, true);
-      let index = id.replace("job-", "") - 1;
-      let value = true;
-      this.setTabLoading({ index, value });
-      BatchProcessingService.runTVRRUN(request)
-        .then((response) => {
-          //update the admin dashboard
-          this.getAdminDashboardData();
-          this.cancelBatchJob(id);
-          this.selectedTab = 0;
-          if (response.data) {
-            this.$bvToast.toast(
-              "Batch run " +
-                response.data.batchId +
-                " has started for request " +
-                requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            this.cancelBatchJob(id);
-            this.$bvToast.toast("There was an error processing " + requestId, {
-              title: "BATCH PROCESSING UPDATE",
-              variant: "error",
-              noAutoHide: true,
-            });
-          }
-        });
-    },
-    runREGALG(request, id) {
-      let requestId = id.replace("job-", "");
-      this.$set(this.spinners, id, true);
-      let index = id.replace("job-", "") - 1;
-      let value = true;
-      this.setTabLoading({ index, value });
-      BatchProcessingService.runREGALG(request)
-        .then((response) => {
-          //update the admin dashboard
-          this.getAdminDashboardData();
-          this.cancelBatchJob(id);
-          this.selectedTab = 0;
-          if (response.data) {
-            this.$bvToast.toast(
-              "Batch run " +
-                response.data.batchId +
-                " has started for request " +
-                requestId,
-              {
-                title: "BATCH PROCESSING STARTED",
-                variant: "success",
-                noAutoHide: true,
-              }
-            );
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            this.cancelBatchJob(id);
-            this.$bvToast.toast("There was an error processing " + requestId, {
-              title: "BATCH PROCESSING UPDATE",
-              variant: "error",
-              noAutoHide: true,
-            });
-          }
-        });
-    },
-    addScheduledJob(request, id) {
-      let requestId = id.replace("job-", "");
-      this.$set(this.spinners, id, true);
-      let index = id.replace("job-", "") - 1;
-      let value = true;
-      this.setTabLoading({ index, value });
-      BatchProcessingService.addScheduledJob(request)
-        .then(() => {
-          //update the admin dashboard
-          this.getScheduledJobs();
-          this.cancelBatchJob(id);
-          this.selectedTab = 0;
-          this.$bvToast.toast(
-            "Request " + requestId + " has successfully been scheduled",
-            {
-              title: "SCHEDULING USER REQUEST",
-              variant: "success",
-              noAutoHide: true,
-            }
-          );
-        })
-        .catch((error) => {
-          if (error) {
-            this.$bvToast.toast("There was an error scheduling your request", {
-              title: "SCHEDULING ERROR",
-              variant: "success",
-              noAutoHide: true,
-            });
-          }
-        });
-    },
-    getScheduledJobs() {
-      BatchProcessingService.getScheduledBatchJobs().then((response) => {
-        this.setScheduledBatchJobs(response.data);
-      });
-    },
-    //delete
-    runbatch(id, cronTime) {},
-    rerunBatchSchoolReports(bid) {},
-    rerunBatch(bid) {},
-    rerunBatchStudentErrors(bid) {},
-    displaySearchResults(value) {},
-    setBatchId(id, type) {},
   },
 };
 </script>
 <style scoped>
-.batch-processing-view {
-  padding-left: 25px;
-  padding-right: 25px;
-}
-.downloadIcon {
-  min-width: 25px;
-  margin-left: 5px;
-  margin-top: 5px;
-}
-.alert,
-.card,
-.btn.btn-primary {
-  position: inherit;
-}
 h6 {
   font-size: 1.5rem;
 }
-.find {
-  padding-bottom: 1rem;
-}
+
 .delete-button {
   border-radius: 0px;
 }
