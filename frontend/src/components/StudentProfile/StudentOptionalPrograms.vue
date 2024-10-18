@@ -28,6 +28,8 @@
 
         <template v-slot:item.optionalReqMet="{ item }">
           <div v-if="item.studentOptionalProgramData">
+            <!-- {{ item.optionalProgramCode }}
+            {{ item.studentOptionalProgramData.optionalRequirementsMet }} -->
             <v-data-table
               v-if="
                 item.optionalProgramCode == 'BC' ||
@@ -37,10 +39,58 @@
                 item.programCode == 'SCCP'
               "
               :items="item.studentOptionalProgramData.optionalRequirementsMet"
-              :headers="fields"
+              :headers="requirementsMetHeaders"
               :hide-default-header="true"
               :hide-default-footer="true"
             ></v-data-table>
+            <v-data-table
+              :items="
+                filteredGradReqCourses(
+                  item.studentOptionalProgramData.optionalStudentCourses
+                    .studentCourseList
+                )
+              "
+              :headers="studentCourseListHeaders"
+              v-if="item.studentOptionalProgramData.optionalStudentCourses"
+              :hide-default-header="true"
+              :hide-default-footer="true"
+            >
+              <template v-slot:item.gradReqMetDetail="{ item }">
+                <!-- {{ item }} -->
+                <div class="p-2">
+                  <strong>{{ item.gradReqMetDetail }}</strong
+                  ><br />
+                  {{ item.courseCode }} {{ item.courseLevel }} -
+                  {{ $filters.formatYYYYMMDate(item.sessionDate) }} ({{
+                    item.courseName
+                  }})
+                </div>
+              </template>
+            </v-data-table>
+            <v-data-table
+              :items="
+                filteredGradReqAssessments(
+                  item.studentOptionalProgramData.optionalStudentAssessments
+                    .studentAssessmentList
+                )
+              "
+              :headers="studentCourseListHeaders"
+              v-if="item.studentOptionalProgramData.optionalStudentAssessments"
+              :hide-default-header="true"
+              :hide-default-footer="true"
+            >
+              <template v-slot:item.gradReqMetDetail="{ item }">
+                <!-- {{ item }} -->
+                <div class="p-2">
+                  <strong>{{ item.gradReqMetDetail }}</strong
+                  ><br />
+                  {{ item.assessmentCode }} -
+                  {{ $filters.formatYYYYMMDate(item.sessionDate) }} ({{
+                    item.assessmentName
+                  }})
+                </div>
+              </template>
+            </v-data-table>
           </div>
         </template>
 
@@ -202,7 +252,7 @@
               <v-card class="my-3 mx-0">
                 <v-data-table
                   :items="studentCareerPrograms"
-                  :headers="studentCareerProgramsFields"
+                  :headers="studentCareerProgramsHeaders"
                   :hide-default-footer="true"
                 >
                   <template v-slot:item.actions="{ item }">
@@ -272,8 +322,8 @@
 </template>
 
 <script>
-import { useStudentStore } from "../../store/modules/student";
 import { mapState, mapActions } from "pinia";
+import { useStudentStore } from "../../store/modules/student";
 import DisplayTable from "@/components/DisplayTable.vue";
 import OptionalProgramsForm from "@/components/Forms/OptionalProgramsForm.vue";
 export default {
@@ -294,7 +344,7 @@ export default {
   data: function () {
     return {
       deleteDialog: {},
-      fields: [
+      requirementsMetHeaders: [
         {
           key: "rule",
           label: "Grad Requirement Met",
@@ -306,8 +356,16 @@ export default {
           class: "text-left",
         },
       ],
+      studentCourseListHeaders: [
+        // { key: "courseCode", label: "Course Code", class: "text-left" },
+        {
+          key: "gradReqMetDetail",
+          label: "Grad Requirement Met",
+          class: "text-left",
+        },
+      ],
 
-      studentCareerProgramsFields: [
+      studentCareerProgramsHeaders: [
         { key: "careerProgramCode", title: "Career Program Code" },
         { key: "careerProgramName", title: "Career Program Name" },
         { key: "actions", title: "Delete" },
@@ -336,10 +394,18 @@ export default {
       removeStudentOptionalProgram: "removeStudentOptionalProgram",
       removeStudentCareerProgram: "removeStudentCareerProgram",
     }),
-    filterGradReqCourses(row) {
-      if (row.gradReqMet.length > 0) {
+    filterGradReqItems(item) {
+      if (item.gradReqMet.length > 0) {
         return true;
       }
+    },
+    filteredGradReqCourses(courses) {
+      return courses?.filter((course) => this.filterGradReqItems(course));
+    },
+    filteredGradReqAssessments(assessments) {
+      return assessments?.filter((assessment) =>
+        this.filterGradReqItems(assessment)
+      );
     },
     toggle(id) {
       const index = this.opened.indexOf(id);
