@@ -103,7 +103,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     getGroupData: (state) => {
       
       if (state.who === "Student") {
-        return state.students.map(student => student.pen);
+        return state.students;
       } else if (state.who === "School Category") {
         return state.districts;
       } else if (state.who === "Program") {

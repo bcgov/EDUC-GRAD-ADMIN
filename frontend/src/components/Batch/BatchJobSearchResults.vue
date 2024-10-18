@@ -20,7 +20,7 @@
       There are no results to display.<br />
       Please select another Job Execution ID.
     </p>
-
+    {{ getBatchRequest }}
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
       :headers="batchDataFields"

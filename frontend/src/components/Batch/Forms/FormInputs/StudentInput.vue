@@ -14,7 +14,10 @@
             ></v-text-field>
           </v-col>
           <v-col md="3">
-            <v-btn @click="addStudent()" :disabled="v$.pen.$invalid">
+            <v-btn
+              @click="addStudent()"
+              :disabled="v$.pen.$invalid || pen == ''"
+            >
               Add Student
             </v-btn>
             <!-- <v-btn @click="clearPen" text> Clear </v-btn> -->
@@ -71,7 +74,7 @@ import GraduationReportService from "@/services/GraduationReportService.js";
 import { useVuelidate } from "@vuelidate/core";
 import { mapActions, mapState } from "pinia";
 import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
-import { required, minLength, helpers } from "@vuelidate/validators";
+import { required, minLength, maxLength, helpers } from "@vuelidate/validators";
 
 export default {
   components: {},
@@ -98,7 +101,6 @@ export default {
   validations() {
     return {
       pen: {
-        required,
         minLength: minLength(9),
       }, // Matches this.firstName
     };

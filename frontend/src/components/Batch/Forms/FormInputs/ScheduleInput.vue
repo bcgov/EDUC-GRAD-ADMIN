@@ -63,7 +63,25 @@
           </template></v-data-table
         >
       </div>
-
+      <div v-if="getGroup == 'Student'">
+        <v-data-table
+          :items="getGroupData"
+          :headers="[
+            { title: 'Pen', value: 'pen' },
+            { title: 'Student Name', value: 'name' },
+            { title: 'DOB', value: 'info.dob' },
+            { title: 'status', value: 'info.status' },
+          ]"
+          hide-default-footer
+        >
+          <template #item.name="{ item }">
+            {{ item.info.firstName }} {{ item.info.lastName }}
+          </template>
+          <template #no-data>
+            <v-icon>mdi-information</v-icon> Group not selected
+          </template></v-data-table
+        >
+      </div>
       <div v-if="getGroup == 'Program'">
         <v-data-table
           :items="getGroupData"
@@ -261,9 +279,6 @@ export default {
       "getGroup",
       "getDistribution",
     ]),
-    isEmpty() {
-      return this.students.length > 0;
-    },
   },
 };
 </script>
