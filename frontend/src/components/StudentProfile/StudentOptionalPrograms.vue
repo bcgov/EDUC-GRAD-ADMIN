@@ -44,9 +44,9 @@
               :hide-default-footer="true"
             >
               <template v-slot:item.rule="{ item }">
-                <p class="ml-2 pt-2">
+                <div class="p-2">
                   <strong>{{ item.rule }}</strong> - {{ item.description }}
-                </p>
+                </div>
               </template>
             </v-data-table>
             <v-data-table
