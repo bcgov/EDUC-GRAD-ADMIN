@@ -47,12 +47,8 @@
         <v-tabs-window-item value="batchRuns">
           <BatchRuns></BatchRuns>
         </v-tabs-window-item>
-
         <v-tabs-window-item value="scheduledRuns">
-          <v-row v-if="!scheduledJobs.length">
-            <v-col> No Scheduled Jobs </v-col>
-          </v-row>
-          <v-row v-else>
+          <v-row>
             <v-col> <ScheduledBatchRuns></ScheduledBatchRuns></v-col>
           </v-row>
         </v-tabs-window-item>
