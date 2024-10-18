@@ -15,6 +15,7 @@
       </v-alert>
       <OptionalProgramsForm />
       <v-data-table
+        v-if="studentOptionalPrograms"
         :items="studentOptionalPrograms"
         :headers="studentOptionalProgramsFields"
       >
