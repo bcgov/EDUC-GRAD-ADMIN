@@ -301,12 +301,114 @@
             <tr v-if="!showEdit">
               <td><strong>School of record: </strong></td>
               <td>
-                {{
-                  studentGradStatus.schoolName
-                    ? studentGradStatus.schoolName
-                    : schoolOfRecord.schoolName
-                }}<br />
-                {{ studentGradStatus.schoolOfRecord }}
+                <v-btn
+                  class="p-0 text-left"
+                  variant="text"
+                  @click="
+                    dialog = true;
+                    getSchoolInfo(
+                      studentGradStatus.schoolOfRecord,
+                      'schoolOfRecord'
+                    );
+                  "
+                >
+                  {{
+                    studentGradStatus.schoolName
+                      ? studentGradStatus.schoolName
+                      : schoolOfRecord.schoolName
+                  }}<br />
+                  {{ studentGradStatus.schoolOfRecord }}
+                </v-btn>
+
+                <v-dialog v-model="dialog" persistent max-width="600px">
+                  <v-card>
+                    <v-card-title class="text-h6"
+                      >School Information</v-card-title
+                    >
+
+                    <v-card-text>
+                      <ul>
+                        <li v-if="schoolOfRecord.districtName">
+                          <strong>District:</strong>
+                          {{ schoolOfRecord.districtName }}
+                        </li>
+                        <li>
+                          <strong>School Code and Name:</strong>
+                          {{
+                            schoolOfRecord.mincode +
+                            " " +
+                            schoolOfRecord.displayName
+                          }}
+                        </li>
+                      </ul>
+                      {{ schoolOfRecord }}
+                      <v-simple-table
+                        role="presentation"
+                        aria-label="grad status"
+                      >
+                        <template>
+                          <tbody>
+                            <tr>
+                              <td><strong>District:</strong></td>
+                              <td>{{ schoolOfRecord?.districtName }}</td>
+                            </tr>
+                            <tr>
+                              <td><strong>School Code and Name:</strong></td>
+                              <td>
+                                {{
+                                  schoolOfRecord?.minCode +
+                                  " " +
+                                  schoolOfRecord?.displayName
+                                }}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td><strong>Status:</strong></td>
+                              <td>
+                                {{
+                                  schoolOfRecord?.openFlag == "Y"
+                                    ? "Open"
+                                    : "Closed"
+                                }}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td><strong>Independent type:</strong></td>
+                              <td>
+                                {{ schoolOfRecord?.independentDesignation }}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td><strong>Independent affiliation:</strong></td>
+                              <td>
+                                {{ schoolOfRecord?.independentAffiliation }}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td><strong>Transcript eligible:</strong></td>
+                              <td>
+                                {{ schoolOfRecord?.canIssueTranscripts }}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td><strong>Dogwood eligibility:</strong></td>
+                              <td>
+                                {{ schoolOfRecord.certificateEligibility }}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </template>
+                      </v-simple-table>
+                    </v-card-text>
+
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary" @click="dialog = false"
+                        >Close</v-btn
+                      >
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
                 <!-- <b-button
                   class="p-0 text-left"
                   v-b-modal.modal-1
@@ -324,9 +426,9 @@
                       : schoolOfRecord.schoolName
                   }}<br />
                   {{ studentGradStatus.schoolOfRecord }}</b-button
-                > -->
+                >
 
-                <!-- <b-modal
+                <b-modal
                   id="modal-1"
                   title="School Information"
                   ok-title="Close"
@@ -840,6 +942,7 @@ export default {
   },
   data() {
     return {
+      dialog: false,
       snackbarStore: useSnackbarStore(),
       programCompletionEffectiveDateList: [],
       programEffectiveDate: "",

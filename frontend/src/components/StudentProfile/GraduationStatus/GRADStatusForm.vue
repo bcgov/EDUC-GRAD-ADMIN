@@ -589,6 +589,14 @@ export default {
         return false;
       }
     },
+    mergedStudent() {
+      if (this.studentGradStatus.studentStatus === "MER") {
+        return true;
+      } else {
+        this.searchLoading = false;
+        return false;
+      }
+    },
   },
   data() {
     return {
@@ -1040,7 +1048,13 @@ export default {
                 .replace("-", "/")
                 .substring(0, 7);
           }
-          this.snackbarStore.showSnackbar(error, "error", 5000);
+          //eslint-disable-next-line
+          console.log(error?.response?.data);
+          this.snackbarStore.showSnackbar(
+            error?.response?.data?.message,
+            "error",
+            5000
+          );
         });
     },
     getSchoolInfo(mincode, type) {
