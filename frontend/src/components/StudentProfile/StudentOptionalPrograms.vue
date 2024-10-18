@@ -42,7 +42,13 @@
               :headers="requirementsMetHeaders"
               :hide-default-header="true"
               :hide-default-footer="true"
-            ></v-data-table>
+            >
+              <template v-slot:item.rule="{ item }">
+                <p class="ml-2 pt-2">
+                  <strong>{{ item.rule }}</strong> - {{ item.description }}
+                </p>
+              </template>
+            </v-data-table>
             <v-data-table
               :items="
                 filteredGradReqCourses(
@@ -51,7 +57,13 @@
                 )
               "
               :headers="studentCourseListHeaders"
-              v-if="item.studentOptionalProgramData.optionalStudentCourses"
+              v-if="
+                item.studentOptionalProgramData.optionalStudentCourses &&
+                filteredGradReqCourses(
+                  item.studentOptionalProgramData.optionalStudentCourses
+                    .studentCourseList
+                )?.length
+              "
               :hide-default-header="true"
               :hide-default-footer="true"
             >
@@ -75,7 +87,13 @@
                 )
               "
               :headers="studentCourseListHeaders"
-              v-if="item.studentOptionalProgramData.optionalStudentAssessments"
+              v-if="
+                item.studentOptionalProgramData.optionalStudentAssessments &&
+                filteredGradReqAssessments(
+                  item.studentOptionalProgramData.optionalStudentAssessments
+                    .studentAssessmentList
+                )?.length
+              "
               :hide-default-header="true"
               :hide-default-footer="true"
             >
@@ -350,14 +368,13 @@ export default {
           label: "Grad Requirement Met",
           class: "text-left",
         },
-        {
-          key: "description",
-          label: "Grad Requirement Met",
-          class: "text-left",
-        },
+        // {
+        //   key: "description",
+        //   label: "Grad Requirement Met",
+        //   class: "text-left",
+        // },
       ],
       studentCourseListHeaders: [
-        // { key: "courseCode", label: "Course Code", class: "text-left" },
         {
           key: "gradReqMetDetail",
           label: "Grad Requirement Met",
