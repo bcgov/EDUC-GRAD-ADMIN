@@ -55,7 +55,7 @@
           </v-col>
           <v-col sm="5" lg="2">
             <v-btn
-              :disabled="!district"
+              :disabled="!district || selectAllDistricts"
               @click="addDistrict()"
               class="float-left bg-primary"
               >Add District</v-btn
@@ -263,6 +263,7 @@ export default {
       this.clearDistrictInfo();
     },
     selectAllDistrictsCheckbox(event) {
+      this.clearDistrictInput();
       const AllDistrictChecked = event.target.checked;
       if (AllDistrictChecked) {
         // Remove all psis and automatically add the All PSI

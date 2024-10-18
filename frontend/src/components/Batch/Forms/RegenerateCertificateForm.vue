@@ -11,115 +11,132 @@
         >
       </template>
       <v-card>
-        <v-card-title>
-          <span class="text-h5">User Request Certificate Regeneration</span>
-        </v-card-title>
+        <div class="d-flex justify-space-between align-center">
+          <v-card-title>User Request Certificate Regeneration</v-card-title>
+          <v-btn
+            @click="closeDialogAndResetForm()"
+            color="error"
+            variant="outlined"
+            class="m-4"
+            >Cancel</v-btn
+          >
+        </div>
         <v-card-text>
-          <v-container>
-            <v-stepper alt-labels show-actions v-model="step">
-              <template v-slot:default="{ prev, next }">
-                <v-stepper-header>
-                  <v-stepper-item
-                    :rules="[
-                      () =>
-                        !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Group"
-                    value="1"
-                  ></v-stepper-item>
+          <v-stepper show-actions v-model="step">
+            <template v-slot:default="{ prev, next }">
+              <v-stepper-header>
+                <v-stepper-item
+                  :rules="[
+                    () => !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
+                  ]"
+                  complete
+                  editable
+                  title="Group"
+                  value="0"
+                ></v-stepper-item>
 
-                  <v-divider></v-divider>
+                <v-divider></v-divider>
 
-                  <v-stepper-item
-                    :rules="[
-                      () => !v$.getBatchRequest.batchRunTimeSet.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Run/Schedule"
-                    value="2"
-                  ></v-stepper-item>
-                </v-stepper-header>
+                <v-stepper-item
+                  :rules="[() => !v$.getBatchRequest.batchRunTimeSet.$invalid]"
+                  complete
+                  editable
+                  title="Run/Schedule"
+                  value="1"
+                ></v-stepper-item>
+              </v-stepper-header>
 
-                <v-stepper-window>
-                  <v-stepper-window-item value="1">
-                    <v-row>
-                      <v-select
-                        v-model="group"
-                        :items="[
-                          {
-                            title: 'All',
-                            value: 'all',
-                            disabled: !hasPermissions(
-                              'BATCH',
-                              'selectAllOption'
-                            ),
-                          },
-                          {
-                            title: 'Student',
-                            value: 'Student',
-                          },
-                          {
-                            title: 'District',
-                            value: 'School Category',
-                          },
-                        ]"
-                        label="Select a Group"
-                        ><template v-slot:item="{ props, item }">
-                          <v-list-item
-                            v-bind="props"
-                            :disabled="item.raw.disabled"
-                          ></v-list-item> </template
-                      ></v-select>
-                    </v-row>
-                    <v-row v-if="group == 'Student'">
-                      <StudentInput runType="CERT_REGEN"></StudentInput>
-                    </v-row>
-                    <v-row v-if="group == 'School Category'">
-                      <DistrictInput
-                        runType="CERT_REGEN"
-                        disableSelectStudents
-                        disableSelectCategory
-                      ></DistrictInput>
-                    </v-row>
-                  </v-stepper-window-item>
+              <v-stepper-window>
+                <v-stepper-window-item value="0">
+                  <v-row>
+                    <v-select
+                      v-model="group"
+                      :items="[
+                        {
+                          title: 'All',
+                          value: 'all',
+                          disabled: !hasPermissions('BATCH', 'selectAllOption'),
+                        },
+                        {
+                          title: 'Student',
+                          value: 'Student',
+                        },
+                        {
+                          title: 'District',
+                          value: 'School Category',
+                        },
+                      ]"
+                      label="Select a Group"
+                      ><template v-slot:item="{ props, item }">
+                        <v-list-item
+                          v-bind="props"
+                          :disabled="item.raw.disabled"
+                        ></v-list-item> </template
+                    ></v-select>
+                  </v-row>
+                  <v-row v-if="group == 'Student'">
+                    <StudentInput runType="CERT_REGEN"></StudentInput>
+                  </v-row>
+                  <v-row v-if="group == 'School Category'">
+                    <DistrictInput
+                      runType="CERT_REGEN"
+                      disableSelectStudents
+                      disableSelectCategory
+                    ></DistrictInput>
+                  </v-row>
+                </v-stepper-window-item>
 
-                  <v-stepper-window-item value="2">
-                    <v-card flat>
-                      <ScheduleInput></ScheduleInput>
-                    </v-card>
-                  </v-stepper-window-item>
-
-                  <v-stepper-window-item value="3">
-                    <span>Step Window 3</span>
-                  </v-stepper-window-item>
-                </v-stepper-window>
-                <v-stepper-actions
-                  @click:prev="prev"
-                  @click:next="next"
-                  @click:submit="submit"
-                ></v-stepper-actions>
-              </template>
-            </v-stepper>
-          </v-container>
+                <v-stepper-window-item value="1">
+                  <v-card flat>
+                    <ScheduleInput>
+                      <template #batchDetails>
+                        <v-data-table
+                          :items="[
+                            {
+                              label: 'Run Type',
+                              value: 'User Request Certificate Regeneration',
+                            },
+                          ]"
+                          hide-default-header
+                          hide-default-footer
+                        >
+                        </v-data-table>
+                      </template>
+                    </ScheduleInput>
+                  </v-card>
+                </v-stepper-window-item>
+              </v-stepper-window>
+            </template>
+            <template v-slot:actions>
+              <div class="row mx-6 mb-6">
+                <!-- Left Action Button -->
+                <v-btn
+                  @click="step--"
+                  color="bcGovBlue"
+                  :disabled="step == 0"
+                  variant="outlined"
+                  >Back</v-btn
+                >
+                <v-spacer />
+                <!-- Right Action Button -->
+                <v-btn v-if="step < 1" @click="step++" color="bcGovBlue"
+                  >Next</v-btn
+                >
+                <v-btn
+                  v-else
+                  color="error"
+                  variant="flat"
+                  class="text-none"
+                  density="default"
+                  @click="submit"
+                  :disabled="v$.$invalid"
+                  >Submit</v-btn
+                >
+              </div>
+            </template>
+          </v-stepper>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions class="sticky-form-actions">
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="cancel">
-            Cancel
-          </v-btn>
-          <v-btn
-            :disabled="v$.$invalid"
-            color="blue-darken-1"
-            variant="text"
-            @click="submit"
-          >
-            Submit
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-row>
@@ -184,26 +201,24 @@ export default {
           } else return false;
         }),
         hasAtLeastOneGroupValue: helpers.withMessage(
-          "Must contain at least one " + this.group,
+          "Must contain at least one " + this.getGroup,
           (value) => {
             if (this.getBatchRequest) {
               let isValid = false;
               if (
-                this.group &&
-                ["Student", "School Category", "All"].includes(this.group)
+                this.getGroup &&
+                ["Student", "School Category", "all"].includes(this.getGroup)
               ) {
-                if (this.group === "Student") {
+                if (this.getGroup === "Student") {
                   isValid =
                     this.getBatchRequest.pens &&
                     this.getBatchRequest.pens.length > 0;
-                } else if (this.group === "School Category") {
+                } else if (this.getGroup === "School Category") {
                   isValid =
                     this.getBatchRequest.districts &&
                     this.getBatchRequest.districts.length > 0;
-                } else if (this.group === "All") {
+                } else if (this.getGroup === "all") {
                   isValid = true;
-                } else {
-                  isValid = true; // Return true if none of the above conditions matched
                 }
                 return isValid;
               }
@@ -233,6 +248,7 @@ export default {
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
+      "getGroup",
       "getBatchRequestCrontime",
     ]),
   },

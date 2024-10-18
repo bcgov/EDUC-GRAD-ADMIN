@@ -174,14 +174,30 @@
       <v-col cols="12" md="5" v-if="isBatchShowing">
         <BatchJobSearchResults :selectedBatchId="adminSelectedBatchId"
           ><template v-slot:close>
-            <v-btn @click="isBatchShowing ^= true"> Close </v-btn></template
+            <v-btn
+              color="bcGovBlue"
+              variant="outlined"
+              class="text-none mr-3"
+              density="default"
+              @click="isBatchShowing ^= true"
+            >
+              Close
+            </v-btn></template
           ></BatchJobSearchResults
         >
       </v-col>
       <v-col cols="12" md="5" v-if="isErrorShowing">
         <BatchJobErrorResults :selectedErrorId="adminSelectedErrorId">
           <template v-slot:close>
-            <v-btn @click="isErrorShowing ^= true"> Close </v-btn>
+            <v-btn
+              color="bcGovBlue"
+              variant="outlined"
+              class="text-none mr-3"
+              density="default"
+              @click="isErrorShowing ^= true"
+            >
+              Close
+            </v-btn>
           </template>
         </BatchJobErrorResults>
       </v-col>

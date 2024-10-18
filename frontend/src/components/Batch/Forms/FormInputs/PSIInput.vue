@@ -1,112 +1,85 @@
 <template>
-  <v-card>
-    <v-card-title>Include Post Secondary Institute(s)</v-card-title>
-    <v-card-text>
-      <v-row>
-        <v-col sm="2">Transmission Mode</v-col>
-        <v-col>
-          <v-select
-            v-model="transmissionMode"
-            label="Select a Transmission Mode"
-            :items="[{ title: 'Paper', value: 'PAPER' }, 'FTP']"
-            outlined
-            small
-            hide-details
-          >
-          </v-select
-        ></v-col>
-      </v-row>
-      <v-row>
-        <v-col sm="2">PSI Year</v-col>
-        <v-col
-          ><v-text-field
-            v-model="psiYear"
-            type="number"
-            label="Enter PSI Year"
-            outlined
-            small
-          >
-          </v-text-field>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col sm="2">PSI</v-col>
-        <v-col sm="10">
-          <v-text-field
-            v-if="!selectAllPSI"
-            label="Post Secondary Institution Code"
-            v-model="psi"
-            maxlength="3"
-            @input="validatePSI"
-            outlined />
+  <div>
+    <v-row>
+      <v-col sm="2">Transmission Mode</v-col>
+      <v-col>
+        <v-select
+          v-model="transmissionMode"
+          label="Select a Transmission Mode"
+          :items="[{ title: 'Paper', value: 'PAPER' }, 'FTP']"
+          outlined
+          small
+          hide-details
+        >
+        </v-select
+      ></v-col>
+    </v-row>
+    <v-row>
+      <v-col sm="2">PSI Year</v-col>
+      <v-col
+        ><v-text-field
+          v-model="psiYear"
+          type="number"
+          label="Enter PSI Year"
+          outlined
+          small
+        >
+        </v-text-field>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col sm="2">PSI</v-col>
+      <v-col sm="8">
+        <v-text-field
+          v-if="!selectAllPSI"
+          label="Post Secondary Institution Code"
+          v-model="psi"
+          maxlength="3"
+          @input="validatePSI"
+          outlined
+        />
 
-          <div
-            v-for="error in v$.psi.$errors"
-            :key="error.$uid"
-            class="input-errors"
-          >
-            <div class="error-msg">{{ error.$message }}</div>
-          </div>
-
-          <div v-if="psiInfo">
-            <v-card>
-              <v-card-text>
-                <v-alert
-                  v-if="validationMessage"
-                  type="error"
-                  dismissible
-                  v-model="showAlert"
-                >
-                  {{ validationMessage }}
-                </v-alert>
-                <v-overlay :value="psiValidating">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-row>
-                      <v-col auto>
-                        <strong>Post Secondary Institute:</strong>
-                        {{ psiInfo.psiName }}<br />
-                      </v-col>
-                      <v-col>
-                        <v-btn
-                          @click="addPSI"
-                          :disabled="validationMessage !== ''"
-                          class="float-right"
-                          color="primary"
-                          small
-                        >
-                          <v-icon>mdi-plus</v-icon>
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                  </template>
-                </v-overlay>
-              </v-card-text>
-            </v-card>
-          </div>
-          <v-checkbox
-            v-model="selectAll"
-            @change="selectAllPSICheckbox($event)"
-            label="Select all post secondary institutes"
-          ></v-checkbox
-        ></v-col>
-      </v-row>
-      <v-data-table
-        v-if="psis.length > 0"
-        :items="psis"
-        :headers="psiInputFields"
-        class="elevation-1"
-      >
-        <template #item.remove="{ item }">
-          <v-btn color="primary" block @click="removePSI(item.psi)">
-            Remove
-          </v-btn>
-        </template>
-        <template #item.info="{ item }">
-          <div>{{ item.info.psiName }}</div>
-        </template>
-      </v-data-table>
-    </v-card-text>
-  </v-card>
+        <div
+          v-for="error in v$.psi.$errors"
+          :key="error.$uid"
+          class="input-errors"
+        >
+          <div class="error-msg">{{ error.$message }}</div>
+        </div>
+        <v-checkbox
+          v-model="selectAll"
+          @change="selectAllPSICheckbox($event)"
+          label="Select all post secondary institutes"
+        ></v-checkbox>
+      </v-col>
+      <v-col sm="2">
+        <v-btn
+          @click="addPSI"
+          :disabled="!psi || selectAll"
+          class="float-right"
+          color="bcGovBlue"
+          small
+        >
+          ADD PROGRAM
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-data-table
+      v-if="psis.length > 0"
+      :items="psis"
+      :headers="psiInputFields"
+      class="elevation-1"
+    >
+      <template #item.remove="{ item }">
+        <v-btn color="primary" block @click="removePSI(item.psi)">
+          Remove
+        </v-btn>
+      </template>
+      <template #item.info="{ item }">
+        <div>{{ item.info.psiName }}</div>
+      </template>
+    </v-data-table>
+  </div>
 </template>
 
 <script>
@@ -204,6 +177,7 @@ export default {
       this.clearPSIInfo();
     },
     selectAllPSICheckbox(event) {
+      this.clearPSI();
       const AllPSIChecked = event.target.checked;
       if (AllPSIChecked) {
         // Remove all psis and automatically add the All PSI
@@ -223,7 +197,23 @@ export default {
         this.psis.splice(0, this.psis.length);
       }
     },
-    addPSI() {
+    async addPSI() {
+      this.validationMessage = "";
+      if (this.psi === "") return true;
+      if (this.psi.length === 3) {
+        let psi = await TRAXService.getPSIByAdvancedSearch(
+          `psiCode=${this.psi}`
+        );
+        if (psi.data[0]) {
+          this.psiInfo = {
+            psiCode: psi.data[0].psiCode,
+            psiName: psi.data[0].psiName,
+          };
+        } else {
+          this.validationMessage = "Invalid post secondary institution";
+        }
+      }
+
       let info = this.psiInfo;
       this.psiInfo = {
         psiCode: info.psiCode,
