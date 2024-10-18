@@ -4,7 +4,7 @@
       <v-card-text>
         <v-row>
           <v-col sm="2"><strong>Personal Education Number</strong></v-col>
-          <v-col cols="10">
+          <v-col cols="7">
             <v-text-field
               label="Personal Education Number"
               v-model="pen"
@@ -12,88 +12,19 @@
               type="number"
               class="mr-2"
             ></v-text-field>
-            <v-row v-if="validationMessage">
-              <v-alert dismissible type="error">
-                {{ validationMessage }}
-              </v-alert>
-            </v-row>
-            <v-row v-for="error in v$.pen.$errors" :key="error.$uid">
-              <v-col v-if="validationMessage">
-                <v-alert dismissible type="error">
-                  {{ validationMessage }}
-                </v-alert>
-              </v-col>
-              <v-col>
-                <v-alert type="error">{{ error.$message }}</v-alert>
-              </v-col>
-            </v-row>
-            <v-row v-if="penStudentInfo">
-              <v-col sm="12">
-                <v-card>
-                  <v-card-text>
-                    <div v-if="!penStudentInfo">NOT VALID</div>
-                    <div v-else>
-                      <v-simple-table class="w-100">
-                        <tbody>
-                          <tr>
-                            <td class="p-1"><strong>First Name</strong></td>
-                            <td class="p-1">{{ penStudentInfo.firstName }}</td>
-                          </tr>
-                          <tr>
-                            <td class="p-1"><strong>Last Name</strong></td>
-                            <td class="p-1">{{ penStudentInfo.lastName }}</td>
-                          </tr>
-                          <tr>
-                            <td class="p-1"><strong>Birthdate</strong></td>
-                            <td class="p-1">{{ penStudentInfo.dob }}</td>
-                          </tr>
-                          <tr>
-                            <td class="p-1"><strong>Status</strong></td>
-                            <td class="p-1">{{ penStudentInfo.status }}</td>
-                          </tr>
-                        </tbody>
-                      </v-simple-table>
-                      <v-simple-table class="p-3">
-                        <tbody>
-                          <tr>
-                            <td class="p-1"><strong>Program</strong></td>
-                            <td class="p-1">{{ penStudentInfo.program }}</td>
-                          </tr>
-                          <tr>
-                            <td class="p-1">
-                              <strong>School of Record</strong>
-                            </td>
-                            <td class="p-1">
-                              {{ penStudentInfo.schoolOfRecord }}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="p-1">
-                              <strong>School at Graduation</strong>
-                            </td>
-                            <td class="p-1">
-                              {{ penStudentInfo.schoolAtGrad }}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </v-simple-table>
-                    </div>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-btn
-                      @click="addStudent()"
-                      :disabled="validationMessage !== ''"
-                    >
-                      Add Student
-                    </v-btn>
-                    <v-btn @click="clearPen" text> Clear </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-col>
-            </v-row>
+          </v-col>
+          <v-col md="3">
+            <v-btn @click="addStudent()" :disabled="v$.pen.$invalid">
+              Add Student
+            </v-btn>
+            <!-- <v-btn @click="clearPen" text> Clear </v-btn> -->
           </v-col>
         </v-row>
-
+        <v-row v-if="validationMessage">
+          <v-alert dismissible type="error">
+            {{ validationMessage }}
+          </v-alert>
+        </v-row>
         <v-row>
           <v-col>
             <v-data-table
@@ -167,83 +98,8 @@ export default {
   validations() {
     return {
       pen: {
+        required,
         minLength: minLength(9),
-        async isValid(value) {
-          this.validationMessage = "";
-          if (value === "") return true;
-          if (value.length == 9) {
-            let student = await StudentService.getStudentByPen(value);
-            if (student.data && student.data.length === 0) {
-              this.validationMessage = "Student not found";
-              return false;
-            }
-
-            let studentGRADStatus = await StudentService.getGraduationStatus(
-              student.data[0].studentID
-            );
-
-            //check is student is status = MER
-
-            if (studentGRADStatus.data) {
-              //display student
-              this.penStudentInfo = {
-                firstName: student.data[0].legalFirstName,
-                lastName: student.data[0].legalLastName,
-                dob: student.data[0].dob,
-                status: studentGRADStatus.data.studentStatusName,
-                schoolOfRecord: studentGRADStatus.data.schoolOfRecord,
-                schoolAtGrad: studentGRADStatus.data.schoolAtGrad,
-                program: studentGRADStatus.data.program,
-              };
-              if (studentGRADStatus.data.studentStatusName == "Merged") {
-                this.validationMessage =
-                  value + " is a merged student and not permitted";
-                return false;
-              }
-              if (this.runType == "CERT_REGEN") {
-                //when User is entereing PENs for the REGEN process, error if the student has a null PROGRAM COMPLETION DATE
-                if (!studentGRADStatus.data.programCompletionDate) {
-                  this.validationMessage =
-                    "Error: Cannot regenerate a certificate for this student - this student has not completed their program";
-                }
-                return false;
-              }
-
-              //check if what credentialType was selected
-              if (
-                this.runType == "DISTRUNUSER" &&
-                (this.credentialType == "RC" || this.credentialType == "OC")
-              ) {
-                let certificate =
-                  await GraduationReportService.getStudentCertificates(
-                    studentID
-                  );
-                if (certificate.data.length) {
-                  //check that certificate has does not have a null distribution date
-
-                  if (
-                    !certificate.data.distributionDate &&
-                    this.credentialType == "RC"
-                  ) {
-                    this.validationMessage =
-                      "Cannot reprint certificate for this student. Distribution date is null";
-                  }
-                } else {
-                  if (this.credentialType == "RC") {
-                    this.validationMessage =
-                      "Cannot reprint certificate for this student.";
-                  }
-                  if (this.credentialType == "OC") {
-                    console.log(
-                      "Cannot print certificate for this student,this student does not have a certificate."
-                    );
-                  }
-                }
-              }
-            }
-          }
-          return false;
-        },
       }, // Matches this.firstName
     };
   },
@@ -256,19 +112,19 @@ export default {
       studentInputFields: [
         {
           key: "pen",
-          title: "pen",
+          title: "Pen",
           sortable: true,
           class: "text-left col-2",
         },
         {
           key: "info",
-          title: "info",
+          title: "Info",
           sortable: true,
           class: "text-left",
         },
         {
           key: "remove",
-          title: "remove",
+          title: "",
           sortable: true,
           class: "text-left",
         },
@@ -298,12 +154,84 @@ export default {
       this.pen = "";
       this.clearPenStudentInfo();
     },
-    addStudent() {
-      this.students.splice(0, 0, {
-        pen: this.pen,
-        info: this.penStudentInfo,
-      });
-      this.clearPen();
+    async addStudent() {
+      this.validationMessage = "";
+      if (this.pen.length == 9) {
+        let student = await StudentService.getStudentByPen(this.pen);
+        if (student.data && student.data.length === 0) {
+          this.validationMessage = "Student not found";
+          return false;
+        }
+
+        let studentGRADStatus = await StudentService.getGraduationStatus(
+          student.data[0].studentID
+        );
+
+        //check is student is status = MER
+
+        if (studentGRADStatus.data) {
+          //display student
+          this.penStudentInfo = {
+            firstName: student.data[0].legalFirstName,
+            lastName: student.data[0].legalLastName,
+            dob: student.data[0].dob,
+            status: studentGRADStatus.data.studentStatusName,
+            schoolOfRecord: studentGRADStatus.data.schoolOfRecord,
+            schoolAtGrad: studentGRADStatus.data.schoolAtGrad,
+            program: studentGRADStatus.data.program,
+          };
+          if (studentGRADStatus.data.studentStatusName == "Merged") {
+            this.validationMessage =
+              this.pen + " is a merged student and not permitted";
+            return;
+          }
+          if (this.runType == "CERT_REGEN") {
+            //when User is entereing PENs for the REGEN process, error if the student has a null PROGRAM COMPLETION DATE
+            if (!studentGRADStatus.data.programCompletionDate) {
+              this.validationMessage =
+                "Error: Cannot regenerate a certificate for this student - this student has not completed their program";
+              return;
+            }
+          }
+
+          //check if what credentialType was selected
+          if (
+            this.runType == "DISTRUNUSER" &&
+            (this.credentialType == "RC" || this.credentialType == "OC")
+          ) {
+            let certificate =
+              await GraduationReportService.getStudentCertificates(studentID);
+            if (certificate.data.length) {
+              //check that certificate has does not have a null distribution date
+
+              if (
+                !certificate.data.distributionDate &&
+                this.credentialType == "RC"
+              ) {
+                this.validationMessage =
+                  "Cannot reprint certificate for this student. Distribution date is null";
+                return;
+              }
+            } else {
+              if (this.credentialType == "RC") {
+                this.validationMessage =
+                  "Cannot reprint certificate for this student.";
+                return;
+              }
+              if (this.credentialType == "OC") {
+                this.validationMessage =
+                  "Cannot print certificate for this student,this student does not have a certificate.";
+                return;
+              }
+            }
+          }
+        }
+        this.students.splice(0, 0, {
+          pen: this.pen,
+          info: this.penStudentInfo,
+        });
+        this.clearPen();
+      }
     },
     removeStudent(pen) {
       for (const [index, student] in this.students) {

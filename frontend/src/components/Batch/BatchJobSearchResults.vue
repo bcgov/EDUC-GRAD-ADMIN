@@ -1,5 +1,11 @@
 <template>
-  <div>
+  <v-card>
+    <div class="d-flex justify-space-between align-center">
+      <v-card-title> Batch Job #{{ selectedBatchId }} students </v-card-title>
+
+      <!-- Slot for close button -->
+      <slot name="close"></slot>
+    </div>
     <v-progress-circular
       v-if="isLoading"
       indeterminate
@@ -14,9 +20,7 @@
       There are no results to display.<br />
       Please select another Job Execution ID.
     </p>
-    <strong>Batch Id#: {{ selectedBatchId }}</strong>
-    {{ itemsPerPage }}
-    {{ totalElements }}
+
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
       :headers="batchDataFields"
@@ -25,20 +29,30 @@
       :loading="loading"
       item-value="id"
       @update:options="loadItems"
-    ></v-data-table-server>
-  </div>
+    >
+      <template v-slot:item.pen="{ item }">
+        <v-btn
+          :id="'pen' + item.pen"
+          text
+          small
+          variant="plain"
+          class="v-btn-link"
+          @click="findStudentByPen(item.pen)"
+        >
+          {{ item.pen }}
+        </v-btn>
+      </template>
+    </v-data-table-server>
+  </v-card>
 </template>
 
 <script>
 import sharedMethods from "../../sharedMethods";
 import StudentService from "@/services/StudentService.js";
-import DisplayTable from "@/components/DisplayTable.vue";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "batchJobSearch",
-  components: {
-    DisplayTable: DisplayTable,
-  },
+  components: {},
   props: ["selectedBatchId"],
   data() {
     return {
