@@ -7,6 +7,8 @@
     vertical
   >
     {{ snackbarStore.message }}
+
+    <!-- Action slot for Close Button -->
     <template v-slot:action>
       <v-btn color="white" text @click="close">Close</v-btn>
     </template>
@@ -26,5 +28,8 @@ const close = () => {
 </script>
 
 <style scoped>
-/* Add any custom styling if needed */
+.v-overlay__content .v-snackbar__wrapper {
+  position: absolute !important;
+  top: 0 !important;
+}
 </style>
