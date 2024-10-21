@@ -61,8 +61,76 @@ export const useStudentStore = defineStore("student", {
       recalculateGradStatus: "",
       recalculateProjectedGrad: "",
     },
+    formattedGradStatusCourses: [],
+    formattedGradStatusAssessments: [],
   }),
   actions: {
+    formatAssessmentItemsList(items) {
+      return items.map((item) => {
+        if (!item.used) {
+          item.used = "Not Used";
+        }
+        if (item.notCompleted) {
+          item.notCompleted = " No Attempt";
+        }
+        if (item.projected) {
+          item.projected = " Registration";
+        }
+        if (item.failed) {
+          item.failed = " Not Completed";
+        }
+        if (item.duplicate) {
+          item.duplicate = " Repeat";
+        }
+        return item;
+      });
+    },
+    formatCourseItemsList(items) {
+      return items.map((item) => {
+        if (!item.used) {
+          item.used = "Not Used";
+        }
+        if (item.notCompleted) {
+          item.notCompleted = " Incomplete Course";
+        }
+        if (item.projected) {
+          item.projected = " Registration or Interim";
+        }
+        if (item.failed) {
+          item.failed = " Failed";
+        }
+        if (item.duplicate) {
+          item.duplicate = " Repeat";
+        }
+        if (item.careerPrep) {
+          item.careerPrep = " Career Prep course";
+        }
+        if (item.locallyDeveloped) {
+          item.locallyDeveloped = " Locally Developed course";
+        }
+        if (item.boardAuthorityAuthorized) {
+          item.boardAuthorityAuthorized = " Board/Authority Authorized Course";
+        }
+        if (item.cutOffCourse) {
+          item.cutOffCourse = " Course taken after Program Expiry Date";
+        }
+        if (item.grade10Course) {
+          item.grade10Course = " Grade 10 ineligible (1995 program)";
+        }
+        if (item.lessCreditCourse) {
+          item.lessCreditCourse = " Courses with credits < 4 ineligible";
+        }
+        if (item.restricted) {
+          item.restricted = " Course restricted against another course";
+        }
+        if (item.independentDirectedStudies) {
+          item.independentDirectedStudies =
+            ", Independent Directed Studies course";
+        }
+
+        return item;
+      });
+    },
     loadStudentReportsAndCertificates() {
       this.loadStudentXmlReport(this.pen);
       this.loadStudentTranscripts(this.id);
@@ -407,6 +475,12 @@ export const useStudentStore = defineStore("student", {
     setEditedGradStatus(gradStatus) {
       this.editedGradStatus = gradStatus;
     },
+    setFormattedGradStatusAssessments(formattedGradStatusAssessments) {
+      this.formattedGradStatusAssessments = formattedGradStatusAssessments;
+    },
+    setFormattedGradStatusCourses(formattedGradStatusCourses) {
+      this.formattedGradStatusCourses = formattedGradStatusCourses;
+    },
     //Optional Program CRUD
     addStudentOptionalProgram(optionalProgramId) {
       try {
@@ -608,7 +682,7 @@ export const useStudentStore = defineStore("student", {
         return {};
       }
     },
-
+    formattedGradStatusCourses() {},
     getRoles() {
       return this.roles;
     },
@@ -644,8 +718,11 @@ export const useStudentStore = defineStore("student", {
     getStudentCareerPrograms() {
       return this.student.careerPrograms;
     },
-    getEditedGradStatus() {
-      return this.editedGradStatus;
+    getFormattedGradStatusCourses() {
+      return this.formatCourseItemsList(this.gradStatusCourses);
+    },
+    getFormattedGradStatusAssessments() {
+      return this.formatAssessmentItemsList(this.gradStatusAssessments);
     },
   },
 });
