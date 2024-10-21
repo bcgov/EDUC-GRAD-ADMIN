@@ -89,16 +89,22 @@ export const useStudentStore = defineStore("student", {
           this.setStudentCertificates(response.data);
         })
         .catch((error) => {
-          if (error.response.data.code == "404") {
+          if (error?.response?.data?.code == "404") {
             // eslint-disable-next-line
             console.log(error);
           } else {
-            if (error.response.status) {
-              this.$bvToast.toast("ERROR " + error.response.statusText, {
-                title: "ERROR" + error.response.status,
-                variant: "danger",
-                noAutoHide: true,
-              });
+            if (error?.response?.status) {
+              // this.$bvToast.toast("ERROR " + error.response.statusText, {
+              //   title: "ERROR" + error.response.status,
+              //   variant: "danger",
+              //   noAutoHide: true,
+              // });
+              this.snackbarStore.showSnackbar(
+                "ERROR " + error?.response?.statusText,
+                "error",
+                10000,
+                "ERROR" + error?.response?.status
+              );
             }
           }
         });
@@ -109,16 +115,22 @@ export const useStudentStore = defineStore("student", {
           this.setStudentReports(response.data);
         })
         .catch((error) => {
-          if (error.response.data.code == "404") {
+          if (error?.response?.data?.code == "404") {
             // eslint-disable-next-line
             console.log(error);
           } else {
-            if (error.response.status) {
-              this.$bvToast.toast("ERROR " + error.response.statusText, {
-                title: "ERROR" + error.response.status,
-                variant: "danger",
-                noAutoHide: true,
-              });
+            if (error?.response?.status) {
+              // this.$bvToast.toast("ERROR " + error.response.statusText, {
+              //   title: "ERROR" + error.response.status,
+              //   variant: "danger",
+              //   noAutoHide: true,
+              // });
+              this.snackbarStore.showSnackbar(
+                "ERROR " + error?.response?.statusText,
+                "error",
+                10000,
+                "ERROR" + error?.response?.status
+              );
             }
           }
         });
@@ -129,16 +141,22 @@ export const useStudentStore = defineStore("student", {
           this.setStudentTranscripts(response.data);
         })
         .catch((error) => {
-          if (error.response.data.code == "404") {
+          if (error?.response?.data?.code == "404") {
             // eslint-disable-next-line
             console.log(error);
           } else {
-            if (error.response.status) {
-              this.$bvToast.toast("ERROR " + error.response.statusText, {
-                title: "Service ERROR" + error.response.status,
-                variant: "danger",
-                noAutoHide: true,
-              });
+            if (error?.response?.status) {
+              // this.$bvToast.toast("ERROR " + error.response.statusText, {
+              //   title: "Service ERROR" + error.response.status,
+              //   variant: "danger",
+              //   noAutoHide: true,
+              // });
+              this.snackbarStore.showSnackbar(
+                "ERROR " + error?.response?.statusText,
+                "error",
+                10000,
+                "ERROR" + error?.response?.status
+              );
             }
           }
         });
@@ -162,14 +180,21 @@ export const useStudentStore = defineStore("student", {
           this.setStudentGradStatusOptionalPrograms(response.data);
         })
         .catch((error) => {
-          if (error.response.status) {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title:
-                "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
-                error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
+          if (error?.response?.status) {
+            // this.$bvToast.toast("ERROR " + error.response.statusText, {
+            //   title:
+            //     "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
+            //     error.response.status,
+            //   variant: "danger",
+            //   noAutoHide: true,
+            // });
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error?.response?.statusText,
+              "error",
+              10000,
+              "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
+                error?.response?.status
+            );
           }
         });
     },
@@ -179,14 +204,21 @@ export const useStudentStore = defineStore("student", {
           this.setStudentCareerPrograms(response.data);
         })
         .catch((error) => {
-          if (error.response.status) {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title:
-                "There was an error with the Student Service (getting the student's Career Programs): " +
-                error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
+          if (error?.response?.status) {
+            // this.$bvToast.toast("ERROR " + error.response.statusText, {
+            //   title:
+            //     "There was an error with the Student Service (getting the student's Career Programs): " +
+            //     error.response.status,
+            //   variant: "danger",
+            //   noAutoHide: true,
+            // });
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error?.response?.statusText,
+              "error",
+              10000,
+              "There was an error with the Student Service (getting the student's Career Programs): " +
+                error?.response?.status
+            );
           }
         });
     },
@@ -196,14 +228,21 @@ export const useStudentStore = defineStore("student", {
           this.setStudentAuditHistory(response.data);
         })
         .catch((error) => {
-          if (error.response.status) {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title:
-                "There was an error with the Student Service (getting the Student History): " +
-                error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
+          if (error?.response?.status) {
+            // this.$bvToast.toast("ERROR " + error.response.statusText, {
+            //   title:
+            //     "There was an error with the Student Service (getting the Student History): " +
+            //     error.response.status,
+            //   variant: "danger",
+            //   noAutoHide: true,
+            // });
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error?.response?.statusText,
+              "error",
+              10000,
+              "There was an error with the Student Service (getting the Student History): " +
+                error?.response?.status
+            );
           }
         });
     },
@@ -213,14 +252,21 @@ export const useStudentStore = defineStore("student", {
           this.setStudentOptionalProgramsAuditHistory(response.data);
         })
         .catch((error) => {
-          if (error.response.status) {
-            this.$bvToast.toast("ERROR " + error.response.statusText, {
-              title:
-                "There was an error with the Student Service (getting the Student Optional Program History): " +
-                error.response.status,
-              variant: "danger",
-              noAutoHide: true,
-            });
+          if (error?.response?.status) {
+            // this.$bvToast.toast("ERROR " + error.response.statusText, {
+            //   title:
+            //     "There was an error with the Student Service (getting the Student Optional Program History): " +
+            //     error.response.status,
+            //   variant: "danger",
+            //   noAutoHide: true,
+            // });
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error?.response?.statusText,
+              "error",
+              10000,
+              "There was an error with the Student Service (getting the Student Optional Program History): " +
+                error?.response?.status
+            );
           }
         });
     },

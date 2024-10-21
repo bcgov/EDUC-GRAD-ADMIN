@@ -2,80 +2,76 @@
   <v-container>
     <v-row>
       <v-col>
-        <v-card title="Include School(s)">
-          <v-card-text>
-            <v-alert v-if="$slots.inputWarning" type="info" class="pb-2">
-              <slot name="inputWarning"></slot>
-            </v-alert>
+        <v-alert v-if="$slots.inputWarning" type="info" class="pb-2">
+          <slot name="inputWarning"></slot>
+        </v-alert>
 
-            <v-row v-if="!disableSelectStudents">
-              <v-col sm="12">
-                <DateRangeInput></DateRangeInput>
-              </v-col>
-            </v-row>
+        <v-row v-if="!disableSelectStudents">
+          <v-col sm="12">
+            <DateRangeInput></DateRangeInput>
+          </v-col>
+        </v-row>
 
-            <v-row>
-              <v-col md="2">
-                <label class="font-weight-bold">School</label>
-              </v-col>
-              <v-col md="8">
-                <v-autocomplete
-                  v-model="mincode"
-                  label="Select a school to include"
-                  :items="getSchoolsList"
-                  :item-title="schoolTitle"
-                  item-value="mincode"
-                >
-                  <template v-slot:label="label">
-                    {{ label.label }}
-                  </template>
-                </v-autocomplete>
-              </v-col>
-              <v-col md="2">
-                <v-btn @click="addSchool()">Add School</v-btn>
-                <v-row v-for="error in v$.mincode.$errors" :key="error.$uid">
-                  <div class="error-msg">{{ error.$message }}</div>
-                </v-row>
-              </v-col>
-            </v-row>
-            <v-data-table
-              v-if="schools.length"
-              :items="schools"
-              :headers="schoolInputFields"
+        <v-row>
+          <v-col md="2">
+            <label class="font-weight-bold">School</label>
+          </v-col>
+          <v-col md="8">
+            <v-autocomplete
+              v-model="mincode"
+              label="Select a school to include"
+              :items="getSchoolsList"
+              :item-title="schoolTitle"
+              item-value="mincode"
             >
-              <template v-slot:item.remove="{ item }">
-                <v-btn
-                  @click="removeSchool(item.mincode)"
-                  class="btn btn-primary w-100"
-                  >Remove</v-btn
-                >
+              <template v-slot:label="label">
+                {{ label.label }}
               </template>
-              <template v-slot:item.info="{ item }">
-                <div>
-                  <strong>School Name:</strong>
-                  {{ item.info.schoolName }}
-                </div>
-                <div>
-                  <strong>Transcript Eligibility:</strong>
-                  {{ item.info.transcriptEligibility ? "Y" : "N" }}
-                </div>
-                <div>
-                  <strong>Certificate Eligibility</strong>
-                  {{ item.info.certificateEligibility ? "Y" : "N" }}
-                </div>
-                <div>
-                  <strong>School Category</strong>
-                  {{ item.info.schoolCategory }}
-                </div>
-                <div>
-                  <strong>TRAX reporting</strong>
-                  {{ item.info.traxReporting }}
-                </div>
-              </template>
-              <template #bottom></template>
-            </v-data-table>
-          </v-card-text>
-        </v-card>
+            </v-autocomplete>
+          </v-col>
+          <v-col md="2">
+            <v-btn color="bcGovBlue" @click="addSchool()">Add School</v-btn>
+            <v-row v-for="error in v$.mincode.$errors" :key="error.$uid">
+              <div class="error-msg">{{ error.$message }}</div>
+            </v-row>
+          </v-col>
+        </v-row>
+        <v-data-table
+          v-if="schools.length"
+          :items="schools"
+          :headers="schoolInputFields"
+        >
+          <template v-slot:item.remove="{ item }">
+            <v-btn
+              @click="removeSchool(item.mincode)"
+              class="btn btn-primary w-100"
+              >Remove</v-btn
+            >
+          </template>
+          <template v-slot:item.info="{ item }">
+            <div>
+              <strong>School Name:</strong>
+              {{ item.info.schoolName }}
+            </div>
+            <div>
+              <strong>Transcript Eligibility:</strong>
+              {{ item.info.transcriptEligibility ? "Y" : "N" }}
+            </div>
+            <div>
+              <strong>Certificate Eligibility</strong>
+              {{ item.info.certificateEligibility ? "Y" : "N" }}
+            </div>
+            <div>
+              <strong>School Category</strong>
+              {{ item.info.schoolCategory }}
+            </div>
+            <div>
+              <strong>TRAX reporting</strong>
+              {{ item.info.traxReporting }}
+            </div>
+          </template>
+          <template #bottom></template>
+        </v-data-table>
       </v-col>
     </v-row>
   </v-container>

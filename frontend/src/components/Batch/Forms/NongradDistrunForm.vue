@@ -13,107 +13,115 @@
         </v-btn>
       </template>
       <v-card>
-        <v-card-title>
-          <span class="text-h5">Non-Graduate Transcript Distribution Run</span>
-        </v-card-title>
+        <div class="d-flex justify-space-between align-center">
+          <v-card-title>Non-Graduate Transcript Distribution Run</v-card-title>
+          <v-btn
+            @click="closeDialogAndResetForm()"
+            color="error"
+            variant="outlined"
+            class="m-4"
+            >Cancel</v-btn
+          >
+        </div>
+
         <v-card-text>
-          <v-container>
-            <v-stepper alt-labels show-actions v-model="step">
-              <template v-slot:default="{ prev, next }">
-                <v-stepper-header>
-                  <v-stepper-item
-                    :rules="[
-                      () =>
-                        !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Group"
-                    value="1"
-                  ></v-stepper-item>
+          <v-stepper show-actions v-model="step">
+            <template v-slot:default="{ prev, next }">
+              <v-stepper-header>
+                <v-stepper-item
+                  :rules="[
+                    () => !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
+                  ]"
+                  complete
+                  editable
+                  title="Group"
+                  value="1"
+                ></v-stepper-item>
 
-                  <v-divider></v-divider>
+                <v-divider></v-divider>
 
-                  <v-stepper-item
-                    :rules="[
-                      () => !v$.getBatchRequest.batchRunTimeSet.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Run/Schedule"
-                    value="2"
-                  ></v-stepper-item>
-                </v-stepper-header>
+                <v-stepper-item
+                  :rules="[() => !v$.getBatchRequest.batchRunTimeSet.$invalid]"
+                  complete
+                  editable
+                  title="Run/Schedule"
+                  value="2"
+                ></v-stepper-item>
+              </v-stepper-header>
 
-                <v-stepper-window>
-                  <v-stepper-window-item value="1">
-                    <v-row>
-                      <v-select
-                        v-model="getGroup"
-                        :items="['School Category']"
-                        label="Select a Group"
-                      ></v-select>
-                    </v-row>
-                    <v-row v-if="getGroup == 'School Category'">
-                      <DistrictInput
-                        disableSelectStudents
-                        disableSelectDistrict
-                      ></DistrictInput>
-                    </v-row>
-                  </v-stepper-window-item>
+              <v-stepper-window>
+                <v-stepper-window-item value="1">
+                  <v-row>
+                    <v-select
+                      v-model="getGroup"
+                      :items="['School Category']"
+                      label="Select a Group"
+                    ></v-select>
+                  </v-row>
+                  <v-row v-if="getGroup == 'School Category'">
+                    <DistrictInput
+                      disableSelectStudents
+                      :disableSelectDistrict="
+                        !getBatchRequest.schoolCategoryCodes.includes('01')
+                      "
+                    ></DistrictInput>
+                  </v-row>
+                </v-stepper-window-item>
 
-                  <v-stepper-window-item value="2">
-                    <v-card flat>
-                      <ScheduleInput
-                        ><template #batchDetails>
-                          <v-data-table
-                            :items="[
-                              {
-                                label: 'Run Type',
-                                value:
-                                  'Non-Graduate Transcript Distribution Run',
-                              },
-                              {
-                                label: 'Where',
-                                value: 'BC Mail',
-                              },
-                            ]"
-                            hide-default-header
-                            hide-default-footer
-                          >
-                          </v-data-table> </template
-                      ></ScheduleInput>
-                    </v-card>
-                  </v-stepper-window-item>
-
-                  <v-stepper-window-item value="3">
-                    <span>Step Window 3</span>
-                  </v-stepper-window-item>
-                </v-stepper-window>
-                <v-stepper-actions
-                  @click:prev="prev"
-                  @click:next="next"
-                  @click:submit="submit"
-                ></v-stepper-actions>
-              </template>
-            </v-stepper>
-          </v-container>
+                <v-stepper-window-item value="2">
+                  <v-card flat>
+                    <ScheduleInput
+                      ><template #batchDetails>
+                        <v-data-table
+                          :items="[
+                            {
+                              label: 'Run Type',
+                              value: 'Non-Graduate Transcript Distribution Run',
+                            },
+                            {
+                              label: 'Where',
+                              value: 'BC Mail',
+                            },
+                          ]"
+                          hide-default-header
+                          hide-default-footer
+                        >
+                        </v-data-table> </template
+                    ></ScheduleInput>
+                  </v-card>
+                </v-stepper-window-item>
+              </v-stepper-window>
+            </template>
+            <template v-slot:actions>
+              <div class="row mx-6 mb-6">
+                <!-- Left Action Button -->
+                <v-btn
+                  @click="step--"
+                  color="bcGovBlue"
+                  :disabled="step == 0"
+                  variant="outlined"
+                  >Back</v-btn
+                >
+                <v-spacer />
+                <!-- Right Action Button -->
+                <v-btn v-if="step < 1" @click="step++" color="bcGovBlue"
+                  >Next</v-btn
+                >
+                <v-btn
+                  v-else
+                  color="error"
+                  variant="flat"
+                  class="text-none"
+                  density="default"
+                  @click="submit"
+                  :disabled="v$.$invalid"
+                  >Submit</v-btn
+                >
+              </div>
+            </template>
+          </v-stepper>
           <small>*indicates required field</small>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="cancel">
-            Cancel
-          </v-btn>
-          <v-btn
-            :disabled="v$.$invalid"
-            color="blue-darken-1"
-            variant="text"
-            @click="submit"
-          >
-            Submit
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-row>

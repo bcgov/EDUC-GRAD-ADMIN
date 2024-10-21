@@ -6,7 +6,8 @@
     location="top right"
     vertical
   >
-    {{ snackbarStore.message }}
+    <h3>{{ snackbarStore.title }}</h3>
+    <p>{{ snackbarStore.message }}</p>
     <template v-slot:action>
       <v-btn color="white" text @click="close">Close</v-btn>
     </template>

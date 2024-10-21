@@ -24,7 +24,13 @@
               </v-card-text>
 
               <v-card-actions>
-                <v-btn color="primary" text @click="dialog = false"
+                <v-btn
+                  color="bcGovBlue"
+                  variant="outlined"
+                  class="text-none"
+                  density="default"
+                  text
+                  @click="dialog = false"
                   >Close</v-btn
                 >
               </v-card-actions>
