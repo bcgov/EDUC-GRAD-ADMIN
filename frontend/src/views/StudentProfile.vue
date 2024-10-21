@@ -66,7 +66,7 @@
     <!-- Studnet Demo. end-->
     <div class="row m-0">
       <div class="col-12 px-0">
-        <v-card class="p-0" color="#f2f2f2">
+        <v-card class="p-0" color="#f2f2f2" :disabled="tabLoading">
           <v-window v-model="tab">
             <v-window-item value="gradStatusTab">
               <v-tabs v-model="selectedTab" bg-color="primary">
@@ -620,6 +620,7 @@ export default {
   props: {},
   data() {
     return {
+      disableScreen: false,
       snackbarStore: useSnackbarStore(),
       projectedGradStatusWithFinalMarksDialog: false,
       projectedGradStatusDialog: false,
@@ -862,6 +863,7 @@ export default {
         });
     },
     updateStudentReports() {
+      this.disableScreen = true;
       this.selectedTab = 0;
       this.tabLoading = true;
       GraduationService.updateStudentReports(this.studentId)
@@ -873,6 +875,7 @@ export default {
               this.tabLoading = false;
             })
             .catch((error) => {
+              this.tabLoading = false;
               if (error.res.status) {
                 this.snackbarStore.showSnackbar(
                   "There was an error: " + error.res.status,
