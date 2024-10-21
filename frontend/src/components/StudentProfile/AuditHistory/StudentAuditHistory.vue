@@ -12,12 +12,85 @@
       <v-window v-model="selectedTab">
         <v-window-item value="studentChangeHistory">
           <v-data-table
-            :items="flattenedStudentChangeHighlight"
+            :items="studentHistory"
             :headers="studentChangeFields"
-            :item-key="createDate"
-            :sort-desc="true"
+            :items-per-page="'-1'"
+            item-value="historyID"
           >
-            <template v-slot:item.programCompletionDate="{ item }">
+            <template v-slot:expanded-row="{ columns, item }">
+              <tr>
+                <td :colspan="columns.length">
+                  <div class="mx-5 my-5">
+                    <p>
+                      Changed By <strong>{{ item.updateUser }}</strong> on
+                      <strong>{{
+                        $filters.formatTime(item.updateDate)
+                      }}</strong>
+                    </p>
+                    <pre>
+                      {{ JSON.stringify(item, null, "\t") }}
+                    </pre>
+                  </div>
+                </td>
+              </tr>
+            </template>
+            <template
+              v-slot:item.data-table-expand="{
+                item,
+                internalItem,
+                toggleExpand,
+                isExpanded,
+              }"
+            >
+              <td v-if="!!item">
+                <v-btn
+                  variant="text"
+                  density="comfortable"
+                  @click="toggleExpand(internalItem)"
+                  class="v-data-table__expand-icon"
+                  :class="{ 'v-data-table__expand-icon--active': isExpanded }"
+                  :icon="
+                    isExpanded(internalItem)
+                      ? 'mdi-chevron-down'
+                      : 'mdi-chevron-right'
+                  "
+                >
+                </v-btn>
+              </td>
+            </template>
+            <template v-slot:item.activityCode="{ item }">
+              <i>{{ item.activityCode }}</i> -
+              {{ item.activityCodeDescription }}
+            </template>
+            <template v-slot:item.updateDate="{ item }">
+              {{ $filters.formatTime(item.updateDate) }}
+            </template>
+
+            <!-- Attempt at dynamic rendering of slots -->
+            <!-- <template
+              v-for="header in studentChangeFields.filter(
+                (field) => field.key != 'data-table-expand'
+              )"
+              v-slot:[`item.${header.key}`]="{ item }"
+            >
+              <slot :name="`item.${header.key}`" :value="item[header.key]">
+                <div v-if="header.key == 'activityCode'">
+                  {{ item.data.activityCodeDescription }}
+                </div>
+                <div v-else-if="header.key == 'updateDate'">
+                  {{ $filters.formatTime(item.data.updateDate) }}
+                </div>
+                <div v-else-if="header.key == 'data-table-expand'">EXPAND</div>
+                <div
+                  v-else
+                  :class="item[header.key].changed ? 'value-changed' : ''"
+                >
+                  {{ item[header.key].value }}
+                </div>
+              </slot>
+            </template> -->
+
+            <!-- <template v-slot:item.programCompletionDate="{ item }">
               {{ item.programCompletionDate.value }}
             </template>
 
@@ -33,7 +106,9 @@
               {{ item.updateUser.value }}
             </template>
             <template v-slot:item.program="{ item }">
-              {{ item.program.value }}
+              <div :class="item?.program.changed ? 'value-changed' : ''">
+                {{ item.program.value }}
+              </div>
             </template>
             <template v-slot:item.studentStatus="{ item }">
               {{ item.studentStatus.value }}
@@ -70,12 +145,13 @@
             </template>
             <template v-slot:item.batchId="{ item }">
               {{ item.batchId.value }}
-            </template>
+            </template> -->
           </v-data-table>
         </v-window-item>
 
         <v-window-item value="optionalProgramChangeHistory">
-          <v-data-table
+          TODO: Optional Program Change History
+          <!-- <v-data-table
             :items="optionalProgramChangeHighlight"
             :fields="optionalProgramChangeFields"
             showFilter="false"
@@ -135,7 +211,7 @@
                 {{ item.row.value }}
               </div>
             </template>
-          </v-data-table>
+          </v-data-table> -->
         </v-window-item>
       </v-window>
     </v-card-text>
@@ -161,12 +237,12 @@ export default {
       studentUngradReasons: "getStudentUngradReasons",
       studentNotes: "getStudentNotes",
     }),
-    flattenedStudentChangeHighlight() {
-      return this.studentChangeHighlight.map((item) => ({
-        ...item,
-        createDateValue: item.createDate.value,
-      }));
-    },
+    // flattenedStudentChangeHighlight() {
+    //   return this.studentChangeHighlight.map((item) => ({
+    //     ...item,
+    //     createDateValue: item.createDate.value,
+    //   }));
+    // },
   },
   data: function () {
     return {
@@ -181,14 +257,14 @@ export default {
       smallScreen: false,
       window: { width: 0, height: 0 },
       studentChangeFields: [
-        { text: "Index", value: "index", sortable: false }, // Added index column
+        //{ text: "Index", value: "index", sortable: false }, // Added index column
         {
           key: "data-table-expand",
           title: "",
           sortable: true,
         },
         {
-          key: "createDate",
+          key: "updateDate",
           title: "Date",
           sortable: true,
           sortDirection: "desc",
@@ -367,6 +443,7 @@ export default {
           if (
             index > 0 &&
             field.key != "createDate" &&
+            field.key != "data-table-expand" &&
             field.key != "activityCode"
           ) {
             tempEntry[field.key] = {
@@ -384,6 +461,8 @@ export default {
         }
         changes.push(tempEntry);
       }
+
+      console.log(changes);
 
       this.studentChangeHighlight = changes;
     },
@@ -423,7 +502,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .table th,
 .table td {
   border-top: none !important;
@@ -445,7 +524,7 @@ export default {
   font-size: 87.5%;
 }
 
-.value-changed {
+:deep(.value-changed) {
   font-weight: bold;
 }
 </style>
