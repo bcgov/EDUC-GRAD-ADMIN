@@ -210,6 +210,7 @@
                   variant="flat"
                   class="text-none"
                   density="default"
+                  :disabled="v$.$invalid"
                   @click="submit"
                 >
                   Download
