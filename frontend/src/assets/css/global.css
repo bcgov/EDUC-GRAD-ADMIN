@@ -122,6 +122,10 @@ button.collapsed, button.not-collapsed, button.more-button {
 tbody tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, .05) !important
 }
+
+th {
+  font-weight: bold !important;
+}
 .v-btn-link{
   color: #1a5a96 !important;
   text-decoration: underline !important;

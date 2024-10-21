@@ -6,7 +6,7 @@
     max-width="500px"
   >
     <template v-slot:activator="{ props }">
-      <v-btn color="bcGovBlue" prepend-icon="mdi-plus" class="float-right text-none mt-n12 mb-8" v-bind="props" text="Add Optional Program">
+      <v-btn color="bcGovBlue" prepend-icon="mdi-plus" class="float-right text-none mt-n12 mb-8" @click="openCreateOptionalProgramDialog()" text="Add Optional Program">
       </v-btn>
     </template>
 
@@ -22,11 +22,32 @@
         <v-stepper-window>
           <v-stepper-window-item  value="1">
             <v-form @submit.prevent="submitForm">
+              <v-alert v-if="v$.ifStudentStatusMerged.$invalid" type="error" variant="tonal" border="start" class="mb-4">
+                <p><strong>ERROR</strong></p>
+                <p>{{ v$.ifStudentStatusMerged.$message }}</p>
+              </v-alert>
+              <v-alert v-if="v$.ifProgramComplete.$invalid" type="error" variant="tonal" border="start" class="mb-4">
+                <p><strong>ERROR</strong></p>
+                <p>{{ v$.ifProgramComplete.$message }}</p>
+              </v-alert>
+              <v-alert v-if="v$.ifStudentStatusDeceased.$invalid" type="warning" variant="tonal" border="start" class="mb-4">
+                <p><strong>WARNING</strong></p>
+                <p>{{ v$.ifStudentStatusDeceased.$message }}</p>
+              </v-alert>
+              <v-alert v-if="v$.ifStudentStatusArchived.$invalid" type="warning" variant="tonal" border="start" class="mb-4">
+                <p><strong>WARNING</strong></p>
+                <p>{{ v$.ifStudentStatusArchived.$message }}</p>
+              </v-alert>
+              <v-alert v-if="v$.ifStudentStatusTerminated.$invalid" type="warning" variant="tonal" border="start" class="mb-4">
+                <p><strong>WARNING</strong></p>
+                <p>{{ v$.ifStudentStatusTerminated.$message }}</p>
+              </v-alert>
               <!-- Program Name Input -->
               <v-autocomplete
                 v-model="form.selectedOptionalProgram"
                 :items="activeOptionalPrograms"
                 :item-title="optionalProgramTitle"
+                :disabled="v$.ifProgramComplete.$invalid || v$.ifStudentStatusMerged.$invalid"
                 item-value="optionalProgramID"
                 label="Choose an Optional Program to add"
                 required
@@ -143,8 +164,24 @@ export default {
         selectedOptionalProgram: { required },
         selectedCareerPrograms: { required: requiredIf(function(){
           return !!this.form.selectedOptionalProgram && this.getOptionalProgramByID(this.form.selectedOptionalProgram)?.optProgramCode == 'CP'
-        })}
-      }
+        })},
+      },
+      ifStudentStatusMerged: helpers.withMessage('This student is showing as merged. Student GRAD Optional Program data cannot be updated for students with a status of "MER" merged.', (value) => {
+        console.log(this.studentGradStatus.studentStatus)
+        return !(this.studentGradStatus.studentStatus == "MER");
+      }),
+      ifStudentStatusDeceased: helpers.withMessage('This student is showing as deceased.', (value) => {
+        return !(this.studentGradStatus.studentStatus == "DEC");
+      }),
+      ifStudentStatusArchived: helpers.withMessage('This student is not active. Re-activate by setting their status to "CUR" if they are currently attending school.', (value) => {
+        return !(this.studentGradStatus.studentStatus == "ARC");
+      }),
+      ifStudentStatusTerminated: helpers.withMessage('This student has been terminated. Re-activate by setting their status to "CUR" if they are currently attending school.', (value) => {
+        return !(this.studentGradStatus.studentStatus == "TER");
+      }),
+      ifProgramComplete: helpers.withMessage(`This student has a program completion date of ${this.studentGradStatus.programCompletionDate}. You must undo completion to be able to edit the Optional Programs for this student.`, (value) => {
+        return !this.isProgramComplete(this.studentGradStatus.programCompletionDate, this.studentGradStatus.program)
+      })
     }
   },
   computed: {
@@ -228,12 +265,8 @@ export default {
 
       return activeProgram && activeProgram.optProgramCode === "CP";
     },
-    clearCareerPrograms() {
-      console.log('clear career programs')
-      this.form.selectedCareerPrograms = null;
-    },
-    clearOptionalProgram() {
-      this.form.selectedOptionalProgram = null;
+    isProgramComplete(date, program) {
+      return isProgramComplete(date, program)
     },
     optionalProgramTitle(item) {
       if (item) {
@@ -272,6 +305,7 @@ export default {
       );
     },
     openCreateOptionalProgramDialog() {
+      this.step = 0;
       this.clearForm();
       this.dialog = true;
     },
@@ -280,9 +314,14 @@ export default {
       this.dialog = false;
     },
     clearForm() {
-      console.log("form cleared");
       this.clearOptionalProgram()
       this.clearCareerPrograms()
+    },
+    clearCareerPrograms() {
+      this.form.selectedCareerPrograms = null;
+    },
+    clearOptionalProgram() {
+      this.form.selectedOptionalProgram = null;
     },
     submitForm() {
       this.addStudentOptionalProgram(
