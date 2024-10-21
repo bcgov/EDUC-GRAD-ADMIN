@@ -70,18 +70,24 @@
           <v-window v-model="tab">
             <v-window-item value="gradStatusTab">
               <v-tabs v-model="selectedTab" bg-color="primary">
-                <v-tab value="GRAD">GRAD</v-tab>
-                <v-tab value="Courses">Courses ({{ courses.length }})</v-tab>
-                <v-tab value="Assessments"
+                <v-tab value="GRAD" class="text-none">GRAD</v-tab>
+                <v-tab value="Courses" class="text-none"
+                  >Courses ({{ courses.length }})</v-tab
+                >
+                <v-tab value="Assessments" class="text-none"
                   >Assessments ({{ assessments.length }})</v-tab
                 >
-                <v-tab value="Exams">Exams Details ({{ exams.length }})</v-tab>
-                <v-tab value="Optional"
+                <v-tab value="Exams" class="text-none"
+                  >Exams Details ({{ exams.length }})</v-tab
+                >
+                <v-tab value="Optional" class="text-none"
                   >Optional Programs ({{ optionalPrograms.length }})</v-tab
                 >
-                <v-tab value="Audit">Audit History</v-tab>
-                <v-tab value="Notes">Notes ({{ studentNotes.length }}) </v-tab>
-                <v-tab value="Undo Completion Reasons"
+                <v-tab value="Audit" class="text-none">Audit History</v-tab>
+                <v-tab value="Notes" class="text-none"
+                  >Notes ({{ studentNotes.length }})
+                </v-tab>
+                <v-tab value="Undo Completion Reasons" class="text-none"
                   >Undo Completion Reasons ({{
                     studentUngradReasons.length
                   }})</v-tab
@@ -91,10 +97,13 @@
                 <v-window v-model="selectedTab">
                   <v-window-item value="GRAD">
                     <v-tabs v-model="selectedSubTab" color="primary">
-                      <v-tab value="gradStatusTab"
+                      <v-tab value="gradStatusTab" class="text-none"
                         ><v-chip>GRAD Status</v-chip></v-tab
                       >
-                      <v-tab value="requirementDetailsTab" color="primary"
+                      <v-tab
+                        value="requirementDetailsTab"
+                        class="text-none"
+                        color="primary"
                         ><v-chip>Requirement Details</v-chip></v-tab
                       >
                     </v-tabs>
