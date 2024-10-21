@@ -15,8 +15,11 @@
       </v-alert>
       <OptionalProgramsForm />
       <v-data-table
+        v-if="studentOptionalPrograms"
         :items="studentOptionalPrograms"
         :headers="studentOptionalProgramsFields"
+        :items-per-page="'-1'"
+        hide-default-footer
       >
         <template v-slot:item.optionalProgramName="{ item }">
           <div class="pt-2">
@@ -38,8 +41,8 @@
               "
               :items="item.studentOptionalProgramData.optionalRequirementsMet"
               :headers="requirementsMetHeaders"
-              :hide-default-header="true"
-              :hide-default-footer="true"
+              hide-default-header
+              hide-default-footer
             >
               <template v-slot:item.rule="{ item }">
                 <div class="p-2">
@@ -60,10 +63,10 @@
                 filteredGradReqCourses(
                   item.studentOptionalProgramData.optionalStudentCourses
                     .studentCourseList
-                )?.length
+                )?.length > 0
               "
-              :hide-default-header="true"
-              :hide-default-footer="true"
+              hide-default-header
+              hide-default-footer
             >
               <template v-slot:item.gradReqMetDetail="{ item }">
                 <div class="p-2">
@@ -91,11 +94,10 @@
                     .studentAssessmentList
                 )?.length
               "
-              :hide-default-header="true"
-              :hide-default-footer="true"
+              hide-default-header
+              hide-default-footer
             >
               <template v-slot:item.gradReqMetDetail="{ item }">
-                <!-- {{ item }} -->
                 <div class="p-2">
                   <strong>{{ item.gradReqMetDetail }}</strong
                   ><br />
@@ -198,7 +200,44 @@
               class="mx-auto"
             >
               <v-divider color="error" class="mt-0 mx-4" />
+              <!-- START Optional Program Delete Warnings and Errors -->
               <v-alert
+                v-if="v$.ifStudentStatusArchived.$invalid"
+                type="warning"
+                variant="tonal"
+                border="start"
+                class="mx-4 my-4"
+              >
+                <p><strong>WARNING</strong></p>
+                <p>{{ v$.ifStudentStatusArchived.$message }}</p>
+              </v-alert>
+              <v-alert
+                v-else-if="v$.ifStudentStatusDeceased.$invalid"
+                type="warning"
+                variant="tonal"
+                border="start"
+                class="mx-4 my-4"
+              >
+                <p><strong>WARNING</strong></p>
+                <p>{{ v$.ifStudentStatusDeceased.$message }}</p>
+              </v-alert>
+              <v-alert
+                v-else-if="v$.ifStudentStatusTerminated.$invalid"
+                type="warning"
+                variant="tonal"
+                border="start"
+                class="mx-4 my-4"
+              >
+                <p><strong>WARNING</strong></p>
+                <p>{{ v$.ifStudentStatusTerminated.$message }}</p>
+              </v-alert>
+              <v-alert
+                v-if="
+                  !(
+                    v$.ifStudentStatusMerged.$invalid ||
+                    v$.ifProgramComplete.$invalid
+                  )
+                "
                 type="warning"
                 variant="tonal"
                 border="start"
@@ -214,8 +253,30 @@
                   Optional Program from this student
                 </p>
               </v-alert>
+
+              <v-alert
+                v-else-if="v$.ifStudentStatusMerged.$invalid"
+                type="error"
+                variant="tonal"
+                border="start"
+                class="mx-4 my-4"
+              >
+                <p><strong>ERROR</strong></p>
+                <p>{{ v$.ifStudentStatusMerged.$message }}</p>
+              </v-alert>
+              <v-alert
+                v-else-if="v$.ifProgramComplete.$invalid"
+                type="error"
+                variant="tonal"
+                border="start"
+                class="mx-4 my-4"
+              >
+                <p><strong>ERROR</strong></p>
+                <p>{{ v$.ifProgramComplete.$message }}</p>
+              </v-alert>
+              <!-- END Optional Program Delete Warnings and Errors -->
               <v-divider class="mx-4" />
-              <v-card-actions>
+              <v-card-actions class="mx-2 mb-2">
                 <v-btn
                   color="bcGovBlue"
                   variant="outlined"
@@ -226,6 +287,10 @@
                 >
                 <v-spacer />
                 <v-btn
+                  :disabled="
+                    v$.ifStudentStatusMerged.$invalid ||
+                    v$.ifProgramComplete.$invalid
+                  "
                   color="error"
                   variant="flat"
                   class="text-none"
@@ -268,7 +333,8 @@
                 <v-data-table
                   :items="studentCareerPrograms"
                   :headers="studentCareerProgramsHeaders"
-                  :hide-default-footer="true"
+                  :items-per-page="'-1'"
+                  hide-default-footer
                 >
                   <template v-slot:item.actions="{ item }">
                     <v-dialog v-model="deleteDialog[item.id]">
@@ -287,7 +353,45 @@
                         class="mx-auto"
                       >
                         <v-divider color="error" class="mt-0 mx-4" />
+                        <!-- START Career Program Delete Warnings and Errors -->
                         <v-alert
+                          v-if="v$.ifStudentStatusArchived.$invalid"
+                          type="warning"
+                          variant="tonal"
+                          border="start"
+                          class="mx-4 my-4"
+                        >
+                          <p><strong>WARNING</strong></p>
+                          <p>{{ v$.ifStudentStatusArchived.$message }}</p>
+                        </v-alert>
+                        <v-alert
+                          v-else-if="v$.ifStudentStatusDeceased.$invalid"
+                          type="warning"
+                          variant="tonal"
+                          border="start"
+                          class="mx-4 my-4"
+                        >
+                          <p><strong>WARNING</strong></p>
+                          <p>{{ v$.ifStudentStatusDeceased.$message }}</p>
+                        </v-alert>
+                        <v-alert
+                          v-else-if="v$.ifStudentStatusTerminated.$invalid"
+                          type="warning"
+                          variant="tonal"
+                          border="start"
+                          class="mx-4 my-4"
+                        >
+                          <p><strong>WARNING</strong></p>
+                          <p>{{ v$.ifStudentStatusTerminated.$message }}</p>
+                        </v-alert>
+
+                        <v-alert
+                          v-if="
+                            !(
+                              v$.ifStudentStatusMerged.$invalid ||
+                              v$.ifProgramComplete.$invalid
+                            )
+                          "
                           type="warning"
                           variant="tonal"
                           border="start"
@@ -303,8 +407,29 @@
                             Career Program from this student
                           </p>
                         </v-alert>
+                        <v-alert
+                          v-else-if="v$.ifStudentStatusMerged.$invalid"
+                          type="error"
+                          variant="tonal"
+                          border="start"
+                          class="mx-4 my-4"
+                        >
+                          <p><strong>ERROR</strong></p>
+                          <p>{{ v$.ifStudentStatusMerged.$message }}</p>
+                        </v-alert>
+                        <v-alert
+                          v-else-if="v$.ifProgramComplete.$invalid"
+                          type="error"
+                          variant="tonal"
+                          border="start"
+                          class="mx-4 my-4"
+                        >
+                          <p><strong>ERROR</strong></p>
+                          <p>{{ v$.ifProgramComplete.$message }}</p>
+                        </v-alert>
+                        <!-- END Career Program Delete Warnings and Errors -->
                         <v-divider class="mx-4" />
-                        <v-card-actions>
+                        <v-card-actions class="mx-2 mb-2">
                           <v-btn
                             color="bcGovBlue"
                             variant="outlined"
@@ -315,6 +440,10 @@
                           >
                           <v-spacer />
                           <v-btn
+                            :disabled="
+                              v$.ifStudentStatusMerged.$invalid ||
+                              v$.ifProgramComplete.$invalid
+                            "
                             color="error"
                             variant="flat"
                             class="text-none"
@@ -337,24 +466,76 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "pinia";
+// Store Imports
 import { useStudentStore } from "../../store/modules/student";
+import { mapState, mapActions } from "pinia";
+
+// Component Imports
 import DisplayTable from "@/components/DisplayTable.vue";
 import OptionalProgramsForm from "@/components/Forms/OptionalProgramsForm.vue";
+
+// Shared functions & validations
+import { isProgramComplete, applyDisplayOrder } from "@/utils/common.js";
+
+// vuelidate
+import { useVuelidate } from "@vuelidate/core";
+import { helpers } from "@vuelidate/validators";
+
 export default {
   name: "StudentOptionalPrograms",
   components: {
     DisplayTable: DisplayTable,
     OptionalProgramsForm: OptionalProgramsForm,
   },
-
+  setup() {
+    return {
+      v$: useVuelidate(),
+    };
+  },
   computed: {
     ...mapState(useStudentStore, {
       studentOptionalPrograms: "getStudentOptionalPrograms",
       studentCareerPrograms: "getStudentCareerPrograms",
       studentGradStatus: "getStudentGradStatus",
-      studentProgramId: "getStudentProgram", // Remove?
     }),
+  },
+  validations() {
+    return {
+      ifStudentStatusMerged: helpers.withMessage(
+        'This student is showing as merged. Student GRAD Optional Program data cannot be updated for students with a status of "MER" merged.',
+        (value) => {
+          console.log(this.studentGradStatus.studentStatus);
+          return !(this.studentGradStatus.studentStatus == "MER");
+        }
+      ),
+      ifStudentStatusDeceased: helpers.withMessage(
+        "This student is showing as deceased.",
+        (value) => {
+          return !(this.studentGradStatus.studentStatus == "DEC");
+        }
+      ),
+      ifStudentStatusArchived: helpers.withMessage(
+        'This student is not active. Re-activate by setting their status to "CUR" if they are currently attending school.',
+        (value) => {
+          return !(this.studentGradStatus.studentStatus == "ARC");
+        }
+      ),
+      ifStudentStatusTerminated: helpers.withMessage(
+        'This student has been terminated. Re-activate by setting their status to "CUR" if they are currently attending school.',
+        (value) => {
+          return !(this.studentGradStatus.studentStatus == "TER");
+        }
+      ),
+      ifProgramComplete: helpers.withMessage(
+        `This student has a program completion date of ${this.studentGradStatus.programCompletionDate}. You must undo completion to be able to edit the Optional Programs for this student.`,
+        (value) => {
+          return !this.isProgramComplete(
+            this.studentGradStatus.programCompletionDate,
+            this.studentGradStatus.program
+          );
+        }
+      ),
+    };
   },
   data: function () {
     return {
@@ -403,8 +584,11 @@ export default {
       removeStudentOptionalProgram: "removeStudentOptionalProgram",
       removeStudentCareerProgram: "removeStudentCareerProgram",
     }),
+    isProgramComplete(date, program) {
+      return isProgramComplete(date, program);
+    },
     filterGradReqItems(item) {
-      if (item.gradReqMet.length > 0) {
+      if (item.gradReqMet?.length > 0) {
         return true;
       }
     },

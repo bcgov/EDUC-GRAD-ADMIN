@@ -76,7 +76,7 @@
               </div>
             </div>
             <div>
-              <div class="px-3 w-100 float-left mt-2">
+              <div class="px-3 w-100 float-left mt-2 mb-6">
                 <a
                   :disabled="!showXMLPreview()"
                   @click="

@@ -93,13 +93,13 @@ export default {
       programInputFields: [
         {
           key: "program",
-          title: "Program",
+          title: "Program Code",
           sortable: true,
           class: "text-left",
         },
         {
           key: "info",
-          title: "Post Secondary Institute Name",
+          title: "Program Name",
           sortable: true,
           class: "text-left",
         },

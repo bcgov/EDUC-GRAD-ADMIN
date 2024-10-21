@@ -12,213 +12,214 @@
         </v-btn>
       </template>
       <v-card>
-        <v-card-title>
-          <span class="text-h5">Archive Student Batch Process</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-stepper alt-labels show-actions v-model="step">
-              <template v-slot:default="{ prev, next }">
-                <v-stepper-header>
-                  <v-stepper-item
-                    :rules="[
-                      () =>
-                        !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Group"
-                    value="1"
-                  ></v-stepper-item>
-
-                  <v-divider></v-divider>
-
-                  <v-stepper-item
-                    :rules="[
-                      () => !v$.getBatchRequest.batchRunTimeSet.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Run/Schedule"
-                    value="2"
-                  ></v-stepper-item>
-                </v-stepper-header>
-
-                <v-stepper-window>
-                  <v-stepper-window-item value="1">
-                    <v-row>
-                      <v-select
-                        v-model="group"
-                        :items="['School', 'All Students']"
-                        label="Select a Group"
-                      ></v-select>
-                    </v-row>
-                    <v-row v-if="group == 'School'">
-                      <SchoolInput>
-                        <template #inputWarning>
-                          <p>
-                            All students with a School of Record matching the
-                            entered school and with a student status of CUR or a
-                            student status of TER will have their status changed
-                            to ARC
-                          </p>
-                        </template>
-                      </SchoolInput>
-                    </v-row>
-                    <v-row v-if="group == 'All Students'">
-                      <v-alert>
-                        All students with a status of CUR (current) and TER
-                        (terminated) will have their student status changed to
-                        ARC (archived)
-                      </v-alert>
-                    </v-row>
-                  </v-stepper-window-item>
-
-                  <v-stepper-window-item value="2">
-                    <v-card flat>
-                      <div v-if="group === 'School Category'">
-                        Districts:
-                        <v-list>
-                          <v-list-item
-                            v-for="(
-                              district, index
-                            ) in getBatchRequest.districts"
-                            :key="index"
-                          >
-                            <v-list-item-content>
-                              <v-list-item-title>{{
-                                district
-                              }}</v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list>
-                      </div>
-                      <div v-if="group === 'Program'">
-                        Districts: {{ getBatchRequest.programs }}
-                      </div>
-                      <div v-if="group === 'PSI'">
-                        Post Secondary Institutions: REQUEST
-                        {{ getBatchRequest.psi }}
-                      </div>
-                      <v-card class="">
-                        <v-card-text> </v-card-text>
-                      </v-card>
-                      <ScheduleInput>
-                        <template #batchDetails>
-                          <v-data-table
-                            :items="[
-                              {
-                                label: 'Run Type',
-                                value: 'Archive Student Batch Process',
-                              },
-                              {
-                                label: 'Select Students',
-                                value: 'Current and Terminated Students',
-                              },
-                            ]"
-                            hide-default-header
-                            hide-default-footer
-                          >
-                          </v-data-table>
-                        </template>
-                        <template #confirmations>
-                          <v-card
-                            title="Confirmations"
-                            class="text-h5 font-weight-regular bg-blue-grey"
-                          >
-                            <v-table>
-                              <thead>
-                                <tr>
-                                  <th>
-                                    Batch Confirmation: please read and accept
-                                    before submitting
-                                  </th>
-                                  <th>Confirm</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <!-- First Confirmation Checkbox -->
-                                <tr>
-                                  <td>
-                                    Final Graduation Algorithm and TVR batch
-                                    jobs have been run for students from the
-                                    previous cycle
-                                  </td>
-                                  <td>
-                                    <v-checkbox
-                                      v-model="selectedConfirmations"
-                                      value="REQUIRED_CONFIRMATION_1"
-                                      hide-details
-                                    ></v-checkbox>
-                                  </td>
-                                </tr>
-
-                                <!-- Second Confirmation Checkbox -->
-                                <tr>
-                                  <td>
-                                    Regenerate School Reports process has been
-                                    completed for any schools that require final
-                                    updates
-                                  </td>
-                                  <td>
-                                    <v-checkbox
-                                      v-model="selectedConfirmations"
-                                      value="REQUIRED_CONFIRMATION_2"
-                                      hide-details
-                                    ></v-checkbox>
-                                  </td>
-                                </tr>
-
-                                <!-- Third Confirmation Checkbox -->
-                                <tr>
-                                  <td>
-                                    Archive School Reports process has been
-                                    completed
-                                  </td>
-                                  <td>
-                                    <v-checkbox
-                                      v-model="selectedConfirmations"
-                                      value="REQUIRED_CONFIRMATION_3"
-                                      hide-details
-                                    ></v-checkbox>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </v-table>
-                          </v-card>
-                        </template>
-                      </ScheduleInput>
-                    </v-card>
-                  </v-stepper-window-item>
-
-                  <v-stepper-window-item value="3">
-                    <span>Step Window 3</span>
-                  </v-stepper-window-item>
-                </v-stepper-window>
-                <v-stepper-actions
-                  @click:prev="prev"
-                  @click:next="next"
-                  @click:submit="submit"
-                ></v-stepper-actions>
-              </template>
-            </v-stepper>
-          </v-container>
-          <small>*indicates required field</small>
-        </v-card-text>
-        <v-card-actions class="sticky-form-actions">
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="cancel">
-            Cancel
-          </v-btn>
+        <div class="d-flex justify-space-between align-center">
+          <v-card-title>Archive Student Batch Process</v-card-title>
           <v-btn
-            :disabled="v$.$invalid"
-            color="blue-darken-1"
-            variant="text"
-            @click="submit"
+            @click="closeDialogAndResetForm()"
+            color="error"
+            variant="outlined"
+            class="m-4"
+            >Cancel</v-btn
           >
-            Submit
-          </v-btn>
-        </v-card-actions>
+        </div>
+
+        <v-card-text>
+          <v-stepper show-actions v-model="step">
+            <template v-slot:default="{ prev, next }">
+              <v-stepper-header>
+                <v-stepper-item
+                  :rules="[
+                    () => !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
+                  ]"
+                  complete
+                  editable
+                  title="Group"
+                  value="0"
+                ></v-stepper-item>
+
+                <v-divider></v-divider>
+
+                <v-stepper-item
+                  :rules="[() => !v$.getBatchRequest.batchRunTimeSet.$invalid]"
+                  complete
+                  editable
+                  title="Run/Schedule"
+                  value="1"
+                ></v-stepper-item>
+              </v-stepper-header>
+
+              <v-stepper-window>
+                <v-stepper-window-item value="0">
+                  <v-row>
+                    <v-select
+                      v-model="group"
+                      :items="['School', 'All Students']"
+                      label="Select a Group"
+                    ></v-select>
+                  </v-row>
+                  <v-row v-if="group == 'School'">
+                    <SchoolInput>
+                      <template #inputWarning>
+                        <p>
+                          All students with a School of Record matching the
+                          entered school and with a student status of CUR or a
+                          student status of TER will have their status changed
+                          to ARC
+                        </p>
+                      </template>
+                    </SchoolInput>
+                  </v-row>
+                  <v-row v-if="group == 'All Students'">
+                    <v-alert>
+                      All students with a status of CUR (current) and TER
+                      (terminated) will have their student status changed to ARC
+                      (archived)
+                    </v-alert>
+                  </v-row>
+                </v-stepper-window-item>
+
+                <v-stepper-window-item value="1">
+                  <v-card flat>
+                    <div v-if="group === 'School Category'">
+                      Districts:
+                      <v-list>
+                        <v-list-item
+                          v-for="(district, index) in getBatchRequest.districts"
+                          :key="index"
+                        >
+                          <v-list-item-content>
+                            <v-list-item-title>{{
+                              district
+                            }}</v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </div>
+                    <div v-if="group === 'Program'">
+                      Districts: {{ getBatchRequest.programs }}
+                    </div>
+                    <div v-if="group === 'PSI'">
+                      Post Secondary Institutions: REQUEST
+                      {{ getBatchRequest.psi }}
+                    </div>
+                    <v-card class="">
+                      <v-card-text> </v-card-text>
+                    </v-card>
+                    <ScheduleInput>
+                      <template #batchDetails>
+                        <v-data-table
+                          :items="[
+                            {
+                              label: 'Run Type',
+                              value: 'Archive Student Batch Process',
+                            },
+                            {
+                              label: 'Select Students',
+                              value: 'Current and Terminated Students',
+                            },
+                          ]"
+                          hide-default-header
+                          hide-default-footer
+                        >
+                        </v-data-table>
+                      </template>
+                      <template #confirmations>
+                        <v-card title="Confirmations" class="text-h5">
+                          <v-table>
+                            <thead>
+                              <tr>
+                                <th>
+                                  Batch Confirmation: please read and accept
+                                  before submitting
+                                </th>
+                                <th>Confirm</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <!-- First Confirmation Checkbox -->
+                              <tr>
+                                <td>
+                                  Final Graduation Algorithm and TVR batch jobs
+                                  have been run for students from the previous
+                                  cycle
+                                </td>
+                                <td>
+                                  <v-checkbox
+                                    v-model="selectedConfirmations"
+                                    value="REQUIRED_CONFIRMATION_1"
+                                    hide-details
+                                  ></v-checkbox>
+                                </td>
+                              </tr>
+
+                              <!-- Second Confirmation Checkbox -->
+                              <tr>
+                                <td>
+                                  Regenerate School Reports process has been
+                                  completed for any schools that require final
+                                  updates
+                                </td>
+                                <td>
+                                  <v-checkbox
+                                    v-model="selectedConfirmations"
+                                    value="REQUIRED_CONFIRMATION_2"
+                                    hide-details
+                                  ></v-checkbox>
+                                </td>
+                              </tr>
+
+                              <!-- Third Confirmation Checkbox -->
+                              <tr>
+                                <td>
+                                  Archive School Reports process has been
+                                  completed
+                                </td>
+                                <td>
+                                  <v-checkbox
+                                    v-model="selectedConfirmations"
+                                    value="REQUIRED_CONFIRMATION_3"
+                                    hide-details
+                                  ></v-checkbox>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </v-table>
+                        </v-card>
+                      </template>
+                    </ScheduleInput>
+                  </v-card>
+                </v-stepper-window-item>
+              </v-stepper-window>
+            </template>
+            <template v-slot:actions>
+              <div class="row mx-6 mb-6">
+                <!-- Left Action Button -->
+                <v-btn
+                  @click="step--"
+                  color="bcGovBlue"
+                  :disabled="step == 0"
+                  variant="outlined"
+                  >Back</v-btn
+                >
+                <v-spacer />
+                <!-- Right Action Button -->
+                <v-btn v-if="step < 1" @click="step++" color="bcGovBlue"
+                  >Next</v-btn
+                >
+                <v-btn
+                  v-else
+                  color="error"
+                  variant="flat"
+                  class="text-none"
+                  density="default"
+                  @click="submit"
+                  :disabled="v$.$invalid"
+                  >Submit</v-btn
+                >
+              </div>
+            </template>
+          </v-stepper>
+        </v-card-text>
       </v-card>
     </v-dialog>
   </v-row>

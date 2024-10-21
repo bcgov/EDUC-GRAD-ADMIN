@@ -12,203 +12,223 @@
         </v-btn>
       </template>
       <v-card>
-        <v-card-title>
-          <span class="text-h5">User Request Distribution Run</span>
-        </v-card-title>
+        <div class="d-flex justify-space-between align-center">
+          <v-card-title>User Request Distribution Run</v-card-title>
+          <v-btn
+            @click="closeDialogAndResetForm()"
+            color="error"
+            variant="outlined"
+            class="m-4"
+            >Cancel</v-btn
+          >
+        </div>
+
         <v-card-text>
-          <v-container>
-            <v-stepper alt-labels show-actions v-model="step">
-              <template v-slot:default="{ prev, next }">
-                <v-stepper-header>
-                  <v-stepper-item
-                    :rules="[
-                      () => !v$.getBatchRequest.credentialTypeSelected.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Credential Type"
-                    value="1"
-                  ></v-stepper-item>
+          <v-stepper v-model="step">
+            <template v-slot:default="{ prev, next }">
+              <v-stepper-header>
+                <v-stepper-item
+                  v-show="
+                    getCredential == 'Blank certificate print' ||
+                    getCredential == 'Blank transcript print'
+                  "
+                  :rules="[
+                    () => !v$.getBatchRequest.credentialTypeSelected.$invalid,
+                  ]"
+                  complete
+                  editable
+                  title="Credential Type"
+                  value="0"
+                ></v-stepper-item>
 
-                  <v-divider></v-divider>
-                  <v-stepper-item
-                    :rules="[
-                      () =>
-                        !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Group"
-                    value="2"
-                  ></v-stepper-item>
-                  <v-stepper-item
-                    :rules="[() => !v$.getBatchRequest.distribution.$invalid]"
-                    complete
-                    editable
-                    title="Distribution"
-                    value="3"
-                  ></v-stepper-item>
-                  <v-stepper-item
-                    :rules="[
-                      () => !v$.getBatchRequest.batchRunTimeSet.$invalid,
-                    ]"
-                    complete
-                    editable
-                    title="Run/Schedule"
-                    value="4"
-                  ></v-stepper-item>
-                </v-stepper-header>
+                <v-divider></v-divider>
+                <v-stepper-item
+                  :rules="[
+                    () => !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
+                  ]"
+                  complete
+                  editable
+                  title="Group"
+                  value="1"
+                ></v-stepper-item>
+                <v-stepper-item
+                  :rules="[() => !v$.getBatchRequest.distribution.$invalid]"
+                  complete
+                  editable
+                  title="Distribution"
+                  value="2"
+                ></v-stepper-item>
+                <v-stepper-item
+                  :rules="[() => !v$.getBatchRequest.batchRunTimeSet.$invalid]"
+                  complete
+                  editable
+                  title="Run/Schedule"
+                  value="3"
+                ></v-stepper-item>
+              </v-stepper-header>
 
-                <v-stepper-window>
-                  <v-stepper-window-item value="1">
-                    <div v-if="getCredential === 'Blank transcript print'">
-                      Select transcript type
-                      <v-row>
-                        <v-col
-                          v-for="(option, index) in transcriptTypes"
-                          :key="index"
-                          cols="auto"
-                          class="p-0 m-0"
-                          :style="{ minWidth: '500px' }"
-                        >
-                          <v-checkbox
-                            :label="option.description"
-                            :value="option.code"
-                            v-model="blankTranscriptDetails"
-                            hide-details
-                          ></v-checkbox>
-                        </v-col>
-                      </v-row>
-                    </div>
-
-                    <div v-if="getCredential === 'Blank certificate print'">
-                      Select certificate type
-                      <v-row>
-                        <v-col
-                          v-for="(option, index) in certificateTypes"
-                          :key="index"
-                          cols="auto"
-                          class="p-0 m-0"
-                          :style="{ minWidth: '450px' }"
-                        >
-                          <v-checkbox
-                            :label="option.label"
-                            :value="option.code"
-                            v-model="blankCertificateDetails"
-                            hide-details
-                          ></v-checkbox>
-                        </v-col>
-                      </v-row>
-                    </div>
-                  </v-stepper-window-item>
-                  <v-stepper-window-item value="2">
+              <v-stepper-window>
+                <v-stepper-window-item value="0">
+                  <div v-if="getCredential === 'Blank transcript print'">
+                    Select transcript type
                     <v-row>
-                      <v-col>
-                        <v-select
-                          v-model="group"
-                          :items="groupItems"
-                          label="Select group"
+                      <v-col
+                        v-for="(option, index) in transcriptTypes"
+                        :key="index"
+                        cols="auto"
+                        class="p-0 m-0"
+                        :style="{ minWidth: '500px' }"
+                      >
+                        <v-checkbox
+                          :label="option.description"
+                          :value="option.code"
+                          v-model="blankTranscriptDetails"
                           hide-details
-                        ></v-select>
+                        ></v-checkbox>
                       </v-col>
                     </v-row>
+                  </div>
 
-                    <v-row v-if="group == 'Student'">
-                      <StudentInput></StudentInput>
-                    </v-row>
-                    <v-row v-if="group == 'School Category'">
-                      <DistrictInput></DistrictInput>
-                    </v-row>
-                    <v-row v-if="group == 'PSI'">
-                      <DistrictInput></DistrictInput>
-                    </v-row>
-                    <v-row v-if="group == 'Program'">
-                      <ProgramInput></ProgramInput>
-                    </v-row>
-                    <v-row v-if="group == 'School'">
-                      <SchoolInput
-                        :disableSelectStudents="
-                          getCredential == 'Blank certificate print' ||
-                          getCredential == 'Blank transcript print'
-                        "
-                      ></SchoolInput>
-                    </v-row>
-                  </v-stepper-window-item>
-                  <v-stepper-window-item value="3">
-                    <DistributionInput></DistributionInput>
-                  </v-stepper-window-item>
-                  <v-stepper-window-item value="4">
-                    <v-card flat>
-                      <ScheduleInput
-                        warning="Warning: You have selected a large volume of documents to be printed"
+                  <div v-if="getCredential === 'Blank certificate print'">
+                    Select certificate type
+                    <v-row>
+                      <v-col
+                        v-for="(option, index) in certificateTypes"
+                        :key="index"
+                        cols="auto"
+                        class="p-0 m-0"
+                        :style="{ minWidth: '450px' }"
                       >
-                        <template #batchDetails>
-                          <v-data-table
-                            :items="[
-                              {
-                                label: 'Run Type',
-                                value: 'User Request Distribution Run',
-                              },
-                              {
-                                label: 'Copies',
-                                value: getBatchRequest.quantity,
-                              },
-                              {
-                                label: 'Credential Type',
-                                value:
-                                  getBatchRequest.credentialTypeCode.join(', '),
-                              },
-                              {
-                                label: 'Where',
-                                value: getDistribution,
-                              },
-                            ]"
-                            hide-default-header
-                            hide-default-footer
-                          >
-                          </v-data-table>
-                        </template>
-                      </ScheduleInput>
-                    </v-card>
-                  </v-stepper-window-item>
+                        <v-checkbox
+                          :label="option.label"
+                          :value="option.code"
+                          v-model="blankCertificateDetails"
+                          hide-details
+                        ></v-checkbox>
+                      </v-col>
+                    </v-row>
+                  </div>
+                </v-stepper-window-item>
+                <v-stepper-window-item value="1">
+                  <v-row>
+                    <v-col>
+                      <v-select
+                        v-model="group"
+                        :items="groupItems"
+                        label="Select group"
+                        hide-details
+                      ></v-select>
+                    </v-col>
+                  </v-row>
 
-                  <v-stepper-window-item value="3">
-                    <span>Step Window 3</span>
-                  </v-stepper-window-item>
-                </v-stepper-window>
-                <v-stepper-actions
-                  @click:prev="prev"
-                  @click:next="next"
-                  @click:submit="submit"
-                ></v-stepper-actions>
-              </template>
-            </v-stepper>
-          </v-container>
-          <small>*indicates required field</small>
+                  <v-row v-if="group == 'Student'">
+                    <StudentInput></StudentInput>
+                  </v-row>
+                  <v-row v-if="group == 'School Category'">
+                    <DistrictInput></DistrictInput>
+                  </v-row>
+                  <v-row v-if="group == 'PSI'">
+                    <DistrictInput></DistrictInput>
+                  </v-row>
+                  <v-row v-if="group == 'Program'">
+                    <ProgramInput></ProgramInput>
+                  </v-row>
+                  <v-row v-if="group == 'School'">
+                    <SchoolInput
+                      :disableSelectStudents="
+                        getCredential == 'Blank certificate print' ||
+                        getCredential == 'Blank transcript print'
+                      "
+                    ></SchoolInput>
+                  </v-row>
+                </v-stepper-window-item>
+                <v-stepper-window-item value="2">
+                  <DistributionInput></DistributionInput>
+                </v-stepper-window-item>
+                <v-stepper-window-item value="3">
+                  <ScheduleInput>
+                    <template #batchDetails>
+                      <v-data-table
+                        :items="[
+                          {
+                            label: 'Run Type',
+                            value: 'User Request Distribution Run',
+                          },
+                          {
+                            label: 'Copies',
+                            value: getBatchRequest.quantity,
+                          },
+                          ...(getCredential == 'Blank certificate print' ||
+                          getCredential == 'Blank transcript print'
+                            ? [
+                                {
+                                  label: 'Credential Type',
+                                  value:
+                                    getBatchRequest.credentialTypeCode.join(
+                                      ', '
+                                    ),
+                                },
+                              ]
+                            : []),
+                          {
+                            label: 'Where',
+                            value: getDistribution,
+                          },
+                        ]"
+                        hide-default-header
+                        hide-default-footer
+                      >
+                      </v-data-table>
+                    </template>
+                  </ScheduleInput>
+                </v-stepper-window-item>
+              </v-stepper-window>
+            </template>
+            <template v-slot:actions>
+              <div class="row mx-6 mb-6">
+                <!-- Left Action Button -->
+                <v-btn
+                  @click="step--"
+                  color="bcGovBlue"
+                  :disabled="
+                    step == 0 ||
+                    (step == 1 &&
+                      (getCredential !== 'Blank certificate print' ||
+                        getCredential !== 'Blank transcript print'))
+                  "
+                  variant="outlined"
+                  >Back</v-btn
+                >
+                <v-spacer />
+                <!-- Right Action Button -->
+                <v-btn v-if="step < 3" @click="step++" color="bcGovBlue"
+                  >Next</v-btn
+                >
+                <v-btn
+                  v-else-if="getBatchRequest.localDownload == 'Y'"
+                  color="error"
+                  variant="flat"
+                  class="text-none"
+                  density="default"
+                  :disabled="v$.$invalid"
+                  @click="submit"
+                >
+                  Download
+                </v-btn>
+                <v-btn
+                  v-else
+                  color="error"
+                  variant="flat"
+                  class="text-none"
+                  density="default"
+                  @click="submit"
+                  :disabled="v$.$invalid"
+                  >Submit</v-btn
+                >
+              </div>
+            </template>
+          </v-stepper>
         </v-card-text>
-        <v-card-actions class="sticky-form-actions">
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="cancel">
-            Cancel
-          </v-btn>
-          <v-btn
-            v-if="getBatchRequest.localDownload == 'Y'"
-            color="blue-darken-1"
-            variant="text"
-            @click="submit"
-          >
-            Download
-          </v-btn>
-          <v-btn
-            v-else
-            color="blue-darken-1"
-            variant="text"
-            @click="submit"
-            :disabled="v$.$invalid"
-          >
-            Submit
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-row>
@@ -478,6 +498,14 @@ export default {
   methods: {
     setCredentialForForm() {
       this.setCredential(this.credentialSelected);
+      if (
+        this.getCredential === "Blank certificate print" ||
+        this.getCredential === "Blank transcript print"
+      ) {
+        this.step = 0;
+      } else {
+        this.step = 1;
+      }
     },
     ...mapActions(useBatchRequestFormStore, [
       "clearBatchDetails",
@@ -497,9 +525,9 @@ export default {
         // eslint-disable-next-line
         .catch((error) => {
           if (error.response.statusText) {
-            this.makeToast("ERROR " + error.response.statusText, "danger");
+            console.log("ERROR " + error.response.statusText, "danger");
           } else {
-            this.makeToast("ERROR " + "error with webservervice", "danger");
+            console.log("ERROR " + "error with webservervice", "danger");
           }
         });
     },

@@ -13,11 +13,18 @@
         </v-btn>
       </template>
       <v-card>
-        <v-card-title>
-          <span class="text-h5"
-            >Credentials and Transcript Distribution Run</span
+        <div class="d-flex justify-space-between align-center">
+          <v-card-title
+            >Credentials and Transcript Distribution Run</v-card-title
           >
-        </v-card-title>
+          <v-btn
+            @click="closeDialogAndResetForm()"
+            color="error"
+            variant="outlined"
+            class="m-4"
+            >Cancel</v-btn
+          >
+        </div>
         <v-card-text>
           <ScheduleInput hideGroup>
             <template #batchDetails>
@@ -38,31 +45,19 @@
               </v-data-table>
             </template>
           </ScheduleInput>
-          <small>*indicates required field</small>
+
+          <div class="row mx-6 mb-6 justify-end">
+            <v-btn
+              color="error"
+              variant="flat"
+              class="text-none"
+              density="default"
+              @click="submit"
+              :disabled="v$.$invalid"
+              >Submit</v-btn
+            >
+          </div>
         </v-card-text>
-        <v-card-actions class="sticky-form-actions">
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="cancel">
-            Cancel
-          </v-btn>
-          <v-btn
-            v-if="getBatchRequest.localDownload == 'Y'"
-            color="blue-darken-1"
-            variant="text"
-            @click="submit"
-          >
-            Download
-          </v-btn>
-          <v-btn
-            v-else
-            color="blue-darken-1"
-            variant="text"
-            @click="submit"
-            :disabled="v$.$invalid"
-          >
-            Submit
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-row>
