@@ -6,7 +6,7 @@
     max-width="500px"
   >
     <template v-slot:activator="{ props }">
-      <v-btn color="bcGovBlue" prepend-icon="mdi-plus" class="float-right text-none mt-n12 mb-8" v-bind="props" text="Add Optional Program">
+      <v-btn color="bcGovBlue" prepend-icon="mdi-plus" class="float-right text-none mt-n12 mb-8" @click="openCreateOptionalProgramDialog()" text="Add Optional Program">
       </v-btn>
     </template>
 
@@ -268,12 +268,6 @@ export default {
     isProgramComplete(date, program) {
       return isProgramComplete(date, program)
     },
-    clearCareerPrograms() {
-      this.form.selectedCareerPrograms = null;
-    },
-    clearOptionalProgram() {
-      this.form.selectedOptionalProgram = null;
-    },
     optionalProgramTitle(item) {
       if (item) {
         return `${item.graduationProgramCode} - ${item.optionalProgramName}`;
@@ -311,6 +305,7 @@ export default {
       );
     },
     openCreateOptionalProgramDialog() {
+      this.step = 0;
       this.clearForm();
       this.dialog = true;
     },
@@ -321,6 +316,12 @@ export default {
     clearForm() {
       this.clearOptionalProgram()
       this.clearCareerPrograms()
+    },
+    clearCareerPrograms() {
+      this.form.selectedCareerPrograms = null;
+    },
+    clearOptionalProgram() {
+      this.form.selectedOptionalProgram = null;
     },
     submitForm() {
       this.addStudentOptionalProgram(
