@@ -112,8 +112,8 @@
               <td><strong>School of record: </strong></td>
               <td>
                 <v-btn
-                  class="p-0 text-left"
-                  variant="tonal"
+                  class="v-btn-link p-0 text-left"
+                  variant="plain"
                   @click="
                     schoolOfRecordDialog = true;
                     getSchoolInfo(
@@ -215,8 +215,8 @@
               <td>
                 <v-btn
                   v-if="studentGradStatus && studentGradStatus.schoolAtGrad"
-                  class="p-0 text-left"
-                  variant="tonal"
+                  class="p-0 text-left v-btn-link"
+                  variant="plain"
                   @click="
                     schoolAtGradDialog = true;
                     getSchoolInfo(
