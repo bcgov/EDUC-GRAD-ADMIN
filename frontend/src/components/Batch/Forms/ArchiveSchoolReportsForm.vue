@@ -210,7 +210,6 @@
               </div>
             </template>
           </v-stepper>
-          <small>*indicates required field</small>
         </v-card-text>
         <v-card-actions class="sticky-form-actions">
           <v-spacer></v-spacer>

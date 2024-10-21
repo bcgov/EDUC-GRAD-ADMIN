@@ -57,7 +57,6 @@
               >Submit</v-btn
             >
           </div>
-          <small>*indicates required field</small>
         </v-card-text>
       </v-card>
     </v-dialog>
