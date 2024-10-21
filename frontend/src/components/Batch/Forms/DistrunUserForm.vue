@@ -142,9 +142,7 @@
                   <DistributionInput></DistributionInput>
                 </v-stepper-window-item>
                 <v-stepper-window-item value="3">
-                  <ScheduleInput
-                    warning="Warning: You have selected a large volume of documents to be printed"
-                  >
+                  <ScheduleInput>
                     <template #batchDetails>
                       <v-data-table
                         :items="[
@@ -211,7 +209,7 @@
               </div>
             </template>
           </v-stepper>
-          <small>*indicates required field</small>
+          <small> required field</small>
         </v-card-text>
       </v-card>
     </v-dialog>

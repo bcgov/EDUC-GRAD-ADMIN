@@ -116,7 +116,7 @@
               </div>
             </template>
           </v-stepper>
-          <small>*indicates required field</small>
+          <small> required field</small>
         </v-card-text>
 
         <p v-for="error of v$.$errors" :key="error.$uid">
