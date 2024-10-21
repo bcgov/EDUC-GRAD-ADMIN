@@ -21,17 +21,26 @@
 
         <v-stepper-window>
           <v-stepper-window-item  value="1">
-            <!-- <pre>{{ v$ }}</pre> -->
             <v-form @submit.prevent="submitForm">
-              <v-alert v-if="v$.ifStudentStatusMerged.$invalid" type="error" variant="tonal" border="start" :text="v$.ifStudentStatusMerged.$message" class="mb-4">
+              <v-alert v-if="v$.ifStudentStatusMerged.$invalid" type="error" variant="tonal" border="start" class="mb-4">
+                <p><strong>ERROR</strong></p>
+                <p>{{ v$.ifStudentStatusMerged.$message }}</p>
               </v-alert>
-              <v-alert v-if="v$.ifProgramComplete.$invalid" type="error" variant="tonal" border="start" :text="v$.ifProgramComplete.$message" class="mb-4">
+              <v-alert v-if="v$.ifProgramComplete.$invalid" type="error" variant="tonal" border="start" class="mb-4">
+                <p><strong>ERROR</strong></p>
+                <p>{{ v$.ifProgramComplete.$message }}</p>
               </v-alert>
-              <v-alert v-if="v$.ifStudentStatusDeceased.$invalid" type="warning" variant="tonal" border="start" :text="v$.ifStudentStatusDeceased.$message" class="mb-4">
+              <v-alert v-if="v$.ifStudentStatusDeceased.$invalid" type="warning" variant="tonal" border="start" class="mb-4">
+                <p><strong>WARNING</strong></p>
+                <p>{{ v$.ifStudentStatusDeceased.$message }}</p>
               </v-alert>
-              <v-alert v-if="v$.ifStudentStatusArchived.$invalid" type="warning" variant="tonal" border="start" :text="v$.ifStudentStatusArchived.$message" class="mb-4">
+              <v-alert v-if="v$.ifStudentStatusArchived.$invalid" type="warning" variant="tonal" border="start" class="mb-4">
+                <p><strong>WARNING</strong></p>
+                <p>{{ v$.ifStudentStatusArchived.$message }}</p>
               </v-alert>
-              <v-alert v-if="v$.ifStudentStatusTerminated.$invalid" type="warning" variant="tonal" border="start" :text="v$.ifStudentStatusTerminated.$message" class="mb-4">
+              <v-alert v-if="v$.ifStudentStatusTerminated.$invalid" type="warning" variant="tonal" border="start" class="mb-4">
+                <p><strong>WARNING</strong></p>
+                <p>{{ v$.ifStudentStatusTerminated.$message }}</p>
               </v-alert>
               <!-- Program Name Input -->
               <v-autocomplete
