@@ -28,6 +28,10 @@
             <template v-slot:default="{ prev, next }">
               <v-stepper-header>
                 <v-stepper-item
+                  v-show="
+                    getCredential == 'Blank certificate print' ||
+                    getCredential == 'Blank transcript print'
+                  "
                   :rules="[
                     () => !v$.getBatchRequest.credentialTypeSelected.$invalid,
                   ]"
@@ -154,11 +158,18 @@
                             label: 'Copies',
                             value: getBatchRequest.quantity,
                           },
-                          {
-                            label: 'Credential Type',
-                            value:
-                              getBatchRequest.credentialTypeCode.join(', '),
-                          },
+                          ...(getCredential == 'Blank certificate print' ||
+                          getCredential == 'Blank transcript print'
+                            ? [
+                                {
+                                  label: 'Credential Type',
+                                  value:
+                                    getBatchRequest.credentialTypeCode.join(
+                                      ', '
+                                    ),
+                                },
+                              ]
+                            : []),
                           {
                             label: 'Where',
                             value: getDistribution,
@@ -179,7 +190,12 @@
                 <v-btn
                   @click="step--"
                   color="bcGovBlue"
-                  :disabled="step == 0"
+                  :disabled="
+                    step == 0 ||
+                    (step == 1 &&
+                      (getCredential !== 'Blank certificate print' ||
+                        getCredential !== 'Blank transcript print'))
+                  "
                   variant="outlined"
                   >Back</v-btn
                 >
@@ -190,8 +206,10 @@
                 >
                 <v-btn
                   v-else-if="getBatchRequest.localDownload == 'Y'"
-                  color="bcGovBlue"
-                  variant="text"
+                  color="error"
+                  variant="flat"
+                  class="text-none"
+                  density="default"
                   @click="submit"
                 >
                   Download
@@ -209,7 +227,6 @@
               </div>
             </template>
           </v-stepper>
-          <small> required field</small>
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -480,6 +497,14 @@ export default {
   methods: {
     setCredentialForForm() {
       this.setCredential(this.credentialSelected);
+      if (
+        this.getCredential === "Blank certificate print" ||
+        this.getCredential === "Blank transcript print"
+      ) {
+        this.step = 0;
+      } else {
+        this.step = 1;
+      }
     },
     ...mapActions(useBatchRequestFormStore, [
       "clearBatchDetails",
