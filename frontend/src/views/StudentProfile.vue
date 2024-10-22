@@ -16,7 +16,7 @@
                 :disabled="tabLoading || !hasGradStatus"
                 id="actions"
                 right
-                class="float-right admin-actions"
+                class="float-right admin-actions text-none"
               >
                 <v-icon icon="mdi-school" start></v-icon>Transcripts &
                 TVRs</v-btn
@@ -56,6 +56,7 @@
                   studentGradStatus.studentStatus === 'MER' ||
                   !studentGradStatus.programCompletionDate
                 "
+                v-on:click="showUndoCompletionDialog = true"
                 >Undo Completion</v-list-item
               >
             </v-list>
@@ -98,13 +99,15 @@
                   <v-window-item value="GRAD">
                     <v-tabs v-model="selectedSubTab" color="primary">
                       <v-tab value="gradStatusTab" class="text-none"
-                        ><v-chip>GRAD Status</v-chip></v-tab
+                        ><v-chip class="text-none">GRAD Status</v-chip></v-tab
                       >
                       <v-tab
                         value="requirementDetailsTab"
                         class="text-none"
                         color="primary"
-                        ><v-chip>Requirement Details</v-chip></v-tab
+                        ><v-chip class="text-none"
+                          >Requirement Details</v-chip
+                        ></v-tab
                       >
                     </v-tabs>
 
@@ -496,50 +499,64 @@
     </v-dialog>
 
     <!-- Undo Completion Modal -->
-    <v-dialog max-width="600px">
+    <v-dialog max-width="600px" v-model="showUndoCompletionDialog">
       <v-card>
         <v-card-title class="text-h5">Undo Completion</v-card-title>
         <v-card-text>
           <p>Undo Completion Reason</p>
           <v-select
-            v-model="studentUngradReasonSelected"
+            v-model="studentUngradReasonForm.selected"
             :items="ungradReasons"
+            item-title="label"
             item-value="code"
-            item-text="label"
             label="Select an Undo Completion Reason"
           ></v-select>
 
-          <div class="mt-3" v-if="studentUngradReasonSelected">
-            <v-alert type="warning" v-if="ungradReasons.length > 0">
+          <div class="mt-2 mb-4" v-if="studentUngradReasonForm.selected">
+            <v-alert
+              type="info"
+              variant="tonal"
+              border="start"
+              v-if="ungradReasons.length > 0"
+            >
               {{
                 ungradReasons.find(
-                  (element) => element.code === studentUngradReasonSelected
+                  (element) => element.code === studentUngradReasonForm.selected
                 ).description
               }}
             </v-alert>
           </div>
 
-          <div v-if="studentUngradReasonSelected === 'OTH'" class="mt-3">
+          <div v-if="studentUngradReasonForm.selected === 'OTH'" class="mt-3">
             <v-textarea
-              v-model="studentUngradReasonDescription"
+              v-model="studentUngradReasonForm.description"
               label="Reason for running undo completion on this student..."
               :rules="[(v) => !!v || 'Description is required']"
             ></v-textarea>
           </div>
 
           <v-checkbox
-            v-if="studentUngradReasonSelected"
-            v-model="confirmStudentUndoCompletion"
+            v-if="studentUngradReasonForm.selected"
+            v-model="studentUngradReasonForm.confirm"
             label="I confirm that I am authorized to undo completion for this student"
           ></v-checkbox>
         </v-card-text>
 
-        <v-card-actions>
-          <v-btn text @click="cancelUndoCompletion"> Cancel </v-btn>
+        <v-card-actions class="mx-4 mb-4">
           <v-btn
-            color="primary"
-            :disabled="isUndoCompletionButtonDisabled"
-            @click="confirmUndoCompletion"
+            color="bcGovBlue"
+            variant="outlined"
+            @click="closeStudentUndoCompletionDialog"
+          >
+            Cancel
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            class="text-none"
+            color="error"
+            variant="flat"
+            :disabled="v$.studentUngradReasonForm.$invalid"
+            @click="submitStudentUndoCompletion"
           >
             Undo Completion
           </v-btn>
@@ -565,18 +582,41 @@ import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/Studen
 import StudentUndoCompletionReasons from "@/components/StudentProfile/StudentUndoCompletionReasons.vue";
 import StudentNotes from "@/components/StudentProfile/AuditHistory/StudentNotes.vue";
 import DisplayTable from "@/components/DisplayTable.vue";
+
+// pinia store
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "../store/modules/student";
 import { useAppStore } from "../store/modules/app";
 import { useAccessStore } from "../store/modules/access";
 import { mapState, mapActions } from "pinia";
+
+// vuelidate
+import { useVuelidate } from "@vuelidate/core";
+import { required, requiredIf, sameAs } from "@vuelidate/validators";
+
 export default {
   name: "studentProfile",
   setup() {
     const studentStore = useStudentStore();
     const appStore = useAppStore();
     const accessStore = useAccessStore();
-    return { appStore, studentStore, accessStore };
+    return { appStore, studentStore, accessStore, v$: useVuelidate() };
+  },
+  validations() {
+    return {
+      studentUngradReasonForm: {
+        selected: { required },
+        description: {
+          required: requiredIf(function () {
+            return (
+              !!this.studentUngradReasonForm &&
+              this.studentUngradReasonForm.selected == "OTH"
+            );
+          }),
+        },
+        confirm: { sameAsTrue: sameAs(true) },
+      },
+    };
   },
   created() {
     StudentService.getStudentPen(this.$route.params.studentId)
@@ -603,6 +643,8 @@ export default {
     }
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
+
+    console.log(this.ungradReasons);
   },
   components: {
     StudentInformation: StudentInformation,
@@ -630,9 +672,14 @@ export default {
       projectedOptionalGradStatus: "",
       nonGradReasons: "",
       projectedrequirementsMet: "",
-      studentUngradReasonSelected: "",
-      studentUngradReasonDescription: "",
-      confirmStudentUndoCompletion: false,
+      studentUngradReasonForm: {
+        selected: null,
+        description: null,
+        confirm: false,
+      },
+      // studentUngradReasonSelected: "",
+      // studentUngradReasonDescription: "",
+      // confirmStudentUndoCompletion: false,
       selectedSubTab: 0,
       selectedTab: 0,
       projectedGradStatus: [],
@@ -644,6 +691,7 @@ export default {
       opened: [],
       displayMessage: null,
       smallScreen: false,
+      showUndoCompletionDialog: false,
       window: {
         width: 0,
         height: 0,
@@ -717,7 +765,7 @@ export default {
   },
   watch: {
     userUndoCompletionReasonChange: function () {
-      this.confirmStudentUndoCompletion = false; //clear confirm if they change options
+      this.studentUngradReasonForm.confirm = false; //clear confirm if they change options
     },
   },
   destroyed() {
@@ -767,11 +815,19 @@ export default {
       "setStudentPen",
       "setStudentId",
     ]),
+    submitStudentUndoCompletion() {
+      this.ungraduateStudent();
+      this.closeStudentUndoCompletionDialog();
+    },
+    closeStudentUndoCompletionDialog() {
+      this.resetUndoCompletionValues();
+      this.showUndoCompletionDialog = false;
+    },
     ungraduateStudent() {
       this.tabLoading = true;
-      this.confirmStudentUndoCompletion = "";
-      let ungradCode = this.studentUngradReasonSelected;
-      let ungradDesc = this.studentUngradReasonDescription;
+      this.studentUngradReasonForm.confirm = "";
+      let ungradCode = this.studentUngradReasonForm.selected;
+      let ungradDesc = this.studentUngradReasonForm.description;
       if (ungradCode != "OTH") {
         ungradDesc = this.ungradReasons.filter(function (reason) {
           return reason.code == ungradCode;
@@ -823,9 +879,9 @@ export default {
         });
     },
     resetUndoCompletionValues() {
-      this.confirmStudentUndoCompletion = false;
-      this.studentUngradReasonSelected = "";
-      this.studentUngradReasonDescription = "";
+      this.studentUngradReasonForm.selected = null;
+      this.studentUngradReasonForm.description = null;
+      this.studentUngradReasonForm.confirm = false;
     },
     reloadGradStatus() {
       StudentService.getGraduationStatus(this.studentId)
