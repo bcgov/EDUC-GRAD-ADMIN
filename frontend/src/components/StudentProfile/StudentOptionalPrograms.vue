@@ -187,6 +187,7 @@
           >
             <template v-slot:activator="{ props }">
               <v-btn
+                v-if="hasPermissions('STUDENT', 'optionalProgramUpdate')"
                 v-bind="props"
                 color="error"
                 icon="mdi-delete-forever"
@@ -340,6 +341,9 @@
                     <v-dialog v-model="deleteDialog[item.id]">
                       <template v-slot:activator="{ props }">
                         <v-btn
+                          v-if="
+                            hasPermissions('STUDENT', 'optionalProgramUpdate')
+                          "
                           v-bind="props"
                           color="error"
                           icon="mdi-delete-forever"
@@ -584,6 +588,7 @@ export default {
       removeStudentOptionalProgram: "removeStudentOptionalProgram",
       removeStudentCareerProgram: "removeStudentCareerProgram",
     }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
     isProgramComplete(date, program) {
       return isProgramComplete(date, program);
     },
