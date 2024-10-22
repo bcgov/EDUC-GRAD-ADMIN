@@ -5,35 +5,71 @@
       <v-card no-body header="Assessment Requirements">
         <v-card-text class="p-3">
           <h3>Assessment Requirements</h3>
-          <DisplayTable
+          <v-data-table
             v-if="hasGradStatus"
-            :items="gradStatusAssessments"
-            :fields="fields2"
+            :items="formattedGradStatusAssessments"
+            :headers="reqAssessments"
+            :items-per-page="-1"
             showFilter="true"
+            hide-default-footer
           >
             <template v-slot:item.gradReqMet="{ item }">
               <div class="d-flex flex-column text-md-left">
                 <div class="gradReqsMet">
                   {{ item.gradReqMet }}
+                  <span v-if="item.used && item.used != true">{{
+                    item.used
+                  }}</span>
+                  <span v-if="item.notCompleted">{{ item.notCompleted }}</span>
+                  <span v-if="item.projected">{{ item.projected }}</span>
+                  <span v-if="item.failed">{{ item.failed }}</span>
+                  <span v-if="item.duplicate">{{ item.duplicate }}</span>
                 </div>
               </div>
             </template>
-          </DisplayTable>
+          </v-data-table>
         </v-card-text>
       </v-card>
       <v-card no-body header="Course Requirements">
         <v-card-text class="p-3">
           <h3>Course Requirements</h3>
-          <DisplayTable
+          <v-data-table
             v-if="hasGradStatus && gradStatusCourses"
-            :items="gradStatusCourses"
-            :fields="fields"
+            :items="formattedGradStatusCourses"
+            :headers="reqCourses"
+            :items-per-page="-1"
             showFilter="true"
+            hide-default-footer
           >
             <template v-slot:item.gradReqMet="{ item }">
               <div class="d-flex flex-column text-md-left">
                 <div class="gradReqsMet">
                   {{ item.gradReqMet }}
+                  <span v-if="item.used && item.used != true">{{
+                    item.used
+                  }}</span>
+                  <span v-if="item.notCompleted">{{ item.notCompleted }}</span>
+                  <span v-if="item.projected">{{ item.projected }}</span>
+                  <span v-if="item.failed">{{ item.failed }}</span>
+                  <span v-if="item.duplicate">{{ item.duplicate }}</span>
+                  <span v-if="item.careerPrep">{{ item.careerPrep }}</span>
+                  <span v-if="item.locallyDeveloped">{{
+                    item.locallyDeveloped
+                  }}</span>
+                  <span v-if="item.boardAuthorityAuthorized">{{
+                    item.boardAuthorityAuthorized
+                  }}</span>
+                  <span v-if="item.cutOffCourse">{{ item.cutOffCourse }}</span>
+                  <span v-if="item.grade10Course">{{
+                    item.grade10Course
+                  }}</span>
+                  <span v-if="item.lessCreditCourse">{{
+                    item.lessCreditCourse
+                  }}</span>
+                  <span v-if="item.restricted">{{ item.restricted }}</span>
+                  <span v-if="item.independentDirectedStudies">{{
+                    item.independentDirectedStudies
+                  }}</span>
                 </div>
               </div>
             </template>
@@ -44,7 +80,7 @@
                 </div>
               </div>
             </template>
-          </DisplayTable>
+          </v-data-table>
         </v-card-text>
       </v-card>
     </div>
@@ -55,6 +91,7 @@
 import { mapState } from "pinia";
 import { useStudentStore } from "../../store/modules/student";
 import DisplayTable from "@/components/DisplayTable.vue";
+
 export default {
   name: "GRADRequirementDetails",
   components: {
@@ -68,11 +105,13 @@ export default {
       studentRequirementDetailGRADStudentCoursess: "getStudentGradStatus",
       hasGradStatus: "studentHasGradStatus",
       hasGradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
+      formattedGradStatusCourses: "getFormattedGradStatusCourses",
+      formattedGradStatusAssessments: "getFormattedGradStatusAssessments",
     }),
   },
   data: function () {
     return {
-      fields2: [
+      reqAssessments: [
         {
           key: "assessmentCode",
           title: "Code",
@@ -118,7 +157,7 @@ export default {
           formatter: (value, key, item) => {
             let formattedValue = value;
 
-            if (!item.used) {
+            if (!item.used || item.used == false) {
               formattedValue = "Not Used";
             }
             if (item.notCompleted) {
@@ -144,7 +183,7 @@ export default {
           class: "text-left",
         },
       ],
-      fields: [
+      reqCourses: [
         { key: "more", title: "" },
         {
           key: "courseCode",
@@ -197,51 +236,6 @@ export default {
           sortable: true,
           class: "text-left",
           sortByFormatted: true,
-          formatter: (value, key, item) => {
-            let formattedValue = value;
-
-            if (!item.used) {
-              formattedValue = "Not Used";
-            }
-            if (item.notCompleted) {
-              formattedValue += ", Incomplete Course";
-            }
-            if (item.projected) {
-              formattedValue += ", Registration or Interim";
-            }
-            if (item.failed) {
-              formattedValue += ", Failed";
-            }
-            if (item.duplicate) {
-              formattedValue += ", Repeat";
-            }
-            if (item.careerPrep) {
-              formattedValue += ", Career Prep course";
-            }
-            if (item.locallyDeveloped) {
-              formattedValue += ", Locally Developed course";
-            }
-            if (item.boardAuthorityAuthorized) {
-              formattedValue += ", Board/Authority Authorized Course";
-            }
-            if (item.cutOffCourse) {
-              formattedValue += ", Course taken after Program Expiry Date";
-            }
-            if (item.grade10Course) {
-              formattedValue += ", Grade 10 ineligible (1995 program)";
-            }
-            if (item.lessCreditCourse) {
-              formattedValue += ", Courses with credits < 4 ineligible";
-            }
-            if (item.restricted) {
-              formattedValue += ", Course restricted against another course";
-            }
-            if (item.independentDirectedStudies) {
-              formattedValue += ", Independent Directed Studies course";
-            }
-
-            return formattedValue;
-          },
         },
         {
           key: "gradReqMetDetail",

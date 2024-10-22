@@ -28,7 +28,7 @@ import CourseService from "@/services/CourseService";
 
 // import shared functions & validations
 import { applyDisplayOrder } from "@/utils/common.js";
-
+import { useSnackbarStore } from "../../store/modules/snackbar";
 export default {
   name: "ExamSpecialCaseCodes",
   components: {
@@ -42,15 +42,22 @@ export default {
       })
       // eslint-disable-next-line
       .catch((error) => {
-        this.$bvToast.toast("ERROR " + error.response.statusText, {
-          title: "ERROR" + error.response.status,
-          variant: "danger",
-          noAutoHide: true,
-        });
+        // this.$bvToast.toast("ERROR " + error.response.statusText, {
+        //   title: "ERROR" + error.response.status,
+        //   variant: "danger",
+        //   noAutoHide: true,
+        // });
+        this.snackbarStore.showSnackbar(
+          "ERROR " + error.response.statusText,
+          "error",
+          10000,
+          "ERROR" + error.response.status
+        );
       });
   },
   data: function () {
     return {
+      snackbarStore: useSnackbarStore(),
       examSpecialCaseCodes: [],
       examSpecialCaseCodesFields: [
         {

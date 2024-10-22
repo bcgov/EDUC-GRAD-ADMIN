@@ -324,13 +324,19 @@ export default {
     rerunBatch(bid) {
       BatchProcessingService.rerunBatch(bid).then((response) => {
         if (response) {
-          this.$bvToast.toast(
+          // this.$bvToast.toast(
+          //   "Created a new batch job based on batch #" + bid,
+          //   {
+          //     title: "NEW BATCH JOB STARTED",
+          //     variant: "success",
+          //     noAutoHide: true,
+          //   }
+          // );
+          this.snackbarStore.showSnackbar(
             "Created a new batch job based on batch #" + bid,
-            {
-              title: "NEW BATCH JOB STARTED",
-              variant: "success",
-              noAutoHide: true,
-            }
+            "success",
+            10000,
+            "NEW BATCH JOB STARTED"
           );
         }
         this.getAdminDashboardData();
@@ -380,11 +386,17 @@ export default {
       this.$refs["popover-" + bid].$emit("close");
       BatchProcessingService.rerunBatchSchoolReports(bid).then((response) => {
         if (response) {
-          this.$bvToast.toast("Running school reports for batch job #" + bid, {
-            title: "SCHOOL REPORTS BATCH",
-            variant: "success",
-            noAutoHide: true,
-          });
+          // this.$bvToast.toast("Running school reports for batch job #" + bid, {
+          //   title: "SCHOOL REPORTS BATCH",
+          //   variant: "success",
+          //   noAutoHide: true,
+          // });
+          this.snackbarStore.showSnackbar(
+            "Running school reports for batch job #" + bid,
+            "success",
+            10000,
+            "SCHOOL REPORTS BATCH"
+          );
         }
         this.getAdminDashboardData();
       });
@@ -393,13 +405,19 @@ export default {
       this.$refs["popover-" + bid].$emit("close");
       BatchProcessingService.rerunBatch(bid).then((response) => {
         if (response) {
-          this.$bvToast.toast(
+          // this.$bvToast.toast(
+          //   "Created a new batch job based on batch #" + bid,
+          //   {
+          //     title: "NEW BATCH JOB STARTED",
+          //     variant: "success",
+          //     noAutoHide: true,
+          //   }
+          // );
+          this.snackbarStore.showSnackbar(
             "Created a new batch job based on batch #" + bid,
-            {
-              title: "NEW BATCH JOB STARTED",
-              variant: "success",
-              noAutoHide: true,
-            }
+            "success",
+            10000,
+            "NEW BATCH JOB STARTED"
           );
         }
         this.getAdminDashboardData();
@@ -410,13 +428,19 @@ export default {
 
       BatchProcessingService.rerunBatchStudentErrors(bid).then((response) => {
         if (response) {
-          this.$bvToast.toast(
-            "Created an new batch job for batch #" + bid + " errors",
-            {
-              title: "NEW BATCH JOB STARTED",
-              variant: "success",
-              noAutoHide: true,
-            }
+          // this.$bvToast.toast(
+          //   "Created an new batch job for batch #" + bid + " errors",
+          //   {
+          //     title: "NEW BATCH JOB STARTED",
+          //     variant: "success",
+          //     noAutoHide: true,
+          //   }
+          // );
+          this.snackbarStore.showSnackbar(
+            "Created a new batch job based on batch #" + bid,
+            "success",
+            10000,
+            "NEW BATCH JOB STARTED"
           );
         }
         this.getAdminDashboardData();
