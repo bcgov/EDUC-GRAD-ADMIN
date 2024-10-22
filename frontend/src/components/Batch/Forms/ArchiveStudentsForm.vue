@@ -219,7 +219,6 @@
               </div>
             </template>
           </v-stepper>
-          <small>*indicates required field</small>
         </v-card-text>
       </v-card>
     </v-dialog>

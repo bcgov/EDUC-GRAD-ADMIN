@@ -36,7 +36,7 @@
           hide-default-header
           hide-default-footer
           ><template #no-data>
-            <v-icon>mdi-information</v-icon> Group not selected
+            At least one school must be selected
           </template></v-data-table
         >
       </div>
@@ -59,7 +59,7 @@
           hide-default-header
           hide-default-footer
           ><template #no-data>
-            <v-icon>mdi-information</v-icon> Group not selected
+            At least one school category must be selected
           </template></v-data-table
         >
       </div>
@@ -78,7 +78,7 @@
             {{ item.info.firstName }} {{ item.info.lastName }}
           </template>
           <template #no-data>
-            <v-icon>mdi-information</v-icon> Group not selected
+            At least one student must be selected
           </template></v-data-table
         >
       </div>
@@ -92,7 +92,7 @@
           hide-default-header
           hide-default-footer
           ><template #no-data>
-            <v-icon>mdi-information</v-icon> Group not selected
+            At least one program must be selected
           </template></v-data-table
         >
       </div>
@@ -110,8 +110,7 @@
 
           <template #no-data>
             <div class="d-flex align-start text-left">
-              <v-icon left class="mr-2">mdi-information</v-icon>
-              Group not selected
+              At least one post secondary institute must be selected
             </div>
           </template>
         </v-data-table>
