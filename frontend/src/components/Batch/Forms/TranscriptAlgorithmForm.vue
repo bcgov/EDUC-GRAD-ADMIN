@@ -106,11 +106,6 @@
                               label: 'Run Type',
                               value: 'Transcript Verification Report',
                             },
-
-                            {
-                              label: 'Where',
-                              value: 'BC Mail',
-                            },
                           ]"
                           hide-default-header
                           hide-default-footer

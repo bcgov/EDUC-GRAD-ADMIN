@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <v-app>
+      <Snackbar></Snackbar>
       <EnvironmentBanner />
 
       <Bcheader class="bcheader" style="margin-bottom: 15px">
@@ -47,7 +48,7 @@
 
       <div class="container" style="min-height: 100vh">
         <router-view />
-        <Snackbar></Snackbar>
+
         <div class="overlay-dialog">
           <v-dialog v-model="tokenExpiring" max-width="600px">
             <v-card>

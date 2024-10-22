@@ -5,6 +5,9 @@
   z-index: 10;
   border-top:1px solid #cccc
 }
+.v-overlay__content.v-snackbar__wrapper {
+  top: 0 !important;
+}
 /* DisplayTable Component Style*/
 .table-row-header-group{
   border-bottom: none;

@@ -27,5 +27,8 @@ const close = () => {
 </script>
 
 <style scoped>
-/* Add any custom styling if needed */
+.v-overlay__content .v-snackbar__wrapper {
+  position: absolute !important;
+  top: 0 !important;
+}
 </style>
