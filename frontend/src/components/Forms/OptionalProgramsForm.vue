@@ -6,7 +6,7 @@
     max-width="500px"
   >
     <template v-slot:activator="{ props }">
-      <v-btn color="bcGovBlue" prepend-icon="mdi-plus" class="float-right text-none mt-n12 mb-8" @click="openCreateOptionalProgramDialog()" text="Add Optional Program">
+      <v-btn v-if="hasPermissions('STUDENT', 'optionalProgramUpdate')" color="bcGovBlue" prepend-icon="mdi-plus" class="float-right text-none mt-n12 mb-8" @click="openCreateOptionalProgramDialog()" text="Add Optional Program">
       </v-btn>
     </template>
 
@@ -190,9 +190,7 @@ export default {
       studentCareerPrograms: "getStudentCareerPrograms",
       studentGradStatus: "getStudentGradStatus",
     }),
-    ...mapState(useAccessStore, {
-      allowOptionalProgramUpdate: "allowOptionalProgramUpdate",
-    }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
     optionalProgramChange() {
       return this.form.selectedOptionalProgram;
     },
@@ -278,7 +276,7 @@ export default {
         return `${item.code} - ${item.name}`;
       }
     },
-    ...mapActions(useStudentStore, ["addStudentOptionalProgram"]),
+    ...mapActions(useStudentStore, ["addStudentOptionalProgram", "addStudentCareerPrograms"]),
     async fetchPrograms() {
       try {
         const response = await ProgramManagementService.getOptionalPrograms();
@@ -324,10 +322,13 @@ export default {
       this.form.selectedOptionalProgram = null;
     },
     submitForm() {
-      this.addStudentOptionalProgram(
-        this.form.selectedOptionalProgram,
-        this.form.selectedCareerPrograms
-      );
+      if(this.isCareerProgram(this.form.selectedOptionalProgram)) {
+        this.addStudentCareerPrograms(this.form.selectedCareerPrograms)
+      } else {
+        this.addStudentOptionalProgram(
+          this.form.selectedOptionalProgram
+        );
+      }
       this.closeCreateOptionalProgramDialog();
     },
   },
