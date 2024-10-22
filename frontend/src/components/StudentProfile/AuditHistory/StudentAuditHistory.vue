@@ -8,7 +8,7 @@
         ><v-chip>Optional Program Change History</v-chip></v-tab
       >
     </v-tabs>
-    <v-card-text>
+    <v-card-text class="px-0">
       <v-window v-model="selectedTab">
         <v-window-item value="studentChangeHistory">
           <v-data-table
@@ -47,6 +47,7 @@
                 <v-btn
                   variant="text"
                   density="comfortable"
+                  size="small"
                   @click="toggleExpand(internalItem)"
                   class="v-data-table__expand-icon"
                   :class="{ 'v-data-table__expand-icon--active': isExpanded }"
@@ -130,6 +131,7 @@
                 <v-btn
                   variant="text"
                   density="comfortable"
+                  size="small"
                   @click="toggleExpand(internalItem)"
                   class="v-data-table__expand-icon"
                   :class="{ 'v-data-table__expand-icon--active': isExpanded }"
@@ -175,12 +177,6 @@ export default {
       studentUngradReasons: "getStudentUngradReasons",
       studentNotes: "getStudentNotes",
     }),
-    // flattenedStudentChangeHighlight() {
-    //   return this.studentChangeHighlight.map((item) => ({
-    //     ...item,
-    //     createDateValue: item.createDate.value,
-    //   }));
-    // },
   },
   data: function () {
     return {
@@ -199,6 +195,7 @@ export default {
         {
           key: "data-table-expand",
           title: "",
+          sortable: false,
         },
         {
           key: "updateDate",
@@ -208,58 +205,73 @@ export default {
         {
           key: "activityCode",
           title: "Change",
+          sortable: false,
         },
         {
           key: "updateUser",
           title: "Update User",
+          sortable: false,
         },
         {
           key: "program",
           title: "Program",
+          width: "50px",
+          sortable: false,
         },
         {
           key: "programCompletionDate",
           title: "Program Completion Date",
+          sortable: false,
         },
         {
           key: "studentStatus",
           title: "Status",
+          sortable: false,
         },
         {
           key: "studentGrade",
           title: "Grade",
+          sortable: false,
         },
         {
           key: "schoolOfRecord",
           title: "School of Record",
+          sortable: false,
         },
         {
           key: "schoolAtGrad",
           title: "School at Graduation",
+          sortable: false,
         },
         {
           key: "consumerEducationRequirementMet",
           title: "Consumer Ed",
+          sortable: false,
         },
         {
           key: "honoursStanding",
           title: "Honours",
+          sortable: false,
         },
         {
           key: "gpa",
           title: "GPA",
+          sortable: false,
         },
         {
           key: "recalculateProjectedGrad",
           title: "Recalc Projected Grad",
+          sortable: false,
         },
         {
           key: "recalculateGradStatus",
           title: "Recalc Grad",
+          sortable: false,
         },
         {
           key: "batchId",
           title: "Batch ID",
+          sortable: false,
         },
       ],
       studentChangeHighlight: [],
@@ -315,12 +327,12 @@ export default {
     this.handleResize();
   },
   watch: {
-    studentHistory: function () {
-      this.highlightStudentHistoryChanges();
-    },
-    optionalProgramHistory: function () {
-      this.highlightOptionalProgramHistoryChanges();
-    },
+    // studentHistory: function () {
+    //   this.highlightStudentHistoryChanges();
+    // },
+    // optionalProgramHistory: function () {
+    //   this.highlightOptionalProgramHistoryChanges();
+    // },
   },
   methods: {
     handleResize() {
@@ -361,8 +373,6 @@ export default {
         changes.push(tempEntry);
       }
 
-      console.log(changes);
-
       this.studentChangeHighlight = changes;
     },
     highlightOptionalProgramHistoryChanges() {
@@ -402,6 +412,14 @@ export default {
 </script>
 
 <style scoped>
+:deep(
+    .v-table > .v-table__wrapper > table > tbody > tr > td,
+    ,
+    .v-table > .v-table__wrapper > table > thead > tr > th,
+    .v-table > .v-table__wrapper > table > tfoot > tr > t
+  ) {
+  padding: 0 4px !important;
+}
 .table th,
 .table td {
   border-top: none !important;

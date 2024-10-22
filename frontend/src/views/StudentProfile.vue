@@ -193,7 +193,7 @@
                       color="green"
                     >
                     </v-progress-circular>
-                    <div class="ml-3">
+                    <div>
                       <StudentAuditHistory v-if="auditTab == 'studentAudit'" />
                     </div>
                   </v-window-item>
