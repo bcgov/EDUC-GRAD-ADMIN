@@ -177,6 +177,7 @@
                     label="Select"
                     variant="outlined"
                     density="compact"
+                    class="mt-4"
                   ></v-select>
                 </td>
               </tr>
@@ -216,11 +217,13 @@
                 <td>
                   <v-text-field
                     v-model="editedGradStatus.programCompletionDate"
-                    label=""
+                    label="Date"
                     maxLength="7"
                     :formatter="formatYYYYMMDate"
                     density="compact"
+                    variant="outlined"
                     clearable
+                    class="mt-4"
                   ></v-text-field>
                 </td>
               </tr>
@@ -237,6 +240,7 @@
                     label="Select"
                     variant="outlined"
                     density="compact"
+                    class="mt-4"
                   ></v-select>
                 </td>
               </tr>
@@ -270,6 +274,7 @@
                     label="Select"
                     variant="outlined"
                     density="compact"
+                    class="mt-4"
                   ></v-select>
                 </td>
               </tr>
@@ -313,6 +318,9 @@
                     :items="getSchoolsList"
                     :item-title="schoolTitle"
                     item-value="mincode"
+                    variant="outlined"
+                    density="compact"
+                    class="mt-4"
                   >
                     <template v-slot:label="label">
                       {{ label.label }}
@@ -342,7 +350,7 @@
                   </div>
                 </td>
 
-                <td>
+                <td class="pt-2">
                   <v-autocomplete
                     :disabled="disableSchoolAtGrad"
                     v-model="editedGradStatus.schoolAtGrad"
@@ -350,6 +358,9 @@
                     :items="getSchoolsList"
                     :item-title="schoolTitle"
                     item-value="mincode"
+                    variant="outlined"
+                    class="mt-4"
+                    density="compact"
                   >
                     <template v-slot:label="label">
                       {{ label.label }}
@@ -432,9 +443,11 @@
                   <v-text-field
                     :disabled="editedGradStatus.program != '1950'"
                     v-model="editedGradStatus.adultStartDate"
-                    label=""
+                    label="Date"
                     maxLength="10"
                     density="compact"
+                    variant="outlined"
+                    class="mt-4"
                     clearable
                   ></v-text-field>
                 </td>
@@ -467,6 +480,7 @@
                     label="Select"
                     variant="outlined"
                     density="compact"
+                    class="mt-4"
                   ></v-select>
                 </td>
               </tr>
@@ -484,6 +498,7 @@
                     label="Select"
                     variant="outlined"
                     density="compact"
+                    class="mt-4"
                   ></v-select>
                 </td>
               </tr>
@@ -495,17 +510,17 @@
           class="sticky-form-actions"
           v-if="allowUpdateGradStatus"
         >
-          <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" variant="text" @click="cancelGradStatus">
+          <v-btn color="error" variant="outlined" @click="cancelGradStatus">
             Cancel
           </v-btn>
+          <v-spacer />
           <v-btn
-            color="blue-darken-1"
-            variant="text"
+            color="error"
+            variant="flat"
             :disabled="blockSave"
             @click="saveGraduationStatus(studentId)"
           >
-            Save
+            Save Grad Status
           </v-btn>
         </v-card-actions>
       </v-card>
