@@ -160,6 +160,13 @@ export default {
           sortDirection: "desc",
         },
         {
+          key: "wroteFlag",
+          title: "Wrote Flag",
+          sortable: true,
+          sortDirection: "desc",
+          class: "text-md-center",
+        },
+        {
           key: "exceededWriteFlag",
           title: "Exceeded Writes",
           sortable: true,

@@ -8,132 +8,148 @@
         ><v-chip>Optional Program Change History</v-chip></v-tab
       >
     </v-tabs>
-    <v-card-text>
+    <v-card-text class="px-0">
       <v-window v-model="selectedTab">
         <v-window-item value="studentChangeHistory">
           <v-data-table
-            :items="flattenedStudentChangeHighlight"
+            :sortBy="sortBy"
+            :items="studentHistory"
             :headers="studentChangeFields"
-            :item-key="createDate"
-            :sort-desc="true"
+            :items-per-page="'-1'"
+            item-value="historyID"
           >
-            <template v-slot:item.programCompletionDate="{ item }">
-              {{ item.programCompletionDate.value }}
+            <template v-slot:expanded-row="{ columns, item }">
+              <tr>
+                <td :colspan="columns.length">
+                  <div class="mx-5 my-5">
+                    <p>
+                      Changed By <strong>{{ item.updateUser }}</strong> on
+                      <strong>{{
+                        $filters.formatTime(item.updateDate)
+                      }}</strong>
+                    </p>
+                    <pre>
+                      {{ JSON.stringify(item, null, "\t") }}
+                    </pre>
+                  </div>
+                </td>
+              </tr>
             </template>
-
-            <template v-slot:item.createDate="{ item }">
-              {{ item.createDate.value }}
+            <template
+              v-slot:item.data-table-expand="{
+                item,
+                internalItem,
+                toggleExpand,
+                isExpanded,
+              }"
+            >
+              <td v-if="!!item">
+                <v-btn
+                  variant="text"
+                  density="comfortable"
+                  size="small"
+                  @click="toggleExpand(internalItem)"
+                  class="v-data-table__expand-icon"
+                  :class="{ 'v-data-table__expand-icon--active': isExpanded }"
+                  :icon="
+                    isExpanded(internalItem)
+                      ? 'mdi-chevron-down'
+                      : 'mdi-chevron-right'
+                  "
+                >
+                </v-btn>
+              </td>
             </template>
-
             <template v-slot:item.activityCode="{ item }">
-              {{ item.data.activityCodeDescription }}
+              <i>{{ item.activityCode }}</i> -
+              {{ item.activityCodeDescription }}
+            </template>
+            <template v-slot:item.updateDate="{ item }">
+              {{ $filters.formatTime(item.updateDate) }}
             </template>
 
-            <template v-slot:item.updateUser="{ item }">
-              {{ item.updateUser.value }}
-            </template>
-            <template v-slot:item.program="{ item }">
-              {{ item.program.value }}
-            </template>
-            <template v-slot:item.studentStatus="{ item }">
-              {{ item.studentStatus.value }}
-            </template>
-            <template v-slot:item.studentGrade="{ item }">
-              {{ item.studentGrade.value }}
-            </template>
-
-            <template v-slot:item.schoolOfRecord="{ item }">
-              {{ item.schoolOfRecord.value }}
-            </template>
-
-            <template v-slot:item.schoolAtGrad="{ item }">
-              {{ item.schoolAtGrad.value }}
-            </template>
-
-            <template v-slot:item.consumerEducationRequirementMet="{ item }">
-              {{ item.consumerEducationRequirementMet.value }}
-            </template>
-
-            <template v-slot:item.honoursStanding="{ item }">
-              {{ item.honoursStanding.value }}
-            </template>
-
-            <template v-slot:item.gpa="{ item }">
-              {{ item.gpa.value }}
-            </template>
-
-            <template v-slot:item.recalculateProjectedGrad="{ item }">
-              {{ item.recalculateProjectedGrad.value }}
-            </template>
-            <template v-slot:item.recalculateGradStatus="{ item }">
-              {{ item.recalculateGradStatus.value }}
-            </template>
-            <template v-slot:item.batchId="{ item }">
-              {{ item.batchId.value }}
-            </template>
+            <!-- Attempt at dynamic rendering of slots -->
+            <!-- <template
+              v-for="header in studentChangeFields.filter(
+                (field) => field.key != 'data-table-expand'
+              )"
+              v-slot:[`item.${header.key}`]="{ item }"
+            >
+              <slot :name="`item.${header.key}`" :value="item[header.key]">
+                <div v-if="header.key == 'activityCode'">
+                  {{ item.data.activityCodeDescription }}
+                </div>
+                <div v-else-if="header.key == 'updateDate'">
+                  {{ $filters.formatTime(item.data.updateDate) }}
+                </div>
+                <div v-else-if="header.key == 'data-table-expand'">EXPAND</div>
+                <div
+                  v-else
+                  :class="item[header.key].changed ? 'value-changed' : ''"
+                >
+                  {{ item[header.key].value }}
+                </div>
+              </slot>
+            </template> -->
           </v-data-table>
         </v-window-item>
 
         <v-window-item value="optionalProgramChangeHistory">
           <v-data-table
-            :items="optionalProgramChangeHighlight"
-            :fields="optionalProgramChangeFields"
-            showFilter="false"
-            title="Optional Program Change History"
-            :sort-desc="true"
-            :sortBy="'createDate'"
+            :sortBy="sortBy"
+            :items="optionalProgramHistory"
+            :headers="optionalProgramChangeFields"
+            :items-per-page="'-1'"
+            item-value="historyId"
           >
-            <template #cell(more)="row">
-              <v-btn
-                variant="outlined"
-                size="sm"
-                @click="row.toggleDetails"
-                class="more-button"
-              >
-                <img
-                  v-show="!row.detailsShowing"
-                  src="../../../assets/images/icon-right.svg"
-                  width="9"
-                  aria-hidden="true"
-                  alt=""
-                />
-                <img
-                  v-show="row.detailsShowing"
-                  src="../../../assets/images/icon-down.svg"
-                  height="5"
-                  aria-hidden="true"
-                  alt=""
-                />
-              </v-btn>
+            <template v-slot:expanded-row="{ columns, item }">
+              <tr>
+                <td :colspan="columns.length">
+                  <div class="mx-5 my-5">
+                    <p>
+                      Changed By <strong>{{ item.updateUser }}</strong> on
+                      <strong>{{
+                        $filters.formatTime(item.updateDate)
+                      }}</strong>
+                    </p>
+                    <pre>
+                      {{ JSON.stringify(item, null, "\t") }}
+                    </pre>
+                  </div>
+                </td>
+              </tr>
             </template>
-
-            <template #row-details="row">
-              <v-card class="px-0 mt-0">
-                <p>
-                  <strong
-                    >Changed By {{ row.item.data.updateUser }} on
-                    {{ $filters.formatTime(row.item.data.updateDate) }}</strong
-                  >
-                </p>
-                <pre>
-                    {{ JSON.stringify(row.item.data, null, "\t") }}
-                  </pre
+            <template
+              v-slot:item.data-table-expand="{
+                item,
+                internalItem,
+                toggleExpand,
+                isExpanded,
+              }"
+            >
+              <td v-if="!!item">
+                <v-btn
+                  variant="text"
+                  density="comfortable"
+                  size="small"
+                  @click="toggleExpand(internalItem)"
+                  class="v-data-table__expand-icon"
+                  :class="{ 'v-data-table__expand-icon--active': isExpanded }"
+                  :icon="
+                    isExpanded(internalItem)
+                      ? 'mdi-chevron-down'
+                      : 'mdi-chevron-right'
+                  "
                 >
-              </v-card>
-            </template>
-
-            <template v-slot:item.createDate="{ item }">
-              {{ $filters.formatTime(item.createDate.value) }}
+                </v-btn>
+              </td>
             </template>
             <template v-slot:item.activityCode="{ item }">
-              {{ item.data.activityCodeDescription }}
+              <i>{{ item.activityCode }}</i> -
+              {{ item.activityCodeDescription }}
             </template>
-
-            <template v-slot:item="{ item }">
-              {{ item }}
-              <div :class="row.value.changed ? 'value-changed' : ''">
-                {{ item.row.value }}
-              </div>
+            <template v-slot:item.updateDate="{ item }">
+              {{ $filters.formatTime(item.updateDate) }}
             </template>
           </v-data-table>
         </v-window-item>
@@ -161,12 +177,6 @@ export default {
       studentUngradReasons: "getStudentUngradReasons",
       studentNotes: "getStudentNotes",
     }),
-    flattenedStudentChangeHighlight() {
-      return this.studentChangeHighlight.map((item) => ({
-        ...item,
-        createDateValue: item.createDate.value,
-      }));
-    },
   },
   data: function () {
     return {
@@ -180,148 +190,125 @@ export default {
       sortDesc: true,
       smallScreen: false,
       window: { width: 0, height: 0 },
+      sortBy: [{ key: "updateDate", order: "desc" }],
       studentChangeFields: [
-        { text: "Index", value: "index", sortable: false }, // Added index column
         {
           key: "data-table-expand",
           title: "",
-          sortable: true,
+          sortable: false,
         },
         {
-          key: "createDate",
+          key: "updateDate",
           title: "Date",
-          sortable: true,
-          sortDirection: "desc",
+          width: "115px",
         },
         {
           key: "activityCode",
           title: "Change",
-          sortable: true,
-          sortDirection: "asc",
+          sortable: false,
         },
         {
           key: "updateUser",
           title: "Update User",
-          sortable: true,
-          sortDirection: "asc",
+          sortable: false,
         },
         {
           key: "program",
           title: "Program",
-          sortable: true,
-          sortDirection: "asc",
+          width: "50px",
+          sortable: false,
         },
         {
           key: "programCompletionDate",
           title: "Program Completion Date",
-          sortable: true,
-          sortDirection: "asc",
+          sortable: false,
         },
         {
           key: "studentStatus",
           title: "Status",
-          sortable: true,
-          sortDirection: "asc",
+          sortable: false,
         },
         {
           key: "studentGrade",
           title: "Grade",
-          sortable: true,
-          sortDirection: "asc",
+          sortable: false,
         },
         {
           key: "schoolOfRecord",
           title: "School of Record",
-          sortable: true,
-          sortDirection: "asc",
+          sortable: false,
         },
         {
           key: "schoolAtGrad",
           title: "School at Graduation",
-          sortable: true,
-          sortDirection: "asc",
+          sortable: false,
         },
         {
           key: "consumerEducationRequirementMet",
           title: "Consumer Ed",
-          sortable: true,
-          sortDirection: "asc",
+          sortable: false,
         },
         {
           key: "honoursStanding",
           title: "Honours",
-          sortable: true,
-          sortDirection: "asc",
+          sortable: false,
         },
         {
           key: "gpa",
           title: "GPA",
-          sortable: true,
-          sortDirection: "asc",
+          sortable: false,
         },
         {
           key: "recalculateProjectedGrad",
           title: "Recalc Projected Grad",
-          sortable: true,
-          sortDirection: "asc",
+          sortable: false,
         },
         {
           key: "recalculateGradStatus",
           title: "Recalc Grad",
-          sortable: true,
-          sortDirection: "asc",
+          sortable: false,
         },
         {
           key: "batchId",
           title: "Batch ID",
-          sortable: true,
-          sortDirection: "asc",
+          sortable: false,
         },
       ],
       studentChangeHighlight: [],
       optionalProgramChangeFields: [
         {
-          key: "more",
+          key: "data-table-expand",
           title: "",
-          sortable: true,
         },
         {
-          key: "createDate",
+          key: "updateDate",
           title: "Date",
-          sortable: true,
-          sortDirection: "desc",
+          width: "115px",
         },
         {
           key: "activityCode",
           title: "Change",
-          sortable: true,
         },
         {
           key: "updateUser",
           title: "Update User",
           sortable: true,
-          sortDirection: "asc",
         },
         {
           key: "programCode",
           title: "Program Code",
-          sortable: true,
         },
         {
           key: "optionalProgramCode",
           title: "Optional Program Code",
-          sortable: true,
-          sortDirection: "asc",
         },
         {
           key: "optionalProgramName",
           title: "Optional Program Name",
-          sortable: true,
         },
         {
           key: "optionalProgramCompletionDate",
           title: "Program Completion Date",
-          sortable: true,
         },
       ],
       optionalProgramChangeHighlight: [],
@@ -332,20 +319,20 @@ export default {
     };
   },
   mounted() {
-    this.highlightStudentHistoryChanges();
-    this.highlightOptionalProgramHistoryChanges();
+    // this.highlightStudentHistoryChanges();
+    // this.highlightOptionalProgramHistoryChanges();
   },
   created() {
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
   },
   watch: {
-    studentHistory: function () {
-      this.highlightStudentHistoryChanges();
-    },
-    optionalProgramHistory: function () {
-      this.highlightOptionalProgramHistoryChanges();
-    },
+    // studentHistory: function () {
+    //   this.highlightStudentHistoryChanges();
+    // },
+    // optionalProgramHistory: function () {
+    //   this.highlightOptionalProgramHistoryChanges();
+    // },
   },
   methods: {
     handleResize() {
@@ -367,6 +354,7 @@ export default {
           if (
             index > 0 &&
             field.key != "createDate" &&
+            field.key != "data-table-expand" &&
             field.key != "activityCode"
           ) {
             tempEntry[field.key] = {
@@ -423,7 +411,15 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+:deep(
+    .v-table > .v-table__wrapper > table > tbody > tr > td,
+    ,
+    .v-table > .v-table__wrapper > table > thead > tr > th,
+    .v-table > .v-table__wrapper > table > tfoot > tr > t
+  ) {
+  padding: 0 4px !important;
+}
 .table th,
 .table td {
   border-top: none !important;
@@ -445,7 +441,7 @@ export default {
   font-size: 87.5%;
 }
 
-.value-changed {
+:deep(.value-changed) {
   font-weight: bold;
 }
 </style>
