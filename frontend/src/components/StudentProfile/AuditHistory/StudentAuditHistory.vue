@@ -2,10 +2,12 @@
   <v-card no-body>
     <v-tabs v-model="selectedTab">
       <v-tab value="studentChangeHistory"
-        ><v-chip>Student Change History</v-chip></v-tab
+        ><v-chip class="text-none">Student Change History</v-chip></v-tab
       >
       <v-tab value="optionalProgramChangeHistory"
-        ><v-chip>Optional Program Change History</v-chip></v-tab
+        ><v-chip class="text-none"
+          >Optional Program Change History</v-chip
+        ></v-tab
       >
     </v-tabs>
     <v-card-text class="px-0">

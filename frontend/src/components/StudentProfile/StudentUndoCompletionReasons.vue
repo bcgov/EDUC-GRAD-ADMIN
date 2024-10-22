@@ -5,29 +5,11 @@
     </p>
     <v-data-table
       :items="studentUngradReasons"
-      :headers="[
-        {
-          key: 'createDate',
-          title: 'Undo Completion Date',
-          class: 'px-0 py-2 w-15',
-        },
-        {
-          key: 'undoCompletionReasonCode',
-          title: 'Code',
-          class: 'px-0 py-2 w-10',
-        },
-        {
-          key: 'undoCompletionReasonDescription',
-          title: 'Reason',
-          class: 'px-0 py-2 w-80',
-        },
-        {
-          key: 'createUser',
-          title: 'User',
-          class: 'px-0 py-2 w-80',
-        },
-      ]"
+      :headers="undoCompletionReasonsHeaders"
     >
+      <template v-slot:item.createDate="{ item }">
+        {{ $filters.formatTime(item.createDate) }}
+      </template>
     </v-data-table>
   </div>
 </template>
@@ -47,7 +29,26 @@ export default {
     }),
   },
   data: function () {
-    return {};
+    return {
+      undoCompletionReasonsHeaders: [
+        {
+          key: "createDate",
+          title: "Undo Completion Date",
+        },
+        {
+          key: "undoCompletionReasonCode",
+          title: "Code",
+        },
+        {
+          key: "undoCompletionReasonDescription",
+          title: "Reason",
+        },
+        {
+          key: "createUser",
+          title: "User",
+        },
+      ],
+    };
   },
   methods: {},
 };

@@ -1,7 +1,13 @@
 <template>
   <div>
     <!-- Button to open the dialog -->
-    <v-btn color="primary" @click="showDialog = true">Add Note</v-btn>
+    <v-btn
+      color="primary"
+      @click="showDialog = true"
+      prepend-icon="mdi-plus"
+      class="text-none"
+      >Add Note</v-btn
+    >
 
     <!-- v-dialog for adding notes -->
     <v-dialog v-model="showDialog" max-width="600px">
@@ -24,8 +30,10 @@
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" @click="onSubmit">Add</v-btn>
-          <v-btn text @click="showDialog = false">Cancel</v-btn>
+          <v-btn color="primary" @click="onSubmit" class="text-none">Add</v-btn>
+          <v-btn text @click="showDialog = false" class="text-none"
+            >Cancel</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
