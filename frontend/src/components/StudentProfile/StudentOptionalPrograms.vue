@@ -472,6 +472,7 @@
 <script>
 // Store Imports
 import { useStudentStore } from "../../store/modules/student";
+import { useAccessStore } from "../../store/modules/access";
 import { mapState, mapActions } from "pinia";
 
 // Component Imports
