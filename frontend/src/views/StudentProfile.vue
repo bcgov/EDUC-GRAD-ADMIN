@@ -643,8 +643,6 @@ export default {
     }
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
-
-    console.log(this.ungradReasons);
   },
   components: {
     StudentInformation: StudentInformation,
