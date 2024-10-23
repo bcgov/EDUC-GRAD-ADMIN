@@ -35,18 +35,6 @@
         class="text-none"
         >Search</v-btn
       >
-      <!-- <v-btn
-        prepend-icon="mdi-magnify"
-        id="search-submit"
-        v-on:click="findStudentByPen"
-        :disabled="searchLoading"
-        variant="flat"
-        color="primary"
-        class="text-none"
-      >
-        <v-progress-circular v-if="searchLoading" indeterminate color="green" />
-        <span v-else> Search </span>
-      </v-btn> -->
     </v-form>
     <v-alert
       v-if="searchMessage"

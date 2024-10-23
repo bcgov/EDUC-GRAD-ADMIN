@@ -23,6 +23,8 @@
             </div>
             <v-text-field
               label="Course code:"
+              variant="outlined"
+              density="compact"
               v-model="requirementsSearchInput.courseCode.value"
               placeholder=""
               tabindex="1"
@@ -31,6 +33,8 @@
           <div class="advanced-search-field col-12 col-md-2">
             <v-text-field
               label="Course level:"
+              variant="outlined"
+              density="compact"
               v-model="requirementsSearchInput.courseLevel.value"
               placeholder=""
               tabindex="2"
@@ -56,6 +60,8 @@
             </div>
             <v-text-field
               label="Rule#:"
+              variant="outlined"
+              density="compact"
               v-model="requirementsSearchInput.rule.value"
               placeholder=""
               tabindex="3"
@@ -66,6 +72,16 @@
         <v-row class="mt-n3">
           <div class="advanced-search-button">
             <v-btn
+              prepend-icon="mdi-magnify"
+              v-on:click="courseRequirementsSearch"
+              :loading="courseRequirementLoading"
+              :disabled="courseRequirementLoading"
+              variant="flat"
+              color="primary"
+              class="text-none"
+              >Search</v-btn
+            >
+            <!-- <v-btn
               v-on:click="courseRequirementsSearch"
               v-if="!courseRequirementLoading"
               color="primary"
@@ -83,10 +99,12 @@
                 color="green"
               >
               </v-progress-circular>
-            </v-btn>
+            </v-btn> -->
             <v-btn
               v-on:click="clearInput()"
-              class="btn btn-outline-primary mx-2"
+              variant="outlined"
+              color="primary"
+              class="btn btn-outline-primary text-none mx-2"
             >
               Reset
             </v-btn>

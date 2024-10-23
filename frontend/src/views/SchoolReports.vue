@@ -21,6 +21,8 @@
                 </div>
                 <v-text-field
                   label="Mincode:"
+                  variant="outlined"
+                  density="compact"
                   v-model="mincode.value"
                   v-on:keyup="keyHandler"
                   placeholder=""
@@ -32,7 +34,7 @@
             </div>
             <div class="row ml-1">
               <div class="advanced-search-button">
-                <v-btn
+                <!-- <v-btn
                   v-on:click="schoolReportSearch"
                   v-if="!searchLoading"
                   color="primary"
@@ -48,8 +50,23 @@
                     indeterminate
                     color="green"
                   ></v-progress-circular
-                ></v-btn>
-                <v-btn @click="clearInput" class="btn btn-outline-primary mx-2">
+                ></v-btn> -->
+                <v-btn
+                  prepend-icon="mdi-magnify"
+                  v-on:click="schoolReportSearch"
+                  :loading="searchLoading"
+                  :disabled="searchLoading"
+                  variant="flat"
+                  color="primary"
+                  class="text-none"
+                  >Search</v-btn
+                >
+                <v-btn
+                  @click="clearInput"
+                  variant="outlined"
+                  color="primary"
+                  class="text-none mx-2"
+                >
                   Reset
                 </v-btn>
               </div>

@@ -238,34 +238,6 @@
             class="text-none"
             >Search</v-btn
           >
-          <!-- <v-btn
-            prepend-icon="mdi-magnify"
-            class="text-none"
-            id="adv-search-submit"
-            @click="findStudentsByAdvancedSearch()"
-            v-if="!advancedSearchLoading"
-            color="primary"
-            tabindex="12"
-          >
-            Search
-          </v-btn>
-          <v-btn
-            prepend-icon="mdi-magnify"
-            class="text-none"
-            id="adv-search-submit"
-            @click="findStudentsByAdvancedSearch()"
-            v-if="advancedSearchLoading"
-            color="success"
-            tabindex="12"
-          >
-            Search
-            <v-progress-circular
-              v-if="advancedSearchLoading"
-              indeterminate
-              color="green"
-            >
-            </v-progress-circular>
-          </v-btn> -->
           <v-btn
             class="mx-2 text-none"
             id="adv-search-reset-button"
