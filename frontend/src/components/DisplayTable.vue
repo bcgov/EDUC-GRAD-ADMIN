@@ -11,6 +11,8 @@
                 <v-text-field
                   v-model="filter"
                   label="Filter"
+                  variant="outlined"
+                  density="comfortable"
                   debounce="500"
                   placeholder=""
                   append-icon="mdi-close"

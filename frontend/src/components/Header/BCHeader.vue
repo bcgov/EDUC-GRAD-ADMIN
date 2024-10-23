@@ -87,6 +87,8 @@
                     <v-col class="d-flex align-center">
                       <v-text-field
                         density="compact"
+                        size="small"
+                        variant="outlined"
                         type="search"
                         v-model="penInput"
                         maxlength="9"

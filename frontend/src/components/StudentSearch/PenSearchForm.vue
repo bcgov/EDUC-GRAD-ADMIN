@@ -5,6 +5,7 @@
         <v-col cols="12">
           <v-text-field
             label="Search by PEN:"
+            variant="outlined"
             :disabled="searchLoading"
             :loading="searchLoading"
             id="search-by-pen"
@@ -24,15 +25,16 @@
         </v-col>
       </v-row>
       <v-btn
+        prepend-icon="mdi-magnify"
         id="search-submit"
         v-on:click="findStudentByPen"
+        :loading="searchLoading"
+        :disabled="searchLoading"
         variant="flat"
         color="primary"
+        class="text-none"
+        >Search</v-btn
       >
-        Search
-        <v-progress-circular v-if="searchLoading" indeterminate color="green">
-        </v-progress-circular>
-      </v-btn>
     </v-form>
     <v-alert
       v-if="searchMessage"

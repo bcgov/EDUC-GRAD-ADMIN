@@ -24,6 +24,8 @@
               </div>
               <v-text-field
                 label="PSI Code:"
+                variant="outlined"
+                density="compact"
                 v-model="advancedSearchInput.psiCode.value"
                 placeholder=""
                 id="psiCode"
@@ -51,6 +53,8 @@
               </div>
               <v-text-field
                 label="PSI Name:"
+                variant="outlined"
+                density="compact"
                 v-model="advancedSearchInput.psiName.value"
                 placeholder=""
                 id="psiName"
@@ -79,6 +83,8 @@
               </div>
               <v-text-field
                 label="CSL Code:"
+                variant="outlined"
+                density="compact"
                 v-model="advancedSearchInput.cslCode.value"
                 placeholder=""
                 id="cslCode"
@@ -90,6 +96,8 @@
             <div class="advanced-search-field col-12 col-md-2">
               <v-select
                 label="Active:"
+                variant="outlined"
+                density="compact"
                 v-model="advancedSearchInput.openFlag.value"
                 :items="options"
                 item-title="text"
@@ -116,6 +124,8 @@
               </div>
               <v-text-field
                 label="Transmission Mode:"
+                variant="outlined"
+                density="compact"
                 v-model="advancedSearchInput.transmissionMode.value"
                 placeholder=""
                 id="transmissionMode"
@@ -128,23 +138,21 @@
           <div class="row ml-1">
             <div class="advanced-search-button">
               <v-btn
+                prepend-icon="mdi-magnify"
                 v-on:click="advancePSISearch"
-                v-if="!advancedSearchLoading"
+                :loading="advancedSearchLoading"
+                :disabled="advancedSearchLoading"
+                variant="flat"
                 color="primary"
-                tabindex="6"
+                class="text-none"
+                >Search</v-btn
               >
-                <i class="fas fa-search" aria-hidden="true"></i>
-                Search
-              </v-btn>
-              <v-btn color="success" v-if="advancedSearchLoading" tabindex="6"
-                ><i class="fas fa-search" aria-hidden="true"></i>Search
-                <v-progress-circular
-                  v-if="advancedSearchLoading"
-                  indeterminate
-                  color="green"
-                ></v-progress-circular
-              ></v-btn>
-              <v-btn @click="clearInput" class="btn btn-outline-primary mx-2">
+              <v-btn
+                v-on:click="clearInput"
+                variant="outlined"
+                color="primary"
+                class="text-none mx-2"
+              >
                 Reset
               </v-btn>
             </div>

@@ -2,7 +2,7 @@
   <div class="studentlist">
     <h1>Student Search</h1>
     <v-card>
-      <v-tabs v-model="tab" bg-color="primary">
+      <v-tabs v-model="tab" bg-color="primary" grow>
         <v-tab value="pen" class="text-none" size="large"> PEN Search </v-tab>
         <v-tab value="advance" class="text-none" size="large">
           Advanced Search
