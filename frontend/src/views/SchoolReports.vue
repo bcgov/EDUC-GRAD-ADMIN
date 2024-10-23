@@ -34,23 +34,6 @@
             </div>
             <div class="row ml-1">
               <div class="advanced-search-button">
-                <!-- <v-btn
-                  v-on:click="schoolReportSearch"
-                  v-if="!searchLoading"
-                  color="primary"
-                  tabindex="6"
-                >
-                  <i class="fas fa-search" aria-hidden="true"></i>
-                  &nbsp;Search
-                </v-btn>
-                <v-btn color="success" v-if="searchLoading" tabindex="6"
-                  ><i class="fas fa-search" aria-hidden="true"></i>&nbsp;Search
-                  <v-progress-circular
-                    v-if="searchLoading"
-                    indeterminate
-                    color="green"
-                  ></v-progress-circular
-                ></v-btn> -->
                 <v-btn
                   prepend-icon="mdi-magnify"
                   v-on:click="schoolReportSearch"
