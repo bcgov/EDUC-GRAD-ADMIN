@@ -224,6 +224,12 @@
                     variant="outlined"
                     clearable
                     class="mt-4"
+                    :disabled="
+                      editedGradStatus.program != 'SCCP' ||
+                      (studentGradStatus.programCompletionDate &&
+                        new Date(studentGradStatus.programCompletionDate) <=
+                          new Date())
+                    "
                   ></v-text-field>
                 </td>
               </tr>
