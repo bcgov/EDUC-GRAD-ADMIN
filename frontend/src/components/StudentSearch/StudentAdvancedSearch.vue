@@ -25,6 +25,8 @@
           </div>
           <v-text-field
             label="Legal Surname:"
+            variant="outlined"
+            density="compact"
             id="legal-surname-input"
             class="form__input"
             v-model="advancedSearchInput.legalLastName.value"
@@ -52,6 +54,8 @@
           </div>
           <v-text-field
             label="Legal Given:"
+            variant="outlined"
+            density="compact"
             id="legal-given-input"
             v-model="advancedSearchInput.legalFirstName.value"
             placeholder=""
@@ -79,6 +83,8 @@
           </div>
           <v-text-field
             label="Legal Middle:"
+            variant="outlined"
+            density="compact"
             id="legal-middle-input"
             v-model="advancedSearchInput.legalMiddleNames.value"
             placeholder=""
@@ -90,6 +96,8 @@
           <v-select
             v-model="advancedSearchInput.gender.value"
             label="Gender:"
+            variant="outlined"
+            density="compact"
             id="gender-select"
             :items="genderOptions"
             item-title="text"
@@ -97,9 +105,11 @@
             tabindex="4"
           ></v-select>
         </div>
-        <div class="form-group advanced-search-field col-12 col-md-2">
+        <div class="form-group advanced-search-field col-12 col-md-auto">
           <v-text-field
             label="Birthdate From:"
+            variant="outlined"
+            density="compact"
             class="form__input"
             id="datepicker-birthdate-from"
             v-model="advancedSearchInput.birthdateFrom.value"
@@ -112,9 +122,11 @@
             v-on:keyup="keyHandler"
           ></v-text-field>
         </div>
-        <div class="advanced-search-field col-12 col-md-2">
+        <div class="advanced-search-field col-12 col-md-auto">
           <v-text-field
             label="Birthdate to:"
+            variant="outlined"
+            density="compact"
             id="datepicker-birthdate-to"
             v-model="advancedSearchInput.birthdateTo.value"
             type="date"
@@ -147,6 +159,8 @@
           </div>
           <v-text-field
             label="Usual Surname:"
+            variant="outlined"
+            density="compact"
             id="usual-surname-input"
             v-model="advancedSearchInput.usualLastName.value"
             placeholder=""
@@ -173,6 +187,8 @@
           </div>
           <v-text-field
             label="Usual Given:"
+            variant="outlined"
+            density="compact"
             id="usual-given-input"
             v-model="advancedSearchInput.usualFirstName.value"
             placeholder=""
@@ -199,6 +215,8 @@
           </div>
           <v-text-field
             label="Usual Middle:"
+            variant="outlined"
+            density="compact"
             id="usual-middle-input"
             v-model="advancedSearchInput.usualMiddleNames.value"
             placeholder=""
@@ -210,36 +228,50 @@
       <v-row>
         <div class="advanced-search-button">
           <v-btn
+            prepend-icon="mdi-magnify"
+            id="adv-search-submit"
+            v-on:click="findStudentsByAdvancedSearch"
+            :loading="advancedSearchLoading"
+            :disabled="advancedSearchLoading"
+            variant="flat"
+            color="primary"
+            class="text-none"
+            >Search</v-btn
+          >
+          <!-- <v-btn
+            prepend-icon="mdi-magnify"
+            class="text-none"
             id="adv-search-submit"
             @click="findStudentsByAdvancedSearch()"
             v-if="!advancedSearchLoading"
             color="primary"
             tabindex="12"
           >
-            <i class="fas fa-search" aria-hidden="true"></i>
-            &nbsp;Search
+            Search
           </v-btn>
           <v-btn
+            prepend-icon="mdi-magnify"
+            class="text-none"
             id="adv-search-submit"
             @click="findStudentsByAdvancedSearch()"
             v-if="advancedSearchLoading"
             color="success"
             tabindex="12"
           >
-            <i class="fas fa-search" aria-hidden="true"></i>
-            &nbsp;Search
+            Search
             <v-progress-circular
               v-if="advancedSearchLoading"
               indeterminate
               color="green"
             >
             </v-progress-circular>
-          </v-btn>
+          </v-btn> -->
           <v-btn
+            class="mx-2 text-none"
             id="adv-search-reset-button"
-            color="grey-lighten-3"
+            color="primary"
+            variant="outlined"
             @click="clearInput"
-            class="mx-2"
           >
             Reset
           </v-btn>
@@ -256,18 +288,6 @@
         v-if="advancedSearchMessage && advancedSearchAPIMessage"
         :text="`${advancedSearchMessage}\n${advancedSearchAPIMessage}`"
       ></v-alert>
-      <!-- <div class="results-option-group col-12 col-md-4">
-        <label v-if="totalPages > 1">Results per page</label>
-        <v-select
-          class="results-option"
-          v-if="totalPages > 1"
-          @change="findStudentsByAdvancedSearch()"
-          v-model="resultsPerPage"
-          :items="resultsPerPageOptions"
-          :value="resultsPerPage"
-          label="Results Per Page"
-        ></v-select>
-      </div> -->
     </div>
 
     <transition name="fade">

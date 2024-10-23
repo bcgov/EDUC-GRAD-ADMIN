@@ -70,7 +70,7 @@
         <v-card class="p-0" color="#f2f2f2" :disabled="tabLoading">
           <v-window v-model="tab">
             <v-window-item value="gradStatusTab">
-              <v-tabs v-model="selectedTab" bg-color="primary">
+              <v-tabs v-model="selectedTab" bg-color="primary" grow>
                 <v-tab value="GRAD" class="text-none">GRAD</v-tab>
                 <v-tab value="Courses" class="text-none"
                   >Courses ({{ courses.length }})</v-tab
