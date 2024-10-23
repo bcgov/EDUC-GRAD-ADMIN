@@ -546,6 +546,7 @@ export default {
         });
     },
     closeDialogAndResetForm() {
+      this.blankCertificateDetails =[];
       this.group = null;
       this.dialog = false;
       this.clearBatchDetails();

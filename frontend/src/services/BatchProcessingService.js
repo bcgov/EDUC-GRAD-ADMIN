@@ -89,7 +89,7 @@ export default {
     if (cronTime) {
       let scheduledRequest = {};
       scheduledRequest.cronExpression = cronTime;
-      scheduledRequest.jobName = "??";
+      scheduledRequest.jobName = "SRRBJ";
       scheduledRequest.blankPayLoad = null;
       scheduledRequest.payload = request;
       this.addScheduledJob(scheduledRequest);

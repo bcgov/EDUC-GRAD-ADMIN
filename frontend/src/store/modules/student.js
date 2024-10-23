@@ -475,11 +475,11 @@ export const useStudentStore = defineStore("student", {
     setEditedGradStatus(gradStatus) {
       this.editedGradStatus = gradStatus;
     },
-    setFormattedGradStatusAssessments(formattedGradStatusAssessments) {
-      this.formattedGradStatusAssessments = formattedGradStatusAssessments;
+    setFormattedGradStatusAssessments(item) {
+      this.formattedGradStatusAssessments = item;
     },
-    setFormattedGradStatusCourses(formattedGradStatusCourses) {
-      this.formattedGradStatusCourses = formattedGradStatusCourses;
+    setFormattedGradStatusCourses(item) {
+      this.formattedGradStatusCourses = item;
     },
     //Optional Program CRUD
     addStudentOptionalProgram(optionalProgramId) {
@@ -682,7 +682,6 @@ export const useStudentStore = defineStore("student", {
         return {};
       }
     },
-    formattedGradStatusCourses() {},
     getRoles() {
       return this.roles;
     },
