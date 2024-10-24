@@ -12,9 +12,14 @@
           />
         </a>
         <v-toolbar-title
-          >Graduation Records and Achievement Data</v-toolbar-title
-        >
-        <v-spacer />
+          >Graduation Records and Achievement Data
+          <span v-if="version">v{{ version }}</span>
+          <v-spacer />
+          <div class="float-right user-profile">
+            <slot></slot>
+          </div>
+        </v-toolbar-title>
+
         <v-menu v-model="menu" offset-y>
           <template #activator="{ props }">
             <v-btn
@@ -58,30 +63,67 @@
         </v-menu>
       </v-app-bar>
 
-      <v-app-bar color="primary">
-        <v-btn text v-for="link in menuLinks" :key="link.id">
-          <router-link
-            :to="link.route"
-            style="text-decoration: none; color: inherit"
-          >
-            {{ link.title }}
-          </router-link>
-        </v-btn>
-        <v-btn v-if="!profile.pen">
-          <a
-            id="profile-route"
-            class="text-decoration-none text-disabled"
-            :disabled="true"
-            >Profile (Student Not Loaded)</a
-          >
-        </v-btn>
-        <v-btn v-else>
-          <router-link
-            :to="`/student-profile/${profile.studentID}`"
-            id="profile-route"
-            >Profile ({{ profile.pen }})</router-link
-          >
-        </v-btn>
+      <v-app-bar class="hide-on-small">
+        <v-toolbar>
+          <v-btn text v-for="link in menuLinks" :key="link.id">
+            <router-link
+              :to="link.route"
+              style="text-decoration: none; color: inherit"
+            >
+              {{ link.title }}
+            </router-link>
+          </v-btn>
+          <v-btn v-if="!profile.pen">
+            <a
+              id="profile-route"
+              class="text-decoration-none text-disabled"
+              :disabled="true"
+              >Profile (Student Not Loaded)</a
+            >
+          </v-btn>
+          <v-btn v-else>
+            <router-link
+              :to="`/student-profile/${profile.studentID}`"
+              id="profile-route"
+              >Profile ({{ profile.pen }})</router-link
+            >
+          </v-btn>
+          <v-spacer />
+          <form v-on:submit.prevent>
+            <div class="form-group top-search">
+              <div>
+                <v-form @submit.prevent>
+                  <v-row class="align-center">
+                    <v-col class="d-flex align-center">
+                      <v-text-field
+                        density="compact"
+                        size="small"
+                        variant="outlined"
+                        type="search"
+                        v-model="penInput"
+                        maxlength="9"
+                        minlength="9"
+                        outlined
+                        dense
+                        placeholder="PEN"
+                        class="headerSearch"
+                        ref="penSearch"
+                      ></v-text-field>
+                      <v-btn
+                        v-if="!searchLoading"
+                        @click="findStudentByPen"
+                        variant="flat"
+                        color="primary"
+                        class="px-2 header-search-btn"
+                        >Search
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </div>
+            </div>
+          </form>
+        </v-toolbar>
       </v-app-bar>
     </v-app>
 
@@ -159,5 +201,9 @@ export default {
 </script>
 
 <style scoped>
-/* Optional: Add custom styles if needed */
+@media (max-width: 760px) {
+  .hide-on-small {
+    display: none;
+  }
+}
 </style>

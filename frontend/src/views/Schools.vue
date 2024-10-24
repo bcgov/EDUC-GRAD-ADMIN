@@ -23,6 +23,8 @@
                 </div>
                 <v-text-field
                   label="District:"
+                  variant="outlined"
+                  density="compact"
                   v-model="search.district.value"
                   v-on:keyup="keyHandler"
                   placeholder=""
@@ -48,6 +50,8 @@
                 </div>
                 <v-text-field
                   label="Mincode:"
+                  variant="outlined"
+                  density="compact"
                   v-model="search.mincode.value"
                   v-on:keyup="keyHandler"
                   placeholder=""
@@ -73,6 +77,8 @@
                 </div>
                 <v-text-field
                   label="School name:"
+                  variant="outlined"
+                  density="compact"
                   v-model="search.schoolName.value"
                   v-on:keyup="keyHandler"
                   placeholder=""
@@ -86,26 +92,20 @@
         <v-row>
           <div class="advanced-search-button ml-4 mb-4">
             <v-btn
+              prepend-icon="mdi-magnify"
               v-on:click="advancedSchoolSearch"
-              v-if="!searchLoading"
+              :loading="searchLoading"
+              :disabled="searchLoading"
+              variant="flat"
               color="primary"
-              tabindex="4"
+              class="text-none"
+              >Search</v-btn
             >
-              <i class="fas fa-search" aria-hidden="true"></i>
-              &nbsp;Search
-            </v-btn>
-            <v-btn color="success" v-if="searchLoading" tabindex="3"
-              ><i class="fas fa-search" aria-hidden="true"></i>&nbsp;Search
-              <v-progress-circular
-                v-if="courseRequirementLoading"
-                indeterminate
-                color="green"
-              ></v-progress-circular
-            ></v-btn>
             <v-btn
+              color="primary"
+              variant="outlined"
               @click="clearInput"
-              class="btn btn-outline-primary mx-2"
-              tabindex="5"
+              class="text-none mx-2"
             >
               Reset
             </v-btn>

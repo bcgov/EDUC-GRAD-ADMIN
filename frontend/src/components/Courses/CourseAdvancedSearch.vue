@@ -23,6 +23,8 @@
             </div>
             <v-text-field
               label="TRAX Code:"
+              variant="outlined"
+              density="compact"
               v-model="advancedSearchInput.courseCode.value"
               placeholder=""
               tabindex="1"
@@ -47,6 +49,8 @@
             </div>
             <v-text-field
               label="TRAX Grade Level:"
+              variant="outlined"
+              density="compact"
               v-model="advancedSearchInput.courseLevel.value"
               placeholder=""
               tabindex="2"
@@ -71,6 +75,8 @@
             </div>
             <v-text-field
               label="Course Title:"
+              variant="outlined"
+              density="compact"
               v-model="advancedSearchInput.courseName.value"
               placeholder=""
               tabindex="3"
@@ -79,6 +85,8 @@
           <div class="advanced-search-field col-12 col-md-2">
             <v-select
               label="Instruction Language:"
+              variant="outlined"
+              density="compact"
               v-model="advancedSearchInput.language.value"
               :items="langOptions"
               item-title="text"
@@ -86,9 +94,11 @@
               tabindex="4"
             ></v-select>
           </div>
-          <div class="advanced-search-field col-12 col-md-2">
+          <div class="advanced-search-field col-12 col-md-auto">
             <v-text-field
               label="TRAX Start Date:"
+              variant="outlined"
+              density="compact"
               id="datepicker-startDate"
               v-model="advancedSearchInput.startDate.value"
               type="date"
@@ -99,9 +109,11 @@
               tabindex="5"
             ></v-text-field>
           </div>
-          <div class="advanced-search-field col-12 col-md-2">
+          <div class="advanced-search-field col-12 col-md-auto">
             <v-text-field
               label="TRAX End Date:"
+              variant="outlined"
+              density="compact"
               id="datepicker-endDate"
               v-model="advancedSearchInput.endDate.value"
               type="date"
@@ -116,32 +128,20 @@
         <v-row class="mt-n3">
           <div class="advanced-search-button">
             <v-btn
+              prepend-icon="mdi-magnify"
               v-on:click="advanceCourseSearch"
-              v-if="!advancedSearchLoading"
-              class="btn"
+              :loading="advancedSearchLoading"
+              :disabled="advancedSearchLoading"
+              variant="flat"
               color="primary"
-              tabindex="7"
+              class="text-none"
+              >Search</v-btn
             >
-              <i class="fas fa-search" aria-hidden="true"></i>
-              &nbsp;Search
-            </v-btn>
-            <v-btn
-              class="btn"
-              color="success"
-              v-if="advancedSearchLoading"
-              tabindex="7"
-              ><i class="fas fa-search" aria-hidden="true"></i>
-              &nbsp;Search
-              <v-progress-circular
-                v-if="advancedSearchLoading"
-                indeterminate
-                color="green"
-              >
-              </v-progress-circular>
-            </v-btn>
             <v-btn
               v-on:click="clearInput()"
-              class="btn btn-outline-primary mx-2"
+              variant="outlined"
+              color="primary"
+              class="btn btn-outline-primary text-none mx-2"
               tabindex="7"
             >
               Reset
