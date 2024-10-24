@@ -96,16 +96,19 @@
                         outlined
                         dense
                         placeholder="PEN"
-                        class="headerSearch"
+                        class=""
                         ref="penSearch"
                       ></v-text-field>
                       <v-btn
                         v-if="!searchLoading"
                         @click="findStudentByPen"
-                        variant="flat"
+                        icon="mdi-magnify"
+                        density="comfortable"
+                        rounded="sm"
+                        variant="text"
                         color="primary"
-                        class="px-2 header-search-btn"
-                        >Search
+                        class="px-2 mx-2 header-search-btn text-none"
+                      >
                       </v-btn>
                     </v-col>
                   </v-row>
