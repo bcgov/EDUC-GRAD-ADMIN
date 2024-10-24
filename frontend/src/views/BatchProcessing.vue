@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="batch-processing-view">
     <h1>Batch Processing</h1>
     <div>
       <v-tabs v-model="activeTab" bg-color="transparent">
@@ -48,7 +48,10 @@
           <BatchRuns></BatchRuns>
         </v-tabs-window-item>
         <v-tabs-window-item value="scheduledRuns">
-          <v-row>
+          <v-row v-if="scheduledJobs && scheduledJobs.length == 0">
+            <v-col> No Scheduled Jobs </v-col>
+          </v-row>
+          <v-row v-else>
             <v-col> <ScheduledBatchRuns></ScheduledBatchRuns></v-col>
           </v-row>
         </v-tabs-window-item>
@@ -71,9 +74,15 @@
                 class="pb-3"
               >
                 <template v-slot:item.description="{ item }">
-                  <strong>{{ item.label }} </strong>
-                  <br />
-                  {{ item.description }}
+                  <strong>{{ item.label }}</strong>
+                  <v-tooltip max-width="500">
+                    {{ item.description }}
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" color="bcGovBlue" x-small size="18"
+                        >mdi-information</v-icon
+                      >
+                    </template>
+                  </v-tooltip>
                 </template>
                 <template v-slot:item.newRequest="{ item }">
                   <GraduationAlgorithmForm
@@ -102,7 +111,7 @@
               <v-table>
                 <tbody>
                   <tr>
-                    <td>Blank certificate print</td>
+                    <td><strong>Blank certificate print</strong></td>
                     <td>
                       <DistrunUserForm
                         credentialSelected="Blank certificate print"
@@ -110,7 +119,12 @@
                     </td>
                   </tr>
                   <tr>
-                    <td>Reprint certificate – no principal signature block</td>
+                    <td>
+                      <strong
+                        >Reprint certificate – no principal signature
+                        block</strong
+                      >
+                    </td>
                     <td>
                       <DistrunUserForm
                         credentialSelected="RC"
@@ -119,7 +133,10 @@
                   </tr>
                   <tr>
                     <td>
-                      Original certificate – with principal signature block
+                      <strong>
+                        Original certificate – with principal signature
+                        block</strong
+                      >
                     </td>
                     <td>
                       <DistrunUserForm
@@ -128,7 +145,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td>Blank transcript print</td>
+                    <td><strong>Blank transcript print</strong></td>
                     <td>
                       <DistrunUserForm
                         credentialSelected="Blank transcript print"
@@ -136,7 +153,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td>Transcript</td>
+                    <td><strong>Transcript</strong></td>
                     <td>
                       <DistrunUserForm
                         credentialSelected="OT"
@@ -156,10 +173,17 @@
                 class="pb-3"
               >
                 <template v-slot:item.description="{ item }">
-                  <strong> {{ item.label }} </strong>
-                  <br />
-                  {{ item.description }}
+                  <strong>{{ item.label }}</strong>
+                  <v-tooltip max-width="500">
+                    {{ item.description }}
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" color="bcGovBlue" small size="18"
+                        >mdi-information</v-icon
+                      >
+                    </template>
+                  </v-tooltip>
                 </template>
+
                 <template v-slot:item.newRequest="{ item }">
                   <RegenerateCertificateForm
                     v-if="item.code == 'CERT_REGEN'"
@@ -183,9 +207,15 @@
                 hide-default-footer
               >
                 <template v-slot:item.description="{ item }">
-                  <strong>{{ item.label }}</strong>
-                  <br />
-                  {{ item.description }}
+                  <v-tooltip max-width="500">
+                    {{ item.description }}
+                    <template v-slot:activator="{ props }">
+                      <strong v-bind="props">{{ item.label }}</strong>
+                      <v-icon v-bind="props" color="bcGovBlue" x-small size="18"
+                        >mdi-information</v-icon
+                      >
+                    </template>
+                  </v-tooltip>
                 </template>
                 <template v-slot:item.newRequest="{ item }">
                   <DistrunFormYearEnd
@@ -479,6 +509,10 @@ export default {
 };
 </script>
 <style scoped>
+.batch-processing-view {
+  padding-left: 25px;
+  padding-right: 25px;
+}
 h6 {
   font-size: 1.5rem;
 }

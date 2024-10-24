@@ -37,11 +37,7 @@
             {{ item.updateDate.replace("T", ", ") }}
           </template>
           <template v-slot:item.jobExecutionId="{ item }">
-            <v-menu
-              :close-on-content-click="true"
-              location="end"
-              :width="item.jobParameters ? 600 : 350"
-            >
+            <v-menu location="end" :width="item.jobParameters ? 600 : 350">
               <template v-slot:activator="{ props }">
                 <v-btn
                   variant="plain"
