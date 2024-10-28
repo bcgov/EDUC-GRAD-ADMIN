@@ -13,7 +13,9 @@
       </template>
       <v-card>
         <div class="d-flex justify-space-between align-center">
-          <v-card-title>User Request Distribution Run</v-card-title>
+          <v-card-title
+            >User Request Distribution Run - {{ getCredential }}</v-card-title
+          >
           <v-btn
             @click="closeDialogAndResetForm()"
             color="error"
@@ -152,7 +154,9 @@
                         :items="[
                           {
                             label: 'Run Type',
-                            value: 'User Request Distribution Run',
+                            value:
+                              'User Request Distribution Run - ' +
+                              getCredential,
                           },
                           {
                             label: 'Copies',
@@ -546,7 +550,7 @@ export default {
         });
     },
     closeDialogAndResetForm() {
-      this.blankCertificateDetails =[];
+      this.blankCertificateDetails = [];
       this.group = null;
       this.dialog = false;
       this.clearBatchDetails();

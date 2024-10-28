@@ -138,3 +138,6 @@ th {
 .v-btn-link:hover{
   color: #0000f3 !important;
 }
+.v-label{
+  padding-top: 8px;
+}
