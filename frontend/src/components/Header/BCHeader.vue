@@ -182,17 +182,9 @@ export default {
     const versionResponse = await CommonService.getVersion();
     this.version = versionResponse.data;
   },
-  mounted() {
-    window.addEventListener("resize", this.updateDimensions);
-  },
-  beforeDestroy() {
-    window.removeEventListener("resize", this.updateDimensions);
-  },
+  mounted() {},
+  beforeDestroy() {},
   methods: {
-    updateDimensions() {
-      console.log(window.innerWidth); // Log the current window width for debugging
-      this.$forceUpdate(); // Force reactivity, if needed
-    },
     findStudentByPen() {
       // Your existing findStudentByPen logic here
     },

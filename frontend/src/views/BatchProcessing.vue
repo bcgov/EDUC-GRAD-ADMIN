@@ -62,7 +62,7 @@
         <v-tabs-window-item value="newBatchRequest">
           <v-row class="py-4">
             <v-col justify-md="start">
-              <h4>GRAD and TVR</h4>
+              <label>GRAD and TVR</label>
               <v-data-table
                 :items="batchRunGradOptions"
                 :headers="batchFields"
@@ -74,7 +74,7 @@
                 class="pb-3"
               >
                 <template v-slot:item.description="{ item }">
-                  <strong>{{ item.label }}</strong>
+                  {{ item.label }}
                   <v-tooltip max-width="500">
                     {{ item.description }}
                     <template v-slot:activator="{ props }">
@@ -111,7 +111,7 @@
               <v-table>
                 <tbody>
                   <tr>
-                    <td><strong>Blank certificate print</strong></td>
+                    <td>Blank certificate print</td>
                     <td>
                       <DistrunUserForm
                         credentialSelected="Blank certificate print"
@@ -119,12 +119,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td>
-                      <strong
-                        >Reprint certificate – no principal signature
-                        block</strong
-                      >
-                    </td>
+                    <td>Reprint certificate – no principal signature block</td>
                     <td>
                       <DistrunUserForm
                         credentialSelected="RC"
@@ -133,10 +128,7 @@
                   </tr>
                   <tr>
                     <td>
-                      <strong>
-                        Original certificate – with principal signature
-                        block</strong
-                      >
+                      Original certificate – with principal signature block
                     </td>
                     <td>
                       <DistrunUserForm
@@ -145,7 +137,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td><strong>Blank transcript print</strong></td>
+                    <td>Blank transcript print</td>
                     <td>
                       <DistrunUserForm
                         credentialSelected="Blank transcript print"
@@ -153,7 +145,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td><strong>Transcript</strong></td>
+                    <td>Transcript</td>
                     <td>
                       <DistrunUserForm
                         credentialSelected="OT"
@@ -173,7 +165,7 @@
                 class="pb-3"
               >
                 <template v-slot:item.description="{ item }">
-                  <strong>{{ item.label }}</strong>
+                  {{ item.label }}
                   <v-tooltip max-width="500">
                     {{ item.description }}
                     <template v-slot:activator="{ props }">
@@ -196,7 +188,7 @@
               </v-data-table>
             </v-col>
             <v-col sm="12" md="4">
-              <h4>Year-End Administration</h4>
+              <label>Year-End Administration</label>
               <v-data-table
                 :items="credentialBatchRunOptions.yearEndBatchRunOptions"
                 :headers="batchFields"
@@ -210,7 +202,7 @@
                   <v-tooltip max-width="500">
                     {{ item.description }}
                     <template v-slot:activator="{ props }">
-                      <strong v-bind="props">{{ item.label }}</strong>
+                      {{ item.label }}
                       <v-icon v-bind="props" color="bcGovBlue" x-small size="18"
                         >mdi-information</v-icon
                       >
