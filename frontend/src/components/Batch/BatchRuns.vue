@@ -317,6 +317,10 @@ export default {
   },
   methods: {
     ...mapActions(useBatchProcessingStore, ["setBatchJobs"]),
+    getRowClass(item) {
+      // Conditionally apply a class based on the item's status
+      return item.jobExecutionId === "104848" ? "highlight-row" : "";
+    },
     rerunBatch(bid) {
       BatchProcessingService.rerunBatch(bid).then((response) => {
         if (response) {
