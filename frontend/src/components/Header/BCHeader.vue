@@ -102,6 +102,7 @@
               class=""
               ref="penSearch"
               hide-details
+              v-on:keyup="keyHandler"
             ></v-text-field>
             <v-btn
               @click="findStudentByPen"
@@ -125,6 +126,7 @@
 </template>
 
 <script>
+import StudentService from "@/services/StudentService.js";
 import { loadStudent } from "../../utils/common.js"; // Import your loadStudent function
 import { useSnackbarStore } from "@/store/modules/snackbar"; // Import your snackbar store
 import { useStudentStore } from "@/store/modules/student"; // Import your student store
@@ -135,6 +137,10 @@ import EnvironmentBanner from "@/components/Header/EnvironmentBanner.vue";
 export default {
   components: {
     EnvironmentBanner: EnvironmentBanner,
+  },
+  setup() {
+    const studentStore = useStudentStore();
+    return { studentStore };
   },
   data() {
     return {
@@ -199,6 +205,15 @@ export default {
       //console.log(window.innerWidth); // Log the current window width for debugging
       this.smallScreen = window.innerWidth <= 760; //set flag to determine which header elements to show
       this.$forceUpdate(); // Force reactivity, if needed
+    },
+    keyHandler: function (e) {
+      if (e.keyCode === 13) {
+        //enter key pressed
+        this.studentSearchResults = [];
+        if (this.penInput) {
+          this.findStudentByPen();
+        }
+      }
     },
     findStudentByPen() {
       // Your existing findStudentByPen logic here
