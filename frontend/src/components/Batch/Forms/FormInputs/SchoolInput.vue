@@ -28,6 +28,9 @@
                 {{ label.label }}
               </template>
             </v-autocomplete>
+            <v-alert v-if="validationMessage" type="error">{{
+              validationMessage
+            }}</v-alert>
           </v-col>
           <v-col md="2">
             <v-btn color="bcGovBlue" @click="addSchool()">Add School</v-btn>
@@ -126,6 +129,7 @@ export default {
       mincode: "",
       mincodeSchoolInfo: "",
       mincodeValidating: false,
+      validationMessage: "",
       schoolInputFields: [
         {
           key: "mincode",
@@ -171,13 +175,14 @@ export default {
       this.mincodeSchoolInfo = "";
     },
     clearMincode() {
+      this.validationMessage = "";
       this.mincode = "";
       this.clearmincodeSchoolInfo();
     },
     async addSchool() {
+      this.validationMessage = "";
       if (this.mincode === "") return true;
       if (this.mincode.length == 8) {
-        console.log("8");
         try {
           let schoolInfo = await SchoolService.getSchoolInfo(this.mincode);
           if (schoolInfo.data) {
@@ -196,7 +201,7 @@ export default {
             return true;
           }
         } catch (error) {
-          console.log(error);
+          this.validationMessage = this.mincode + " is not valid";
           this.mincodeSchoolInfo = null;
           return false;
         }

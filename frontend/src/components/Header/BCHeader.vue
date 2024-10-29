@@ -187,6 +187,13 @@ export default {
   beforeDestroy() {
     window.removeEventListener("resize", this.updateDimensions);
   },
+  async created() {
+    this.loadStudent = loadStudent; // Assign loadStudent to this context
+    const versionResponse = await CommonService.getVersion();
+    this.version = versionResponse.data;
+  },
+  mounted() {},
+  beforeDestroy() {},
   methods: {
     updateDimensions() {
       //console.log(window.innerWidth); // Log the current window width for debugging

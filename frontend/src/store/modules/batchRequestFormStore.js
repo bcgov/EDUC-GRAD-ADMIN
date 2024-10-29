@@ -38,7 +38,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     activityCode: null,
     reportType: null,
 
-    batchRunTime: null,
+    batchRunTime: 'Run Now',
     batchRunSchedule: null,
     batchRunCustomDate: null,
     batchRunCustomTime: null
