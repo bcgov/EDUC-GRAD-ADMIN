@@ -130,6 +130,8 @@ th {
   font-weight: bold !important;
   /* border-bottom: 2px solid rgb(var(--v-theme-primary)) !important; */
 }
+
+/** Vuetify internal overrides below **/
 .v-btn-link{
   color: #1a5a96 !important;
   text-decoration: underline !important;
@@ -138,6 +140,15 @@ th {
 .v-btn-link:hover{
   color: #0000f3 !important;
 }
-.v-label{
-  padding-top: 8px;
+.v-card-text, .v-table {
+  font-size: 1rem;
 }
+.v-btn {
+  letter-spacing: 0.04em;
+}
+.v-table > .v-table__wrapper > table > tbody > tr > td, .v-table > .v-table__wrapper > table > thead > tr > th {
+  padding: var(--v-table-padding);
+}
+/* .v-label{
+  padding-top: 8px;
+} */
