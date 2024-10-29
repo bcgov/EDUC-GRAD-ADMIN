@@ -189,7 +189,7 @@ export default {
   },
   methods: {
     updateDimensions() {
-      console.log(window.innerWidth); // Log the current window width for debugging
+      //console.log(window.innerWidth); // Log the current window width for debugging
       this.smallScreen = window.innerWidth <= 760; //set flag to determine which header elements to show
       this.$forceUpdate(); // Force reactivity, if needed
     },

@@ -17,7 +17,7 @@
       <v-data-table
         v-if="studentOptionalPrograms"
         :items="studentOptionalPrograms"
-        :headers="studentOptionalProgramsFields"
+        :headers="studentOptionalProgramsHeaders"
         :items-per-page="'-1'"
         hide-default-footer
       >
@@ -565,14 +565,18 @@ export default {
         { key: "careerProgramName", title: "Career Program Name" },
         { key: "actions", title: "Delete" },
       ],
-      studentOptionalProgramsFields: [
+      studentOptionalProgramsHeaders: [
         {
           key: "data-table-expand",
           title: "",
           sortable: true,
           class: "text-left",
         },
-        { key: "programCode", title: "Graduation Program" },
+        {
+          key: "programCode",
+          title: "Graduation Program",
+          class: "text-center",
+        },
         { key: "optionalProgramName", title: "Optional Program" },
         { key: "optionalReqMet", title: "Requirements Met" },
         { key: "optionalNonGradReasons", title: "Requirements Not Met" },
