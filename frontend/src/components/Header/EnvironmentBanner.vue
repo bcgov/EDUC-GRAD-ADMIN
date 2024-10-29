@@ -1,15 +1,26 @@
 <template>
   <div id="env-banner">
-    <div v-if="environment == 'local'" class="local-env">
-      Vue 3 - <strong>localhost</strong> environment
-    </div>
-    <div v-else-if="environment === 'dev'" class="dev-env">
-      Vue 3 - <strong>DEV</strong> environment
-    </div>
-    <div v-else-if="environment == 'test'" class="test-env">
-      Vue 3 - <strong>TEST</strong> environment
-    </div>
-    <div v-else>Vue 3 - <strong>Environment not recognized</strong></div>
+    <v-app-bar
+      v-if="environment == 'local'"
+      density="compact"
+      class="local-env"
+    >
+      <v-spacer />Vue 3 - <strong>localhost</strong> environment <v-spacer />
+    </v-app-bar>
+    <v-app-bar
+      v-else-if="environment === 'dev'"
+      density="compact"
+      class="dev-env"
+    >
+      <v-spacer />Vue 3 - <strong>DEV</strong> environment<v-spacer />
+    </v-app-bar>
+    <v-app-bar
+      v-else-if="environment == 'test'"
+      density="compact"
+      class="test-env"
+    >
+      <v-spacer />Vue 3 - <strong>TEST</strong> environment<v-spacer />
+    </v-app-bar>
   </div>
 </template>
 
@@ -52,22 +63,15 @@ export default {
 </script>
 
 <style scoped>
-#env-banner {
-  display: block;
-  position: fixed;
-  z-index: 101;
-  top: 106px;
-  width: 100%;
-  text-align: center;
+#env-banner :deep(div.v-toolbar__content) {
+  height: 26px !important;
 }
-#env-banner div {
-  float: right;
+#env-banner header {
   padding: 0 1em;
   height: 26px;
-  margin-right: 40px;
 }
 #env-banner .local-env {
-  background-color: #c1c1c152;
+  background-color: #025cb652;
   color: #000;
   text-align: left;
   width: fit-content;

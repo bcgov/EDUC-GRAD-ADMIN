@@ -2,7 +2,7 @@
   <div>
     <h3 class="ml-2 mt-5">Course Search</h3>
     <div class="advanced-search-form ml-1">
-      <v-form v-on:submit.prevent>
+      <v-form @submit.prevent>
         <v-row class="row my-3">
           <div class="advanced-search-field col-12 col-md-2">
             <div
