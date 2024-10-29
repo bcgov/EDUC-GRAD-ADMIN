@@ -37,11 +37,7 @@
             {{ item.updateDate.replace("T", ", ") }}
           </template>
           <template v-slot:item.jobExecutionId="{ item }">
-            <v-menu
-              :close-on-content-click="true"
-              location="end"
-              :width="item.jobParameters ? 600 : 350"
-            >
+            <v-menu location="end" :width="item.jobParameters ? 600 : 350">
               <template v-slot:activator="{ props }">
                 <v-btn
                   variant="plain"
@@ -321,6 +317,10 @@ export default {
   },
   methods: {
     ...mapActions(useBatchProcessingStore, ["setBatchJobs"]),
+    getRowClass(item) {
+      // Conditionally apply a class based on the item's status
+      return item.jobExecutionId === "104848" ? "highlight-row" : "";
+    },
     rerunBatch(bid) {
       BatchProcessingService.rerunBatch(bid).then((response) => {
         if (response) {

@@ -1,85 +1,81 @@
 <template>
-  <div id="app">
-    <v-app>
-      <Snackbar></Snackbar>
-      <EnvironmentBanner />
+  <v-app>
+    <Snackbar></Snackbar>
+    <Bcheader class="bcheader">
+      <div v-if="isAuthenticatedGet && dataReady">
+        <v-btn @click="dialog = true">{{ userInfoGet.userName }}</v-btn>
 
-      <Bcheader class="bcheader" style="margin-bottom: 15px">
-        <div v-if="isAuthenticatedGet && dataReady">
-          <v-btn @click="dialog = true">{{ userInfoGet.userName }}</v-btn>
+        <!-- Dialog component -->
+        <v-dialog v-model="dialog" max-width="500px">
+          <template v-slot:activator="{ on, attrs }">
+            <!-- The button opens the dialog, already set up above -->
+          </template>
 
-          <!-- Dialog component -->
-          <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on, attrs }">
-              <!-- The button opens the dialog, already set up above -->
-            </template>
+          <v-card>
+            <v-card-title> User Information </v-card-title>
 
-            <v-card>
-              <v-card-title> User Information </v-card-title>
+            <v-card-text>
+              <!-- You can display more user info here or switch roles -->
+              <p>Username: {{ userInfoGet.userName }}</p>
+              <p>Current Role: {{ roles }}</p>
+              <v-btn @click="switchRole">Switch Role</v-btn>
+            </v-card-text>
 
-              <v-card-text>
-                <!-- You can display more user info here or switch roles -->
-                <p>Username: {{ userInfoGet.userName }}</p>
-                <p>Current Role: {{ roles }}</p>
-                <v-btn @click="switchRole">Switch Role</v-btn>
-              </v-card-text>
+            <v-card-actions>
+              <v-btn
+                color="bcGovBlue"
+                variant="outlined"
+                class="text-none"
+                density="default"
+                text
+                @click="dialog = false"
+                >Close</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
-              <v-card-actions>
-                <v-btn
-                  color="bcGovBlue"
-                  variant="outlined"
-                  class="text-none"
-                  density="default"
-                  text
-                  @click="dialog = false"
-                  >Close</v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          |
-          <a :href="authRoutes.LOGOUT" class="text-white">Logout</a>
-        </div>
-        <div v-else-if="!isAuthenticatedGet">
-          <a :href="authRoutes.LOGIN">Login</a>
-        </div>
-      </Bcheader>
-
-      <div class="container" style="min-height: 100vh">
-        <router-view />
-
-        <div class="overlay-dialog">
-          <v-dialog v-model="tokenExpiring" max-width="600px">
-            <v-card>
-              <v-card-title>
-                <span v-if="tokenExpired">Session Expired</span>
-                <span v-else>Session Expiring</span>
-              </v-card-title>
-
-              <v-card-text>
-                <p v-if="tokenExpired">
-                  Your session has expired. Please Login.
-                </p>
-                <p v-else>
-                  Your session is about to expire in {{ timerValue }} seconds.
-                  Are you still there?
-                </p>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-btn @click="login" v-if="tokenExpired">Login</v-btn>
-                <v-btn @click="resumeSession" v-else>Yes</v-btn>
-                <v-btn @click="logout">Logout</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </div>
+        |
+        <a :href="authRoutes.LOGOUT" class="text-white">Logout</a>
       </div>
+      <div v-else-if="!isAuthenticatedGet">
+        <a :href="authRoutes.LOGIN">Login</a>
+      </div>
+    </Bcheader>
 
-      <BCFooter></BCFooter>
-    </v-app>
-  </div>
+    <!-- <div class="container"> -->
+    <v-main>
+      <router-view />
+
+      <div class="overlay-dialog">
+        <v-dialog v-model="tokenExpiring" max-width="600px">
+          <v-card>
+            <v-card-title>
+              <span v-if="tokenExpired">Session Expired</span>
+              <span v-else>Session Expiring</span>
+            </v-card-title>
+
+            <v-card-text>
+              <p v-if="tokenExpired">Your session has expired. Please Login.</p>
+              <p v-else>
+                Your session is about to expire in {{ timerValue }} seconds. Are
+                you still there?
+              </p>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-btn @click="login" v-if="tokenExpired">Login</v-btn>
+              <v-btn @click="resumeSession" v-else>Yes</v-btn>
+              <v-btn @click="logout">Logout</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </div>
+    </v-main>
+    <!-- </div> -->
+
+    <BCFooter></BCFooter>
+  </v-app>
 </template>
 <script>
 // Vue Store
@@ -89,7 +85,6 @@ import { useAccessStore } from "./store/modules/access";
 import { mapState, mapActions } from "pinia";
 import Bcheader from "@/components/Header/BCHeader.vue";
 import BCFooter from "@/components/BCFooter.vue";
-import EnvironmentBanner from "@/components/Header/EnvironmentBanner.vue";
 import { Routes } from "@/utils/constants.js";
 import authService from "./common/authService";
 import Snackbar from "@/components/Common/Snackbar.vue";
@@ -98,7 +93,6 @@ export default {
   components: {
     Bcheader,
     BCFooter,
-    EnvironmentBanner,
     Snackbar,
   },
   async created() {
@@ -191,11 +185,11 @@ export default {
 </script>
 
 <style>
-#app {
+/* #app {
   background: #f9f9fb;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
+} */
 .main-container {
   font-size: 14px;
   margin-top: 135px !important;
@@ -244,12 +238,12 @@ ul.sidebar-panel-nav > li > a {
       padding-left: 50px !important; */
   }
 }
-.bcheader {
+/* .bcheader {
   height: 115px;
 }
 @media (max-width: 768px) {
   .bcheader {
     height: 75px;
   }
-}
+} */
 </style>

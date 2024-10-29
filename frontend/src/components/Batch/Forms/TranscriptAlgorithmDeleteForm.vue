@@ -145,28 +145,6 @@
             </template>
           </v-stepper>
         </v-card-text>
-        <v-card-actions class="sticky-form-actions">
-          <v-spacer></v-spacer>
-          <v-btn
-            color="bcGovBlue"
-            variant="outlined"
-            class="text-none"
-            density="default"
-            @click="cancel"
-          >
-            Cancel
-          </v-btn>
-          <v-btn
-            :disabled="v$.$invalid"
-            color="error"
-            variant="flat"
-            class="text-none"
-            density="default"
-            @click="submit"
-          >
-            Submit
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-row>

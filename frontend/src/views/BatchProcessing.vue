@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="batch-processing-view">
     <h1>Batch Processing</h1>
     <div>
       <v-tabs v-model="activeTab" bg-color="transparent">
@@ -48,7 +48,10 @@
           <BatchRuns></BatchRuns>
         </v-tabs-window-item>
         <v-tabs-window-item value="scheduledRuns">
-          <v-row>
+          <v-row v-if="scheduledJobs && scheduledJobs.length == 0">
+            <v-col> No Scheduled Jobs </v-col>
+          </v-row>
+          <v-row v-else>
             <v-col> <ScheduledBatchRuns></ScheduledBatchRuns></v-col>
           </v-row>
         </v-tabs-window-item>
@@ -59,7 +62,7 @@
         <v-tabs-window-item value="newBatchRequest">
           <v-row class="py-4">
             <v-col justify-md="start">
-              <h4>GRAD and TVR</h4>
+              <label>GRAD and TVR</label>
               <v-data-table
                 :items="batchRunGradOptions"
                 :headers="batchFields"
@@ -71,9 +74,15 @@
                 class="pb-3"
               >
                 <template v-slot:item.description="{ item }">
-                  <strong>{{ item.label }} </strong>
-                  <br />
-                  {{ item.description }}
+                  {{ item.label }}
+                  <v-tooltip max-width="500">
+                    {{ item.description }}
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" color="bcGovBlue" x-small size="18"
+                        >mdi-information</v-icon
+                      >
+                    </template>
+                  </v-tooltip>
                 </template>
                 <template v-slot:item.newRequest="{ item }">
                   <GraduationAlgorithmForm
@@ -156,10 +165,17 @@
                 class="pb-3"
               >
                 <template v-slot:item.description="{ item }">
-                  <strong> {{ item.label }} </strong>
-                  <br />
-                  {{ item.description }}
+                  {{ item.label }}
+                  <v-tooltip max-width="500">
+                    {{ item.description }}
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" color="bcGovBlue" small size="18"
+                        >mdi-information</v-icon
+                      >
+                    </template>
+                  </v-tooltip>
                 </template>
+
                 <template v-slot:item.newRequest="{ item }">
                   <RegenerateCertificateForm
                     v-if="item.code == 'CERT_REGEN'"
@@ -172,7 +188,7 @@
               </v-data-table>
             </v-col>
             <v-col sm="12" md="4">
-              <h4>Year-End Administration</h4>
+              <label>Year-End Administration</label>
               <v-data-table
                 :items="credentialBatchRunOptions.yearEndBatchRunOptions"
                 :headers="batchFields"
@@ -183,9 +199,15 @@
                 hide-default-footer
               >
                 <template v-slot:item.description="{ item }">
-                  <strong>{{ item.label }}</strong>
-                  <br />
-                  {{ item.description }}
+                  <v-tooltip max-width="500">
+                    {{ item.description }}
+                    <template v-slot:activator="{ props }">
+                      {{ item.label }}
+                      <v-icon v-bind="props" color="bcGovBlue" x-small size="18"
+                        >mdi-information</v-icon
+                      >
+                    </template>
+                  </v-tooltip>
                 </template>
                 <template v-slot:item.newRequest="{ item }">
                   <DistrunFormYearEnd
@@ -479,6 +501,10 @@ export default {
 };
 </script>
 <style scoped>
+.batch-processing-view {
+  padding-left: 25px;
+  padding-right: 25px;
+}
 h6 {
   font-size: 1.5rem;
 }
