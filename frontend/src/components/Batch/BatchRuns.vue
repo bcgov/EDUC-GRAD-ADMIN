@@ -60,18 +60,17 @@
                       Results</v-list-item-title
                     >
                   </v-list-item>
-                  <v-list-item>
+                  <v-list-item
+                    v-if="item.jobType != 'TVRRUN' && item.jobType != 'REGALG'"
+                    @click="rerunBatch(item.jobExecutionId)"
+                  >
                     <v-list-item-title>
                       <div class="" v-if="item.jobType != 'DISTRUNUSER'">
                         <v-btn
                           :id="'batch-job-id-rerun-btn' + item.jobExecutionId"
-                          :disabled="
-                            item.jobType != 'TVRRUN' && item.jobType != 'REGALG'
-                          "
                           class=""
                           variant="link"
                           size="xs"
-                          @click="rerunBatch(item.jobExecutionId)"
                         >
                           <v-icon>mdi-play-circle-outline</v-icon>
                         </v-btn>
@@ -85,7 +84,10 @@
                       </div>
                     </v-list-item-title>
                   </v-list-item>
-                  <v-list-item v-if="item.failedStudentsProcessed > 0">
+                  <v-list-item
+                    v-if="item.failedStudentsProcessed > 0"
+                    @click="rerunBatchStudentErrors(item.jobExecutionId)"
+                  >
                     <v-list-item-title>
                       <div>
                         <v-btn
@@ -93,7 +95,6 @@
                           class=""
                           variant="link"
                           size="xs"
-                          @click="rerunBatch(item.jobExecutionId)"
                         >
                           <v-icon>mdi-play-circle-outline</v-icon>
                         </v-btn>
@@ -424,18 +425,8 @@ export default {
       });
     },
     rerunBatchStudentErrors(bid) {
-      this.$refs["popover-" + bid].$emit("close");
-
       BatchProcessingService.rerunBatchStudentErrors(bid).then((response) => {
         if (response) {
-          // this.$bvToast.toast(
-          //   "Created an new batch job for batch #" + bid + " errors",
-          //   {
-          //     title: "NEW BATCH JOB STARTED",
-          //     variant: "success",
-          //     noAutoHide: true,
-          //   }
-          // );
           this.snackbarStore.showSnackbar(
             "Created a new batch job based on batch #" + bid,
             "success",
