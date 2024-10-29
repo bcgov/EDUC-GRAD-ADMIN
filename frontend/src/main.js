@@ -34,6 +34,12 @@ const bcGovTheme = {
     warning: "#926700",
     debug: "#C582FF",
   },
+  //override vue variables below; each variable appears in the DOM and can be accessed via CSS with '--v-' prepended,
+  // so btn-size will become --v-btn-size in the DOM and CSS
+  variables: {
+    "btn-size": "1rem",
+    "table-padding": "0 4px",
+  },
 };
 
 const vuetify = createVuetify({

@@ -17,8 +17,9 @@
             :sortBy="sortBy"
             :items="studentHistory"
             :headers="studentChangeFields"
-            :items-per-page="'-1'"
+            :items-per-page="'50'"
             item-value="historyID"
+            density="compact"
           >
             <template v-slot:expanded-row="{ columns, item }">
               <tr>
@@ -198,6 +199,7 @@ export default {
           key: "data-table-expand",
           title: "",
           sortable: false,
+          width: "10px",
         },
         {
           key: "updateDate",
@@ -414,14 +416,12 @@ export default {
 </script>
 
 <style scoped>
-:deep(
-    .v-table > .v-table__wrapper > table > tbody > tr > td,
-    ,
-    .v-table > .v-table__wrapper > table > thead > tr > th,
-    .v-table > .v-table__wrapper > table > tfoot > tr > t
-  ) {
+/* :deep(.v-table > .v-table__wrapper > table > tbody > tr > td) {
   padding: 0 4px !important;
 }
+:deep(.v-table > .v-table__wrapper > table > thead > tr > th) {
+  padding: 0 4px !important;
+} */
 .table th,
 .table td {
   border-top: none !important;
