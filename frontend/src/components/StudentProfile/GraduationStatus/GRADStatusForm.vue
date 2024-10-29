@@ -122,12 +122,17 @@
           <!-- Alerts End -->
           <!-- <p>$v: {{ v$ }}</p>
           <p>editedGradStatus: {{ editedGradStatus }}</p> -->
-          <v-table class="pt-3" density="compact" aria-label="edit grad status">
-            <tbody class="w-50">
+          <v-table
+            style="max-width: 600px; width: 600px; margin: auto"
+            class="pt-3"
+            density="compact"
+            aria-label="edit grad status"
+          >
+            <tbody>
               <!-- Program -->
-              <tr class="">
-                <td class="w-50">
-                  <strong>Program: </strong>
+              <tr>
+                <td class="">
+                  <strong>Program: </strong><br />
                   <!-- Warning if student grade is not AN or AD when on 1950 program -->
                   <div
                     class="bg-error"
@@ -166,8 +171,6 @@
                   >
                     {{ v$.editedGradStatus.ifClosedProgramWarning.$message }}
                   </div>
-                </td>
-                <td>
                   <v-select
                     :disabled="disableProgramInput"
                     v-model="editedGradStatus.program"
@@ -181,6 +184,7 @@
                   ></v-select>
                 </td>
               </tr>
+
               <!-- END program edit -->
               <!-- Program completion date -->
               <tr>
@@ -213,8 +217,6 @@
                         .$message
                     }}
                   </div>
-                </td>
-                <td>
                   <v-text-field
                     v-model="editedGradStatus.programCompletionDate"
                     label="Date"
@@ -236,8 +238,9 @@
               <!-- END program completion date edit -->
               <!-- Student status -->
               <tr>
-                <td><strong>Student status: </strong></td>
                 <td>
+                  <strong>Student status: </strong>
+                  <br />
                   <v-select
                     v-model="editedGradStatus.studentStatus"
                     :items="studentStatusOptions"
@@ -254,7 +257,7 @@
               <!-- Student grade -->
               <tr>
                 <td>
-                  <strong>Student grade: </strong>
+                  <strong>Student grade: </strong><br />
                   <!-- Warning if student is not on 1950 program and grade is AN/AD.
                   *Note that we have existing SCCP students with AD/AN, but future students on SCCP program should not have a grade of AN/AD -->
                   <div
@@ -270,8 +273,6 @@
                         .ifProgramIsNot1950studentGradeCannotBeADorAN.$message
                     }}
                   </div>
-                </td>
-                <td>
                   <v-select
                     v-model="editedGradStatus.studentGrade"
                     :items="gradeOptions"
@@ -315,8 +316,6 @@
                       v$.editedGradStatus.ifProgramIs1950AndOffshore.$message
                     }}
                   </div>
-                </td>
-                <td>
                   <v-autocomplete
                     v-model="editedGradStatus.schoolOfRecord"
                     :disabled="disableSchoolOfRecord"
@@ -339,7 +338,6 @@
               <tr>
                 <td>
                   <strong>School at graduation:</strong><br />
-
                   <div
                     class="bg-error"
                     v-if="
@@ -354,9 +352,6 @@
                         .$message
                     }}
                   </div>
-                </td>
-
-                <td class="pt-2">
                   <v-autocomplete
                     :disabled="disableSchoolAtGrad"
                     v-model="editedGradStatus.schoolAtGrad"
@@ -377,29 +372,29 @@
               <!-- School at graduation End-->
               <!-- Honours standing-->
               <tr>
-                <td><strong>Honours standing:</strong></td>
                 <td>
+                  <strong>Honours standing:</strong><br />
                   <span v-if="studentGradStatus.honoursStanding">
                     {{ studentGradStatus.honoursStanding }}</span
-                  >
+                  ><span v-else><br /></span>
                 </td>
               </tr>
               <!-- Honours standing End-->
               <!-- GPA-->
               <tr>
-                <td><strong>GPA:</strong></td>
                 <td>
+                  <strong>GPA:</strong><br />
                   <span
                     v-if="studentGradStatus.gpa && studentGradStatus.gpa > 0"
                     >{{ studentGradStatus.gpa }}</span
-                  >
+                  ><span v-else><br /></span>
                 </td>
               </tr>
               <!-- GPA End -->
               <!-- Optional Programs -->
               <tr>
-                <td><strong>Optional Programs</strong></td>
                 <td>
+                  <strong>Optional Programs</strong><br />
                   <ul
                     class="p-0"
                     v-if="
@@ -415,13 +410,14 @@
                       {{ item.optionalProgramName }}
                     </li>
                   </ul>
+                  <span v-else><br /></span>
                 </td>
               </tr>
               <!-- Optional Programs End -->
               <!-- Adult start date -->
               <tr>
                 <td>
-                  <strong>Adult start date: (YYYY-MM-DD)</strong>
+                  <strong>Adult start date: (YYYY-MM-DD)</strong><br />
                   <!-- Warning if adult start date contains non-numeric values -->
                   <div
                     class="bg-error"
@@ -444,8 +440,6 @@
                         .$message
                     }}
                   </div>
-                </td>
-                <td>
                   <v-text-field
                     :disabled="editedGradStatus.program != '1950'"
                     v-model="editedGradStatus.adultStartDate"
@@ -461,8 +455,8 @@
               <!-- Adult start date End -->
               <!-- Consumer education requirement met -->
               <tr>
-                <td><strong>Consumer education requirement met:</strong></td>
                 <td>
+                  <strong>Consumer education requirement met:</strong><br />
                   <span
                     v-if="studentGradStatus.consumerEducationRequirementMet"
                   >
@@ -475,8 +469,8 @@
               <!-- Consumer education requirement met End -->
               <!-- Recalculate Grad Status -->
               <tr>
-                <td><strong>Recalculate Grad Status:</strong></td>
                 <td>
+                  <strong>Recalculate Grad Status:</strong><br />
                   <v-select
                     :disabled="!allowUpdateRecalcFlags"
                     v-model="editedGradStatus.recalculateGradStatus"
@@ -493,8 +487,8 @@
               <!-- Recalculate Grad Status End -->
               <!-- Recalculate Projected Grad -->
               <tr>
-                <td><strong>Recalculate Projected Grad:</strong></td>
                 <td>
+                  <strong>Recalculate Projected Grad:</strong><br />
                   <v-select
                     :disabled="!allowUpdateRecalcFlags"
                     v-model="editedGradStatus.recalculateProjectedGrad"

@@ -5,7 +5,7 @@
         <GRADStatusForm class="gradstatus-actions float-right"></GRADStatusForm>
 
         <!-- Info callout in edit form when student status is MER/Merged -->
-        <div
+        <!-- <div
           v-if="studentGradStatus && studentGradStatus.studentStatus == 'MER'"
         >
           <v-alert show variant="info" type="info" class="p-3 mb-1">
@@ -15,9 +15,9 @@
               changed.
             </p>
           </v-alert>
-        </div>
+        </div> -->
         <!-- Warning callout in edit form when student status is N/Not Active -->
-        <div v-if="studentGradStatus && studentGradStatus.studentStatus == 'N'">
+        <!-- <div v-if="studentGradStatus && studentGradStatus.studentStatus == 'N'">
           <v-alert show variant="tonal" type="warning" class="p-3 mb-1">
             <h4 class="alert-heading">Student status: Not active</h4>
             <p class="locked-message">
@@ -26,9 +26,9 @@
               enrolled in a school.
             </p>
           </v-alert>
-        </div>
+        </div> -->
         <!-- Warning callout in edit form when student status is TER/Terminated -->
-        <div
+        <!-- <div
           v-else-if="
             studentGradStatus && studentGradStatus.studentStatus == 'TER'
           "
@@ -41,9 +41,9 @@
               enrolled in a school.
             </p>
           </v-alert>
-        </div>
+        </div> -->
         <!-- Warning callout in edit form when student status is ARC/Archived -->
-        <div
+        <!-- <div
           v-else-if="
             studentGradStatus && studentGradStatus.studentStatus == 'ARC'
           "
@@ -55,9 +55,9 @@
               "Current" if they are currently attending school
             </p>
           </v-alert>
-        </div>
+        </div> -->
         <!-- Warning callout in edit form when student status is DEC/Deceased -->
-        <div
+        <!-- <div
           v-else-if="
             studentGradStatus && studentGradStatus.studentStatus == 'DEC'
           "
@@ -68,7 +68,7 @@
               Warning: This student is showing as "Deceased".
             </p>
           </v-alert>
-        </div>
+        </div> -->
         <v-table density="compact" aria-label="edit grad status">
           <tbody>
             <!-- Program -->
