@@ -3,73 +3,7 @@
     <v-card no-body title="GRAD Status">
       <v-card-text class="p-3">
         <GRADStatusForm class="gradstatus-actions float-right"></GRADStatusForm>
-
-        <!-- Info callout in edit form when student status is MER/Merged -->
-        <!-- <div
-          v-if="studentGradStatus && studentGradStatus.studentStatus == 'MER'"
-        >
-          <v-alert show variant="info" type="info" class="p-3 mb-1">
-            <h4 class="alert-heading">Student status: Merged</h4>
-            <p class="locked-message">
-              This student's status is set to 'Merged'. Their data cannot be
-              changed.
-            </p>
-          </v-alert>
-        </div> -->
-        <!-- Warning callout in edit form when student status is N/Not Active -->
-        <!-- <div v-if="studentGradStatus && studentGradStatus.studentStatus == 'N'">
-          <v-alert show variant="tonal" type="warning" class="p-3 mb-1">
-            <h4 class="alert-heading">Student status: Not active</h4>
-            <p class="locked-message">
-              This student's status is set to 'Not active'. Re-activate their
-              record by setting their 'Student status' to 'Active' if they are
-              enrolled in a school.
-            </p>
-          </v-alert>
-        </div> -->
-        <!-- Warning callout in edit form when student status is TER/Terminated -->
-        <!-- <div
-          v-else-if="
-            studentGradStatus && studentGradStatus.studentStatus == 'TER'
-          "
-        >
-          <v-alert show variant="tonal" type="warning" class="p-3 mb-1">
-            <h4 class="alert-heading">Student status: Terminated</h4>
-            <p class="locked-message">
-              This student's status is set to 'Terminated'. Re-activate their
-              record by setting their 'Student status' to 'Current' if they are
-              enrolled in a school.
-            </p>
-          </v-alert>
-        </div> -->
-        <!-- Warning callout in edit form when student status is ARC/Archived -->
-        <!-- <div
-          v-else-if="
-            studentGradStatus && studentGradStatus.studentStatus == 'ARC'
-          "
-        >
-          <v-alert show variant="tonal" type="warning" class="p-3 mb-1">
-            <h4 class="alert-heading">Student status: Archived</h4>
-            <p class="locked-message">
-              This student is not active. Re-activate by setting their status to
-              "Current" if they are currently attending school
-            </p>
-          </v-alert>
-        </div> -->
-        <!-- Warning callout in edit form when student status is DEC/Deceased -->
-        <!-- <div
-          v-else-if="
-            studentGradStatus && studentGradStatus.studentStatus == 'DEC'
-          "
-        >
-          <v-alert show variant="tonal" type="warning" class="p-3 mb-1">
-            <h4 class="alert-heading">Student status: Deceased</h4>
-            <p class="locked-message">
-              Warning: This student is showing as "Deceased".
-            </p>
-          </v-alert>
-        </div> -->
-        <v-table density="compact" aria-label="edit grad status">
+        <v-table density="comfortable" aria-label="edit grad status">
           <tbody>
             <!-- Program -->
             <tr>
