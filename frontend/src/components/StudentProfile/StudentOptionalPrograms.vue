@@ -573,7 +573,7 @@ export default {
           title: "Graduation Program",
           cellProps: {
             style: "vertical-align: baseline;",
-            class: "pt-5",
+            class: "pt-5 pb-5",
           },
         },
         {
@@ -590,7 +590,14 @@ export default {
           key: "optionalProgramCompletionDate",
           title: "Optional Program Completion Date",
         },
-        { key: "actions", title: "Delete" },
+        {
+          key: "actions",
+          title: "Delete",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
+        },
       ],
     };
   },
