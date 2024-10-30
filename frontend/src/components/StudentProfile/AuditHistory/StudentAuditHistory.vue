@@ -2,10 +2,20 @@
   <v-card no-body>
     <v-tabs v-model="selectedTab">
       <v-tab value="studentChangeHistory"
-        ><v-chip class="text-none">Student Change History</v-chip></v-tab
+        ><v-chip
+          class="text-none"
+          color="primary"
+          :variant="selectedTab == 'studentChangeHistory' ? 'flat' : 'outlined'"
+          >Student Change History</v-chip
+        ></v-tab
       >
       <v-tab value="optionalProgramChangeHistory"
-        ><v-chip class="text-none"
+        ><v-chip
+          class="text-none"
+          color="primary"
+          :variant="
+            selectedTab == 'optionalProgramChangeHistory' ? 'flat' : 'outlined'
+          "
           >Optional Program Change History</v-chip
         ></v-tab
       >
@@ -70,30 +80,6 @@
             <template v-slot:item.updateDate="{ item }">
               {{ $filters.formatTime(item.updateDate) }}
             </template>
-
-            <!-- Attempt at dynamic rendering of slots -->
-            <!-- <template
-              v-for="header in studentChangeFields.filter(
-                (field) => field.key != 'data-table-expand'
-              )"
-              v-slot:[`item.${header.key}`]="{ item }"
-            >
-              <slot :name="`item.${header.key}`" :value="item[header.key]">
-                <div v-if="header.key == 'activityCode'">
-                  {{ item.data.activityCodeDescription }}
-                </div>
-                <div v-else-if="header.key == 'updateDate'">
-                  {{ $filters.formatTime(item.data.updateDate) }}
-                </div>
-                <div v-else-if="header.key == 'data-table-expand'">EXPAND</div>
-                <div
-                  v-else
-                  :class="item[header.key].changed ? 'value-changed' : ''"
-                >
-                  {{ item[header.key].value }}
-                </div>
-              </slot>
-            </template> -->
           </v-data-table>
         </v-window-item>
 
@@ -183,7 +169,7 @@ export default {
   },
   data: function () {
     return {
-      selectedTab: 0,
+      selectedTab: "studentChangeHistory",
       isEdit: false,
       isDelete: false,
       isAdd: false,

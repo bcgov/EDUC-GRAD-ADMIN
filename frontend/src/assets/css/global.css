@@ -153,6 +153,22 @@ th {
   font-weight: bold;
   color: rgb(var(--v-theme-bcGovBlue));
 }
-/* .v-label{
-  padding-top: 8px;
-} */
+.bg-primary .v-btn.v-tab {
+  background-color: rgb(var(--v-theme-primary));
+  border-radius: 4px 4px 0 0;
+  margin: 2px 1px 0 1px;
+}
+.bg-primary .v-btn.v-tab-item--selected {
+  background-color: white;
+  border: solid 1px rgba(var(--v-border-color), var(--v-border-opacity));
+  color: rgb(var(--v-theme-primary));
+  font-weight: bold;
+}
+.v-btn.v-tab-item--selected .v-tab__slider {
+  display: none;
+}
+.v-slide-group.bg-primary {
+  background-color: white !important;
+}
+
+
