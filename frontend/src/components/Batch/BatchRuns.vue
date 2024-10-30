@@ -42,7 +42,11 @@
                 <v-btn
                   variant="plain"
                   v-bind="props"
-                  class="no-outline-btn v-btn-link"
+                  :class="
+                    item.jobExecutionId == adminSelectedBatchId
+                      ? 'no-outline-btn v-btn-link selected'
+                      : 'no-outline-btn v-btn-link'
+                  "
                 >
                   {{ item.jobExecutionId }}
                 </v-btn>
@@ -176,7 +180,10 @@
               variant="outlined"
               class="text-none mr-3"
               density="default"
-              @click="isBatchShowing ^= true"
+              @click="
+                isBatchShowing ^= true;
+                adminSelectedBatchId = '';
+              "
             >
               Close
             </v-btn></template
@@ -191,7 +198,10 @@
               variant="outlined"
               class="text-none mr-3"
               density="default"
-              @click="isErrorShowing ^= true"
+              @click="
+                isErrorShowing ^= true;
+                adminSelectedBatchId = '';
+              "
             >
               Close
             </v-btn>
@@ -453,5 +463,8 @@ input {
 .link-button {
   text-decoration: underline;
   /* You can add more styles as needed to make it look like a link */
+}
+.v-btn-link.selected {
+  font-weight: bold;
 }
 </style>

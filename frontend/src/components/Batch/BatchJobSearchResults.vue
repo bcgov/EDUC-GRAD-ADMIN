@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="p-3">
     <div class="d-flex justify-space-between align-center">
       <v-card-title> Batch Job #{{ selectedBatchId }} students </v-card-title>
 
@@ -20,7 +20,7 @@
       There are no results to display.<br />
       Please select another Job Execution ID.
     </p>
-    {{ getBatchRequest }}
+
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
       :headers="batchDataFields"
