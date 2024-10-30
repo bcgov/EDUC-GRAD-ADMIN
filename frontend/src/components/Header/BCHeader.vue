@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar app color="bcGovBlue" dark>
+    <v-app-bar color="bcGovBlue" dark class="bc-header">
       <a class="navbar-brand ml-6" href="/">
         <img
           class="img-fluid d-md-block"
@@ -18,13 +18,9 @@
         <slot></slot>
       </div>
 
-      <v-menu v-model="menu" offset-y>
+      <v-menu v-if="smallScreen" v-model="menu" offset-y>
         <template #activator="{ props }">
-          <v-btn
-            icon
-            v-bind="props"
-            class="d-md-none d-lg-none d-xl-none d-xxl-none"
-          >
+          <v-btn icon v-bind="props">
             <v-icon>mdi-menu</v-icon>
           </v-btn>
         </template>
@@ -68,9 +64,15 @@
       </v-menu>
     </v-app-bar>
 
-    <v-app-bar v-if="!smallScreen" density="compact">
-      <v-toolbar>
-        <v-btn text v-for="link in menuLinks" :key="link.id" class="text-none">
+    <v-app-bar v-if="!smallScreen" density="compact" class="header-nav">
+      <v-toolbar class="pl-4 pr-6">
+        <v-btn
+          text
+          v-for="link in menuLinks"
+          :key="link.id"
+          class="text-none"
+          size="small"
+        >
           <router-link
             :to="link.route"
             style="text-decoration: none; color: inherit"
@@ -78,7 +80,7 @@
             {{ link.title }}
           </router-link>
         </v-btn>
-        <v-btn v-if="!profile.pen" class="text-none">
+        <v-btn v-if="!profile.pen" size="small" class="text-none">
           <a
             id="profile-route"
             class="text-decoration-none text-disabled"
@@ -86,7 +88,7 @@
             >Profile (Student Not Loaded)</a
           >
         </v-btn>
-        <v-btn v-else>
+        <v-btn size="small" v-else>
           <router-link
             :to="`/student-profile/${profile.studentID}`"
             id="profile-route"
@@ -98,9 +100,10 @@
         <div class="form-group top-search mb-0">
           <v-form @submit.prevent class="d-flex mb-0">
             <v-text-field
+              id="header-pen-search"
               density="compact"
               variant="outlined"
-              size="40"
+              size="9"
               type="search"
               v-model="penInput"
               maxlength="9"
@@ -109,8 +112,12 @@
               ref="penSearch"
               hide-details
               v-on:keyup="keyHandler"
+              append-inner-icon="mdi-magnify"
+              @click:appendInner="findStudentByPen"
+              :loading="searchLoading"
+              color="primary"
             ></v-text-field>
-            <v-btn
+            <!-- <v-btn
               @click="findStudentByPen"
               icon="mdi-magnify"
               density="comfortable"
@@ -120,7 +127,7 @@
               color="primary"
               class="px-2 mx-2 header-search-btn text-none"
             >
-            </v-btn>
+            </v-btn> -->
           </v-form>
         </div>
       </v-toolbar>
@@ -185,7 +192,7 @@ export default {
       return window.innerWidth;
     },
     isDesktop() {
-      return window.innerWidth >= 600; // Adjust this breakpoint as needed
+      return window.innerWidth >= 760; // Adjust this breakpoint as needed
     },
   },
   async created() {
@@ -204,8 +211,6 @@ export default {
     const versionResponse = await CommonService.getVersion();
     this.version = versionResponse.data;
   },
-  mounted() {},
-  beforeDestroy() {},
   methods: {
     updateDimensions() {
       //console.log(window.innerWidth); // Log the current window width for debugging
@@ -268,9 +273,20 @@ export default {
 </script>
 
 <style scoped>
-@media (max-width: 760px) {
-  .hide-on-small {
-    display: none;
-  }
+:deep(header.bc-header) {
+  border-bottom: 2px solid rgb(var(--v-theme-bcGovGold));
+}
+:deep(.header-nav .v-btn) {
+  font-size: 0.825em;
+  border-right: 1px solid
+    rgba(var(--v-theme-on-background), var(--v-disabled-opacity));
+  border-radius: 0;
+}
+:deep(.header-nav .v-btn):last-of-type {
+  border-right: none;
+}
+:deep(#header-pen-search) {
+  padding: 4px 16px;
+  min-height: 0;
 }
 </style>
