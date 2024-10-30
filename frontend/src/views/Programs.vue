@@ -91,6 +91,5 @@ export default {
 :deep(a.v-btn),
 :deep(a.v-btn.v-tab-item--selected) {
   text-decoration: none;
-  color: #fff;
 }
 </style>
