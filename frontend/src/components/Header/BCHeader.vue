@@ -63,7 +63,13 @@
 
     <v-app-bar v-if="!smallScreen" density="compact">
       <v-toolbar>
-        <v-btn text v-for="link in menuLinks" :key="link.id" class="text-none">
+        <v-btn
+          text
+          v-for="link in menuLinks"
+          :key="link.id"
+          class="text-none"
+          density="compact"
+        >
           <router-link
             :to="link.route"
             style="text-decoration: none; color: inherit"
@@ -71,7 +77,7 @@
             {{ link.title }}
           </router-link>
         </v-btn>
-        <v-btn v-if="!profile.pen" class="text-none">
+        <v-btn v-if="!profile.pen" class="text-none" density="compact">
           <a
             id="profile-route"
             class="text-decoration-none text-disabled"
@@ -79,7 +85,7 @@
             >Profile (Student Not Loaded)</a
           >
         </v-btn>
-        <v-btn v-else>
+        <v-btn v-else density="compact">
           <router-link
             :to="`/student-profile/${profile.studentID}`"
             id="profile-route"
