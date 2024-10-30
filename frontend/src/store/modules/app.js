@@ -60,7 +60,7 @@ export const useAppStore = defineStore('app',{
         //   const schools = response.data;
         //   this.schoolsList = schools;
         // });           
-        ApiService.apiAxios.get('/api/v2/trax/school').then(response => {
+        ApiService.apiAxios.get('/api/v1/trax/school').then(response => {
           const schools = response.data;
           this.schoolsList = schools;
         });           
