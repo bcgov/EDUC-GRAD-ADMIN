@@ -251,7 +251,7 @@
         </div>
       </v-row>
     </v-form>
-    <div v-if="studentSearchResults">
+    <div v-if="studentSearchResults?.length > 0">
       <v-alert
         type="success"
         variant="tonal"
@@ -259,6 +259,16 @@
         class="mt-8 mb-2 ml-1 py-3 width-fit-content"
         v-if="advancedSearchMessage && advancedSearchAPIMessage"
         :text="`${advancedSearchMessage}\n${advancedSearchAPIMessage}`"
+      ></v-alert>
+    </div>
+    <div v-else>
+      <v-alert
+        type="error"
+        variant="tonal"
+        border="start"
+        class="mt-8 mb-2 ml-1 py-3 width-fit-content"
+        v-if="advancedSearchAPIMessage"
+        :text="advancedSearchAPIMessage"
       ></v-alert>
     </div>
 
@@ -520,7 +530,7 @@ export default {
     // },
     findStudentsByAdvancedSearch: function () {
       this.advancedSearchMessage = "";
-      this.message = "";
+      this.advancedSearchAPIMessage = "";
       this.errorMessage = "";
 
       if (this.v$.$invalid) {
@@ -593,7 +603,6 @@ export default {
     },
     keyHandler: function (e) {
       if (e.keyCode === 13) {
-        this.studentSearchResults = [];
         //enter key pressed
         this.findStudentsByAdvancedSearch();
       }
@@ -609,6 +618,9 @@ export default {
       }
       this.advancedSearchInput.birthdateFrom.value = "";
       this.advancedSearchInput.birthdateTo.value = "";
+      this.advancedSearchMessage = "";
+      this.advancedSearchAPIMessage = "";
+      this.errorMessage = "";
     },
     advancedSearchValidate(obj) {
       //check if all inputs are empty
