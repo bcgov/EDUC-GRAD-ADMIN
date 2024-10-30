@@ -45,7 +45,6 @@
           :headers="schoolInputFields"
         >
           <template v-slot:item.remove="{ item }">
-            {{ item }}
             <v-btn
               @click="removeSchool(item.mincode)"
               class="btn btn-primary w-100"
