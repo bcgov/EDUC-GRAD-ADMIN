@@ -73,10 +73,7 @@
           class="text-none"
           size="small"
         >
-          <router-link
-            :to="link.route"
-            style="text-decoration: none; color: inherit"
-          >
+          <router-link :to="link.route">
             {{ link.title }}
           </router-link>
         </v-btn>
@@ -117,17 +114,6 @@
               :loading="searchLoading"
               color="primary"
             ></v-text-field>
-            <!-- <v-btn
-              @click="findStudentByPen"
-              icon="mdi-magnify"
-              density="comfortable"
-              :loading="searchLoading"
-              rounded="sm"
-              variant="text"
-              color="primary"
-              class="px-2 mx-2 header-search-btn text-none"
-            >
-            </v-btn> -->
           </v-form>
         </div>
       </v-toolbar>
@@ -282,11 +268,32 @@ export default {
     rgba(var(--v-theme-on-background), var(--v-disabled-opacity));
   border-radius: 0;
 }
+:deep(.header-nav .v-btn):hover {
+  background-color: transparent;
+  text-decoration: underline;
+  border-radius: 2px;
+}
+:deep(.v-btn:has(.text-disabled)):hover {
+  text-decoration: none;
+}
+:deep(.v-btn:hover > .v-btn__overlay) {
+  opacity: 0;
+}
 :deep(.header-nav .v-btn):last-of-type {
   border-right: none;
+}
+:deep(.header-nav .v-btn a) {
+  color: rgba(var(--v-theme-on-surface-light), var(--v-high-emphasis-opacity));
+  text-decoration: none !important;
 }
 :deep(#header-pen-search) {
   padding: 4px 16px;
   min-height: 0;
+}
+:deep(.v-field__append-inner i.v-icon):hover {
+  color: rgb(var(--v-theme-bcGovBlue));
+  background-color: rgba(var(--v-theme-bcGovBlue), var(--v-hover-opacity));
+  border-radius: 4px;
+  padding: 12px;
 }
 </style>

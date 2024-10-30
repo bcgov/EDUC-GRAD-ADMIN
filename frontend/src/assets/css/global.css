@@ -151,6 +151,7 @@ th {
 }
 .router-link-active{
   font-weight: bold;
+  color: rgb(var(--v-theme-bcGovBlue));
 }
 /* .v-label{
   padding-top: 8px;
