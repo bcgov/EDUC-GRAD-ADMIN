@@ -22,7 +22,7 @@
               label="Select a school to include"
               :items="getSchoolsList"
               :item-title="schoolTitle"
-              item-value="mincode"
+              item-value="minCode"
             >
               <template v-slot:label="label">
                 {{ label.label }}
@@ -132,7 +132,7 @@ export default {
       validationMessage: "",
       schoolInputFields: [
         {
-          key: "mincode",
+          key: "minCode",
           title: "Mincode",
           sortable: true,
           class: "text-left",
@@ -158,7 +158,7 @@ export default {
     schoolTitle(item) {
       // Customize this method to return the desired format
       if (item) {
-        return `${item.mincode} - ${item.displayName}`;
+        return `${item.minCode} - ${item.displayName}`;
       } else {
         return null;
       }
@@ -166,7 +166,7 @@ export default {
     schoolTitle(item) {
       // Customize this method to return the desired format
       if (item) {
-        return `${item.mincode} - ${item.displayName}`;
+        return `${item.minCode} - ${item.schoolName}`;
       } else {
         return null;
       }
