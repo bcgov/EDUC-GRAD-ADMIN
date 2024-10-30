@@ -22,11 +22,9 @@
         hide-default-footer
       >
         <template v-slot:item.optionalProgramName="{ item }">
-          <div class="pt-2">
-            {{ item.optionalProgramName }} ({{ item.optionalProgramCode }})
-            <br />
-            {{ item.optionalProgramCompletionDate }}
-          </div>
+          {{ item.optionalProgramName }} ({{ item.optionalProgramCode }})
+          <br />
+          {{ item.optionalProgramCompletionDate }}
         </template>
 
         <template v-slot:item.optionalReqMet="{ item }">
@@ -569,15 +567,23 @@ export default {
         {
           key: "data-table-expand",
           title: "",
-          sortable: true,
-          class: "text-left",
         },
         {
           key: "programCode",
           title: "Graduation Program",
-          class: "text-center",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5",
+          },
         },
-        { key: "optionalProgramName", title: "Optional Program" },
+        {
+          key: "optionalProgramName",
+          title: "Optional Program",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
+        },
         { key: "optionalReqMet", title: "Requirements Met" },
         { key: "optionalNonGradReasons", title: "Requirements Not Met" },
         {

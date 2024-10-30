@@ -1,18 +1,17 @@
 <template>
   <div>
-    <v-alert info v-if="!exams">
+    <v-alert info v-if="!studentExams">
       This student does not have any exams.
     </v-alert>
-    <DisplayTable
-      :items="exams"
-      :fields="fields"
-      showFilter="true"
-      title="Assessments"
+    <v-data-table
+      :items="studentExams"
+      :headers="studentExamsHeaders"
+      :items-per-page="'-1'"
     >
       <template v-slot:item.sessionDate="{ item }">
         {{ $filters.formatYYYYMMDate(item.sessionDate) }}
       </template>
-    </DisplayTable>
+    </v-data-table>
   </div>
 </template>
 
@@ -25,7 +24,7 @@ export default {
   props: {},
   computed: {
     ...mapState(useStudentStore, {
-      exams: "getStudentExams",
+      studentExams: "getStudentExams",
     }),
   },
   components: {
@@ -33,7 +32,7 @@ export default {
   },
   data: function () {
     return {
-      fields: [
+      studentExamsHeaders: [
         // {
         //   key: "data-table-expand",
         //   title: "",

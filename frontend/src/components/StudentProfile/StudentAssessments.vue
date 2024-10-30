@@ -9,6 +9,7 @@
       :headers="fields"
       showFilter="true"
       title="Assessments"
+      :items-per-page="'-1'"
       :id="id"
     >
       <template
