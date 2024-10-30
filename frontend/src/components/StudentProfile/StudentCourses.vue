@@ -9,6 +9,7 @@
           v-if="courses"
           :items="courses"
           :headers="fields"
+          :items-per-page="'-1'"
           :id="id"
           showFilter="true"
           title="studentCourse"
