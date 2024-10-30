@@ -67,7 +67,7 @@
     <!-- Studnet Demo. end-->
     <div class="row m-0">
       <div class="col-12 px-0">
-        <v-card class="p-0" color="#f2f2f2" :disabled="tabLoading">
+        <v-card class="p-0" :disabled="tabLoading">
           <v-window v-model="tab">
             <v-window-item value="gradStatusTab">
               <v-tabs v-model="selectedTab" bg-color="primary" grow>
@@ -99,13 +99,26 @@
                   <v-window-item value="GRAD">
                     <v-tabs v-model="selectedSubTab" color="primary">
                       <v-tab value="gradStatusTab" class="text-none"
-                        ><v-chip class="text-none">GRAD Status</v-chip></v-tab
+                        ><v-chip
+                          class="text-none"
+                          color="primary"
+                          :variant="
+                            selectedSubTab == 'gradStatusTab'
+                              ? 'flat'
+                              : 'outlined'
+                          "
+                          >GRAD Status</v-chip
+                        ></v-tab
                       >
-                      <v-tab
-                        value="requirementDetailsTab"
-                        class="text-none"
-                        color="primary"
-                        ><v-chip class="text-none"
+                      <v-tab value="requirementDetailsTab" class="text-none"
+                        ><v-chip
+                          class="text-none"
+                          color="primary"
+                          :variant="
+                            selectedSubTab == 'requirementDetailsTab'
+                              ? 'flat'
+                              : 'outlined'
+                          "
                           >Requirement Details</v-chip
                         ></v-tab
                       >
@@ -678,7 +691,7 @@ export default {
       // studentUngradReasonSelected: "",
       // studentUngradReasonDescription: "",
       // confirmStudentUndoCompletion: false,
-      selectedSubTab: 0,
+      selectedSubTab: "gradStatus",
       selectedTab: 0,
       projectedGradStatus: [],
       projectedGradStatusWithRegistrations: [],

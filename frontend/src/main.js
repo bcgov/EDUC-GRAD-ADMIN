@@ -28,6 +28,7 @@ const bcGovTheme = {
     secondary: "#7490BA",
     bcGovBlue: "#003366",
     bcGovGold: "#FCBA19",
+    bcLightGrey: "#EEEEEE",
     error: "#D8292F",
     info: "#003366",
     success: "#2E8540",
