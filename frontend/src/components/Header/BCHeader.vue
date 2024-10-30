@@ -92,14 +92,13 @@
           <v-form @submit.prevent class="d-flex mb-0">
             <v-text-field
               density="compact"
-              size="small"
               variant="outlined"
+              size="30"
               type="search"
               v-model="penInput"
               maxlength="9"
               minlength="9"
               placeholder="PEN"
-              class=""
               ref="penSearch"
               hide-details
               v-on:keyup="keyHandler"

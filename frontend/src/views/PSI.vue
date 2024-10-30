@@ -32,6 +32,7 @@
                 class="form__input"
                 trim
                 tabindex="1"
+                v-on:keyup="keyHandler"
               ></v-text-field>
             </div>
             <div class="advanced-search-field col-12 col-md-2">
@@ -61,6 +62,7 @@
                 class="form__input"
                 trim
                 tabindex="2"
+                v-on:keyup="keyHandler"
               ></v-text-field>
             </div>
             <div class="advanced-search-field col-12 col-md-2">
@@ -91,6 +93,7 @@
                 class="form__input"
                 trim
                 tabindex="3"
+                v-on:keyup="keyHandler"
               ></v-text-field>
             </div>
             <div class="advanced-search-field col-12 col-md-2">
@@ -103,6 +106,7 @@
                 item-title="text"
                 item-value="value"
                 tabindex="4"
+                v-on:keyup="keyHandler"
               ></v-select>
             </div>
             <div class="advanced-search-field col-12 col-md-2">
@@ -132,6 +136,7 @@
                 class="form__input"
                 trim
                 tabindex="5"
+                v-on:keyup="keyHandler"
               ></v-text-field>
             </div>
           </div>
@@ -172,8 +177,8 @@
               variant="tonal"
               border="start"
               class="mt-8 mb-0 ml-1 py-3 width-fit-content"
-              v-if="!!searchMessage"
-              :text="searchMessage"
+              v-if="!!advancedSearchMessage"
+              :text="advancedSearchMessage"
             ></v-alert>
           </div>
         </div>
@@ -320,8 +325,7 @@ export default {
   },
   methods: {
     clearInput: function () {
-      this.penInput = "";
-      this.psiResults = "";
+      this.psiResults = [];
       for (const key in this.advancedSearchInput) {
         if (this.advancedSearchInput.hasOwnProperty(key)) {
           this.advancedSearchInput[key].value = "";
@@ -333,6 +337,12 @@ export default {
           this.requirementsSearchInput[reqKey].value = "";
           this.requirementsSearchInput[reqKey].contains = false;
         }
+      }
+    },
+    keyHandler: function (e) {
+      if (e.keyCode === 13) {
+        //enter key pressed
+        this.advancePSISearch();
       }
     },
     advancePSISearch() {

@@ -28,6 +28,7 @@
               v-model="advancedSearchInput.courseCode.value"
               placeholder=""
               tabindex="1"
+              v-on:keyup="keyHandler"
             />
           </div>
           <div class="advanced-search-field col-12 col-md-2">
@@ -54,6 +55,7 @@
               v-model="advancedSearchInput.courseLevel.value"
               placeholder=""
               tabindex="2"
+              v-on:keyup="keyHandler"
             />
           </div>
           <div class="advanced-search-field col-12 col-md-2">
@@ -80,6 +82,7 @@
               v-model="advancedSearchInput.courseName.value"
               placeholder=""
               tabindex="3"
+              v-on:keyup="keyHandler"
             />
           </div>
           <div class="advanced-search-field col-12 col-md-2">
@@ -92,6 +95,7 @@
               item-title="text"
               item-value="value"
               tabindex="4"
+              v-on:keyup="keyHandler"
             ></v-select>
           </div>
           <div class="advanced-search-field col-12 col-md-auto">
@@ -122,6 +126,7 @@
               :date-format-options="{ year: '4-digit' }"
               autocomplete="off"
               tabindex="6"
+              v-on:keyup="keyHandler"
             ></v-text-field>
           </div>
         </v-row>
@@ -301,6 +306,12 @@ export default {
           this.advancedSearchInput[key].value = "";
           this.advancedSearchInput[key].contains = false;
         }
+      }
+    },
+    keyHandler: function (e) {
+      if (e.keyCode === 13) {
+        //enter key pressed
+        this.advanceCourseSearch();
       }
     },
     advanceCourseSearch() {
