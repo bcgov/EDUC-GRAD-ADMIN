@@ -34,12 +34,19 @@
             :key="link.id"
             @click="menu = false"
           >
-            <router-link
+            <v-btn
               :to="link.route"
-              style="text-decoration: none; color: inherit"
+              variant="text"
+              color="primary"
+              style="
+                text-transform: none;
+                text-decoration: none;
+                color: inherit;
+              "
+              class="text-start"
             >
               <v-list-item-title>{{ link.title }}</v-list-item-title>
-            </router-link>
+            </v-btn>
           </v-list-item>
           <v-spacer />
           <v-list-item v-if="!profile.pen">
@@ -63,13 +70,7 @@
 
     <v-app-bar v-if="!smallScreen" density="compact">
       <v-toolbar>
-        <v-btn
-          text
-          v-for="link in menuLinks"
-          :key="link.id"
-          class="text-none"
-          density="compact"
-        >
+        <v-btn text v-for="link in menuLinks" :key="link.id" class="text-none">
           <router-link
             :to="link.route"
             style="text-decoration: none; color: inherit"
@@ -77,7 +78,7 @@
             {{ link.title }}
           </router-link>
         </v-btn>
-        <v-btn v-if="!profile.pen" class="text-none" density="compact">
+        <v-btn v-if="!profile.pen" class="text-none">
           <a
             id="profile-route"
             class="text-decoration-none text-disabled"
@@ -85,7 +86,7 @@
             >Profile (Student Not Loaded)</a
           >
         </v-btn>
-        <v-btn v-else density="compact">
+        <v-btn v-else>
           <router-link
             :to="`/student-profile/${profile.studentID}`"
             id="profile-route"
@@ -99,7 +100,7 @@
             <v-text-field
               density="compact"
               variant="outlined"
-              size="30"
+              size="40"
               type="search"
               v-model="penInput"
               maxlength="9"

@@ -1,7 +1,6 @@
 <template>
   <div class="advanced-search-form mb-4">
     <h3>Advanced Student Search</h3>
-    {{ advancedSearchInput }}
     <p class="px-1">
       Use the advanced search to look up students by specified criteria.
     </p>
