@@ -1,6 +1,7 @@
 <template>
   <div class="advanced-search-form mb-4">
     <h3>Advanced Student Search</h3>
+    {{ advancedSearchInput }}
     <p class="px-1">
       Use the advanced search to look up students by specified criteria.
     </p>
@@ -507,17 +508,17 @@ export default {
     this.unsetStudent();
   },
   methods: {
-    keyHandler: function (e) {
-      if (e.keyCode === 13) {
-        //enter key pressed
-        this.studentSearchResults = [];
-        if (this.penInput) {
-          this.findStudentByPen();
-        } else if (this.surnameInput) {
-          this.findStudentBySurname();
-        }
-      }
-    },
+    // keyHandler: function (e) {
+    //   if (e.keyCode === 13) {
+    //     //enter key pressed
+    //     this.studentSearchResults = [];
+    //     if (this.penInput) {
+    //       this.findStudentByPen();
+    //     } else if (this.surnameInput) {
+    //       this.findStudentBySurname();
+    //     }
+    //   }
+    // },
     findStudentsByAdvancedSearch: function () {
       this.advancedSearchMessage = "";
       this.message = "";
@@ -591,9 +592,16 @@ export default {
     showAdvancedSearch: function () {
       this.showAdvancedSearchForm = true;
     },
+    keyHandler: function (e) {
+      if (e.keyCode === 13) {
+        this.studentSearchResults = [];
+        //enter key pressed
+        this.findStudentsByAdvancedSearch();
+      }
+    },
     clearInput: function () {
       // this.penInput = "";
-      this.studentSearchResults = "";
+      this.studentSearchResults = [];
       for (const key in this.advancedSearchInput) {
         if (this.advancedSearchInput.hasOwnProperty(key)) {
           this.advancedSearchInput[key].value = "";
