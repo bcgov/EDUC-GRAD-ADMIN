@@ -22,12 +22,12 @@ export const useStudentStore = defineStore("student", {
     quickSearchId: "",
     student: {
       profile: {},
-      courses: "not loaded",
-      assessments: "not loaded",
-      exams: "not loaded",
+      courses: [],
+      assessments: [],
+      exams: [],
       notes: [],
       gradStatus: "not loaded",
-      optionalPrograms: "not loaded",
+      optionalPrograms: [],
       hasExams: false,
       hasAssessments: false,
       hasCourses: false,
@@ -341,12 +341,12 @@ export const useStudentStore = defineStore("student", {
     unsetStudent() {
       this.student.profile = {};
       this.student.notes = [];
-      this.student.id = "not loaded";
-      this.student.courses = "not loaded";
-      this.student.assessments = "not loaded";
-      this.student.exams = "not loaded";
+      this.student.id = [];
+      this.student.courses = [];
+      this.student.assessments = [];
+      this.student.exams = [];
       this.student.gradStatus = "not loaded";
-      this.student.optionalPrograms = "not loaded";
+      this.student.optionalPrograms = [];
       this.student.hasExams = false;
       this.student.hasAssessments = false;
       this.student.hasCourses = false;
@@ -624,7 +624,11 @@ export const useStudentStore = defineStore("student", {
       }));
     },
     getStudentExams() {
-      return this.student.exams;
+      if (!this.student.exams || this.student.exams.length === 0) {
+        return [];
+      } else {
+        return this.student.exams;
+      }
     },
     getStudentAssessments() {
       if (
