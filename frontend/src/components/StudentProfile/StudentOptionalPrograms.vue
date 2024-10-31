@@ -190,7 +190,7 @@
                 color="error"
                 icon="mdi-delete-forever"
                 density="compact"
-                variant="outline"
+                variant="text"
               ></v-btn>
             </template>
             <v-card
@@ -346,7 +346,7 @@
                           color="error"
                           icon="mdi-delete-forever"
                           density="compact"
-                          variant="outline"
+                          variant="text"
                         ></v-btn>
                       </template>
                       <v-card
@@ -567,6 +567,10 @@ export default {
         {
           key: "data-table-expand",
           title: "",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
         },
         {
           key: "programCode",
@@ -585,10 +589,21 @@ export default {
           },
         },
         { key: "optionalReqMet", title: "Requirements Met" },
-        { key: "optionalNonGradReasons", title: "Requirements Not Met" },
+        {
+          key: "optionalNonGradReasons",
+          title: "Requirements Not Met",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
+        },
         {
           key: "optionalProgramCompletionDate",
           title: "Optional Program Completion Date",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
         },
         {
           key: "actions",

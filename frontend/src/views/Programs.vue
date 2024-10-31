@@ -13,10 +13,11 @@
               <v-btn
                 text
                 v-bind="props"
-                variant="link"
                 class="text-none"
                 size="large"
-                >Programs <v-icon>mdi-menu-down</v-icon></v-btn
+                variant="text"
+                append-icon="mdi-menu-down"
+                >Programs</v-btn
               >
             </template>
             <v-list>
@@ -38,11 +39,12 @@
               <v-btn
                 text
                 v-bind="props"
-                variant="link"
                 class="text-none"
                 size="large"
+                variant="text"
+                append-icon="mdi-menu-down"
                 block
-                >Optional Programs <v-icon>mdi-menu-down</v-icon></v-btn
+                >Optional Programs</v-btn
               >
             </template>
             <v-list>
