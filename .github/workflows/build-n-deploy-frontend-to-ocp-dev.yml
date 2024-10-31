@@ -39,7 +39,7 @@ jobs:
   openshift-ci-cd:
     name: Build & Deploy Frontend to DEV
     # ubuntu-latest can also be used.
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: dev
 
     outputs:
@@ -171,7 +171,7 @@ jobs:
           # Get status, returns 0 if rollout is successful
           oc rollout status dc/${{ env.IMAGE_NAME }}-dc
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.3.0
+        uses: zaproxy/action-full-scan@v0.10.0
         with:
           target: 'https://educ-grad-admin-bbe4c3-dev.apps.silver.devops.gov.bc.ca'
 
