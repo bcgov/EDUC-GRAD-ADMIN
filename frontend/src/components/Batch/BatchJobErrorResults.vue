@@ -1,5 +1,5 @@
 <template>
-  <v-card :title="'Batch Job #' + selectedErrorId + ' Error(s)'">
+  <v-card>
     <div class="d-flex justify-space-between align-center">
       <v-card-title> Batch Job #{{ selectedErrorId }} Error(s) </v-card-title>
 
@@ -18,6 +18,7 @@
       id="id"
       :showFilter="false"
       :pagination="true"
+      class="p-3"
     >
       <template v-slot:item.pen="{ item }">
         <v-btn
