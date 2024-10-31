@@ -20,11 +20,13 @@
               >
             </template>
             <v-list>
-              <v-list-item to="/programs/programs">Programs</v-list-item>
-              <v-list-item to="/programs/program-rules"
+              <v-list-item @click="tab = 1" to="/programs/programs"
+                >Programs</v-list-item
+              >
+              <v-list-item @click="tab = 1" to="/programs/program-rules"
                 >Program Rules</v-list-item
               >
-              <v-list-item to="/programs/transcript-message"
+              <v-list-item @click="tab = 1" to="/programs/transcript-message"
                 >Transcript Messaging</v-list-item
               >
             </v-list>
@@ -44,10 +46,12 @@
               >
             </template>
             <v-list>
-              <v-list-item to="/programs/optional-programs"
+              <v-list-item @click="tab = 2" to="/programs/optional-programs"
                 >Optional Programs</v-list-item
               >
-              <v-list-item to="/programs/optional-program-rules"
+              <v-list-item
+                @click="tab = 2"
+                to="/programs/optional-program-rules"
                 >Optional Program Rules</v-list-item
               >
             </v-list>
@@ -75,7 +79,7 @@ export default {
   name: "graduationPrograms",
   data() {
     return {
-      tab: 1,
+      tab: 0,
     };
   },
   methods: {},
