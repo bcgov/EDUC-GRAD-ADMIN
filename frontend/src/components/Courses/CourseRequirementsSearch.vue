@@ -28,6 +28,7 @@
               v-model="requirementsSearchInput.courseCode.value"
               placeholder=""
               tabindex="1"
+              v-on:keyup="keyHandler"
             ></v-text-field>
           </div>
           <div class="advanced-search-field col-12 col-md-2">
@@ -39,6 +40,7 @@
               placeholder=""
               tabindex="2"
               trim
+              v-on:keyup="keyHandler"
             ></v-text-field>
           </div>
           <div class="advanced-search-field col-12 col-md-2">
@@ -66,6 +68,7 @@
               placeholder=""
               tabindex="3"
               trim
+              v-on:keyup="keyHandler"
             ></v-text-field>
           </div>
         </v-row>
@@ -241,6 +244,12 @@ export default {
           this.requirementsSearchInput[reqKey].value = "";
           this.requirementsSearchInput[reqKey].contains = false;
         }
+      }
+    },
+    keyHandler: function (e) {
+      if (e.keyCode === 13) {
+        //enter key pressed
+        this.courseRequirementsSearch();
       }
     },
     courseRequirementsSearch() {
