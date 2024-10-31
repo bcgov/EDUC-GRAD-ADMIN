@@ -3,7 +3,7 @@
     <h1>Assessments</h1>
     <div>
       <v-card no-body>
-        <v-tabs v-model="tab" bg-color="primary" grow>
+        <v-tabs v-model="tab" bg-color="bcGovLightGrey">
           <v-tab value="assessmentTab" class="text-none" size="large"
             >Assessments</v-tab
           >

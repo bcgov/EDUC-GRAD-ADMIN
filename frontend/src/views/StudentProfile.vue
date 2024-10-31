@@ -17,9 +17,11 @@
                 id="actions"
                 right
                 class="float-right admin-actions text-none"
+                prepend-icon="mdi-school"
+                append-icon="mdi-menu-down"
+                color="primary"
               >
-                <v-icon icon="mdi-school" start></v-icon>Transcripts &
-                TVRs</v-btn
+                Transcripts & TVRs</v-btn
               >
             </template>
             <v-list>
@@ -70,7 +72,7 @@
         <v-card class="p-0" :disabled="tabLoading">
           <v-window v-model="tab">
             <v-window-item value="gradStatusTab">
-              <v-tabs v-model="selectedTab" bg-color="primary" grow>
+              <v-tabs v-model="selectedTab" bg-color="bcGovLightGrey">
                 <v-tab value="GRAD" class="text-none">GRAD</v-tab>
                 <v-tab value="Courses" class="text-none"
                   >Courses ({{ courses.length }})</v-tab
@@ -138,8 +140,10 @@
                       <v-window-item value="gradStatusTab">
                         <div v-if="studentGradStatus.studentGradData">
                           <v-alert
-                            color="Info"
-                            icon="$info"
+                            type="info"
+                            variant="tonal"
+                            border="start"
+                            class="mt-4"
                             v-if="
                               studentGradStatus.studentGradData.gradMessage &&
                               !studentGradStatus.recalculateGradStatus

@@ -2,7 +2,7 @@
   <div class="codes-view">
     <h1>Codes</h1>
     <v-card no-body>
-      <v-tabs v-model="tab" bg-color="primary" grow>
+      <v-tabs v-model="tab" bg-color="bcGovLightGrey">
         <v-tab to="/codes/career-programs" class="text-none" size="large"
           >Career Program Codes</v-tab
         >
@@ -400,11 +400,5 @@ export default {
 
 .profile-name {
   padding-bottom: 10px;
-}
-
-:deep(a.v-btn),
-:deep(a.v-btn.v-tab-item--selected) {
-  text-decoration: none;
-  color: #fff;
 }
 </style>
