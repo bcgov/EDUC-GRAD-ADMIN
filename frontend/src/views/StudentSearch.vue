@@ -2,7 +2,7 @@
   <div class="studentlist">
     <h1>Student Search</h1>
     <v-card>
-      <v-tabs v-model="tab" bg-color="primary" grow>
+      <v-tabs v-model="tab" bg-color="bcGovLightGrey">
         <v-tab value="pen" class="text-none" size="large"> PEN Search </v-tab>
         <v-tab value="advance" class="text-none" size="large">
           Advanced Search
@@ -27,15 +27,11 @@
   </div>
 </template>
 <script>
-import { mapState, mapActions, mapWritableState, storeToRefs } from "pinia";
 import { useVuelidate } from "@vuelidate/core";
 import { useSnackbarStore } from "@/store/modules/snackbar";
-import { useStudentStore } from "@/store/modules/student";
-import StudentService from "@/services/StudentService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 import PenSearchForm from "@/components/StudentSearch/PenSearchForm.vue";
 import StudentAdvancedSearch from "@/components/StudentSearch/StudentAdvancedSearch.vue";
-const studentStore = useStudentStore();
 
 export default {
   name: "studentSearch",

@@ -631,7 +631,7 @@ export const useStudentStore = defineStore("student", {
         !Array.isArray(this.student.assessments) ||
         this.student.assessments.length === 0
       ) {
-        return "";
+        return [];
       }
       return this.student.assessments.map((assessment) => ({
         ...assessment,

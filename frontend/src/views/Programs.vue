@@ -3,7 +3,7 @@
     <h1>Programs</h1>
 
     <v-card no-body>
-      <v-tabs v-model="tab" bg-color="primary" grow>
+      <v-tabs v-model="tab" bg-color="bcGovLightGrey">
         <v-tab to="/programs/algorithm-rules" class="text-none" size="large"
           >Algorithm Rules</v-tab
         >

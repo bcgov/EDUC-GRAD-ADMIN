@@ -6,7 +6,7 @@
     max-width="500px"
   >
     <template v-slot:activator="{ props }">
-      <v-btn v-if="hasPermissions('STUDENT', 'optionalProgramUpdate')" color="bcGovBlue" prepend-icon="mdi-plus" class="float-right text-none mt-n12 mb-8" @click="openCreateOptionalProgramDialog()" text="Add Optional Program">
+      <v-btn v-if="hasPermissions('STUDENT', 'optionalProgramUpdate')" color="primary" variant="flat" prepend-icon="mdi-plus" class="float-right text-none mt-n12 mb-8" @click="openCreateOptionalProgramDialog()" text="Add Optional Program">
       </v-btn>
     </template>
 
