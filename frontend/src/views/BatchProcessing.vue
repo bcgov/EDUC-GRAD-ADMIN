@@ -2,13 +2,14 @@
   <div class="batch-processing-view">
     <h1>Batch Processing</h1>
     <div>
-      <v-tabs v-model="activeTab" bg-color="transparent">
+      <v-tabs v-model="activeTab" bg-color="bcGovLightGrey">
         <v-tab
           value="batchRuns"
           @click="
             getJwtToken;
             activeTab = 'batchRuns';
           "
+          class="text-none"
           >Batch Runs ({{ batchRuns.length }})</v-tab
         >
         <v-tab
@@ -17,6 +18,7 @@
             clearBatchDetails;
           "
           value="newBatchRequest"
+          class="text-none"
           >New Batch Request</v-tab
         >
         <v-tab
@@ -25,6 +27,7 @@
             getJwtToken;
             activeTab = 'scheduledRuns';
           "
+          class="text-none"
           >User Scheduled ({{ queueScheduledJobs.length }} Queued)</v-tab
         >
         <v-tab
@@ -32,15 +35,22 @@
             getJwtToken;
             activeTab = 'batchRoutines';
           "
+          class="text-none"
           value="batchRoutines"
           >Scheduled Routines</v-tab
         >
+        <v-spacer />
 
-        <v-tab @click.prevent class="ml-auto">
-          <v-btn @click.stop="updateDashboards">
-            Update <v-icon>mdi-refresh</v-icon>
-          </v-btn>
-        </v-tab>
+        <v-btn
+          @click.stop="updateDashboards"
+          class="text-none"
+          style="margin: 6px"
+          color="primary"
+          variant="flat"
+          append-icon="mdi-refresh"
+        >
+          Update
+        </v-btn>
       </v-tabs>
 
       <v-tabs-window v-model="getActiveTab">
