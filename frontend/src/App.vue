@@ -18,7 +18,6 @@
               <!-- You can display more user info here or switch roles -->
               <p>Username: {{ userInfoGet.userName }}</p>
               <p>Current Role: {{ roles }}</p>
-              <v-btn @click="switchRole">Switch Role</v-btn>
             </v-card-text>
 
             <v-card-actions>
