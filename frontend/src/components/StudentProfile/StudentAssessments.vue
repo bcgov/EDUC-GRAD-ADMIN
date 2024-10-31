@@ -10,7 +10,6 @@
       showFilter="true"
       title="Assessments"
       :items-per-page="'-1'"
-      :id="id"
     >
       <template
         v-slot:item.data-table-expand="{
