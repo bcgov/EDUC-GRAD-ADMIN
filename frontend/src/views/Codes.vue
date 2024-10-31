@@ -12,9 +12,10 @@
               <v-btn
                 text
                 v-bind="props"
-                variant="link"
+                variant="text"
                 class="text-none"
                 size="large"
+                append-icon="mdi-menu-down"
                 >Credentials</v-btn
               >
             </template>
