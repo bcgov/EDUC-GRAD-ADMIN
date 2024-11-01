@@ -34,7 +34,7 @@ env:
   MIN_MEM: "200Mi"
   MAX_MEM: "250Mi"
   MIN_REPLICAS: "1"
-  MAX_REPLICAS: "1"
+  MAX_REPLICAS: "2"
 
   # SITE_URL should have no scheme or port. It will be prepended with https://
   HOST_ROUTE: ${{ secrets.SITE_URL }}
@@ -46,7 +46,7 @@ jobs:
   openshift-ci-cd:
     name: Build & Deploy Backend to DEV
     # ubuntu-latest can also be used.
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: dev
 
     outputs:
@@ -169,6 +169,6 @@ jobs:
           oc rollout status dc/${{ env.IMAGE_NAME }}-dc
 
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.3.0
+        uses: zaproxy/action-full-scan@v0.10.0
         with:
           target: 'https://educ-grad-admin-bbe4c3-dev.apps.silver.devops.gov.bc.ca'

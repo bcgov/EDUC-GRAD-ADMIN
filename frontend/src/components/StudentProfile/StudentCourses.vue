@@ -10,17 +10,8 @@
           :items="courses"
           :headers="fields"
           :items-per-page="'-1'"
-          :id="id"
           showFilter="true"
           title="studentCourse"
-          :delete="{
-            disable: {
-              condition: 'OR',
-              criteria: [],
-            },
-            label: 'Delete',
-            action: 'removeStudentCourse',
-          }"
         >
           <template
             v-slot:item.data-table-expand="{
@@ -318,14 +309,14 @@ export default {
       // Set the data property to false to close the modal
       this.modalState = false;
     },
-    toggle(id) {
-      const index = this.opened.indexOf(id);
-      if (index > -1) {
-        this.opened.splice(index, 1);
-      } else {
-        this.opened.push(id);
-      }
-    },
+    // toggle(id) {
+    //   const index = this.opened.indexOf(id);
+    //   if (index > -1) {
+    //     this.opened.splice(index, 1);
+    //   } else {
+    //     this.opened.push(id);
+    //   }
+    // },
     checkForPendingUpdates() {
       if (this.hasGradStatus) {
         for (let i = 0; i < this.courses.length; i++) {
