@@ -58,8 +58,8 @@
             <v-card-text>
               <p v-if="tokenExpired">Your session has expired. Please Login.</p>
               <p v-else>
-                Your session is about to expire in {{ timerValue }} seconds. Do
-                you want to extend your session?
+                Your session is about to expire in {{ timeRemaining }} seconds.
+                Do you want to extend your session?
               </p>
             </v-card-text>
 
