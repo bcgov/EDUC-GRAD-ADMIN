@@ -1,25 +1,27 @@
 <template>
   <v-container fluid class="full-height">
-    <v-row align="center">
-      <v-col cols="10" sm="10" md="8" lg="4" xl="3">
-        <v-card class="session-expired-card">
-          <v-card-title class="gov-header">
+    <v-row>
+      <v-spacer />
+      <v-col cols="12" md="4" lg="4">
+        <v-card class="pt-3 pb-4">
+          <v-card-title>
             <h4 id="logout_text">Logged Out</h4>
           </v-card-title>
           <v-card-text id="logout_descriptor">
-            <v-row style="margin: 0.3rem">You have Logged out.</v-row>
+            You have Logged out of the Graduation Administration Application.
+          </v-card-text>
+          <v-card-actions>
             <v-btn
               @click="clearStorage"
-              :href="Routes.LOGIN"
-              class="ma-1"
-              dark
-              color="#003366"
-              >Log In</v-btn
+              variant="text"
+              :href="routes.LOGIN"
+              color="primary"
+              >Login</v-btn
             >
-            <span>&nbsp;again if you wish to continue.</span>
-          </v-card-text>
+          </v-card-actions>
         </v-card>
       </v-col>
+      <v-spacer />
     </v-row>
   </v-container>
 </template>
