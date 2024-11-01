@@ -272,7 +272,7 @@ export default {
   color: rgba(var(--v-theme-on-surface-light), var(--v-high-emphasis-opacity));
   text-decoration: none !important;
 }
-:deep(.header-nav .v-btn):hover {
+:deep(.header-nav .v-btn .v-btn__content):hover {
   background-color: transparent;
   text-decoration: underline;
   border-radius: 2px;
