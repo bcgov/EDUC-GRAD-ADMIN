@@ -180,4 +180,8 @@ button.v-btn:focus {
   outline: none;
 }
 
+.v-table__wrapper {
+  overflow: unset;
+}
+
 
