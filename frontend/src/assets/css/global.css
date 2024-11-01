@@ -90,7 +90,7 @@ option:disabled{
     background: #fff !important;
     border: none !important;
   }
-  #optional-programs-dd button{
+  /* #optional-programs-dd button{
     padding: 0px !important;
     line-height: 1em;
     color: #1a5a96;
@@ -101,7 +101,7 @@ option:disabled{
   #optional-programs-dd button:focus{
     box-shadow: none;
     color: #495057;
-  }
+  } */
   .nav-item a{
     border-radius: 0px !important;
   }
@@ -166,11 +166,18 @@ th {
   color: rgb(var(--v-theme-primary));
   font-weight: bold;
 }
+.bg-bcGovLightGrey .v-btn.v-tab-item--selected .v-btn__content {
+  font-weight: bold;
+}
 .v-btn.v-tab-item--selected .v-tab__slider {
   display: none;
 }
 .v-slide-group.bg-primary {
   background-color: white !important;
+}
+
+button.v-btn:focus {
+  outline: none;
 }
 
 

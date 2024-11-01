@@ -1,26 +1,30 @@
 <template>
   <div>
     <!-- Button to open the dialog -->
-    <v-btn
-      color="primary"
-      @click="showDialog = true"
-      prepend-icon="mdi-plus"
-      class="text-none"
-      >Add Note</v-btn
-    >
+    <v-row no-gutters>
+      <v-spacer />
+      <v-btn
+        color="primary"
+        @click="showDialog = true"
+        prepend-icon="mdi-plus"
+        class="text-none"
+        >Add Student Note</v-btn
+      >
+    </v-row>
 
     <!-- v-dialog for adding notes -->
     <v-dialog v-model="showDialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="headline">Add Note</span>
+          <span class="headline">Add Student Note</span>
         </v-card-title>
-        <v-card-text>
+        <v-card-text class="bg-surface-light">
           <v-form @submit.prevent="onSubmit" @reset="onReset">
             <v-textarea
               v-model="newNote.note"
               label="Add note:"
               placeholder="Max 255 Characters"
+              variant="outlined"
               :rules="[
                 (value) =>
                   !value || value.length <= 255 || 'Max 255 characters',
@@ -30,72 +34,96 @@
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" @click="onSubmit" class="text-none">Add</v-btn>
-          <v-btn text @click="showDialog = false" class="text-none"
+          <v-btn
+            color="error"
+            variant="outlined"
+            @click="showDialog = false"
+            class="text-none ml-4"
             >Cancel</v-btn
+          >
+          <v-spacer />
+          <v-btn
+            color="error"
+            variant="flat"
+            @click="onSubmit"
+            class="text-none mr-4 mb-4"
+            >Add Student Note</v-btn
           >
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <v-list>
-      <v-list-item-group>
-        <v-list-item
-          v-for="(studentNote, studentNoteIndex) in studentNotes"
-          :key="studentNote.id"
-        >
-          <v-card class="mb-2" outlined>
-            <v-card-title>
-              <span>{{ studentNote.createUser }}</span>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="onEditNote(studentNote)">
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-              <v-btn
-                v-if="showAddButton"
-                icon
-                @click="onDelete(studentNote.id)"
-              >
-                <v-icon color="red">mdi-delete</v-icon>
-              </v-btn>
-            </v-card-title>
-            <v-card-subtitle>
-              <strong>Created:</strong>
-              {{ $filters.formatTime(studentNote.createDate) }}
-            </v-card-subtitle>
-            <v-card-text>
-              <div v-if="showEditForm != studentNote.id">
-                {{ studentNote.note }}
-              </div>
-              <v-textarea
-                v-if="showEditForm == studentNote.id"
-                v-model="editedNote.note"
-                placeholder="Max 255 Characters"
-                :rules="[
-                  (value) =>
-                    !value || value.length <= 255 || 'Max 255 characters',
-                ]"
-                rows="3"
-                max-rows="6"
-              ></v-textarea>
-              <v-btn
-                v-if="showSave && showEditForm == studentNote.id"
-                color="primary"
-                @click="onSaveEditedNote(studentNoteIndex, editedNote)"
-              >
-                Save
-              </v-btn>
+      <v-list-item
+        v-for="(studentNote, studentNoteIndex) in studentNotes"
+        :key="studentNote.id"
+      >
+        <v-card class="mb-2" variant="elevated" max-width="1200px">
+          <v-card-title>
+            <span>{{ studentNote.createUser }}</span>
+            <v-btn
+              v-if="showAddButton"
+              @click="onDelete(studentNote.id)"
+              color="error"
+              icon="mdi-delete"
+              variant="text"
+              class="float-right"
+            >
+            </v-btn>
+            <v-btn
+              @click="onEditNote(studentNote)"
+              color="bcGovBlue"
+              icon="mdi-pencil"
+              variant="text"
+              class="float-right"
+            >
+            </v-btn>
+          </v-card-title>
+          <v-divider class="mx-4 mt-0" />
+          <v-card-text>
+            <div v-if="showEditForm != studentNote.id">
+              {{ studentNote.note }}
+            </div>
+            <v-textarea
+              v-if="showEditForm == studentNote.id"
+              v-model="editedNote.note"
+              placeholder="Max 255 Characters"
+              variant="outlined"
+              :rules="[
+                (value) =>
+                  !value || value.length <= 255 || 'Max 255 characters',
+              ]"
+              rows="3"
+              max-rows="6"
+            ></v-textarea>
+            <v-row no-gutters>
               <v-btn
                 v-if="showEditForm == studentNote.id"
-                text
+                color="error"
+                variant="outlined"
+                class="text-none mb-2"
                 @click="cancelEdit()"
               >
                 Cancel
               </v-btn>
-            </v-card-text>
-          </v-card>
-        </v-list-item>
-      </v-list-item-group>
+              <v-spacer />
+              <v-btn
+                v-if="showSave && showEditForm == studentNote.id"
+                color="error"
+                variant="flat"
+                class="text-none mb-2"
+                @click="onSaveEditedNote(studentNoteIndex, editedNote)"
+              >
+                Save
+              </v-btn>
+            </v-row>
+          </v-card-text>
+          <v-card-subtitle class="ml-0 mb-4">
+            <strong>Created:</strong>
+            {{ $filters.formatTime(studentNote.createDate) }}
+          </v-card-subtitle>
+        </v-card>
+      </v-list-item>
     </v-list>
   </div>
 </template>

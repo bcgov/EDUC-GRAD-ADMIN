@@ -25,10 +25,10 @@ form {
   padding: 5px 5px 5px 7px;
 }
 
-.text_input[type="text"]:focus {
+/* .text_input[type="text"]:focus {
     outline: 4px solid #3B99FC;
     outline-offset: 1px;
-}
+} */
 
 .text_label {
   display: flex;
@@ -56,10 +56,10 @@ text-decoration: underline;
 opacity: 0.80;
 }
 
-.text_input:focus {
+/* .text_input:focus {
 outline: 4px solid #3B99FC;
 outline-offset: 1px;
-}
+} */
 
 .BC-Gov-PrimaryButton:active {
 opacity: 1;

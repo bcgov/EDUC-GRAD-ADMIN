@@ -5,21 +5,22 @@
       density="compact"
       class="local-env"
     >
-      <v-spacer />Vue 3 - <strong>localhost</strong> environment <v-spacer />
+      <v-spacer /><strong>localhost</strong>&nbsp;environment
+      <v-spacer />
     </v-app-bar>
     <v-app-bar
       v-else-if="environment === 'dev'"
       density="compact"
       class="dev-env"
     >
-      <v-spacer />Vue 3 - <strong>DEV</strong> environment<v-spacer />
+      <v-spacer /><strong>DEV</strong>&nbsp;environment<v-spacer />
     </v-app-bar>
     <v-app-bar
       v-else-if="environment == 'test'"
       density="compact"
       class="test-env"
     >
-      <v-spacer />Vue 3 - <strong>TEST</strong> environment<v-spacer />
+      <v-spacer /><strong>TEST</strong>&nbsp;environment<v-spacer />
     </v-app-bar>
   </div>
 </template>
@@ -83,7 +84,7 @@ export default {
   float: none;
 }
 #env-banner .test-env {
-  background-color: #80ff00;
+  background-color: #80ff00ad;
   color: #000;
   width: 100%;
   float: none;
