@@ -175,7 +175,11 @@ export default {
     editableFields() {
       return this.fields.filter((field) => field.editable);
     },
-
+    // totalRows: function () {
+    //   if (this.items?.length) {
+    //     return this.items.length;
+    //   } else return this.totalRows;
+    // },
     sortOptions() {
       return this.fields
         .filter((f) => f.sortable)

@@ -1,7 +1,6 @@
 <template>
   <v-app>
     <Snackbar></Snackbar>
-
     <Bcheader class="bcheader">
       <div v-if="isAuthenticatedGet && dataReady">
         <v-btn @click="dialog = true">{{ userInfoGet.userName }}</v-btn>
@@ -58,13 +57,13 @@
             <v-card-text>
               <p v-if="tokenExpired">Your session has expired. Please Login.</p>
               <p v-else>
-                Your session is about to expire in {{ timerValue }} seconds. Do
-                you want to extend your session?
+                Your session is about to expire in {{ timerValue }} seconds. Are
+                you still there?
               </p>
             </v-card-text>
 
             <v-card-actions>
-              <v-btn :href="authRoutes.LOGIN" v-if="tokenExpired">Login</v-btn>
+              <v-btn @click="login" v-if="tokenExpired">Login</v-btn>
               <v-btn @click="resumeSession" v-else>Yes</v-btn>
               <v-btn @click="logout">Logout</v-btn>
             </v-card-actions>
@@ -134,8 +133,8 @@ export default {
     dataReady: function () {
       return this.userInfoGet;
     },
-    timeRemaining: function () {
-      return Math.floor(this.timerValue);
+    loginUrl: function () {
+      return this.authRoutes.LOGIN;
     },
   },
   methods: {
@@ -178,8 +177,7 @@ export default {
     },
     login() {
       // Use Vue Router to navigate to the login route
-      console.log(this.authRoutes.LOGIN);
-      this.$router.push(this.authRoutes.LOGIN);
+      this.$router.push(this.loginUrl);
     },
   },
 };
