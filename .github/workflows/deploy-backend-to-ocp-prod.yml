@@ -19,7 +19,7 @@ env:
   DOCKER_ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca/docker-remote
   ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca
 
-  APP_NAME: 'educ-grad-admin'
+  APP_NAME: "educ-grad-admin"
   REPO_NAME: "educ-grad-admin"
   BRANCH: "main"
   APP_NAME_BACKEND: "educ-grad-admin-backend"
@@ -47,7 +47,7 @@ jobs:
   openshift-ci-cd:
     name: Deploy Backend to PROD
     # ubuntu-latest can also be used.
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: prod
 
     outputs:

@@ -19,7 +19,7 @@ env:
   DOCKER_ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca/docker-remote
   ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca
 
-  APP_NAME: 'educ-grad-admin'
+  APP_NAME: "educ-grad-admin"
   REPO_NAME: "educ-grad-admin"
   BRANCH: "main"
   APP_NAME_BACKEND: "educ-grad-admin-backend"
@@ -38,7 +38,7 @@ env:
   MIN_MEM: "200Mi"
   MAX_MEM: "250Mi"
   MIN_REPLICAS: "3"
-  MAX_REPLICAS: "3"
+  MAX_REPLICAS: "5"
 
 on:
   workflow_dispatch:
@@ -47,7 +47,7 @@ jobs:
   openshift-ci-cd:
     name: Deploy Backend to TEST
     # ubuntu-latest can also be used.
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: test
 
     outputs:
@@ -93,6 +93,6 @@ jobs:
           oc rollout status dc/${{ env.IMAGE_NAME }}-dc
 
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.3.0
+        uses: zaproxy/action-full-scan@v0.10.0
         with:
-          target: 'https://educ-grad-admin-bbe4c3-test.apps.silver.devops.gov.bc.ca'
+          target: "https://educ-grad-admin-bbe4c3-test.apps.silver.devops.gov.bc.ca"

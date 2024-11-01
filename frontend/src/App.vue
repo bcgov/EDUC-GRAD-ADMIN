@@ -178,7 +178,6 @@ export default {
     },
     login() {
       // Use Vue Router to navigate to the login route
-      console.log(this.authRoutes.LOGIN);
       this.$router.push(this.authRoutes.LOGIN);
     },
   },
