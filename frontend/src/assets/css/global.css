@@ -149,9 +149,12 @@ th {
 .v-table > .v-table__wrapper > table > tbody > tr > td, .v-table > .v-table__wrapper > table > thead > tr > th {
   padding: var(--v-table-padding);
 }
-.router-link-active{
+.router-link-active, .v-btn--active:not(.v-btn--disabled) {
   font-weight: bold;
   color: rgb(var(--v-theme-bcGovBlue));
+}
+.v-btn--active .v-btn__overlay {
+  background-color: transparent;
 }
 .bg-primary .v-btn.v-tab, .bg-bcGovLightGrey .v-btn.v-tab {
   border-radius: 4px 4px 0 0;

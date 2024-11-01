@@ -72,26 +72,28 @@
           :key="link.id"
           class="text-none"
           size="small"
+          :to="link.route"
         >
-          <router-link :to="link.route">
-            {{ link.title }}
-          </router-link>
+          {{ link.title }}
         </v-btn>
-        <v-btn v-if="!profile.pen" size="small" class="text-none">
-          <a
-            id="profile-route"
-            class="text-decoration-none text-disabled"
-            :disabled="true"
-            >Profile (Student Not Loaded)</a
-          >
+        <v-btn
+          v-if="!profile.pen"
+          id="profile-route"
+          size="small"
+          disabled
+          class="text-none"
+          to="#"
+        >
+          Profile (Student Not Loaded)
         </v-btn>
-        <v-btn size="small" v-else>
-          <router-link
-            :to="`/student-profile/${profile.studentID}`"
-            id="profile-route"
-            class="text-none"
-            >Profile ({{ profile.pen }})</router-link
-          >
+        <v-btn
+          id="profile-route"
+          size="small"
+          :to="`/student-profile/${profile.studentID}`"
+          class="text-none"
+          v-else
+        >
+          Profile ({{ profile.pen }})
         </v-btn>
         <v-spacer />
         <div class="form-group top-search mb-0">
@@ -267,6 +269,8 @@ export default {
   border-right: 1px solid
     rgba(var(--v-theme-on-background), var(--v-disabled-opacity));
   border-radius: 0;
+  color: rgba(var(--v-theme-on-surface-light), var(--v-high-emphasis-opacity));
+  text-decoration: none !important;
 }
 :deep(.header-nav .v-btn):hover {
   background-color: transparent;
@@ -281,10 +285,6 @@ export default {
 }
 :deep(.header-nav .v-btn):last-of-type {
   border-right: none;
-}
-:deep(.header-nav .v-btn a) {
-  color: rgba(var(--v-theme-on-surface-light), var(--v-high-emphasis-opacity));
-  text-decoration: none !important;
 }
 :deep(#header-pen-search) {
   padding: 4px 16px;
