@@ -129,7 +129,7 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.isBatchLoading = false;
+            this.batchLoading = false;
           }
         });
     },
