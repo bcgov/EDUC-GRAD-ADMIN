@@ -146,7 +146,7 @@ export default {
       StudentService.getBatchHistory(batchId, page)
         .then((response) => {
           this.batchData = response.data.content;
-          this.rows = response.data.totalElements;
+          this.totalElements = response.data.totalElements;
           this.itemsPerPage = response.data.size;
           this.batchLoading = false;
         })
