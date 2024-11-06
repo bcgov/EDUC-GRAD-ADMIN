@@ -11,15 +11,6 @@
         >
       </template>
       <v-card>
-        <v-overlay
-          v-model="batchLoading"
-          class="align-center justify-center"
-          contained
-        >
-          <v-progress-circular indeterminate color="primary" size="64">
-            Loading...
-          </v-progress-circular>
-        </v-overlay>
         <div class="d-flex justify-space-between align-center">
           <v-card-title>Graduation Algorithm</v-card-title>
           <v-btn
@@ -149,7 +140,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
