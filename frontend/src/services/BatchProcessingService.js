@@ -40,11 +40,11 @@ export default {
        //For Blank transcript print or Blank certificate print option, the payload must use the blankPayload
       if(credentialType == "Blank transcript print" || credentialType == "Blank certificate print"){
         
-        scheduledRequest.payload = request;
-        scheduledRequest.blankPayLoad = null;
-      }else{
         scheduledRequest.payload = null;
         scheduledRequest.blankPayLoad = request;
+      }else{
+        scheduledRequest.payload = request;
+        scheduledRequest.blankPayLoad = null;
       }
 
       if(credentialType == "OT" && request.psi && request.psi.length >0){

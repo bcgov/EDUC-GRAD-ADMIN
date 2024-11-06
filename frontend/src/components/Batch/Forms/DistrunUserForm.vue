@@ -543,9 +543,15 @@ export default {
         // eslint-disable-next-line
         .catch((error) => {
           if (error.response.statusText) {
-            this.makeToast("ERROR " + error.response.statusText, "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error.response.statusText,
+              5000
+            );
           } else {
-            this.makeToast("ERROR " + "error with webservervice", "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + "error with webservervice",
+              5000
+            );
           }
         });
     },
@@ -563,6 +569,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.dialog = false;
       try {
         const requestTemplate = [
           "credentialTypeCode",
@@ -583,6 +590,13 @@ export default {
           this.getBatchRequest,
           requestTemplate
         );
+        //set schoolOfRecords to "000000"
+        if (
+          this.group == "Ministry of Advanced Education" &&
+          this.getCredential == "Blank certificate print"
+        ) {
+          requestPayload.schoolOfRecords = ["00000000"];
+        }
         let response = await BatchProcessingService.runDISTRUNUSER(
           requestPayload,
           this.getCredential,
