@@ -2,7 +2,10 @@
   <div class="batch-processing-view">
     <h1>Batch Processing</h1>
     <div>
-      <v-tabs v-model="activeTab" bg-color="bcGovLightGrey">
+      <v-tabs
+        v-model="batchProcessingStore.activeTab"
+        bg-color="bcGovLightGrey"
+      >
         <v-tab
           value="batchRuns"
           @click="
@@ -284,6 +287,7 @@ export default {
 
     return {
       activeTab,
+      batchProcessingStore,
     };
   },
   computed: {
