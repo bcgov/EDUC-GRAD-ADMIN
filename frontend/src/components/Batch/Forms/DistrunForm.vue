@@ -3,7 +3,12 @@
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
         <v-btn
-          v-if="hasPermissions('BATCH', 'runDistrun')"
+          v-if="
+            hasPermissions(
+              'BATCH',
+              'runCredentialsandTranscriptDistributionRun'
+            )
+          "
           color="primary"
           v-bind="props"
           class="mr-2"
@@ -32,7 +37,7 @@
                 :items="[
                   {
                     label: 'Run Type',
-                    value: 'User Request Distribution Run',
+                    value: 'Credentials and Transcript Distribution Run',
                   },
                   {
                     label: 'Where',
