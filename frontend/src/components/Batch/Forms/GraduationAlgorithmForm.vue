@@ -267,6 +267,7 @@ export default {
   },
   data: () => ({
     step: 0,
+    batchLoading: false,
     dialog: false,
     snackbarStore: useSnackbarStore(),
     batchProcessingStore: useBatchProcessingStore(),
@@ -327,6 +328,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.batchLoading = true;
       try {
         this.batchLoading = true;
         const requestTemplate = [
@@ -368,6 +370,7 @@ export default {
         }
         this.closeDialogAndResetForm();
         this.setActiveTab("batchRuns");
+        this.updateDashboards();
       } catch (error) {
         // handle the error and show the notification
         this.snackbarStore.showSnackbar(

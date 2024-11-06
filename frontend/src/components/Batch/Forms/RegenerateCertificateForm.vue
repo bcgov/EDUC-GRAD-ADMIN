@@ -129,7 +129,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -240,6 +241,7 @@ export default {
   data: () => ({
     snackbarStore: useSnackbarStore(),
     step: 0,
+    batchLoading: false,
     dialog: false,
   }),
   computed: {
@@ -273,7 +275,7 @@ export default {
       this.step = step;
     },
     async submit() {
-      this.dialog = false;
+      this.batchLoading = true;
       const requestTemplate = [
         "districts",
         "pens",
@@ -293,7 +295,7 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
-
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "User Request Certificate Regeneration has been successfully scheduled",

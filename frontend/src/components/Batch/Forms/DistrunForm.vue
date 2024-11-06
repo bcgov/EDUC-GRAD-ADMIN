@@ -58,7 +58,8 @@
               class="text-none"
               density="default"
               @click="submit"
-              :disabled="v$.$invalid"
+              :loading="batchLoading"
+              :disabled="v$.$invalid || batchLoading"
               >Submit</v-btn
             >
           </div>
@@ -166,6 +167,7 @@ export default {
   data: () => ({
     snackbarStore: useSnackbarStore(),
     step: 0,
+    batchLoading: false,
     dialog: false,
     groupSelected: "",
     transcriptTypes: [],
@@ -320,7 +322,7 @@ export default {
       this.step = step;
     },
     async submit() {
-      this.dialog = false;
+      this.batchLoading = true;
       try {
         const requestTemplate = [
           "pens",
@@ -346,6 +348,7 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
+        this.batchLoading = false;
         if (response) {
           if (this.getBatchRequestCrontime) {
             this.snackbarStore.showSnackbar(
@@ -362,6 +365,7 @@ export default {
             );
           }
         }
+        this.setActiveTab("batchRuns");
         this.closeDialogAndResetForm();
         this.updateDashboards();
       } catch (error) {

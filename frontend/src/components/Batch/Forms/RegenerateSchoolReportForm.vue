@@ -145,7 +145,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -179,7 +180,7 @@ export default {
     watch(group, (newValue) => {
       batchRequestFormStore.who = newValue;
       if (newValue == "All Schools") {
-        batchRequestFormStore.setActivityCode("All");
+        batchRequestFormStore.setActivityCode("ALL");
       } else {
         batchRequestFormStore.setActivityCode(null);
       }
@@ -257,6 +258,7 @@ export default {
   },
   data: () => ({
     step: 0,
+    batchLoading: false,
     dialog: false,
     snackbarStore: useSnackbarStore(),
     batchProcessingStore: useBatchProcessingStore(),
@@ -297,7 +299,7 @@ export default {
       this.step = step;
     },
     async submit() {
-      this.dialog = false;
+      this.batchLoading = true;
       try {
         const requestTemplate = [
           "districts",
@@ -321,7 +323,7 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
-
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "User Request School Report Regeneration has been successfully scheduled",

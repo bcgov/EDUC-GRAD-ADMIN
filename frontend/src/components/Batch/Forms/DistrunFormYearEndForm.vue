@@ -113,7 +113,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -191,6 +192,7 @@ export default {
   },
   data: () => ({
     step: 0,
+    batchLoading: false,
     dialog: false,
   }),
   computed: {
@@ -254,7 +256,7 @@ export default {
       this.step = step;
     },
     async submit() {
-      this.dialog = false;
+      this.batchLoading = true;
       const requestTemplate = [
         "credentialTypeCode",
         "districts",
@@ -279,7 +281,7 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
-
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Year-End Credentials and Transcript Distribution Run has been successfully scheduled",
@@ -295,7 +297,6 @@ export default {
           );
         }
         this.closeDialogAndResetForm();
-
         this.setActiveTab("batchRuns");
         this.updateDashboards();
       } catch (error) {

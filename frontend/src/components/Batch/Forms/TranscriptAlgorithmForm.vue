@@ -138,7 +138,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -251,6 +252,7 @@ export default {
   },
   data: () => ({
     step: 0,
+    batchLoading: false,
     dialog: false,
     snackbarStore: useSnackbarStore(),
   }),
@@ -312,7 +314,7 @@ export default {
       this.step = step;
     },
     async submit() {
-      this.dialog = false;
+      this.batchLoading = true;
       try {
         const requestTemplate = [
           "districts",
@@ -336,8 +338,7 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
-
-        this.activeTab = "batchRuns";
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Transcript verification report has been successfully scheduled",
@@ -350,7 +351,9 @@ export default {
             5000
           );
         }
+        this.setActiveTab("batchRuns");
         this.closeDialogAndResetForm();
+        this.updateDashboards();
       } catch (error) {
         // handle the error and show the notification
         this.snackbarStore.showSnackbar(
