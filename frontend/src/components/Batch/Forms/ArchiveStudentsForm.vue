@@ -52,9 +52,10 @@
                 <v-stepper-window-item value="0">
                   <v-row>
                     <v-select
+                      class="mt-2"
                       v-model="group"
                       :items="['School', 'All Students']"
-                      label="Select a Group"
+                      label="Select a group"
                     ></v-select>
                   </v-row>
                   <v-row v-if="group == 'School'">

@@ -57,7 +57,8 @@
                     <v-select
                       v-model="getGroup"
                       :items="['School Category']"
-                      label="Select a Group"
+                      label="Select a group"
+                      variant="outlined"
                     ></v-select>
                   </v-row>
                   <v-row v-if="getGroup == 'School Category'">

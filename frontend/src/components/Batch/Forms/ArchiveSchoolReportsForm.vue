@@ -49,7 +49,7 @@
               <v-stepper-window>
                 <v-stepper-window-item value="0">
                   <v-row>
-                    <v-col sm="2"> Report Type </v-col>
+                    <v-col sm="2">Report Type </v-col>
                     <v-col sm="10">
                       <v-select
                         v-model="reportType"
@@ -70,15 +70,21 @@
                         item-title="text"
                         item-value="value"
                         label="Select a report type"
+                        variant="outlined"
+                        class="mt-2"
                       ></v-select>
                     </v-col>
                   </v-row>
                   <v-row>
-                    <v-select
-                      v-model="group"
-                      :items="['School', 'All Schools']"
-                      label="Select a group"
-                    ></v-select>
+                    <v-col>
+                      <v-select
+                        class="mt-2"
+                        v-model="group"
+                        :items="['School', 'All Schools']"
+                        label="Select a group"
+                        variant="outlined"
+                      ></v-select>
+                    </v-col>
                   </v-row>
                   <v-row v-if="group == 'School'">
                     <SchoolInput>

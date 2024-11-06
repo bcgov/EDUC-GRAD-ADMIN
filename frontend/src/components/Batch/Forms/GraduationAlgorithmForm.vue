@@ -52,6 +52,7 @@
                   <v-row>
                     <v-col>
                       <v-select
+                        class="mt-2"
                         v-model="group"
                         :items="[
                           { title: 'Student', value: 'Student' },
@@ -73,7 +74,8 @@
                             ),
                           },
                         ]"
-                        label="Select group"
+                        label="Select a group"
+                        variant="outlined"
                         hide-details
                       >
                         <template v-slot:item="{ props, item }">

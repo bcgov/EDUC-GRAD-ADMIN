@@ -8,7 +8,8 @@
           v-model="pen"
           @input="validateStudent"
           type="number"
-          class="mr-2"
+          variant="outlined"
+          class="mr-2 mt-2"
         ></v-text-field>
       </v-col>
       <v-col md="3">

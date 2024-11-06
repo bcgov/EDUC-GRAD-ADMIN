@@ -50,6 +50,7 @@
                 <v-stepper-window-item value="0">
                   <v-row>
                     <v-select
+                      class="mt-2"
                       v-model="group"
                       :items="[
                         {
@@ -66,7 +67,8 @@
                           value: 'School Category',
                         },
                       ]"
-                      label="Select a Group"
+                      label="Select a group"
+                      variant="outlined"
                       ><template v-slot:item="{ props, item }">
                         <v-list-item
                           v-bind="props"

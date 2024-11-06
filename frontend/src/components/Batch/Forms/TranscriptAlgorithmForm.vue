@@ -49,38 +49,41 @@
               <v-stepper-window>
                 <v-stepper-window-item value="0">
                   <v-row>
-                    <v-select
-                      v-model="group"
-                      :items="[
-                        { title: 'Student', value: 'Student' },
-                        { title: 'School', value: 'School' },
-                        {
-                          title: 'School Category',
-                          value: 'School Category',
-                          disabled: !this.hasPermissions(
-                            'BATCH',
-                            'selectSchoolCategoryGroup'
-                          ),
-                        },
-                        {
-                          title: 'Program',
-                          value: 'Program',
-                          disabled: !this.hasPermissions(
-                            'BATCH',
-                            'selectProgramGroup'
-                          ),
-                        },
-                      ]"
-                      label="Select group"
-                      hide-details
-                    >
-                      <template v-slot:item="{ props, item }">
-                        <v-list-item
-                          v-bind="props"
-                          :subtitle="item.raw.department"
-                          :disabled="item.raw.disabled"
-                        ></v-list-item> </template
-                    ></v-select>
+                    <v-col>
+                      <v-select
+                        v-model="group"
+                        :items="[
+                          { title: 'Student', value: 'Student' },
+                          { title: 'School', value: 'School' },
+                          {
+                            title: 'School Category',
+                            value: 'School Category',
+                            disabled: !this.hasPermissions(
+                              'BATCH',
+                              'selectSchoolCategoryGroup'
+                            ),
+                          },
+                          {
+                            title: 'Program',
+                            value: 'Program',
+                            disabled: !this.hasPermissions(
+                              'BATCH',
+                              'selectProgramGroup'
+                            ),
+                          },
+                        ]"
+                        label="Select a group"
+                        variant="outlined"
+                        hide-details
+                      >
+                        <template v-slot:item="{ props, item }">
+                          <v-list-item
+                            v-bind="props"
+                            :subtitle="item.raw.department"
+                            :disabled="item.raw.disabled"
+                          ></v-list-item> </template
+                      ></v-select>
+                    </v-col>
                   </v-row>
                   <v-row v-if="group == 'Student'">
                     <StudentInput></StudentInput>
@@ -252,7 +255,7 @@ export default {
   },
   data: () => ({
     step: 0,
-    batchLoading: false,
+
     dialog: false,
     snackbarStore: useSnackbarStore(),
   }),

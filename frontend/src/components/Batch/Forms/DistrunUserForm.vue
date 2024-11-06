@@ -115,6 +115,8 @@
                   <v-row>
                     <v-col>
                       <v-select
+                        class="mt-2"
+                        variant="outlined"
                         v-model="group"
                         :items="groupItems"
                         label="Select group"
