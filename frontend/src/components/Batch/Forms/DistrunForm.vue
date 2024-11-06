@@ -270,9 +270,15 @@ export default {
         // eslint-disable-next-line
         .catch((error) => {
           if (error.response.statusText) {
-            this.makeToast("ERROR " + error.response.statusText, "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error.response.statusText,
+              5000
+            );
           } else {
-            this.makeToast("ERROR " + "error with webservervice", "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + "error with webservervice",
+              5000
+            );
           }
         });
     },
@@ -284,9 +290,15 @@ export default {
         // eslint-disable-next-line
         .catch((error) => {
           if (error.response.statusText) {
-            this.makeToast("ERROR " + error.response.statusText, "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error.response.statusText,
+              5000
+            );
           } else {
-            this.makeToast("ERROR " + "error with webservervice", "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + "error with webservervice",
+              5000
+            );
           }
         });
     },
@@ -323,6 +335,7 @@ export default {
           this.getBatchRequest,
           requestTemplate
         );
+
         let response = await BatchProcessingService.runDISTRUN_MONTHLY(
           requestPayload,
           this.getBatchRequestCrontime
