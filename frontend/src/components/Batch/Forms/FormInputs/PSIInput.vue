@@ -7,7 +7,7 @@
           v-model="transmissionMode"
           label="Select a Transmission Mode"
           :items="[{ title: 'Paper', value: 'PAPER' }, 'FTP']"
-          outlined
+          variant="outlined"
           small
           hide-details
         >
@@ -21,7 +21,7 @@
           v-model="psiYear"
           type="number"
           label="Enter PSI Year"
-          outlined
+          variant="outlined"
           small
         >
         </v-text-field>
@@ -36,7 +36,7 @@
           v-model="psi"
           maxlength="3"
           @input="validatePSI"
-          outlined
+          variant="outlined"
         />
 
         <div

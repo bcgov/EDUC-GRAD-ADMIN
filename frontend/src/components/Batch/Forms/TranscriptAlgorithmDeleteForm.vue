@@ -51,6 +51,7 @@
                 <v-stepper-window-item value="0">
                   <v-row>
                     <v-select
+                      class="mt-2"
                       v-model="group"
                       :items="[
                         { title: 'Student', value: 'Student' },
@@ -68,7 +69,8 @@
                           disabled: !hasPermissions('BATCH', 'selectAllOption'),
                         },
                       ]"
-                      label="Select a Group"
+                      label="Select a group"
+                      variant="outlined"
                       ><template v-slot:item="{ props, item }">
                         <v-list-item
                           v-bind="props"
@@ -138,7 +140,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -170,11 +173,6 @@ export default {
     const group = ref(batchRequestFormStore.who);
     watch(group, (newValue) => {
       batchRequestFormStore.who = newValue;
-      if (newValue == "All Students") {
-        batchRequestFormStore.setActivityCode("ALL");
-      } else {
-        batchRequestFormStore.setActivityCode(null);
-      }
     });
 
     return {
@@ -234,6 +232,7 @@ export default {
   },
   data: () => ({
     step: 0,
+    batchLoading: false,
     dialog: false,
     snackbarStore: useSnackbarStore(),
     batchProcessingStore: useBatchProcessingStore(),
@@ -295,7 +294,7 @@ export default {
       this.step = step;
     },
     async submit() {
-      this.dialog = false;
+      this.batchLoading = true;
       try {
         const requestTemplate = [
           "credentialTypeCode",
@@ -307,6 +306,7 @@ export default {
           "programs",
           "psiCodes",
           "quantity",
+          "activityCode",
           "reportTypes",
           "schoolCategoryCodes",
           "schoolOfRecords",
@@ -316,11 +316,15 @@ export default {
           this.getBatchRequest,
           requestTemplate
         );
+        requestPayload.reportTypes = ["ACHV"];
+        if (this.group == "All Students") {
+          requestPayload.activityCode = "ALL";
+        }
         let response = await BatchProcessingService.runTVR_DELETE(
           requestPayload,
           this.getBatchRequestCrontime
         );
-
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Transcript verification report delete has been successfully scheduled",

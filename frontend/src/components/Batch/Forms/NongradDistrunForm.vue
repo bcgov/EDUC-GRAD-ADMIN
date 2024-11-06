@@ -55,7 +55,8 @@
                     <v-select
                       v-model="getGroup"
                       :items="['School Category']"
-                      label="Select a Group"
+                      label="Select a group"
+                      variant="outlined"
                     ></v-select>
                   </v-row>
                   <v-row v-if="getGroup == 'School Category'">
@@ -114,7 +115,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -192,6 +194,7 @@ export default {
   },
   data: () => ({
     step: 0,
+    batchLoading: false,
     dialog: false,
     snackbarStore: useSnackbarStore(),
   }),
@@ -256,7 +259,7 @@ export default {
       this.step = step;
     },
     async submit() {
-      this.dialog = false;
+      this.batchLoading = true;
       const requestTemplate = [
         "credentialTypeCode",
         "districts",
@@ -281,7 +284,7 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
-
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Non-Graduate Transcript Distribution Run has been successfully scheduled",

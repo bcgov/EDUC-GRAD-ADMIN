@@ -11,15 +11,6 @@
         >
       </template>
       <v-card>
-        <v-overlay
-          v-model="batchLoading"
-          class="align-center justify-center"
-          contained
-        >
-          <v-progress-circular indeterminate color="primary" size="64">
-            Loading...
-          </v-progress-circular>
-        </v-overlay>
         <div class="d-flex justify-space-between align-center">
           <v-card-title>Graduation Algorithm</v-card-title>
           <v-btn
@@ -61,6 +52,7 @@
                   <v-row>
                     <v-col>
                       <v-select
+                        class="mt-2"
                         v-model="group"
                         :items="[
                           { title: 'Student', value: 'Student' },
@@ -82,7 +74,8 @@
                             ),
                           },
                         ]"
-                        label="Select group"
+                        label="Select a group"
+                        variant="outlined"
                         hide-details
                       >
                         <template v-slot:item="{ props, item }">
@@ -149,7 +142,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -275,6 +269,7 @@ export default {
   },
   data: () => ({
     step: 0,
+    batchLoading: false,
     dialog: false,
     snackbarStore: useSnackbarStore(),
     batchProcessingStore: useBatchProcessingStore(),
@@ -335,6 +330,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.batchLoading = true;
       try {
         this.batchLoading = true;
         const requestTemplate = [
@@ -376,6 +372,7 @@ export default {
         }
         this.closeDialogAndResetForm();
         this.setActiveTab("batchRuns");
+        this.updateDashboards();
       } catch (error) {
         // handle the error and show the notification
         this.snackbarStore.showSnackbar(

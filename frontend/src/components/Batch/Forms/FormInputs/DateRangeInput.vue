@@ -7,6 +7,7 @@
       <v-col md="10">
         <v-select
           v-model="includeStudents"
+          variant="outlined"
           :items="['Current Students', 'Date Range']"
           label="Select which students to include"
           class=""
@@ -16,8 +17,9 @@
         <v-row v-if="includeStudents === 'Date Range'">
           <v-col sm="6">
             <v-text-field
+              variant="outlined"
               label="Graduation Date From:"
-              class="form__input"
+              class="mt-4"
               id="datepicker-birthdate-from"
               v-model="gradDateFrom"
               type="date"
@@ -46,8 +48,9 @@
           </v-col>
           <v-col sm="6">
             <v-text-field
+              variant="outlined"
               label="Graduation Date To:"
-              class="form__input"
+              class="mt-4"
               id="datepicker-birthdate-from"
               v-model="gradDateTo"
               type="date"
@@ -67,9 +70,7 @@
                 new Date(gradDateTo) < new Date(gradDateFrom)
               "
             >
-              <span class="text-red"
-                >End Date must be greater than Start Date.</span
-              >
+              <span color="red">End Date must be greater than Start Date.</span>
             </div>
             <div v-if="v$.gradDateTo.$invalid && !v$.gradDateTo.$pending">
               <span class="text-red">End Date is invalid or required.</span>
