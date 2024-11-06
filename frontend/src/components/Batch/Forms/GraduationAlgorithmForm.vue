@@ -11,6 +11,15 @@
         >
       </template>
       <v-card>
+        <v-overlay
+          v-model="batchLoading"
+          class="align-center justify-center"
+          contained
+        >
+          <v-progress-circular indeterminate color="primary" size="64">
+            Loading...
+          </v-progress-circular>
+        </v-overlay>
         <div class="d-flex justify-space-between align-center">
           <v-card-title>Graduation Algorithm</v-card-title>
           <v-btn
@@ -313,6 +322,7 @@ export default {
       "updateDashboards",
     ]),
     closeDialogAndResetForm() {
+      this.batchLoading = false;
       this.group = null;
       this.dialog = false;
       this.clearBatchDetails();
@@ -325,8 +335,8 @@ export default {
       this.step = step;
     },
     async submit() {
-      this.dialog = false;
       try {
+        this.batchLoading = true;
         const requestTemplate = [
           "districts",
           "gradDateFrom",
@@ -349,6 +359,7 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Graduation Algorithm request has been successfully scheduled",
@@ -364,7 +375,6 @@ export default {
           );
         }
         this.closeDialogAndResetForm();
-
         this.setActiveTab("batchRuns");
       } catch (error) {
         // handle the error and show the notification
@@ -373,6 +383,7 @@ export default {
           "danger",
           5000
         );
+        this.batchLoading = false;
         console.error("Error:", error);
       }
     },
