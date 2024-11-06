@@ -115,6 +115,8 @@
                   <v-row>
                     <v-col>
                       <v-select
+                        class="mt-2"
+                        variant="outlined"
                         v-model="group"
                         :items="groupItems"
                         label="Select group"
@@ -214,7 +216,8 @@
                   variant="flat"
                   class="text-none"
                   density="default"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   @click="submit"
                 >
                   Download
@@ -226,7 +229,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -413,6 +417,7 @@ export default {
     snackbarStore: useSnackbarStore(),
     step: 0,
     dialog: false,
+    batchLoading: false,
     groupSelected: "",
     transcriptTypes: [],
     certificateTypes: [],
@@ -569,7 +574,7 @@ export default {
       this.step = step;
     },
     async submit() {
-      this.dialog = false;
+      this.batchLoading = true;
       try {
         const requestTemplate = [
           "credentialTypeCode",
@@ -603,6 +608,7 @@ export default {
           this.getBatchRequestCrontime
         );
         if (response) {
+          this.batchLoading = false;
           if (this.getBatchRequestCrontime) {
             this.snackbarStore.showSnackbar(
               "User distribution batch request has been successfully scheduled",
@@ -618,6 +624,7 @@ export default {
             );
           }
         }
+        this.setActiveTab("batchRuns");
         this.closeDialogAndResetForm();
         this.updateDashboards();
       } catch (error) {

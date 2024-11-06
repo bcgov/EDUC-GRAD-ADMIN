@@ -16,6 +16,7 @@
               :item-title="programTitle"
               item-value="programCode"
               :item-disabled="true"
+              variant="outlined"
             ></v-autocomplete>
           </v-col>
           <v-col sm="2" class="p-2 my-2">

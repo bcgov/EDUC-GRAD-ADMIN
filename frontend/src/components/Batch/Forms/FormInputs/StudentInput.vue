@@ -8,7 +8,8 @@
           v-model="pen"
           @input="validateStudent"
           type="number"
-          class="mr-2"
+          variant="outlined"
+          class="mr-2 mt-2"
         ></v-text-field>
       </v-col>
       <v-col md="3">
@@ -16,6 +17,7 @@
           color="bcGovBlue"
           @click="addStudent()"
           :disabled="v$.pen.$invalid || pen == ''"
+          :loading="penLoading"
         >
           Add Student
         </v-btn>
@@ -105,6 +107,7 @@ export default {
   data() {
     return {
       pen: "",
+      penLoading: false,
       penStudentInfo: "",
       penValidating: false,
       validationMessage: "",
@@ -154,6 +157,7 @@ export default {
       this.clearPenStudentInfo();
     },
     async addStudent() {
+      this.penLoading = true;
       this.validationMessage = "";
       if (this.pen.length == 9) {
         let student = await StudentService.getStudentByPen(this.pen);
@@ -230,6 +234,7 @@ export default {
           info: this.penStudentInfo,
         });
         this.clearPen();
+        this.penLoading = false;
       }
     },
     removeStudent(pen) {
