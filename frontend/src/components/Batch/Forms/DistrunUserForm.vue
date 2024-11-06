@@ -569,6 +569,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.dialog = false;
       try {
         const requestTemplate = [
           "credentialTypeCode",

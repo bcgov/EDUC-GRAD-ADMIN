@@ -254,6 +254,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.dialog = false;
       const requestTemplate = [
         "credentialTypeCode",
         "districts",

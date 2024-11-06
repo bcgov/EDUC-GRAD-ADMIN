@@ -355,6 +355,7 @@ export default {
     },
 
     async submit() {
+      this.dialog = false;
       const requestTemplate = [
         "districts",
         "gradDateFrom",
