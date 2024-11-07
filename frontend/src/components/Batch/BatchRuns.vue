@@ -1,5 +1,18 @@
 <template>
   <v-container>
+    <v-overlay
+      v-model="isBatchJobsLoading"
+      class="align-center justify-center"
+      contained
+    >
+      <v-progress-circular
+        v-if="isBatchJobsLoading"
+        indeterminate
+        color="primary"
+        size="64"
+      >
+      </v-progress-circular>
+    </v-overlay>
     <v-row>
       <!-- First Column (col-5 for medium screens, col-12 for small screens) -->
       <v-col :cols="12" :md="isBatchShowing || isErrorShowing ? 7 : 12">
@@ -324,6 +337,7 @@ export default {
   computed: {
     ...mapState(useBatchProcessingStore, {
       batchRuns: "getBatchRuns",
+      isBatchJobsLoading: "getIsGettingBatchJobsLoading",
     }),
   },
   methods: {
@@ -335,14 +349,6 @@ export default {
     rerunBatch(bid) {
       BatchProcessingService.rerunBatch(bid).then((response) => {
         if (response) {
-          // this.$bvToast.toast(
-          //   "Created a new batch job based on batch #" + bid,
-          //   {
-          //     title: "NEW BATCH JOB STARTED",
-          //     variant: "success",
-          //     noAutoHide: true,
-          //   }
-          // );
           this.snackbarStore.showSnackbar(
             "Created a new batch job based on batch #" + bid,
             "success",
