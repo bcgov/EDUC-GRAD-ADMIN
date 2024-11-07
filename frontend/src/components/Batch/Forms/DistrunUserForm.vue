@@ -126,7 +126,10 @@
                   </v-row>
 
                   <v-row v-if="group == 'Student'">
-                    <StudentInput></StudentInput>
+                    <StudentInput
+                      runType="DISTRUNUSER"
+                      :credentialType="credentialSelected"
+                    ></StudentInput>
                   </v-row>
                   <v-row v-if="group == 'School Category'">
                     <DistrictInput></DistrictInput>
