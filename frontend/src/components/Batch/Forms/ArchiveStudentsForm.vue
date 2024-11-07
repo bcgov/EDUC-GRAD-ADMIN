@@ -426,7 +426,10 @@ export default {
           }
           this.closeDialogAndResetForm();
           this.setActiveTab("batchRuns");
-          this.updateDashboards();
+          //add a wait before updating dashboard
+          setTimeout(() => {
+            this.updateDashboards();
+          }, 2000);
         } catch (error) {
           // handle the error and show the notification
           this.snackbarStore.showSnackbar(

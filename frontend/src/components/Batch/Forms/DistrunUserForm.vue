@@ -126,7 +126,10 @@
                   </v-row>
 
                   <v-row v-if="group == 'Student'">
-                    <StudentInput></StudentInput>
+                    <StudentInput
+                      runType="DISTRUNUSER"
+                      :credentialType="credentialSelected"
+                    ></StudentInput>
                   </v-row>
                   <v-row v-if="group == 'School Category'">
                     <DistrictInput></DistrictInput>
@@ -626,7 +629,10 @@ export default {
         }
         this.setActiveTab("batchRuns");
         this.closeDialogAndResetForm();
-        this.updateDashboards();
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
       } catch (error) {
         // handle the error and show the notification
         console.error("Error:", error);

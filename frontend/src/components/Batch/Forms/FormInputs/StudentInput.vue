@@ -145,6 +145,7 @@ export default {
       this.clearPenStudentInfo();
       const result = await this.v$.$validate();
       if (!result) {
+        this.penLoading = false;
         return;
       }
       this.penValidating = false;
@@ -163,8 +164,10 @@ export default {
         let student = await StudentService.getStudentByPen(this.pen);
         if (student.data && student.data.length === 0) {
           this.validationMessage = "Student not found";
+          this.penLoading = false;
           return false;
         }
+        let studentID = student.data[0].studentID;
 
         let studentGRADStatus = await StudentService.getGraduationStatus(
           student.data[0].studentID
@@ -186,6 +189,7 @@ export default {
           if (studentGRADStatus.data.studentStatusName == "Merged") {
             this.validationMessage =
               this.pen + " is a merged student and not permitted";
+            this.penLoading = false;
             return;
           }
           if (this.runType == "CERT_REGEN") {
@@ -193,6 +197,7 @@ export default {
             if (!studentGRADStatus.data.programCompletionDate) {
               this.validationMessage =
                 "Error: Cannot regenerate a certificate for this student - this student has not completed their program";
+              this.penLoading = false;
               return;
             }
           }
@@ -204,7 +209,7 @@ export default {
           ) {
             let certificate =
               await GraduationReportService.getStudentCertificates(studentID);
-            if (certificate.data.length) {
+            if (certificate?.data.length) {
               //check that certificate has does not have a null distribution date
 
               if (
@@ -213,17 +218,20 @@ export default {
               ) {
                 this.validationMessage =
                   "Cannot reprint certificate for this student. Distribution date is null";
+                this.penLoading = false;
                 return;
               }
             } else {
               if (this.credentialType == "RC") {
                 this.validationMessage =
                   "Cannot reprint certificate for this student.";
+                this.penLoading = false;
                 return;
               }
               if (this.credentialType == "OC") {
                 this.validationMessage =
                   "Cannot print certificate for this student,this student does not have a certificate.";
+                this.penLoading = false;
                 return;
               }
             }
@@ -246,8 +254,8 @@ export default {
     },
   },
   props: {
-    credentialType: String,
     runType: String,
+    credentialType: String,
   },
 
   computed: {
@@ -255,6 +263,7 @@ export default {
       ...mapState(useBatchRequestFormStore, [
         "getBatchRequest",
         "getBatchRunTime",
+        "getCredential",
       ]),
     },
     isEmpty() {
