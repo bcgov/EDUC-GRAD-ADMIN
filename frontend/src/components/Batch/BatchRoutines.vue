@@ -1,5 +1,18 @@
 <template>
-  <div>
+  <v-container>
+    <v-overlay
+      v-model="isBatchRoutinesLoading"
+      class="align-center justify-center"
+      contained
+    >
+      <v-progress-circular
+        v-if="isBatchRoutinesLoading"
+        indeterminate
+        color="primary"
+        size="64"
+      >
+      </v-progress-circular>
+    </v-overlay>
     <v-data-table
       :headers="scheduledRoutinesFields"
       :items="batchRoutines"
@@ -45,7 +58,7 @@
       {{ snackbarMessage }}
       <v-btn text @click="snackbarVisible = false">Close</v-btn>
     </v-snackbar>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -153,6 +166,7 @@ export default {
   computed: {
     ...mapState(useBatchProcessingStore, {
       batchRoutines: "getBatchRoutines",
+      isBatchRoutinesLoading: "getIsGettingBatchRoutinesLoading",
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
   },

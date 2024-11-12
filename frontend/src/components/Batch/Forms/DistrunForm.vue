@@ -3,7 +3,12 @@
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
         <v-btn
-          v-if="hasPermissions('BATCH', 'runDistrun')"
+          v-if="
+            hasPermissions(
+              'BATCH',
+              'runCredentialsandTranscriptDistributionRun'
+            )
+          "
           color="primary"
           v-bind="props"
           class="mr-2"
@@ -32,7 +37,7 @@
                 :items="[
                   {
                     label: 'Run Type',
-                    value: 'User Request Distribution Run',
+                    value: 'Credentials and Transcript Distribution Run',
                   },
                   {
                     label: 'Where',
@@ -53,7 +58,8 @@
               class="text-none"
               density="default"
               @click="submit"
-              :disabled="v$.$invalid"
+              :loading="batchLoading"
+              :disabled="v$.$invalid || batchLoading"
               >Submit</v-btn
             >
           </div>
@@ -161,6 +167,7 @@ export default {
   data: () => ({
     snackbarStore: useSnackbarStore(),
     step: 0,
+    batchLoading: false,
     dialog: false,
     groupSelected: "",
     transcriptTypes: [],
@@ -270,9 +277,15 @@ export default {
         // eslint-disable-next-line
         .catch((error) => {
           if (error.response.statusText) {
-            this.makeToast("ERROR " + error.response.statusText, "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error.response.statusText,
+              5000
+            );
           } else {
-            this.makeToast("ERROR " + "error with webservervice", "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + "error with webservervice",
+              5000
+            );
           }
         });
     },
@@ -284,9 +297,15 @@ export default {
         // eslint-disable-next-line
         .catch((error) => {
           if (error.response.statusText) {
-            this.makeToast("ERROR " + error.response.statusText, "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error.response.statusText,
+              5000
+            );
           } else {
-            this.makeToast("ERROR " + "error with webservervice", "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + "error with webservervice",
+              5000
+            );
           }
         });
     },
@@ -303,6 +322,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.batchLoading = true;
       try {
         const requestTemplate = [
           "pens",
@@ -323,10 +343,12 @@ export default {
           this.getBatchRequest,
           requestTemplate
         );
+
         let response = await BatchProcessingService.runDISTRUN_MONTHLY(
           requestPayload,
           this.getBatchRequestCrontime
         );
+        this.batchLoading = false;
         if (response) {
           if (this.getBatchRequestCrontime) {
             this.snackbarStore.showSnackbar(
@@ -343,8 +365,12 @@ export default {
             );
           }
         }
+        this.setActiveTab("batchRuns");
         this.closeDialogAndResetForm();
-        this.updateDashboards();
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
       } catch (error) {
         // handle the error and show the notification
         console.error("Error:", error);

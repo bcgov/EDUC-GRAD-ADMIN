@@ -115,6 +115,8 @@
                   <v-row>
                     <v-col>
                       <v-select
+                        class="mt-2"
+                        variant="outlined"
                         v-model="group"
                         :items="groupItems"
                         label="Select group"
@@ -124,7 +126,10 @@
                   </v-row>
 
                   <v-row v-if="group == 'Student'">
-                    <StudentInput></StudentInput>
+                    <StudentInput
+                      runType="DISTRUNUSER"
+                      :credentialType="credentialSelected"
+                    ></StudentInput>
                   </v-row>
                   <v-row v-if="group == 'School Category'">
                     <DistrictInput></DistrictInput>
@@ -214,7 +219,8 @@
                   variant="flat"
                   class="text-none"
                   density="default"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   @click="submit"
                 >
                   Download
@@ -226,7 +232,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -413,6 +420,7 @@ export default {
     snackbarStore: useSnackbarStore(),
     step: 0,
     dialog: false,
+    batchLoading: false,
     groupSelected: "",
     transcriptTypes: [],
     certificateTypes: [],
@@ -543,9 +551,15 @@ export default {
         // eslint-disable-next-line
         .catch((error) => {
           if (error.response.statusText) {
-            this.makeToast("ERROR " + error.response.statusText, "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error.response.statusText,
+              5000
+            );
           } else {
-            this.makeToast("ERROR " + "error with webservervice", "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + "error with webservervice",
+              5000
+            );
           }
         });
     },
@@ -563,6 +577,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.batchLoading = true;
       try {
         const requestTemplate = [
           "credentialTypeCode",
@@ -583,12 +598,20 @@ export default {
           this.getBatchRequest,
           requestTemplate
         );
+        //set schoolOfRecords to "000000"
+        if (
+          this.group == "Ministry of Advanced Education" &&
+          this.getCredential == "Blank certificate print"
+        ) {
+          requestPayload.schoolOfRecords = ["00000000"];
+        }
         let response = await BatchProcessingService.runDISTRUNUSER(
           requestPayload,
           this.getCredential,
           this.getBatchRequestCrontime
         );
         if (response) {
+          this.batchLoading = false;
           if (this.getBatchRequestCrontime) {
             this.snackbarStore.showSnackbar(
               "User distribution batch request has been successfully scheduled",
@@ -604,8 +627,12 @@ export default {
             );
           }
         }
+        this.setActiveTab("batchRuns");
         this.closeDialogAndResetForm();
-        this.updateDashboards();
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
       } catch (error) {
         // handle the error and show the notification
         console.error("Error:", error);

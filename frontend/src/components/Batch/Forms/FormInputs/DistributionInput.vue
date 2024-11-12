@@ -8,6 +8,7 @@
           label="Copies"
           type="number"
           required
+          variant="outlined"
         ></v-text-field>
       </v-col> </v-row
     ><v-row>
@@ -23,6 +24,7 @@
           item-title="title"
           item-value="value"
           label="Where"
+          variant="outlined"
           require
           hide-details
         ></v-select>

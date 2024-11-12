@@ -49,7 +49,7 @@
               <v-stepper-window>
                 <v-stepper-window-item value="0">
                   <v-row>
-                    <v-col sm="2"> Report Type </v-col>
+                    <v-col sm="2">Report Type </v-col>
                     <v-col sm="10">
                       <v-select
                         v-model="reportType"
@@ -70,15 +70,21 @@
                         item-title="text"
                         item-value="value"
                         label="Select a report type"
+                        variant="outlined"
+                        class="mt-2"
                       ></v-select>
                     </v-col>
                   </v-row>
                   <v-row>
-                    <v-select
-                      v-model="group"
-                      :items="['School', 'All Schools']"
-                      label="Select a group"
-                    ></v-select>
+                    <v-col>
+                      <v-select
+                        class="mt-2"
+                        v-model="group"
+                        :items="['School', 'All Schools']"
+                        label="Select a group"
+                        variant="outlined"
+                      ></v-select>
+                    </v-col>
                   </v-row>
                   <v-row v-if="group == 'School'">
                     <SchoolInput>
@@ -186,17 +192,9 @@
                 >
                 <v-spacer />
                 <!-- Right Action Button -->
-                <v-btn v-if="step < 3" @click="step++" color="bcGovBlue"
+                <v-btn v-if="step < 1" @click="step++" color="bcGovBlue"
                   >Next</v-btn
                 >
-                <v-btn
-                  v-else-if="getBatchRequest.localDownload == 'Y'"
-                  color="bcGovBlue"
-                  variant="text"
-                  @click="submit"
-                >
-                  Download
-                </v-btn>
                 <v-btn
                   v-else
                   color="error"
@@ -204,7 +202,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -237,7 +236,7 @@ export default {
     watch(group, (newValue) => {
       batchRequestFormStore.who = newValue;
       if (newValue == "All Schools") {
-        batchRequestFormStore.setActivityCode("All");
+        batchRequestFormStore.setActivityCode("ALL");
       } else {
         batchRequestFormStore.setActivityCode(null);
       }
@@ -312,6 +311,7 @@ export default {
   },
   data: () => ({
     step: 0,
+    batchLoading: false,
     dialog: false,
     selectedConfirmations: [],
 
@@ -355,6 +355,7 @@ export default {
     },
 
     async submit() {
+      this.batchLoading = true;
       const requestTemplate = [
         "districts",
         "gradDateFrom",
@@ -378,7 +379,7 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
-
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Archive School Reports Process has been successfully scheduled",
@@ -393,9 +394,13 @@ export default {
             5000
           );
         }
+        this.batchLoading = false;
         this.closeDialogAndResetForm();
         this.setActiveTab("batchRuns");
-        this.updateDashboards();
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
       } catch (error) {
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,

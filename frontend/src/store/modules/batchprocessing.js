@@ -10,7 +10,9 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
     batchRuns: [],
     batchRoutines: [],
     activeTab: "batchRuns",
-
+    gettingBatchJobs: false,
+    gettingScheduledBatchJobs: false,
+    gettingBatchRoutines: false,
     //delete below
     schools: [],
     districts: [],
@@ -42,6 +44,9 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
   }),
   actions: {
     async updateDashboards() {
+      this.gettingScheduledBatchJobs = true;
+      this.gettingBatchRoutines = true;
+      this.gettingBatchJobs = true;
       await this.setBatchJobs();
       const batchRunScheduledRuns =
         await BatchProcessingService.getScheduledBatchJobs();
@@ -56,12 +61,14 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
     },
     async setBatchRoutines(payload) {
       this.batchRoutines = payload;
+      this.gettingBatchRoutines = false;
     },
     async setScheduledBatchJobs(payload) {
       this.scheduledBatchJobs = payload;
       for (let value of this.scheduledBatchJobs) {
         value.jobParameters = JSON.parse(value.jobParameters);
       }
+      this.gettingScheduledBatchJobs = false;
     },
     async setBatchJobs() {
       BatchProcessingService.getDashboardInfo()
@@ -73,15 +80,11 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
           }
           // Set the batchRuns property
           this.batchRuns = batchRunData;
+          this.gettingBatchJobs = false;
         })
         .catch((error) => {
-          this.adminDashboardLoading = false;
+          this.gettingBatchJobs = false;
           if (error.response && error.response.status) {
-            // this.$bvToast.toast("ERROR " + error.response.statusText, {
-            //   title: "ERROR" + error.response.status,
-            //   variant: "danger",
-            //   noAutoHide: true,
-            // });
             this.snackbarStore.showSnackbar(
               "ERROR " + error.response.statusText,
               "error",
@@ -111,15 +114,17 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
       }
     },
 
-    async setScheduledBatchJobs(payload) {
-      this.scheduledBatchJobs = payload;
-      for (let value of this.scheduledBatchJobs) {
-        value.jobParameters = JSON.parse(value.jobParameters);
-      }
-    },
-    async setBatchRoutines(payload) {
-      this.batchRoutines = payload;
-    },
+    // async setScheduledBatchJobs(payload) {
+    //   this.scheduledBatchJobs = payload;
+    //   for (let value of this.scheduledBatchJobs) {
+    //     value.jobParameters = JSON.parse(value.jobParameters);
+    //   }
+    //   this.gettingScheduledBatchJobs = false;
+    // },
+    // async setBatchRoutines(payload) {
+    //   this.batchRoutines = payload;
+    //   this.gettingBatchRoutines = false;
+    // },
 
     async removeScheduledJobs(payload) {
       const response = await BatchProcessingService.removeScheduledJobs(
@@ -128,12 +133,13 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
       this.updateDashboards();
       return response;
     },
-    async setScheduledBatchJobs(payload) {
-      this.scheduledBatchJobs = payload;
-      for (let value of this.scheduledBatchJobs) {
-        value.jobParameters = JSON.parse(value.jobParameters);
-      }
-    },
+    // async setScheduledBatchJobs(payload) {
+    //   this.scheduledBatchJobs = payload;
+    //   for (let value of this.scheduledBatchJobs) {
+    //     value.jobParameters = JSON.parse(value.jobParameters);
+    //   }
+    //   this.gettingScheduledBatchJobs = false;
+    // },
   },
   getters: {
     getActiveTab: (state) => {
@@ -142,5 +148,9 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
     getScheduledBatchRuns: (state) => state.scheduledBatchJobs,
     getBatchRuns: (state) => state.batchRuns,
     getBatchRoutines: (state) => state.batchRoutines,
+    getIsGettingScheduledBatchJobsLoading: (state) =>
+      state.gettingScheduledBatchJobs,
+    getIsGettingBatchRoutinesLoading: (state) => state.gettingBatchRoutines,
+    getIsGettingBatchJobsLoading: (state) => state.gettingBatchJobs,
   },
 });
