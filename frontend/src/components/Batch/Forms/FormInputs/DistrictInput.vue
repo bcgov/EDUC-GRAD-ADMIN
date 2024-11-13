@@ -17,6 +17,7 @@
               item-value="value"
               label="School Category"
               class="my-2"
+              variant="outlined"
               outlined
               hide-details
             ></v-select>
@@ -43,7 +44,7 @@
               v-if="!selectAllDistricts"
               :items="getDistrictList"
               label="Category"
-              outlined
+              variant="outlined"
               :item-title="districtTitle"
               item-value="districtNumber"
             ></v-autocomplete>

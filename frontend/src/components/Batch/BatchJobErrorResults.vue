@@ -1,5 +1,19 @@
 <template>
-  <v-card>
+  <v-card class="p-3">
+    <v-overlay
+      v-model="batchLoading"
+      class="align-center justify-center"
+      contained
+    >
+      <v-progress-circular
+        v-if="batchLoading"
+        indeterminate
+        color="primary"
+        size="64"
+      >
+        Loading...
+      </v-progress-circular>
+    </v-overlay>
     <div class="d-flex justify-space-between align-center">
       <v-card-title> Batch Job #{{ selectedErrorId }} Error(s) </v-card-title>
 
@@ -8,10 +22,11 @@
     </div>
 
     <!-- No results message-->
-    <p v-if="rows < 1">
+    <p v-if="totalElements < 1 && !batchLoading">
       There are no results to display.<br />
       Please select another Job Execution ID.
     </p>
+
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
       title="Job/Runs"

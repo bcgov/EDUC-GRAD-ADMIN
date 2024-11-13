@@ -50,6 +50,7 @@
                 <v-stepper-window-item value="0">
                   <v-row>
                     <v-select
+                      class="mt-2"
                       v-model="group"
                       :items="[
                         {
@@ -66,7 +67,8 @@
                           value: 'School Category',
                         },
                       ]"
-                      label="Select a Group"
+                      label="Select a group"
+                      variant="outlined"
                       ><template v-slot:item="{ props, item }">
                         <v-list-item
                           v-bind="props"
@@ -129,7 +131,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -240,6 +243,7 @@ export default {
   data: () => ({
     snackbarStore: useSnackbarStore(),
     step: 0,
+    batchLoading: false,
     dialog: false,
   }),
   computed: {
@@ -273,6 +277,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.batchLoading = true;
       const requestTemplate = [
         "districts",
         "pens",
@@ -292,7 +297,7 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
-
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "User Request Certificate Regeneration has been successfully scheduled",
@@ -309,7 +314,10 @@ export default {
         }
         this.closeDialogAndResetForm();
         this.setActiveTab("batchRuns");
-        this.updateDashboards();
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
       } catch (error) {
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,

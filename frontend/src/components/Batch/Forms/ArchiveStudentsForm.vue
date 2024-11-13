@@ -52,9 +52,10 @@
                 <v-stepper-window-item value="0">
                   <v-row>
                     <v-select
+                      class="mt-2"
                       v-model="group"
                       :items="['School', 'All Students']"
-                      label="Select a Group"
+                      label="Select a group"
                     ></v-select>
                   </v-row>
                   <v-row v-if="group == 'School'">
@@ -213,7 +214,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -245,7 +247,7 @@ export default {
     watch(group, (newValue) => {
       batchRequestFormStore.who = newValue;
       if (newValue == "All Students") {
-        batchRequestFormStore.setActivityCode("All");
+        batchRequestFormStore.setActivityCode("ALL");
       } else {
         batchRequestFormStore.setActivityCode(null);
       }
@@ -318,6 +320,7 @@ export default {
   },
   data: () => ({
     step: 0,
+    batchLoading: false,
     dialog: false,
     selectedConfirmations: [],
   }),
@@ -380,6 +383,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.batchLoading = true;
       const requestTemplate = [
         "credentialTypeCode",
         "districts",
@@ -399,37 +403,41 @@ export default {
         this.getBatchRequest,
         requestTemplate
       );
-      try {
-        let response = await BatchProcessingService.runArchiveStudents(
-          requestPayload,
-          this.getBatchRequestCrontime
-        );
-
-        if (this.getBatchRequestCrontime) {
-          this.snackbarStore.showSnackbar(
-            "Archive student batch process has been successfully scheduled",
-            5000
+      if (this.group == "All Students")
+        try {
+          let response = await BatchProcessingService.runArchiveStudents(
+            requestPayload,
+            this.getBatchRequestCrontime
           );
-        } else {
+          this.batchLoading = false;
+          if (this.getBatchRequestCrontime) {
+            this.snackbarStore.showSnackbar(
+              "Archive student batch process has been successfully scheduled",
+              5000
+            );
+          } else {
+            this.snackbarStore.showSnackbar(
+              "Batch " +
+                response.data.batchId +
+                "- Archive student batch process submitted",
+              "success",
+              5000
+            );
+          }
+          this.closeDialogAndResetForm();
+          this.setActiveTab("batchRuns");
+          //add a wait before updating dashboard
+          setTimeout(() => {
+            this.updateDashboards();
+          }, 2000);
+        } catch (error) {
+          // handle the error and show the notification
           this.snackbarStore.showSnackbar(
-            "Batch " +
-              response.data.batchId +
-              "- Archive student batch process submitted",
-            "success",
+            "An error occurred: " + error.message,
+            "danger",
             5000
           );
         }
-        this.closeDialogAndResetForm();
-        this.setActiveTab("batchRuns");
-        this.updateDashboards();
-      } catch (error) {
-        // handle the error and show the notification
-        this.snackbarStore.showSnackbar(
-          "An error occurred: " + error.message,
-          "danger",
-          5000
-        );
-      }
     },
   },
 };

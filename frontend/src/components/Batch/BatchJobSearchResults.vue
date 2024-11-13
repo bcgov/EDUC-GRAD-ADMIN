@@ -1,22 +1,28 @@
 <template>
   <v-card class="p-3">
+    <v-overlay
+      v-model="batchLoading"
+      class="align-center justify-center"
+      contained
+    >
+      <v-progress-circular
+        v-if="batchLoading"
+        indeterminate
+        color="primary"
+        size="64"
+      >
+        Loading...
+      </v-progress-circular>
+    </v-overlay>
     <div class="d-flex justify-space-between align-center">
       <v-card-title> Batch Job #{{ selectedBatchId }} students </v-card-title>
 
       <!-- Slot for close button -->
       <slot name="close"></slot>
     </div>
-    <v-progress-circular
-      v-if="isLoading"
-      indeterminate
-      color="primary"
-      size="64"
-    >
-      Loading...
-    </v-progress-circular>
 
     <!-- No results message-->
-    <p v-if="rows < 1">
+    <p v-if="totalElements < 1 && !batchLoading">
       There are no results to display.<br />
       Please select another Job Execution ID.
     </p>
@@ -26,7 +32,7 @@
       :headers="batchDataFields"
       :items="batchData"
       :items-length="totalElements"
-      :loading="loading"
+      :loading="batchLoading"
       item-value="id"
       @update:options="loadItems"
     >
@@ -60,7 +66,6 @@ export default {
       batchData: [],
       perPage: 10,
       rows: 0,
-      loading: false,
       totalElements: 0,
       itemsPerPage: 10,
       currentPage: 0,
@@ -152,7 +157,7 @@ export default {
         })
         .catch((error) => {
           if (error.response.status) {
-            this.isBatchLoading = false;
+            this.BatchLoading = false;
           }
         });
     },
