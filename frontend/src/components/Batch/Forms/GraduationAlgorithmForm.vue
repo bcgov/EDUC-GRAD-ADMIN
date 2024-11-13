@@ -339,11 +339,14 @@ export default {
           "schoolCategoryCodes",
           "schoolOfRecords",
           "validateInput",
+          "activityCode",
         ];
+
         const requestPayload = generateRequestPayload(
           this.getBatchRequest,
           requestTemplate
         );
+        requestPayload.activityCode = "GRADALG";
         let response = await BatchProcessingService.runREGALG(
           requestPayload,
           this.getBatchRequestCrontime
