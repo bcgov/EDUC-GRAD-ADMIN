@@ -15,7 +15,7 @@
       <v-card>
         <div class="d-flex justify-space-between align-center">
           <v-card-title
-            >Year-End Credentials and Transcript Distribution Run</v-card-title
+            >-End Credentials and Transcript DistrYearibution Run</v-card-title
           >
           <v-btn
             @click="closeDialogAndResetForm()"
@@ -74,7 +74,8 @@
                           :items="[
                             {
                               label: 'Run Type',
-                              value: 'Non-Graduate Transcript Distribution Run',
+                              value:
+                                'Year-End Credentials and Transcript Distribution Run',
                             },
 
                             {
