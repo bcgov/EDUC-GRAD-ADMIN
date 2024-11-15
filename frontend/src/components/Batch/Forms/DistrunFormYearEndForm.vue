@@ -287,7 +287,7 @@ export default {
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Year-End Credentials and Transcript Distribution Run has been successfully scheduled",
-            5000
+            10000
           );
         } else {
           this.snackbarStore.showSnackbar(
@@ -295,7 +295,7 @@ export default {
               response.data.batchId +
               "- Year-End Credentials and Transcript Distribution Run submitted",
             "success",
-            5000
+            10000
           );
         }
         this.closeDialogAndResetForm();
@@ -308,7 +308,7 @@ export default {
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "danger",
-          5000
+          10000
         );
       }
     },

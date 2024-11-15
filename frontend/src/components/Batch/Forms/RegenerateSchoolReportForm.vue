@@ -333,7 +333,7 @@ export default {
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "User Request School Report Regeneration has been successfully scheduled",
-            5000
+            10000
           );
         } else {
           this.snackbarStore.showSnackbar(
@@ -341,7 +341,7 @@ export default {
               response.data.batchId +
               "- User Request School Report Regeneration submitted",
             "success",
-            5000
+            10000
           );
         }
         this.closeDialogAndResetForm();
@@ -354,7 +354,7 @@ export default {
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "danger",
-          5000
+          10000
         );
       }
     },

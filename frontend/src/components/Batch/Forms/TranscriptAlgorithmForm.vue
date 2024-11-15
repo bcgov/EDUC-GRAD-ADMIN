@@ -345,13 +345,13 @@ export default {
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Transcript verification report has been successfully scheduled",
-            5000
+            10000
           );
         } else {
           this.snackbarStore.showSnackbar(
             "Transcript verification report request submitted",
             "success",
-            5000
+            10000
           );
         }
         this.setActiveTab("batchRuns");
@@ -365,7 +365,7 @@ export default {
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "danger",
-          5000
+          10000
         );
         console.error("Error:", error);
       }

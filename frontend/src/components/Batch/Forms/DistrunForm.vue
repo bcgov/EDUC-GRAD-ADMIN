@@ -279,12 +279,12 @@ export default {
           if (error.response.statusText) {
             this.snackbarStore.showSnackbar(
               "ERROR " + error.response.statusText,
-              5000
+              10000
             );
           } else {
             this.snackbarStore.showSnackbar(
               "ERROR " + "error with webservervice",
-              5000
+              10000
             );
           }
         });
@@ -299,12 +299,12 @@ export default {
           if (error.response.statusText) {
             this.snackbarStore.showSnackbar(
               "ERROR " + error.response.statusText,
-              5000
+              10000
             );
           } else {
             this.snackbarStore.showSnackbar(
               "ERROR " + "error with webservervice",
-              5000
+              10000
             );
           }
         });
@@ -353,7 +353,7 @@ export default {
           if (this.getBatchRequestCrontime) {
             this.snackbarStore.showSnackbar(
               "Credentials and Transcript Distribution Run request has been successfully scheduled",
-              5000
+              10000
             );
           } else {
             this.snackbarStore.showSnackbar(
@@ -361,7 +361,7 @@ export default {
                 response.data.batchId +
                 "- Credentials and Transcript Distribution Run request submitted",
               "success",
-              5000
+              10000
             );
           }
         }
@@ -377,7 +377,7 @@ export default {
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "error",
-          5000
+          10000
         );
       }
     },

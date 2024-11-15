@@ -85,6 +85,7 @@
                 hide-default-footer
                 :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
                 class="pb-3"
+                :loading="!batchRunGradOptions"
               >
                 <template v-slot:item.description="{ item }">
                   {{ item.label }}
