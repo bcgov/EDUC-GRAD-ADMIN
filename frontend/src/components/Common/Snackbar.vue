@@ -4,12 +4,12 @@
     :timeout="snackbarStore.timeout"
     :color="snackbarStore.color"
     location="top right"
-    vertical
+    multi-line
   >
     <h3>{{ snackbarStore.title }}</h3>
     <p>{{ snackbarStore.message }}</p>
-    <template v-slot:action>
-      <v-btn color="white" text @click="close">Close</v-btn>
+    <template v-slot:actions>
+      <v-icon class="mx-3" color="white" text @click="close">mdi-close</v-icon>
     </template>
   </v-snackbar>
 </template>

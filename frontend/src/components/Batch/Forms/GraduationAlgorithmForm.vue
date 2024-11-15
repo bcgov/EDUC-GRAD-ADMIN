@@ -362,7 +362,7 @@ export default {
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Graduation Algorithm request has been successfully scheduled",
-            5000
+            10000
           );
         } else {
           this.snackbarStore.showSnackbar(
@@ -370,7 +370,7 @@ export default {
               response.data.batchId +
               "- Graduation Algorithm request submitted",
             "success",
-            5000
+            10000
           );
         }
 
@@ -385,7 +385,7 @@ export default {
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "danger",
-          5000
+          10000
         );
         this.batchLoading = false;
         console.error("Error:", error);
