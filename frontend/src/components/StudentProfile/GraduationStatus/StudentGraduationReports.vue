@@ -78,13 +78,22 @@
             <div>
               <div class="px-3 w-100 float-left mt-2 mb-6">
                 <a
-                  :disabled="!showXMLPreview()"
+                  v-if="showXMLPreview()"
                   @click="
                     downloadFile(xmlReports, 'application/pdf', 'xml-preview')
                   "
-                  href="#"
+                  href="javascript:void(0)"
+                  class="pdf-link"
                   >View XML Preview</a
                 >
+                <a
+                  v-else
+                  class="text-disabled"
+                  disabled
+                  href="javascropt:void(0)"
+                >
+                  View XML Preview
+                </a>
               </div>
             </div>
           </div>
