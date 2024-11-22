@@ -18,6 +18,7 @@
             color="error"
             variant="outlined"
             class="m-4"
+            :loading="batchLoading"
             >Cancel</v-btn
           >
         </div>
@@ -352,6 +353,7 @@ export default {
           this.getBatchRequest,
           requestTemplate
         );
+        requestPayload.user = "Shaun Lum";
         let response = await BatchProcessingService.runREGALG(
           requestPayload,
           this.getBatchRequestCrontime
