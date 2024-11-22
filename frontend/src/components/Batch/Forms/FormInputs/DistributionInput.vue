@@ -10,24 +10,20 @@
           required
           variant="outlined"
         ></v-text-field>
-      </v-col> </v-row
-    ><v-row>
+      </v-col>
+    </v-row>
+    <v-row v-if="getDistribution !== 'User'">
       <v-col sm="2"><strong>Where</strong></v-col>
       <v-col sm="10" md="4">
         <v-select
-          v-model="distribution"
-          :items="[
-            'BC Mail',
-            'Download',
-            { title: 'User: ' + userFullName, value: 'User' },
-          ]"
+          v-model="getDistribution"
+          :items="['BC Mail', 'Download']"
           item-title="title"
           item-value="value"
           label="Where"
           variant="outlined"
           require
           hide-details
-          :disabled="distribution === 'User'"
         ></v-select>
       </v-col>
 
@@ -35,7 +31,11 @@
         <template #bottom></template>
       </v-col>
     </v-row>
-    <v-card v-if="distribution === 'User'" class="mt-4" title="Mailing Address">
+    <v-card
+      v-if="getDistribution === 'User'"
+      class="mt-4"
+      title="Mailing Address"
+    >
       <v-card-text>
         <strong>{{ userFullName }}</strong
         ><br />
@@ -126,6 +126,7 @@ export default {
       "getBatchRunTime",
       "getBatchRunCustomDate",
       "getbatchRunCustomTime",
+      "getDistribution",
       "getGroup",
       "getUserDistributionAddress",
     ]),

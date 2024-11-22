@@ -306,9 +306,11 @@ export default {
     });
 
     watch(group, (newValue) => {
+      batchRequestFormStore.who = newValue;
       if (newValue == "Ministry of Advanced Education") {
-        batchRequestFormStore.who = newValue;
         batchRequestFormStore.distribution = "User";
+      } else {
+        batchRequestFormStore.distribution = "BC Mail";
       }
     });
 
