@@ -27,6 +27,7 @@
           variant="outlined"
           require
           hide-details
+          :disabled="distribution === 'User'"
         ></v-select>
       </v-col>
 
