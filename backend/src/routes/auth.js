@@ -55,34 +55,33 @@ function logout(req) {
 }
 
 //removes tokens and destroys session
-router.get("/logout", async (req, res) => {
-  if (req?.session?.passport?.user) {
-    logout(req);
+router.get("/logout", async (req, res, next) => {
+  let primaryURL = config.get('logoutEndpoint') + '?post_logout_redirect_uri=' + config.get('server:frontend');
+  let idToken = req?.session?.passport?.user?.idToken;
+  if (idToken) {
+    req.logout(function(err) {
+      if (err) {
+        return next(err);
+      }
+      req.session.destroy();
+      let retUrl;
+      if (req.query && req.query.sessionExpired) {
+        retUrl = encodeURIComponent(primaryURL + '/session-expired' + '&id_token_hint=' + idToken);
+      } else {
+        retUrl = encodeURIComponent(primaryURL + '/logout' + '&id_token_hint=' + idToken);
+      }
+      res.redirect(config.get('siteMinder_logout_endpoint') + retUrl);
+    });
+  }else {
     let retUrl;
     if (req.query && req.query.sessionExpired) {
-      retUrl = encodeURIComponent(
-        config.get("logoutEndpoint") +
-          "?post_logout_redirect_uri=" +
-          config.get("server:frontend") +
-          "/session-expired"
-      );
+      console.log("1")
+      retUrl = encodeURIComponent(primaryURL + '/session-expired' + '&client_id=' + config.get('oidc:clientId'));
     } else {
-      retUrl = encodeURIComponent(
-        
-        config.get("logoutEndpoint") +
-          "?post_logout_redirect_uri=" +
-          config.get("server:frontend") +
-          "/logout"
-      );
+      console.log("2")
+      retUrl = encodeURIComponent(primaryURL + '/logout' + '&client_id=' + config.get('oidc:clientId'));
     }
-    res.redirect(config.get("siteMinder_logout_endpoint") + retUrl);
-  } else {
-    res.redirect(config.get("server:frontend") + "/logout");
-    // if (req.query && req.query.sessionExpired) {
-    //   res.redirect(config.get("server:frontend") + "/session-expired");
-    // } else {
-    //   res.redirect(config.get("server:frontend") + "/logout");
-    // }
+    res.redirect(config.get('siteMinder_logout_endpoint') + retUrl);
   }
 });
 
