@@ -261,6 +261,7 @@ import DistributionInput from "@/components/Batch/Forms/FormInputs/DistributionI
 import { mapActions, mapState } from "pinia";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import { useAccessStore } from "../../../store/modules/access";
+import { useAuthStore } from "../../../store/modules/auth";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
@@ -307,6 +308,11 @@ export default {
 
     watch(group, (newValue) => {
       batchRequestFormStore.who = newValue;
+      if (newValue == "Ministry of Advanced Education") {
+        batchRequestFormStore.distribution = "User";
+      } else {
+        batchRequestFormStore.distribution = "BC Mail";
+      }
     });
 
     return {
@@ -441,6 +447,7 @@ export default {
     ],
   }),
   computed: {
+    ...mapState(useAuthStore, ["userFullName"]),
     ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
@@ -606,6 +613,15 @@ export default {
           this.group == "Ministry of Advanced Education" &&
           this.getCredential == "Blank certificate print"
         ) {
+          requestPayload.user = this.userFullName;
+          requestPayload.address = {
+            streetLine1: "4TH FLOOR 620 SUPERIOR",
+            streetLine2: "PO BOX 9886 STN PROV GOVT",
+            city: "VICTORIA",
+            region: "BRITISH COLUMBIA",
+            country: "CANADA",
+            code: "V8W9T6",
+          };
           requestPayload.schoolOfRecords = ["00000000"];
         }
 
