@@ -162,6 +162,7 @@ jobs:
           oc process -f tools/openshift/frontend-dc.yaml -p REPO_NAME=educ-grad-admin \
           -p HOST_ROUTE=educ-grad-admin-bbe4c3-dev.apps.silver.devops.gov.bc.ca -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
           -p APP_NAME=educ-grad-admin -p TAG=latest -p MIN_REPLICAS=2 -p MAX_REPLICAS=3 -p MIN_CPU=50m -p MAX_CPU=100m \
+          -p BASE_URL=${{ env.TARGET_ENV }}.grad.gov.bc.ca -p ENVIRONMENT=${{ env.TARGET_ENV }} -p CERTIFICATE=${{ secrets.CERTIFICATE }} -p CA_CERT=${{ secrets.CA_CERT }} -p PRIVATE_KEY=${{ secrets.PRIVATE_KEY }} \
           -p MIN_MEM=200Mi -p MAX_MEM=250Mi | oc apply -n bbe4c3-dev -f -
           
           # Start rollout (if necessary) and follow it

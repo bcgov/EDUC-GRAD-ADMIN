@@ -83,7 +83,9 @@ jobs:
           # Process and apply deployment template
           oc process -f tools/openshift/frontend-dc.yaml -p REPO_NAME=educ-grad-admin \
           -p HOST_ROUTE=educ-grad-admin-bbe4c3-test.apps.silver.devops.gov.bc.ca -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
-          -p APP_NAME=educ-grad-admin -p TAG=${{ steps.get-latest-tag.outputs.tag }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} | oc apply -n bbe4c3-test -f -
+          -p APP_NAME=educ-grad-admin -p TAG=${{ steps.get-latest-tag.outputs.tag }} -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
+          -p BASE_URL=${{ env.TARGET_ENV }}.grad.gov.bc.ca -p ENVIRONMENT=${{ env.TARGET_ENV }} -p CERTIFICATE=${{ secrets.CERTIFICATE }} -p CA_CERT=${{ secrets.CA_CERT }} -p PRIVATE_KEY=${{ secrets.PRIVATE_KEY }} \
+          -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} | oc apply -n bbe4c3-test -f -
 
           # Start rollout (if necessary) and follow it
           oc rollout latest dc/${{ env.IMAGE_NAME }}-dc 2> /dev/null \
