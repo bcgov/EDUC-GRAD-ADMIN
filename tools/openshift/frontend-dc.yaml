@@ -6,239 +6,239 @@ labels:
 metadata:
   name: "${REPO_NAME}-frontend"
 objects:
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    name: "${APP_NAME}-frontend"
-    labels:
-      app: "${APP_NAME}-frontend"
-      app.kubernetes.io/part-of: GRAD-ADMIN
-      app.openshift.io/runtime: js
-  spec:
-    replicas: ${{MIN_REPLICAS}}
-    selector:
-      matchLabels:
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: "${APP_NAME}-frontend"
+      labels:
         app: "${APP_NAME}-frontend"
-    strategy:
-      type: RollingUpdate
-      rollingUpdate:
-        maxUnavailable: 25%
-        maxSurge: 25%
-    template:
-      metadata:
-        annotations:
-          openshift.io/generated-by: OpenShiftNewApp
-        labels:
+        app.kubernetes.io/part-of: GRAD-ADMIN
+        app.openshift.io/runtime: js
+    spec:
+      replicas: ${{MIN_REPLICAS}}
+      selector:
+        matchLabels:
           app: "${APP_NAME}-frontend"
-      spec:
-        containers:
-        - name: "${APP_NAME}-frontend"
-          image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend:${TAG}
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 2015
-              protocol: TCP
-          envFrom:
-            - configMapRef:
-                name: "${APP_NAME}-frontend-config-map"
-          resources:
-            requests:
-              cpu: "${MIN_CPU}"
-              memory: "${MIN_MEM}"
-            limits:
-              cpu: "${MAX_CPU}"
-              memory: "${MAX_MEM}"
-          livenessProbe:
-            httpGet:
-              path: "/"
-              port: 2015
-              scheme: HTTP
-            initialDelaySeconds: 300
-            periodSeconds: 30
-            timeoutSeconds: 5
-            failureThreshold: 5
-            successThreshold: 1
-          readinessProbe:
-            httpGet:
-              path: "/"
-              port: 2015
-              scheme: HTTP
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 20
-            successThreshold: 1
-          volumeMounts:
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 25%
+          maxSurge: 25%
+      template:
+        metadata:
+          annotations:
+            openshift.io/generated-by: OpenShiftNewApp
+          labels:
+            app: "${APP_NAME}-frontend"
+        spec:
+          containers:
+            - name: "${APP_NAME}-frontend"
+              image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend:${TAG}
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 2015
+                  protocol: TCP
+              envFrom:
+                - configMapRef:
+                    name: "${APP_NAME}-frontend-config-map"
+              resources:
+                requests:
+                  cpu: "${MIN_CPU}"
+                  memory: "${MIN_MEM}"
+                limits:
+                  cpu: "${MAX_CPU}"
+                  memory: "${MAX_MEM}"
+              livenessProbe:
+                httpGet:
+                  path: "/"
+                  port: 2015
+                  scheme: HTTP
+                initialDelaySeconds: 300
+                periodSeconds: 30
+                timeoutSeconds: 5
+                failureThreshold: 5
+                successThreshold: 1
+              readinessProbe:
+                httpGet:
+                  path: "/"
+                  port: 2015
+                  scheme: HTTP
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                timeoutSeconds: 5
+                failureThreshold: 20
+                successThreshold: 1
+              volumeMounts:
+                - name: tls-certs
+                  mountPath: "/etc/tls-certs"
+                  readOnly: true
+                - name: config-env
+                  mountPath: "/var/www/html/js/config"
+          volumes:
           - name: tls-certs
-            mountPath: "/etc/tls-certs"
-            readOnly: true
+            secret:
+              secretName: "${APP_NAME}-frontend-cert"
           - name: config-env
-            mountPath: "/var/www/html/js/config"
-        volumes:
-        - name: tls-certs
-          secret:
-            secretName: "${APP_NAME}-frontend-cert"
-        - name: config-env
-          configMap:
-            name: ${APP_NAME}-frontend-config-map
-    test: false
-- apiVersion: v1
-  kind: Service
-  metadata:
-    annotations:
-      openshift.io/generated-by: OpenShiftNewApp
-      service.alpha.openshift.io/serving-cert-secret-name: "${APP_NAME}-frontend-cert"
-    labels:
-      app: "${APP_NAME}-frontend"
-    name: "${APP_NAME}-frontend"
-  spec:
-    ports:
-    - name: 2015-tcp
-      port: 2015
-      protocol: TCP
-      targetPort: 2015
-    selector:
-      app: "${APP_NAME}-frontend"
-# route for .grad.gov.bc.ca
-#- apiVersion: v1
-#  kind: Route
-#  metadata:
-#    annotations:
-#      openshift.io/host.generated: 'true'
-#    labels:
-#      app: "${APP_NAME}-frontend"
-#    name: "${APP_NAME}-frontend-${ENVIRONMENT}"
-#  spec:
-#    host: "${BASE_URL}"
-#    to:
-#      kind: Service
-#      name: "${APP_NAME}-frontend"
-#      weight: 100
- #   wildcardPolicy: None
- #   port:
- #     targetPort: 2015-tcp
- #   tls:
- #     caCertificate: "${CA_CERT}"
- #     certificate: "${CERTIFICATE}"
- #     insecureEdgeTerminationPolicy: Redirect
- #     key: "${PRIVATE_KEY}"
- #     termination: edge
-# route for backend .grad.gov.bc.ca/api
-#- apiVersion: v1
-#  kind: Route
-#  metadata:
-#    annotations:
-#      openshift.io/host.generated: 'true'
-#    labels:
-#      app: "${APP_NAME}-backend"
-#    name: "${APP_NAME}-backend-${ENVIRONMENT}"
-#  spec:
-#    host: "${BASE_URL}"
-#    path: "/api"
-#    to:
-#      kind: Service
-#      name: "${APP_NAME}-backend"
-#      weight: 100
-#    wildcardPolicy: None
-#    port:
-#      targetPort: 8080-tcp
-#    tls:
-#      caCertificate: "${CA_CERT}"
-#      certificate: "${CERTIFICATE}"
-#      insecureEdgeTerminationPolicy: Redirect
-#      key: "${PRIVATE_KEY}"
-#      termination: edge
-- apiVersion: v1
-  kind: Route
-  metadata:
-    annotations:
-      openshift.io/host.generated: 'true'
-    labels:
-      app: "${APP_NAME}-frontend"
-    name: "${APP_NAME}-frontend"
-  spec:
-    host: "${HOST_ROUTE}"
-    port:
-      targetPort: 2015-tcp
-    tls:
-      insecureEdgeTerminationPolicy: Redirect
-      termination: edge
-    to:
-      kind: Service
+            configMap:
+              name: ${APP_NAME}-frontend-config-map
+      test: false
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+        service.alpha.openshift.io/serving-cert-secret-name: "${APP_NAME}-frontend-cert"
+      labels:
+        app: "${APP_NAME}-frontend"
       name: "${APP_NAME}-frontend"
-      weight: 100
-    wildcardPolicy: None
-- apiVersion: autoscaling/v2
-  kind: HorizontalPodAutoscaler
-  metadata:
-    name: "${APP_NAME}-frontend-cpu-autoscaler"
-  spec:
-    scaleTargetRef:
-      apiVersion: apps/v1
-      kind: Deployment
+    spec:
+      ports:
+      - name: 2015-tcp
+        port: 2015
+        protocol: TCP
+        targetPort: 2015
+      selector:
+        app: "${APP_NAME}-frontend"
+  # route for .grad.gov.bc.ca
+  #- apiVersion: v1
+  #  kind: Route
+  #  metadata:
+  #    annotations:
+  #      openshift.io/host.generated: 'true'
+  #    labels:
+  #      app: "${APP_NAME}-frontend"
+  #    name: "${APP_NAME}-frontend-${ENVIRONMENT}"
+  #  spec:
+  #    host: "${BASE_URL}"
+  #    to:
+  #      kind: Service
+  #      name: "${APP_NAME}-frontend"
+  #      weight: 100
+   #   wildcardPolicy: None
+   #   port:
+   #     targetPort: 2015-tcp
+   #   tls:
+   #     caCertificate: "${CA_CERT}"
+   #     certificate: "${CERTIFICATE}"
+   #     insecureEdgeTerminationPolicy: Redirect
+   #     key: "${PRIVATE_KEY}"
+   #     termination: edge
+  # route for backend .grad.gov.bc.ca/api
+  #- apiVersion: v1
+  #  kind: Route
+  #  metadata:
+  #    annotations:
+  #      openshift.io/host.generated: 'true'
+  #    labels:
+  #      app: "${APP_NAME}-backend"
+  #    name: "${APP_NAME}-backend-${ENVIRONMENT}"
+  #  spec:
+  #    host: "${BASE_URL}"
+  #    path: "/api"
+  #    to:
+  #      kind: Service
+  #      name: "${APP_NAME}-backend"
+  #      weight: 100
+  #    wildcardPolicy: None
+  #    port:
+  #      targetPort: 8080-tcp
+  #    tls:
+  #      caCertificate: "${CA_CERT}"
+  #      certificate: "${CERTIFICATE}"
+  #      insecureEdgeTerminationPolicy: Redirect
+  #      key: "${PRIVATE_KEY}"
+  #      termination: edge
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      annotations:
+        openshift.io/host.generated: 'true'
+      labels:
+        app: "${APP_NAME}-frontend"
       name: "${APP_NAME}-frontend"
-      subresource: scale
-    minReplicas: ${{MIN_REPLICAS}}
-    maxReplicas: ${{MAX_REPLICAS}}
-    metrics:
-      - type: Resource
-        resource:
-          name: cpu
-          target:
-            averageUtilization: 150
-            type: Utilization
-      - type: Resource
-        resource:
-          name: memory
-          target:
-            averageUtilization: 100
-            type: Utilization
+    spec:
+      host: "${HOST_ROUTE}"
+      port:
+        targetPort: 2015-tcp
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: "${APP_NAME}-frontend"
+        weight: 100
+      wildcardPolicy: None
+  - apiVersion: autoscaling/v2
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: "${APP_NAME}-frontend-cpu-autoscaler"
+    spec:
+      scaleTargetRef:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: "${APP_NAME}-frontend"
+        subresource: scale
+      minReplicas: ${{MIN_REPLICAS}}
+      maxReplicas: ${{MAX_REPLICAS}}
+      metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              averageUtilization: 150
+              type: Utilization
+        - type: Resource
+          resource:
+            name: memory
+            target:
+              averageUtilization: 100
+              type: Utilization
 parameters:
-- name: REPO_NAME
-  description: Application repository name
-  required: true
-- name: NAMESPACE
-  description: Target namespace reference (i.e. 'k8vopl-dev')
-  required: true
-- name: APP_NAME
-  description: Application name
-  required: true
-- name: HOST_ROUTE
-  description: The host the route will use to expose service outside cluster
-  required: true
-- name: TAG
-  description: The identifying tag for this specific deployment
-  required: true
-- name: MIN_REPLICAS
-  description: The minimum amount of replicas
-  required: true
-- name: MAX_REPLICAS
-  description: The maximum amount of replicas
-  required: true
-- name: MIN_CPU
-  description: The minimum amount of cpu
-  required: true
-- name: MAX_CPU
-  description: The maximum amount of cpu
-  required: true
-- name: MIN_MEM
-  description: The minimum amount of memory
-  required: true
-- name: MAX_MEM
-  description: The maximum amount of memory
-  required: true
-- name: ENVIRONMENT
-  description: dev, test, prod
-  required: true
-- name: CA_CERT
-  description: The CA Certificate
-  required: true
-- name: CERTIFICATE
-  description: The Certificate
-  required: true
-- name: PRIVATE_KEY
-  description: The private key
-  required: true
-- name: BASE_URL
-  description: Base url. Example dev.grad.gov.bc.ca. Not prepended with https://
-  required: true
+  - name: REPO_NAME
+    description: Application repository name
+    required: true
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. 'k8vopl-dev')
+    required: true
+  - name: APP_NAME
+    description: Application name
+    required: true
+  - name: HOST_ROUTE
+    description: The host the route will use to expose service outside cluster
+    required: true
+  - name: TAG
+    description: The identifying tag for this specific deployment
+    required: true
+  - name: MIN_REPLICAS
+    description: The minimum amount of replicas
+    required: true
+  - name: MAX_REPLICAS
+    description: The maximum amount of replicas
+    required: true
+  - name: MIN_CPU
+    description: The minimum amount of cpu
+    required: true
+  - name: MAX_CPU
+    description: The maximum amount of cpu
+    required: true
+  - name: MIN_MEM
+    description: The minimum amount of memory
+    required: true
+  - name: MAX_MEM
+    description: The maximum amount of memory
+    required: true
+  - name: ENVIRONMENT
+    description: dev, test, prod
+    required: true
+  - name: CA_CERT
+    description: The CA Certificate
+    required: true
+  - name: CERTIFICATE
+    description: The Certificate
+    required: true
+  - name: PRIVATE_KEY
+    description: The private key
+    required: true
+  - name: BASE_URL
+    description: Base url. Example dev.grad.gov.bc.ca. Not prepended with https://
+    required: true
