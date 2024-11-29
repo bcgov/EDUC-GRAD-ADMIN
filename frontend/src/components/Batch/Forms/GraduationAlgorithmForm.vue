@@ -353,7 +353,6 @@ export default {
           this.getBatchRequest,
           requestTemplate
         );
-        requestPayload.user = "Shaun Lum";
         let response = await BatchProcessingService.runREGALG(
           requestPayload,
           this.getBatchRequestCrontime
