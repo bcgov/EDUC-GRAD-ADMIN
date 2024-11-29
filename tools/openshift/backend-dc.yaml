@@ -38,7 +38,7 @@ objects:
                   protocol: TCP
               envFrom:
                 - configMapRef:
-                    name: educ-grad-admin-backend-config-map
+                    name: "${REPO_NAME}-backend-config-map"
               resources:
                 requests:
                   cpu: "${MIN_CPU}"
