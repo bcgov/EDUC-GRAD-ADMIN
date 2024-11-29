@@ -6,64 +6,38 @@ labels:
 metadata:
   name: "${REPO_NAME}-frontend"
 objects:
-- apiVersion: v1
-  kind: DeploymentConfig
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
-    annotations:
-      openshift.io/generated-by: OpenShiftNewApp
+    name: "${APP_NAME}-frontend"
     labels:
-      app: "${APP_NAME}"
+      app: "${APP_NAME}-frontend"
       app.kubernetes.io/part-of: GRAD-ADMIN
       app.openshift.io/runtime: js
-    name: "${APP_NAME}-frontend-dc"
   spec:
     replicas: ${{MIN_REPLICAS}}
     selector:
-      app: "${APP_NAME}"
-      deploymentconfig: "${APP_NAME}-frontend-dc"
+      matchLabels:
+        app: "${APP_NAME}-frontend"
     strategy:
-      resources: {}
-      type: Rolling
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 25%
+        maxSurge: 25%
     template:
       metadata:
         annotations:
           openshift.io/generated-by: OpenShiftNewApp
-        creationTimestamp:
         labels:
-          app: "${APP_NAME}"
-          deploymentconfig: "${APP_NAME}-frontend-dc"
+          app: "${APP_NAME}-frontend"
       spec:
         containers:
-        - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend:${TAG}
+        - name: "${APP_NAME}-frontend"
+          image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend:${TAG}
           imagePullPolicy: Always
-          volumeMounts:
-          - name: tls-certs
-            mountPath: "/etc/tls-certs"
-            readOnly: true
-          - name: config-env
-            mountPath: "/var/www/html/js/config"
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: "/"
-              port: 2015
-              scheme: HTTP
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
-          name: "${APP_NAME}-frontend"
           ports:
-          - containerPort: 2015
-            protocol: TCP
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: "/"
-              port: 2015
-              scheme: HTTP
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
+            - containerPort: 2015
+              protocol: TCP
           resources:
             requests:
               cpu: "${MIN_CPU}"
@@ -71,6 +45,32 @@ objects:
             limits:
               cpu: "${MAX_CPU}"
               memory: "${MAX_MEM}"
+          livenessProbe:
+            httpGet:
+              path: "/"
+              port: 2015
+              scheme: HTTP
+            initialDelaySeconds: 300
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: "/"
+              port: 2015
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 20
+            successThreshold: 1
+          volumeMounts:
+          - name: tls-certs
+            mountPath: "/etc/tls-certs"
+            readOnly: true
+          - name: config-env
+            mountPath: "/var/www/html/js/config"
         volumes:
         - name: tls-certs
           secret:
@@ -79,17 +79,14 @@ objects:
           configMap:
             name: ${APP_NAME}-frontend-config-map
     test: false
-    triggers:
-    - type: ConfigChange
 - apiVersion: v1
   kind: Service
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftNewApp
       service.alpha.openshift.io/serving-cert-secret-name: "${APP_NAME}-frontend-cert"
-    creationTimestamp:
     labels:
-      app: "${APP_NAME}"
+      app: "${APP_NAME}-frontend"
     name: "${APP_NAME}-frontend"
   spec:
     ports:
@@ -98,8 +95,7 @@ objects:
       protocol: TCP
       targetPort: 2015
     selector:
-      app: "${APP_NAME}"
-      deploymentconfig: "${APP_NAME}-frontend-dc"
+      app: "${APP_NAME}-frontend"
 # route for .grad.gov.bc.ca
 - apiVersion: v1
   kind: Route
@@ -107,7 +103,7 @@ objects:
     annotations:
       openshift.io/host.generated: 'true'
     labels:
-      app: "${APP_NAME}"
+      app: "${APP_NAME}-frontend"
     name: "${APP_NAME}-frontend-${ENVIRONMENT}"
   spec:
     host: "${BASE_URL}"
@@ -131,7 +127,7 @@ objects:
     annotations:
       openshift.io/host.generated: 'true'
     labels:
-      app: "${APP_NAME}"
+      app: "${APP_NAME}-backend"
     name: "${APP_NAME}-backend-${ENVIRONMENT}"
   spec:
     host: "${BASE_URL}"
@@ -155,7 +151,7 @@ objects:
     annotations:
       openshift.io/host.generated: 'true'
     labels:
-      app: "${APP_NAME}"
+      app: "${APP_NAME}-frontend"
     name: "${APP_NAME}-frontend"
   spec:
     host: "${HOST_ROUTE}"
@@ -175,9 +171,9 @@ objects:
     name: "${APP_NAME}-frontend-cpu-autoscaler"
   spec:
     scaleTargetRef:
-      apiVersion: apps.openshift.io/v1
-      kind: DeploymentConfig
-      name: "${APP_NAME}-frontend-dc"
+      apiVersion: apps/v1
+      kind: Deployment
+      name: "${APP_NAME}-frontend"
       subresource: scale
     minReplicas: ${{MIN_REPLICAS}}
     maxReplicas: ${{MAX_REPLICAS}}
