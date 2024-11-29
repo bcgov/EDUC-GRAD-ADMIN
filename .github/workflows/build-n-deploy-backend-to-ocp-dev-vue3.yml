@@ -21,7 +21,7 @@ env:
 
   APP_NAME: "educ-grad-admin"
   REPO_NAME: "educ-grad-admin"
-  BRANCH: "vue3"
+  BRANCH: "GRAD2-3119"
   APP_NAME_BACKEND: "educ-grad-admin-backend"
   NAMESPACE: ${{secrets.GRAD_NAMESPACE_NO_ENV}}
   NAMESPACE_TOOLS: ${{secrets.GRAD_NAMESPACE_NO_ENV}}-tools
