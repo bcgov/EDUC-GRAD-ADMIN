@@ -4,42 +4,38 @@ kind: Template
 labels:
   template: "${REPO_NAME}-backend-template"
 metadata:
-  name: "${REPO_NAME}-backend-dc"
+  name: "${REPO_NAME}-backend"
 objects:
-  - apiVersion: v1
-    kind: DeploymentConfig
+  - apiVersion: apps/v1
+    kind: Deployment
     metadata:
       labels:
         app: "${REPO_NAME}-backend"
         app.kubernetes.io/part-of: GRAD-ADMIN
         app.openshift.io/runtime: nodejs
-      name: "${REPO_NAME}-backend-dc"
+      name: "${REPO_NAME}-backend"
     spec:
       replicas: ${{MIN_REPLICAS}}
-      revisionHistoryLimit: 1
-      triggers: []
       selector:
-        app: "${REPO_NAME}-backend"
-        deploymentConfig: "${REPO_NAME}-backend-dc"
+        matchLabels:
+          app: "${REPO_NAME}-backend"
       strategy:
-        resources: {}
-        type: Rolling
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 25%
+          maxSurge: 25%
       template:
         metadata:
           labels:
             app: "${REPO_NAME}-backend"
-            deploymentConfig: "${REPO_NAME}-backend-dc"
         spec:
           containers:
-            - image: image-registry.openshift-image-registry.svc:5000/${IS_NAMESPACE}/${REPO_NAME}-backend:${TAG_NAME}
+            - name: "${REPO_NAME}-backend"
+              image: image-registry.openshift-image-registry.svc:5000/${IS_NAMESPACE}/${REPO_NAME}-backend:${TAG_NAME}
               imagePullPolicy: Always
-              name: "${REPO_NAME}-backend"
               ports:
                 - containerPort: ${{CONTAINER_PORT}}
                   protocol: TCP
-              volumeMounts:
-                - name: log-storage
-                  mountPath: /logs
               envFrom:
                 - configMapRef:
                     name: educ-grad-admin-backend-config-map
@@ -50,8 +46,11 @@ objects:
                 limits:
                   cpu: "${MAX_CPU}"
                   memory: "${MAX_MEM}"
-            - image: artifacts.developer.gov.bc.ca/docker-remote/fluent/fluent-bit:1.5.7
-              name: "${REPO_NAME}-fluent-bit-sidecar"
+              volumeMounts:
+                - name: log-storage
+                  mountPath: /logs
+            - name: "${REPO_NAME}-fluent-bit-sidecar"
+              image: artifacts.developer.gov.bc.ca/docker-remote/fluent/fluent-bit:1.5.7
               imagePullPolicy: Always
               imagePullSecrets:
                 - name: artifactory-creds
@@ -108,7 +107,6 @@ objects:
           protocol: TCP
       selector:
         app: "${REPO_NAME}-backend"
-        deploymentconfig: "${REPO_NAME}-backend-dc"
   - apiVersion: v1
     kind: Route
     metadata:
@@ -136,9 +134,9 @@ objects:
       name: "${REPO_NAME}-backend-cpu-autoscaler"
     spec:
       scaleTargetRef:
-        apiVersion: apps.openshift.io/v1
-        kind: DeploymentConfig
-        name: "${REPO_NAME}-backend-dc"
+        apiVersion: apps/v1
+        kind: Deployment
+        name: "${REPO_NAME}-backend"
         subresource: scale
       minReplicas: ${{MIN_REPLICAS}}
       maxReplicas: ${{MAX_REPLICAS}}
