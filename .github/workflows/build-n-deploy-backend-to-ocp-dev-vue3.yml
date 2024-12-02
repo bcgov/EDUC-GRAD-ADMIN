@@ -37,7 +37,7 @@ env:
   MAX_REPLICAS: "1"
 
   # SITE_URL should have no scheme or port. It will be prepended with https://
-  HOST_ROUTE: ${{ secrets.SITE_URL }}
+  HOST_ROUTE: "educ-grad-admin-${{secrets.GRAD_NAMESPACE_NO_ENV}}-dev.apps.silver.devops.gov.bc.ca"
 
 on:
   workflow_dispatch:
@@ -48,10 +48,6 @@ jobs:
     # ubuntu-latest can also be used.
     runs-on: ubuntu-22.04
     environment: dev-vue3
-
-    outputs:
-      ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
-      SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
 
     steps:
       - name: Check for required secrets
@@ -157,8 +153,23 @@ jobs:
 
           oc tag ${{ steps.push-image-backend.outputs.registry-path }} ${{ env.REPO_NAME }}-backend:${{ env.TAG }}
 
-          # Process and apply deployment template
-          oc process -f tools/openshift/backend-dc.yaml -p IS_NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} -p REPO_NAME=educ-grad-admin -p HOST_ROUTE=educ-grad-admin-${{secrets.GRAD_NAMESPACE_NO_ENV}}-dev.apps.silver.devops.gov.bc.ca  -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} | oc apply -n ${{secrets.GRAD_NAMESPACE_NO_ENV}}-dev -f -
+          # Process template
+          oc process -f tools/openshift/backend-dc.yaml \
+          -p IS_NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
+          -p REPO_NAME=educ-grad-admin \
+          -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
+          -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
+          -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
+          -p MIN_CPU=${{ env.MIN_CPU }} \
+          -p MAX_CPU=${{ env.MAX_CPU }} \
+          -p MIN_MEM=${{ env.MIN_MEM }} \
+          -p MAX_MEM=${{ env.MAX_MEM }} \
+          -p BASE_URL=${{ env.TARGET_ENV }}.grad.gov.bc.ca \
+          -p ENVIRONMENT=${{ env.TARGET_ENV }} \
+          -p CERTIFICATE="${{ secrets.CERTIFICATE }}" \
+          -p CA_CERT="${{ secrets.CA_CERT }}" \
+          -p PRIVATE_KEY="${{ secrets.PRIVATE_KEY }}" \
+          | oc apply -n ${{ env.OPENSHIFT_NAMESPACE }} -f -
 
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.IMAGE_NAME }} 
@@ -169,4 +180,4 @@ jobs:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.10.0
         with:
-          target: "https://educ-grad-admin-${{secrets.GRAD_NAMESPACE_NO_ENV}}-dev.apps.silver.devops.gov.bc.ca"
+          target: 'https://educ-grad-admin-${{ env.OPENSHIFT_NAMESPACE }}.apps.silver.devops.gov.bc.ca'
