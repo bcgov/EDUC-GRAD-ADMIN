@@ -83,7 +83,7 @@ jobs:
           -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
           -p MIN_CPU=${{ env.MIN_CPU }} \
           -p MAX_CPU=${{ env.MAX_CPU }} \
-          -p BASE_URL=${{ env.TARGET_ENV }}.grad.gov.bc.ca \
+          -p BASE_URL=grad.gov.bc.ca \
           -p ENVIRONMENT=${{ env.TARGET_ENV }} \
           -p CERTIFICATE="${{ secrets.CERTIFICATE }}" \
           -p CA_CERT="${{ secrets.CA_CERT }}" \
