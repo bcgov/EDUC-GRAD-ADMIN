@@ -23,7 +23,7 @@ env:
   NAMESPACE: bbe4c3
   NAMESPACE_TOOLS: bbe4c3-tools
   COMMON_NAMESPACE: 75e61b
-  TARGET_ENV: "test"
+  TARGET_ENV: "prod"
 
   MIN_CPU: "50m"
   MAX_CPU: "100m"
