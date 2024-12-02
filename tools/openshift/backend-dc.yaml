@@ -142,7 +142,7 @@ objects:
         haproxy.router.openshift.io/timeout: 600s
     spec:
       host: "${HOST_ROUTE}"
-      path: ${HOST_PATH}
+      path: "${HOST_PATH}"
       port:
         targetPort: ${CONTAINER_PORT}-tcp
       tls:
