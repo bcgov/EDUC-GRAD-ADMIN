@@ -15,19 +15,15 @@ env:
   IMAGE_REGISTRY_USER: ${{ github.actor }}
   IMAGE_REGISTRY_PASSWORD: ${{ github.token }}
 
-  IMAGE_NAME: educ-grad-admin-frontend
   DOCKER_ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca/docker-remote
   ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca
 
   APP_NAME: "educ-grad-admin"
-  REPO_NAME: "educ-grad-admin"
-  BRANCH: "main"
   APP_NAME_FRONTEND: "educ-grad-admin-frontend"
   NAMESPACE: bbe4c3
   NAMESPACE_TOOLS: bbe4c3-tools
   COMMON_NAMESPACE: 75e61b
-  TAG: "latest"
-  TARGET_ENV: "prod"
+  TARGET_ENV: "test"
 
   MIN_CPU: "50m"
   MAX_CPU: "100m"
@@ -37,7 +33,7 @@ env:
   MAX_REPLICAS: "5"
 
   # SITE_URL should have no scheme or port. It will be prepended with https://
-  HOST_ROUTE: ${{ secrets.SITE_URL }}
+  HOST_ROUTE: "educ-grad-admin-bbe4c3-prod.apps.silver.devops.gov.bc.ca"
 
 on:
   workflow_dispatch:
@@ -48,10 +44,6 @@ jobs:
     # ubuntu-latest can also be used.
     runs-on: ubuntu-22.04
     environment: prod
-
-    outputs:
-      ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
-      SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
 
     steps:
       - name: Check out repository
@@ -74,23 +66,35 @@ jobs:
           # Login to OpenShift and select project
           oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
           oc project ${{ env.OPENSHIFT_NAMESPACE }}
+          
           # Cancel any rollouts in progress
-          oc rollout cancel dc/${{ env.IMAGE_NAME }}-dc 2> /dev/null \
+          oc rollout cancel deployment/${{ env.APP_NAME_FRONTEND }} 2> /dev/null \
           || true && echo "No rollout in progress"
 
-          oc tag ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-frontend:${{ steps.get-latest-tag.outputs.tag }} ${{ env.NAMESPACE }}-prod/${{ env.REPO_NAME }}-frontend:${{ steps.get-latest-tag.outputs.tag }}
-
-          # Process and apply deployment template
-          oc process -f tools/openshift/frontend-dc.yaml -p REPO_NAME=educ-grad-admin \
-          -p HOST_ROUTE=educ-grad-admin-bbe4c3-prod.apps.silver.devops.gov.bc.ca -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
-          -p APP_NAME=educ-grad-admin -p TAG=${{ steps.get-latest-tag.outputs.tag }} \
-          -p BASE_URL=grad.gov.bc.ca -p ENVIRONMENT=${{ env.TARGET_ENV }} -p CERTIFICATE="${{ secrets.CERTIFICATE }}" -p CA_CERT="${{ secrets.CA_CERT }}" -p PRIVATE_KEY="${{ secrets.PRIVATE_KEY }}" \
-          -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} | oc apply -f -
-
+          oc tag ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-frontend:${{ steps.get-latest-tag.outputs.tag }} ${{ env.NAMESPACE }}-test/${{ env.REPO_NAME }}-frontend:${{ steps.get-latest-tag.outputs.tag }}
+          
+          # Process template
+          oc process -f tools/openshift/frontend-dc.yaml \
+          -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
+          -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
+          -p APP_NAME=${{ env.APP_NAME }} \
+          -p TAG=${{ steps.get-latest-tag.outputs.tag }} \
+          -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
+          -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
+          -p MIN_CPU=${{ env.MIN_CPU }} \
+          -p MAX_CPU=${{ env.MAX_CPU }} \
+          -p BASE_URL=${{ env.TARGET_ENV }}.grad.gov.bc.ca \
+          -p ENVIRONMENT=${{ env.TARGET_ENV }} \
+          -p CERTIFICATE="${{ secrets.CERTIFICATE }}" \
+          -p CA_CERT="${{ secrets.CA_CERT }}" \
+          -p PRIVATE_KEY="${{ secrets.PRIVATE_KEY }}" \
+          -p MIN_MEM=${{ env.MIN_MEM }} \
+          -p MAX_MEM=${{ env.MAX_MEM }} \
+          | oc apply -n ${{ env.OPENSHIFT_NAMESPACE }} -f -
+          
           # Start rollout (if necessary) and follow it
-          oc rollout latest dc/${{ env.IMAGE_NAME }}-dc 2> /dev/null \
-          || true && echo "Rollout in progress"
+          oc rollout restart deployment/${{ env.APP_NAME_FRONTEND }} 
 
-          oc logs -f dc/${{ env.IMAGE_NAME }}-dc
           # Get status, returns 0 if rollout is successful
-          oc rollout status dc/${{ env.IMAGE_NAME }}-dc
+          oc rollout status deployment/${{ env.APP_NAME_FRONTEND }}
+
