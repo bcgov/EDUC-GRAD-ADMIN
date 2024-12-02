@@ -31,6 +31,8 @@ env:
 
   # SITE_URL should have no scheme or port. It will be prepended with https://
   HOST_ROUTE: educ-grad-admin-${{secrets.GRAD_NAMESPACE_NO_ENV}}-dev.apps.silver.devops.gov.bc.ca
+  MIN_MEM: "200Mi"
+  MAX_MEM: "250Mi"
 
 on:
   workflow_dispatch:
@@ -41,10 +43,6 @@ jobs:
     # ubuntu-latest can also be used.
     runs-on: ubuntu-22.04
     environment: dev-vue3
-
-    outputs:
-      ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
-      SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
 
     steps:
       - name: Check for required secrets
@@ -153,7 +151,7 @@ jobs:
           # Login to OpenShift and select project
           oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
           oc project ${{ env.OPENSHIFT_NAMESPACE }}
-
+          
           # Cancel any rollouts in progress
           oc rollout cancel deployment/${{ env.IMAGE_NAME }} 2> /dev/null \
           || true && echo "No rollout in progress"
@@ -163,7 +161,7 @@ jobs:
           -p HOST_ROUTE=${{ env.HOST_ROUTE }} -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
           -p APP_NAME=educ-grad-admin -p TAG=latest -p MIN_REPLICAS=2 -p MAX_REPLICAS=3 -p MIN_CPU=50m -p MAX_CPU=100m \
           -p BASE_URL=${{ env.TARGET_ENV }}.grad.gov.bc.ca -p ENVIRONMENT=${{ env.TARGET_ENV }} -p CERTIFICATE="${{ secrets.CERTIFICATE }}" -p CA_CERT="${{ secrets.CA_CERT }}" -p PRIVATE_KEY="${{ secrets.PRIVATE_KEY }}" \
-          -p MIN_MEM=200Mi -p MAX_MEM=250Mi | oc apply -n ${{secrets.GRAD_NAMESPACE_NO_ENV}}-dev -f -
+          -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} | oc apply -n ${{ env.OPENSHIFT_NAMESPACE }} -f -
           
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.IMAGE_NAME }} 
@@ -174,4 +172,5 @@ jobs:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.10.0
         with:
-          target: "https://educ-grad-admin-${{secrets.GRAD_NAMESPACE_NO_ENV}}-dev.apps.silver.devops.gov.bc.ca"
+          target: 'https://educ-grad-admin-${{ env.OPENSHIFT_NAMESPACE }}.apps.silver.devops.gov.bc.ca'
+
