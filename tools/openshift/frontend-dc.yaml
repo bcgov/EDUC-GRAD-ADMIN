@@ -38,9 +38,9 @@ objects:
               ports:
                 - containerPort: 2015
                   protocol: TCP
-              envFrom:
-                - configMapRef:
-                    name: "${APP_NAME}-frontend-config-map"
+              #envFrom:
+                #- configMapRef:
+                    #name: "${APP_NAME}-frontend-config-map"
               resources:
                 requests:
                   cpu: "${MIN_CPU}"
@@ -68,19 +68,19 @@ objects:
                 timeoutSeconds: 5
                 failureThreshold: 20
                 successThreshold: 1
-              volumeMounts:
-                - name: tls-certs
-                  mountPath: "/etc/tls-certs"
-                  readOnly: true
-                - name: config-env
-                  mountPath: "/var/www/html/js/config"
-          volumes:
-          - name: tls-certs
-            secret:
-              secretName: "${APP_NAME}-frontend-cert"
-          - name: config-env
-            configMap:
-              name: ${APP_NAME}-frontend-config-map
+              #volumeMounts:
+                #- name: tls-certs
+                  #mountPath: "/etc/tls-certs"
+                  #readOnly: true
+                #- name: config-env
+                  #mountPath: "/var/www/html/js/config"
+          #volumes:
+          #- name: tls-certs
+            #secret:
+              #secretName: "${APP_NAME}-frontend-cert"
+          #- name: config-env
+            #configMap:
+              #name: ${APP_NAME}-frontend-config-map
       test: false
   - apiVersion: v1
     kind: Service
