@@ -30,7 +30,7 @@ env:
   TARGET_ENV: "dev"
 
   # SITE_URL should have no scheme or port. It will be prepended with https://
-  HOST_ROUTE: ${{ secrets.SITE_URL }}
+  HOST_ROUTE: educ-grad-admin-${{secrets.GRAD_NAMESPACE_NO_ENV}}-dev.apps.silver.devops.gov.bc.ca
 
 on:
   workflow_dispatch:
@@ -158,13 +158,20 @@ jobs:
           oc rollout cancel deployment/${{ env.IMAGE_NAME }} 2> /dev/null \
           || true && echo "No rollout in progress"
 
-          # Process and apply deployment template
+          # Process template
           oc process -f tools/openshift/frontend-dc.yaml -p REPO_NAME=educ-grad-admin \
           -p HOST_ROUTE=educ-grad-admin-${{secrets.GRAD_NAMESPACE_NO_ENV}}-dev.apps.silver.devops.gov.bc.ca -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
           -p APP_NAME=educ-grad-admin -p TAG=latest -p MIN_REPLICAS=2 -p MAX_REPLICAS=3 -p MIN_CPU=50m -p MAX_CPU=100m \
           -p BASE_URL=${{ env.TARGET_ENV }}.grad.gov.bc.ca -p ENVIRONMENT=${{ env.TARGET_ENV }} -p CERTIFICATE="${{ secrets.CERTIFICATE }}" -p CA_CERT="${{ secrets.CA_CERT }}" -p PRIVATE_KEY="${{ secrets.PRIVATE_KEY }}" \
           -p MIN_MEM=200Mi -p MAX_MEM=250Mi | oc apply -n ${{secrets.GRAD_NAMESPACE_NO_ENV}}-dev -f -
 
+          # UPDATE Configmaps
+          curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/${{ env.BRANCH }}/tools/config/update-configmap-frontend.sh \
+          | bash /dev/stdin \
+          dev \
+          ${{ env.REPO_NAME }} \
+          ${{ env.GRAD_NAMESPACE }}
+          
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.IMAGE_NAME }} 
 
