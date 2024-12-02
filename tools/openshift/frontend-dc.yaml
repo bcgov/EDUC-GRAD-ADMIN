@@ -2,9 +2,9 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  template: "${REPO_NAME}-template"
+  template: "${APP_NAME}-template"
 metadata:
-  name: "${REPO_NAME}-frontend"
+  name: "${APP_NAME}-frontend"
 objects:
   - apiVersion: apps/v1
     kind: Deployment
@@ -33,7 +33,7 @@ objects:
         spec:
           containers:
             - name: "${APP_NAME}-frontend"
-              image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend:${TAG}
+              image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APP_NAME}-frontend:${TAG}
               imagePullPolicy: Always
               ports:
                 - containerPort: 2015
@@ -153,9 +153,6 @@ objects:
               averageUtilization: 100
               type: Utilization
 parameters:
-  - name: REPO_NAME
-    description: Application repository name
-    required: true
   - name: NAMESPACE
     description: Target namespace reference (i.e. 'k8vopl-dev')
     required: true
