@@ -170,7 +170,8 @@ jobs:
           | bash /dev/stdin \
           dev \
           ${{ env.REPO_NAME }} \
-          ${{ env.GRAD_NAMESPACE }}
+          ${{ env.GRAD_NAMESPACE }} \
+          ${{ env.HOST_ROUTE }}
           
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.IMAGE_NAME }} 
