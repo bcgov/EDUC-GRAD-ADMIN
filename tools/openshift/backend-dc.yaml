@@ -2,23 +2,23 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  template: "${REPO_NAME}-backend-template"
+  template: "${APP_NAME}-backend-template"
 metadata:
-  name: "${REPO_NAME}-backend"
+  name: "${APP_NAME}-backend"
 objects:
   - apiVersion: apps/v1
     kind: Deployment
     metadata:
       labels:
-        app: "${REPO_NAME}-backend"
+        app: "${APP_NAME}-backend"
         app.kubernetes.io/part-of: GRAD-ADMIN
         app.openshift.io/runtime: nodejs
-      name: "${REPO_NAME}-backend"
+      name: "${APP_NAME}-backend"
     spec:
       replicas: ${{MIN_REPLICAS}}
       selector:
         matchLabels:
-          app: "${REPO_NAME}-backend"
+          app: "${APP_NAME}-backend"
       strategy:
         type: RollingUpdate
         rollingUpdate:
@@ -27,18 +27,18 @@ objects:
       template:
         metadata:
           labels:
-            app: "${REPO_NAME}-backend"
+            app: "${APP_NAME}-backend"
         spec:
           containers:
-            - name: "${REPO_NAME}-backend"
-              image: image-registry.openshift-image-registry.svc:5000/${IS_NAMESPACE}/${REPO_NAME}-backend:${TAG_NAME}
+            - name: "${APP_NAME}-backend"
+              image: image-registry.openshift-image-registry.svc:5000/${IS_NAMESPACE}/${APP_NAME}-backend:${TAG_NAME}
               imagePullPolicy: Always
               ports:
                 - containerPort: ${{CONTAINER_PORT}}
                   protocol: TCP
               envFrom:
                 - configMapRef:
-                    name: "${REPO_NAME}-backend-config-map"
+                    name: "${APP_NAME}-backend-config-map"
               resources:
                 requests:
                   cpu: "${MIN_CPU}"
@@ -49,7 +49,7 @@ objects:
               volumeMounts:
                 - name: log-storage
                   mountPath: /logs
-            - name: "${REPO_NAME}-fluent-bit-sidecar"
+            - name: "${APP_NAME}-fluent-bit-sidecar"
               image: artifacts.developer.gov.bc.ca/docker-remote/fluent/fluent-bit:1.5.7
               imagePullPolicy: Always
               imagePullSecrets:
@@ -92,21 +92,21 @@ objects:
               emptyDir: { }
             - name: flb-sc-config-volume
               configMap:
-                name: "${REPO_NAME}-flb-sc-config-map"
+                name: "${APP_NAME}-flb-sc-config-map"
       test: false
   - apiVersion: v1
     kind: Service
     metadata:
       labels:
-        app: "${REPO_NAME}-backend"
-      name: "${REPO_NAME}-backend"
+        app: "${APP_NAME}-backend"
+      name: "${APP_NAME}-backend"
     spec:
       ports:
         - name: ${CONTAINER_PORT}-tcp
           port: ${{CONTAINER_PORT}}
           protocol: TCP
       selector:
-        app: "${REPO_NAME}-backend"
+        app: "${APP_NAME}-backend"
   # route for backend .grad.gov.bc.ca/api
   - apiVersion: v1
     kind: Route
@@ -114,14 +114,14 @@ objects:
       annotations:
         openshift.io/host.generated: 'true'
       labels:
-        app: "${REPO_NAME}-backend"
-      name: "${REPO_NAME}-backend-${ENVIRONMENT}"
+        app: "${APP_NAME}-backend"
+      name: "${APP_NAME}-backend-${ENVIRONMENT}"
     spec:
       host: "${BASE_URL}"
       path: "/api"
       to:
         kind: Service
-        name: "${REPO_NAME}-backend"
+        name: "${APP_NAME}-backend"
         weight: 100
       wildcardPolicy: None
       port:
@@ -136,8 +136,8 @@ objects:
     kind: Route
     metadata:
       labels:
-        app: "${REPO_NAME}-backend"
-      name: "${REPO_NAME}-backend"
+        app: "${APP_NAME}-backend"
+      name: "${APP_NAME}-backend"
       annotations:
         haproxy.router.openshift.io/timeout: 600s
     spec:
@@ -150,18 +150,18 @@ objects:
         termination: edge
       to:
         kind: Service
-        name: "${REPO_NAME}-backend"
+        name: "${APP_NAME}-backend"
         weight: 100
       wildcardPolicy: None
   - apiVersion: autoscaling/v2
     kind: HorizontalPodAutoscaler
     metadata:
-      name: "${REPO_NAME}-backend-cpu-autoscaler"
+      name: "${APP_NAME}-backend-cpu-autoscaler"
     spec:
       scaleTargetRef:
         apiVersion: apps/v1
         kind: Deployment
-        name: "${REPO_NAME}-backend"
+        name: "${APP_NAME}-backend"
         subresource: scale
       minReplicas: ${{MIN_REPLICAS}}
       maxReplicas: ${{MAX_REPLICAS}}
@@ -179,8 +179,8 @@ objects:
               averageUtilization: 100
               type: Utilization
 parameters:
-  - name: REPO_NAME
-    description: Application repository name
+  - name: APP_NAME
+    description: Application name
     required: true
   - name: IS_NAMESPACE
     description: The namespace where the imagestream lives
