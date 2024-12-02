@@ -38,9 +38,6 @@ objects:
               ports:
                 - containerPort: 2015
                   protocol: TCP
-              #envFrom:
-                #- configMapRef:
-                    #name: "${APP_NAME}-frontend-config-map"
               resources:
                 requests:
                   cpu: "${MIN_CPU}"
@@ -68,19 +65,6 @@ objects:
                 timeoutSeconds: 5
                 failureThreshold: 20
                 successThreshold: 1
-              #volumeMounts:
-                #- name: tls-certs
-                  #mountPath: "/etc/tls-certs"
-                  #readOnly: true
-                #- name: config-env
-                  #mountPath: "/var/www/html/js/config"
-          #volumes:
-          #- name: tls-certs
-            #secret:
-              #secretName: "${APP_NAME}-frontend-cert"
-          #- name: config-env
-            #configMap:
-              #name: ${APP_NAME}-frontend-config-map
       test: false
   - apiVersion: v1
     kind: Service
@@ -100,29 +84,29 @@ objects:
       selector:
         app: "${APP_NAME}-frontend"
   # route for .grad.gov.bc.ca
-  #- apiVersion: v1
-  #  kind: Route
-  #  metadata:
-  #    annotations:
-  #      openshift.io/host.generated: 'true'
-  #    labels:
-  #      app: "${APP_NAME}-frontend"
-  #    name: "${APP_NAME}-frontend-${ENVIRONMENT}"
-  #  spec:
-  #    host: "${BASE_URL}"
-  #    to:
-  #      kind: Service
-  #      name: "${APP_NAME}-frontend"
-  #      weight: 100
-   #   wildcardPolicy: None
-   #   port:
-   #     targetPort: 2015-tcp
-   #   tls:
-   #     caCertificate: "${CA_CERT}"
-   #     certificate: "${CERTIFICATE}"
-   #     insecureEdgeTerminationPolicy: Redirect
-   #     key: "${PRIVATE_KEY}"
-   #     termination: edge
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      annotations:
+        openshift.io/host.generated: 'true'
+      labels:
+        app: "${APP_NAME}-frontend"
+      name: "${APP_NAME}-frontend-${ENVIRONMENT}"
+    spec:
+      host: "${BASE_URL}"
+      to:
+        kind: Service
+        name: "${APP_NAME}-frontend"
+        weight: 100
+      wildcardPolicy: None
+      port:
+        targetPort: 2015-tcp
+      tls:
+        caCertificate: "${CA_CERT}"
+        certificate: "${CERTIFICATE}"
+        insecureEdgeTerminationPolicy: Redirect
+        key: "${PRIVATE_KEY}"
+        termination: edge
   # route for backend .grad.gov.bc.ca/api
   #- apiVersion: v1
   #  kind: Route
