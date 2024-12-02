@@ -107,6 +107,31 @@ objects:
           protocol: TCP
       selector:
         app: "${REPO_NAME}-backend"
+  # route for backend .grad.gov.bc.ca/api
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      annotations:
+        openshift.io/host.generated: 'true'
+      labels:
+        app: "${APP_NAME}-backend"
+      name: "${APP_NAME}-backend-${ENVIRONMENT}"
+    spec:
+      host: "${BASE_URL}"
+      path: "/api"
+      to:
+        kind: Service
+        name: "${APP_NAME}-backend"
+        weight: 100
+      wildcardPolicy: None
+      port:
+        targetPort: 8080-tcp
+      tls:
+        caCertificate: "${CA_CERT}"
+        certificate: "${CERTIFICATE}"
+        insecureEdgeTerminationPolicy: Redirect
+        key: "${PRIVATE_KEY}"
+        termination: edge
   - apiVersion: v1
     kind: Route
     metadata:
