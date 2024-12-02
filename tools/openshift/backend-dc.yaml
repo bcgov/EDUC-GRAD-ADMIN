@@ -114,14 +114,14 @@ objects:
       annotations:
         openshift.io/host.generated: 'true'
       labels:
-        app: "${APP_NAME}-backend"
-      name: "${APP_NAME}-backend-${ENVIRONMENT}"
+        app: "${REPO_NAME}-backend"
+      name: "${REPO_NAME}-backend-${ENVIRONMENT}"
     spec:
       host: "${BASE_URL}"
       path: "/api"
       to:
         kind: Service
-        name: "${APP_NAME}-backend"
+        name: "${REPO_NAME}-backend"
         weight: 100
       wildcardPolicy: None
       port:
