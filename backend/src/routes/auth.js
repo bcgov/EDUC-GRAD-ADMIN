@@ -41,6 +41,7 @@ router.get(
   "/login",
   passport.authenticate("oidc", {
     failureRedirect: "error",
+    scope: ["openid", "profile"]
   })
 );
 

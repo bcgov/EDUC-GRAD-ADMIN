@@ -496,9 +496,8 @@ export default {
           return ["School"];
         }
       } else if (this.getCredential === "Blank transcript print") {
-        return this.blankTranscriptDetails
-          ? ["School", "Ministry of Advanced Education"]
-          : ["Select a credential type"];
+        let groupOptions = [{ title: "School", value: "School" }];
+        return groupOptions;
       } else {
         let groupOptions = [
           { title: "Student", value: "Student" },
@@ -575,6 +574,7 @@ export default {
     },
     closeDialogAndResetForm() {
       this.blankCertificateDetails = [];
+      this.blankTranscriptDetails = [];
       this.group = null;
       this.dialog = false;
       this.clearBatchDetails();

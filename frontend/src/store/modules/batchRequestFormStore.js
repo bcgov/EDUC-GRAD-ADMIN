@@ -219,7 +219,10 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         gradDateFrom: state.getFormattedGradDateFrom,
         gradDateTo: state.getFormattedGradDateTo,
     
-        credentialTypeCode: [...state.blankCertificateDetails],
+        credentialTypeCode: [
+          ...state.blankCertificateDetails,
+          ...state.blankTranscriptDetails
+        ],
     
         quantity: state.copies,
         localDownload: state.getLocalDownload,
