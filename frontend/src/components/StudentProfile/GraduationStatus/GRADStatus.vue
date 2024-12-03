@@ -48,6 +48,7 @@
                 <v-btn
                   class="v-btn-link p-0 text-left"
                   variant="plain"
+                  :disabled="getSchoolsList.length == 0"
                   @click="
                     schoolOfRecordDialog = true;
                     getSchoolInfo(
@@ -59,7 +60,7 @@
                   {{
                     studentGradStatus.schoolName
                       ? studentGradStatus.schoolName
-                      : schoolOfRecord.schoolName
+                      : schoolOfRecord.displayName
                   }}<br />
                   {{ studentGradStatus.schoolOfRecord }}
                 </v-btn>
@@ -77,54 +78,62 @@
                     ></v-card-title>
                     <v-card-text>
                       <v-table role="presentation" aria-label="grad status">
-                        <template v-if="schoolOfRecord.districtName">
+                        <template v-if="schoolOfRecord">
                           <tbody>
                             <tr>
                               <td><strong>District:</strong></td>
-                              <td>{{ schoolOfRecord.districtName }}</td>
+                              <td>{{ schoolOfRecord.districtId }}</td>
                             </tr>
                             <tr>
                               <td><strong>School Code and Name:</strong></td>
                               <td>
                                 {{
-                                  schoolOfRecord.minCode +
+                                  schoolOfRecord.mincode +
                                   " " +
-                                  schoolOfRecord.schoolName
+                                  schoolOfRecord.displayName
                                 }}
                               </td>
                             </tr>
                             <tr>
-                              <td><strong>Status:</strong></td>
+                              <td><strong>Open Date:</strong></td>
                               <td>
                                 {{
-                                  schoolOfRecord.openFlag == "Y"
-                                    ? "Open"
-                                    : "Closed"
+                                  dateFormatYYYYMMDD(schoolOfRecord?.openedDate)
                                 }}
                               </td>
                             </tr>
                             <tr>
-                              <td><strong>Independent type:</strong></td>
+                              <td><strong>Close Date:</strong></td>
                               <td>
-                                {{ schoolOfRecord.independentDesignation }}
+                                {{
+                                  dateFormatYYYYMMDD(schoolOfRecord?.closedDate)
+                                }}
+                              </td>
+                            </tr>
+                            <!-- <tr>
+                              <td><strong>Status:</strong></td>
+                              <td>
+                                {{ isSchoolOpenStatus(schoolOfRecord) }}
+                              </td>
+                            </tr> -->
+                            <tr>
+                              <td><strong>Issue Transcript:</strong></td>
+                              <td>
+                                {{
+                                  schoolOfRecord.canIssueTranscripts == true
+                                    ? "Y"
+                                    : "N"
+                                }}
                               </td>
                             </tr>
                             <tr>
-                              <td><strong>Independent affiliation:</strong></td>
+                              <td><strong>Issue Certificate:</strong></td>
                               <td>
-                                {{ schoolOfRecord.independentAffiliation }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Transcript eligible:</strong></td>
-                              <td>
-                                {{ schoolOfRecord.transcriptEligibility }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Dogwood eligibility:</strong></td>
-                              <td>
-                                {{ schoolOfRecord.certificateEligibility }}
+                                {{
+                                  schoolOfRecord.canIssueCertificates == true
+                                    ? "Y"
+                                    : "N"
+                                }}
                               </td>
                             </tr>
                           </tbody>
@@ -149,6 +158,7 @@
               <td>
                 <v-btn
                   v-if="studentGradStatus && studentGradStatus.schoolAtGrad"
+                  :disabled="getSchoolsList.length == 0"
                   class="p-0 text-left v-btn-link"
                   variant="plain"
                   @click="
@@ -162,7 +172,7 @@
                   {{
                     studentGradStatus.schoolAtGradName
                       ? studentGradStatus.schoolAtGradName
-                      : schoolAtGraduation.schoolName
+                      : schoolAtGraduation.displayName
                   }}<br />
                   {{ studentGradStatus.schoolAtGrad }}
                   <v-progress-circular
@@ -183,54 +193,70 @@
                         role="presentation"
                         aria-label="edit graduation status"
                       >
-                        <template v-if="schoolAtGraduation.districtName">
+                        <template v-if="schoolAtGraduation">
                           <tbody>
                             <tr>
                               <td><strong>District:</strong></td>
-                              <td>{{ schoolAtGraduation.districtName }}</td>
+                              <td>{{ schoolAtGraduation.districtId }}</td>
                             </tr>
                             <tr>
                               <td><strong>School Code and Name:</strong></td>
                               <td>
                                 {{
-                                  schoolAtGraduation.minCode +
+                                  schoolAtGraduation.mincode +
                                   " " +
-                                  schoolAtGraduation.schoolName
+                                  schoolAtGraduation.displayName
                                 }}
                               </td>
                             </tr>
                             <tr>
+                              <td><strong>Open Date:</strong></td>
+                              <td>
+                                {{
+                                  dateFormatYYYYMMDD(
+                                    schoolAtGraduation?.openedDate
+                                  )
+                                }}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td><strong>Close Date:</strong></td>
+                              <td>
+                                {{
+                                  dateFormatYYYYMMDD(
+                                    schoolAtGraduation?.closedDate
+                                  )
+                                }}
+                              </td>
+                            </tr>
+                            <!-- <tr>
                               <td><strong>Status:</strong></td>
                               <td>
                                 {{
-                                  schoolAtGraduation.openFlag == "Y"
-                                    ? "Open"
-                                    : "Closed"
+                                  {{ isSchoolOpenStatus(schoolAtGraduation) }}
+                                }}
+                              </td>
+                            </tr> -->
+
+                            <tr>
+                              <td><strong>Issue Transcript:</strong></td>
+                              <td>
+                                {{
+                                  schoolAtGraduation.canIssueTranscripts == true
+                                    ? "Y"
+                                    : "N"
                                 }}
                               </td>
                             </tr>
                             <tr>
-                              <td><strong>Independent type:</strong></td>
+                              <td><strong>Issue Certificate:</strong></td>
                               <td>
-                                {{ schoolAtGraduation.independentDesignation }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Independent affiliation:</strong></td>
-                              <td>
-                                {{ schoolAtGraduation.independentAffiliation }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Transcript eligible:</strong></td>
-                              <td>
-                                {{ schoolAtGraduation.transcriptEligibility }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Dogwood eligibility:</strong></td>
-                              <td>
-                                {{ schoolAtGraduation.certificateEligibility }}
+                                {{
+                                  schoolAtGraduation.canIssueCertificates ==
+                                  true
+                                    ? "Y"
+                                    : "N"
+                                }}
                               </td>
                             </tr>
                           </tbody>
@@ -336,7 +362,7 @@ import {
   containsAnyLetters,
   parseStudentStatus,
 } from "../../../utils/common.js";
-import SchoolService from "@/services/SchoolService.js";
+import sharedMethods from "../../../sharedMethods";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import GRADStatusForm from "./GRADStatusForm.vue";
 export default {
@@ -361,6 +387,7 @@ export default {
     ...mapState(useAppStore, {
       programOptions: "getProgramOptions",
       studentStatusOptions: "getStudentStatusOptions",
+      getSchoolsList: "getSchoolsList",
     }),
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
@@ -400,25 +427,63 @@ export default {
     sortStudentStatus(code) {
       return this.parseStudentStatus(code, this.studentStatusOptions);
     },
-    getSchoolInfo(mincode, type) {
-      if (mincode != null) {
+    // getSchoolInfo(mincode, type) {
+    //   if (mincode != null) {
+    //     this.schoolSearchLoading = true;
+    //     SchoolService.getSchoolInfo(mincode)
+    //       .then((response) => {
+    //         if (type == "schoolOfRecord") {
+    //           this.schoolOfRecord = response.data;
+    //           this.schoolSearchLoading = false;
+    //         }
+    //         if (type == "schoolAtGrad") {
+    //           this.schoolAtGraduation = response.data;
+    //           this.schoolSearchLoading = false;
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         // eslint-disable-next-line
+    //         console.log("There was an error:" + error.response);
+    //       });
+    //   }
+    // },
+    getSchoolInfo(minCode, type) {
+      if (minCode) {
         this.schoolSearchLoading = true;
-        SchoolService.getSchoolInfo(mincode)
-          .then((response) => {
-            if (type == "schoolOfRecord") {
-              this.schoolOfRecord = response.data;
-              this.schoolSearchLoading = false;
-            }
-            if (type == "schoolAtGrad") {
-              this.schoolAtGraduation = response.data;
-              this.schoolSearchLoading = false;
-            }
-          })
-          .catch((error) => {
-            // eslint-disable-next-line
-            console.log("There was an error:" + error.response);
-          });
+        if (type === "schoolOfRecord") {
+          this.schoolOfRecord = this.findSchoolByMinCode(minCode);
+          console.log(this.schoolOfRecord);
+          this.schoolSearchLoading = false;
+        }
+        if (type === "schoolAtGrad") {
+          this.schoolAtGraduation = this.findSchoolByMinCode(minCode);
+          console.log(this.schoolAtGraduation);
+          this.schoolSearchLoading = false;
+        }
       }
+    },
+    isSchoolOpenStatus(school) {
+      const openedDate = new Date(school.openedDate);
+      const closedDate = school.closedDate ? new Date(school.closedDate) : null;
+      const today = new Date();
+
+      // Remove the time part from today's date for a precise comparison
+      today.setHours(0, 0, 0, 0);
+
+      return openedDate < today && !closedDate ? "Open" : "Closed";
+    },
+    findSchoolByMinCode(minCode) {
+      return (
+        this.getSchoolsList.find((school) => school.mincode === minCode) || null
+      );
+    },
+    dateFormatYYYYMMDD(dateStr) {
+      const date = new Date(dateStr);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
     },
     ifProgramsWithExpiry(program) {
       for (let p of this.programsWithExpiry) {

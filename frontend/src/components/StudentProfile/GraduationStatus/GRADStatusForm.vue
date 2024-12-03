@@ -322,7 +322,7 @@
                     label="Select a school"
                     :items="getSchoolsList"
                     :item-title="schoolTitle"
-                    item-value="minCode"
+                    item-value="mincode"
                     variant="outlined"
                     density="compact"
                     class="mt-4"
@@ -358,7 +358,7 @@
                     label="Select a school"
                     :items="getSchoolsList"
                     :item-title="schoolTitle"
-                    item-value="minCode"
+                    item-value="mincode"
                     variant="outlined"
                     class="mt-4"
                     density="compact"
@@ -878,7 +878,7 @@ export default {
     schoolTitle(item) {
       // Customize this method to return the desired format
       if (item) {
-        return `${item.minCode} - ${item.schoolName}`;
+        return `${item.mincode} - ${item.displayName}`;
       } else {
         return null;
       }
