@@ -177,12 +177,9 @@ jobs:
           ${{ secrets.UI_PUBLIC_KEY }} \
           ${{ secrets.UI_PRIVATE_KEY }} \
           ${{ secrets.REDIS_PASSWORD }} \
-          ${{ secrets.SPLUNK_TOKEN }}
+          ${{ secrets.SPLUNK_TOKEN }} \
+          ${{ secrets.COMMON_NAMESPACE }}
           
-          
-          
-          
-
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.APP_NAME_BACKEND }} 
 
