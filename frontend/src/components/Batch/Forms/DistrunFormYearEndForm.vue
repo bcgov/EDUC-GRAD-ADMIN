@@ -15,13 +15,14 @@
       <v-card>
         <div class="d-flex justify-space-between align-center">
           <v-card-title
-            >Year-End Credentials and Transcript Distribution Run</v-card-title
+            >-End Credentials and Transcript DistrYearibution Run</v-card-title
           >
           <v-btn
             @click="closeDialogAndResetForm()"
             color="error"
             variant="outlined"
             class="m-4"
+            :loading="batchLoading"
             >Cancel</v-btn
           >
         </div>
@@ -74,7 +75,8 @@
                           :items="[
                             {
                               label: 'Run Type',
-                              value: 'Non-Graduate Transcript Distribution Run',
+                              value:
+                                'Year-End Credentials and Transcript Distribution Run',
                             },
 
                             {
@@ -286,7 +288,7 @@ export default {
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Year-End Credentials and Transcript Distribution Run has been successfully scheduled",
-            5000
+            10000
           );
         } else {
           this.snackbarStore.showSnackbar(
@@ -294,17 +296,20 @@ export default {
               response.data.batchId +
               "- Year-End Credentials and Transcript Distribution Run submitted",
             "success",
-            5000
+            10000
           );
         }
         this.closeDialogAndResetForm();
         this.setActiveTab("batchRuns");
-        this.updateDashboards();
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
       } catch (error) {
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "danger",
-          5000
+          10000
         );
       }
     },

@@ -18,6 +18,7 @@
             color="error"
             variant="outlined"
             class="m-4"
+            :loading="batchLoading"
             >Cancel</v-btn
           >
         </div>
@@ -347,6 +348,7 @@ export default {
           "schoolOfRecords",
           "validateInput",
         ];
+
         const requestPayload = generateRequestPayload(
           this.getBatchRequest,
           requestTemplate
@@ -359,7 +361,7 @@ export default {
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Graduation Algorithm request has been successfully scheduled",
-            5000
+            10000
           );
         } else {
           this.snackbarStore.showSnackbar(
@@ -367,18 +369,22 @@ export default {
               response.data.batchId +
               "- Graduation Algorithm request submitted",
             "success",
-            5000
+            10000
           );
         }
+
         this.closeDialogAndResetForm();
         this.setActiveTab("batchRuns");
-        this.updateDashboards();
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
       } catch (error) {
         // handle the error and show the notification
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "danger",
-          5000
+          10000
         );
         this.batchLoading = false;
         console.error("Error:", error);
