@@ -10,9 +10,9 @@ SOAM_CLIENT_ID=$6
 SOAM_CLIENT_SECRET=$7
 SITEMINDER_LOGOUT_ENDPOINT=$8
 UI_PUBLIC_KEY=$9
-UI_PRIVATE_KEY=$10
-REDIS_PASSWORD=$11
-SPLUNK_TOKEN=$12
+UI_PRIVATE_KEY=${10}
+REDIS_PASSWORD=${11}
+SPLUNK_TOKEN=${12}
 
 SPLUNK_URL="gww.splunk.educ.gov.bc.ca"
 FLB_CONFIG="[SERVICE]
@@ -60,24 +60,24 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=NODE_ENV=openshift \
   --from-literal=LOG_LEVEL=info \
   --from-literal=SERVER_FRONTEND="https://$BASE_URL" \
-  --from-literal=SOAM_PUBLIC_KEY=$SOAM_PUBLIC_KEY \
-  --from-literal=SOAM_CLIENT_ID=$SOAM_CLIENT_ID \
-  --from-literal=SOAM_CLIENT_SECRET=$SOAM_CLIENT_SECRET \
+  --from-literal=SOAM_PUBLIC_KEY="$SOAM_PUBLIC_KEY" \
+  --from-literal=SOAM_CLIENT_ID="$SOAM_CLIENT_ID" \
+  --from-literal=SOAM_CLIENT_SECRET="$SOAM_CLIENT_SECRET" \
   --from-literal=SOAM_URL="https://soam-$ENV.apps.silver.devops.gov.bc.ca" \
   --from-literal=SOAM_DISCOVERY="https://soam-$ENV.apps.silver.devops.gov.bc.ca/auth/realms/master/.well-known/openid-configuration" \
   --from-literal=IDIR_IDP_HINT=keycloak_bcdevexchange_idir \
-  --from-literal=SITEMINDER_LOGOUT_ENDPOINT=$SITEMINDER_LOGOUT_ENDPOINT \
+  --from-literal=SITEMINDER_LOGOUT_ENDPOINT="$SITEMINDER_LOGOUT_ENDPOINT" \
   --from-literal=ISSUER=GRAD_ADMIN_APPLICATION \
   --from-literal=SESSION_MAX_AGE='1800000' \
   --from-literal=TOKEN_EXPIRES_IN='1800000' \
-  --from-literal=UI_PUBLIC_KEY=$UI_PUBLIC_KEY \
-  --from-literal=UI_PRIVATE_KEY=$UI_PRIVATE_KEY \
+  --from-literal=UI_PUBLIC_KEY="$UI_PUBLIC_KEY" \
+  --from-literal=UI_PRIVATE_KEY="$UI_PRIVATE_KEY" \
   --from-literal=GRAD_ROLE_ADMIN=GRAD_SYSTEM_COORDINATOR \
   --from-literal=GRAD_PROGRAM_AREA_BA=GRAD_PROGRAM_AREA_BA \
   --from-literal=GRAD_ROLE_INFO_OFFICER=GRAD_INFO_OFFICER \
   --from-literal=REDIS_HOST=redis \
   --from-literal=REDIS_PORT=6379 \
-  --from-literal=REDIS_PASSWORD=$REDIS_PASSWORD \
+  --from-literal=REDIS_PASSWORD="$REDIS_PASSWORD" \
   --from-literal=BATCH_API_URL="http://educ-grad-batch-graduation-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
   --from-literal=STUDENT_GRADUATION_API_URL="http://educ-grad-student-graduation-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
   --from-literal=GRADUATION_API_URL="http://educ-grad-graduation-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
