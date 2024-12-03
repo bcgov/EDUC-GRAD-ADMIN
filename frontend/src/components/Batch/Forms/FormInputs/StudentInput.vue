@@ -207,7 +207,6 @@ export default {
             this.runType == "DISTRUNUSER" &&
             (this.credentialType == "RC" || this.credentialType == "OC")
           ) {
-            console.log(studentID);
             let certificate =
               await GraduationReportService.getStudentCertificates(studentID);
 
