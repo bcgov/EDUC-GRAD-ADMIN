@@ -1,14 +1,18 @@
 ###########################################################
 #ENV VARS
 ###########################################################
-envValue=$1
+ENV=$1
 APP_NAME=$2
-GRAD_NAMESPACE=$3
-COMMON_NAMESPACE=$4
-BUSINESS_NAMESPACE=$5
-SPLUNK_TOKEN=$6
-APP_LOG_LEVEL=$7
-STUDENT_ADMIN_URL_ROOT=$8
+OPENSHIFT_NAMESPACE=$3
+BASE_URL=$4
+SOAM_PUBLIC_KEY=$5
+SOAM_CLIENT_ID=$6
+SOAM_CLIENT_SECRET=$7
+SITEMINDER_LOGOUT_ENDPOINT=$8
+UI_PUBLIC_KEY=$9
+UI_PRIVATE_KEY=$10
+REDIS_PASSWORD=$11
+SPLUNK_TOKEN=$12
 
 SPLUNK_URL="gww.splunk.educ.gov.bc.ca"
 FLB_CONFIG="[SERVICE]
@@ -51,40 +55,44 @@ PARSER_CONFIG="
 ###########################################################
 #Setup for config-maps
 ###########################################################
-echo Creating config map "$APP_NAME"-config-map
-oc create -n "$GRAD_NAMESPACE"-"$envValue" configmap "$APP_NAME"-config-map \
-  --from-literal=APP_LOG_LEVEL="$APP_LOG_LEVEL" \
-  --from-literal=BASELINE_ON_MIGRATE="true" \
-  --from-literal=CRON_SCHEDULED_PURGE_OLD_RECORDS="0 0 0 * * *" \
-  --from-literal=RECORDS_STALE_IN_DAYS="365" \
-  --from-literal=CRON_SCHEDULED_GRAD_TO_TRAX_EVENTS="0 0/5 * * * *" \
-  --from-literal=CRON_SCHEDULED_GRAD_TO_TRAX_EVENTS_LOCK_AT_LEAST_FOR="PT1M" \
-  --from-literal=CRON_SCHEDULED_GRAD_TO_TRAX_EVENTS_LOCK_AT_MOST_FOR="PT5M" \
-  --from-literal=CRON_SCHEDULED_GRAD_TO_TRAX_EVENTS_THRESHOLD="1000" \
-  --from-literal=CRON_SCHEDULED_TRAX_TO_GRAD_EVENTS="0 0/5 * * * *" \
-  --from-literal=CRON_SCHEDULED_TRAX_TO_GRAD_EVENTS_LOCK_AT_LEAST_FOR="PT1M" \
-  --from-literal=CRON_SCHEDULED_TRAX_TO_GRAD_EVENTS_LOCK_AT_MOST_FOR="PT5M" \
-  --from-literal=CRON_SCHEDULED_TRAX_TO_GRAD_EVENTS_THRESHOLD="1000" \
-  --from-literal=CRON_SCHEDULED_TRIGGER_TRAX_UPDATES="0 0/20 * * * *" \
-  --from-literal=CRON_SCHEDULED_TRIGGER_TRAX_UPDATES_LOCK_AT_LEAST_FOR="PT1M" \
-  --from-literal=CRON_SCHEDULED_TRIGGER_TRAX_UPDATES_LOCK_AT_MOST_FOR="PT20M" \
-  --from-literal=CRON_SCHEDULED_TRIGGER_TRAX_UPDATES_THRESHOLD="4000" \
-  --from-literal=ENABLE_FLYWAY="true" \
-  --from-literal=ENABLE_TRAX_UPDATE="true" \
-  --from-literal=KEYCLOAK_TOKEN_URL="https://soam-$envValue.apps.silver.devops.gov.bc.ca/" \
-  --from-literal=INSTITUTE_API_URL_ROOT="http://institute-api-master.$COMMON_NAMESPACE-$envValue.svc.cluster.local:8080/" \
-  --from-literal=MAX_RETRY_ATTEMPTS="3" \
-  --from-literal=SCHOOL_CACHE_EXPIRY_IN_MINS="240" \
-  --from-literal=STUDENT_ADMIN_URL_ROOT="$STUDENT_ADMIN_URL_ROOT" \
-  --from-literal=CONNECTION_TIMEOUT='30000' \
-  --from-literal=MAXIMUM_POOL_SIZE='15' \
-  --from-literal=MIN_IDLE='15' \
-  --from-literal=IDLE_TIMEOUT='600000' \
-  --from-literal=MAX_LIFETIME='1500000' \
+echo Creating config map "$APP_NAME"-backend-config-map
+oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
+  --from-literal=NODE_ENV=openshift \
+  --from-literal=LOG_LEVEL=info \
+  --from-literal=SERVER_FRONTEND="https://$BASE_URL" \
+  --from-literal=SOAM_PUBLIC_KEY=$SOAM_PUBLIC_KEY \
+  --from-literal=SOAM_CLIENT_ID=$SOAM_CLIENT_ID \
+  --from-literal=SOAM_CLIENT_SECRET=$SOAM_CLIENT_SECRET \
+  --from-literal=SOAM_URL="https://soam-$ENV.apps.silver.devops.gov.bc.ca" \
+  --from-literal=SOAM_DISCOVERY="https://soam-$ENV.apps.silver.devops.gov.bc.ca/auth/realms/master/.well-known/openid-configuration" \
+  --from-literal=IDIR_IDP_HINT=keycloak_bcdevexchange_idir \
+  --from-literal=SITEMINDER_LOGOUT_ENDPOINT=$SITEMINDER_LOGOUT_ENDPOINT \
+  --from-literal=ISSUER=GRAD_ADMIN_APPLICATION \
+  --from-literal=SESSION_MAX_AGE='1800000' \
+  --from-literal=TOKEN_EXPIRES_IN='1800000' \
+  --from-literal=UI_PUBLIC_KEY=$UI_PUBLIC_KEY \
+  --from-literal=UI_PRIVATE_KEY=$UI_PRIVATE_KEY \
+  --from-literal=GRAD_ROLE_ADMIN=GRAD_SYSTEM_COORDINATOR \
+  --from-literal=GRAD_PROGRAM_AREA_BA=GRAD_PROGRAM_AREA_BA \
+  --from-literal=GRAD_ROLE_INFO_OFFICER=GRAD_INFO_OFFICER \
+  --from-literal=REDIS_HOST=redis \
+  --from-literal=REDIS_PORT=6379 \
+  --from-literal=REDIS_PASSWORD=$REDIS_PASSWORD \
+  --from-literal=BATCH_API_URL="http://educ-grad-batch-graduation-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=STUDENT_GRADUATION_API_URL="http://educ-grad-student-graduation-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=GRADUATION_API_URL="http://educ-grad-graduation-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=COURSE_API_URL="http://educ-grad-course-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=GRAD_STUDENT_API_URL="http://educ-grad-student-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=PROGRAM_API_URL="http://educ-grad-program-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=DISTRIBUTION_API_URL="http://educ-grad-distribution-api.e8a97a-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=ASSESSMENT_API_URL="http://educ-grad-assessment-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=GRADUATION_REPORT_API_URL="http://educ-grad-graduation-report-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=GRAD_REPORT_API_URL="http://educ-grad-report-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=GRAD_TRAX_API_URL="http://educ-grad-trax-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
   --dry-run=client -o yaml | oc apply -f -
 
 echo Creating config map "$APP_NAME"-flb-sc-config-map
-oc create -n "$GRAD_NAMESPACE"-"$envValue" configmap "$APP_NAME"-flb-sc-config-map \
+oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-flb-sc-config-map \
   --from-literal=fluent-bit.conf="$FLB_CONFIG" \
   --from-literal=parsers.conf="$PARSER_CONFIG" \
   --dry-run=client -o yaml | oc apply -f -
