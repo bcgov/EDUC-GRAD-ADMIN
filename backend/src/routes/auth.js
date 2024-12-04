@@ -75,10 +75,8 @@ router.get("/logout", async (req, res, next) => {
   }else {
     let retUrl;
     if (req.query && req.query.sessionExpired) {
-      console.log("1")
       retUrl = encodeURIComponent(primaryURL + '/session-expired' + '&client_id=' + config.get('oidc:clientId'));
     } else {
-      console.log("2")
       retUrl = encodeURIComponent(primaryURL + '/logout' + '&client_id=' + config.get('oidc:clientId'));
     }
     res.redirect(config.get('siteMinder_logout_endpoint') + retUrl);
