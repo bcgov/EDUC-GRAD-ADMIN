@@ -170,12 +170,7 @@ jobs:
           ${{ env.APP_NAME }} \
           ${{ env.OPENSHIFT_NAMESPACE }} \
           ${{ env.TARGET_ENV }}.grad.gov.bc.ca \
-          ${{ secrets.SOAM_PUBLIC_KEY }} \
-          ${{ secrets.SOAM_CLIENT_ID }} \
           ${{ secrets.SOAM_CLIENT_SECRET }} \
-          ${{ secrets.SITEMINDER_LOGOUT_ENDPOINT }} \
-          ${{ secrets.UI_PUBLIC_KEY }} \
-          ${{ secrets.UI_PRIVATE_KEY }} \
           ${{ secrets.REDIS_PASSWORD }} \
           ${{ secrets.SPLUNK_TOKEN }} \
           ${{ secrets.COMMON_NAMESPACE }}

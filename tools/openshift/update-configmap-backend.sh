@@ -5,20 +5,28 @@ ENV=$1
 APP_NAME=$2
 OPENSHIFT_NAMESPACE=$3
 BASE_URL=$4
-SOAM_PUBLIC_KEY=$5
-SOAM_CLIENT_ID=$6
-SOAM_CLIENT_SECRET=$7
-SITEMINDER_LOGOUT_ENDPOINT=$8
-UI_PUBLIC_KEY=$9
-UI_PRIVATE_KEY=${10}
-REDIS_PASSWORD=${11}
-SPLUNK_TOKEN=${12}
-COMMON_NAMESPACE=${13}
+#SOAM_PUBLIC_KEY=$5
+#SOAM_CLIENT_ID=$6
+SOAM_CLIENT_SECRET=$5
+#SITEMINDER_LOGOUT_ENDPOINT=$8
+#UI_PUBLIC_KEY=$9
+#UI_PRIVATE_KEY=${10}
+REDIS_PASSWORD=$6
+SPLUNK_TOKEN=$7
+COMMON_NAMESPACE=$8
 
 SOAM_KC_REALM_ID="master"
 SOAM_KC=soam-$ENV.apps.silver.devops.gov.bc.ca
 SOAM_KC_LOAD_USER_ADMIN=$(oc -n $COMMON_NAMESPACE-$ENV -o json get secret sso-admin-${ENV} | sed -n 's/.*"username": "\(.*\)"/\1/p' | base64 --decode)
 SOAM_KC_LOAD_USER_PASS=$(oc -n $COMMON_NAMESPACE-$ENV -o json get secret sso-admin-${ENV} | sed -n 's/.*"password": "\(.*\)",/\1/p' | base64 --decode)
+
+siteMinderLogoutUrl=""
+if [ "$ENV" != "prod" ]
+then
+  siteMinderLogoutUrl="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl="
+else
+  siteMinderLogoutUrl="https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl="
+fi
 
 echo Fetching SOAM token
 TKN=$(curl -s \
@@ -58,12 +66,12 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=LOG_LEVEL=info \
   --from-literal=SERVER_FRONTEND="https://$BASE_URL" \
   --from-literal=SOAM_PUBLIC_KEY="$formattedPublicKey" \
-  --from-literal=SOAM_CLIENT_ID="$SOAM_CLIENT_ID" \
+  --from-literal=SOAM_CLIENT_ID="grad-admin-client" \
   --from-literal=SOAM_CLIENT_SECRET="$SOAM_CLIENT_SECRET" \
   --from-literal=SOAM_URL="https://soam-$ENV.apps.silver.devops.gov.bc.ca" \
   --from-literal=SOAM_DISCOVERY="https://soam-$ENV.apps.silver.devops.gov.bc.ca/auth/realms/master/.well-known/openid-configuration" \
   --from-literal=IDIR_IDP_HINT=keycloak_bcdevexchange_idir \
-  --from-literal=SITEMINDER_LOGOUT_ENDPOINT="$SITEMINDER_LOGOUT_ENDPOINT" \
+  --from-literal=SITEMINDER_LOGOUT_ENDPOINT="$siteMinderLogoutUrl" \
   --from-literal=ISSUER=GRAD_ADMIN_APPLICATION \
   --from-literal=SESSION_MAX_AGE='1800000' \
   --from-literal=TOKEN_EXPIRES_IN='1800000' \
