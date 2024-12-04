@@ -9,6 +9,8 @@ SOAM_CLIENT_SECRET=$5
 REDIS_PASSWORD=$6
 SPLUNK_TOKEN=$7
 COMMON_NAMESPACE=$8
+GRAD_NAMESPACE=$9
+GRAD_BUSINESS_NAMESPACE=${10}
 
 SOAM_KC_REALM_ID="master"
 SOAM_KC=soam-$ENV.apps.silver.devops.gov.bc.ca
@@ -83,17 +85,17 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=REDIS_HOST=redis \
   --from-literal=REDIS_PORT=6379 \
   --from-literal=REDIS_PASSWORD="$REDIS_PASSWORD" \
-  --from-literal=BATCH_API_URL="http://educ-grad-batch-graduation-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
-  --from-literal=STUDENT_GRADUATION_API_URL="http://educ-grad-student-graduation-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
-  --from-literal=GRADUATION_API_URL="http://educ-grad-graduation-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
-  --from-literal=COURSE_API_URL="http://educ-grad-course-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
-  --from-literal=GRAD_STUDENT_API_URL="http://educ-grad-student-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
-  --from-literal=PROGRAM_API_URL="http://educ-grad-program-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
-  --from-literal=DISTRIBUTION_API_URL="http://educ-grad-distribution-api.e8a97a-$ENV.svc.cluster.local:8080/api/v1" \
-  --from-literal=ASSESSMENT_API_URL="http://educ-grad-assessment-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
-  --from-literal=GRADUATION_REPORT_API_URL="http://educ-grad-graduation-report-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
-  --from-literal=GRAD_REPORT_API_URL="http://educ-grad-report-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
-  --from-literal=GRAD_TRAX_API_URL="http://educ-grad-trax-api.77c02f-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=BATCH_API_URL="http://educ-grad-batch-graduation-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=STUDENT_GRADUATION_API_URL="http://educ-grad-student-graduation-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=GRADUATION_API_URL="http://educ-grad-graduation-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=COURSE_API_URL="http://educ-grad-course-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=GRAD_STUDENT_API_URL="http://educ-grad-student-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=PROGRAM_API_URL="http://educ-grad-program-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=DISTRIBUTION_API_URL="http://educ-grad-distribution-api.$GRAD_BUSINESS_NAMESPACE-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=ASSESSMENT_API_URL="http://educ-grad-assessment-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=GRADUATION_REPORT_API_URL="http://educ-grad-graduation-report-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=GRAD_REPORT_API_URL="http://educ-grad-report-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080/api/v1" \
+  --from-literal=GRAD_TRAX_API_URL="http://educ-grad-trax-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080/api/v1" \
   --dry-run=client -o yaml | oc apply -f -
 
 #### splunk

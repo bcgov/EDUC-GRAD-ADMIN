@@ -172,7 +172,9 @@ jobs:
           ${{ secrets.SOAM_CLIENT_SECRET }} \
           ${{ secrets.REDIS_PASSWORD }} \
           ${{ secrets.SPLUNK_TOKEN }} \
-          ${{ secrets.COMMON_NAMESPACE }}
+          ${{ secrets.COMMON_NAMESPACE }} \
+          ${{ secrets.GRAD_NAMESPACE }} \
+          ${{ secrets.GRAD_BUSINESS_NAMESPACE }}
           
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.APP_NAME_BACKEND }} 
