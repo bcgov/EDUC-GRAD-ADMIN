@@ -23,9 +23,9 @@ env:
   REPO_NAME: "educ-grad-admin"
   BRANCH: "feature/caddy2"
   APP_NAME_BACKEND: "educ-grad-admin-backend"
-  NAMESPACE: bbe4c3
-  NAMESPACE_TOOLS: bbe4c3-tools
-  COMMON_NAMESPACE: 75e61b
+  NAMESPACE: ${{ secrets.UI_NAMESPACE }}
+  NAMESPACE_TOOLS: ${{ secrets.UI_NAMESPACE }}-tools
+  COMMON_NAMESPACE: ${{ secrets.COMMON_NAMESPACE }}
   TAG: "tools"
   TARGET_ENV: "tools"
 
@@ -162,7 +162,7 @@ jobs:
           oc project ${{ env.OPENSHIFT_NAMESPACE }}
 
           # Process and apply deployment template
-          oc process -f tools/openshift/backend-dc.yaml -p REPO_NAME=educ-grad-admin -p HOST_ROUTE=educ-grad-admin-bbe4c3-tools.apps.silver.devops.gov.bc.ca  -p MIN_REPLICAS=${{ env.MIN_REPLICAS_DEV }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS_DEV }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} | oc apply -n bbe4c3-tools -f -
+          oc process -f tools/openshift/backend-dc.yaml -p REPO_NAME=educ-grad-admin -p HOST_ROUTE=educ-grad-admin-${{ env.NAMESPACE_TOOLS }}.apps.silver.devops.gov.bc.ca  -p MIN_REPLICAS=${{ env.MIN_REPLICAS_DEV }} -p MAX_REPLICAS=${{ env.MAX_REPLICAS_DEV }} -p MIN_CPU=${{ env.MIN_CPU }} -p MAX_CPU=${{ env.MAX_CPU }} -p MIN_MEM=${{ env.MIN_MEM }} -p MAX_MEM=${{ env.MAX_MEM }} | oc apply -n ${{ env.NAMESPACE_TOOLS }} -f -
 
           # Start rollout (if necessary) and follow it
           oc rollout latest dc/${{ env.IMAGE_NAME }}-dc 2> /dev/null \
@@ -175,4 +175,4 @@ jobs:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.3.0
         with:
-          target: 'https://educ-grad-admin-bbe4c3-tools.apps.silver.devops.gov.bc.ca'
+          target: 'https://educ-grad-admin-${{ env.NAMESPACE_TOOLS }}.apps.silver.devops.gov.bc.ca'

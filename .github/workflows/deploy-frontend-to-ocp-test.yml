@@ -7,7 +7,7 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: bbe4c3-test
+  OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-test
 
   # 🖊️ EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
@@ -20,9 +20,9 @@ env:
 
   APP_NAME: "educ-grad-admin"
   APP_NAME_FRONTEND: "educ-grad-admin-frontend"
-  NAMESPACE: bbe4c3
-  NAMESPACE_TOOLS: bbe4c3-tools
-  COMMON_NAMESPACE: 75e61b
+  NAMESPACE: ${{ secrets.UI_NAMESPACE }}
+  NAMESPACE_TOOLS: ${{ secrets.UI_NAMESPACE }}-tools
+  COMMON_NAMESPACE: ${{ secrets.COMMON_NAMESPACE }}
   TARGET_ENV: "test"
 
   MIN_CPU: "50m"
@@ -97,9 +97,4 @@ jobs:
 
           # Get status, returns 0 if rollout is successful
           oc rollout status deployment/${{ env.APP_NAME_FRONTEND }}
-
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.10.0
-        with:
-          target: 'https://educ-grad-admin-${{ env.OPENSHIFT_NAMESPACE }}.apps.silver.devops.gov.bc.ca'
 

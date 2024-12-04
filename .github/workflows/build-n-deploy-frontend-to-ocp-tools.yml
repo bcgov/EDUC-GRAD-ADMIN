@@ -7,7 +7,7 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: bbe4c3-tools
+  OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-tools
 
   # 🖊️ EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
@@ -23,9 +23,9 @@ env:
   REPO_NAME: "educ-grad-admin"
   BRANCH: "feature/caddy2"
   APP_NAME_FRONTEND: "educ-grad-admin-frontend"
-  NAMESPACE: bbe4c3
-  NAMESPACE_TOOLS: bbe4c3-tools
-  COMMON_NAMESPACE: 75e61b
+  NAMESPACE: ${{ secrets.UI_NAMESPACE }}
+  NAMESPACE_TOOLS: ${{ secrets.UI_NAMESPACE }}-tools
+  COMMON_NAMESPACE: ${{ secrets.COMMON_NAMESPACE }}
   TAG: "tools"
   TARGET_ENV: "tools"
 
@@ -162,9 +162,9 @@ jobs:
           
           # Process and apply deployment template
           oc process -f tools/openshift/frontend-static.dc.ocp4.yaml -p REPO_NAME=educ-grad-admin \
-          -p HOST_ROUTE=educ-grad-admin-bbe4c3-tools.apps.silver.devops.gov.bc.ca -p NAMESPACE=${{ env.NAMESPACE_TOOLS }} \
+          -p HOST_ROUTE=educ-grad-admin-${{ env.NAMESPACE_TOOLS }}.apps.silver.devops.gov.bc.ca -p NAMESPACE=${{ env.NAMESPACE_TOOLS }} \
           -p APP_NAME=educ-grad-admin -p TAG=tools -p MIN_REPLICAS=2 -p MAX_REPLICAS=3 -p MIN_CPU=50m -p MAX_CPU=100m \
-          -p MIN_MEM=200Mi -p MAX_MEM=250Mi | oc apply -n bbe4c3-tools -f -
+          -p MIN_MEM=200Mi -p MAX_MEM=250Mi | oc apply -n ${{ env.NAMESPACE_TOOLS }} -f -
           
           # Start rollout (if necessary) and follow it
           oc rollout latest dc/${{ env.IMAGE_NAME }}-dc 2> /dev/null \
@@ -175,5 +175,5 @@ jobs:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.3.0
         with:
-          target: 'https://educ-grad-admin-bbe4c3-tools.apps.silver.devops.gov.bc.ca'
+          target: 'https://educ-grad-admin-${{ env.NAMESPACE_TOOLS }}.apps.silver.devops.gov.bc.ca'
 

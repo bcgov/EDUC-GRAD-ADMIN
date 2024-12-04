@@ -21,9 +21,9 @@ env:
   APP_NAME: "educ-grad-admin"
   APP_NAME_FRONTEND: "educ-grad-admin-frontend"
   BRANCH: "main"
-  NAMESPACE: bbe4c3
-  NAMESPACE_TOOLS: bbe4c3-tools
-  COMMON_NAMESPACE: 75e61b
+  NAMESPACE: ${{ secrets.UI_NAMESPACE }}
+  NAMESPACE_TOOLS: ${{ secrets.UI_NAMESPACE }}-tools
+  COMMON_NAMESPACE: ${{ secrets.COMMON_NAMESPACE }}
   TAG: "latest"
   TARGET_ENV: "dev"
 

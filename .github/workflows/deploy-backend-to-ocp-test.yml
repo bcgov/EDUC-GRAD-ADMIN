@@ -7,7 +7,7 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: bbe4c3-test
+  OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-test
 
   # 🖊️ EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
@@ -30,7 +30,7 @@ env:
   MAX_REPLICAS: "5"
 
   # SITE_URL should have no scheme or port. It will be prepended with https://
-  HOST_ROUTE: "educ-grad-admin-bbe4c3-test.apps.silver.devops.gov.bc.ca"
+  HOST_ROUTE: "educ-grad-admin-${{ env.OPENSHIFT_NAMESPACE }}.apps.silver.devops.gov.bc.ca"
 
 on:
   workflow_dispatch:
@@ -105,7 +105,3 @@ jobs:
           # Get status, returns 0 if rollout is successful
           oc rollout status deployment/${{ env.APP_NAME_BACKEND }}
 
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.10.0
-        with:
-          target: 'https://educ-grad-admin-${{ env.OPENSHIFT_NAMESPACE }}.apps.silver.devops.gov.bc.ca'
