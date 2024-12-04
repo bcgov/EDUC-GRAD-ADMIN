@@ -40,8 +40,7 @@ router.get("/error", (_req, res) => {
 router.get(
   "/login",
   passport.authenticate("oidc", {
-    failureRedirect: "error",
-    scope: ["openid", "profile"]
+    failureRedirect: "error"
   })
 );
 
