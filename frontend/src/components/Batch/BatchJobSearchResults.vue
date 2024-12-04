@@ -171,8 +171,9 @@ export default {
           })
           .catch((error) => {
             // eslint-disable-next-line
+            console.log(error);
             this.snackbarStore.showSnackbar(
-              "Student cannot be found on the GRAD or PEN database",
+              "There was an error with the Student API",
               "error",
               5000
             );

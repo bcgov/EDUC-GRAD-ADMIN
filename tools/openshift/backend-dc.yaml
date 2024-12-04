@@ -176,7 +176,7 @@ objects:
           resource:
             name: memory
             target:
-              averageUtilization: 100
+              averageUtilization: 150
               type: Utilization
 parameters:
   - name: APP_NAME

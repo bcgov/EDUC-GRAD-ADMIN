@@ -547,7 +547,7 @@ export default {
           if (error.response.statusText) {
             console.log("ERROR " + error.response.statusText, "danger");
           } else {
-            console.log("ERROR " + "error with webservervice", "danger");
+            console.log("ERROR " + "error with webservice", "danger");
           }
         });
     },
@@ -561,12 +561,14 @@ export default {
           if (error.response.statusText) {
             this.snackbarStore.showSnackbar(
               "ERROR " + error.response.statusText,
-              5000
+              "danger",
+              10000
             );
           } else {
             this.snackbarStore.showSnackbar(
-              "ERROR " + "error with webservervice",
-              5000
+              "ERROR " + "error with web service",
+              "danger",
+              10000
             );
           }
         });
@@ -622,41 +624,64 @@ export default {
           };
           requestPayload.schoolOfRecords = ["00000000"];
         }
-        let response = await BatchProcessingService.runDISTRUNUSER(
+
+        BatchProcessingService.runDISTRUNUSER(
           requestPayload,
           this.getCredential,
           this.getBatchRequestCrontime
-        );
-        if (response) {
-          this.batchLoading = false;
-          if (this.getBatchRequestCrontime) {
-            this.snackbarStore.showSnackbar(
-              "User distribution batch request has been successfully scheduled",
-              5000
-            );
-          } else {
-            this.snackbarStore.showSnackbar(
-              "Batch " +
-                response.data.batchId +
-                "- User distribution batch request submitted",
-              "success",
-              5000
-            );
-          }
-        }
-        this.setActiveTab("batchRuns");
-        this.closeDialogAndResetForm();
-        //add a wait before updating dashboard
+        )
+          .then((response) => {
+            if (response && this.batchLoading) {
+              this.batchLoading = false;
+              if (this.getBatchRequestCrontime) {
+                this.snackbarStore.showSnackbar(
+                  "User distribution batch request has been successfully scheduled",
+                  10000
+                );
+              } else {
+                this.snackbarStore.showSnackbar(
+                  "Batch " +
+                    response.data.batchId +
+                    "- User distribution batch request submitted",
+                  "success",
+                  10000
+                );
+              }
+              this.setActiveTab("batchRuns");
+              this.closeDialogAndResetForm();
+              //add a wait before updating dashboard
+              setTimeout(() => {
+                this.updateDashboards();
+              }, 2000);
+            }
+          })
+          .catch((error) => {
+            // handle any errors here
+          });
         setTimeout(() => {
-          this.updateDashboards();
-        }, 2000);
+          //Close the request after 5 seconds.
+          if (this.batchLoading) {
+            this.batchLoading = false;
+            this.snackbarStore.showSnackbar(
+              "The user distribution batch request is currently running in the background. Click the Update button on the Batch Processing page to view the results once the job is complete.",
+              "success",
+              10000
+            );
+            this.setActiveTab("batchRuns");
+            this.closeDialogAndResetForm();
+            //add a wait before updating dashboard
+            setTimeout(() => {
+              this.updateDashboards();
+            }, 2000);
+          }
+        }, 10000);
       } catch (error) {
         // handle the error and show the notification
         console.error("Error:", error);
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "error",
-          5000
+          10000
         );
       }
     },
