@@ -151,7 +151,9 @@ export default {
       request.districts[0].toLowerCase() === "all"
     ) {
       // If the condition is true, set districts to an empty array
-      request.districts = [];
+      return ApiService.apiAxios.get(
+        "/api/v1/batch/executecertregenbatchjob"
+      );
     }
     if (cronTime) {
       let scheduledRequest = {};
