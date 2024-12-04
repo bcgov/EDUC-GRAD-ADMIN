@@ -2,6 +2,6 @@ import ApiService from "../common/apiService";
 
 export default {
   getSchoolsList() {
-    return ApiService.apiAxios.get("/api/v1/institute/schools/list")
+    return ApiService.apiAxios.get("/api/v2/institute/schools/list");
   },
 };
