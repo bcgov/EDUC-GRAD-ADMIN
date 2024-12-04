@@ -5,12 +5,7 @@ ENV=$1
 APP_NAME=$2
 OPENSHIFT_NAMESPACE=$3
 BASE_URL=$4
-#SOAM_PUBLIC_KEY=$5
-#SOAM_CLIENT_ID=$6
 SOAM_CLIENT_SECRET=$5
-#SITEMINDER_LOGOUT_ENDPOINT=$8
-#UI_PUBLIC_KEY=$9
-#UI_PRIVATE_KEY=${10}
 REDIS_PASSWORD=$6
 SPLUNK_TOKEN=$7
 COMMON_NAMESPACE=$8
@@ -20,6 +15,11 @@ SOAM_KC=soam-$ENV.apps.silver.devops.gov.bc.ca
 SOAM_KC_LOAD_USER_ADMIN=$(oc -n $COMMON_NAMESPACE-$ENV -o json get secret sso-admin-${ENV} | sed -n 's/.*"username": "\(.*\)"/\1/p' | base64 --decode)
 SOAM_KC_LOAD_USER_PASS=$(oc -n $COMMON_NAMESPACE-$ENV -o json get secret sso-admin-${ENV} | sed -n 's/.*"password": "\(.*\)",/\1/p' | base64 --decode)
 
+nodeEnv="openshift"
+if [ "$ENV" = "dev" ]
+then
+  nodeEnv="local"
+fi
 siteMinderLogoutUrl=""
 if [ "$ENV" != "prod" ]
 then
@@ -62,7 +62,7 @@ rm tempPenBackendkey.pub
 #### backend configmap
 echo Creating config map "$APP_NAME"-backend-config-map
 oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
-  --from-literal=NODE_ENV=openshift \
+  --from-literal=NODE_ENV=$nodeEnv \
   --from-literal=LOG_LEVEL=info \
   --from-literal=SERVER_FRONTEND="https://$BASE_URL" \
   --from-literal=SOAM_PUBLIC_KEY="$formattedPublicKey" \
