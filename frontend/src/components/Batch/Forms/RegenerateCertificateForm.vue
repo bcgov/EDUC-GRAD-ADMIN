@@ -294,10 +294,15 @@ export default {
         requestTemplate
       );
       try {
-        let response = await BatchProcessingService.runCERTREGEN(
-          requestPayload,
-          this.getBatchRequestCrontime
-        );
+        if (this.getGroup == "all") {
+          let response = await BatchProcessingService.runCERTREGEN_ALL();
+        } else {
+          let response = await BatchProcessingService.runCERTREGEN(
+            requestPayload,
+            this.getBatchRequestCrontime
+          );
+        }
+
         this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
