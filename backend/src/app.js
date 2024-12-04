@@ -106,7 +106,8 @@ utils.getOidcDiscovery().then(discovery => {
     callbackURL: config.get('server:frontend') + '/api/auth/callback',
     scope: discovery.scopes_supported,
     kc_idp_hint: config.get('server:idirIDPHint')
-  }, (_issuer, _sub, profile, accessToken, refreshToken, done) => {
+  }, (_issuer, _sub, profile, accessToken, refreshToken, params, done) => {
+    const idToken = params.id_token;
     if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
       (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
       return done('No access token', null);
@@ -116,6 +117,7 @@ utils.getOidcDiscovery().then(discovery => {
     profile.jwtFrontend = auth.generateUiToken();
     profile.jwt = accessToken;
     profile.refreshToken = refreshToken;
+    profile.idToken = idToken;
     return done(null, profile);
   }));
   //JWT strategy is used for authorization
