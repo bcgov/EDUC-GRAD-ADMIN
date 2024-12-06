@@ -16,7 +16,7 @@
       <v-col sm="2"><strong>Where</strong></v-col>
       <v-col sm="10" md="4">
         <v-select
-          v-model="getDistribution"
+          v-model="distribution"
           :items="['BC Mail', 'Download']"
           item-title="title"
           item-value="value"

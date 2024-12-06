@@ -29,10 +29,10 @@ env:
   TAG: "latest"
   TARGET_ENV: "dev"
 
-  MIN_CPU: "50m"
-  MAX_CPU: "100m"
-  MIN_MEM: "200Mi"
-  MAX_MEM: "250Mi"
+  MIN_CPU: "60m"
+  MAX_CPU: "120m"
+  MIN_MEM: "250Mi"
+  MAX_MEM: "400Mi"
   MIN_REPLICAS: "1"
   MAX_REPLICAS: "2"
 
@@ -169,6 +169,6 @@ jobs:
           oc rollout status dc/${{ env.IMAGE_NAME }}-dc
 
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.10.0
+        uses: zaproxy/action-full-scan@v0.12.0
         with:
           target: 'https://educ-grad-admin-bbe4c3-dev.apps.silver.devops.gov.bc.ca'
