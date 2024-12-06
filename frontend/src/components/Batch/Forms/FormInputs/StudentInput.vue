@@ -209,28 +209,17 @@ export default {
           ) {
             let certificate =
               await GraduationReportService.getStudentCertificates(studentID);
-            if (certificate?.data.length) {
-              //check that certificate has does not have a null distribution date
 
-              if (
-                !certificate.data.distributionDate &&
-                this.credentialType == "RC"
-              ) {
-                this.validationMessage =
-                  "Cannot reprint certificate for this student. Distribution date is null";
-                this.penLoading = false;
-                return;
-              }
-            } else {
+            if (!certificate?.data.length) {
               if (this.credentialType == "RC") {
                 this.validationMessage =
-                  "Cannot reprint certificate for this student.";
+                  "Cannot reprint certificate for this student. This student does not have a certificate.";
                 this.penLoading = false;
                 return;
               }
               if (this.credentialType == "OC") {
                 this.validationMessage =
-                  "Cannot print certificate for this student,this student does not have a certificate.";
+                  "Cannot print certificate for this student. This student does not have a certificate.";
                 this.penLoading = false;
                 return;
               }
