@@ -294,14 +294,16 @@ export default {
         requestTemplate
       );
       try {
+        let response;
         if (this.getGroup == "all") {
-          let response = await BatchProcessingService.runCERTREGEN_ALL();
+          response = await BatchProcessingService.runCERTREGEN_ALL();
         } else {
-          let response = await BatchProcessingService.runCERTREGEN(
+          response = await BatchProcessingService.runCERTREGEN(
             requestPayload,
             this.getBatchRequestCrontime
           );
         }
+        console.log("returned");
 
         this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
