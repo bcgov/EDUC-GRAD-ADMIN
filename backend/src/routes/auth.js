@@ -13,7 +13,11 @@ const { body, validationResult } = require("express-validator");
 
 const isValidStaffUserWithRoles = auth.isValidUserWithRoles(
   "GRAD_INFO_OFFICER",
-  [roles.Admin.StaffInfoOfficer, roles.Admin.StaffAdministration, roles.Admin.StaffGradProgramBA]
+  [
+    roles.Admin.StaffInfoOfficer,
+    roles.Admin.StaffAdministration,
+    roles.Admin.StaffGradProgramBA,
+  ]
 );
 
 const router = express.Router();
@@ -41,16 +45,17 @@ router.get(
   "/login",
   passport.authenticate("oidc", {
     failureRedirect: "error",
+    scope: ["openid", "profile"],
   })
 );
 
 function logout(req) {
-  req.logout(function(err) {
-    if (err) { return next(err); }
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
     req.session.destroy();
   });
-
-  
 }
 
 //removes tokens and destroys session
@@ -67,7 +72,6 @@ router.get("/logout", async (req, res) => {
       );
     } else {
       retUrl = encodeURIComponent(
-        
         config.get("logoutEndpoint") +
           "?post_logout_redirect_uri=" +
           config.get("server:frontend") +
@@ -131,26 +135,26 @@ router.post("/refresh", [body("refreshToken").exists()], async (req, res) => {
 });
 
 //provides a jwt to authenticated users
-router.get('/token', auth.refreshJWT, (req, res) => {
+router.get("/token", auth.refreshJWT, (req, res) => {
   const isAuthorizedUser = isValidStaffUserWithRoles(req);
-  if (req['user'] && req['user'].jwtFrontend && req['user'].refreshToken) {
+  if (req["user"] && req["user"].jwtFrontend && req["user"].refreshToken) {
     if (req.session?.passport?.user?._json && !req.session.correlationID) {
       const correlationID = uuidv4();
       req.session.correlationID = correlationID;
       const correlation = {
         user_guid: req.session?.passport?.user?._json.idir_guid,
-        correlation_id: correlationID
+        correlation_id: correlationID,
       };
-      log.info('created correlation id and stored in session', correlation);
+      log.info("created correlation id and stored in session", correlation);
     }
     const responseJson = {
-      jwtFrontend: req['user'].jwtFrontend,
-      isAuthorizedUser: isAuthorizedUser
+      jwtFrontend: req["user"].jwtFrontend,
+      isAuthorizedUser: isAuthorizedUser,
     };
     res.status(HttpStatus.OK).json(responseJson);
   } else {
     res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'Not logged in'
+      message: "Not logged in",
     });
   }
 });
