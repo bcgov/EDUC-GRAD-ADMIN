@@ -166,7 +166,7 @@ jobs:
           
           # update configmap
           curl -s https://raw.githubusercontent.com/bcgov/${{ env.APP_NAME }}/refs/heads/${{ env.BRANCH }}/tools/openshift/update-configmap-backend.sh | bash /dev/stdin \
-          dev \
+          ${{ env.TARGET_ENV }} \
           ${{ env.APP_NAME }} \
           ${{ env.OPENSHIFT_NAMESPACE }} \
           ${{ env.TARGET_ENV }}.grad.gov.bc.ca \
