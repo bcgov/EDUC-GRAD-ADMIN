@@ -12,14 +12,23 @@
         ></v-text-field>
       </v-col>
     </v-row>
-    <v-row v-if="getDistribution !== 'User'">
+    <v-row>
       <v-col sm="2"><strong>Where</strong></v-col>
       <v-col sm="10" md="4">
         <v-select
+          v-if="getGroup != 'Ministry of Advanced Education'"
           v-model="distribution"
-          :items="['BC Mail', 'Download']"
+          :items="[
+            'BC Mail',
+            'Download',
+            {
+              title: 'User - ' + userFullName,
+              value: 'User',
+            },
+          ]"
           item-title="title"
           item-value="value"
+          :key="value"
           label="Where"
           variant="outlined"
           require
@@ -32,7 +41,7 @@
       </v-col>
     </v-row>
     <v-card
-      v-if="getDistribution === 'User'"
+      v-if="getDistribution == 'User'"
       class="mt-4"
       title="Mailing Address"
     >
