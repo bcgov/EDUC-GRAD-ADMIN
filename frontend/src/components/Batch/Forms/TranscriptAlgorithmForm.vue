@@ -18,6 +18,7 @@
             color="error"
             variant="outlined"
             class="m-4"
+            :loading="batchLoading"
             >Cancel</v-btn
           >
         </div>
@@ -49,38 +50,41 @@
               <v-stepper-window>
                 <v-stepper-window-item value="0">
                   <v-row>
-                    <v-select
-                      v-model="group"
-                      :items="[
-                        { title: 'Student', value: 'Student' },
-                        { title: 'School', value: 'School' },
-                        {
-                          title: 'School Category',
-                          value: 'School Category',
-                          disabled: !this.hasPermissions(
-                            'BATCH',
-                            'selectSchoolCategoryGroup'
-                          ),
-                        },
-                        {
-                          title: 'Program',
-                          value: 'Program',
-                          disabled: !this.hasPermissions(
-                            'BATCH',
-                            'selectProgramGroup'
-                          ),
-                        },
-                      ]"
-                      label="Select group"
-                      hide-details
-                    >
-                      <template v-slot:item="{ props, item }">
-                        <v-list-item
-                          v-bind="props"
-                          :subtitle="item.raw.department"
-                          :disabled="item.raw.disabled"
-                        ></v-list-item> </template
-                    ></v-select>
+                    <v-col>
+                      <v-select
+                        v-model="group"
+                        :items="[
+                          { title: 'Student', value: 'Student' },
+                          { title: 'School', value: 'School' },
+                          {
+                            title: 'School Category',
+                            value: 'School Category',
+                            disabled: !this.hasPermissions(
+                              'BATCH',
+                              'selectSchoolCategoryGroup'
+                            ),
+                          },
+                          {
+                            title: 'Program',
+                            value: 'Program',
+                            disabled: !this.hasPermissions(
+                              'BATCH',
+                              'selectProgramGroup'
+                            ),
+                          },
+                        ]"
+                        label="Select a group"
+                        variant="outlined"
+                        hide-details
+                      >
+                        <template v-slot:item="{ props, item }">
+                          <v-list-item
+                            v-bind="props"
+                            :subtitle="item.raw.department"
+                            :disabled="item.raw.disabled"
+                          ></v-list-item> </template
+                      ></v-select>
+                    </v-col>
                   </v-row>
                   <v-row v-if="group == 'Student'">
                     <StudentInput></StudentInput>
@@ -138,7 +142,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -251,6 +256,7 @@ export default {
   },
   data: () => ({
     step: 0,
+
     dialog: false,
     snackbarStore: useSnackbarStore(),
   }),
@@ -312,6 +318,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.batchLoading = true;
       try {
         const requestTemplate = [
           "districts",
@@ -335,27 +342,31 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
-
-        this.activeTab = "batchRuns";
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Transcript verification report has been successfully scheduled",
-            5000
+            10000
           );
         } else {
           this.snackbarStore.showSnackbar(
             "Transcript verification report request submitted",
             "success",
-            5000
+            10000
           );
         }
+        this.setActiveTab("batchRuns");
         this.closeDialogAndResetForm();
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
       } catch (error) {
         // handle the error and show the notification
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "danger",
-          5000
+          10000
         );
         console.error("Error:", error);
       }

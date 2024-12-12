@@ -21,6 +21,7 @@
             color="error"
             variant="outlined"
             class="m-4"
+            :loading="batchLoading"
             >Cancel</v-btn
           >
         </div>
@@ -115,6 +116,8 @@
                   <v-row>
                     <v-col>
                       <v-select
+                        class="mt-2"
+                        variant="outlined"
                         v-model="group"
                         :items="groupItems"
                         label="Select group"
@@ -124,7 +127,10 @@
                   </v-row>
 
                   <v-row v-if="group == 'Student'">
-                    <StudentInput></StudentInput>
+                    <StudentInput
+                      runType="DISTRUNUSER"
+                      :credentialType="credentialSelected"
+                    ></StudentInput>
                   </v-row>
                   <v-row v-if="group == 'School Category'">
                     <DistrictInput></DistrictInput>
@@ -214,7 +220,8 @@
                   variant="flat"
                   class="text-none"
                   density="default"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   @click="submit"
                 >
                   Download
@@ -226,7 +233,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -253,6 +261,7 @@ import DistributionInput from "@/components/Batch/Forms/FormInputs/DistributionI
 import { mapActions, mapState } from "pinia";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 import { useAccessStore } from "../../../store/modules/access";
+import { useAuthStore } from "../../../store/modules/auth";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
 import { useBatchProcessingStore } from "../../../store/modules/batchprocessing";
 import { useBatchRequestFormStore } from "../../../store/modules/batchRequestFormStore";
@@ -299,6 +308,11 @@ export default {
 
     watch(group, (newValue) => {
       batchRequestFormStore.who = newValue;
+      if (newValue == "Ministry of Advanced Education") {
+        batchRequestFormStore.distribution = "User";
+      } else {
+        batchRequestFormStore.distribution = "BC Mail";
+      }
     });
 
     return {
@@ -413,6 +427,7 @@ export default {
     snackbarStore: useSnackbarStore(),
     step: 0,
     dialog: false,
+    batchLoading: false,
     groupSelected: "",
     transcriptTypes: [],
     certificateTypes: [],
@@ -432,6 +447,7 @@ export default {
     ],
   }),
   computed: {
+    ...mapState(useAuthStore, ["userFullName"]),
     ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
@@ -480,9 +496,8 @@ export default {
           return ["School"];
         }
       } else if (this.getCredential === "Blank transcript print") {
-        return this.blankTranscriptDetails
-          ? ["School", "Ministry of Advanced Education"]
-          : ["Select a credential type"];
+        let groupOptions = [{ title: "School", value: "School" }];
+        return groupOptions;
       } else {
         let groupOptions = [
           { title: "Student", value: "Student" },
@@ -531,7 +546,7 @@ export default {
           if (error.response.statusText) {
             console.log("ERROR " + error.response.statusText, "danger");
           } else {
-            console.log("ERROR " + "error with webservervice", "danger");
+            console.log("ERROR " + "error with webservice", "danger");
           }
         });
     },
@@ -543,14 +558,23 @@ export default {
         // eslint-disable-next-line
         .catch((error) => {
           if (error.response.statusText) {
-            this.makeToast("ERROR " + error.response.statusText, "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error.response.statusText,
+              "danger",
+              10000
+            );
           } else {
-            this.makeToast("ERROR " + "error with webservervice", "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + "error with web service",
+              "danger",
+              10000
+            );
           }
         });
     },
     closeDialogAndResetForm() {
       this.blankCertificateDetails = [];
+      this.blankTranscriptDetails = [];
       this.group = null;
       this.dialog = false;
       this.clearBatchDetails();
@@ -563,6 +587,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.batchLoading = true;
       try {
         const requestTemplate = [
           "credentialTypeCode",
@@ -583,36 +608,80 @@ export default {
           this.getBatchRequest,
           requestTemplate
         );
-        let response = await BatchProcessingService.runDISTRUNUSER(
+        //set schoolOfRecords to "000000"
+        if (
+          this.group == "Ministry of Advanced Education" &&
+          this.getCredential == "Blank certificate print"
+        ) {
+          requestPayload.user = this.userFullName;
+          requestPayload.address = {
+            streetLine1: "4TH FLOOR 620 SUPERIOR",
+            streetLine2: "PO BOX 9886 STN PROV GOVT",
+            city: "VICTORIA",
+            region: "BRITISH COLUMBIA",
+            country: "CANADA",
+            code: "V8W9T6",
+          };
+          requestPayload.schoolOfRecords = ["00000000"];
+        }
+
+        BatchProcessingService.runDISTRUNUSER(
           requestPayload,
           this.getCredential,
           this.getBatchRequestCrontime
-        );
-        if (response) {
-          if (this.getBatchRequestCrontime) {
+        )
+          .then((response) => {
+            if (response && this.batchLoading) {
+              this.batchLoading = false;
+              if (this.getBatchRequestCrontime) {
+                this.snackbarStore.showSnackbar(
+                  "User distribution batch request has been successfully scheduled",
+                  10000
+                );
+              } else {
+                this.snackbarStore.showSnackbar(
+                  "Batch " +
+                    response.data.batchId +
+                    "- User distribution batch request submitted",
+                  "success",
+                  10000
+                );
+              }
+              this.setActiveTab("batchRuns");
+              this.closeDialogAndResetForm();
+              //add a wait before updating dashboard
+              setTimeout(() => {
+                this.updateDashboards();
+              }, 2000);
+            }
+          })
+          .catch((error) => {
+            // handle any errors here
+          });
+        setTimeout(() => {
+          //Close the request after 5 seconds.
+          if (this.batchLoading) {
+            this.batchLoading = false;
             this.snackbarStore.showSnackbar(
-              "User distribution batch request has been successfully scheduled",
-              5000
-            );
-          } else {
-            this.snackbarStore.showSnackbar(
-              "Batch " +
-                response.data.batchId +
-                "- User distribution batch request submitted",
+              "The user distribution batch request is currently running in the background. Click the Update button on the Batch Processing page to view the results once the job is complete.",
               "success",
-              5000
+              10000
             );
+            this.setActiveTab("batchRuns");
+            this.closeDialogAndResetForm();
+            //add a wait before updating dashboard
+            setTimeout(() => {
+              this.updateDashboards();
+            }, 2000);
           }
-        }
-        this.closeDialogAndResetForm();
-        this.updateDashboards();
+        }, 10000);
       } catch (error) {
         // handle the error and show the notification
         console.error("Error:", error);
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "error",
-          5000
+          10000
         );
       }
     },

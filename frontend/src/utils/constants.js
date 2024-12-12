@@ -73,6 +73,9 @@ export const RolePermissions = Object.freeze({
     runDistrun: {
       allowed: ['GRAD_SYSTEM_COORDINATOR', 'GRAD_INFO_OFFICER'],
     },
+    runCredentialsandTranscriptDistributionRun: {
+      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+    },
     runNonGradRun: {
       allowed: ['GRAD_SYSTEM_COORDINATOR'],
     },
@@ -84,7 +87,7 @@ export const RolePermissions = Object.freeze({
     },
     runCertificateRegeneration:{
       allowed: ['GRAD_SYSTEM_COORDINATOR', 'GRAD_INFO_OFFICER'],
-    },
+    },  
     runSchoolReportRegeneration:{
       allowed: ['GRAD_SYSTEM_COORDINATOR'],
     },    

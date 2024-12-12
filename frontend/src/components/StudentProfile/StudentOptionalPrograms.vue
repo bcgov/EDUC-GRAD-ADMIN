@@ -123,7 +123,7 @@
                   item.studentOptionalProgramData.optionalRequirementsMet
                     .length != 0
                 "
-                >ALL requirements have been met</span
+                >All requirements have been met</span
               >
             </div>
             <div v-else>
@@ -136,7 +136,7 @@
                     .length > 0
                 "
               >
-                ALL Requirements have been met
+                All Requirements have been met
               </div>
             </div>
             <span

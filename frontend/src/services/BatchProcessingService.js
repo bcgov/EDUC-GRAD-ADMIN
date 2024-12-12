@@ -40,11 +40,11 @@ export default {
        //For Blank transcript print or Blank certificate print option, the payload must use the blankPayload
       if(credentialType == "Blank transcript print" || credentialType == "Blank certificate print"){
         
-        scheduledRequest.payload = request;
-        scheduledRequest.blankPayLoad = null;
-      }else{
         scheduledRequest.payload = null;
         scheduledRequest.blankPayLoad = request;
+      }else{
+        scheduledRequest.payload = request;
+        scheduledRequest.blankPayLoad = null;
       }
 
       if(credentialType == "OT" && request.psi && request.psi.length >0){
@@ -143,6 +143,13 @@ export default {
   runDISTRUN_SUPP() {
   
     return ApiService.apiAxios.get("/api/v1/batch/executesuppdisrunbatchjob");
+  },
+  runCERTREGEN_ALL() {
+    //To run regenerate all Certificates, you must run a get
+
+      return ApiService.apiAxios.get(
+        "/api/v1/batch/executecertregenbatchjob"
+      );
   },
   runCERTREGEN(request, cronTime = "") {
     if (

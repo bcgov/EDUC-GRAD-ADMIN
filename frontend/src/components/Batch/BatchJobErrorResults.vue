@@ -1,24 +1,40 @@
 <template>
-  <v-card>
+  <v-card class="p-3">
+    <v-overlay
+      v-model="batchLoading"
+      class="align-center justify-center"
+      contained
+    >
+      <v-progress-circular
+        v-if="batchLoading"
+        indeterminate
+        color="primary"
+        size="64"
+      >
+        Loading...
+      </v-progress-circular>
+    </v-overlay>
     <div class="d-flex justify-space-between align-center">
       <v-card-title> Batch Job #{{ selectedErrorId }} Error(s) </v-card-title>
 
       <!-- Slot for close button -->
       <slot name="close"></slot>
     </div>
+
     <!-- No results message-->
-    <p v-if="rows < 1">
+    <p v-if="totalElements < 1 && !batchLoading">
       There are no results to display.<br />
       Please select another Job Execution ID.
     </p>
-    <v-data-table
+
+    <v-data-table-server
+      v-model:items-per-page="itemsPerPage"
       title="Job/Runs"
-      :items="batchData"
       :headers="batchDataFields"
-      id="id"
-      :showFilter="false"
-      :pagination="true"
-      class="p-3"
+      :items="batchData"
+      :items-length="totalElements"
+      item-value="id"
+      @update:options="loadItems"
     >
       <template v-slot:item.pen="{ item }">
         <v-btn
@@ -35,7 +51,7 @@
       <template v-slot:item.schoolOfRecord="{ item }">
         <div v-if="item.schoolOfRecord">{{ item.schoolOfRecord }}</div>
       </template>
-    </v-data-table>
+    </v-data-table-server>
   </v-card>
 </template>
 
@@ -58,9 +74,12 @@ export default {
       batchData: [],
       perPage: 10,
       rows: 0,
+      totalElements: 0,
+      itemsPerPage: 10,
       currentPage: 0,
       userSelectedPage: 0,
       batchLoading: false,
+
       batchDataFields: [
         {
           key: "pen",
@@ -96,10 +115,6 @@ export default {
 
   computed: {
     ...mapGetters("auth", ["token"]),
-
-    currentPageChange() {
-      return this.userSelectedPage;
-    },
   },
   created() {
     this.loadStudent = sharedMethods.loadStudent;
@@ -109,13 +124,22 @@ export default {
     selectedErrorId: function () {
       this.getAdminDashboardData(this.selectedErrorId, 0);
     },
-    currentPageChange: function () {
-      if (this.userSelectedPage !== null) {
-        this.getAdminDashboardData(this.selectedErrorId, this.userSelectedPage);
-      }
-    },
   },
   methods: {
+    loadItems({ page, itemsPerPage, sortBy }) {
+      this.batchLoading = true;
+      BatchProcessingService.getBatchErrors(this.selectedErrorId, page - 1)
+        .then((response) => {
+          this.batchData = response.data.errorList;
+          this.totalElements = response.data.totalElements;
+          this.batchLoading = false;
+        })
+        .catch((error) => {
+          if (error.response.status) {
+            this.batchLoading = false;
+          }
+        });
+    },
     getAdminDashboardData(batchId, page) {
       this.batchData = [];
       this.rows = 0;

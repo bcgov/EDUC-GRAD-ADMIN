@@ -1,5 +1,18 @@
 <template>
-  <div>
+  <v-container>
+    <v-overlay
+      v-model="isScheduledBatchJobsLoading"
+      class="align-center justify-center"
+      contained
+    >
+      <v-progress-circular
+        v-if="isScheduledBatchJobsLoading"
+        indeterminate
+        color="primary"
+        size="64"
+      >
+      </v-progress-circular>
+    </v-overlay>
     <div v-if="adminDashboardLoading">LOADING</div>
     <div v-if="!scheduledJobs.length">No Scheduled Jobs</div>
 
@@ -88,7 +101,7 @@
       {{ snackbar.message }}
       <v-btn text @click="snackbar.show = false">Close</v-btn>
     </v-snackbar>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -150,6 +163,7 @@ export default {
   computed: {
     ...mapState(useBatchProcessingStore, {
       scheduledJobs: "getScheduledBatchRuns",
+      isScheduledBatchJobsLoading: "getIsGettingScheduledBatchJobsLoading",
     }),
     sortedScheduledJobs() {
       return [...this.scheduledJobs].sort((a, b) => {

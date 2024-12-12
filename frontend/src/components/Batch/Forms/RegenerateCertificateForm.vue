@@ -18,6 +18,7 @@
             color="error"
             variant="outlined"
             class="m-4"
+            :loading="batchLoading"
             >Cancel</v-btn
           >
         </div>
@@ -50,6 +51,7 @@
                 <v-stepper-window-item value="0">
                   <v-row>
                     <v-select
+                      class="mt-2"
                       v-model="group"
                       :items="[
                         {
@@ -66,7 +68,8 @@
                           value: 'School Category',
                         },
                       ]"
-                      label="Select a Group"
+                      label="Select a group"
+                      variant="outlined"
                       ><template v-slot:item="{ props, item }">
                         <v-list-item
                           v-bind="props"
@@ -129,7 +132,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -240,6 +244,7 @@ export default {
   data: () => ({
     snackbarStore: useSnackbarStore(),
     step: 0,
+    batchLoading: false,
     dialog: false,
   }),
   computed: {
@@ -273,6 +278,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.batchLoading = true;
       const requestTemplate = [
         "districts",
         "pens",
@@ -288,15 +294,20 @@ export default {
         requestTemplate
       );
       try {
-        let response = await BatchProcessingService.runCERTREGEN(
-          requestPayload,
-          this.getBatchRequestCrontime
-        );
+        if (this.getGroup == "all") {
+          let response = await BatchProcessingService.runCERTREGEN_ALL();
+        } else {
+          let response = await BatchProcessingService.runCERTREGEN(
+            requestPayload,
+            this.getBatchRequestCrontime
+          );
+        }
 
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "User Request Certificate Regeneration has been successfully scheduled",
-            5000
+            10000
           );
         } else {
           this.snackbarStore.showSnackbar(
@@ -304,17 +315,20 @@ export default {
               response.data.batchId +
               "- User Request Certificate Regeneration submitted",
             "success",
-            5000
+            10000
           );
         }
         this.closeDialogAndResetForm();
         this.setActiveTab("batchRuns");
-        this.updateDashboards();
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
       } catch (error) {
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "danger",
-          5000
+          10000
         );
       }
     },

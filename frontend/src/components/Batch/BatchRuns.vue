@@ -1,5 +1,18 @@
 <template>
   <v-container>
+    <v-overlay
+      v-model="isBatchJobsLoading"
+      class="align-center justify-center"
+      contained
+    >
+      <v-progress-circular
+        v-if="isBatchJobsLoading"
+        indeterminate
+        color="primary"
+        size="64"
+      >
+      </v-progress-circular>
+    </v-overlay>
     <v-row>
       <!-- First Column (col-5 for medium screens, col-12 for small screens) -->
       <v-col :cols="12" :md="isBatchShowing || isErrorShowing ? 7 : 12">
@@ -318,31 +331,18 @@ export default {
       ],
     };
   },
-  created() {
-    this.getAdminDashboardData();
-  },
+  created() {},
   computed: {
     ...mapState(useBatchProcessingStore, {
       batchRuns: "getBatchRuns",
+      isBatchJobsLoading: "getIsGettingBatchJobsLoading",
     }),
   },
   methods: {
     ...mapActions(useBatchProcessingStore, ["setBatchJobs"]),
-    getRowClass(item) {
-      // Conditionally apply a class based on the item's status
-      return item.jobExecutionId === "104848" ? "highlight-row" : "";
-    },
     rerunBatch(bid) {
       BatchProcessingService.rerunBatch(bid).then((response) => {
         if (response) {
-          // this.$bvToast.toast(
-          //   "Created a new batch job based on batch #" + bid,
-          //   {
-          //     title: "NEW BATCH JOB STARTED",
-          //     variant: "success",
-          //     noAutoHide: true,
-          //   }
-          // );
           this.snackbarStore.showSnackbar(
             "Created a new batch job based on batch #" + bid,
             "success",
@@ -394,14 +394,8 @@ export default {
     },
 
     rerunBatchSchoolReports(bid) {
-      this.$refs["popover-" + bid].$emit("close");
       BatchProcessingService.rerunBatchSchoolReports(bid).then((response) => {
         if (response) {
-          // this.$bvToast.toast("Running school reports for batch job #" + bid, {
-          //   title: "SCHOOL REPORTS BATCH",
-          //   variant: "success",
-          //   noAutoHide: true,
-          // });
           this.snackbarStore.showSnackbar(
             "Running school reports for batch job #" + bid,
             "success",
@@ -413,17 +407,8 @@ export default {
       });
     },
     rerunBatch(bid) {
-      this.$refs["popover-" + bid].$emit("close");
       BatchProcessingService.rerunBatch(bid).then((response) => {
         if (response) {
-          // this.$bvToast.toast(
-          //   "Created a new batch job based on batch #" + bid,
-          //   {
-          //     title: "NEW BATCH JOB STARTED",
-          //     variant: "success",
-          //     noAutoHide: true,
-          //   }
-          // );
           this.snackbarStore.showSnackbar(
             "Created a new batch job based on batch #" + bid,
             "success",

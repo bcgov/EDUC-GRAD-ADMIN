@@ -8,7 +8,8 @@
           v-model="pen"
           @input="validateStudent"
           type="number"
-          class="mr-2"
+          variant="outlined"
+          class="mr-2 mt-2"
         ></v-text-field>
       </v-col>
       <v-col md="3">
@@ -16,6 +17,7 @@
           color="bcGovBlue"
           @click="addStudent()"
           :disabled="v$.pen.$invalid || pen == ''"
+          :loading="penLoading"
         >
           Add Student
         </v-btn>
@@ -105,6 +107,7 @@ export default {
   data() {
     return {
       pen: "",
+      penLoading: false,
       penStudentInfo: "",
       penValidating: false,
       validationMessage: "",
@@ -142,6 +145,7 @@ export default {
       this.clearPenStudentInfo();
       const result = await this.v$.$validate();
       if (!result) {
+        this.penLoading = false;
         return;
       }
       this.penValidating = false;
@@ -154,13 +158,16 @@ export default {
       this.clearPenStudentInfo();
     },
     async addStudent() {
+      this.penLoading = true;
       this.validationMessage = "";
       if (this.pen.length == 9) {
         let student = await StudentService.getStudentByPen(this.pen);
         if (student.data && student.data.length === 0) {
           this.validationMessage = "Student not found";
+          this.penLoading = false;
           return false;
         }
+        let studentID = student.data[0].studentID;
 
         let studentGRADStatus = await StudentService.getGraduationStatus(
           student.data[0].studentID
@@ -182,6 +189,7 @@ export default {
           if (studentGRADStatus.data.studentStatusName == "Merged") {
             this.validationMessage =
               this.pen + " is a merged student and not permitted";
+            this.penLoading = false;
             return;
           }
           if (this.runType == "CERT_REGEN") {
@@ -189,6 +197,7 @@ export default {
             if (!studentGRADStatus.data.programCompletionDate) {
               this.validationMessage =
                 "Error: Cannot regenerate a certificate for this student - this student has not completed their program";
+              this.penLoading = false;
               return;
             }
           }
@@ -200,26 +209,18 @@ export default {
           ) {
             let certificate =
               await GraduationReportService.getStudentCertificates(studentID);
-            if (certificate.data.length) {
-              //check that certificate has does not have a null distribution date
 
-              if (
-                !certificate.data.distributionDate &&
-                this.credentialType == "RC"
-              ) {
-                this.validationMessage =
-                  "Cannot reprint certificate for this student. Distribution date is null";
-                return;
-              }
-            } else {
+            if (!certificate?.data.length) {
               if (this.credentialType == "RC") {
                 this.validationMessage =
-                  "Cannot reprint certificate for this student.";
+                  "Cannot reprint certificate for this student. This student does not have a certificate.";
+                this.penLoading = false;
                 return;
               }
               if (this.credentialType == "OC") {
                 this.validationMessage =
-                  "Cannot print certificate for this student,this student does not have a certificate.";
+                  "Cannot print certificate for this student. This student does not have a certificate.";
+                this.penLoading = false;
                 return;
               }
             }
@@ -230,6 +231,7 @@ export default {
           info: this.penStudentInfo,
         });
         this.clearPen();
+        this.penLoading = false;
       }
     },
     removeStudent(pen) {
@@ -241,8 +243,8 @@ export default {
     },
   },
   props: {
-    credentialType: String,
     runType: String,
+    credentialType: String,
   },
 
   computed: {
@@ -250,6 +252,7 @@ export default {
       ...mapState(useBatchRequestFormStore, [
         "getBatchRequest",
         "getBatchRunTime",
+        "getCredential",
       ]),
     },
     isEmpty() {

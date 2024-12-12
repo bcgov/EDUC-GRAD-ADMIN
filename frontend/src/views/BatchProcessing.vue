@@ -2,7 +2,10 @@
   <div class="batch-processing-view">
     <h1>Batch Processing</h1>
     <div>
-      <v-tabs v-model="activeTab" bg-color="bcGovLightGrey">
+      <v-tabs
+        v-model="batchProcessingStore.activeTab"
+        bg-color="bcGovLightGrey"
+      >
         <v-tab
           value="batchRuns"
           @click="
@@ -82,6 +85,7 @@
                 hide-default-footer
                 :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
                 class="pb-3"
+                :loading="!batchRunGradOptions"
               >
                 <template v-slot:item.description="{ item }">
                   {{ item.label }}
@@ -284,6 +288,7 @@ export default {
 
     return {
       activeTab,
+      batchProcessingStore,
     };
   },
   computed: {

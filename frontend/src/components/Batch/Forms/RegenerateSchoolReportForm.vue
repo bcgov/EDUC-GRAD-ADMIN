@@ -18,6 +18,7 @@
             color="error"
             variant="outlined"
             class="m-4"
+            :loading="batchLoading"
             >Cancel</v-btn
           >
         </div>
@@ -51,7 +52,9 @@
               <v-stepper-window>
                 <v-stepper-window-item value="0">
                   <v-row>
-                    <v-col sm="2"> Report Type </v-col>
+                    <v-col sm="2" class="mt-3"
+                      ><strong>Report Type</strong></v-col
+                    >
                     <v-col sm="10">
                       <v-select
                         v-model="reportType"
@@ -68,12 +71,15 @@
                         item-title="text"
                         item-value="value"
                         label="Select a report type"
+                        variant="outlined"
+                        class="mt-2"
                       ></v-select>
                     </v-col>
                     <v-col> </v-col>
                   </v-row>
                   <v-row>
                     <v-select
+                      class="mt-2"
                       v-model="group"
                       :item-title="title"
                       :item-value="value"
@@ -83,6 +89,7 @@
                         { title: 'All', value: 'All Schools' },
                       ]"
                       label="Select a group"
+                      variant="outlined"
                     />
                   </v-row>
                   <v-row v-if="group == 'School'">
@@ -145,7 +152,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -179,7 +187,7 @@ export default {
     watch(group, (newValue) => {
       batchRequestFormStore.who = newValue;
       if (newValue == "All Schools") {
-        batchRequestFormStore.setActivityCode("All");
+        batchRequestFormStore.setActivityCode("ALL");
       } else {
         batchRequestFormStore.setActivityCode(null);
       }
@@ -257,6 +265,7 @@ export default {
   },
   data: () => ({
     step: 0,
+    batchLoading: false,
     dialog: false,
     snackbarStore: useSnackbarStore(),
     batchProcessingStore: useBatchProcessingStore(),
@@ -297,6 +306,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.batchLoading = true;
       try {
         const requestTemplate = [
           "districts",
@@ -320,11 +330,11 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
-
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "User Request School Report Regeneration has been successfully scheduled",
-            5000
+            10000
           );
         } else {
           this.snackbarStore.showSnackbar(
@@ -332,17 +342,20 @@ export default {
               response.data.batchId +
               "- User Request School Report Regeneration submitted",
             "success",
-            5000
+            10000
           );
         }
         this.closeDialogAndResetForm();
         this.setActiveTab("batchRuns");
-        this.updateDashboards();
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
       } catch (error) {
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "danger",
-          5000
+          10000
         );
       }
     },

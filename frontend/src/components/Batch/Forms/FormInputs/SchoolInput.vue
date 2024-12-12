@@ -18,6 +18,7 @@
           </v-col>
           <v-col md="8">
             <v-autocomplete
+              variant="outlined"
               v-model="mincode"
               label="Select a school to include"
               :items="getSchoolsList"

@@ -3,7 +3,12 @@
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
         <v-btn
-          v-if="hasPermissions('BATCH', 'runDistrun')"
+          v-if="
+            hasPermissions(
+              'BATCH',
+              'runCredentialsandTranscriptDistributionRun'
+            )
+          "
           color="primary"
           v-bind="props"
           class="mr-2"
@@ -22,6 +27,7 @@
             color="error"
             variant="outlined"
             class="m-4"
+            :loading="batchLoading"
             >Cancel</v-btn
           >
         </div>
@@ -32,7 +38,7 @@
                 :items="[
                   {
                     label: 'Run Type',
-                    value: 'User Request Distribution Run',
+                    value: 'Credentials and Transcript Distribution Run',
                   },
                   {
                     label: 'Where',
@@ -53,7 +59,8 @@
               class="text-none"
               density="default"
               @click="submit"
-              :disabled="v$.$invalid"
+              :loading="batchLoading"
+              :disabled="v$.$invalid || batchLoading"
               >Submit</v-btn
             >
           </div>
@@ -161,6 +168,7 @@ export default {
   data: () => ({
     snackbarStore: useSnackbarStore(),
     step: 0,
+    batchLoading: false,
     dialog: false,
     groupSelected: "",
     transcriptTypes: [],
@@ -229,9 +237,11 @@ export default {
           return ["School"];
         }
       } else if (this.getCredential === "Blank transcript print") {
-        return this.blankTranscriptDetails
-          ? ["School", "Ministry of Advanced Education"]
-          : ["Select a credential type"];
+        let groupOptions = [
+          { title: "Student", value: "Student" },
+          { title: "School", value: "School" },
+        ];
+        return groupOptions;
       } else {
         let groupOptions = [
           { title: "Student", value: "Student" },
@@ -270,9 +280,15 @@ export default {
         // eslint-disable-next-line
         .catch((error) => {
           if (error.response.statusText) {
-            this.makeToast("ERROR " + error.response.statusText, "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error.response.statusText,
+              10000
+            );
           } else {
-            this.makeToast("ERROR " + "error with webservervice", "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + "error with webservervice",
+              10000
+            );
           }
         });
     },
@@ -284,9 +300,15 @@ export default {
         // eslint-disable-next-line
         .catch((error) => {
           if (error.response.statusText) {
-            this.makeToast("ERROR " + error.response.statusText, "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error.response.statusText,
+              10000
+            );
           } else {
-            this.makeToast("ERROR " + "error with webservervice", "danger");
+            this.snackbarStore.showSnackbar(
+              "ERROR " + "error with webservervice",
+              10000
+            );
           }
         });
     },
@@ -303,6 +325,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.batchLoading = true;
       try {
         const requestTemplate = [
           "pens",
@@ -323,15 +346,17 @@ export default {
           this.getBatchRequest,
           requestTemplate
         );
+
         let response = await BatchProcessingService.runDISTRUN_MONTHLY(
           requestPayload,
           this.getBatchRequestCrontime
         );
+        this.batchLoading = false;
         if (response) {
           if (this.getBatchRequestCrontime) {
             this.snackbarStore.showSnackbar(
               "Credentials and Transcript Distribution Run request has been successfully scheduled",
-              5000
+              10000
             );
           } else {
             this.snackbarStore.showSnackbar(
@@ -339,19 +364,23 @@ export default {
                 response.data.batchId +
                 "- Credentials and Transcript Distribution Run request submitted",
               "success",
-              5000
+              10000
             );
           }
         }
+        this.setActiveTab("batchRuns");
         this.closeDialogAndResetForm();
-        this.updateDashboards();
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
       } catch (error) {
         // handle the error and show the notification
         console.error("Error:", error);
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "error",
-          5000
+          10000
         );
       }
     },

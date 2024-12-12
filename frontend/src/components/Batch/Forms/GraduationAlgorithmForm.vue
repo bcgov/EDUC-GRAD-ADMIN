@@ -18,6 +18,7 @@
             color="error"
             variant="outlined"
             class="m-4"
+            :loading="batchLoading"
             >Cancel</v-btn
           >
         </div>
@@ -52,6 +53,7 @@
                   <v-row>
                     <v-col>
                       <v-select
+                        class="mt-2"
                         v-model="group"
                         :items="[
                           { title: 'Student', value: 'Student' },
@@ -73,7 +75,8 @@
                             ),
                           },
                         ]"
-                        label="Select group"
+                        label="Select a group"
+                        variant="outlined"
                         hide-details
                       >
                         <template v-slot:item="{ props, item }">
@@ -140,7 +143,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -266,6 +270,7 @@ export default {
   },
   data: () => ({
     step: 0,
+    batchLoading: false,
     dialog: false,
     snackbarStore: useSnackbarStore(),
     batchProcessingStore: useBatchProcessingStore(),
@@ -313,6 +318,7 @@ export default {
       "updateDashboards",
     ]),
     closeDialogAndResetForm() {
+      this.batchLoading = false;
       this.group = null;
       this.dialog = false;
       this.clearBatchDetails();
@@ -325,7 +331,9 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.batchLoading = true;
       try {
+        this.batchLoading = true;
         const requestTemplate = [
           "districts",
           "gradDateFrom",
@@ -340,6 +348,7 @@ export default {
           "schoolOfRecords",
           "validateInput",
         ];
+
         const requestPayload = generateRequestPayload(
           this.getBatchRequest,
           requestTemplate
@@ -348,10 +357,11 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Graduation Algorithm request has been successfully scheduled",
-            5000
+            10000
           );
         } else {
           this.snackbarStore.showSnackbar(
@@ -359,19 +369,24 @@ export default {
               response.data.batchId +
               "- Graduation Algorithm request submitted",
             "success",
-            5000
+            10000
           );
         }
-        this.closeDialogAndResetForm();
 
+        this.closeDialogAndResetForm();
         this.setActiveTab("batchRuns");
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
       } catch (error) {
         // handle the error and show the notification
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "danger",
-          5000
+          10000
         );
+        this.batchLoading = false;
         console.error("Error:", error);
       }
     },

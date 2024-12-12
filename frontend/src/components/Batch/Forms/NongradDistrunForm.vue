@@ -20,6 +20,7 @@
             color="error"
             variant="outlined"
             class="m-4"
+            :loading="batchLoading"
             >Cancel</v-btn
           >
         </div>
@@ -55,7 +56,8 @@
                     <v-select
                       v-model="getGroup"
                       :items="['School Category']"
-                      label="Select a Group"
+                      label="Select a group"
+                      variant="outlined"
                     ></v-select>
                   </v-row>
                   <v-row v-if="getGroup == 'School Category'">
@@ -114,7 +116,8 @@
                   class="text-none"
                   density="default"
                   @click="submit"
-                  :disabled="v$.$invalid"
+                  :loading="batchLoading"
+                  :disabled="v$.$invalid || batchLoading"
                   >Submit</v-btn
                 >
               </div>
@@ -192,6 +195,7 @@ export default {
   },
   data: () => ({
     step: 0,
+    batchLoading: false,
     dialog: false,
     snackbarStore: useSnackbarStore(),
   }),
@@ -256,6 +260,7 @@ export default {
       this.step = step;
     },
     async submit() {
+      this.batchLoading = true;
       const requestTemplate = [
         "credentialTypeCode",
         "districts",
@@ -280,11 +285,11 @@ export default {
           requestPayload,
           this.getBatchRequestCrontime
         );
-
+        this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
             "Non-Graduate Transcript Distribution Run has been successfully scheduled",
-            5000
+            10000
           );
         } else {
           this.snackbarStore.showSnackbar(
@@ -292,17 +297,20 @@ export default {
               response.data.batchId +
               "- Non-Graduate Transcript Distribution Run submitted",
             "success",
-            5000
+            10000
           );
         }
         this.closeDialogAndResetForm();
         this.setActiveTab("batchRuns");
-        this.updateDashboards();
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
       } catch (error) {
         this.snackbarStore.showSnackbar(
           "An error occurred: " + error.message,
           "danger",
-          5000
+          10000
         );
       }
     },
