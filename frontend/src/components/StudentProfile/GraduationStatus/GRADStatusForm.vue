@@ -317,12 +317,12 @@
                     }}
                   </div>
                   <v-autocomplete
-                    v-model="editedGradStatus.schoolOfRecord"
+                    v-model="editedGradStatus.schoolOfRecordId"
                     :disabled="disableSchoolOfRecord"
                     label="Select a school"
                     :items="getSchoolsList"
                     :item-title="schoolTitle"
-                    item-value="mincode"
+                    item-value="schoolId"
                     variant="outlined"
                     density="compact"
                     class="mt-4"
@@ -352,13 +352,12 @@
                         .$message
                     }}
                   </div>
-                  <!--    :disabled="disableSchoolAtGrad" -->
                   <v-autocomplete
-                    v-model="editedGradStatus.schoolAtGrad"
+                    v-model="editedGradStatus.schoolAtGradId"
                     label="Select a school"
                     :items="getSchoolsList"
                     :item-title="schoolTitle"
-                    item-value="mincode"
+                    item-value="schoolId"
                     variant="outlined"
                     class="mt-4"
                     density="compact"
@@ -918,10 +917,15 @@ export default {
       this.editedGradStatus.pen = this.studentGradStatus.pen;
       this.editedGradStatus.program = this.studentGradStatus.program;
       this.editedGradStatus.studentGrade = this.studentGradStatus.studentGrade;
-      this.editedGradStatus.schoolName = this.studentGradStatus.schoolName;
+      this.editedGradStatus.schoolOfRecordName =
+        this.studentGradStatus.schoolOfRecordName;
       this.editedGradStatus.schoolOfRecord =
         this.studentGradStatus.schoolOfRecord;
+      this.editedGradStatus.schoolOfRecordId =
+        this.studentGradStatus.schoolOfRecordId;
       this.editedGradStatus.schoolAtGrad = this.studentGradStatus.schoolAtGrad;
+      this.editedGradStatus.schoolAtGradId =
+        this.studentGradStatus.schoolAtGradId;
       this.editedGradStatus.schoolAtGradName =
         this.studentGradStatus.schoolAtGradName;
       this.editedGradStatus.studentStatus =

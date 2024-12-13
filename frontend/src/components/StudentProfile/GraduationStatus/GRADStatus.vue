@@ -58,8 +58,8 @@
                   "
                 >
                   {{
-                    studentGradStatus.schoolName
-                      ? studentGradStatus.schoolName
+                    studentGradStatus.schoolOfRecordName
+                      ? studentGradStatus.schoolOfRecordName
                       : schoolOfRecord.displayName
                   }}<br />
                   {{ studentGradStatus.schoolOfRecord }}
