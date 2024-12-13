@@ -187,7 +187,7 @@ const auth = {
           client_secret: config.get("oidc:clientSecret"),
           grant_type: "refresh_token",
           refresh_token: refreshToken,
-          scope: discovery.scopes_supported,
+          scope: "openid profile",
         }),
         {
           headers: {

@@ -203,8 +203,8 @@
                   :disabled="
                     step == 0 ||
                     (step == 1 &&
-                      (getCredential !== 'Blank certificate print' ||
-                        getCredential !== 'Blank transcript print'))
+                      getCredential !== 'Blank certificate print' &&
+                      getCredential !== 'Blank transcript print')
                   "
                   variant="outlined"
                   >Back</v-btn
@@ -310,8 +310,7 @@ export default {
       batchRequestFormStore.who = newValue;
       if (newValue == "Ministry of Advanced Education") {
         batchRequestFormStore.distribution = "User";
-      } else {
-        batchRequestFormStore.distribution = "BC Mail";
+        batchRequestFormStore.schools = [];
       }
     });
 
@@ -458,6 +457,7 @@ export default {
       "getCredential",
       "getDistribution",
       "getCopies",
+      "gwtWhere",
     ]),
     requestPayload() {
       const requestTemplate = [
@@ -608,10 +608,11 @@ export default {
           this.getBatchRequest,
           requestTemplate
         );
-        //set schoolOfRecords to "000000"
+        // set payload.user and payload.address for the request
         if (
-          this.group == "Ministry of Advanced Education" &&
-          this.getCredential == "Blank certificate print"
+          (this.group == "Ministry of Advanced Education" &&
+            this.getCredential == "Blank certificate print") ||
+          this.getDistribution == "User"
         ) {
           requestPayload.user = this.userFullName;
           requestPayload.address = {
@@ -622,9 +623,15 @@ export default {
             country: "CANADA",
             code: "V8W9T6",
           };
-          requestPayload.schoolOfRecords = ["00000000"];
         }
 
+        //set schoolOfRecords to "000000" for Ministry of Advanced Education
+        if (
+          this.group == "Ministry of Advanced Education" &&
+          this.getCredential == "Blank certificate print"
+        ) {
+          requestPayload.schoolOfRecords = ["00000000"];
+        }
         BatchProcessingService.runDISTRUNUSER(
           requestPayload,
           this.getCredential,
