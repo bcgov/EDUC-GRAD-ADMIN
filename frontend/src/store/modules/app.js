@@ -12,10 +12,20 @@ export const useAppStore = defineStore("app", {
   }),
   getters: {
     getProgramOptions: (state) => state.programOptions,
-    getSchoolsList: (state) => state.schoolsList,
-    getDistrictList: (state) => state.districtsList,
     getStudentStatusOptions: (state) => state.studentStatusOptions,
     getUngradReasons: (state) => state.ungradReasons,
+    getSchoolsList: (state) => state.schoolsList,
+    getSchoolById: (state) => {
+      return (schoolId) =>
+        state.schoolsList.find((school) => schoolId === school.schoolId);
+    },
+    getDistrictList: (state) => state.districtsList,
+    getDistrictById: (state) => {
+      return (districtId) =>
+        state.districtsList.find(
+          (district) => districtId === district.districtId
+        );
+    },
   },
   actions: {
     setApplicationVariables() {

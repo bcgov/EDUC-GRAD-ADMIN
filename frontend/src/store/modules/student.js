@@ -608,6 +608,7 @@ export const useStudentStore = defineStore("student", {
       return this.student.profile.pen;
     },
     getStudentGradStatus() {
+      console.log(this.student.gradStatus);
       return this.student.gradStatus;
     },
     getStudentOptionalPrograms() {

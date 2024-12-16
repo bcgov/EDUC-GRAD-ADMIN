@@ -58,11 +58,11 @@
                   "
                 >
                   {{
-                    studentGradStatus.schoolOfRecordName
-                      ? studentGradStatus.schoolOfRecordName
+                    studentGradStatus.schoolName
+                      ? studentGradStatus.schoolName
                       : schoolOfRecord.displayName
                   }}<br />
-                  {{ studentGradStatus.schoolOfRecord }}
+                  {{ studentGradStatus.schoolOfRecordId }}
                 </v-btn>
 
                 <v-dialog v-model="schoolOfRecordDialog" max-width="600px">
@@ -169,12 +169,12 @@
                     );
                   "
                 >
-                  {{
+                  <!-- {{
                     studentGradStatus.schoolAtGradName
                       ? studentGradStatus.schoolAtGradName
                       : schoolAtGraduation.displayName
-                  }}<br />
-                  {{ studentGradStatus.schoolAtGrad }}
+                  }}<br /> -->
+                  {{ studentGradStatus.schoolAtGradId }}
                   <v-progress-circular
                     v-if="schoolSearchLoading"
                     indeterminate
@@ -388,6 +388,7 @@ export default {
       programOptions: "getProgramOptions",
       studentStatusOptions: "getStudentStatusOptions",
       getSchoolsList: "getSchoolsList",
+      getSchoolById: "getSchoolById", // IDK if this will work like this
     }),
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
