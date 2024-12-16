@@ -69,14 +69,6 @@
               <strong>School Category:</strong>
               {{ item.info.schoolCategoryCode }}
             </div>
-            <div>
-              <strong>TRAX reporting</strong>
-              <!-- TODO -->
-              <strong style="color: red">
-                Not provided with institute info</strong
-              >
-              <!-- {{ item.info.traxReporting }} -->
-            </div>
           </template>
           <template #bottom> </template>
         </v-data-table>
@@ -190,7 +182,6 @@ export default {
               canIssueTranscripts: schoolInfo.data.canIssueTranscripts,
               canIssueCertificates: schoolInfo.data.canIssueCertificates,
               schoolCategoryCode: schoolInfo.data.schoolCategoryCode,
-              traxReporting: schoolInfo.data.reportingFlag,
             };
             this.mincode = schoolInfo.data.mincode; //set mincode to add to batch request here since schoolId is now the v-model
             this.schools.splice(0, 0, {
