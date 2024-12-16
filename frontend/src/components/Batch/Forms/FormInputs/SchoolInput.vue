@@ -19,11 +19,11 @@
           <v-col md="8">
             <v-autocomplete
               variant="outlined"
-              v-model="mincode"
+              v-model="schoolId"
               label="Select a school to include"
               :items="getSchoolsList"
               :item-title="schoolTitle"
-              item-value="minCode"
+              item-value="schoolId"
             >
               <template v-slot:label="label">
                 {{ label.label }}
@@ -55,26 +55,30 @@
           <template v-slot:item.info="{ item }">
             <div>
               <strong>School Name:</strong>
-              {{ item.info.schoolName }}
+              {{ item.info.displayName }}
             </div>
             <div>
               <strong>Transcript Eligibility:</strong>
-              {{ item.info.transcriptEligibility ? "Y" : "N" }}
+              {{ item.info.canIssueTranscripts ? "Y" : "N" }}
             </div>
             <div>
-              <strong>Certificate Eligibility</strong>
-              {{ item.info.certificateEligibility ? "Y" : "N" }}
+              <strong>Certificate Eligibility:</strong>
+              {{ item.info.canIssueCertificates ? "Y" : "N" }}
             </div>
             <div>
-              <strong>School Category</strong>
-              {{ item.info.schoolCategory }}
+              <strong>School Category:</strong>
+              {{ item.info.schoolCategoryCode }}
             </div>
             <div>
               <strong>TRAX reporting</strong>
-              {{ item.info.traxReporting }}
+              <!-- TODO -->
+              <strong style="color: red">
+                Not provided with institute info</strong
+              >
+              <!-- {{ item.info.traxReporting }} -->
             </div>
           </template>
-          <template #bottom></template>
+          <template #bottom> </template>
         </v-data-table>
       </v-col>
     </v-row>
@@ -128,12 +132,13 @@ export default {
     return {
       selectedSchool: "",
       mincode: "",
+      schoolId: "",
       mincodeSchoolInfo: "",
       mincodeValidating: false,
       validationMessage: "",
       schoolInputFields: [
         {
-          key: "minCode",
+          key: "mincode",
           title: "Mincode",
           sortable: true,
           class: "text-left",
@@ -159,15 +164,7 @@ export default {
     schoolTitle(item) {
       // Customize this method to return the desired format
       if (item) {
-        return `${item.minCode} - ${item.displayName}`;
-      } else {
-        return null;
-      }
-    },
-    schoolTitle(item) {
-      // Customize this method to return the desired format
-      if (item) {
-        return `${item.minCode} - ${item.schoolName}`;
+        return `${item.mincode} - ${item.displayName}`;
       } else {
         return null;
       }
@@ -177,23 +174,25 @@ export default {
     },
     clearMincode() {
       this.validationMessage = "";
+      this.schoolId = "";
       this.mincode = "";
       this.clearmincodeSchoolInfo();
     },
     async addSchool() {
       this.validationMessage = "";
-      if (this.mincode === "") return true;
-      if (this.mincode.length == 8) {
+      //if (this.mincode === "") return true;
+      if (!!this.schoolId.length) {
         try {
-          let schoolInfo = await SchoolService.getSchoolInfo(this.mincode);
+          let schoolInfo = await SchoolService.getSchoolInfo(this.schoolId);
           if (schoolInfo.data) {
             this.mincodeSchoolInfo = {
-              schoolName: schoolInfo.data.schoolName,
-              transcriptEligibility: schoolInfo.data.transcriptEligibility,
-              certificateEligibility: schoolInfo.data.certificateEligibility,
-              schoolCategory: schoolInfo.data.schoolCategory,
+              displayName: schoolInfo.data.displayName,
+              canIssueTranscripts: schoolInfo.data.canIssueTranscripts,
+              canIssueCertificates: schoolInfo.data.canIssueCertificates,
+              schoolCategoryCode: schoolInfo.data.schoolCategoryCode,
               traxReporting: schoolInfo.data.reportingFlag,
             };
+            this.mincode = schoolInfo.data.mincode; //set mincode to add to batch request here since schoolId is now the v-model
             this.schools.splice(0, 0, {
               mincode: this.mincode,
               info: this.mincodeSchoolInfo,
