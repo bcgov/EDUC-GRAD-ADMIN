@@ -138,21 +138,6 @@
 
                     <v-window v-model="selectedSubTab">
                       <v-window-item value="gradStatusTab">
-                        <div v-if="studentGradStatus.studentGradData">
-                          <v-alert
-                            type="info"
-                            variant="tonal"
-                            border="start"
-                            class="mt-4"
-                            v-if="
-                              studentGradStatus.studentGradData.gradMessage &&
-                              !studentGradStatus.recalculateGradStatus
-                            "
-                          >
-                            {{ studentGradStatus.studentGradData.gradMessage }}
-                          </v-alert>
-                        </div>
-
                         <StudentGraduationStatus></StudentGraduationStatus>
                       </v-window-item>
 
@@ -1207,7 +1192,7 @@ export default {
 }
 .last-updated-date {
   position: absolute;
-  top: 15px;
+  top: -1px;
   right: 0;
 }
 .student-profile {
