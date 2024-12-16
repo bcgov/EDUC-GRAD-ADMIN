@@ -58,11 +58,12 @@
                   "
                 >
                   {{
-                    studentGradStatus.schoolName
-                      ? studentGradStatus.schoolName
-                      : schoolOfRecord.displayName
+                    getSchoolById(studentGradStatus.schoolOfRecordId)
+                      ?.displayName
                   }}<br />
-                  {{ studentGradStatus.schoolOfRecordId }}
+                  {{
+                    getSchoolById(studentGradStatus.schoolOfRecordId)?.mincode
+                  }}
                 </v-btn>
 
                 <v-dialog v-model="schoolOfRecordDialog" max-width="600px">
@@ -169,12 +170,11 @@
                     );
                   "
                 >
-                  <!-- {{
-                    studentGradStatus.schoolAtGradName
-                      ? studentGradStatus.schoolAtGradName
-                      : schoolAtGraduation.displayName
-                  }}<br /> -->
-                  {{ studentGradStatus.schoolAtGradId }}
+                  {{
+                    getSchoolById(studentGradStatus.schoolAtGradId)
+                      ?.displayName
+                  }}<br />
+                  {{ getSchoolById(studentGradStatus.schoolAtGradId)?.mincode }}
                   <v-progress-circular
                     v-if="schoolSearchLoading"
                     indeterminate
