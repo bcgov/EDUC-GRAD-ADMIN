@@ -35,7 +35,7 @@ env:
   MAX_REPLICAS: "5"
 
   # SITE_URL should have no scheme or port. It will be prepended with https://
-  HOST_ROUTE: "educ-grad-admin-bbe4c3-dev.apps.silver.devops.gov.bc.ca"
+  HOST_ROUTE: "educ-grad-admin-${{ secrets.UI_NAMESPACE }}-dev.apps.silver.devops.gov.bc.ca"
 
 on:
   workflow_dispatch:
