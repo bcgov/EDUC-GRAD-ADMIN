@@ -30,7 +30,7 @@ env:
   MAX_REPLICAS: "5"
 
   # SITE_URL should have no scheme or port. It will be prepended with https://
-  HOST_ROUTE: "educ-grad-admin-${{ env.OPENSHIFT_NAMESPACE }}.apps.silver.devops.gov.bc.ca"
+  HOST_ROUTE: "educ-grad-admin-${{ secrets.UI_NAMESPACE }}-test.apps.silver.devops.gov.bc.ca"
 
 on:
   workflow_dispatch:
@@ -110,4 +110,4 @@ jobs:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.12.0
         with:
-          target: "https://educ-grad-admin-bbe4c3-test.apps.silver.devops.gov.bc.ca"
+          target: "https://educ-grad-admin-${{ secrets.UI_NAMESPACE }}-test.apps.silver.devops.gov.bc.ca"
