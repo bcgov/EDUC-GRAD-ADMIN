@@ -144,6 +144,13 @@ export default {
   
     return ApiService.apiAxios.get("/api/v1/batch/executesuppdisrunbatchjob");
   },
+  runCERTREGEN_ALL() {
+    //To run regenerate all Certificates, you must run a get
+
+      return ApiService.apiAxios.get(
+        "/api/v1/batch/executecertregenbatchjob"
+      );
+  },
   runCERTREGEN(request, cronTime = "") {
     if (
       Array.isArray(request.districts) &&
