@@ -164,7 +164,7 @@ jobs:
           | oc apply -n ${{ env.OPENSHIFT_NAMESPACE }} -f -
           
           # update configmap
-          curl -s https://raw.githubusercontent.com/bcgov/${{ env.APP_NAME }}/refs/heads/main/tools/openshift/update-configmap-backend.sh | bash /dev/stdin \
+          curl -s https://raw.githubusercontent.com/bcgov/${{ env.APP_NAME }}/refs/heads/${{ env.BRANCH }}/tools/openshift/update-configmap-backend.sh | bash /dev/stdin \
           ${{ env.TARGET_ENV }} \
           ${{ env.APP_NAME }} \
           ${{ env.OPENSHIFT_NAMESPACE }} \
