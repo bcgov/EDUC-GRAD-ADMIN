@@ -45,28 +45,35 @@
             <tr>
               <td><strong>School of record: </strong></td>
               <td>
-                <v-btn
+                <SchoolDetailsDialog
+                  title="TEST"
+                  :school="getSchoolById(studentGradStatus.schoolOfRecordId)"
+                />
+                <!-- OLD SCHOOL OF RECORD DISPLAY - DELETE -->
+                <!-- <v-btn
                   class="v-btn-link p-0 text-left"
                   variant="plain"
                   :disabled="getSchoolsList.length == 0"
                   @click="
                     schoolOfRecordDialog = true;
                     getSchoolInfo(
-                      studentGradStatus.schoolOfRecord,
+                      studentGradStatus.schoolOfRecordId,
                       'schoolOfRecord'
                     );
                   "
                 >
                   {{
                     getSchoolById(studentGradStatus.schoolOfRecordId)
+                      ?.displayNameNoSpecialChars ??
+                    getSchoolById(studentGradStatus.schoolOfRecordId)
                       ?.displayName
                   }}<br />
                   {{
                     getSchoolById(studentGradStatus.schoolOfRecordId)?.mincode
                   }}
-                </v-btn>
+                </v-btn> -->
 
-                <v-dialog v-model="schoolOfRecordDialog" max-width="600px">
+                <!-- <v-dialog v-model="schoolOfRecordDialog" max-width="600px">
                   <v-card>
                     <v-card-title class="text-h6"
                       >School of record
@@ -96,10 +103,16 @@
                               </td>
                             </tr>
                             <tr>
+                              <td><strong>School Category Code</strong></td>
+                              <td>{{ schoolOfRecord.schoolCategoryCode }}</td>
+                            </tr>
+                            <tr>
                               <td><strong>Open Date:</strong></td>
                               <td>
                                 {{
-                                  dateFormatYYYYMMDD(schoolOfRecord?.openedDate)
+                                  $filters.formatSimpleDate(
+                                    schoolOfRecord?.openedDate
+                                  )
                                 }}
                               </td>
                             </tr>
@@ -107,16 +120,12 @@
                               <td><strong>Close Date:</strong></td>
                               <td>
                                 {{
-                                  dateFormatYYYYMMDD(schoolOfRecord?.closedDate)
+                                  $filters.formatSimpleDate(
+                                    schoolOfRecord?.closedDate
+                                  )
                                 }}
                               </td>
                             </tr>
-                            <!-- <tr>
-                              <td><strong>Status:</strong></td>
-                              <td>
-                                {{ isSchoolOpenStatus(schoolOfRecord) }}
-                              </td>
-                            </tr> -->
                             <tr>
                               <td><strong>Issue Transcript:</strong></td>
                               <td>
@@ -150,14 +159,19 @@
                       >
                     </v-card-actions>
                   </v-card>
-                </v-dialog>
+                </v-dialog> -->
               </td>
             </tr>
             <!-- School at graduation -->
             <tr>
               <td><strong>School at graduation: </strong></td>
               <td>
-                <v-btn
+                <SchoolDetailsDialog
+                  title="TEST"
+                  :school="getSchoolById(studentGradStatus.schoolAtGradId)"
+                />
+                <!-- OLD SCHOOL AT GRAD BTN - DELETE -->
+                <!-- <v-btn
                   v-if="studentGradStatus && studentGradStatus.schoolAtGrad"
                   :disabled="getSchoolsList.length == 0"
                   class="p-0 text-left v-btn-link"
@@ -165,12 +179,14 @@
                   @click="
                     schoolAtGradDialog = true;
                     getSchoolInfo(
-                      studentGradStatus.schoolAtGrad,
+                      studentGradStatus.schoolAtGradId,
                       'schoolAtGrad'
                     );
                   "
                 >
                   {{
+                    getSchoolById(studentGradStatus.schoolAtGradId)
+                      ?.displayNameNoSpecialChars ??
                     getSchoolById(studentGradStatus.schoolAtGradId)
                       ?.displayName
                   }}<br />
@@ -181,9 +197,9 @@
                     color="green"
                   >
                   </v-progress-circular>
-                </v-btn>
+                </v-btn> -->
 
-                <v-dialog v-model="schoolAtGradDialog" max-width="600px">
+                <!-- <v-dialog v-model="schoolAtGradDialog" max-width="600px">
                   <v-card>
                     <v-card-title class="text-h6"
                       >School at graduation</v-card-title
@@ -213,7 +229,7 @@
                               <td><strong>Open Date:</strong></td>
                               <td>
                                 {{
-                                  dateFormatYYYYMMDD(
+                                  $filters.formatSimpleDate(
                                     schoolAtGraduation?.openedDate
                                   )
                                 }}
@@ -223,21 +239,12 @@
                               <td><strong>Close Date:</strong></td>
                               <td>
                                 {{
-                                  dateFormatYYYYMMDD(
+                                  $filters.formatSimpleDate(
                                     schoolAtGraduation?.closedDate
                                   )
                                 }}
                               </td>
                             </tr>
-                            <!-- <tr>
-                              <td><strong>Status:</strong></td>
-                              <td>
-                                {{
-                                  {{ isSchoolOpenStatus(schoolAtGraduation) }}
-                                }}
-                              </td>
-                            </tr> -->
-
                             <tr>
                               <td><strong>Issue Transcript:</strong></td>
                               <td>
@@ -271,7 +278,7 @@
                       >
                     </v-card-actions>
                   </v-card>
-                </v-dialog>
+                </v-dialog> -->
               </td>
             </tr>
             <!-- Honours standing -->
@@ -365,6 +372,8 @@ import {
 import sharedMethods from "../../../sharedMethods";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import GRADStatusForm from "./GRADStatusForm.vue";
+import SchoolDetailsDialog from "@/components/Common/SchoolDetailsDialog.vue";
+
 export default {
   name: "GRADStatus",
   created() {
@@ -377,6 +386,7 @@ export default {
   },
   components: {
     GRADStatusForm: GRADStatusForm,
+    SchoolDetailsDialog: SchoolDetailsDialog,
   },
   computed: {
     ...mapState(useStudentStore, {
@@ -428,37 +438,17 @@ export default {
     sortStudentStatus(code) {
       return this.parseStudentStatus(code, this.studentStatusOptions);
     },
-    // getSchoolInfo(mincode, type) {
-    //   if (mincode != null) {
-    //     this.schoolSearchLoading = true;
-    //     SchoolService.getSchoolInfo(mincode)
-    //       .then((response) => {
-    //         if (type == "schoolOfRecord") {
-    //           this.schoolOfRecord = response.data;
-    //           this.schoolSearchLoading = false;
-    //         }
-    //         if (type == "schoolAtGrad") {
-    //           this.schoolAtGraduation = response.data;
-    //           this.schoolSearchLoading = false;
-    //         }
-    //       })
-    //       .catch((error) => {
-    //         // eslint-disable-next-line
-    //         console.log("There was an error:" + error.response);
-    //       });
-    //   }
-    // },
-    getSchoolInfo(minCode, type) {
-      if (minCode) {
+    //TODO refactor to use computed properties? Also look at creating a shared school details component
+    getSchoolInfo(schoolId, type) {
+      if (schoolId) {
         this.schoolSearchLoading = true;
         if (type === "schoolOfRecord") {
-          this.schoolOfRecord = this.findSchoolByMinCode(minCode);
-          console.log(this.schoolOfRecord);
+          this.schoolOfRecord = this.schoolOfRecord =
+            this.getSchoolById(schoolId);
           this.schoolSearchLoading = false;
         }
         if (type === "schoolAtGrad") {
-          this.schoolAtGraduation = this.findSchoolByMinCode(minCode);
-          console.log(this.schoolAtGraduation);
+          this.schoolAtGraduation = this.getSchoolById(schoolId);
           this.schoolSearchLoading = false;
         }
       }
@@ -477,14 +467,6 @@ export default {
       return (
         this.getSchoolsList.find((school) => school.mincode === minCode) || null
       );
-    },
-    dateFormatYYYYMMDD(dateStr) {
-      const date = new Date(dateStr);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-
-      return `${year}-${month}-${day}`;
     },
     ifProgramsWithExpiry(program) {
       for (let p of this.programsWithExpiry) {
