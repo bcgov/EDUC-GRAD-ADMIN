@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import ApiService from "../../common/apiService.js";
-
+import sharedMethods from "../../sharedMethods.js";
 export const useAppStore = defineStore("app", {
   state: () => ({
     programOptions: [],
@@ -74,7 +74,8 @@ export const useAppStore = defineStore("app", {
           });
         ApiService.apiAxios.get("/api/v2/trax/school").then((response) => {
           const schools = response.data;
-          this.schoolsList = schools;
+          this.schoolsList =
+            sharedMethods.sortSchoolListByTranscriptsAndMincode(schools);
         });
       }
     },
