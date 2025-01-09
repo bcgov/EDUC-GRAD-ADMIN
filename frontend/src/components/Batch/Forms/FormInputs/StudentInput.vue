@@ -177,13 +177,14 @@ export default {
 
         if (studentGRADStatus.data) {
           //display student
+          console.log(studentGRADStatus)
           this.penStudentInfo = {
             firstName: student.data[0].legalFirstName,
             lastName: student.data[0].legalLastName,
             dob: student.data[0].dob,
             status: studentGRADStatus.data.studentStatusName,
-            schoolOfRecord: studentGRADStatus.data.schoolOfRecord,
-            schoolAtGrad: studentGRADStatus.data.schoolAtGrad,
+            schoolOfRecord: studentGRADStatus.data.schoolName,
+            schoolAtGrad: studentGRADStatus.data.schoolAtGradName,
             program: studentGRADStatus.data.program,
           };
           if (studentGRADStatus.data.studentStatusName == "Merged") {
