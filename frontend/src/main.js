@@ -61,7 +61,7 @@ const vuetify = createVuetify({
 
 const app = createApp(App);
 app.config.globalProperties.$filters = {
-  //Format simple Date
+  //Format simple Date in YYYYMMDD format
   formatSimpleDate(value) {
     if (value) {
       return new Date(value).toISOString().split("T")[0].replace(/\//g, "-");

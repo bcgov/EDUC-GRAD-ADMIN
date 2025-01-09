@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import ApiService from "../../common/apiService.js";
+import InstituteService from "../../services/InstituteService.js";
 import sharedMethods from "../../sharedMethods.js";
 export const useAppStore = defineStore("app", {
   state: () => ({
@@ -66,16 +67,23 @@ export const useAppStore = defineStore("app", {
               console.log(error);
             }
           });
-        ApiService.apiAxios
-          .get("/api/v1/trax/district/schoolCategories")
-          .then((response) => {
-            const districts = response.data;
-            this.districtsList = districts;
-          });
-        ApiService.apiAxios.get("/api/v2/trax/school").then((response) => {
-          const schools = response.data;
-          this.schoolsList =
-            sharedMethods.sortSchoolListByTranscriptsAndMincode(schools);
+        InstituteService.getDistrictsList().then((response) => {
+          try {
+            this.districtsList = response.data;
+          } catch (error) {
+            console.error(error);
+          }
+        });
+        InstituteService.getSchoolsList().then((response) => {
+          try {
+            this.schoolsList = response.data;
+            this.schoolsList =
+              sharedMethods.sortSchoolListByTranscriptsAndMincode(
+                this.schoolsList
+              );
+          } catch (error) {
+            console.error(error);
+          }
         });
       }
     },
