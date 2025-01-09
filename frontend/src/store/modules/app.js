@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import ApiService from "../../common/apiService.js";
 import InstituteService from "../../services/InstituteService.js";
-
+import sharedMethods from "../../sharedMethods.js";
 export const useAppStore = defineStore("app", {
   state: () => ({
     programOptions: [],
@@ -77,6 +77,10 @@ export const useAppStore = defineStore("app", {
         InstituteService.getSchoolsList().then((response) => {
           try {
             this.schoolsList = response.data;
+            this.schoolsList =
+              sharedMethods.sortSchoolListByTranscriptsAndMincode(
+                this.schoolsList
+              );
           } catch (error) {
             console.error(error);
           }

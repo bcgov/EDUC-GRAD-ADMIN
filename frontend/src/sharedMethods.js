@@ -1,5 +1,5 @@
 import StudentService from "@/services/StudentService.js";
-
+import InstituteService from "./services/InstituteService";
 export default {
   applyDisplayOrder(unsorted) {
     return unsorted.sort((a, b) => a.displayOrder - b.displayOrder);
@@ -131,5 +131,18 @@ export default {
   },
   jobLabel(jobId) {
     return this.jobId.replace("job-", "");
+  },
+  sortSchoolListByTranscriptsAndMincode(schoolsList) {
+    if (!schoolsList) return [];
+    return [...schoolsList].sort((a, b) => {
+      // Sort by canIssueCertificates first (descending - true values first)
+      if (a.canIssueTranscripts && !b.canIssueTranscripts) {
+        return -1;
+      } else if (!a.canIssueTranscripts && b.canIssueTranscripts) {
+        return 1;
+      }
+      // If canIssueTranscripts is the same, sort by mincode (ascending)
+      return a.mincode.localeCompare(b.mincode);
+    });
   },
 };
