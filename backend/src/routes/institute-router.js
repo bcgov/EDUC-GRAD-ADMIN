@@ -4,6 +4,7 @@ const router = express.Router();
 const config = require("../config/index");
 const auth = require("../components/auth");
 const roles = require("../components/roles");
+const { getSchoolBySchoolID, getAllSchoolDetails, getFullSchoolDetails, getAllCachedSchools } = require('../components/school');
 const {
   errorResponse,
   getBackendToken,
@@ -22,6 +23,10 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
 );
 
 //Program Routes
+router.get('/allSchools', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getAllCachedSchools);
+router.get('/school/:schoolID',passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getFullSchoolDetails);
+
+
 router.get("/*", getInstituteAPI);
 
 async function getInstituteAPI(req, res) {

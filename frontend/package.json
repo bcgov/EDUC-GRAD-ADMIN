@@ -18,6 +18,7 @@
     "@vuelidate/validators": "^2.0.0",
     "axios": "^0.25.0",
     "http-status-codes": "^1.4.0",
+    "nats": "^2.6.1",
     "npm": "^10.2.1",
     "pinia": "^2.0.32",
     "popper": "^1.0.1",

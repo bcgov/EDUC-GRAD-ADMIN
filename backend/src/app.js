@@ -23,6 +23,10 @@ const noCache = require("nocache");
 const apiRouter = express.Router();
 const authRouter = require("./routes/auth");
 const promMid = require("express-prometheus-middleware");
+const messagePubSub = require('./messaging/message-pub-sub');
+messagePubSub.init().then(() => {
+  require('./messaging/handlers/institute-update-handler').subscribe();
+}).catch((e) => log.error(e));
 
 //GRAD Routers
 const TRAXRouter = require("./routes/trax-router");

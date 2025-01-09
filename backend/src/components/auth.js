@@ -270,7 +270,7 @@ const auth = {
           client_id: config.get("oidc:clientId"),
           client_secret: config.get("oidc:clientSecret"),
           grant_type: "client_credentials",
-          scope: discovery.scopes_supported,
+          scope: "profile openid",
         }),
         {
           headers: {
@@ -281,7 +281,7 @@ const auth = {
         }
       );
 
-      log.verbose("getApiCredentials Res", safeStringify(response.data));
+      // log.verbose("getApiCredentials Res", safeStringify(response.data));
 
       let result = {};
       result.accessToken = response.data.access_token;

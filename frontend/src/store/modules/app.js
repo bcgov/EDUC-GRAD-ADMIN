@@ -76,6 +76,11 @@ export const useAppStore = defineStore("app", {
           const schools = response.data;
           this.schoolsList = schools;
         });
+        ApiService.apiAxios
+          .get("/api/v1/institute/allSchools")
+          .then((response) => {
+            
+          });        
       }
     },
   },
