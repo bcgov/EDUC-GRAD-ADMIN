@@ -27,6 +27,34 @@ export const useAppStore = defineStore("app", {
           (district) => districtId === district.districtId
         );
     },
+    getInstituteAddressTypeCodes: (state) => state.instituteAddressTypeCodes,
+    getInstituteAddressTypeCode: (state) => {
+      return (code) =>
+        state.instituteAddressTypeCodes.find(
+          (addressTypeCode) => code === addressTypeCode.addressTypeCode
+        );
+    },
+    getInstituteCategoryCodes: (state) => state.instituteCategoryCodes,
+    getInstituteCategoryByCode: (state) => {
+      return (code) =>
+        state.instituteCategoryCodes.find(
+          (categoryCode) => code === categoryCode.schoolCategoryCode
+        );
+    },
+    getInstituteFacilityCodes: (state) => state.instituteFacilityCodes,
+    getInstituteFacilityCode: (state) => {
+      return (code) =>
+        state.instituteFacilityCodes.find(
+          (facilityCode) => code === facilityCode.facilityTypeCode
+        );
+    },
+    getInstituteGradeCodes: (state) => state.instituteGradeCodes,
+    getInstituteGradeCode: (state) => {
+      return (code) =>
+        state.instituteGradeCodes.find(
+          (gradeCode) => code === gradeCode.schoolGradeCode
+        );
+    },
   },
   actions: {
     setApplicationVariables() {
@@ -67,6 +95,8 @@ export const useAppStore = defineStore("app", {
               console.log(error);
             }
           });
+
+        // SET INSTITUTE SCHOOL AND DISTRICT DATA
         InstituteService.getDistrictsList().then((response) => {
           try {
             this.districtsList = response.data;
@@ -81,6 +111,36 @@ export const useAppStore = defineStore("app", {
               sharedMethods.sortSchoolListByTranscriptsAndMincode(
                 this.schoolsList
               );
+          } catch (error) {
+            console.error(error);
+          }
+        });
+
+        // SET INSTITUTE CODES
+        InstituteService.getAddressTypeCodes().then((response) => {
+          try {
+            this.instituteAddressTypeCodes = response.data;
+          } catch (error) {
+            console.error(error);
+          }
+        });
+        InstituteService.getCategoryCodes().then((response) => {
+          try {
+            this.instituteCategoryCodes = response.data;
+          } catch (error) {
+            console.error(error);
+          }
+        });
+        InstituteService.getFacilityCodes().then((response) => {
+          try {
+            this.instituteFacilityCodes = response.data;
+          } catch (error) {
+            console.error(error);
+          }
+        });
+        InstituteService.getGradeCodes().then((response) => {
+          try {
+            this.instituteGradeCodes = response.data;
           } catch (error) {
             console.error(error);
           }
