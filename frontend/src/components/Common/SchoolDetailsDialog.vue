@@ -3,37 +3,45 @@
     <v-btn
       variant="text"
       @click="schoolDialog = !schoolDialog"
-      class="text-left px-0"
-      >{{ school.displayName }}<br />{{ school.mincode }}</v-btn
+      class="text-left px-0 text-none"
+      >{{ school?.displayNameNoSpecialChars ?? school.displayName }}<br />{{
+        school.mincode
+      }}</v-btn
     >
     <v-dialog v-model="schoolDialog" max-width="600px">
       <v-card :title="title">
         <!-- <pre>{{ school }}</pre> -->
         <v-card-text>
-          <div>
+          <div class="my-1">
             <strong>District </strong
             >{{ getDistrictById(school.districtId)?.districtNumber }} -
             {{ getDistrictById(school.districtId)?.displayName }}
           </div>
-          <div>
+          <div class="my-1">
             <strong>School Code and Name </strong>{{ school.mincode }} -
-            {{ school.displayName }}
+            {{ school?.displayNameNoSpecialChars ?? school.displayName }}
           </div>
-          <div>
+          <div class="my-1">
             <strong>Open Date </strong
             >{{ $filters.formatSimpleDate(school.openedDate) }}
           </div>
-          <div>
+          <div class="my-1">
             <strong>Close Date </strong
             >{{ $filters.formatSimpleDate(school.closedDate) }}
           </div>
-          <div>
-            <strong>Can Issue Transcripts? </strong
-            >{{ school.canIssueTranscripts }}
+          <div class="my-1">
+            <strong>School Category </strong
+            >{{
+              getInstituteCategoryByCode(school.schoolCategoryCode)?.legacyCode
+            }}&nbsp;{{ school.schoolCategoryCode }}
           </div>
-          <div>
-            <strong>Can Issue Certificates? </strong
-            >{{ school.canIssueCertificates }}
+          <div class="my-1">
+            <strong>Issue Transcripts </strong
+            >{{ formatFlag(school.canIssueTranscripts) }}
+          </div>
+          <div class="my-1">
+            <strong>Issue Certificates </strong
+            >{{ formatFlag(school.canIssueCertificates) }}
           </div>
         </v-card-text>
       </v-card>
@@ -44,6 +52,7 @@
 <script>
 import { mapState } from "pinia";
 import { useAppStore } from "@/store/modules/app";
+import { formatFlag } from "@/utils/common.js";
 
 export default {
   props: {
@@ -56,21 +65,18 @@ export default {
   computed: {
     ...mapState(useAppStore, {
       getDistrictById: "getDistrictById",
+      getInstituteCategoryByCode: "getInstituteCategoryByCode",
     }),
+  },
+  methods: {
+    formatFlag(flag) {
+      return formatFlag(flag);
+    },
   },
   data() {
     return {
       schoolDialog: false,
-      title: "School Details",
     };
-  },
-  created() {
-    if (this.props?.title) {
-      this.title = this.props?.title;
-    }
-  },
-  setup(props) {
-    //console.log(props);
   },
 };
 </script>

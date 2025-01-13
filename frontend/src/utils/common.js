@@ -27,6 +27,21 @@ export function parseStudentStatus(code, studentStatusOptions) {
 }
 
 /**
+ * FORMATTING
+ */
+export function formatFlag(flag) {
+  switch (flag) {
+    case null:
+    case false:
+    case "N" || "n":
+      return "N";
+    case true:
+    case "Y" || "y":
+      return "Y";
+  }
+}
+
+/**
  * SORTING
  */
 
@@ -67,13 +82,6 @@ export function isPFSchool(mincode) {
 }
 
 export function isProgramComplete(completionDate, programCode) {
-  console.debug(
-    "DEBUG: Program is Complete data:\n completionDate - " +
-      completionDate +
-      "\n programCode - " +
-      programCode
-  );
-
   if (programCode === "SCCP") {
     let today = new Date();
     return !!completionDate && new Date(completionDate) <= today;
