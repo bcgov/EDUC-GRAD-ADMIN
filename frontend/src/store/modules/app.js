@@ -124,7 +124,7 @@ export const useAppStore = defineStore("app", {
             console.error(error);
           }
         });
-        InstituteService.getCategoryCodes().then((response) => {
+        InstituteService.getSchoolCategoryCodes().then((response) => {
           try {
             this.instituteCategoryCodes = response.data;
           } catch (error) {

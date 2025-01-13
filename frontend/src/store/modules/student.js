@@ -608,8 +608,6 @@ export const useStudentStore = defineStore("student", {
       return this.student.profile.pen;
     },
     getStudentGradStatus() {
-      // eslint-disable-next-line
-      console.log(this.student.gradStatus);
       return this.student.gradStatus;
     },
     getStudentOptionalPrograms() {
