@@ -177,7 +177,6 @@ export default {
 
         if (studentGRADStatus.data) {
           //display student
-          console.log(studentGRADStatus)
           this.penStudentInfo = {
             firstName: student.data[0].legalFirstName,
             lastName: student.data[0].legalLastName,
