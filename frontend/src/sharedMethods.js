@@ -145,4 +145,7 @@ export default {
       return a.mincode.localeCompare(b.mincode);
     });
   },
+  getSchoolById(schools, schoolId) {
+    return schools.find((school) => school.schoolId === schoolId) || null;
+  },
 };
