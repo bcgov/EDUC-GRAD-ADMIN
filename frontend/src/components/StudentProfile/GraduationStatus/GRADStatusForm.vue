@@ -242,6 +242,7 @@
                   <strong>Student status: </strong>
                   <br />
                   <v-select
+                    id="student-status-select"
                     v-model="editedGradStatus.studentStatus"
                     :items="studentStatusOptions"
                     item-title="label"
@@ -274,6 +275,7 @@
                     }}
                   </div>
                   <v-select
+                    id="student-grade-select"
                     v-model="editedGradStatus.studentGrade"
                     :items="gradeOptions"
                     item-title="text"
@@ -363,6 +365,7 @@
                     }}
                   </div>
                   <v-autocomplete
+                    id="school-of-record-autoselect"
                     v-model="editedGradStatus.schoolOfRecordId"
                     :disabled="disableSchoolOfRecord"
                     label="Select a school"
@@ -441,6 +444,7 @@
                     }}
                   </div>
                   <v-autocomplete
+                    id="school-at-graduation-autoselect"
                     v-model="editedGradStatus.schoolAtGradId"
                     label="Select a school"
                     :items="getSchoolsList"
@@ -602,6 +606,7 @@
           </v-btn>
           <v-spacer />
           <v-btn
+            id="save-status-btn"
             color="error"
             variant="flat"
             :disabled="blockSave"
