@@ -37,7 +37,30 @@ function createLoginSession() {
     })
 }
 
+function elementExists(selector) {
+    return cy.document().then((doc) => {
+        return Cypress.$(selector, doc).length > 0
+    })
+}
+ 
+function resetDataToOriginal() {
+    const test_student1 = Cypress.env('test_student1')
+    // Edit
+    cy.get(selectors.studentSearch.editBtn).click()
+    cy.get(selectors.studentSearch.status).click({force: true})
+    cy.get(selectors.studentSearch.selections).contains(test_student1.original_status).click()
+    cy.get(selectors.studentSearch.grade).click({force: true})
+    cy.get(selectors.studentSearch.selections).contains(test_student1.original_grade).click()
+    cy.get(selectors.studentSearch.schoolOfRecord).click({force: true})
+    cy.get(selectors.studentSearch.selections).contains(test_student1.original_school).click()
+    cy.get(selectors.studentSearch.schoolAtGraduation).click({force: true})
+    cy.get(selectors.studentSearch.selections).contains(test_student1.original_school).click()
+    cy.get(selectors.studentSearch.saveStatusBtn).click()
+}
+
 Cypress.Commands.add('login', createLoginSession)
+Cypress.Commands.add('doesExist', elementExists)
+Cypress.Commands.add('resetDataToOriginal', resetDataToOriginal)
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     return false
