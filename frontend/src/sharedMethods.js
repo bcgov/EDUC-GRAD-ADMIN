@@ -134,6 +134,14 @@ export default {
   },
   sortSchoolListByTranscriptsAndMincode(schoolsList) {
     if (!schoolsList) return [];
+    //remove special characters from displayname by overwriting with displayNameNoSpecialChars
+    schoolsList.forEach(school => {
+      const displayNameNoSpecialChars = school.displayNameNoSpecialChars;
+      if (displayNameNoSpecialChars) {
+        school.displayName = displayNameNoSpecialChars;
+      }
+    });
+
     return [...schoolsList].sort((a, b) => {
       // Sort by canIssueCertificates first (descending - true values first)
       if (a.canIssueTranscripts && !b.canIssueTranscripts) {
