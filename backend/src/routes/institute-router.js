@@ -4,7 +4,8 @@ const router = express.Router();
 const config = require("../config/index");
 const auth = require("../components/auth");
 const roles = require("../components/roles");
-const { getSchoolBySchoolID, getAllSchoolDetails, getFullSchoolDetails, getAllCachedSchools } = require('../components/school');
+const { getAllSchoolList,  getSchoolBySchoolID, getAllSchoolDetails, getFullSchoolDetails, getAllCachedSchools } = require('../components/school');
+const { getAllDistrictList, getDistrictByDistrictID } = require('../components/district');
 const {
   errorResponse,
   getBackendToken,
@@ -23,8 +24,12 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
 );
 
 //Program Routes
-router.get('/allSchools', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getAllCachedSchools);
+router.get('/school', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getAllCachedSchools);
+router.get('/school/list', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getAllSchoolsList);
 router.get('/school/:schoolID',passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getFullSchoolDetails);
+router.get('/district/list', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getAllDistrictList);
+
+
 
 
 router.get("/*", getInstituteAPI);

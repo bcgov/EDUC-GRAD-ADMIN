@@ -102,6 +102,7 @@ export const useAppStore = defineStore("app", {
           });
 
         // SET INSTITUTE SCHOOL AND DISTRICT DATA
+        
         InstituteService.getDistrictsList().then((response) => {
           try {
             this.districtsList = response.data;
