@@ -132,8 +132,35 @@ export default {
   jobLabel(jobId) {
     return this.jobId.replace("job-", "");
   },
+  sortDistrictListByActiveAndDistrictNumber(districtsList) {
+    if (!districtsList) return [];
+  
+    return districtsList.sort((a, b) => {
+      // First, prioritize districts with districtStatusCode "ACTIVE"
+      if (a.districtStatusCode === "ACTIVE" && b.districtStatusCode !== "ACTIVE") {
+        return -1; // "ACTIVE" comes first
+      }
+      if (a.districtStatusCode !== "ACTIVE" && b.districtStatusCode === "ACTIVE") {
+        return 1; // "ACTIVE" comes first
+      }
+  
+      // Second, sort by districtNumber (as numeric, handling strings like "103", "005", etc.)
+      const aNumber = parseInt(a.districtNumber, 10);
+      const bNumber = parseInt(b.districtNumber, 10);
+  
+      return aNumber - bNumber; // Numeric sorting
+    });
+  },
   sortSchoolListByTranscriptsAndMincode(schoolsList) {
     if (!schoolsList) return [];
+    //remove special characters from displayname by overwriting with displayNameNoSpecialChars
+    schoolsList.forEach(school => {
+      const displayNameNoSpecialChars = school.displayNameNoSpecialChars;
+      if (displayNameNoSpecialChars) {
+        school.displayName = displayNameNoSpecialChars;
+      }
+    });
+
     return [...schoolsList].sort((a, b) => {
       // Sort by canIssueCertificates first (descending - true values first)
       if (a.canIssueTranscripts && !b.canIssueTranscripts) {
