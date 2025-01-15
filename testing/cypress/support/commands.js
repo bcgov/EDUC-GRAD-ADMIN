@@ -26,7 +26,7 @@
 import { Routes } from "../../../frontend/src/utils/constants"
 import selectors from "./selectors"
 
-function createLoginSession() {
+function login() {
     cy.session('loginSession', () => {
         cy.visit(Routes.LOGIN)
         cy.get(selectors.login.idirLoginBtn).click()
@@ -37,7 +37,7 @@ function createLoginSession() {
     })
 }
 
-function elementExists(selector) {
+function doesExist(selector) {
     return cy.document().then((doc) => {
         return Cypress.$(selector, doc).length > 0
     })
@@ -45,6 +45,7 @@ function elementExists(selector) {
  
 function resetDataToOriginal() {
     const test_student1 = Cypress.env('test_student1')
+    cy.get(selectors.studentSearch.gradBtn).click()
     // Edit
     cy.get(selectors.studentSearch.editBtn).click()
     cy.get(selectors.studentSearch.status).click({force: true})
@@ -58,9 +59,15 @@ function resetDataToOriginal() {
     cy.get(selectors.studentSearch.saveStatusBtn).click()
 }
 
-Cypress.Commands.add('login', createLoginSession)
-Cypress.Commands.add('doesExist', elementExists)
+function doesHaveItemsInWindowTable(windowSelector) {
+    const selector = windowSelector + selectors.studentSearch.noRow
+    return !doesExist(selector)
+}
+
+Cypress.Commands.add('login', login)
+Cypress.Commands.add('doesExist', doesExist)
 Cypress.Commands.add('resetDataToOriginal', resetDataToOriginal)
+Cypress.Commands.add('doesHaveItemsInWindowTable', doesHaveItemsInWindowTable)
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     return false
