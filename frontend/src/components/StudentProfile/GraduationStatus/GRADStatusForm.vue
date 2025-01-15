@@ -290,7 +290,53 @@
               <tr>
                 <td>
                   <strong>School of record:</strong><br />
+                  <div
+                    class="bg-warning"
+                    v-if="
+                      v$.editedGradStatus.ifSchoolOfRecordTranscriptEligibility
+                        .$invalid == true
+                    "
+                  >
+                    Please select a school
+                  </div>
+                  <!-- "Warning, Transcript Eligibility flag is not set to Y -->
+
+                  <div hidden>
+                    {{
+                      v$.editedGradStatus.ifSchoolOfRecordTranscriptEligibility
+                    }}
+                    {{ v$.editedGradStatus.ifSchoolOfRecordGrades10To12 }}
+                  </div>
+                  <div
+                    class="bg-warning"
+                    v-if="warningFlags.schoolOfRecord10To12Warning == true"
+                  >
+                    Warning: School
+                    {{
+                      getSchoolMincodeById(
+                        getSchoolsList,
+                        editedGradStatus.schoolOfRecordId
+                      )
+                    }}
+                    is not reported with grade 10-12 enrolments.
+                  </div>
+
+                  <div
+                    class="bg-warning"
+                    v-if="warningFlags.schoolOfRecordTranscriptWarning == true"
+                  >
+                    Warning: School
+                    {{
+                      getSchoolMincodeById(
+                        getSchoolsList,
+                        editedGradStatus.schoolOfRecordId
+                      )
+                    }}
+                    is not authorized to issue Transcripts.
+                  </div>
+
                   <!-- Warning if school of record missing; Samara to investigate if we use this since msg is same as scoolOfRecordWarning -->
+
                   <div
                     class="bg-error"
                     v-if="
@@ -338,6 +384,48 @@
               <tr>
                 <td>
                   <strong>School at graduation:</strong><br />
+                  <div hidden>
+                    {{ v$.editedGradStatus.ifSchoolAtGradGrades10To12 }}
+                    {{
+                      v$.editedGradStatus.ifSchoolAtGradTranscriptEligibility
+                    }}
+                  </div>
+
+                  <div
+                    class="bg-warning"
+                    v-if="
+                      v$.editedGradStatus.ifSchoolAtGradTranscriptEligibility
+                        .$invalid == true
+                    "
+                  >
+                    Please select a school
+                  </div>
+                  <div
+                    class="bg-warning"
+                    v-if="warningFlags.schoolAtGrad10To12Warning == true"
+                  >
+                    Warning: School
+                    {{
+                      getSchoolMincodeById(
+                        getSchoolsList,
+                        editedGradStatus.schoolAtGradId
+                      )
+                    }}
+                    is not reported with grade 10-12 enrolments.
+                  </div>
+                  <div
+                    class="bg-warning"
+                    v-if="warningFlags.schoolAtGradTranscriptWarning == true"
+                  >
+                    Warning: School
+                    {{
+                      getSchoolMincodeById(
+                        getSchoolsList,
+                        editedGradStatus.schoolAtGradId
+                      )
+                    }}
+                    is not authorized to issue Transcripts.
+                  </div>
                   <div
                     class="bg-error"
                     v-if="
@@ -546,7 +634,7 @@ import {
 import SchoolService from "@/services/SchoolService.js";
 import sharedMethods from "../../../sharedMethods";
 import StudentService from "@/services/StudentService.js";
-
+import InstituteService from "@/services/InstituteService.js";
 export default {
   name: "GRADStatusForm",
   created() {
@@ -586,8 +674,14 @@ export default {
     schoolOfRecordChange() {
       return this.editedGradStatus.schoolOfRecord;
     },
+    schoolOfRecordIdChange() {
+      return this.editedGradStatus.schoolOfRecordId;
+    },
     schoolAtGradChange() {
       return this.editedGradStatus.schoolAtGrad;
+    },
+    schoolAtGradIdChange() {
+      return this.editedGradStatus.schoolAtGradId;
     },
     adultStartDateChange() {
       return this.editedGradStatus.adultStartDate;
@@ -643,6 +737,10 @@ export default {
       warningFlags: {
         closedProgramWarning: false,
         schoolWarning: false, //look at moving to error flags, but fine for now since backend prevents submission
+        schoolOfRecordTranscriptWarning: false,
+        schoolAtGradTranscriptWarning: false,
+        schoolOfRecord10To12Warning: false,
+        schoolAtGrad10To12Warning: false,
       },
       updateStatus: [],
       schoolOfRecord: "",
@@ -760,10 +858,36 @@ export default {
           }
         ),
         // SchoolOfRecord
+        ifSchoolOfRecordGrades10To12: helpers.withMessage(
+          () => {
+            if (this.editedGradStatus.schoolOfRecordId) {
+              return this.isSchoolGrades10To12(
+                "schoolOfRecord",
+                this.editedGradStatus.schoolOfRecordId
+              ); // Call your dynamic function here
+            }
+          },
+          (value) => {
+            return this.editedGradStatus.schoolOfRecordId;
+          }
+        ),
+        ifSchoolOfRecordTranscriptEligibility: helpers.withMessage(
+          () => {
+            if (this.editedGradStatus.schoolOfRecordId) {
+              return this.isSchoolTranscriptEligible(
+                "schoolOfRecord",
+                this.editedGradStatus.schoolOfRecordId
+              ); // Call your dynamic function here
+            }
+          },
+          (value) => {
+            return this.editedGradStatus.schoolOfRecordId;
+          }
+        ),
         ifSchoolOfRecordIsEmpty: helpers.withMessage(
           "A student must have a school of record. Please enter a school code",
           (value) => {
-            return this.editedGradStatus.schoolOfRecord;
+            return this.editedGradStatus.schoolOfRecordId;
           }
         ),
         ifSchoolOfRecordIsValid: helpers.withMessage(
@@ -779,6 +903,32 @@ export default {
           }
         ),
         //School at Grad
+        ifSchoolAtGradGrades10To12: helpers.withMessage(
+          () => {
+            if (this.editedGradStatus.schoolAtGradId) {
+              return this.isSchoolGrades10To12(
+                "schoolAtGrad",
+                this.editedGradStatus.schoolAtGradId
+              ); // Call your dynamic function here
+            }
+          },
+          (value) => {
+            return this.editedGradStatus.schoolAtGradId;
+          }
+        ),
+        ifSchoolAtGradTranscriptEligibility: helpers.withMessage(
+          () => {
+            if (this.editedGradStatus.schoolAtGradId) {
+              return this.isSchoolTranscriptEligible(
+                "schoolAtGrad",
+                this.editedGradStatus.schoolAtGradId
+              );
+            }
+          },
+          (value) => {
+            return this.editedGradStatus.schoolAtGradId;
+          }
+        ),
         ifSchoolAtGraduation: helpers.withMessage(
           () => {
             if (this.editedGradStatus.schoolAtGrad) {
@@ -795,9 +945,9 @@ export default {
           helpers.withMessage(
             "If program completion date is not blank, school at graduation cannot be blank",
             (value) => {
-              let { programCompletionDate, schoolAtGrad } =
+              let { programCompletionDate, schoolAtGradId } =
                 this.editedGradStatus;
-              return !programCompletionDate || schoolAtGrad;
+              return !programCompletionDate || schoolAtGradId;
             }
           ),
         ifAdultStartDateInvalid: helpers.withMessage(
@@ -1033,8 +1183,8 @@ export default {
       if (this.editedGradStatus.schoolOfRecord == "") {
         this.editedGradStatus.schoolOfRecord = null;
       }
-      if (this.editedGradStatus.schoolAtGrad == "") {
-        this.editedGradStatus.schoolAtGrad = null;
+      if (this.editedGradStatus.schoolAtGradId == "") {
+        this.editedGradStatus.schoolAtGradId = null;
       }
       if (
         this.studentGradStatus.program == "1950" &&
@@ -1049,16 +1199,14 @@ export default {
           this.updateStatus = response.data;
           this.setStudentGradStatus(response.data);
           this.loadStudentReportsAndCertificates();
-          // this.getStudentReportsAndCertificates();
           this.loadStudentOptionalPrograms(id);
-          // this.refreshStudentHistory();
           this.loadStudentHistory(id);
           this.loadStudentOptionalProgramHistory(id);
           this.studentGradStatus.studentStatusName = this.sortStudentStatus(
             response.data.studentStatus
           );
-          this.getSchoolInfo(response.data.schoolOfRecord, "schoolOfRecord");
-          this.getSchoolInfo(response.data.schoolAtGrad, "schoolAtGrad");
+          // this.getSchoolInfo(response.data.schoolOfRecord, "schoolOfRecord");
+          // this.getSchoolInfo(response.data.schoolAtGrad, "schoolAtGrad");
           this.showEdit = false;
           this.editedGradStatus = {};
           this.snackbarStore.showSnackbar("GRAD Status Saved", "success", 5000);
@@ -1079,24 +1227,29 @@ export default {
           );
         });
     },
-    getSchoolInfo(mincode, type) {
-      if (mincode != null) {
-        SchoolService.getSchoolInfo(mincode)
-          .then((response) => {
-            if (type == "schoolOfRecord") {
-              this.schoolOfRecord = response.data;
-            }
-            if (type == "schoolAtGrad") {
-              this.schoolAtGraduation = response.data;
-            }
-          })
-          .catch((error) => {
-            // eslint-disable-next-line
-            console.log("There was an error:" + error?.response);
-            this.snackbarStore.showSnackbar(error?.response, "error", 5000);
-          });
-      }
-    },
+    // getSchoolInfo(mincode, type) {
+    //   if (mincode != null) {
+    //     const schoolInfo = this.getSchoolByMincode(
+    //       this.getSchoolsList,
+    //       mincode
+    //     );
+    //     console.log(schoolInfo);
+    //     SchoolService.getSchoolInfo(mincode)
+    //       .then((response) => {
+    //         if (type == "schoolOfRecord") {
+    //           this.schoolOfRecord = response.data;
+    //         }
+    //         if (type == "schoolAtGrad") {
+    //           this.schoolAtGraduation = response.data;
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         // eslint-disable-next-line
+    //         console.log("There was an error:" + error?.response);
+    //         this.snackbarStore.showSnackbar(error?.response, "error", 5000);
+    //       });
+    //   }
+    // },
     validateSchoolInfo(schoolToValidate) {
       this.warningFlags.schoolWarning = false;
       let schoolInfo = this.getSchoolByMincode(
@@ -1105,8 +1258,61 @@ export default {
       );
       this.warningFlags.schoolWarning = !this.isSchoolOpen(schoolInfo);
     },
+    async isSchoolGrades10To12(type, schoolId) {
+      try {
+        this.warningFlags.schoolOfRecord10To12Warning = false;
+        this.warningFlags.schoolAtGrad10To12Warning = false;
+        const schoolGradesToCheck = ["GRADE10", "GRADE11", "GRADE12"];
+        // Create a Set from the schoolGradesToCheck array for efficient lookups.
+        const gradesToCheckSet = new Set(schoolGradesToCheck);
+        const response = await InstituteService.getSchoolById(schoolId);
+        const schoolGrades = response?.data?.grades;
+        for (const grade of schoolGrades) {
+          // If the current grade's schoolGradeCode is in the Set, return true.
+          if (gradesToCheckSet.has(grade.schoolGradeCode)) {
+            return true;
+          }
+        }
+        // If none of the grades matched, return false and switch on the warning flags.
+        if (type == "schoolOfRecord") {
+          this.warningFlags.schoolOfRecord10To12Warning = true;
+        } else {
+          this.warningFlags.schoolAtGrad10To12Warning = true;
+        }
+        // console.log(this.warningFlags.schoolOfRecord10To12Warning);
+        // console.log(this.warningFlags.schoolAtGrad10To12Warning);
+        return false;
+      } catch (error) {
+        // eslint-disable-next-line
+        console.error("Error fetching school data:", error);
+      }
+    },
+    isSchoolTranscriptEligible(type, schoolId) {
+      let school = this.getSchoolById(this.getSchoolsList, schoolId);
+      if (school) {
+        if (type == "schoolOfRecord") {
+          this.warningFlags.schoolOfRecordTranscriptWarning =
+            !school.canIssueTranscripts;
+          return school.canIssueTranscripts;
+        } else {
+          this.warningFlags.schoolAtGradTranscriptWarning =
+            !school.canIssueTranscripts;
+          return school.canIssueTranscripts;
+        }
+      } else {
+        // If the school is not found, return false (or handle the error as needed)
+        return false;
+      }
+    },
     getSchoolByMincode(schools, mincode) {
       return schools.find((school) => school.mincode === mincode) || null;
+    },
+    getSchoolById(schools, schoolId) {
+      return schools.find((school) => school.schoolId === schoolId) || null;
+    },
+    getSchoolMincodeById(schools, schoolId) {
+      const school = schools.find((school) => school.schoolId === schoolId);
+      return school ? school.mincode : null;
     },
     isSchoolOpen(school) {
       const openedDate = new Date(school?.openedDate);

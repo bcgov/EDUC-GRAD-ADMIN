@@ -216,13 +216,8 @@ export const useStudentStore = defineStore("student", {
             console.log(error);
           } else {
             if (error?.response?.status) {
-              // this.$bvToast.toast("ERROR " + error.response.statusText, {
-              //   title: "Service ERROR" + error.response.status,
-              //   variant: "danger",
-              //   noAutoHide: true,
-              // });
               this.snackbarStore.showSnackbar(
-                "ERROR " + error?.response?.statusText,
+                "There was a problem with the web service",
                 "error",
                 10000,
                 "ERROR" + error?.response?.status
@@ -238,6 +233,7 @@ export const useStudentStore = defineStore("student", {
           this.showEdit = false;
         })
         .catch((error) => {
+          // eslint-disable-next-line
           console.error(
             "There was an error loading student grad status",
             error
@@ -496,6 +492,7 @@ export const useStudentStore = defineStore("student", {
           this.loadStudentGradStatus(this.id);
         });
       } catch (error) {
+        // eslint-disable-next-line
         console.error("Error creating student optional program: ", error);
       }
     },
@@ -516,6 +513,7 @@ export const useStudentStore = defineStore("student", {
           this.loadStudentGradStatus(this.id);
         });
       } catch (error) {
+        // eslint-disable-next-line
         console.error("Error creating student career program: ", error);
       }
     },
@@ -531,6 +529,7 @@ export const useStudentStore = defineStore("student", {
           this.loadStudentGradStatus(this.id);
         });
       } catch (error) {
+        // eslint-disable-next-line
         console.error("Error deleting student optional program: ", error);
       }
     },
@@ -547,6 +546,7 @@ export const useStudentStore = defineStore("student", {
           this.loadStudentGradStatus(this.id);
         });
       } catch (error) {
+        // eslint-disable-next-line
         console.error("Error deleting student career program: ", error);
       }
     },
@@ -608,7 +608,6 @@ export const useStudentStore = defineStore("student", {
       return this.student.profile.pen;
     },
     getStudentGradStatus() {
-      console.log(this.student.gradStatus);
       return this.student.gradStatus;
     },
     getStudentOptionalPrograms() {
