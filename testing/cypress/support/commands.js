@@ -61,7 +61,9 @@ function resetDataToOriginal() {
 
 function doesHaveItemsInWindowTable(windowSelector) {
     const selector = windowSelector + selectors.studentSearch.noRow
-    return !doesExist(selector)
+    !doesExist(selector).then((result) => {
+        return result
+    })
 }
 
 Cypress.Commands.add('login', login)
