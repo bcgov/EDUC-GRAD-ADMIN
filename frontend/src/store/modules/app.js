@@ -100,6 +100,10 @@ export const useAppStore = defineStore("app", {
         InstituteService.getDistrictsList().then((response) => {
           try {
             this.districtsList = response.data;
+            this.districtList =
+            sharedMethods.sortDistrictListByActiveAndDistrictNumber(
+              this.districtsList
+            );
           } catch (error) {
             console.error(error);
           }
