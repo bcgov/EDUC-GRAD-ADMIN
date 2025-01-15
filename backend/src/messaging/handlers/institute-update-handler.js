@@ -11,10 +11,8 @@ async function subscribeToInstituteAPIMessageTopic(nats) {
   log.info(`Service listening to ${CONSTANTS.INSTITUTE_CACHE_REFRESH_TOPIC}`);
   for await (const msg of sub) {
     log.info(`Received message, on ${msg.subject} , Subscription Id ::  [${msg.sid}], Reply to ::  [${msg.reply}] ::`);
-    console.log("HELLO WORLD")
     await cacheService.loadAllSchoolsToMap();
-    //await cacheService.loadAllDistrictsToMap();
-    console.log("NATS MESSAGE RECEIVED, UPDATE CACHE")
+    await cacheService.loadAllDistrictsToMap();
   }
 }
 

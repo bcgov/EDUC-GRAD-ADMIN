@@ -65,7 +65,7 @@ const cacheService = {
     log.debug('Loading all districtsMap');
     await retry(async () => {
       const data = await getApiCredentials();
-      const districtsResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/institute/school`);
+      const districtsResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/institute/district`);
       // reset the value.
       districts = [];
       activeDistricts = [];

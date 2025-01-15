@@ -19,6 +19,19 @@ const port = normalizePort(config.get('server:port'));
 app.set('port', port);
 const server = http.createServer(app);
 
+//Create Cache for schools
+const cacheService = require('./components/cache-service');
+cacheService.loadAllSchoolsToMap().then(() => {
+  log.info('Loaded school data to memory');
+}).catch((e) => {
+  log.error('Error loading schoolsMap during boot .', e);
+});
+cacheService.loadAllDistrictsToMap().then(() => {
+  log.info('Loaded district data to memory');
+}).catch((e) => {
+  log.error('Error loading districtssMap during boot .', e);
+});
+
 /**
  * Listen on provided port, on all network interfaces.
  */

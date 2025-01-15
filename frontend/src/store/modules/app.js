@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import ApiService from "../../common/apiService.js";
 import InstituteService from "../../services/InstituteService.js";
+import GraduationReportService from "@/services/GraduationReportService.js";
 import sharedMethods from "../../sharedMethods.js";
 export const useAppStore = defineStore("app", {
   state: () => ({
@@ -10,6 +11,8 @@ export const useAppStore = defineStore("app", {
     pageTitle: "GRAD",
     districtsList: [],
     schoolsList: [],
+    transcriptTypes: [],
+    certificationTypes: []
   }),
   getters: {
     getProgramOptions: (state) => state.programOptions,
@@ -55,6 +58,8 @@ export const useAppStore = defineStore("app", {
           (gradeCode) => code === gradeCode.schoolGradeCode
         );
     },
+    getTranscriptTypes: (state) => state.transcriptTypes,
+    getCertificateTypes: (state) => state.certificationTypes
   },
   actions: {
     setApplicationVariables() {
@@ -100,10 +105,6 @@ export const useAppStore = defineStore("app", {
         InstituteService.getDistrictsList().then((response) => {
           try {
             this.districtsList = response.data;
-            this.districtList =
-            sharedMethods.sortDistrictListByActiveAndDistrictNumber(
-              this.districtsList
-            );
           } catch (error) {
             console.error(error);
           }
@@ -154,6 +155,38 @@ export const useAppStore = defineStore("app", {
           .then((response) => {
             
           });        
+        GraduationReportService.getTranscriptTypes().then((response) => {
+          try {
+            this.transcriptTypes = response.data;
+            console.log("Transcript Service")
+          } catch (error) {
+            if (error.response.statusText) {
+              console.log("ERROR " + error.response.statusText, "danger");
+            } else {
+              console.log("ERROR " + "error with webservice", "danger");
+            }
+          }
+        })
+        GraduationReportService.getCertificateTypes().then((response) => {
+          try {
+            this.certificationTypes = response.data;
+            console.log("Certificate Service")
+          } catch (error) {
+            if (error.response.statusText) {
+              this.snackbarStore.showSnackbar(
+                "ERROR " + error.response.statusText,
+                "danger",
+                10000
+              );
+            } else {
+              this.snackbarStore.showSnackbar(
+                "ERROR " + "error with web service",
+                "danger",
+                10000
+              );
+            }
+          }
+        })
       }
     },
   },
