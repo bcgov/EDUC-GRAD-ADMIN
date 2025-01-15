@@ -242,7 +242,7 @@ export default {
   methods: {
     districtTitle(item) {
       if (item) {
-        return `${item.districtNumber} - ${item.districtName}`;
+        return `${item.districtNumber} - ${item.displayName}`;
       } else {
         return null;
       }
@@ -291,8 +291,8 @@ export default {
       );
       this.districtInfo = {
         districtNumber: info.districtNumber,
-        districtName: info.districtName,
-        activeFlag: info.activeFlag,
+        districtName: info.displayName,
+        activeFlag: info.districtStatusCode,
       };
       this.districts.splice(0, 0, {
         district: this.district,
@@ -334,7 +334,7 @@ export default {
   },
 
   computed: {
-    ...mapState(useAppStore, ["getDistrictList"]),
+    ...mapState(useAppStore, ["getDistrictList", "getDistrictById"]),
     ...mapState(useBatchRequestFormStore, [
       "getDistricts",
       "getBatchRequest",
