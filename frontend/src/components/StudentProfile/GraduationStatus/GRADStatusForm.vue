@@ -391,7 +391,7 @@
                     }}
                   </div>
 
-                  <div
+                  <!-- <div
                     class="bg-warning"
                     v-if="
                       v$.editedGradStatus.ifSchoolAtGradTranscriptEligibility
@@ -399,7 +399,7 @@
                     "
                   >
                     Please select a school
-                  </div>
+                  </div> -->
                   <div
                     class="bg-warning"
                     v-if="warningFlags.schoolAtGrad10To12Warning == true"
@@ -449,6 +449,7 @@
                     variant="outlined"
                     class="mt-4"
                     density="compact"
+                    :disabled="disableSchoolAtGrad"
                   >
                     <template v-slot:label="label">
                       {{ label.label }}
@@ -916,19 +917,19 @@ export default {
             return this.editedGradStatus.schoolAtGradId;
           }
         ),
-        ifSchoolAtGradTranscriptEligibility: helpers.withMessage(
-          () => {
-            if (this.editedGradStatus.schoolAtGradId) {
-              return this.isSchoolTranscriptEligible(
-                "schoolAtGrad",
-                this.editedGradStatus.schoolAtGradId
-              );
-            }
-          },
-          (value) => {
-            return this.editedGradStatus.schoolAtGradId;
-          }
-        ),
+        // ifSchoolAtGradTranscriptEligibility: helpers.withMessage(
+        //   () => {
+        //     if (this.editedGradStatus.schoolAtGradId) {
+        //       return this.isSchoolTranscriptEligible(
+        //         "schoolAtGrad",
+        //         this.editedGradStatus.schoolAtGradId
+        //       );
+        //     }
+        //   },
+        //   (value) => {
+        //     return this.editedGradStatus.schoolAtGradId;
+        //   }
+        // ),
         ifSchoolAtGraduation: helpers.withMessage(
           () => {
             if (this.editedGradStatus.schoolAtGrad) {
