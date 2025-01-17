@@ -153,7 +153,6 @@ export const useAppStore = defineStore("app", {
         GraduationReportService.getTranscriptTypes().then((response) => {
           try {
             this.transcriptTypes = response.data;
-            console.log("Transcript Service")
           } catch (error) {
             if (error.response.statusText) {
               console.log("ERROR " + error.response.statusText, "danger");
@@ -165,7 +164,6 @@ export const useAppStore = defineStore("app", {
         GraduationReportService.getCertificateTypes().then((response) => {
           try {
             this.certificationTypes = response.data;
-            console.log("Certificate Service")
           } catch (error) {
             if (error.response.statusText) {
               this.snackbarStore.showSnackbar(

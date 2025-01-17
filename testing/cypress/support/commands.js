@@ -38,36 +38,25 @@ function login() {
 }
 
 function doesExist(selector) {
-    return cy.document().then((doc) => {
-        return Cypress.$(selector, doc).length > 0
+    return cy.get('body').then(($body) => {
+        return $body.find(selector).length > 0
     })
 }
- 
-function resetDataToOriginal() {
-    const test_student1 = Cypress.env('test_student1')
-    cy.get(selectors.studentSearch.gradBtn).click()
-    // Edit
-    cy.get(selectors.studentSearch.editBtn).click()
-    cy.get(selectors.studentSearch.status).click({force: true})
-    cy.get(selectors.studentSearch.selections).contains(test_student1.original_status).click()
-    cy.get(selectors.studentSearch.grade).click({force: true})
-    cy.get(selectors.studentSearch.selections).contains(test_student1.original_grade).click()
-    cy.get(selectors.studentSearch.schoolOfRecord).click({force: true})
-    cy.get(selectors.studentSearch.selections).contains(test_student1.original_school).click()
-    cy.get(selectors.studentSearch.schoolAtGraduation).click({force: true})
-    cy.get(selectors.studentSearch.selections).contains(test_student1.original_school).click()
-    cy.get(selectors.studentSearch.saveStatusBtn).click()
-}
 
-function doesHaveItemsInWindowTable(windowSelector) {
-    const selector = windowSelector + selectors.studentSearch.noRow
-    return !doesExist(selector)
+function checkItemsInWindowTable(windowSelector) {
+    const selector = windowSelector + " " + selectors.studentSearch.noRow
+    cy.doesExist(selector).then((exist) => {
+        if (exist) {
+            cy.get(selector).should('contain.text', 'No data available')
+        } else {
+            cy.get(windowSelector).find(selectors.studentSearch.rows).its('length').should('be.gt', 0)
+        }
+    })
 }
 
 Cypress.Commands.add('login', login)
 Cypress.Commands.add('doesExist', doesExist)
-Cypress.Commands.add('resetDataToOriginal', resetDataToOriginal)
-Cypress.Commands.add('doesHaveItemsInWindowTable', doesHaveItemsInWindowTable)
+Cypress.Commands.add('checkItemsInWindowTable', checkItemsInWindowTable)
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     return false

@@ -27,12 +27,13 @@
             :sortBy="sortBy"
             :items="studentHistory"
             :headers="studentChangeFields"
-            :items-per-page="'50'"
+            :items-per-page="50"
             item-value="historyID"
             density="compact"
           >
             <template v-slot:expanded-row="{ columns, item }">
               <tr>
+                {{ hisotryID }}
                 <td :colspan="columns.length">
                   <div class="mx-5 my-5">
                     <p>
@@ -80,6 +81,41 @@
             <template v-slot:item.updateDate="{ item }">
               {{ $filters.formatTime(item.updateDate) }}
             </template>
+
+            <template v-slot:item.program="{ item }">
+              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'program')}">{{ item.program }}</span>
+            </template>
+            <template v-slot:item.programCompletionDate="{ item }">
+              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'programCompletionDate')}">{{ item.programCompletionDate }}</span>
+            </template>
+            <template v-slot:item.studentStatus="{ item }">
+              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'studentStatus')}">{{ item.studentStatus }}</span>
+            </template>
+            <template v-slot:item.studentGrade="{ item }">
+              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'studentGrade')}">{{ item.studentGrade }}</span>
+            </template>
+            <template v-slot:item.schoolOfRecord="{ item }">
+              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'schoolOfRecord')}">{{ item.schoolOfRecord }}</span>
+            </template>
+            <template v-slot:item.schoolAtGrad="{ item }">
+              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'schoolAtGrad')}">{{ item.schoolAtGrad }}</span>
+            </template>
+            <template v-slot:item.consumerEducationRequirementMet="{ item }">
+              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'],  'consumerEducationRequirementMet')}">{{ item.consumerEducationRequirementMet }}</span>
+            </template>
+            <template v-slot:item.honoursStanding="{ item }">
+              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'honoursStanding')}">{{ item.honoursStanding }}</span>
+            </template>
+            <template v-slot:item.gpa="{ item }">
+              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'gpa')}">{{ item.gpa }}</span>
+            </template>
+            <template v-slot:item.recalculateProjectedGrad="{ item }">
+              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'recalculateProjectedGrad')}">{{ item.recalculateProjectedGrad }}</span>
+            </template>
+            <template v-slot:item.recalculateGradStatus="{ item }">
+              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'recalculateGradStatus')}">{{ item.recalculateGradStatus }}</span>
+            </template>
+
           </v-data-table>
         </v-window-item>
 
@@ -207,36 +243,43 @@ export default {
           title: "Program",
           width: "50px",
           sortable: false,
+          important: true,
         },
         {
           key: "programCompletionDate",
           title: "Program Completion Date",
           sortable: false,
+          important: true,
         },
         {
           key: "studentStatus",
           title: "Status",
           sortable: false,
+          important: true,
         },
         {
           key: "studentGrade",
           title: "Grade",
           sortable: false,
+          important: true,
         },
         {
           key: "schoolOfRecord",
           title: "School of Record",
           sortable: false,
+          important: true,
         },
         {
           key: "schoolAtGrad",
           title: "School at Graduation",
           sortable: false,
+          important: true,
         },
         {
           key: "consumerEducationRequirementMet",
           title: "Consumer Ed",
           sortable: false,
+          important: true,
         },
         {
           key: "honoursStanding",
@@ -247,16 +290,19 @@ export default {
           key: "gpa",
           title: "GPA",
           sortable: false,
+          important: true,
         },
         {
           key: "recalculateProjectedGrad",
           title: "Recalc Projected Grad",
           sortable: false,
+          important: true,
         },
         {
           key: "recalculateGradStatus",
           title: "Recalc Grad",
           sortable: false,
+          important: true,
         },
         {
           key: "batchId",
@@ -264,7 +310,7 @@ export default {
           sortable: false,
         },
       ],
-      studentChangeHighlight: [],
+      changeLoaded: false,
       optionalProgramChangeFields: [
         {
           key: "data-table-expand",
@@ -308,18 +354,16 @@ export default {
       auditTab: "studentHistory",
     };
   },
-  mounted() {
-    // this.highlightStudentHistoryChanges();
-    // this.highlightOptionalProgramHistoryChanges();
-  },
   created() {
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
   },
   watch: {
-    // studentHistory: function () {
-    //   this.highlightStudentHistoryChanges();
-    // },
+    studentHistory: function () {
+      // New date to old date
+      this.studentHistory.sort((a, b) => new Date(b.updateDate) - new Date(a.updateDate))
+      this.highlightStudentHistoryChanges();
+    },
     // optionalProgramHistory: function () {
     //   this.highlightOptionalProgramHistoryChanges();
     // },
@@ -335,35 +379,29 @@ export default {
       }
     },
     highlightStudentHistoryChanges() {
-      const changes = [];
-
       for (const [index, value] of this.studentHistory.entries()) {
         // temp entry to build our change highlight
-        let tempEntry = {};
+        let tempList = [];
         for (const field of this.studentChangeFields) {
           if (
             index > 0 &&
-            field.key != "createDate" &&
             field.key != "data-table-expand" &&
-            field.key != "activityCode"
+            field.key != "updateDate" &&
+            field.key != "activityCode" &&
+            field.key != "updateUser" &&
+            field.important
           ) {
-            tempEntry[field.key] = {
-              value: value[field.key],
-              changed:
-                value[field.key] !== this.studentHistory[index - 1][field.key],
-            };
-          } else {
-            tempEntry[field.key] = {
-              value: value[field.key],
-              changed: true,
-            };
-          }
-          tempEntry["data"] = value;
+            // Check if important data has been changed
+            if (value[field.key] !== this.studentHistory[index - 1][field.key]) {
+              tempList.push(field.key)
+            }
+          } 
         }
-        changes.push(tempEntry);
+        if (index > 0 && tempList)
+          this.studentHistory[index - 1]['changed'] = tempList
       }
 
-      this.studentChangeHighlight = changes;
+      this.changeLoaded = true;
     },
     highlightOptionalProgramHistoryChanges() {
       const changes = [];
@@ -397,6 +435,16 @@ export default {
 
       this.optionalProgramChangeHighlight = changes;
     },
+    isBold(changedList, key) {
+      for (let i in changedList) {
+        if (key == changedList[i]) return true
+      }
+
+      return false
+    },
+    getGlobalIndex(localIndex) {
+      return localIndex + (this.pagination.page - 1) * this.pagination.itemsPerPage
+    }
   },
 };
 </script>
@@ -430,6 +478,10 @@ export default {
 }
 
 :deep(.value-changed) {
+  font-weight: bold;
+}
+
+.important-change {
   font-weight: bold;
 }
 </style>

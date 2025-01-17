@@ -1,5 +1,35 @@
 import selectors from "../../support/selectors"
 
+function editStudentProfile(student, reset = false) {
+    cy.get(selectors.studentSearch.gradBtn).click()
+    // Edit
+    cy.get(selectors.studentSearch.editBtn).click()
+    cy.wait(1000)
+
+    if (reset) {
+      // Reset to original data
+      cy.get(selectors.studentSearch.status).click({force: true})
+      cy.get(selectors.studentSearch.selections).contains(student.original_status).click()
+      cy.get(selectors.studentSearch.grade).click({force: true})
+      cy.get(selectors.studentSearch.selections).contains(student.original_grade).click()
+      cy.get(selectors.studentSearch.schoolOfRecord).click({force: true})
+      cy.get(selectors.studentSearch.selections).contains(student.original_school).click()
+      cy.get(selectors.studentSearch.schoolAtGraduation).click({force: true})
+      cy.get(selectors.studentSearch.selections).contains(student.original_school).click
+    } else {
+      // Change to new data
+      cy.get(selectors.studentSearch.status).click({force: true})
+      cy.get(selectors.studentSearch.selections).contains(student.new_status).click()
+      cy.get(selectors.studentSearch.grade).click({force: true})
+      cy.get(selectors.studentSearch.selections).contains(student.new_grade).click()
+      cy.get(selectors.studentSearch.schoolOfRecord).click({force: true})
+      cy.get(selectors.studentSearch.selections).contains(student.new_school).click()
+      cy.get(selectors.studentSearch.schoolAtGraduation).click({force: true})
+      cy.get(selectors.studentSearch.selections).contains(student.new_school).click()
+    }
+    cy.get(selectors.studentSearch.saveStatusBtn).click()
+}
+
 describe('Student Search', () => {
   const test_student1 = Cypress.env('test_student1')
 
@@ -21,18 +51,9 @@ describe('Student Search', () => {
       cy.wait(5000) // Need to wait so that fields load up in Edit window
     })
 
-    // it('GRAD Status Edit', () => {
+    // it('edits GRAD status', () => {
     //   // Edit
-    //   cy.get(selectors.studentSearch.editBtn).click()
-    //   cy.get(selectors.studentSearch.status).click({force: true})
-    //   cy.get(selectors.studentSearch.selections).contains(test_student1.new_status).click()
-    //   cy.get(selectors.studentSearch.grade).click({force: true})
-    //   cy.get(selectors.studentSearch.selections).contains(test_student1.new_grade).click()
-    //   cy.get(selectors.studentSearch.schoolOfRecord).click({force: true})
-    //   cy.get(selectors.studentSearch.selections).contains(test_student1.new_school).click()
-    //   cy.get(selectors.studentSearch.schoolAtGraduation).click({force: true})
-    //   cy.get(selectors.studentSearch.selections).contains(test_student1.new_school).click()
-    //   cy.get(selectors.studentSearch.saveStatusBtn).click()
+    //   editStudentProfile(Cypress.env('test_student1'))
 
     //   // Check to see if values are changed
     //   cy.get(selectors.studentSearch.table).find(selectors.studentSearch.statusText).should('contain.text', test_student1.new_status)
@@ -41,20 +62,42 @@ describe('Student Search', () => {
     //   cy.get(selectors.studentSearch.table).find(selectors.studentSearch.schoolAtGraduationText).should('contain.text', test_student1.new_school)
     // })
 
-    it('Courses', () => {
+    it('checks if each table\'s data is loaded', () => {
+      // Courses Window
       cy.get(selectors.studentSearch.coursesBtn).click()
-      cy.get(selectors.studentSearch.coursesWindow).should('have.attr', 'disabled', 'false')
-      cy.doesHaveItemsInWindowTable(selectors.studentSearch.coursesWindow).then((exist) => {
-        if (exist) {
-          cy.get(selectors.studentSearch.coursesWindow).find(rows).its('length').should('be.gt', 0)
-        } else {
-          cy.get(selectors.studentSearch.coursesWindow).find(noRow).its('length').should('eq', 1).and('contain.text', 'No data available')
-        }
-      })
+      cy.get(selectors.studentSearch.coursesWindow).should('not.contain.css', 'display', 'none')
+      cy.checkItemsInWindowTable(selectors.studentSearch.coursesWindow)
+      // Assessments Window
+      cy.get(selectors.studentSearch.assessmentBtn).click()
+      cy.get(selectors.studentSearch.coursesWindow).should('contain.css', 'display', 'none')
+      cy.get(selectors.studentSearch.assessmentsWindow).should('not.contain.css', 'display', 'none')
+      cy.checkItemsInWindowTable(selectors.studentSearch.assessmentsWindow)
+      // Exams Details Window
+      cy.get(selectors.studentSearch.examsBtn).click()
+      cy.get(selectors.studentSearch.assessmentsWindow).should('contain.css', 'display', 'none')
+      cy.get(selectors.studentSearch.examsWindow).should('not.contain.css', 'display', 'none')
+      cy.checkItemsInWindowTable(selectors.studentSearch.examsWindow)
+      // Optional Programs Window
+      cy.get(selectors.studentSearch.optionalBtn).click()
+      cy.get(selectors.studentSearch.examsWindow).should('contain.css', 'display', 'none')
+      cy.get(selectors.studentSearch.optionalWindow).should('not.contain.css', 'display', 'none')
+      cy.checkItemsInWindowTable(selectors.studentSearch.optionalWindow)
+      // Audit History Window
+      cy.get(selectors.studentSearch.auditBtn).click()
+      cy.get(selectors.studentSearch.optionalWindow).should('contain.css', 'display', 'none')
+      cy.get(selectors.studentSearch.auditWindow).should('not.contain.css', 'display', 'none')
+      cy.checkItemsInWindowTable(selectors.studentSearch.auditWindow + " .v-window-item:nth-child(1)")
+      cy.get(selectors.studentSearch.optionalProgramChangeHistoryBtn).click()
+      cy.checkItemsInWindowTable(selectors.studentSearch.auditWindow + " .v-window-item:nth-child(2)")
+      // Undo Completion Reasons Window
+      cy.get(selectors.studentSearch.undoBtn).click()
+      cy.get(selectors.studentSearch.auditWindow).should('contain.css', 'display', 'none')
+      cy.get(selectors.studentSearch.undoWindow).should('not.contain.css', 'display', 'none')
+      cy.checkItemsInWindowTable(selectors.studentSearch.undoWindow)
     })
 
     // after(() => {
-    //   cy.resetDataToOriginal()
+    //   editStudentProfile(Cypress.env('test_student1'), true)
     // })
   })
 })
