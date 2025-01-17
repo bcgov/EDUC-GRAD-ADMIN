@@ -25,7 +25,7 @@
         <v-window-item value="studentChangeHistory">
           <v-data-table
             :sortBy="sortBy"
-            :items="studentHistory"
+            :items="studentHistoryWithPrevData"
             :headers="studentChangeFields"
             :items-per-page="50"
             item-value="historyID"
@@ -83,37 +83,37 @@
             </template>
 
             <template v-slot:item.program="{ item }">
-              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'program')}">{{ item.program }}</span>
+              <span :class="{'important-change': item.previous && item.program !== item.previous.program}">{{ item.program }}</span>
             </template>
             <template v-slot:item.programCompletionDate="{ item }">
-              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'programCompletionDate')}">{{ item.programCompletionDate }}</span>
+              <span :class="{'important-change': item.previous &&item.programCompletionDate !== item.previous.programCompletionDate}">{{ item.programCompletionDate }}</span>
             </template>
             <template v-slot:item.studentStatus="{ item }">
-              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'studentStatus')}">{{ item.studentStatus }}</span>
+              <span :class="{'important-change': item.previous &&item.studentStatus !== item.previous.studentStatus}">{{ item.studentStatus }}</span>
             </template>
             <template v-slot:item.studentGrade="{ item }">
-              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'studentGrade')}">{{ item.studentGrade }}</span>
+              <span :class="{'important-change': item.previous &&item.studentGrade !== item.previous.studentGrade}">{{ item.studentGrade }}</span>
             </template>
             <template v-slot:item.schoolOfRecord="{ item }">
-              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'schoolOfRecord')}">{{ item.schoolOfRecord }}</span>
+              <span :class="{'important-change': item.previous &&item.schoolOfRecord !== item.previous.schoolOfRecord}">{{ item.schoolOfRecord }}</span>
             </template>
             <template v-slot:item.schoolAtGrad="{ item }">
-              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'schoolAtGrad')}">{{ item.schoolAtGrad }}</span>
+              <span :class="{'important-change': item.previous &&item.schoolAtGrad !== item.previous.schoolAtGrad}">{{ item.schoolAtGrad }}</span>
             </template>
             <template v-slot:item.consumerEducationRequirementMet="{ item }">
-              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'],  'consumerEducationRequirementMet')}">{{ item.consumerEducationRequirementMet }}</span>
+              <span :class="{'important-change': item.previous &&item.consumerEducationRequirementMet !== item.previous.consumerEducationRequirementMet}">{{ item.consumerEducationRequirementMet }}</span>
             </template>
             <template v-slot:item.honoursStanding="{ item }">
-              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'honoursStanding')}">{{ item.honoursStanding }}</span>
+              <span :class="{'important-change': item.previous &&item.honoursStanding !== item.previous.honoursStanding}">{{ item.honoursStanding }}</span>
             </template>
             <template v-slot:item.gpa="{ item }">
-              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'gpa')}">{{ item.gpa }}</span>
+              <span :class="{'important-change': item.previous &&item.gpa !== item.previous.gpa}">{{ item.gpa }}</span>
             </template>
             <template v-slot:item.recalculateProjectedGrad="{ item }">
-              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'recalculateProjectedGrad')}">{{ item.recalculateProjectedGrad }}</span>
+              <span :class="{'important-change': item.previous &&item.recalculateProjectedGrad !== item.previous.recalculateProjectedGrad}">{{ item.recalculateProjectedGrad }}</span>
             </template>
             <template v-slot:item.recalculateGradStatus="{ item }">
-              <span :class="{'important-change': changeLoaded && item['changed'] && isBold(item['changed'], 'recalculateGradStatus')}">{{ item.recalculateGradStatus }}</span>
+              <span :class="{'important-change': item.previous &&item.recalculateGradStatus !== item.previous.recalculateGradStatus}">{{ item.recalculateGradStatus }}</span>
             </template>
 
           </v-data-table>
@@ -202,6 +202,13 @@ export default {
       studentUngradReasons: "getStudentUngradReasons",
       studentNotes: "getStudentNotes",
     }),
+    studentHistoryWithPrevData() {
+      this.studentHistory.sort((a, b) => new Date(b.updateDate) - new Date(a.updateDate))
+      return this.studentHistory.map((item, index, array) => ({
+        ...item,
+        previous: array[index + 1] || null,
+      }))
+    }
   },
   data: function () {
     return {
@@ -243,43 +250,36 @@ export default {
           title: "Program",
           width: "50px",
           sortable: false,
-          important: true,
         },
         {
           key: "programCompletionDate",
           title: "Program Completion Date",
           sortable: false,
-          important: true,
         },
         {
           key: "studentStatus",
           title: "Status",
           sortable: false,
-          important: true,
         },
         {
           key: "studentGrade",
           title: "Grade",
           sortable: false,
-          important: true,
         },
         {
           key: "schoolOfRecord",
           title: "School of Record",
           sortable: false,
-          important: true,
         },
         {
           key: "schoolAtGrad",
           title: "School at Graduation",
           sortable: false,
-          important: true,
         },
         {
           key: "consumerEducationRequirementMet",
           title: "Consumer Ed",
           sortable: false,
-          important: true,
         },
         {
           key: "honoursStanding",
@@ -290,19 +290,16 @@ export default {
           key: "gpa",
           title: "GPA",
           sortable: false,
-          important: true,
         },
         {
           key: "recalculateProjectedGrad",
           title: "Recalc Projected Grad",
           sortable: false,
-          important: true,
         },
         {
           key: "recalculateGradStatus",
           title: "Recalc Grad",
           sortable: false,
-          important: true,
         },
         {
           key: "batchId",
@@ -310,7 +307,6 @@ export default {
           sortable: false,
         },
       ],
-      changeLoaded: false,
       optionalProgramChangeFields: [
         {
           key: "data-table-expand",
@@ -354,19 +350,12 @@ export default {
       auditTab: "studentHistory",
     };
   },
+  mounted() {
+    this.studentHistoryWithPrevData
+  },
   created() {
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
-  },
-  watch: {
-    studentHistory: function () {
-      // New date to old date
-      this.studentHistory.sort((a, b) => new Date(b.updateDate) - new Date(a.updateDate))
-      this.highlightStudentHistoryChanges();
-    },
-    // optionalProgramHistory: function () {
-    //   this.highlightOptionalProgramHistoryChanges();
-    // },
   },
   methods: {
     handleResize() {
@@ -377,31 +366,6 @@ export default {
       } else {
         this.smallScreen = false;
       }
-    },
-    highlightStudentHistoryChanges() {
-      for (const [index, value] of this.studentHistory.entries()) {
-        // temp entry to build our change highlight
-        let tempList = [];
-        for (const field of this.studentChangeFields) {
-          if (
-            index > 0 &&
-            field.key != "data-table-expand" &&
-            field.key != "updateDate" &&
-            field.key != "activityCode" &&
-            field.key != "updateUser" &&
-            field.important
-          ) {
-            // Check if important data has been changed
-            if (value[field.key] !== this.studentHistory[index - 1][field.key]) {
-              tempList.push(field.key)
-            }
-          } 
-        }
-        if (index > 0 && tempList)
-          this.studentHistory[index - 1]['changed'] = tempList
-      }
-
-      this.changeLoaded = true;
     },
     highlightOptionalProgramHistoryChanges() {
       const changes = [];
@@ -435,16 +399,6 @@ export default {
 
       this.optionalProgramChangeHighlight = changes;
     },
-    isBold(changedList, key) {
-      for (let i in changedList) {
-        if (key == changedList[i]) return true
-      }
-
-      return false
-    },
-    getGlobalIndex(localIndex) {
-      return localIndex + (this.pagination.page - 1) * this.pagination.itemsPerPage
-    }
   },
 };
 </script>
@@ -475,10 +429,6 @@ export default {
 
 .card-body p strong {
   font-size: 87.5%;
-}
-
-:deep(.value-changed) {
-  font-weight: bold;
 }
 
 .important-change {
