@@ -39,6 +39,13 @@ export default {
         auditWindow: '[data-cy="audit-window-item"]',
         undoWindow: '[data-cy="undo-window-item"]',
         noRow: '.v-table__wrapper .v-data-table-rows-no-data',
-        rows: '.v-table__wrapper .v-data-table__tr'
+        rows: '.v-table__wrapper .v-data-table__tr',
+
+        advancedSearchBtn: 'button[value="advance"]',
+        legalSurnameInput: 'input#legal-surname-input',
+        legalGivennameInput: 'input#legal-given-input',
+        advSearchSubmit: 'button#adv-search-submit',
+        searchResultTableRow: 'div.table-responsive .v-table__wrapper tbody > tr',
+        penLink: 'td:nth-child(2) > a'
     }
 }

@@ -33,7 +33,7 @@ function editStudentProfile(student, reset = false) {
 describe('Student Search', () => {
   const test_student1 = Cypress.env('test_student1')
 
-  context('with PEN', () => {
+  context('with PEN Search', () => {
     beforeEach(() => {
       cy.login()
       cy.visit('/')
@@ -51,18 +51,18 @@ describe('Student Search', () => {
       cy.wait(5000) // Need to wait so that fields load up in Edit window
     })
 
-    // it('edits GRAD status', () => {
-    //   // Edit
-    //   editStudentProfile(Cypress.env('test_student1'))
+    it('Edits GRAD status', () => {
+      // Edit
+      editStudentProfile(Cypress.env('test_student1'))
 
-    //   // Check to see if values are changed
-    //   cy.get(selectors.studentSearch.table).find(selectors.studentSearch.statusText).should('contain.text', test_student1.new_status)
-    //   cy.get(selectors.studentSearch.table).find(selectors.studentSearch.gradeText).should('contain.text', test_student1.new_grade)
-    //   cy.get(selectors.studentSearch.table).find(selectors.studentSearch.schoolOfRecordText).should('contain.text', test_student1.new_school)
-    //   cy.get(selectors.studentSearch.table).find(selectors.studentSearch.schoolAtGraduationText).should('contain.text', test_student1.new_school)
-    // })
+      // Check to see if values are changed
+      cy.get(selectors.studentSearch.table).find(selectors.studentSearch.statusText).should('contain.text', test_student1.new_status)
+      cy.get(selectors.studentSearch.table).find(selectors.studentSearch.gradeText).should('contain.text', test_student1.new_grade)
+      cy.get(selectors.studentSearch.table).find(selectors.studentSearch.schoolOfRecordText).should('contain.text', test_student1.new_school)
+      cy.get(selectors.studentSearch.table).find(selectors.studentSearch.schoolAtGraduationText).should('contain.text', test_student1.new_school)
+    })
 
-    it('checks if each table\'s data is loaded', () => {
+    it('Checks if each table\'s data is loaded', () => {
       // Courses Window
       cy.get(selectors.studentSearch.coursesBtn).click()
       cy.get(selectors.studentSearch.coursesWindow).should('not.contain.css', 'display', 'none')
@@ -96,8 +96,36 @@ describe('Student Search', () => {
       cy.checkItemsInWindowTable(selectors.studentSearch.undoWindow)
     })
 
-    // after(() => {
-    //   editStudentProfile(Cypress.env('test_student1'), true)
-    // })
+    after(() => {
+      editStudentProfile(Cypress.env('test_student1'), true)
+    })
+  })
+
+  context('With Advanced Search', () => {
+    
+    beforeEach(() => {
+      cy.login()
+      cy.visit('/')
+
+      // If still not logged in, login
+      cy.doesExist(selectors.login.loginBtn).then((exist) => {
+        if (exist) {
+          cy.get(selectors.login.loginBtn).eq(0).click()
+        }
+      })
+      
+      cy.get(selectors.studentSearch.title).should('contain.text', 'Student Search')
+      cy.get(selectors.studentSearch.advancedSearchBtn).click()
+      cy.contains('Advanced Student Search')
+    })
+
+    it('Search one person', () => {
+        cy.get(selectors.studentSearch.legalSurnameInput).type(test_student1.surname)
+        cy.get(selectors.studentSearch.legalGivennameInput).type(test_student1.given)
+        cy.get(selectors.studentSearch.advSearchSubmit).click()
+        cy.get(selectors.studentSearch.searchResultTableRow).its('length').should('eq', 1)
+        cy.get(selectors.studentSearch.searchResultTableRow).find(selectors.studentSearch.penLink).click()
+        cy.contains('GRAD Status')
+    }) 
   })
 })
