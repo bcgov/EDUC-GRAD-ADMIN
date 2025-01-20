@@ -45,7 +45,13 @@ export default {
         legalSurnameInput: 'input#legal-surname-input',
         legalGivennameInput: 'input#legal-given-input',
         advSearchSubmit: 'button#adv-search-submit',
+        advSearchReset: 'button#adv-search-reset-button',
         searchResultTableRow: 'div.table-responsive .v-table__wrapper tbody > tr',
-        penLink: 'td:nth-child(2) > a'
+        penLink: 'td:nth-child(2) > a',
+
+        chooseOptional: 'body > div.v-overlay-container .v-overlay__content .v-window-item:nth-child(1) input[type="text"]',
+        nextOptional: 'body > div.v-overlay-container .v-overlay__content > .v-sheet > .row > button.v-btn--elevated',
+        optionalProgramTable: '.v-table tbody > tr',
+        deleteOptinalBtn: 'i.mdi-delete-forever'
     }
 }
