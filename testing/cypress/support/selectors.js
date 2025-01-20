@@ -62,5 +62,6 @@ export default {
         editNoteBtn: 'i.mdi-pencil',
         editTextarea: '.v-list-item textarea',
         saveNoteBtn: '.v-list-item button.bg-error',
+        deleteNoteBtn: 'i.mdi-delete',
     }
 }
