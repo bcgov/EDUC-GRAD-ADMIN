@@ -86,34 +86,34 @@
               <span :class="{'important-change': item.previous && item.program !== item.previous.program}">{{ item.program }}</span>
             </template>
             <template v-slot:item.programCompletionDate="{ item }">
-              <span :class="{'important-change': item.previous &&item.programCompletionDate !== item.previous.programCompletionDate}">{{ item.programCompletionDate }}</span>
+              <span :class="{'important-change': item.previous && item.programCompletionDate !== item.previous.programCompletionDate}">{{ item.programCompletionDate }}</span>
             </template>
             <template v-slot:item.studentStatus="{ item }">
-              <span :class="{'important-change': item.previous &&item.studentStatus !== item.previous.studentStatus}">{{ item.studentStatus }}</span>
+              <span :class="{'important-change': item.previous && item.studentStatus !== item.previous.studentStatus}">{{ item.studentStatus }}</span>
             </template>
             <template v-slot:item.studentGrade="{ item }">
-              <span :class="{'important-change': item.previous &&item.studentGrade !== item.previous.studentGrade}">{{ item.studentGrade }}</span>
+              <span :class="{'important-change': item.previous && item.studentGrade !== item.previous.studentGrade}">{{ item.studentGrade }}</span>
             </template>
             <template v-slot:item.schoolOfRecord="{ item }">
-              <span :class="{'important-change': item.previous &&item.schoolOfRecord !== item.previous.schoolOfRecord}">{{ item.schoolOfRecord }}</span>
+              <span :class="{'important-change': item.previous && item.schoolOfRecord !== item.previous.schoolOfRecord}">{{ item.schoolOfRecord }}</span>
             </template>
             <template v-slot:item.schoolAtGrad="{ item }">
-              <span :class="{'important-change': item.previous &&item.schoolAtGrad !== item.previous.schoolAtGrad}">{{ item.schoolAtGrad }}</span>
+              <span :class="{'important-change': item.previous && item.schoolAtGrad !== item.previous.schoolAtGrad}">{{ item.schoolAtGrad }}</span>
             </template>
             <template v-slot:item.consumerEducationRequirementMet="{ item }">
-              <span :class="{'important-change': item.previous &&item.consumerEducationRequirementMet !== item.previous.consumerEducationRequirementMet}">{{ item.consumerEducationRequirementMet }}</span>
+              <span :class="{'important-change': item.previous && item.consumerEducationRequirementMet !== item.previous.consumerEducationRequirementMet}">{{ item.consumerEducationRequirementMet }}</span>
             </template>
             <template v-slot:item.honoursStanding="{ item }">
-              <span :class="{'important-change': item.previous &&item.honoursStanding !== item.previous.honoursStanding}">{{ item.honoursStanding }}</span>
+              <span :class="{'important-change': item.previous && item.honoursStanding !== item.previous.honoursStanding}">{{ item.honoursStanding }}</span>
             </template>
             <template v-slot:item.gpa="{ item }">
-              <span :class="{'important-change': item.previous &&item.gpa !== item.previous.gpa}">{{ item.gpa }}</span>
+              <span :class="{'important-change': item.previous && item.gpa !== item.previous.gpa}">{{ item.gpa }}</span>
             </template>
             <template v-slot:item.recalculateProjectedGrad="{ item }">
-              <span :class="{'important-change': item.previous &&item.recalculateProjectedGrad !== item.previous.recalculateProjectedGrad}">{{ item.recalculateProjectedGrad }}</span>
+              <span :class="{'important-change': item.previous && item.recalculateProjectedGrad !== item.previous.recalculateProjectedGrad}">{{ item.recalculateProjectedGrad }}</span>
             </template>
             <template v-slot:item.recalculateGradStatus="{ item }">
-              <span :class="{'important-change': item.previous &&item.recalculateGradStatus !== item.previous.recalculateGradStatus}">{{ item.recalculateGradStatus }}</span>
+              <span :class="{'important-change': item.previous && item.recalculateGradStatus !== item.previous.recalculateGradStatus}">{{ item.recalculateGradStatus }}</span>
             </template>
 
           </v-data-table>
@@ -187,6 +187,7 @@
 import { useStudentStore } from "../../../store/modules/student";
 import { mapState } from "pinia";
 import DisplayTable from "@/components/DisplayTable.vue";
+import { useAppStore } from "../../../store/modules/app";
 
 export default {
   name: "StudentAuditHistory",
@@ -202,8 +203,17 @@ export default {
       studentUngradReasons: "getStudentUngradReasons",
       studentNotes: "getStudentNotes",
     }),
+    ...mapState(useAppStore, {
+      getSchoolById: "getSchoolById"
+    }),
     studentHistoryWithPrevData() {
+
       this.studentHistory.sort((a, b) => new Date(b.updateDate) - new Date(a.updateDate))
+      for (const key of Object.keys(this.studentHistory)) {
+        const record = this.studentHistory[key]
+        record.schoolOfRecord = !!record.schoolOfRecordId ? this.getSchoolById(record.schoolOfRecordId).mincode : null
+        record.schoolAtGrad = !!record.schoolAtGradId ? this.getSchoolById(record.schoolAtGradId).mincode : null
+      }
       return this.studentHistory.map((item, index, array) => ({
         ...item,
         previous: array[index + 1] || null,
