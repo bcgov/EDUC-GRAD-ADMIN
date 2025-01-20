@@ -183,8 +183,8 @@ export default {
             lastName: student.data[0].legalLastName,
             dob: student.data[0].dob,
             status: studentGRADStatus.data.studentStatusName,
-            schoolOfRecord: this.getSchoolById(studentGRADStatus.data.schoolOfRecordId)?.displayNameNoSpecialChars ?? this.getSchoolById(studentGRADStatus.data.schoolOfRecordId)?.displayName,
-            schoolAtGrad: this.getSchoolById(studentGRADStatus.data.schoolAtGradId)?.displayNameNoSpecialChars  ?? this.getSchoolById(studentGRADStatus.data.schoolAtGradId)?.displayName,
+            schoolOfRecord: this.getSchoolById(studentGRADStatus.data.schoolOfRecordId)?.displayName,
+            schoolAtGrad: this.getSchoolById(studentGRADStatus.data.schoolAtGradId)?.displayName,
             program: studentGRADStatus.data.program,
           };
           if (studentGRADStatus.data.studentStatusName == "Merged") {
