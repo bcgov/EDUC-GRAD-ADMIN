@@ -392,16 +392,16 @@ export default {
               ) {
                 if (this.group === "School") {
                   isValid =
-                    this.getBatchRequest.schoolOfRecords &&
-                    this.getBatchRequest.schoolOfRecords.length > 0;
+                    this.getBatchRequest.schoolIds &&
+                    this.getBatchRequest.schoolIds.length > 0;
                 } else if (this.group === "Student") {
                   isValid =
                     this.getBatchRequest.pens &&
                     this.getBatchRequest.pens.length > 0;
                 } else if (this.group === "School Category") {
                   isValid =
-                    this.getBatchRequest.districts &&
-                    this.getBatchRequest.districts.length > 0;
+                    this.getBatchRequest.districtIds &&
+                    this.getBatchRequest.districtIds.length > 0;
                 } else if (this.group === "Program") {
                   isValid =
                     this.getBatchRequest.programs &&
@@ -460,31 +460,6 @@ export default {
       "getCopies",
       "gwtWhere",
     ]),
-    requestPayload() {
-      const requestTemplate = [
-        "districts",
-        "gradDateFrom",
-        "gradDateTo",
-        "localDownload",
-        "pens",
-        "programs",
-        "psiCodes",
-        "quantity",
-        "reportTypes",
-        "schoolCategoryCodes",
-        "schoolOfRecords",
-        "validateInput",
-      ];
-      const batchRequest = this.getBatchRequest;
-
-      // Filter the batch request using the requestTemplate array
-      return requestTemplate.reduce((acc, field) => {
-        if (batchRequest[field] !== undefined) {
-          acc[field] = batchRequest[field];
-        }
-        return acc;
-      }, {});
-    },
     groupItems() {
       if (this.getCredential === "Blank certificate print") {
         if (
@@ -537,10 +512,7 @@ export default {
       "setActiveTab",
       "updateDashboards",
     ]),
-    ...mapState(useAppStore, [
-      "getTranscriptTypes",
-      "getCertificateTypes"
-    ]),
+    ...mapState(useAppStore, ["getTranscriptTypes", "getCertificateTypes"]),
     // getTranscriptTypes() {
     //   GraduationReportService.getTranscriptTypes()
     //     .then((response) => {
@@ -596,7 +568,7 @@ export default {
       try {
         const requestTemplate = [
           "credentialTypeCode",
-          "districts",
+          "districtIds",
           "gradDateFrom",
           "gradDateTo",
           "localDownload",
@@ -606,7 +578,7 @@ export default {
           "quantity",
           "reportTypes",
           "schoolCategoryCodes",
-          "schoolOfRecords",
+          "schoolIds",
           "validateInput",
         ];
         const requestPayload = generateRequestPayload(
@@ -630,12 +602,12 @@ export default {
           };
         }
 
-        //set schoolOfRecords to "000000" for Ministry of Advanced Education
+        //set schoolIds to "000000" for Ministry of Advanced Education
         if (
           this.group == "Ministry of Advanced Education" &&
           this.getCredential == "Blank certificate print"
         ) {
-          requestPayload.schoolOfRecords = ["00000000"];
+          requestPayload.schoolIds = ["00000000-0000-0000-0000-000000000000"];
         }
         BatchProcessingService.runDISTRUNUSER(
           requestPayload,

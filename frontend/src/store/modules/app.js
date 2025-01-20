@@ -30,6 +30,12 @@ export const useAppStore = defineStore("app", {
           (district) => districtId === district.districtId
         );
     },
+    getDistrictByDistrictNumber: (state) => {
+      return (districtNumber) =>
+        state.districtsList.find(
+          (district) => districtNumber === district.districtNumber
+        );
+    },    
     getInstituteAddressTypeCodes: (state) => state.instituteAddressTypeCodes,
     getInstituteAddressTypeCode: (state) => {
       return (code) =>
@@ -105,6 +111,7 @@ export const useAppStore = defineStore("app", {
         InstituteService.getDistrictsList().then((response) => {
           try {
             this.districtsList = response.data;
+            this.districtsList = sharedMethods.sortDistrictListByActiveAndDistrictNumber(this.districtsList)
           } catch (error) {
             console.error(error);
           }

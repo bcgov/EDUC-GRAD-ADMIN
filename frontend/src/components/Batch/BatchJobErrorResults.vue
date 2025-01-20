@@ -11,7 +11,6 @@
         color="primary"
         size="64"
       >
-        Loading...
       </v-progress-circular>
     </v-overlay>
     <div class="d-flex justify-space-between align-center">
@@ -126,7 +125,7 @@ export default {
     },
   },
   methods: {
-    loadItems({ page, itemsPerPage, sortBy }) {
+    loadItems({ page = 1, itemsPerPage, sortBy }) {
       this.batchLoading = true;
       BatchProcessingService.getBatchErrors(this.selectedErrorId, page - 1)
         .then((response) => {
