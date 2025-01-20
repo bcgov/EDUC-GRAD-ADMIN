@@ -4,7 +4,13 @@
       <v-card-text class="py-1">
         <div v-if="studentGradStatus.studentGradData">
           <div v-if="studentGradStatus.studentGradData.school">
-            <div v-if="!isTranscriptEligible(studentGradStatus.studentGradData.gradStudent.schoolOfRecordId)">
+            <div
+              v-if="
+                !isTranscriptEligible(
+                  studentGradStatus.studentGradData.gradStudent.schoolOfRecordId
+                )
+              "
+            >
               <v-alert type="info" class="">
                 <h4 class="alert-heading">
                   Ineligible for Ministry transcripts
@@ -104,8 +110,7 @@
 </template>
 
 <script>
-
-import { mapState } from "pinia"
+import { mapState } from "pinia";
 import { useStudentStore } from "../../../store/modules/student";
 import { useAppStore } from "../../../store/modules/app.js";
 import sharedMethods from "../../../sharedMethods.js";
@@ -120,18 +125,15 @@ export default {
       optionalPrograms: "getStudentOptionalPrograms",
     }),
     ...mapState(useAppStore, {
-      getSchoolById: "getSchoolById"
-    })
+      getSchoolById: "getSchoolById",
+    }),
   },
   methods: {
     downloadFile: function (data, mimeType, filename) {
       sharedMethods.base64ToFileTypeAndOpenWindow(data, mimeType, filename);
     },
     isTranscriptEligible: function (schoolId) {
-      return (
-        getSchoolById(schoolId).canIssueTranscripts ===
-        "Y"
-      );
+      return this.getSchoolById(schoolId)?.canIssueTranscripts;
     },
     showXMLPreview: function () {
       return (
