@@ -220,31 +220,6 @@ export default {
       "getGroup",
       "getPsiTrasmissionMode",
     ]),
-    requestPayload() {
-      const requestTemplate = [
-        "districts",
-        "gradDateFrom",
-        "gradDateTo",
-        "localDownload",
-        "pens",
-        "programs",
-        "psiCodes",
-        "quantity",
-        "reportTypes",
-        "schoolCategoryCodes",
-        "schoolOfRecords",
-        "validateInput",
-      ];
-      const batchRequest = this.getBatchRequest;
-
-      // Filter the batch request using the requestTemplate array
-      return requestTemplate.reduce((acc, field) => {
-        if (batchRequest[field] !== undefined) {
-          acc[field] = batchRequest[field];
-        }
-        return acc;
-      }, {});
-    },
   },
   methods: {
     ...mapActions(useBatchRequestFormStore, [
@@ -273,7 +248,7 @@ export default {
       try {
         const requestTemplate = [
           "credentialTypeCode",
-          "districts",
+          "districtIds",
           "gradDateFrom",
           "gradDateTo",
           "localDownload",
@@ -284,7 +259,7 @@ export default {
           "quantity",
           "reportTypes",
           "schoolCategoryCodes",
-          "schoolOfRecords",
+          "schoolIds",
           "validateInput",
         ];
         const requestPayload = generateRequestPayload(

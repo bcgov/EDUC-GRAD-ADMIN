@@ -4,7 +4,7 @@
       variant="text"
       @click="schoolDialog = !schoolDialog"
       class="text-left px-0 text-none"
-      >{{ school?.displayNameNoSpecialChars ?? school.displayName }}<br />{{
+      >{{ school.displayName }}<br />{{
         school.mincode
       }}</v-btn
     >
@@ -19,7 +19,7 @@
           </div>
           <div class="my-1">
             <strong>School Code and Name </strong>{{ school.mincode }} -
-            {{ school?.displayNameNoSpecialChars ?? school.displayName }}
+            {{ school.displayName }}
           </div>
           <div class="my-1">
             <strong>Open Date </strong

@@ -32,6 +32,7 @@
           :headers="[
             { text: 'Mincode', value: 'mincode' },
             { text: 'School', value: 'info.schoolName' },
+            { text: 'displayName', value: 'info.displayName' },
           ]"
           hide-default-header
           hide-default-footer

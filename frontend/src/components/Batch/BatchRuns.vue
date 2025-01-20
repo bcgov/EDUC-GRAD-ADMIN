@@ -185,8 +185,11 @@
           </template>
         </v-data-table>
       </v-col>
+
       <v-col cols="12" md="5" v-if="isBatchShowing">
-        <BatchJobSearchResults :selectedBatchId="adminSelectedBatchId"
+        <BatchJobSearchResults
+          v-if="isBatchShowing"
+          :selectedBatchId="adminSelectedBatchId"
           ><template v-slot:close>
             <v-btn
               color="bcGovBlue"
@@ -204,7 +207,10 @@
         >
       </v-col>
       <v-col cols="12" md="5" v-if="isErrorShowing">
-        <BatchJobErrorResults :selectedErrorId="adminSelectedErrorId">
+        <BatchJobErrorResults
+          v-if="isErrorShowing"
+          :selectedErrorId="adminSelectedErrorId"
+        >
           <template v-slot:close>
             <v-btn
               color="bcGovBlue"
@@ -381,6 +387,8 @@ export default {
         });
     },
     setBatchId(id, type) {
+      this.isBatchShowing = false;
+      this.isErrorShowing = false;
       if (type == "batch") {
         this.isBatchShowing = true;
         this.isErrorShowing = false;

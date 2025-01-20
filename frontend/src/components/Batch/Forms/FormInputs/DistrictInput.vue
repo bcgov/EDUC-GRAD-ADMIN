@@ -177,7 +177,11 @@ export default {
       if (newValue == "04") {
         this.districts.splice(0);
         this.district = "098";
+        let districtId = this.getDistrictByDistrictNumber(
+          this.district
+        ).districtId;
         this.districtInfo = {
+          districtId: districtId,
           districtNumber: "098",
           districtName: "YUKON TERRITORIES",
           activeFlag: "Y",
@@ -187,7 +191,11 @@ export default {
       if (newValue == "09") {
         this.districts.splice(0);
         this.district = "103";
+        let districtId = this.getDistrictByDistrictNumber(
+          this.district
+        ).districtId;
         this.districtInfo = {
+          districtId: districtId,
           districtNumber: "103",
           districtName: "OFFSHORE INDEPENDENT",
           activeFlag: "Y",
@@ -230,7 +238,7 @@ export default {
         },
         {
           key: "remove",
-          title: "remove",
+          title: "",
           sortable: true,
           class: "text-left",
         },
@@ -242,7 +250,7 @@ export default {
   methods: {
     districtTitle(item) {
       if (item) {
-        return `${item.districtNumber} - ${item.districtName}`;
+        return `${item.districtNumber} - ${item.displayName}`;
       } else {
         return null;
       }
@@ -286,13 +294,12 @@ export default {
       }
     },
     addDistrict() {
-      let info = this.getDistrictList.find(
-        (districtObject) => districtObject.districtNumber === this.district
-      );
+      let info = this.getDistrictByDistrictNumber(this.district);
       this.districtInfo = {
+        districtId: info.districtId,
         districtNumber: info.districtNumber,
-        districtName: info.districtName,
-        activeFlag: info.activeFlag,
+        districtName: info.displayName,
+        activeFlag: info.districtStatusCode,
       };
       this.districts.splice(0, 0, {
         district: this.district,
@@ -334,7 +341,11 @@ export default {
   },
 
   computed: {
-    ...mapState(useAppStore, ["getDistrictList"]),
+    ...mapState(useAppStore, [
+      "getDistrictList",
+      "getDistrictById",
+      "getDistrictByDistrictNumber",
+    ]),
     ...mapState(useBatchRequestFormStore, [
       "getDistricts",
       "getBatchRequest",

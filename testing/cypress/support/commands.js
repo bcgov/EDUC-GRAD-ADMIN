@@ -26,19 +26,37 @@
 import { Routes } from "../../../frontend/src/utils/constants"
 import selectors from "./selectors"
 
-function createLoginSession(username, password) {
-    cy.session([username, password], () => {
+function login() {
+    cy.session('loginSession', () => {
         cy.visit(Routes.LOGIN)
         cy.get(selectors.login.idirLoginBtn).click()
         cy.get(selectors.login.user).type(Cypress.env('username'))
         cy.get(selectors.login.password).type(Cypress.env('password'))
         cy.get(selectors.login.idirSubmitBtn).click()
-        cy.pause()
-        cy.contains('PEN Search')
+        cy.get(selectors.studentSearch.title).should('contain.text', 'Student Search')
     })
 }
 
-Cypress.Commands.add('login', createLoginSession)
+function doesExist(selector) {
+    return cy.get('body').then(($body) => {
+        return $body.find(selector).length > 0
+    })
+}
+
+function checkItemsInWindowTable(windowSelector) {
+    const selector = windowSelector + " " + selectors.studentSearch.noRow
+    cy.doesExist(selector).then((exist) => {
+        if (exist) {
+            cy.get(selector).should('contain.text', 'No data available')
+        } else {
+            cy.get(windowSelector).find(selectors.studentSearch.rows).its('length').should('be.gt', 0)
+        }
+    })
+}
+
+Cypress.Commands.add('login', login)
+Cypress.Commands.add('doesExist', doesExist)
+Cypress.Commands.add('checkItemsInWindowTable', checkItemsInWindowTable)
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     return false

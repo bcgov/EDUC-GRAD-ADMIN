@@ -239,12 +239,12 @@ export default {
               ) {
                 if (this.group === "School") {
                   isValid =
-                    this.getBatchRequest.schoolOfRecords &&
-                    this.getBatchRequest.schoolOfRecords.length > 0;
+                    this.getBatchRequest.schoolIds &&
+                    this.getBatchRequest.schoolIds.length > 0;
                 } else if (this.group === "School Category") {
                   isValid =
-                    this.getBatchRequest.districts &&
-                    this.getBatchRequest.districts.length > 0;
+                    this.getBatchRequest.districtIds &&
+                    this.getBatchRequest.districtIds.length > 0;
                 } else if (this.group === "All Schools") {
                   isValid = true;
                 }
@@ -309,7 +309,7 @@ export default {
       this.batchLoading = true;
       try {
         const requestTemplate = [
-          "districts",
+          "districtIds",
           "gradDateFrom",
           "gradDateTo",
           "localDownload",
@@ -319,7 +319,7 @@ export default {
           "quantity",
           "reportTypes",
           "schoolCategoryCodes",
-          "schoolOfRecords",
+          "schoolIds",
           "validateInput",
         ];
         const requestPayload = generateRequestPayload(

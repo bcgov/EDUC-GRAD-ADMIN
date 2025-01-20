@@ -260,6 +260,7 @@ import DistributionInput from "@/components/Batch/Forms/FormInputs/DistributionI
 
 import { mapActions, mapState } from "pinia";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
+import { useAppStore } from "../../../store/modules/app";
 import { useAccessStore } from "../../../store/modules/access";
 import { useAuthStore } from "../../../store/modules/auth";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
@@ -391,16 +392,16 @@ export default {
               ) {
                 if (this.group === "School") {
                   isValid =
-                    this.getBatchRequest.schoolOfRecords &&
-                    this.getBatchRequest.schoolOfRecords.length > 0;
+                    this.getBatchRequest.schoolIds &&
+                    this.getBatchRequest.schoolIds.length > 0;
                 } else if (this.group === "Student") {
                   isValid =
                     this.getBatchRequest.pens &&
                     this.getBatchRequest.pens.length > 0;
                 } else if (this.group === "School Category") {
                   isValid =
-                    this.getBatchRequest.districts &&
-                    this.getBatchRequest.districts.length > 0;
+                    this.getBatchRequest.districtIds &&
+                    this.getBatchRequest.districtIds.length > 0;
                 } else if (this.group === "Program") {
                   isValid =
                     this.getBatchRequest.programs &&
@@ -459,31 +460,6 @@ export default {
       "getCopies",
       "gwtWhere",
     ]),
-    requestPayload() {
-      const requestTemplate = [
-        "districts",
-        "gradDateFrom",
-        "gradDateTo",
-        "localDownload",
-        "pens",
-        "programs",
-        "psiCodes",
-        "quantity",
-        "reportTypes",
-        "schoolCategoryCodes",
-        "schoolOfRecords",
-        "validateInput",
-      ];
-      const batchRequest = this.getBatchRequest;
-
-      // Filter the batch request using the requestTemplate array
-      return requestTemplate.reduce((acc, field) => {
-        if (batchRequest[field] !== undefined) {
-          acc[field] = batchRequest[field];
-        }
-        return acc;
-      }, {});
-    },
     groupItems() {
       if (this.getCredential === "Blank certificate print") {
         if (
@@ -536,42 +512,7 @@ export default {
       "setActiveTab",
       "updateDashboards",
     ]),
-    getTranscriptTypes() {
-      GraduationReportService.getTranscriptTypes()
-        .then((response) => {
-          this.transcriptTypes = response.data;
-        })
-        // eslint-disable-next-line
-        .catch((error) => {
-          if (error.response.statusText) {
-            console.log("ERROR " + error.response.statusText, "danger");
-          } else {
-            console.log("ERROR " + "error with webservice", "danger");
-          }
-        });
-    },
-    getCertificateTypes() {
-      GraduationReportService.getCertificateTypes()
-        .then((response) => {
-          this.certificateTypes = response.data;
-        })
-        // eslint-disable-next-line
-        .catch((error) => {
-          if (error.response.statusText) {
-            this.snackbarStore.showSnackbar(
-              "ERROR " + error.response.statusText,
-              "danger",
-              10000
-            );
-          } else {
-            this.snackbarStore.showSnackbar(
-              "ERROR " + "error with web service",
-              "danger",
-              10000
-            );
-          }
-        });
-    },
+    ...mapState(useAppStore, ["getTranscriptTypes", "getCertificateTypes"]),
     closeDialogAndResetForm() {
       this.blankCertificateDetails = [];
       this.blankTranscriptDetails = [];
@@ -591,7 +532,7 @@ export default {
       try {
         const requestTemplate = [
           "credentialTypeCode",
-          "districts",
+          "districtIds",
           "gradDateFrom",
           "gradDateTo",
           "localDownload",
@@ -601,7 +542,7 @@ export default {
           "quantity",
           "reportTypes",
           "schoolCategoryCodes",
-          "schoolOfRecords",
+          "schoolIds",
           "validateInput",
         ];
         const requestPayload = generateRequestPayload(
@@ -625,12 +566,12 @@ export default {
           };
         }
 
-        //set schoolOfRecords to "000000" for Ministry of Advanced Education
+        //set schoolIds to "000000" for Ministry of Advanced Education
         if (
           this.group == "Ministry of Advanced Education" &&
           this.getCredential == "Blank certificate print"
         ) {
-          requestPayload.schoolOfRecords = ["00000000"];
+          requestPayload.schoolIds = ["00000000-0000-0000-0000-000000000000"];
         }
         BatchProcessingService.runDISTRUNUSER(
           requestPayload,
