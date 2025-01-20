@@ -246,8 +246,7 @@
                 <p>
                   You are about to delete the
                   <strong
-                    >{{ item.optionalProgramCode }} -
-                    {{ item.optionalProgramName }}</strong
+                    >{{ item.optionalProgramName }} ({{ item.optionalProgramCode }})</strong
                   >
                   Optional Program from this student
                 </p>

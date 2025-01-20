@@ -60,7 +60,7 @@
           color="bcGovBlue"
           small
         >
-          READ PSI
+          ADD PSI
         </v-btn>
       </v-col>
     </v-row>
