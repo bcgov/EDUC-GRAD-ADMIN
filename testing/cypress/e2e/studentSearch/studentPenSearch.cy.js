@@ -119,9 +119,11 @@ describe('Student Search', () => {
       // Delete Optional Program
       cy.get(selectors.studentSearch.optionalWindow).find(selectors.studentSearch.deleteOptinalBtn).click({force: true})
       cy.contains('This student is not active.')
-      //cy.contains(`You are about to delete the ${optionalCourseToAdd}`)
-      cy.get(selectors.studentSearch.nextOptional).click()
+      cy.contains(`You are about to delete the ${optionalCourseToAdd}`)
+      cy.get(selectors.studentSearch.deleteOptionalConfirmBtn).click()
       cy.get(selectors.studentSearch.optionalWindow).should('contain.text', 'This student does not have any optional programs.')
+
+      // Note 
     })
   })
 

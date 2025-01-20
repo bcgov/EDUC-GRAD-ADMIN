@@ -202,7 +202,7 @@
                       <StudentAuditHistory v-if="auditTab == 'studentAudit'" />
                     </div>
                   </v-window-item>
-                  <v-window-item value="Notes">
+                  <v-window-item value="Notes" data-cy="notes-window-item">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate

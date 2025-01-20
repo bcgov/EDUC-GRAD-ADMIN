@@ -52,6 +52,7 @@ export default {
         chooseOptional: 'body > div.v-overlay-container .v-overlay__content .v-window-item:nth-child(1) input[type="text"]',
         nextOptional: 'body > div.v-overlay-container .v-overlay__content > .v-sheet > .row > button.v-btn--elevated',
         optionalProgramTable: '.v-table tbody > tr',
-        deleteOptinalBtn: 'i.mdi-delete-forever'
+        deleteOptinalBtn: 'i.mdi-delete-forever',
+        deleteOptionalConfirmBtn: 'body > div.v-overlay-container .v-overlay__content .v-card-actions > button.bg-error'
     }
 }
