@@ -138,6 +138,7 @@ describe('Student Search', () => {
       cy.get(selectors.studentSearch.notesWindow).find(selectors.studentSearch.editNoteBtn).click({force: true})
       cy.get(selectors.studentSearch.notesWindow).find(selectors.studentSearch.editTextarea).clear().type(note2)
       cy.get(selectors.studentSearch.notesWindow).find(selectors.studentSearch.saveNoteBtn).click()
+      cy.get(selectors.studentSearch.notesWindow).should('contain.text', note2)
     })
   })
 
