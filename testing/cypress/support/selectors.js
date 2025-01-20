@@ -30,6 +30,7 @@ export default {
         examsBtn: 'button[value="Exams"]',
         optionalBtn: 'button[value="Optional"]',
         auditBtn: 'button[value="Audit"]',
+        notesBtn: 'button[value="Notes"]',
         optionalProgramChangeHistoryBtn: 'button[value="optionalProgramChangeHistory"]',
         undoBtn: 'button[value="Undo Completion Reasons"]',
         coursesWindow:  '[data-cy="courses-window-item"]',
@@ -37,6 +38,7 @@ export default {
         examsWindow: '[data-cy="exams-window-item"]',
         optionalWindow: '[data-cy="optional-window-item"]',
         auditWindow: '[data-cy="audit-window-item"]',
+        notesWindow: '[data-cy="notes-window-item"]',
         undoWindow: '[data-cy="undo-window-item"]',
         noRow: '.v-table__wrapper .v-data-table-rows-no-data',
         rows: '.v-table__wrapper .v-data-table__tr',
@@ -53,6 +55,12 @@ export default {
         nextOptional: 'body > div.v-overlay-container .v-overlay__content > .v-sheet > .row > button.v-btn--elevated',
         optionalProgramTable: '.v-table tbody > tr',
         deleteOptinalBtn: 'i.mdi-delete-forever',
-        deleteOptionalConfirmBtn: 'body > div.v-overlay-container .v-overlay__content .v-card-actions > button.bg-error'
+        deleteOptionalConfirmBtn: 'body > div.v-overlay-container .v-overlay__content .v-card-actions > button.bg-error',
+        addNoteBtn: '.v-row > button',
+        noteTextarea: 'body > div.v-overlay-container .v-overlay__content .v-card-text textarea',
+        addNoteConfirmBtn: 'body > div.v-overlay-container .v-overlay__content .v-card-actions button.bg-error',
+        editNoteBtn: 'i.mdi-pencil',
+        editTextarea: '.v-list-item textarea',
+        saveNoteBtn: '.v-list-item button.bg-error',
     }
 }

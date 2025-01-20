@@ -100,8 +100,8 @@ describe('Student Search', () => {
     // })
 
     it('Adds and removes optional program and note', () => {
+      // Optional Program
       const optionalCourseToAdd = 'French Immersion'
-      cy.get(selectors.studentSearch.optionalBtn).click()
       cy.get(selectors.studentSearch.optionalBtn).click()
       cy.get(selectors.studentSearch.examsWindow).should('contain.css', 'display', 'none')
       cy.get(selectors.studentSearch.optionalWindow).should('not.contain.css', 'display', 'none')
@@ -123,7 +123,21 @@ describe('Student Search', () => {
       cy.get(selectors.studentSearch.deleteOptionalConfirmBtn).click()
       cy.get(selectors.studentSearch.optionalWindow).should('contain.text', 'This student does not have any optional programs.')
 
-      // Note 
+      // Note
+      const note1 = 'Hello Test'
+      const note2 = 'Another Note'
+      cy.get(selectors.studentSearch.notesBtn).click()
+      cy.get(selectors.studentSearch.optionalWindow).should('contain.css', 'display', 'none')
+      cy.get(selectors.studentSearch.notesWindow).should('not.contain.css', 'display', 'none')
+      // Add Note
+      cy.get(selectors.studentSearch.notesWindow).find(selectors.studentSearch.addNoteBtn).click()
+      cy.get(selectors.studentSearch.noteTextarea).type(note1)
+      cy.get(selectors.studentSearch.addNoteConfirmBtn).click()
+      cy.get(selectors.studentSearch.notesWindow).should('contain.text', note1)
+      // Edit Note
+      cy.get(selectors.studentSearch.notesWindow).find(selectors.studentSearch.editNoteBtn).click({force: true})
+      cy.get(selectors.studentSearch.notesWindow).find(selectors.studentSearch.editTextarea).clear().type(note2)
+      cy.get(selectors.studentSearch.notesWindow).find(selectors.studentSearch.saveNoteBtn).click()
     })
   })
 
