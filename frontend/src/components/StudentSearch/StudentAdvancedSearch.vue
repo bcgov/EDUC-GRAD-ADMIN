@@ -32,7 +32,7 @@
             v-model="advancedSearchInput.legalLastName.value"
             placeholder=""
             v-on:keyup="keyHandler"
-            tabindex="2"
+            tabindex="1"
           />
         </div>
         <div class="advanced-search-field col-12 col-md-2">
@@ -118,7 +118,7 @@
             max="9999-12-30"
             :date-format-options="{ year: '4-digit' }"
             autocomplete="off"
-            tabindex="6"
+            tabindex="5"
             v-on:keyup="keyHandler"
           ></v-text-field>
         </div>
@@ -317,10 +317,12 @@
 <script>
 import { mapState, mapActions, mapWritableState, storeToRefs } from "pinia";
 import { useVuelidate } from "@vuelidate/core";
+import { useAppStore } from "@/store/modules/app";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "@/store/modules/student";
 import StudentService from "@/services/StudentService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
+import sharedMethods from "../../sharedMethods.js";
 
 export default {
   name: "StudentAdvancedSearch",
@@ -414,7 +416,7 @@ export default {
           class: "w-1",
         },
         {
-          key: "schoolOfRecord",
+          key: "mincode",
           title: "School of Record (GRAD)",
           sortable: true,
           editable: false,
@@ -422,7 +424,7 @@ export default {
         },
         {
           key: "schoolOfRecordName",
-          title: "School of Record Name (GRAD)",
+          title: "School of Record Name (Institute)",
           sortable: true,
           editable: false,
           class: "w-1",
@@ -435,8 +437,8 @@ export default {
           class: "w-1",
         },
         {
-          key: "schoolOfRecordindependentAffiliation",
-          title: "School Independent Affiliation (GRAD)",
+          key: "schoolCategoryCode",
+          title: "School Category Code (Institute)",
           sortable: true,
           editable: false,
           class: "w-1",
@@ -511,23 +513,15 @@ export default {
     ...mapWritableState(useStudentStore, {
       savedAdvSearchInput: "advancedSearchProps",
     }),
+    ...mapState(useAppStore, {
+      getSchoolsList: "getSchoolsList",
+    }),
   },
   ...mapActions(useStudentStore, ["unsetStudent"]),
   closeRecord: function () {
     this.unsetStudent();
   },
   methods: {
-    // keyHandler: function (e) {
-    //   if (e.keyCode === 13) {
-    //     //enter key pressed
-    //     this.studentSearchResults = [];
-    //     if (this.penInput) {
-    //       this.findStudentByPen();
-    //     } else if (this.surnameInput) {
-    //       this.findStudentBySurname();
-    //     }
-    //   }
-    // },
     findStudentsByAdvancedSearch: function () {
       this.advancedSearchMessage = "";
       this.advancedSearchAPIMessage = "";
@@ -540,7 +534,6 @@ export default {
         !this.v$.$invalid &&
         this.advancedSearchValidate(this.advancedSearchInput)
       ) {
-        // this.advancedSearchValidate(this.advancedSearchInput);
         this.advancedSearchLoading = true;
         this.studentSearchResults = [];
         if (!this.advancedSearchInput.birthdateTo.value) {
@@ -555,14 +548,11 @@ export default {
                 this.searchResults = response.data;
                 this.advancedSearchAPIMessage = response.data.searchMessage;
                 this.studentSearchResults =
-                  this.searchResults.gradSearchStudents;
+                  this.searchResults?.gradSearchStudents;
+                this.convertToInstituteSchools();
                 this.totalElements = this.studentSearchResults.length;
-                this.totalPages = this.searchResults.totalPages;
+                this.totalPages = this.searchResults?.totalPages;
                 this.savedAdvSearchInput = this.advancedSearchInput;
-                // this.$store.dispatch(
-                //   "setAdvancedSearchProps",
-                //   this.advancedSearchInput
-                // );
                 if (this.totalElements > 0) {
                   if (this.searchResults.totalElements == 1) {
                     this.advancedSearchMessage = "1 student record found. ";
@@ -598,6 +588,25 @@ export default {
         }
       }
     },
+    convertToInstituteSchools: function () {
+      // Create a map from schoolRecords for faster lookup
+      const schoolIdMap = new Map(
+        this.getSchoolsList.map((school) => [school.schoolId, school])
+      );
+
+      // Iterate through each student record
+      this.studentSearchResults.forEach((student) => {
+        const schoolOfRecordId = student.schoolOfRecordId;
+        if (schoolIdMap.has(schoolOfRecordId)) {
+          const school = schoolIdMap.get(schoolOfRecordId);
+          // Use displayNameNoSpecialChars if it's not null, otherwise use displayName
+          student.schoolOfRecordName =
+            school.displayNameNoSpecialChars || school.displayName; // Update schoolOfRecordName
+          student.mincode = school.mincode; // Update mincode
+          student.schoolCategoryCode = school.schoolCategoryCode; // Add schoolCategoryCode
+        }
+      });
+    },
     showAdvancedSearch: function () {
       this.showAdvancedSearchForm = true;
     },
@@ -608,7 +617,6 @@ export default {
       }
     },
     clearInput: function () {
-      // this.penInput = "";
       this.studentSearchResults = [];
       for (const key in this.advancedSearchInput) {
         if (this.advancedSearchInput.hasOwnProperty(key)) {
