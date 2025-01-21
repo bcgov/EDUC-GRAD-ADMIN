@@ -3,7 +3,7 @@
     <v-card title="Student Certificates/Dogwoods" no-body>
       <v-card-text class="py-4">
         <div
-          v-if="!isCertificateEligible(studentGradStatus.schoolOfRecordId)"
+          v-if="studentGradStatus.schoolAtGradID && !isCertificateEligible(studentGradStatus.schoolAtGradID)"
         >
           <v-alert type="info" class="">
             <h4 class="alert-heading">Ineligible for ministry certificates</h4>
@@ -58,14 +58,12 @@ import { mapState } from "pinia";
 import { useStudentStore } from "../../../store/modules/student";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { base64ToFileTypeAndOpenWindow } from "../../../utils/common.js";
-import SchoolService from "@/services/SchoolService.js";
 import { useAppStore } from "../../../store/modules/app.js";
 
 export default {
   name: "CertificationDogwoods",
   created() {
     this.base64ToFileTypeAndOpenWindow = base64ToFileTypeAndOpenWindow;
-    this.isCertificateEligible(this.studentGradStatus.schoolOfRecordId);
   },
   data() {
     return {
