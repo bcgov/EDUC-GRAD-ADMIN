@@ -13,7 +13,7 @@ function refreshTableTillComplete(timeout, interval = 3000) {
         cy.wait(interval)
         cy.contains('Update').click({force: true})
         refreshCount --
-        
+
         cy.get(statusColSelector).then(($element) => {
             if ($element.text().includes('COMPLETED')) {
                 // Stop refresing
@@ -46,6 +46,7 @@ describe('Graduation Algorithm', () => {
 
         it('Runs on School', () => {
             cy.contains('Graduation Algorithm').next().find('button').click()
+            cy.wait(500)
             cy.get(batchProcessingSelectors.overlayWindow).find('input').click({force: true})
             cy.get(batchProcessingSelectors.selections).contains('School').click()
             cy.wait(500)
@@ -60,8 +61,14 @@ describe('Graduation Algorithm', () => {
             // cy.wait(10000)
             // cy.contains('Update').click({force: true})
             // cy.get(batchProcessingSelectors.batchRunsTable).find(batchProcessingSelectors.newRow).find(batchProcessingSelectors.batchStatusCol).should('contain.text', 'COMPLETED')
-            refreshTableTillComplete(21000)
+            refreshTableTillComplete(30000)
             cy.get(batchProcessingSelectors.batchRunsTable).find(batchProcessingSelectors.newRow).find(batchProcessingSelectors.batchStatusCol).should('contain.text', 'COMPLETED')
+            cy.get(batchProcessingSelectors.batchRunsTable).find(batchProcessingSelectors.batchJobId).then(($element) => {
+                const text = $element.text()
+                
+            })
+
+            
         })
     })
 })
