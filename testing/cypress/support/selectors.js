@@ -72,6 +72,7 @@ export default {
         overlayWindow: 'body > div.v-overlay-container > .v-overlay--active > .v-overlay__content .v-sheet',
         autocomplete: 'div.v-autocomplete__selection',
         batchRunsTable: 'div#id > .v-table__wrapper > table > tbody',
-        newRow: 'tr.v-data-table__tr:nth-child(1)'
+        newRow: 'tr.v-data-table__tr:nth-child(1)',
+        batchStatusCol: 'td:nth-child(7)'
     }
 }
