@@ -67,7 +67,7 @@
             </div>
             <div>
               <strong>School Category:</strong>
-              {{ item.info.schoolCategoryCode }}
+              {{ item.info.schoolCategoryCode }} <pre>{{ item }}</pre>
             </div>
           </template>
           <template #bottom> </template>
