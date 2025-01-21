@@ -70,6 +70,7 @@ import TRAXService from "@/services/TRAXService.js";
 import SchoolService from "@/services/SchoolService.js";
 import StudentService from "@/services/StudentService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
+import { useAppStore } from "@/store/modules/app";
 import { useVuelidate } from "@vuelidate/core";
 import { mapActions, mapState } from "pinia";
 import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
@@ -182,8 +183,8 @@ export default {
             lastName: student.data[0].legalLastName,
             dob: student.data[0].dob,
             status: studentGRADStatus.data.studentStatusName,
-            schoolOfRecord: studentGRADStatus.data.schoolOfRecord,
-            schoolAtGrad: studentGRADStatus.data.schoolAtGrad,
+            schoolOfRecord: this.getSchoolById(studentGRADStatus.data.schoolOfRecordId)?.displayName,
+            schoolAtGrad: this.getSchoolById(studentGRADStatus.data.schoolAtGradId)?.displayName,
             program: studentGRADStatus.data.program,
           };
           if (studentGRADStatus.data.studentStatusName == "Merged") {
@@ -248,13 +249,14 @@ export default {
   },
 
   computed: {
-    computed: {
-      ...mapState(useBatchRequestFormStore, [
+    ...mapState(useBatchRequestFormStore, [
         "getBatchRequest",
         "getBatchRunTime",
         "getCredential",
       ]),
-    },
+    ...mapState(useAppStore, {
+        getSchoolById: "getSchoolById"
+      }),
     isEmpty() {
       return this.students.length > 0;
     },

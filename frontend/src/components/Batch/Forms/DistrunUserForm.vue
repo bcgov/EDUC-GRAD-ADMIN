@@ -260,6 +260,7 @@ import DistributionInput from "@/components/Batch/Forms/FormInputs/DistributionI
 
 import { mapActions, mapState } from "pinia";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
+import { useAppStore } from "../../../store/modules/app";
 import { useAccessStore } from "../../../store/modules/access";
 import { useAuthStore } from "../../../store/modules/auth";
 import { useSnackbarStore } from "../../../store/modules/snackbar";
@@ -536,42 +537,10 @@ export default {
       "setActiveTab",
       "updateDashboards",
     ]),
-    getTranscriptTypes() {
-      GraduationReportService.getTranscriptTypes()
-        .then((response) => {
-          this.transcriptTypes = response.data;
-        })
-        // eslint-disable-next-line
-        .catch((error) => {
-          if (error.response.statusText) {
-            console.log("ERROR " + error.response.statusText, "danger");
-          } else {
-            console.log("ERROR " + "error with webservice", "danger");
-          }
-        });
-    },
-    getCertificateTypes() {
-      GraduationReportService.getCertificateTypes()
-        .then((response) => {
-          this.certificateTypes = response.data;
-        })
-        // eslint-disable-next-line
-        .catch((error) => {
-          if (error.response.statusText) {
-            this.snackbarStore.showSnackbar(
-              "ERROR " + error.response.statusText,
-              "danger",
-              10000
-            );
-          } else {
-            this.snackbarStore.showSnackbar(
-              "ERROR " + "error with web service",
-              "danger",
-              10000
-            );
-          }
-        });
-    },
+    ...mapState(useAppStore, [
+      "getTranscriptTypes",
+      "getCertificateTypes"
+    ]),
     closeDialogAndResetForm() {
       this.blankCertificateDetails = [];
       this.blankTranscriptDetails = [];

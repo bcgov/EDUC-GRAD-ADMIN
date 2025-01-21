@@ -242,6 +242,7 @@
                   <strong>Student status: </strong>
                   <br />
                   <v-select
+                    data-cy="student-status-select"
                     v-model="editedGradStatus.studentStatus"
                     :items="studentStatusOptions"
                     item-title="label"
@@ -274,6 +275,7 @@
                     }}
                   </div>
                   <v-select
+                    data-cy="student-grade-select"
                     v-model="editedGradStatus.studentGrade"
                     :items="gradeOptions"
                     item-title="text"
@@ -363,6 +365,7 @@
                     }}
                   </div>
                   <v-autocomplete
+                    data-cy="school-of-record-autoselect"
                     v-model="editedGradStatus.schoolOfRecordId"
                     :disabled="disableSchoolOfRecord"
                     label="Select a school"
@@ -391,7 +394,7 @@
                     }}
                   </div>
 
-                  <div
+                  <!-- <div
                     class="bg-warning"
                     v-if="
                       v$.editedGradStatus.ifSchoolAtGradTranscriptEligibility
@@ -399,7 +402,7 @@
                     "
                   >
                     Please select a school
-                  </div>
+                  </div> -->
                   <div
                     class="bg-warning"
                     v-if="warningFlags.schoolAtGrad10To12Warning == true"
@@ -441,6 +444,7 @@
                     }}
                   </div>
                   <v-autocomplete
+                    data-cy="school-at-graduation-autoselect"
                     v-model="editedGradStatus.schoolAtGradId"
                     label="Select a school"
                     :items="getSchoolsList"
@@ -449,6 +453,7 @@
                     variant="outlined"
                     class="mt-4"
                     density="compact"
+                    :disabled="disableSchoolAtGrad"
                   >
                     <template v-slot:label="label">
                       {{ label.label }}
@@ -602,6 +607,7 @@
           </v-btn>
           <v-spacer />
           <v-btn
+            id="save-status-btn"
             color="error"
             variant="flat"
             :disabled="blockSave"
@@ -916,19 +922,19 @@ export default {
             return this.editedGradStatus.schoolAtGradId;
           }
         ),
-        ifSchoolAtGradTranscriptEligibility: helpers.withMessage(
-          () => {
-            if (this.editedGradStatus.schoolAtGradId) {
-              return this.isSchoolTranscriptEligible(
-                "schoolAtGrad",
-                this.editedGradStatus.schoolAtGradId
-              );
-            }
-          },
-          (value) => {
-            return this.editedGradStatus.schoolAtGradId;
-          }
-        ),
+        // ifSchoolAtGradTranscriptEligibility: helpers.withMessage(
+        //   () => {
+        //     if (this.editedGradStatus.schoolAtGradId) {
+        //       return this.isSchoolTranscriptEligible(
+        //         "schoolAtGrad",
+        //         this.editedGradStatus.schoolAtGradId
+        //       );
+        //     }
+        //   },
+        //   (value) => {
+        //     return this.editedGradStatus.schoolAtGradId;
+        //   }
+        // ),
         ifSchoolAtGraduation: helpers.withMessage(
           () => {
             if (this.editedGradStatus.schoolAtGrad) {
