@@ -95,7 +95,7 @@ export default {
           editable: true,
         },
         {
-          key: "schoolOfRecordMincode",
+          key: "schoolOfRecordName",
           title: "School of Record",
           sortable: true,
           class: "text-left",
@@ -133,8 +133,7 @@ export default {
           this.batchData.forEach((item) => {
             const school = this.getSchoolById(item.schoolOfRecordId);
             // Add the school information to the item
-            item.schoolOfRecordMincode = school.mincode;
-            item.schoolOfRecordName = school.schoolOfRecordName;
+            item.schoolOfRecordName = school.mincode;
           });
           this.totalElements = response.data.totalElements;
           this.batchLoading = false;

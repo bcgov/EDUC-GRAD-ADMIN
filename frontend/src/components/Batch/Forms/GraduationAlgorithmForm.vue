@@ -321,7 +321,6 @@ export default {
           "reportTypes",
           "schoolCategoryCodes",
           "schoolIds",
-          "minCodes",
           "validateInput",
         ];
         console.log(this.getBatchRequest);

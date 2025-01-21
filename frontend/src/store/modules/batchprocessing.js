@@ -13,7 +13,34 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
     gettingBatchJobs: false,
     gettingScheduledBatchJobs: false,
     gettingBatchRoutines: false,
-    
+    //delete below
+    schools: [],
+    districts: [],
+    programs: [],
+    students: [],
+    psi: [],
+    who: "",
+    where: "BC Mail",
+    gradDate: "Current Students",
+    gradDateFrom: "",
+    gradDateTo: "",
+    psiYear: "",
+    psiTransmissionMode: "",
+    blankCertificateDetails: [{}],
+    blankTranscriptDetails: [{}],
+    credential: "",
+    categoryCode: [],
+    copies: "1",
+    allPsi: false,
+    allDistricts: false,
+    localDownload: "N",
+
+    //legacy
+    batchDetails: [],
+    scheduledBatchJobs: [],
+    batchAutoIncrement: 1,
+    batchTabsLoading: [],
+    tabs: [],
   }),
   actions: {
     async updateDashboards() {
@@ -50,11 +77,7 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
           //parameters
           for (const batch of batchRunData) {
             batch.jobParameters = JSON.parse(batch.jobParameters);
-              
-            
-            
           }
-          
           // Set the batchRuns property
           this.batchRuns = batchRunData;
           this.gettingBatchJobs = false;
