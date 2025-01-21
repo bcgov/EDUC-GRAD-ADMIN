@@ -31,10 +31,7 @@
           </div>
           <div class="my-1">
             <strong>School Category </strong
-            >{{
-              getInstituteCategoryByCode(school.schoolCategoryCode)?.legacyCode
-            }}&nbsp;{{ school.schoolCategoryCode }}
-            {{ console.log(getSchoolCategoryDisplayByCode(school.schoolCategoryCode)) }}
+            >{{ getInstituteCategoryDisplayByCode(school.schoolCategoryCode) }}
           </div>
           <div class="my-1">
             <strong>Issue Transcripts </strong
@@ -66,8 +63,7 @@ export default {
   computed: {
     ...mapState(useAppStore, {
       getDistrictById: "getDistrictById",
-      getInstituteCategoryByCode: "getInstituteCategoryByCode",
-      getSchoolCategoryDisplayByCode: "getSchoolCategoryDisplayByCode"
+      getInstituteCategoryDisplayByCode: "getInstituteCategoryDisplayByCode",
     }),
   },
   methods: {

@@ -44,11 +44,13 @@ export const useAppStore = defineStore("app", {
           (categoryCode) => code === categoryCode.schoolCategoryCode
         );
     },
-    getSchoolCategoryDisplayByCode: (state) => {
+    getInstituteCategoryDisplayByCode: (state) => {
       return (code) =>
         state.instituteCategoryCodes.find(
           (categoryCode) => code === categoryCode.schoolCategoryCode
-        );
+        )?.legacyCode
+        + " - " +
+        code;
     },
     getInstituteFacilityCodes: (state) => state.instituteFacilityCodes,
     getInstituteFacilityCode: (state) => {
