@@ -69,6 +69,8 @@ export default {
         navBtn: 'a[href="/programs"]',
         navSlider: 'main .v-slide-group__container',
         selections: 'div.v-menu',
+        algorithmRulesTable: 'div#algorithm-rules table',
+        rows: 'tbody > tr',
     },
 
     batchProcessing: {

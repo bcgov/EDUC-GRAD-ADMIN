@@ -17,6 +17,11 @@ describe('Programs', () => {
     })
 
     it('Goes through every table in the Programs nav and checks if they load', () => {
+        cy.get(programsSelectors.algorithmRulesTable).should('exist')
+        cy.get(programsSelectors.algorithmRulesTable).find(programsSelectors.rows).its('length').should('be.gt', 1)
+
         cy.get(programsSelectors.navSlider).contains('Programs').click()
+        cy.get(programsSelectors.selections).contains('Programs').click()
+        cy.get(programsSelectors)
     })
 })
