@@ -60,7 +60,7 @@
           color="bcGovBlue"
           small
         >
-          ADD PROGRAM
+          READ PSI
         </v-btn>
       </v-col>
     </v-row>
@@ -95,6 +95,7 @@ export default {
     const batchRequestFormStore = useBatchRequestFormStore();
     const psis = ref(batchRequestFormStore.psi);
     const transmissionMode = ref(batchRequestFormStore.psiTransmissionMode);
+    transmissionMode.value = { title: 'Paper', value: 'PAPER' }
     const psiYear = ref(batchRequestFormStore.getCurrentPSIYear);
 
     watch(psiYear, (newValue) => {
