@@ -131,6 +131,7 @@ export default {
     isTranscriptEligible: function (schoolId) {
       return this.getSchoolById(schoolId)?.canIssueTranscripts;
     },
+
     showXMLPreview: function () {
       return (
         this.studentGradStatus &&
@@ -144,7 +145,7 @@ export default {
           (this.studentGradStatus.studentGradData.studentExams &&
             this.studentGradStatus.studentGradData.studentExams.length) ||
           (this.optionalPrograms && this.optionalPrograms.length)) &&
-        this.isTranscriptEligible()
+        this.isTranscriptEligible(this.studentGradStatus.schoolOfRecordId)
       );
     },
   },

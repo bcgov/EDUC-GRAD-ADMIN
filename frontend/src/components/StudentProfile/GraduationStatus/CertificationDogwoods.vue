@@ -3,7 +3,7 @@
     <v-card title="Student Certificates/Dogwoods" no-body>
       <v-card-text class="py-4">
         <div
-          v-if="this.studentGradStatus.schoolAtGrad && !isCertificateEligible()"
+          v-if="!isCertificateEligible(studentGradStatus.schoolOfRecordId)"
         >
           <v-alert type="info" class="">
             <h4 class="alert-heading">Ineligible for ministry certificates</h4>
@@ -59,12 +59,13 @@ import { useStudentStore } from "../../../store/modules/student";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { base64ToFileTypeAndOpenWindow } from "../../../utils/common.js";
 import SchoolService from "@/services/SchoolService.js";
+import { useAppStore } from "../../../store/modules/app.js";
 
 export default {
   name: "CertificationDogwoods",
   created() {
     this.base64ToFileTypeAndOpenWindow = base64ToFileTypeAndOpenWindow;
-    this.isCertificateEligible();
+    this.isCertificateEligible(this.studentGradStatus.schoolOfRecordId);
   },
   data() {
     return {
@@ -78,31 +79,16 @@ export default {
       certificates: "getStudentCertificates",
       studentGradStatus: "getStudentGradStatus",
     }),
+    ...mapState(useAppStore, {
+      getSchoolById: "getSchoolById",
+    }),
   },
   methods: {
     downloadFile: function (data, mimeType, filename) {
       this.base64ToFileTypeAndOpenWindow(data, mimeType, filename);
     },
-    isCertificateEligible: function () {
-      // This is a bandaid solution to check school at grad instead of the school of record that is packaged with the student GRAD status; address in Vue 3
-      if (this.studentGradStatus.schoolAtGrad) {
-        SchoolService.getSchoolInfo(this.studentGradStatus.schoolAtGrad)
-          .then((response) => {
-            this.certificateEligible =
-              response.data.certificateEligibility == "Y";
-          })
-          .catch((error) => {
-            if (error.response.data.code == "404") {
-              this.snackbarStore.showSnackbar(
-                "School at grad cannot be found",
-                "error",
-                5000
-              );
-            }
-          });
-      }
-
-      return this.certificateEligible;
+    isCertificateEligible: function (schoolId) {
+      return this.getSchoolById(schoolId)?.canIssueCertificates;
     },
   },
 };
