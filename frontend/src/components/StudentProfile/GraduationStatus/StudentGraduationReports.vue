@@ -5,11 +5,7 @@
         <div v-if="studentGradStatus.studentGradData">
           <div v-if="studentGradStatus.studentGradData.school">
             <div
-              v-if="
-                !isTranscriptEligible(
-                  studentGradStatus.studentGradData.gradStudent.schoolOfRecordId
-                )
-              "
+              v-if="!isTranscriptEligible(studentGradStatus.schoolOfRecordId)"
             >
               <v-alert type="info" class="">
                 <h4 class="alert-heading">
