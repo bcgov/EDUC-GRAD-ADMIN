@@ -218,7 +218,6 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         reportTypes: state.reportType ? [state.reportType] : [],
         gradDateFrom: state.getFormattedGradDateFrom,
         gradDateTo: state.getFormattedGradDateTo,
-        minCodes: state.who === "School" ? state.schools.map(school => school.mincode) : [],
         credentialTypeCode: [
           ...state.blankCertificateDetails,
           ...state.blankTranscriptDetails
@@ -229,9 +228,6 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         ...(state.distribution === "User" ? { user: "", address: state.getUserDistributionAddress } : {}),
         runMode: "Y",
       };
-    
-
-    
       return request;
     },
     

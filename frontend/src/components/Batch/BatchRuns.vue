@@ -53,6 +53,7 @@
             <v-menu location="end" :width="item.jobParameters ? 600 : 350">
               <template v-slot:activator="{ props }">
                 <v-btn
+                  @click="showBatchPayload(item.jobExecutionId)"
                   variant="plain"
                   v-bind="props"
                   :class="
@@ -151,18 +152,11 @@
                   style="height: 200px; overflow-y: scroll"
                 >
                       {{ JSON.stringify(item.jobParameters, null, "\t") }}
+                      {{ item.jobParameters.payload.schoolIds }}
                     </pre
                 >
               </v-card>
             </v-menu>
-
-            <v-popover
-              :target="'batch-job-id-btn' + item.jobExecutionId"
-              triggers="focus"
-              :ref="'popover-' + item.jobExecutionId"
-              class="w-40"
-            >
-            </v-popover>
           </template>
 
           <template v-slot:item.failedStudentsProcessed="{ item }">
@@ -240,6 +234,7 @@ import sharedMethods from "../../sharedMethods.js";
 import { useBatchProcessingStore } from "../../store/modules/batchprocessing";
 import { mapState, mapActions } from "pinia";
 import { useSnackbarStore } from "../../store/modules/snackbar";
+import { useAppStore } from "../../store/modules/app";
 
 export default {
   setup() {},
@@ -256,6 +251,7 @@ export default {
       adminSelectedErrorId: null,
       adminSelectedBatchId: null,
       snackbarStore: useSnackbarStore(),
+      appStore: useAppStore(),
       batchRunsFields: [
         {
           key: "jobDownload",
@@ -343,9 +339,27 @@ export default {
       batchRuns: "getBatchRuns",
       isBatchJobsLoading: "getIsGettingBatchJobsLoading",
     }),
+    ...mapState(useAppStore, {
+      getSchoolMincodeById: "getSchoolMincodeById",
+    }),
   },
   methods: {
     ...mapActions(useBatchProcessingStore, ["setBatchJobs"]),
+    showBatchPayload(id) {
+      const batchRun = this.batchRuns.find(
+        (batch) => batch.jobExecutionId === id
+      );
+      if (batchRun) {
+        if (Array.isArray(batchRun?.jobParameters?.payload?.schoolIds)) {
+          const schools = batchRun.jobParameters.payload.schoolIds.map(
+            (schoolId) => this.getSchoolMincodeById(schoolId)
+          );
+          batchRun.jobParameters.payload.schoolIds = schools;
+        }
+      } else {
+        console.log(`Batch run with jobExecutionId ${id} not found.`);
+      }
+    },
     rerunBatch(bid) {
       BatchProcessingService.rerunBatch(bid).then((response) => {
         if (response) {
@@ -389,6 +403,7 @@ export default {
     setBatchId(id, type) {
       this.isBatchShowing = false;
       this.isErrorShowing = false;
+
       if (type == "batch") {
         this.isBatchShowing = true;
         this.isErrorShowing = false;
