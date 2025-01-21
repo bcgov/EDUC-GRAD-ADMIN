@@ -350,12 +350,10 @@ export default {
         (batch) => batch.jobExecutionId === id
       );
       if (batchRun) {
-        console.log(batchRun); // or perform any other action with the found batchRun
         if (Array.isArray(batchRun?.jobParameters?.payload?.schoolIds)) {
           const schools = batchRun.jobParameters.payload.schoolIds.map(
             (schoolId) => this.getSchoolMincodeById(schoolId)
           );
-
           batchRun.jobParameters.payload.schoolIds = schools;
         }
       } else {
