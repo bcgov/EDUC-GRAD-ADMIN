@@ -134,17 +134,7 @@ export default {
 
     showXMLPreview: function () {
       return (
-        this.studentGradStatus &&
-        this.studentGradStatus.studentGradData &&
-        ((this.studentGradStatus.studentGradData.studentAssessments &&
-          this.studentGradStatus.studentGradData.studentAssessments
-            .studentAssessmentList.length) ||
-          (this.studentGradStatus.studentGradData.studentCourses &&
-            this.studentGradStatus.studentGradData.studentCourses
-              .studentCourseList.length) ||
-          (this.studentGradStatus.studentGradData.studentExams &&
-            this.studentGradStatus.studentGradData.studentExams.length) ||
-          (this.optionalPrograms && this.optionalPrograms.length)) &&
+        !!this.studentGradStatus &&
         this.isTranscriptEligible(this.studentGradStatus.schoolOfRecordId)
       );
     },
