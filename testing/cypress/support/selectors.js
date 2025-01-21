@@ -65,6 +65,12 @@ export default {
         deleteNoteBtn: 'i.mdi-delete',
     },
 
+    programs: {
+        navBtn: 'a[href="/programs"]',
+        navSlider: 'main .v-slide-group__container',
+        selections: 'div.v-menu',
+    },
+
     batchProcessing: {
         navBtn: 'a[href="/batch-processing"]',
         newRequestBtn: 'button[value="newBatchRequest"]',
