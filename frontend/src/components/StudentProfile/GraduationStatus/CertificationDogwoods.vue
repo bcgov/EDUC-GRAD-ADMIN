@@ -3,7 +3,10 @@
     <v-card title="Student Certificates/Dogwoods" no-body>
       <v-card-text class="py-4">
         <div
-          v-if="studentGradStatus.schoolAtGradID && !isCertificateEligible(studentGradStatus.schoolAtGradID)"
+          v-if="
+            !!studentGradStatus.schoolAtGradId &&
+            !isCertificateEligible(studentGradStatus.schoolAtGradId)
+          "
         >
           <v-alert type="info" class="">
             <h4 class="alert-heading">Ineligible for ministry certificates</h4>
