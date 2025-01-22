@@ -7,29 +7,18 @@
         <v-form v-on:submit.prevent id="psiReqForm">
           <div class="advanced-search-form">
             <div class="row mt-3">
-              <div class="advanced-search-field col-12 col-md-2">
-                <div
-                  href="#"
-                  v-on:click="mincode.contains = !mincode.contains"
-                  v-bind:class="{ active: mincode.contains }"
-                  class="wild-card-button"
-                >
-                  <v-tooltip activator="parent" location="top"
-                    >Mincode contains</v-tooltip
-                  >
-                  [.*]
-                </div>
-                <v-text-field
-                  label="Mincode:"
-                  variant="outlined"
-                  density="compact"
-                  v-model="mincode.value"
-                  v-on:keyup="keyHandler"
-                  placeholder=""
+              <div class="advanced-search-field col-12 col-md-5">
+                <v-autocomplete
                   id="mincode"
-                  minlength="3"
-                  trim
-                />
+                  label="Mincode"
+                  v-model="searchSchoolId"
+                  item-value="schoolId"
+                  :items="getSchoolsList"
+                  :item-title="schoolTitle"
+                  density="compact"
+                  variant="outlined"
+                >
+                </v-autocomplete>
               </div>
             </div>
             <div class="row ml-1">
@@ -122,6 +111,8 @@ import DisplayTable from "@/components/DisplayTable.vue";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import sharedMethods from "../sharedMethods";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import { mapState } from "pinia";
+import { useAppStore } from "../store/modules/app";
 
 export default {
   name: "SchoolReports",
@@ -133,10 +124,8 @@ export default {
       snackbarStore: useSnackbarStore(),
       url: null,
       file: [],
-      mincode: {
-        value: "",
-        contains: false,
-      },
+      mincode: "",
+      searchSchoolId: "",
       totalResults: 0,
       searchMessage: "",
       searchLoading: false,
@@ -185,7 +174,11 @@ export default {
       ],
     };
   },
-  computed: {},
+  computed: {
+    ...mapState(useAppStore, {
+      getSchoolsList: "getSchoolsList",
+    }),
+  },
   methods: {
     keyHandler: function (e) {
       if (e.keyCode === 13) {
@@ -193,20 +186,55 @@ export default {
         this.schoolReportSearch();
       }
     },
+    schoolTitle(item) {
+      if (item) {
+        return `${item.mincode} - ${item.displayName}`;
+      } else {
+        return null;
+      }
+    },
+    // schoolReportSearch() {
+    //   //reset results
+    //   this.totalResults = "";
+    //   this.searchMessage = "";
+    //   this.searchLoading = true;
+
+    //   if (!this.mincode.value) {
+    //     this.totalResults = "";
+    //     this.searchLoading = false;
+    //     this.searchMessage = "Enter a school mincode to view reports.";
+    //   } else {
+    //     GraduationReportService.getAllReportsForSchool(
+    //       this.mincode.value + (this.mincode.contains ? "*" : "")
+    //     )
+    //       .then((response) => {
+    //         this.reports = response.data;
+    //         this.searchLoading = false;
+    //         this.totalResults = response.data.length;
+    //         if (response.data.length < 1) {
+    //           this.searchMessage = "No reports found for this school";
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         this.searchLoading = false;
+    //         this.searchMessage = "No reports found for this school";
+    //         this.snackbarStore.showSnackbar(error.message, "error", 5000);
+    //       });
+    //   }
+    // },
     schoolReportSearch() {
       //reset results
       this.totalResults = "";
       this.searchMessage = "";
       this.searchLoading = true;
 
-      if (!this.mincode.value) {
+      console.log(this.searchSchoolId)
+      if (!this.searchSchoolId) {
         this.totalResults = "";
         this.searchLoading = false;
-        this.searchMessage = "Enter a school mincode to view reports.";
+        this.searchMessage = "Select a school to view reports.";
       } else {
-        GraduationReportService.getAllReportsForSchool(
-          this.mincode.value + (this.mincode.contains ? "*" : "")
-        )
+        GraduationReportService.getAllReportsForSchool(this.searchSchoolId)
           .then((response) => {
             this.reports = response.data;
             this.searchLoading = false;

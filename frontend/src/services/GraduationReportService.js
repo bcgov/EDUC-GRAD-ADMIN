@@ -5,7 +5,7 @@ export default {
     return ApiService.apiAxios.get('/api/v1/graduationreports/studentreport/?studentID=' + id + '&reportType=ACHV')
   },
   getAllReportsForSchool(id) {
-    return ApiService.apiAxios.get('/api/v1/graduationreports/schoolreport/' + id);
+    return ApiService.apiAxios.get('/api/v2/graduationreports/schoolreports/search?schoolOfRecordId=' + id);
   },
   getStudentTranscripts(id) {
     return ApiService.apiAxios.get('/api/v1/graduationreports/studenttranscript/' + id)
