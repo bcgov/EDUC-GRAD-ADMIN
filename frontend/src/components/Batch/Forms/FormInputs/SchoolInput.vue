@@ -67,7 +67,7 @@
             </div>
             <div>
               <strong>School Category:</strong>
-              {{ getInstituteCategoryDisplayByCode(item.info.schoolCategoryCode) }}
+              {{ displaySchoolCategoryCode(item.info.schoolCategoryCode) }}
             </div>
           </template>
           <template #bottom> </template>
@@ -216,7 +216,7 @@ export default {
   },
 
   computed: {
-    ...mapState(useAppStore, ["getSchoolsList", "getSchoolById", "getInstituteCategoryDisplayByCode"]),
+    ...mapState(useAppStore, ["getSchoolsList", "getSchoolById", "displaySchoolCategoryCode"]),
     isEmpty() {
       return this.students.length > 0;
     },
