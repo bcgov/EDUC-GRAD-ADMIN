@@ -324,11 +324,13 @@ export default {
             10000
           );
         } else {
-          "Batch " + 
-          response.data.batchId +
-          "- Transcript verification report request submitted",
-          "success",
-          10000
+          this.snackbarStore.showSnackbar(
+            "Batch " + 
+            response.data.batchId +
+            "- Transcript verification report request submitted",
+            "success",
+            10000
+          )
         }
         this.setActiveTab("batchRuns");
         this.closeDialogAndResetForm();

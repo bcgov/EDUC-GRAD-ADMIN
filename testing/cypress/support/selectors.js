@@ -70,7 +70,14 @@ export default {
         navSlider: 'main .v-slide-group__container',
         selections: 'div.v-menu',
         algorithmRulesTable: 'div#algorithm-rules table',
+        programTable: 'div#graduation-programs table',
+        programRuleTable: 'div#graduation-program-rules table',
+        transcriptMessageTable: 'div#transcript-message table',
+        optionalProgramTable: 'div.v-container[isoptionalprogram="true"] table',
+        optionalProgramRuleTable: 'div#optional-graduation-program-rules table',
+        otherTable: 'div.v-container, .v-container--fluid, .v-locale--is-ltr table',
         rows: 'tbody > tr',
+        itemPerPage: 'div[role="combobox"][aria-haspopup="listbox"]'
     },
 
     batchProcessing: {
