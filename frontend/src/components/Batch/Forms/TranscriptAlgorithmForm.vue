@@ -349,11 +349,11 @@ export default {
             10000
           );
         } else {
-          this.snackbarStore.showSnackbar(
-            "Transcript verification report request submitted",
-            "success",
-            10000
-          );
+          "Batch " + 
+          response.data.batchId +
+          "- Transcript verification report request submitted",
+          "success",
+          10000
         }
         this.setActiveTab("batchRuns");
         this.closeDialogAndResetForm();
