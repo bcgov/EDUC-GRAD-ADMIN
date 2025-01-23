@@ -330,7 +330,7 @@ export default {
             "- Transcript verification report request submitted",
             "success",
             10000
-          )
+          );
         }
         this.setActiveTab("batchRuns");
         this.closeDialogAndResetForm();
