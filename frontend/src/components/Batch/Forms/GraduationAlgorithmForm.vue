@@ -341,8 +341,8 @@ export default {
         } else {
           this.snackbarStore.showSnackbar(
             "Batch " +
-              response.data.batchId +
-              "- Graduation Algorithm request submitted",
+            response.data.batchId +
+            " - Graduation Algorithm request submitted",
             "success",
             10000
           );
