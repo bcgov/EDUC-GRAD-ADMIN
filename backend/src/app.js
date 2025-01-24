@@ -24,6 +24,21 @@ const apiRouter = express.Router();
 const authRouter = require("./routes/auth");
 const promMid = require("express-prometheus-middleware");
 
+
+function addVersionToReq(req, res, next) {
+  const { version } = req.params;
+  console.log(version)
+  // Check if the version is supported
+  const supportedVersions = ["v1", "v2"];
+  if (!supportedVersions.includes(version)) {
+    return res.status(404).json({ error: "Invalid API version" });
+  }
+  // Add version to req object
+  req.version = version;
+  // Proceed to the next middleware or route handler
+  next();
+}
+
 //GRAD Routers
 const TRAXRouter = require("./routes/trax-router");
 const programsRouter = require("./routes/programs-router");
@@ -175,23 +190,21 @@ app.use(morgan(config.get("server:morganFormat"), { stream: logStream }));
 //set up routing to auth and main API
 app.use(/(\/api)?/, apiRouter);
 
-//v1 routes
+//:version routes
 apiRouter.use("/auth", authRouter);
-apiRouter.use("/v1/batch", batchRouter);
-apiRouter.use("/v1/distribute", distributionRouter);
-apiRouter.use("/v1/program", programsRouter);
-apiRouter.use("/v1/course", coursesRouter);
-apiRouter.use("/v1/studentgraduation", studentGraduationRouter);
-apiRouter.use("/v1/assessment", assessmentsRouter);
-apiRouter.use("/v1/trax", TRAXRouter);
-apiRouter.use("/v2/trax", TRAXRouter);
-apiRouter.use("/v1/student", studentRouter);
-apiRouter.use("/v2/graduationreports", graduationReportsRouter);
-apiRouter.use("/v1/graduate", graduationRouter);
-apiRouter.use("/v1/reports", reportsRouter);
-apiRouter.use("/v1/school", TRAXRouter);
-apiRouter.use("/v1/version", commonRouter);
-apiRouter.use("/v1/institute", instituteRouter);
+apiRouter.use("/:version/batch", addVersionToReq, batchRouter);
+apiRouter.use("/:version/distribute", addVersionToReq, distributionRouter);
+apiRouter.use("/:version/program", addVersionToReq, programsRouter);
+apiRouter.use("/:version/course", addVersionToReq, coursesRouter);
+apiRouter.use("/:version/studentgraduation", addVersionToReq, studentGraduationRouter);
+apiRouter.use("/:version/assessment", addVersionToReq, assessmentsRouter);
+apiRouter.use("/:version/trax", addVersionToReq, TRAXRouter);
+apiRouter.use("/:version/student", addVersionToReq, studentRouter);
+apiRouter.use("/:version/graduationreports", addVersionToReq, graduationReportsRouter);
+apiRouter.use("/:version/graduate", addVersionToReq, graduationRouter);
+apiRouter.use("/:version/reports", addVersionToReq, reportsRouter);
+apiRouter.use("/:version/version", addVersionToReq, commonRouter);
+apiRouter.use("/:version/institute", addVersionToReq, instituteRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

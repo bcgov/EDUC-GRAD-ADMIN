@@ -40,9 +40,10 @@ router.delete(
 
 async function getStudentAPI(req, res) {
   const token = getBackendToken(req);
+  const version = req.version;
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/student` + req.url;
+    const url = `${config.get('server:studentAPIURL')}/api/${version}/student${req.url}` ;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -55,8 +56,9 @@ async function getStudentAPI(req, res) {
 }
 async function postStudentAPI(req, res) {
   const token = getBackendToken(req);
+  const version = req.version;
   try {
-    const url = `${config.get("server:studentAPIURL")}/student` + req.url;
+    const url = `${config.get('server:studentAPIURL')}/api/${version}/student${req.url}` ;
     const data = await postData(
       token,
       url,
@@ -74,8 +76,9 @@ async function postStudentAPI(req, res) {
 }
 async function deleteStudentAPI(req, res) {
   const token = getBackendToken(req);
+  const version = req.version;
   try {
-    const url = `${config.get("server:studentAPIURL")}/student` + req.url;
+    const url = `${config.get('server:studentAPIURL')}/api/${version}/student${req.url}` ;
     const data = await deleteData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
