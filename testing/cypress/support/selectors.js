@@ -80,6 +80,10 @@ export default {
         rows: 'tbody > tr',
     },
 
+    courses: {
+        navBtn: 'a[href="/courses"]'
+    },
+
     assessments: {
         navBtn: 'a[href="/assessments"]',
         navSlider: 'main .v-slide-group__container',
@@ -87,6 +91,7 @@ export default {
         itemPerPage: 'div[role="combobox"][aria-haspopup="listbox"]',
         assessmentsWindow: 'div.assessments-view > div > .v-card > .v-card-text > .v-window > .v-window__container > .v-window-item:nth-child(1)',
         requirementsWindow: 'div.assessments-view > div > .v-card > .v-card-text > .v-window > .v-window__container > .v-window-item:nth-child(2)',
+        rows: 'table > tbody > tr',
     },
 
     batchProcessing: {
