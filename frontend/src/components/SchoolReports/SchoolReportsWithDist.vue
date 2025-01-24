@@ -120,6 +120,7 @@ data() {
     url: null,
     file: [],
     searchDistrictId: "",
+    selectedDistrict: {},
     totalResults: 0,
     searchMessage: "",
     searchLoading: false,
@@ -138,14 +139,14 @@ data() {
       sortDirection: "asc",
       },
       {
-      key: "schoolOfRecord",
-      title: "Mincode",
+      key: "districtNumber",
+      title: "District Code",
       sortable: true,
       sortDirection: "asc",
       },
       {
-      key: "schoolOfRecordName",
-      title: "School Name",
+      key: "districtName",
+      title: "District Name",
       sortable: true,
       sortDirection: "asc",
       },
@@ -171,6 +172,7 @@ data() {
 computed: {
   ...mapState(useAppStore, {
     getDistrictList: "getDistrictList",
+    getDistrictById: "getDistrictById",
   }),
 },
 methods: {
@@ -192,6 +194,7 @@ methods: {
     this.totalResults = "";
     this.searchMessage = "";
     this.searchLoading = true;
+    this.selectedDistrict = this.getDistrictById(this.searchDistrictId)
 
     if (!this.searchDistrictId) {
         this.totalResults = "";
@@ -205,6 +208,8 @@ methods: {
         this.totalResults = response.data.length;
         if (response.data.length < 1) {
           this.searchMessage = "No reports found for this district";
+        } else {
+          this.reports.forEach((report) => report.districtNumber = this.selectedDistrict.districtNumber)
         }
       })
       .catch((error) => {

@@ -122,6 +122,7 @@ export default {
       url: null,
       file: [],
       searchSchoolId: "",
+      selectedSchool: {},
       totalResults: 0,
       searchMessage: "",
       searchLoading: false,
@@ -140,13 +141,13 @@ export default {
           sortDirection: "asc",
         },
         {
-          key: "schoolOfRecord",
+          key: "mincode",
           title: "Mincode",
           sortable: true,
           sortDirection: "asc",
         },
         {
-          key: "schoolOfRecordName",
+          key: "schoolName",
           title: "School Name",
           sortable: true,
           sortDirection: "asc",
@@ -173,6 +174,7 @@ export default {
   computed: {
     ...mapState(useAppStore, {
       getSchoolsList: "getSchoolsList",
+      getSchoolById: "getSchoolById",
     }),
   },
   methods: {
@@ -194,6 +196,7 @@ export default {
       this.totalResults = "";
       this.searchMessage = "";
       this.searchLoading = true;
+      this.selectedSchool = this.getSchoolById(this.searchSchoolId)
 
       if (!this.searchSchoolId) {
         this.totalResults = "";
@@ -207,6 +210,8 @@ export default {
             this.totalResults = response.data.length;
             if (response.data.length < 1) {
               this.searchMessage = "No reports found for this school";
+            } else {
+              this.reports.forEach((report) => report.mincode = this.selectedSchool.mincode)
             }
           })
           .catch((error) => {

@@ -186,7 +186,7 @@ apiRouter.use("/v1/assessment", assessmentsRouter);
 apiRouter.use("/v1/trax", TRAXRouter);
 apiRouter.use("/v2/trax", TRAXRouter);
 apiRouter.use("/v1/student", studentRouter);
-apiRouter.use("/v1/graduationreports", graduationReportsRouter);
+apiRouter.use("/v2/graduationreports", graduationReportsRouter);
 apiRouter.use("/v1/graduate", graduationRouter);
 apiRouter.use("/v1/reports", reportsRouter);
 apiRouter.use("/v1/school", TRAXRouter);
