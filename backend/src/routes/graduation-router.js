@@ -12,9 +12,9 @@ router.get('/*',passport.authenticate('jwt', {session: false}, undefined), isVal
 
 async function getGraduationAPI(req, res, next) {
   const token = getBackendToken(req);
-  
+  const version = req.version;
   try {
-    const url = `${config.get('server:graduationAPIURL')}/graduate` + req.url;
+    const url = `${config.get('server:graduationAPIURL')}/api/${version}/graduate${req.url}` ;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
