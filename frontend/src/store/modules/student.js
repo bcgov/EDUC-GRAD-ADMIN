@@ -445,7 +445,6 @@ export const useStudentStore = defineStore("student", {
     },
     // isProxy, toRaw { ...payload }
     setStudentGradStatus(payload) {
-      console.log(payload)
       this.student.gradStatus = payload;
       //when commiting gradstatus to store, we need to put the json string in to a json object to call it easier
       if (this.student.gradStatus.studentGradData) {
