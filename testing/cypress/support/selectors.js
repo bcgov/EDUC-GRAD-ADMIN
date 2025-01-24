@@ -69,6 +69,7 @@ export default {
         navBtn: 'a[href="/programs"]',
         navSlider: 'main .v-slide-group__container',
         selections: 'div.v-menu',
+        itemPerPage: 'div[role="combobox"][aria-haspopup="listbox"]',
         algorithmRulesTable: 'div#algorithm-rules table',
         programTable: 'div#graduation-programs table',
         programRuleTable: 'div#graduation-program-rules table',
@@ -77,7 +78,15 @@ export default {
         optionalProgramRuleTable: 'div#optional-graduation-program-rules table',
         otherTable: 'div.v-container, .v-container--fluid, .v-locale--is-ltr table',
         rows: 'tbody > tr',
-        itemPerPage: 'div[role="combobox"][aria-haspopup="listbox"]'
+    },
+
+    assessments: {
+        navBtn: 'a[href="/assessments"]',
+        navSlider: 'main .v-slide-group__container',
+        selections: 'div.v-menu',
+        itemPerPage: 'div[role="combobox"][aria-haspopup="listbox"]',
+        assessmentsWindow: 'div.assessments-view > div > .v-card > .v-card-text > .v-window > .v-window__container > .v-window-item:nth-child(1)',
+        requirementsWindow: 'div.assessments-view > div > .v-card > .v-card-text > .v-window > .v-window__container > .v-window-item:nth-child(2)',
     },
 
     batchProcessing: {
