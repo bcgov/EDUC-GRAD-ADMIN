@@ -515,6 +515,7 @@ export default {
     }),
     ...mapState(useAppStore, {
       getSchoolsList: "getSchoolsList",
+      displaySchoolCategoryCode: "displaySchoolCategoryCode",
     }),
   },
   ...mapActions(useStudentStore, ["unsetStudent"]),
@@ -603,7 +604,9 @@ export default {
           student.schoolOfRecordName =
             school.displayNameNoSpecialChars || school.displayName; // Update schoolOfRecordName
           student.mincode = school.mincode; // Update mincode
-          student.schoolCategoryCode = school.schoolCategoryCode; // Add schoolCategoryCode
+          student.schoolCategoryCode = this.displaySchoolCategoryCode(
+            school.schoolCategoryCode
+          ); // Add schoolCategoryCode
         }
       });
     },
