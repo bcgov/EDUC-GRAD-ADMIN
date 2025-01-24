@@ -15,7 +15,6 @@ router.get('*',
 
 async function getTRAXAPI(req, res) {
   const token = getBackendToken(req);
-
   const version = req.version;
   try {
 

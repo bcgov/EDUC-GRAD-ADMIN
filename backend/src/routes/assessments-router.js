@@ -27,8 +27,9 @@ router.get(
 
 async function getAssessmentAPI(req, res) {
   const token = getBackendToken(req);
+  const version = req.version;
   try {
-    let url = `${config.get("server:assessmentAPIURL")}/assessment`;
+    const url = `${config.get('server:assessmentAPIURL')}/api/${version}/assessment${req.url}` ;
     if (req.url != "/") {
       url += req.url;
     }
