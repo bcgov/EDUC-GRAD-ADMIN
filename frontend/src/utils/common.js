@@ -32,6 +32,7 @@ export function parseStudentStatus(code, studentStatusOptions) {
 export function formatFlag(flag) {
   switch (flag) {
     case null:
+      return "null";
     case false:
     case "N" || "n":
       return "N";

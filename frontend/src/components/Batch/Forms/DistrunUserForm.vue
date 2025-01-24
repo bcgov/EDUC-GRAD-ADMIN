@@ -541,42 +541,6 @@ export default {
       "getTranscriptTypes",
       "getCertificateTypes"
     ]),
-    // getTranscriptTypes() {
-    //   GraduationReportService.getTranscriptTypes()
-    //     .then((response) => {
-    //       this.transcriptTypes = response.data;
-    //     })
-    //     // eslint-disable-next-line
-    //     .catch((error) => {
-    //       if (error.response.statusText) {
-    //         console.log("ERROR " + error.response.statusText, "danger");
-    //       } else {
-    //         console.log("ERROR " + "error with webservice", "danger");
-    //       }
-    //     });
-    // },
-    // getCertificateTypes() {
-    //   GraduationReportService.getCertificateTypes()
-    //     .then((response) => {
-    //       this.certificateTypes = response.data;
-    //     })
-    //     // eslint-disable-next-line
-    //     .catch((error) => {
-    //       if (error.response.statusText) {
-    //         this.snackbarStore.showSnackbar(
-    //           "ERROR " + error.response.statusText,
-    //           "danger",
-    //           10000
-    //         );
-    //       } else {
-    //         this.snackbarStore.showSnackbar(
-    //           "ERROR " + "error with web service",
-    //           "danger",
-    //           10000
-    //         );
-    //       }
-    //     });
-    // },
     closeDialogAndResetForm() {
       this.blankCertificateDetails = [];
       this.blankTranscriptDetails = [];

@@ -12,8 +12,9 @@ router.get('/*',passport.authenticate('jwt', {session: false}, undefined), isVal
 
 async function getReportsAPI(req, res) {
   const token = getBackendToken(req);
+  const version = req.version;
   try {
-    const url = `${config.get('server:reportAPIURL')}/reports` + req.url;
+    const url = `${config.get('server:reportAPIURL')}/api/${version}/reports${req.url}` ;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
