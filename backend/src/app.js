@@ -183,13 +183,18 @@ apiRouter.use("/v1/program", programsRouter);
 apiRouter.use("/v1/course", coursesRouter);
 apiRouter.use("/v1/studentgraduation", studentGraduationRouter);
 apiRouter.use("/v1/assessment", assessmentsRouter);
-apiRouter.use("/v1/trax", TRAXRouter);
-apiRouter.use("/v2/trax", TRAXRouter);
+
+apiRouter.use("/:version/trax", (req, res, next) => {
+  const { version } = req.params;
+  req.version = version
+  // Call the TRAX router for the 'trax' resource
+  TRAXRouter(req, res, next);
+});
+
 apiRouter.use("/v1/student", studentRouter);
 apiRouter.use("/v1/graduationreports", graduationReportsRouter);
 apiRouter.use("/v1/graduate", graduationRouter);
 apiRouter.use("/v1/reports", reportsRouter);
-apiRouter.use("/v1/school", TRAXRouter);
 apiRouter.use("/v1/version", commonRouter);
 apiRouter.use("/v1/institute", instituteRouter);
 

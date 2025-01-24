@@ -15,19 +15,12 @@ router.get('*',
 
 async function getTRAXAPI(req, res) {
   const token = getBackendToken(req);
-  const urlParts = req.baseUrl.split('/').filter(Boolean); // Split and remove empty parts
-  let version = urlParts[0]; // Get the first part which is the version
-  // Set the version on the request object
-  if (version === 'api') {
-    version = urlParts[1]; // Skip the 'api' part in OpenShift
-  }
+
+  const version = req.version;
   try {
-    const configKey = `server:gradTraxAPIURL${version}`;
 
     // Fetch the base URL from the config using the dynamic key
-    const baseURL = config.get(configKey);
-    
-    url = baseURL + "/trax" + req.url;
+    const url = `${config.get('server:gradTraxAPIURL')}/api/${version}/trax${req.url}` ;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
