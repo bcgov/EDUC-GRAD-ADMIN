@@ -36,6 +36,21 @@ async function getAllCachedSchools(_req, res){
     return errorResponse(res);
   }
 }
+async function getAllSchoolsList(_req, res){
+  try {
+    const schoolData = cacheService.getAllSchoolsJSON();
+    const schoolsList = schoolData.map(({ schoolId, displayName, mincode }) => ({
+      schoolId,
+      displayName,
+      mincode,
+    }));
+    return res.status(200).json(schoolsList ? schoolsList : []);
+  } catch (e) {
+    logApiError(e, 'getAllSchoolList', 'Error occurred while attempting to GET school entity.');
+    return errorResponse(res);
+  }
+}
+
 
 function checkSchoolBelongsToDistrict(req, res) {
   if (!res.locals.requestedInstituteIdentifier) {
@@ -145,5 +160,6 @@ module.exports = {
   getAllSchoolDetails,
   getFullSchoolDetails,
   checkSchoolBelongsToDistrict,
+  getAllSchoolsList,
 
 };

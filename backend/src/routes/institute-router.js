@@ -4,7 +4,7 @@ const router = express.Router();
 const config = require("../config/index");
 const auth = require("../components/auth");
 const roles = require("../components/roles");
-const { getAllSchoolList,  getSchoolBySchoolID, getAllSchoolDetails, getFullSchoolDetails, getAllCachedSchools } = require('../components/school');
+const { getAllSchoolsList,  getSchoolBySchoolID, getAllSchoolDetails, getFullSchoolDetails, getAllCachedSchools } = require('../components/school');
 const { getAllDistrictList, getDistrictByDistrictID } = require('../components/district');
 const {
   errorResponse,
