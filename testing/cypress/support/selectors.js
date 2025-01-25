@@ -81,7 +81,10 @@ export default {
     },
 
     courses: {
-        navBtn: 'a[href="/courses"]'
+        navBtn: 'a[href="/courses"]',
+        advancedSearchForm: 'div.advanced-search-form',
+        activeWindow: 'div.v-window-item[disabled="false"]',
+        rows: 'table > tbody > tr'
     },
 
     assessments: {
