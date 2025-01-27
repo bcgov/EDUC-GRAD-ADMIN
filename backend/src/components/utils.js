@@ -143,7 +143,6 @@ function addTokenToHeader(params, token) {
       },
     };
   }
-  console.log(params);
   return params;
 }
 
