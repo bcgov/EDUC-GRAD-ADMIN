@@ -80,9 +80,9 @@ export default {
   getStudentHistory(id) {
     return ApiService.apiAxios.get("/api/v1/student/studentHistory/" + id);
   },
-  getBatchHistory(id, page) {
+  getBatchHistory(id, itemsPerPage, page) {
     return ApiService.apiAxios.get(
-      "/api/v1/student/studentHistory/batchid/" + id + "?pageNumber=" + page
+      "/api/v1/student/studentHistory/batchid/" + id + "?pageNumber=" + page + "&pageSize=" + itemsPerPage 
     );
   },
   getStudentOptionalProgramHistory(id) {

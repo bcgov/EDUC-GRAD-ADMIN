@@ -23,8 +23,11 @@ router.get(
 
 async function getStudentExamAPI(req, res) {
   const token = auth.getBackendToken(req);
+  const version = req.version;
   try {
-    const url = `${config.get("server:courseAPIURL")}/studentexam` + req.url;
+    const url = `${config.get(
+      "server:courseAPIURL"
+    )}/api/${version}/studentexam${req.url}`;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {

@@ -242,6 +242,7 @@
                   <strong>Student status: </strong>
                   <br />
                   <v-select
+                    data-cy="student-status-select"
                     v-model="editedGradStatus.studentStatus"
                     :items="studentStatusOptions"
                     item-title="label"
@@ -274,6 +275,7 @@
                     }}
                   </div>
                   <v-select
+                    data-cy="student-grade-select"
                     v-model="editedGradStatus.studentGrade"
                     :items="gradeOptions"
                     item-title="text"
@@ -363,6 +365,7 @@
                     }}
                   </div>
                   <v-autocomplete
+                    data-cy="school-of-record-autoselect"
                     v-model="editedGradStatus.schoolOfRecordId"
                     :disabled="disableSchoolOfRecord"
                     label="Select a school"
@@ -391,7 +394,7 @@
                     }}
                   </div>
 
-                  <div
+                  <!-- <div
                     class="bg-warning"
                     v-if="
                       v$.editedGradStatus.ifSchoolAtGradTranscriptEligibility
@@ -399,7 +402,7 @@
                     "
                   >
                     Please select a school
-                  </div>
+                  </div> -->
                   <div
                     class="bg-warning"
                     v-if="warningFlags.schoolAtGrad10To12Warning == true"
@@ -441,6 +444,7 @@
                     }}
                   </div>
                   <v-autocomplete
+                    data-cy="school-at-graduation-autoselect"
                     v-model="editedGradStatus.schoolAtGradId"
                     label="Select a school"
                     :items="getSchoolsList"
@@ -449,6 +453,7 @@
                     variant="outlined"
                     class="mt-4"
                     density="compact"
+                    :disabled="disableSchoolAtGrad"
                   >
                     <template v-slot:label="label">
                       {{ label.label }}
@@ -602,6 +607,7 @@
           </v-btn>
           <v-spacer />
           <v-btn
+            id="save-status-btn"
             color="error"
             variant="flat"
             :disabled="blockSave"
@@ -916,19 +922,19 @@ export default {
             return this.editedGradStatus.schoolAtGradId;
           }
         ),
-        ifSchoolAtGradTranscriptEligibility: helpers.withMessage(
-          () => {
-            if (this.editedGradStatus.schoolAtGradId) {
-              return this.isSchoolTranscriptEligible(
-                "schoolAtGrad",
-                this.editedGradStatus.schoolAtGradId
-              );
-            }
-          },
-          (value) => {
-            return this.editedGradStatus.schoolAtGradId;
-          }
-        ),
+        // ifSchoolAtGradTranscriptEligibility: helpers.withMessage(
+        //   () => {
+        //     if (this.editedGradStatus.schoolAtGradId) {
+        //       return this.isSchoolTranscriptEligible(
+        //         "schoolAtGrad",
+        //         this.editedGradStatus.schoolAtGradId
+        //       );
+        //     }
+        //   },
+        //   (value) => {
+        //     return this.editedGradStatus.schoolAtGradId;
+        //   }
+        // ),
         ifSchoolAtGraduation: helpers.withMessage(
           () => {
             if (this.editedGradStatus.schoolAtGrad) {
@@ -945,9 +951,11 @@ export default {
           helpers.withMessage(
             "If program completion date is not blank, school at graduation cannot be blank",
             (value) => {
-              let { programCompletionDate, schoolAtGradId } =
+              let { program, programCompletionDate, schoolAtGradId } =
                 this.editedGradStatus;
-              return !programCompletionDate || schoolAtGradId;
+              return (
+                program == "SCCP" || !programCompletionDate || schoolAtGradId
+              );
             }
           ),
         ifAdultStartDateInvalid: helpers.withMessage(
@@ -1205,8 +1213,6 @@ export default {
           this.studentGradStatus.studentStatusName = this.sortStudentStatus(
             response.data.studentStatus
           );
-          // this.getSchoolInfo(response.data.schoolOfRecord, "schoolOfRecord");
-          // this.getSchoolInfo(response.data.schoolAtGrad, "schoolAtGrad");
           this.showEdit = false;
           this.editedGradStatus = {};
           this.snackbarStore.showSnackbar("GRAD Status Saved", "success", 5000);
@@ -1227,29 +1233,6 @@ export default {
           );
         });
     },
-    // getSchoolInfo(mincode, type) {
-    //   if (mincode != null) {
-    //     const schoolInfo = this.getSchoolByMincode(
-    //       this.getSchoolsList,
-    //       mincode
-    //     );
-    //     console.log(schoolInfo);
-    //     SchoolService.getSchoolInfo(mincode)
-    //       .then((response) => {
-    //         if (type == "schoolOfRecord") {
-    //           this.schoolOfRecord = response.data;
-    //         }
-    //         if (type == "schoolAtGrad") {
-    //           this.schoolAtGraduation = response.data;
-    //         }
-    //       })
-    //       .catch((error) => {
-    //         // eslint-disable-next-line
-    //         console.log("There was an error:" + error?.response);
-    //         this.snackbarStore.showSnackbar(error?.response, "error", 5000);
-    //       });
-    //   }
-    // },
     validateSchoolInfo(schoolToValidate) {
       this.warningFlags.schoolWarning = false;
       let schoolInfo = this.getSchoolByMincode(
@@ -1279,8 +1262,6 @@ export default {
         } else {
           this.warningFlags.schoolAtGrad10To12Warning = true;
         }
-        // console.log(this.warningFlags.schoolOfRecord10To12Warning);
-        // console.log(this.warningFlags.schoolAtGrad10To12Warning);
         return false;
       } catch (error) {
         // eslint-disable-next-line

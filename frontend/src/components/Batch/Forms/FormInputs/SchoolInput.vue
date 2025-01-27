@@ -67,7 +67,7 @@
             </div>
             <div>
               <strong>School Category:</strong>
-              {{ item.info.schoolCategoryCode }}
+              {{ displaySchoolCategoryCode(item.info.schoolCategoryCode) }}
             </div>
           </template>
           <template #bottom> </template>
@@ -175,15 +175,15 @@ export default {
       //if (this.mincode === "") return true;
       if (!!this.schoolId.length) {
         try {
-          let schoolInfo = await SchoolService.getSchoolInfo(this.schoolId);
-          if (schoolInfo.data) {
+          let schoolInfo = this.getSchoolById(this.schoolId);
+          if (schoolInfo) {
             this.mincodeSchoolInfo = {
-              displayName: schoolInfo.data.displayName,
-              canIssueTranscripts: schoolInfo.data.canIssueTranscripts,
-              canIssueCertificates: schoolInfo.data.canIssueCertificates,
-              schoolCategoryCode: schoolInfo.data.schoolCategoryCode,
+              displayName: schoolInfo.displayName,
+              canIssueTranscripts: schoolInfo.canIssueTranscripts,
+              canIssueCertificates: schoolInfo.canIssueCertificates,
+              schoolCategoryCode: schoolInfo.schoolCategoryCode,
             };
-            this.mincode = schoolInfo.data.mincode; //set mincode to add to batch request here since schoolId is now the v-model
+            this.mincode = schoolInfo.mincode; //set mincode to add to batch request here since schoolId is now the v-model
             this.schools.splice(0, 0, {
               mincode: this.mincode,
               info: this.mincodeSchoolInfo,
@@ -216,7 +216,7 @@ export default {
   },
 
   computed: {
-    ...mapState(useAppStore, ["getSchoolsList"]),
+    ...mapState(useAppStore, ["getSchoolsList", "getSchoolById", "displaySchoolCategoryCode"]),
     isEmpty() {
       return this.students.length > 0;
     },

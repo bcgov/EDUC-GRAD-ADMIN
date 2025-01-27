@@ -29,9 +29,11 @@ router.get(
 
 async function getDistributionAPI(req, res) {
   const token = auth.getBackendToken(req);
+  const version = req.version;
   try {
-    const url =
-      `${config.get("server:distributionAPIURL")}/distribute` + req.url;
+    const url = `${config.get(
+      "server:distributionAPIURL"
+    )}/api/${version}/distribute${req.url}`;
     const data = await getData(token, url, req.session?.correlationID);
     res.send(data);
   } catch (e) {

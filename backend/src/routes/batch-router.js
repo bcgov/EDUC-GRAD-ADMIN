@@ -49,8 +49,11 @@ router.put(
 
 async function getBatchInfoAPI(req, res) {
   const token = auth.getBackendToken(req);
+  const version = req.version;
   try {
-    const url = `${config.get("server:batchAPIURL")}/batch` + req.url;
+    const url = `${config.get("server:batchAPIURL")}/api/${version}/batch${
+      req.url
+    }`;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -63,8 +66,11 @@ async function getBatchInfoAPI(req, res) {
 }
 async function postBatchInfoAPI(req, res) {
   const token = auth.getBackendToken(req);
+  const version = req.version;
   try {
-    const url = `${config.get("server:batchAPIURL")}/batch` + req.url;
+    const url = `${config.get("server:batchAPIURL")}/api/${version}/batch${
+      req.url
+    }`;
     const data = await postData(
       token,
       url,
@@ -82,9 +88,12 @@ async function postBatchInfoAPI(req, res) {
 }
 async function deleteBatchInfoAPI(req, res) {
   const token = auth.getBackendToken(req);
+  const version = req.version;
 
   try {
-    const url = `${config.get("server:batchAPIURL")}/batch` + req.url;
+    const url = `${config.get("server:batchAPIURL")}/api/${version}/batch${
+      req.url
+    }`;
     const data = await deleteData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -93,8 +102,11 @@ async function deleteBatchInfoAPI(req, res) {
 }
 async function putBatchInfoAPI(req, res) {
   const token = auth.getBackendToken(req);
+  const version = req.version;
   try {
-    const url = `${config.get("server:batchAPIURL")}/batch` + req.url;
+    const url = `${config.get("server:batchAPIURL")}/api/${version}/batch${
+      req.url
+    }`;
     const data = await putData(token, {}, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {

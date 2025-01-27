@@ -30,11 +30,16 @@ router.get(
 
 async function getAssessmentAPI(req, res) {
   const token = auth.getBackendToken(req);
+  const version = req.version;
   try {
-    let url = `${config.get("server:assessmentAPIURL")}/assessment`;
+    let url = `${config.get(
+      "server:assessmentAPIURL"
+    )}/api/${version}/assessment`;
+
     if (req.url != "/") {
       url += req.url;
     }
+    console.log(url);
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
