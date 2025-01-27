@@ -83,8 +83,15 @@ export default {
     courses: {
         navBtn: 'a[href="/courses"]',
         advancedSearchForm: 'div.advanced-search-form',
-        activeWindow: 'div.v-window-item[disabled="false"]',
-        rows: 'table > tbody > tr'
+        activeWindow: 'div.courses-all div.v-window-item:visible',
+        selections: 'div.v-menu',
+        rows: 'table > tbody > tr',
+        courseRestrictionNav: 'button[value="courseRestrictionsTab"]',
+        courseRequirementsNav: 'button[value="courseRequirementsTab"]',
+        courseReqForm: 'form#courseReqForm',
+        fineArtAppliedSkillNav: 'button[value="fineArtsAppliedSkillsTab"]',
+        examSpecialCaseNav: 'button[value="examSpecialCaseCodesTab"]',
+        equivalencyOrChallengeCodesNav: 'button[value="equivalentOrChallengeCodesTab"]',
     },
 
     assessments: {
