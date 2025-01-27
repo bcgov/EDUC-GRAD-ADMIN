@@ -3,6 +3,9 @@ const schoolsSelectors = selectors.schools
 
 describe('Schools', () => {
   const test_school = Cypress.env('test_school')
+  const invalidMessage = {
+    empty: 'Enter at least one field to'
+  }
 
   beforeEach(() => {
     cy.login()

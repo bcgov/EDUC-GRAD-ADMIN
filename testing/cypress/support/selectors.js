@@ -119,6 +119,19 @@ export default {
         rows: 'div.schools-view .v-table > .v-table__wrapper > table > tbody > tr'
     },
 
+    codes: {
+        navBtn: 'a[href="/codes"]',
+        careerProgramCodesBtn: 'a[href="/codes/career-programs"]',
+        credentialsBtn: 'div.v-slide-group__content > button[role="tab"]',
+        selections: 'div.v-menu',
+        reportTypesBtn: 'a[href="/codes/report-types"]',
+        studentStatusCodesBtn: 'a[href="/codes/student-status-codes"]',
+        undoCompletionReasonCodesBtn: 'a[href="/codes/ungrad-reasons"]',
+        historyActivityCodeBtn: 'a[href="/codes/history-activity"]',
+        batchTypeCodesBtn: 'a[href="/codes/batch-types"]',
+        rows: 'div.codes-view .v-table__wrapper > table > tbody > tr:visible'
+    },
+
     batchProcessing: {
         navBtn: 'a[href="/batch-processing"]',
         newRequestBtn: 'button[value="newBatchRequest"]',

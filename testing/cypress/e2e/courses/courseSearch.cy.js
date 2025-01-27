@@ -1,4 +1,3 @@
-import { type } from "os";
 import selectors from "../../support/selectors";
 const coursesSelectors = selectors.courses
 
