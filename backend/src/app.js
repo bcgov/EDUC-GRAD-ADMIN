@@ -9,7 +9,7 @@ const express = require("express");
 const passport = require("passport");
 const helmet = require("helmet");
 const cors = require("cors");
-const utils = require("./components/utils");
+//const utils = require("./components/utils");
 const auth = require("./components/auth");
 const bodyParser = require("body-parser");
 const connectRedis = require("connect-redis");
@@ -100,7 +100,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //initialize our authentication strategy
-utils
+auth
   .getOidcDiscovery()
   .then((discovery) => {
     //OIDC Strategy is used for authorization
