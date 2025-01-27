@@ -24,7 +24,6 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
 router.get("/*", getInstituteAPI);
 
 async function getInstituteAPI(req, res) {
-  const token = auth.getBackendToken(req);
   const version = req.version;
   try {
     const url = `${config.get(
