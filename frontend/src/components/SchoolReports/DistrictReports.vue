@@ -23,7 +23,7 @@
             <div class="advanced-search-button">
                 <v-btn
                 prepend-icon="mdi-magnify"
-                v-on:click="schoolReportSearch"
+                v-on:click="districtReportSearch"
                 :loading="searchLoading"
                 :disabled="searchLoading"
                 variant="flat"
@@ -110,7 +110,7 @@ import { mapState } from "pinia";
 import { useAppStore } from "@/store/modules/app";
 
 export default {
-name: "SchoolReports",
+name: "DistrictReports",
 components: {
   DisplayTable: DisplayTable,
 },
@@ -179,7 +179,7 @@ methods: {
   keyHandler: function (e) {
     if (e.keyCode === 13) {
         //enter key pressed
-        this.schoolReportSearch();
+        this.districtReportSearch();
     }
   },
   districtTitle(item) {
@@ -189,7 +189,7 @@ methods: {
         return null;
     }
   },
-  schoolReportSearch() {
+  districtReportSearch() {
   //reset results
     this.totalResults = "";
     this.searchMessage = "";

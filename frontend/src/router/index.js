@@ -359,7 +359,7 @@ const router = createRouter({
     {
       path: "/school-reports",
       name: "school-reports",
-      component: () => import("../views/SchoolReports.vue"),
+      component: () => import("../views/Reports.vue"),
       meta: {
         requiresAuth: true,
       },
