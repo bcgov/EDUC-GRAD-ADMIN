@@ -5,7 +5,6 @@ const config = require("../config/index");
 const log = require("./logger");
 const jsonwebtoken = require("jsonwebtoken");
 const qs = require("querystring");
-//const utils = require("./utils");
 const safeStringify = require("fast-safe-stringify");
 const userRoles = require("./roles");
 const { partial, fromPairs } = require("lodash");
@@ -205,7 +204,6 @@ const auth = {
 
       let result = {};
       result.accessToken = response.data.access_token;
-      console.log("getServiceAccountToken result", result);
       return result.accessToken;
     } catch (error) {
       log.error(
