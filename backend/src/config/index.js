@@ -59,6 +59,8 @@ nconf.defaults({
     publicKey: process.env.SOAM_PUBLIC_KEY,
     clientId: process.env.SOAM_CLIENT_ID,
     clientSecret: process.env.SOAM_CLIENT_SECRET,
+    serviceClientId: process.env.SOAM_SERVICE_CLIENT_ID,
+    serviceClientSecret: process.env.SOAM_SERVICE_CLIENT_SECRET,
     discovery: process.env.SOAM_DISCOVERY,
   },
   tokenGenerate: {

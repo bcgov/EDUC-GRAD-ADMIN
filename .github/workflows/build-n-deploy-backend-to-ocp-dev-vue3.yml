@@ -175,7 +175,8 @@ jobs:
           ${{ secrets.SPLUNK_TOKEN }} \
           ${{ secrets.COMMON_NAMESPACE }} \
           ${{ secrets.GRAD_NAMESPACE }} \
-          ${{ secrets.GRAD_BUSINESS_NAMESPACE }}
+          ${{ secrets.GRAD_BUSINESS_NAMESPACE }} \
+          ${{ secrets.SOAM_SERVICE_CLIENT_SECRET }}
           
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.APP_NAME_BACKEND }} 
