@@ -31,6 +31,7 @@ export default {
         optionalBtn: 'button[value="Optional"]',
         auditBtn: 'button[value="Audit"]',
         notesBtn: 'button[value="Notes"]',
+        studentChangeHistoryBtn: 'button[value="studentChangeHistory"]',
         optionalProgramChangeHistoryBtn: 'button[value="optionalProgramChangeHistory"]',
         undoBtn: 'button[value="Undo Completion Reasons"]',
         coursesWindow:  '[data-cy="courses-window-item"]',
@@ -42,6 +43,8 @@ export default {
         undoWindow: '[data-cy="undo-window-item"]',
         noRow: '.v-table__wrapper .v-data-table-rows-no-data',
         rows: '.v-table__wrapper .v-data-table__tr',
+        firstExpandArrow: '.v-table__wrapper .v-data-table__tr:nth-child(1) > td:nth-child(1) > td > button:visible',
+        secondRowJsonData: '.v-table__wrapper tr:nth-child(2) > td > div > pre:visible',
 
         advancedSearchBtn: 'button[value="advance"]',
         legalSurnameInput: 'input#legal-surname-input',
@@ -63,6 +66,7 @@ export default {
         editTextarea: '.v-list-item textarea',
         saveNoteBtn: '.v-list-item button.bg-error',
         deleteNoteBtn: 'i.mdi-delete',
+        errorMsg: 'div.studentlist div.text-error > .v-alert__content:visible'
     },
 
     programs: {
@@ -86,12 +90,14 @@ export default {
         activeWindow: 'div.courses-all div.v-window-item:visible',
         selections: 'div.v-menu',
         rows: 'table > tbody > tr',
+        courseNav: 'button[value="courseTab"]',
         courseRestrictionNav: 'button[value="courseRestrictionsTab"]',
         courseRequirementsNav: 'button[value="courseRequirementsTab"]',
         courseReqForm: 'form#courseReqForm',
         fineArtAppliedSkillNav: 'button[value="fineArtsAppliedSkillsTab"]',
         examSpecialCaseNav: 'button[value="examSpecialCaseCodesTab"]',
         equivalencyOrChallengeCodesNav: 'button[value="equivalentOrChallengeCodesTab"]',
+        errorMsg: 'div.text-error > .v-alert__content'
     },
 
     assessments: {
@@ -102,6 +108,15 @@ export default {
         assessmentsWindow: 'div.assessments-view > div > .v-card > .v-card-text > .v-window > .v-window__container > .v-window-item:nth-child(1)',
         requirementsWindow: 'div.assessments-view > div > .v-card > .v-card-text > .v-window > .v-window__container > .v-window-item:nth-child(2)',
         rows: 'table > tbody > tr',
+    },
+
+    schools: {
+        navBtn: 'a[href="/schools"]',
+        districtInput: 'input#district',
+        mincodeInput: 'input#mincode',
+        schoolNameInput: 'input#schoolName',
+        schoolWindow: 'div.schools-view',
+        rows: 'div.schools-view .v-table > .v-table__wrapper > table > tbody > tr'
     },
 
     batchProcessing: {

@@ -1,3 +1,4 @@
+import { type } from "os";
 import selectors from "../../support/selectors";
 const coursesSelectors = selectors.courses
 
@@ -7,6 +8,11 @@ function typeInputFieldFoundByLabel(label, content) {
 
 describe('Courses', () => {
   const test_course = Cypress.env('test_course') 
+  const invalidMessage = {
+    empty: 'Enter at least one field to search.',
+    noCourse: 'No courses found.',
+    noCourseReq: 'No course requirements found.'
+  }
 
   beforeEach(() => {
     cy.login()
@@ -62,6 +68,24 @@ describe('Courses', () => {
     typeInputFieldFoundByLabel('Rule#:', test_course.ruleNum)
     cy.get(coursesSelectors.courseReqForm).contains('Search').click()
     cy.get(coursesSelectors.activeWindow).find(coursesSelectors.rows).its('length').should('eq', 1)
+
+    // Enters invalid data for Course Search
+    cy.get(coursesSelectors.courseNav).click()
+    cy.get(coursesSelectors.advancedSearchForm).contains('Reset').click()
+    cy.get(coursesSelectors.advancedSearchForm).contains('Search').click()
+    cy.get(coursesSelectors.advancedSearchForm).find(coursesSelectors.errorMsg).should('have.text', invalidMessage.empty)
+    typeInputFieldFoundByLabel('TRAX Code:', 'Hello')
+    cy.get(coursesSelectors.advancedSearchForm).contains('Search').click()
+    cy.get(coursesSelectors.advancedSearchForm).find(coursesSelectors.errorMsg).should('have.text', invalidMessage.noCourse)
+    
+    // Enters invalid data for Course Requirement 
+    cy.get(coursesSelectors.courseRequirementsNav).click()
+    cy.get(coursesSelectors.courseReqForm).contains('Reset').click()
+    cy.get(coursesSelectors.courseReqForm).contains('Search').click()
+    cy.get(coursesSelectors.courseReqForm).find(coursesSelectors.errorMsg).should('have.text', invalidMessage.empty)
+    typeInputFieldFoundByLabel('Course code:', 'Hello')
+    cy.get(coursesSelectors.courseReqForm).contains('Search').click()
+    cy.get(coursesSelectors.courseReqForm).find(coursesSelectors.errorMsg).should('have.text', invalidMessage.noCourseReq)
   })
 
   it('Goes through tables to check if data is loaded', () => {

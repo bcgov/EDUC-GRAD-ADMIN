@@ -98,8 +98,14 @@ describe('Student Search', () => {
       cy.get(studentSearchSelectors.optionalWindow).should('contain.css', 'display', 'none')
       cy.get(studentSearchSelectors.auditWindow).should('not.contain.css', 'display', 'none')
       cy.checkItemsInWindowTable(studentSearchSelectors.auditWindow + " .v-window-item:nth-child(1)")
+      cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.firstExpandArrow).click()
+      cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.secondRowJsonData).should('contain.text', 'createUser')
+
       cy.get(studentSearchSelectors.optionalProgramChangeHistoryBtn).click()
       cy.checkItemsInWindowTable(studentSearchSelectors.auditWindow + " .v-window-item:nth-child(2)")
+      cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.firstExpandArrow).click()
+      cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.secondRowJsonData).should('contain.text', 'createUser')
+      
       // Undo Completion Reasons Window
       cy.get(studentSearchSelectors.undoBtn).click()
       cy.get(studentSearchSelectors.auditWindow).should('contain.css', 'display', 'none')
@@ -117,6 +123,7 @@ describe('Student Search', () => {
       cy.get(studentSearchSelectors.optionalWindow).should('contain.text', 'This student does not have any optional programs.')
       cy.get(studentSearchSelectors.optionalWindow).find('button').click()
       cy.contains('This student is not active.')
+      cy.wait(500)
       cy.get(studentSearchSelectors.chooseOptional).click({force: true})
       cy.get(studentSearchSelectors.selections).contains(optionalCourseToAdd).click()
       cy.get(studentSearchSelectors.nextOptional).click()
@@ -179,7 +186,7 @@ describe('Student Search', () => {
         cy.contains('GRAD Status')
     }) 
 
-    it('Searches multiple studends', () => {
+    it('Searches multiple students', () => {
       const test_student2 = Cypress.env("test_student2")
       cy.get(studentSearchSelectors.legalGivennameInput).type(test_student2.given)
       cy.get(studentSearchSelectors.advSearchSubmit).click()
@@ -187,6 +194,39 @@ describe('Student Search', () => {
 
       cy.get(studentSearchSelectors.advSearchReset).click()
       cy.get(studentSearchSelectors.legalGivennameInput).should('not.contain.text', test_student2.given)
+    })
+  })
+
+  context('With invalid data', () => {
+    // Perform input validation for both pen and advanced search
+    const invalidMessage = {
+      noStudentPEN: 'Student cannot be found on the GRAD or PEN database',
+      noStudentAdvanced: 'There are [0] more matches on PEN'
+    }
+
+    before(() => {
+      cy.login()
+      cy.visit('/')
+
+      // If still not logged in, login
+      cy.doesExist(selectors.login.loginBtn).then((exist) => {
+        if (exist) {
+          cy.get(selectors.login.loginBtn).eq(0).click()
+        }
+      })
+      
+      cy.get(studentSearchSelectors.title).should('contain.text', 'Student Search')
+    })
+
+    it('Enters invalid data', () => {
+      cy.get(studentSearchSelectors.searchByPEN).type('121212121')
+      cy.get(studentSearchSelectors.searchSubmit).click()
+      cy.get(studentSearchSelectors.errorMsg).should('have.text', invalidMessage.noStudentPEN)
+
+      cy.get(studentSearchSelectors.advancedSearchBtn).click()
+      cy.get(studentSearchSelectors.legalSurnameInput).type('ZZZ')
+      cy.get(studentSearchSelectors.advSearchSubmit).click()
+      cy.get(studentSearchSelectors.errorMsg).should('have.text', invalidMessage.noStudentAdvanced)
     })
   })
 })

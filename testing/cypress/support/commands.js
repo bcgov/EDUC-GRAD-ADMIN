@@ -45,6 +45,7 @@ function doesExist(selector) {
 
 function checkItemsInWindowTable(windowSelector) {
     const selector = windowSelector + " " + selectors.studentSearch.noRow
+    cy.wait(500)
     cy.doesExist(selector).then((exist) => {
         if (exist) {
             cy.get(selector).should('contain.text', 'No data available')
