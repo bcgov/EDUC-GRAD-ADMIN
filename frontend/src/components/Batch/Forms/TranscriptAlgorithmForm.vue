@@ -216,16 +216,16 @@ export default {
               ) {
                 if (this.group === "School") {
                   isValid =
-                    this.getBatchRequest.schoolOfRecords &&
-                    this.getBatchRequest.schoolOfRecords.length > 0;
+                    this.getBatchRequest.schoolIds &&
+                    this.getBatchRequest.schoolIds.length > 0;
                 } else if (this.group === "Student") {
                   isValid =
                     this.getBatchRequest.pens &&
                     this.getBatchRequest.pens.length > 0;
                 } else if (this.group === "School Category") {
                   isValid =
-                    this.getBatchRequest.districts &&
-                    this.getBatchRequest.districts.length > 0;
+                    this.getBatchRequest.districtIds &&
+                    this.getBatchRequest.districtIds.length > 0;
                 } else if (this.group === "Program") {
                   isValid =
                     this.getBatchRequest.programs &&
@@ -266,31 +266,6 @@ export default {
       "getBatchRequest",
       "getBatchRunTime",
     ]),
-    requestPayload() {
-      const requestTemplate = [
-        "districts",
-        "gradDateFrom",
-        "gradDateTo",
-        "localDownload",
-        "pens",
-        "programs",
-        "psiCodes",
-        "quantity",
-        "reportTypes",
-        "schoolCategoryCodes",
-        "schoolOfRecords",
-        "validateInput",
-      ];
-      const batchRequest = this.getBatchRequest;
-
-      // Filter the batch request using the requestTemplate array
-      return requestTemplate.reduce((acc, field) => {
-        if (batchRequest[field] !== undefined) {
-          acc[field] = batchRequest[field];
-        }
-        return acc;
-      }, {});
-    },
   },
   methods: {
     ...mapActions(useBatchRequestFormStore, [
@@ -321,7 +296,7 @@ export default {
       this.batchLoading = true;
       try {
         const requestTemplate = [
-          "districts",
+          "districtIds",
           "gradDateFrom",
           "gradDateTo",
           "localDownload",
@@ -331,7 +306,7 @@ export default {
           "quantity",
           "reportTypes",
           "schoolCategoryCodes",
-          "schoolOfRecords",
+          "schoolIds",
           "validateInput",
         ];
         const requestPayload = generateRequestPayload(

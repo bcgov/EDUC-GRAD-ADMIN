@@ -178,6 +178,7 @@ export default {
           let schoolInfo = this.getSchoolById(this.schoolId);
           if (schoolInfo) {
             this.mincodeSchoolInfo = {
+              schoolId: schoolInfo.schoolId,
               displayName: schoolInfo.displayName,
               canIssueTranscripts: schoolInfo.canIssueTranscripts,
               canIssueCertificates: schoolInfo.canIssueCertificates,

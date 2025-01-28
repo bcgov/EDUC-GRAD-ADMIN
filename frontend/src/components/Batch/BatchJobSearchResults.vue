@@ -11,7 +11,6 @@
         color="primary"
         size="64"
       >
-        Loading...
       </v-progress-circular>
     </v-overlay>
     <div class="d-flex justify-space-between align-center">
@@ -56,6 +55,8 @@
 import sharedMethods from "../../sharedMethods";
 import StudentService from "@/services/StudentService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import { useAppStore } from "@/store/modules/app";
+import { mapActions, mapState } from "pinia";
 export default {
   name: "batchJobSearch",
   components: {},
@@ -91,7 +92,7 @@ export default {
           editable: true,
         },
         {
-          key: "schoolOfRecord",
+          key: "schoolOfRecordName",
           title: "School of Record",
           sortable: true,
           class: "text-left",
@@ -102,58 +103,42 @@ export default {
   },
 
   computed: {
-    currentPageChange() {
-      return this.userSelectedPage;
-    },
+    ...mapState(useAppStore, ["getSchoolById"]),
   },
   created() {
     this.loadStudent = sharedMethods.loadStudent;
-    this.getAdminDashboardData(this.selectedBatchId, 0);
   },
   watch: {
     selectedBatchId: function () {
-      this.getAdminDashboardData(this.selectedBatchId, 0);
-    },
-    currentPageChange: function () {
-      if (this.userSelectedPage !== null) {
-        this.getAdminDashboardData(this.selectedBatchId, this.userSelectedPage);
-      }
+      //handle when a selectedBatchId changes
+      this.loadItems({
+        page: 1,
+        itemsPerPage: this.itemsPerPage,
+        sortBy: this.sortBy,
+      });
     },
   },
   methods: {
     loadItems({ page, itemsPerPage, sortBy }) {
       this.batchLoading = true;
-      StudentService.getBatchHistory(this.selectedBatchId, this.itemsPerPage == -1 ? this.totalElements : this.itemsPerPage, page - 1)
+      StudentService.getBatchHistory(
+        this.selectedBatchId,
+        this.itemsPerPage == -1 ? this.totalElements : this.itemsPerPage,
+        page - 1
+      )
         .then((response) => {
           this.batchData = response.data.content;
+          this.batchData.forEach((item) => {
+            const school = this.getSchoolById(item.schoolOfRecordId);
+            // Add the school information to the item
+            item.schoolOfRecordName = school.mincode;
+          });
           this.totalElements = response.data.totalElements;
           this.batchLoading = false;
         })
         .catch((error) => {
           if (error.response.status) {
             this.batchLoading = false;
-          }
-        });
-    },
-
-    getAdminDashboardData(batchId, page) {
-      this.batchData = [];
-      this.batchLoading = true;
-      if (page) {
-        if (page > 0) {
-          page = page - 1;
-        }
-      }
-      StudentService.getBatchHistory(batchId, this.itemsPerPage == -1 ? this.totalElements : this.itemsPerPage, page)
-        .then((response) => {
-          this.batchData = response.data.content;
-          this.totalElements = response.data.totalElements;
-          this.itemsPerPage = response.data.size;
-          this.batchLoading = false;
-        })
-        .catch((error) => {
-          if (error.response.status) {
-            this.BatchLoading = false;
           }
         });
     },

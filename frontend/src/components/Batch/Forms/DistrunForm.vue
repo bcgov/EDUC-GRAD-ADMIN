@@ -200,31 +200,6 @@ export default {
       "getDistribution",
       "getCopies",
     ]),
-    requestPayload() {
-      const requestTemplate = [
-        "districts",
-        "gradDateFrom",
-        "gradDateTo",
-        "localDownload",
-        "pens",
-        "programs",
-        "psiCodes",
-        "quantity",
-        "reportTypes",
-        "schoolCategoryCodes",
-        "schoolOfRecords",
-        "validateInput",
-      ];
-      const batchRequest = this.getBatchRequest;
-
-      // Filter the batch request using the requestTemplate array
-      return requestTemplate.reduce((acc, field) => {
-        if (batchRequest[field] !== undefined) {
-          acc[field] = batchRequest[field];
-        }
-        return acc;
-      }, {});
-    },
     groupItems() {
       if (this.getCredential === "Blank certificate print") {
         if (
@@ -329,8 +304,8 @@ export default {
       try {
         const requestTemplate = [
           "pens",
-          "schoolOfRecords",
-          "districts",
+          "schoolIds",
+          "districtIds",
           "credentialTypeCode",
           "schoolCategoryCodes",
           "programs",

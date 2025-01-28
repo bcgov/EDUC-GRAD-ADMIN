@@ -6,14 +6,17 @@ const auth = require("../components/auth");
 const roles = require("../components/roles");
 const {
   errorResponse,
-  getBackendToken,
   getData,
   postData,
   deleteData,
 } = require("../components/utils");
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
-  [roles.Admin.StaffInfoOfficer, roles.Admin.StaffAdministration, roles.Admin.StaffGradProgramBA]
+  [
+    roles.Admin.StaffInfoOfficer,
+    roles.Admin.StaffAdministration,
+    roles.Admin.StaffGradProgramBA,
+  ]
 );
 
 //Batch Routes
@@ -25,12 +28,14 @@ router.get(
 );
 
 async function getDistributionAPI(req, res) {
-  const token = getBackendToken(req);
+  const token = auth.getBackendToken(req);
+  const version = req.version;
   try {
-    const url =
-      `${config.get("server:distributionAPIURL")}/distribute` + req.url;
+    const url = `${config.get(
+      "server:distributionAPIURL"
+    )}/api/${version}/distribute${req.url}`;
     const data = await getData(token, url, req.session?.correlationID);
-    res.send(data)
+    res.send(data);
   } catch (e) {
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);

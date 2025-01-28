@@ -55,6 +55,6 @@ export default {
     return apiClient.get('/api/v1/reports/signatures/getSignatureBlockTypeCodes',{ headers });
   },
   getAllReportsForSchool(id) {
-    return ApiService.apiAxios.get('/api/v1/graduationreports/schoolreport/' + id);
+    return ApiService.apiAxios.get('/api/v2/graduationreports/schoolreports/search?schoolOfRecordId=' + id);
   }
 };
