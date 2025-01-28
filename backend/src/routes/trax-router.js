@@ -6,7 +6,7 @@ const auth = require("../components/auth");
 const roles = require("../components/roles");
 const {
   errorResponse,
-  ggetData,
+  getData,
   postData,
   putData,
   deleteData,
