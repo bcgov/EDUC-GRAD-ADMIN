@@ -16,7 +16,7 @@ describe('Reports', () => {
     expectedReportsNum: 3
   }
   const test_district_without_result = {
-    title: '123 - Ditchers Test DistrictX',
+    title: '020 - Kootenay-Columbia',
     expectedReportsNum: 0
   }
 
@@ -65,5 +65,14 @@ describe('Reports', () => {
     cy.get(reportSelectors.messageAlert).should('have.text', invalidMessage.emptyDistict)
 
     cy.get(reportSelectors.districtAuto).click()
+    cy.get(reportSelectors.selections).contains(test_district_with_result.title).click({force: true})
+    cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
+    cy.get(reportSelectors.resultTable).find(reportSelectors.rows).its('length').should('eq', test_district_with_result.expectedReportsNum)
+    cy.get(reportSelectors.advancedSearchButtons).contains('Reset').click()
+
+    cy.get(reportSelectors.districtAuto).click()
+    cy.get(reportSelectors.selections).contains(test_district_without_result.title).click({force: true})
+    cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
+    cy.get(reportSelectors.messageAlert).should('have.text', invalidMessage.noDistrict)
   })
 })
