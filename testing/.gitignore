@@ -1,4 +1,5 @@
 **/local.json
 cypress.env.json
+cypress/screenshots
 .env
 node_modules/
