@@ -346,7 +346,6 @@ export default {
   methods: {
     ...mapActions(useBatchProcessingStore, ["setBatchJobs"]),
     showBatchPayload(id) {
-      console.log(id);
       const batchRun = this.batchRuns.find(
         (batch) => batch.jobExecutionId === id
       );
@@ -355,7 +354,7 @@ export default {
         if (Array.isArray(batchRun?.jobParameters?.payload?.schoolIds)) {
           batchRun.jobParameters.payload.schoolIds =
             batchRun.jobParameters.payload.schoolIds.map((schoolId) =>
-              schoolId.length == 36
+              schoolId && schoolId.length == 36
                 ? this.getSchoolMincodeById(schoolId)
                 : schoolId
             );
@@ -365,7 +364,7 @@ export default {
         if (Array.isArray(batchRun?.jobParameters?.payload?.districtIds)) {
           batchRun.jobParameters.payload.districtIds =
             batchRun.jobParameters.payload.districtIds.map((districtId) =>
-              districtId.length == 36
+              districtId && districtId.length == 36
                 ? this.getDistrictCodeById(districtId)
                 : districtId
             );
