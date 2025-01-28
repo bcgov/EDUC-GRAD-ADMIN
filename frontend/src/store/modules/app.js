@@ -24,9 +24,20 @@ export const useAppStore = defineStore("app", {
         state.schoolsList.find((school) => schoolId === school.schoolId);
     },
     getSchoolMincodeById: (state) => {
-      return (schoolId) =>
-        state.schoolsList.find((school) => schoolId === school.schoolId)?.mincode||null;
+      return (schoolId) => {
+        if (schoolId === "00000000-0000-0000-0000-000000000000") {
+          // Special school code for Ministry of Advanced Education 
+          return "Ministry of Advanced Education";
+        }
+        return state.schoolsList.find((school) => schoolId === school.schoolId)?.mincode || null;
+      };
     },
+    getDistrictCodeById: (state) => {
+      return (districtId) => {
+        return state.districtsList.find((district) => districtId === district.districtId)?.districtNumber || null;
+      };
+    },    
+
     getDistrictList: (state) => state.districtsList,
     getDistrictById: (state) => {
       return (districtId) =>

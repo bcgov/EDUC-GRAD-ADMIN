@@ -356,6 +356,12 @@ export default {
           );
           batchRun.jobParameters.payload.schoolIds = schools;
         }
+        if (Array.isArray(batchRun?.jobParameters?.payload?.districtIds)) {
+          const districts = batchRun.jobParameters.payload.districtIds.map(
+            (districtId) => this.getDistrictNumberById(districtId)
+          );
+          batchRun.jobParameters.payload.districtIds = districts;
+        }
       } else {
         console.log(`Batch run with jobExecutionId ${id} not found.`);
       }
