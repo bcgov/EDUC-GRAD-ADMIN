@@ -11,6 +11,7 @@ SPLUNK_TOKEN=$7
 COMMON_NAMESPACE=$8
 GRAD_NAMESPACE=$9
 GRAD_BUSINESS_NAMESPACE=${10}
+SOAM_SERVICE_CLIENT_SECRET=${11}
 
 SOAM_KC_REALM_ID="master"
 SOAM_KC=soam-$ENV.apps.silver.devops.gov.bc.ca
@@ -70,6 +71,8 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=SOAM_PUBLIC_KEY="$formattedPublicKey" \
   --from-literal=SOAM_CLIENT_ID="grad-admin-client" \
   --from-literal=SOAM_CLIENT_SECRET="$SOAM_CLIENT_SECRET" \
+  --from-literal=SOAM_SERVICE_CLIENT_ID="grad-admin-service" \
+  --from-literal=SOAM_SERVICE_CLIENT_SECRET="$SOAM_SERVICE_CLIENT_SECRET" \
   --from-literal=SOAM_URL="https://soam-$ENV.apps.silver.devops.gov.bc.ca" \
   --from-literal=SOAM_DISCOVERY="https://soam-$ENV.apps.silver.devops.gov.bc.ca/auth/realms/master/.well-known/openid-configuration" \
   --from-literal=IDIR_IDP_HINT=keycloak_bcdevexchange_idir \
