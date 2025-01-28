@@ -6,7 +6,16 @@ function typeInputFieldFoundByLabel(label, content) {
 }
 
 describe('Courses', () => {
-  const test_course = Cypress.env('test_course') 
+  const test_course =  {
+    courseCode: "SS",
+    gradeLevel: 10,
+    courseTitle: "SOCIAL STUDIES 10",
+    language: "EN",
+    courseNum: 3,
+    requirementNum: 7,
+    ruleNum: 704
+  }
+  
   const invalidMessage = {
     empty: 'Enter at least one field to search.',
     noCourse: 'No courses found.',

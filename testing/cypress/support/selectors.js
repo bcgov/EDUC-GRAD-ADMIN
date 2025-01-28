@@ -132,6 +132,19 @@ export default {
         rows: 'div.codes-view .v-table__wrapper > table > tbody > tr:visible'
     },
 
+    reports: {
+        navBtn: 'a[href="/school-reports"]',
+        schoolReportsTab: 'button[value="schoolReportsTab"]',
+        districtReportsTab: 'button[value="districtReportsTab"]',
+        mincodeAuto: 'input#mincode',
+        districtAuto: 'input#districtId',
+        resultTable: 'div.reports-view div[sortkey="report"] .v-table__wrapper > table',
+        rows: 'tbody > tr',
+        selections: 'div.v-menu',
+        advancedSearchButtons: 'div.advanced-search-button:visible',
+        messageAlert: 'div.advanced-search-form > div > div.text-error:visible'
+    },
+
     batchProcessing: {
         navBtn: 'a[href="/batch-processing"]',
         newRequestBtn: 'button[value="newBatchRequest"]',

@@ -2,7 +2,12 @@ import selectors from "../../support/selectors";
 const schoolsSelectors = selectors.schools
 
 describe('Schools', () => {
-  const test_school = Cypress.env('test_school')
+  const test_school = {
+    mincode: "00505034",
+    district: "005",
+    schoolName: "Fernie Secondary"
+  }
+  
   const invalidMessage = {
     empty: 'Enter at least one field to'
   }
