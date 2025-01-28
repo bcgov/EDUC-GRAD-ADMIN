@@ -53,6 +53,7 @@
             <v-menu location="end" :width="item.jobParameters ? 600 : 350">
               <template v-slot:activator="{ props }">
                 <v-btn
+                  @click="showBatchPayload(item.jobExecutionId)"
                   variant="plain"
                   v-bind="props"
                   :class="
@@ -155,14 +156,6 @@
                 >
               </v-card>
             </v-menu>
-
-            <v-popover
-              :target="'batch-job-id-btn' + item.jobExecutionId"
-              triggers="focus"
-              :ref="'popover-' + item.jobExecutionId"
-              class="w-40"
-            >
-            </v-popover>
           </template>
 
           <template v-slot:item.failedStudentsProcessed="{ item }">
@@ -185,8 +178,11 @@
           </template>
         </v-data-table>
       </v-col>
+
       <v-col cols="12" md="5" v-if="isBatchShowing">
-        <BatchJobSearchResults :selectedBatchId="adminSelectedBatchId"
+        <BatchJobSearchResults
+          v-if="isBatchShowing"
+          :selectedBatchId="adminSelectedBatchId"
           ><template v-slot:close>
             <v-btn
               color="bcGovBlue"
@@ -204,7 +200,10 @@
         >
       </v-col>
       <v-col cols="12" md="5" v-if="isErrorShowing">
-        <BatchJobErrorResults :selectedErrorId="adminSelectedErrorId">
+        <BatchJobErrorResults
+          v-if="isErrorShowing"
+          :selectedErrorId="adminSelectedErrorId"
+        >
           <template v-slot:close>
             <v-btn
               color="bcGovBlue"
@@ -234,6 +233,7 @@ import sharedMethods from "../../sharedMethods.js";
 import { useBatchProcessingStore } from "../../store/modules/batchprocessing";
 import { mapState, mapActions } from "pinia";
 import { useSnackbarStore } from "../../store/modules/snackbar";
+import { useAppStore } from "../../store/modules/app";
 
 export default {
   setup() {},
@@ -250,6 +250,7 @@ export default {
       adminSelectedErrorId: null,
       adminSelectedBatchId: null,
       snackbarStore: useSnackbarStore(),
+      appStore: useAppStore(),
       batchRunsFields: [
         {
           key: "jobDownload",
@@ -337,9 +338,41 @@ export default {
       batchRuns: "getBatchRuns",
       isBatchJobsLoading: "getIsGettingBatchJobsLoading",
     }),
+    ...mapState(useAppStore, {
+      getSchoolMincodeById: "getSchoolMincodeById",
+      getDistrictCodeById: "getDistrictCodeById",
+    }),
   },
   methods: {
     ...mapActions(useBatchProcessingStore, ["setBatchJobs"]),
+    showBatchPayload(id) {
+      const batchRun = this.batchRuns.find(
+        (batch) => batch.jobExecutionId === id
+      );
+
+      if (batchRun?.jobParameters?.payload?.schoolIds) {
+        if (Array.isArray(batchRun?.jobParameters?.payload?.schoolIds)) {
+          batchRun.jobParameters.payload.schoolIds =
+            batchRun.jobParameters.payload.schoolIds.map((schoolId) =>
+              schoolId && schoolId.length == 36
+                ? this.getSchoolMincodeById(schoolId)
+                : schoolId
+            );
+        }
+      }
+      if (batchRun?.jobParameters?.payload?.districtIds) {
+        if (Array.isArray(batchRun?.jobParameters?.payload?.districtIds)) {
+          batchRun.jobParameters.payload.districtIds =
+            batchRun.jobParameters.payload.districtIds.map((districtId) =>
+              districtId && districtId.length == 36
+                ? this.getDistrictCodeById(districtId)
+                : districtId
+            );
+        }
+      } else {
+        console.log(`Batch run with jobExecutionId ${id} not found.`);
+      }
+    },
     rerunBatch(bid) {
       BatchProcessingService.rerunBatch(bid).then((response) => {
         if (response) {
@@ -381,6 +414,9 @@ export default {
         });
     },
     setBatchId(id, type) {
+      this.isBatchShowing = false;
+      this.isErrorShowing = false;
+
       if (type == "batch") {
         this.isBatchShowing = true;
         this.isErrorShowing = false;

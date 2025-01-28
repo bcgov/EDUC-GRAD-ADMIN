@@ -207,8 +207,8 @@ export default {
               ) {
                 if (this.group === "School") {
                   isValid =
-                    this.getBatchRequest.schoolOfRecords &&
-                    this.getBatchRequest.schoolOfRecords.length > 0;
+                    this.getBatchRequest.schoolIds &&
+                    this.getBatchRequest.schoolIds.length > 0;
                 } else if (this.group === "Student") {
                   isValid =
                     this.getBatchRequest.pens &&
@@ -244,31 +244,6 @@ export default {
       "getBatchRequest",
       "getBatchRunTime",
     ]),
-    requestPayload() {
-      const requestTemplate = [
-        "districts",
-        "gradDateFrom",
-        "gradDateTo",
-        "localDownload",
-        "pens",
-        "programs",
-        "psiCodes",
-        "quantity",
-        "reportTypes",
-        "schoolCategoryCodes",
-        "schoolOfRecords",
-        "validateInput",
-      ];
-      const batchRequest = this.getBatchRequest;
-
-      // Filter the batch request using the requestTemplate array
-      return requestTemplate.reduce((acc, field) => {
-        if (batchRequest[field] !== undefined) {
-          acc[field] = batchRequest[field];
-        }
-        return acc;
-      }, {});
-    },
   },
   methods: {
     ...mapActions(useBatchRequestFormStore, [
@@ -299,7 +274,7 @@ export default {
       try {
         const requestTemplate = [
           "credentialTypeCode",
-          "districts",
+          "districtIds",
           "gradDateFrom",
           "gradDateTo",
           "localDownload",
@@ -310,7 +285,7 @@ export default {
           "activityCode",
           "reportTypes",
           "schoolCategoryCodes",
-          "schoolOfRecords",
+          "schoolIds",
           "validateInput",
         ];
         const requestPayload = generateRequestPayload(
