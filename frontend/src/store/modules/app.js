@@ -29,12 +29,12 @@ export const useAppStore = defineStore("app", {
           // Special school code for Ministry of Advanced Education 
           return "Ministry of Advanced Education";
         }
-        return state.schoolsList.find((school) => schoolId === school.schoolId)?.mincode || null;
+        return state.schoolsList.find((school) => schoolId === school.schoolId)?.mincode 
       };
     },
     getDistrictCodeById: (state) => {
       return (districtId) => {
-        return state.districtsList.find((district) => districtId === district.districtId)?.districtNumber || null;
+        return state.districtsList.find((district) => districtId === district.districtId)?.districtNumber;
       };
     },    
 

@@ -152,7 +152,6 @@
                   style="height: 200px; overflow-y: scroll"
                 >
                       {{ JSON.stringify(item.jobParameters, null, "\t") }}
-                      {{ item.jobParameters.payload.schoolIds }}
                     </pre
                 >
               </v-card>
@@ -341,26 +340,35 @@ export default {
     }),
     ...mapState(useAppStore, {
       getSchoolMincodeById: "getSchoolMincodeById",
+      getDistrictCodeById: "getDistrictCodeById",
     }),
   },
   methods: {
     ...mapActions(useBatchProcessingStore, ["setBatchJobs"]),
     showBatchPayload(id) {
+      console.log(id);
       const batchRun = this.batchRuns.find(
         (batch) => batch.jobExecutionId === id
       );
-      if (batchRun) {
+
+      if (batchRun?.jobParameters?.payload?.schoolIds) {
         if (Array.isArray(batchRun?.jobParameters?.payload?.schoolIds)) {
-          const schools = batchRun.jobParameters.payload.schoolIds.map(
-            (schoolId) => this.getSchoolMincodeById(schoolId)
-          );
-          batchRun.jobParameters.payload.schoolIds = schools;
+          batchRun.jobParameters.payload.schoolIds =
+            batchRun.jobParameters.payload.schoolIds.map((schoolId) =>
+              schoolId.length == 36
+                ? this.getSchoolMincodeById(schoolId)
+                : schoolId
+            );
         }
+      }
+      if (batchRun?.jobParameters?.payload?.districtIds) {
         if (Array.isArray(batchRun?.jobParameters?.payload?.districtIds)) {
-          const districts = batchRun.jobParameters.payload.districtIds.map(
-            (districtId) => this.getDistrictNumberById(districtId)
-          );
-          batchRun.jobParameters.payload.districtIds = districts;
+          batchRun.jobParameters.payload.districtIds =
+            batchRun.jobParameters.payload.districtIds.map((districtId) =>
+              districtId.length == 36
+                ? this.getDistrictCodeById(districtId)
+                : districtId
+            );
         }
       } else {
         console.log(`Batch run with jobExecutionId ${id} not found.`);
