@@ -121,7 +121,11 @@ export default {
   methods: {
     loadItems({ page, itemsPerPage, sortBy }) {
       this.batchLoading = true;
-      StudentService.getBatchHistory(this.selectedBatchId, this.itemsPerPage == -1 ? this.totalElements : this.itemsPerPage, page - 1)
+      StudentService.getBatchHistory(
+        this.selectedBatchId,
+        this.itemsPerPage == -1 ? this.totalElements : this.itemsPerPage,
+        page - 1
+      )
         .then((response) => {
           this.batchData = response.data.content;
           this.batchData.forEach((item) => {
@@ -135,28 +139,6 @@ export default {
         .catch((error) => {
           if (error.response.status) {
             this.batchLoading = false;
-          }
-        });
-    },
-
-    getAdminDashboardData(batchId, page) {
-      this.batchData = [];
-      this.batchLoading = true;
-      if (page) {
-        if (page > 0) {
-          page = page - 1;
-        }
-      }
-      StudentService.getBatchHistory(batchId, this.itemsPerPage == -1 ? this.totalElements : this.itemsPerPage, page)
-        .then((response) => {
-          this.batchData = response.data.content;
-          this.totalElements = response.data.totalElements;
-          this.itemsPerPage = response.data.size;
-          this.batchLoading = false;
-        })
-        .catch((error) => {
-          if (error.response.status) {
-            this.BatchLoading = false;
           }
         });
     },

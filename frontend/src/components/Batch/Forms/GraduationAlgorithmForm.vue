@@ -323,7 +323,6 @@ export default {
           "schoolIds",
           "validateInput",
         ];
-        console.log(this.getBatchRequest);
         const requestPayload = generateRequestPayload(
           this.getBatchRequest,
           requestTemplate

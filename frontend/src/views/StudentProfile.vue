@@ -924,6 +924,10 @@ export default {
       this.tabLoading = true;
       GraduationService.updateStudentReports(this.studentId)
         .then(() => {
+          this.loadStudentOptionalPrograms(this.studentId);
+          this.loadStudentHistory(this.studentId);
+          this.loadStudentOptionalProgramHistory(this.studentId);
+
           this.loadStudentReportsAndCertificates();
           StudentService.getGraduationStatus(this.studentId)
             .then((res) => {
