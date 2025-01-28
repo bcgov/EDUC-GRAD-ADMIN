@@ -93,20 +93,10 @@
                     />
                   </v-row>
                   <v-row v-if="group == 'School'">
-                    <SchoolInput> </SchoolInput>
+                    <SchoolInput disableSelectStudents> </SchoolInput>
                   </v-row>
                   <v-row v-if="group == 'School Category'">
-                    <DistrictInput> </DistrictInput>
-                  </v-row>
-                  <v-row v-if="group == 'All Schools'">
-                    <v-alert type="info" class="pb-2">
-                      <p>
-                        This will archive current school reports, which will
-                        become static and no longer be updated. School reports
-                        must be archived before the new data collection cycle
-                        begins so they are not overwritten entirely.
-                      </p>
-                    </v-alert>
+                    <DistrictInput disableSelectStudents> </DistrictInput>
                   </v-row>
                 </v-stepper-window-item>
 
