@@ -11,6 +11,7 @@ export const useAppStore = defineStore("app", {
     pageTitle: "GRAD",
     districtsList: [],
     schoolsList: [],
+    schoolsList2: [],
     transcriptTypes: [],
     certificationTypes: []
   }),
@@ -107,6 +108,15 @@ export const useAppStore = defineStore("app", {
               console.log(error);
             }
           });
+          ApiService.apiAxios
+          .get("/api/v1/institute/school/list")
+          .then((response) => {
+            try {
+              this.schoolsList2 = response.data;
+            } catch (error) {
+              console.log(error);
+            }
+          });
 
         // SET INSTITUTE SCHOOL AND DISTRICT DATA
         
@@ -157,12 +167,7 @@ export const useAppStore = defineStore("app", {
           } catch (error) {
             console.error(error);
           }
-        });
-        ApiService.apiAxios
-          .get("/api/v1/institute/allSchools")
-          .then((response) => {
-            
-          });        
+        });    
         GraduationReportService.getTranscriptTypes().then((response) => {
           try {
             this.transcriptTypes = response.data;

@@ -25,8 +25,7 @@ const cacheService = {
     await retry(async () => {
       // if anything throws, we retry
       const data = await getApiCredentials(); // get the tokens first to make api calls.
-      
-      const schoolsResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/institute/school`);
+      const schoolsResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/api/v1/institute/school`);
       schools = []; // reset the value.
       schoolMap.clear();// reset the value.
       mincode_school_ID_Map.clear();
@@ -65,7 +64,7 @@ const cacheService = {
     log.debug('Loading all districtsMap');
     await retry(async () => {
       const data = await getApiCredentials();
-      const districtsResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/institute/district`);
+      const districtsResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/api/v1/institute/district`);
       // reset the value.
       districts = [];
       activeDistricts = [];

@@ -97,6 +97,10 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=GRAD_REPORT_API_URL="http://educ-grad-report-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --from-literal=GRAD_TRAX_API_URL="http://educ-grad-trax-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --from-literal=INSTITUTE_API_URL="http://institute-api-master.$COMMON_NAMESPACE-$ENV.svc.cluster.local:8080" \
+  --from-literal=NATS_URL="nats://nats.$COMMON_NAMESPACE-$ENV.svc.cluster.local:4222" \
+  
+
+  
   --dry-run=client -o yaml | oc apply -f -
 
 #### splunk

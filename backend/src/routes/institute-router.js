@@ -29,9 +29,6 @@ router.get('/school/list', passport.authenticate('jwt', {session: false}, undefi
 router.get('/school/:schoolID',passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getFullSchoolDetails);
 router.get('/district/list', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getAllDistrictList);
 
-
-
-
 router.get("/*", getInstituteAPI);
 
 async function getInstituteAPI(req, res) {

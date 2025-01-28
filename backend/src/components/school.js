@@ -39,11 +39,12 @@ async function getAllCachedSchools(_req, res){
 async function getAllSchoolsList(_req, res){
   try {
     const schoolData = cacheService.getAllSchoolsJSON();
-    const schoolsList = schoolData.map(({ schoolId, displayName, mincode }) => ({
-      schoolId,
-      displayName,
+    const schoolsList = schoolData.map(({ schoolID, schoolName, mincode }) => ({
+      schoolID,
+      schoolName,
       mincode,
     }));
+
     return res.status(200).json(schoolsList ? schoolsList : []);
   } catch (e) {
     logApiError(e, 'getAllSchoolList', 'Error occurred while attempting to GET school entity.');
