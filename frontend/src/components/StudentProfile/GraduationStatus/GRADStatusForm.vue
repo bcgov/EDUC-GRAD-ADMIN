@@ -819,7 +819,12 @@ export default {
           (value) => {
             return (
               this.editedGradStatus.program !== "1950" ||
-              !(this.editedGradStatus.schoolOfRecord.search(/^103.*/) >= 0)
+              !(
+                this.getSchoolMincodeById(
+                  this.getSchoolsList,
+                  this.editedGradStatus.schoolOfRecordId
+                ).search(/^103.*/) >= 0
+              )
             );
           }
         ),
@@ -898,14 +903,14 @@ export default {
         ),
         ifSchoolOfRecordIsValid: helpers.withMessage(
           () => {
-            if (this.editedGradStatus.schoolOfRecord) {
+            if (this.editedGradStatus.schoolOfRecordId) {
               return this.validateSchoolInfo(
-                this.editedGradStatus.schoolOfRecord
+                this.editedGradStatus.schoolOfRecordId
               );
             }
           },
           (value) => {
-            return this.editedGradStatus.schoolOfRecord;
+            return this.editedGradStatus.schoolOfRecordId;
           }
         ),
         //School at Grad
@@ -937,14 +942,14 @@ export default {
         // ),
         ifSchoolAtGraduation: helpers.withMessage(
           () => {
-            if (this.editedGradStatus.schoolAtGrad) {
+            if (this.editedGradStatus.schoolAtGradId) {
               return this.validateSchoolInfo(
-                this.editedGradStatus.schoolAtGrad
+                this.editedGradStatus.schoolAtGradId
               ); // Call your dynamic function here
             }
           },
           (value) => {
-            return this.editedGradStatus.schoolAtGrad;
+            return this.editedGradStatus.schoolAtGradId;
           }
         ),
         ifSchoolAtGraduationEmptyAndProgramCompletionNotEmpty:
