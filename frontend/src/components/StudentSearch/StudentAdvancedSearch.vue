@@ -417,14 +417,14 @@ export default {
         },
         {
           key: "mincode",
-          title: "School of Record (Inst.)",
+          title: "School of Record (GRAD)",
           sortable: true,
           editable: false,
           class: "w-1",
         },
         {
           key: "schoolOfRecordName",
-          title: "School of Record Name (Inst.)",
+          title: "School of Record Name (Institute)",
           sortable: true,
           editable: false,
           class: "w-1",
@@ -438,7 +438,7 @@ export default {
         },
         {
           key: "schoolCategoryCode",
-          title: "School Category Code (Inst.)",
+          title: "School Category Code (Institute)",
           sortable: true,
           editable: false,
           class: "w-1",
@@ -515,6 +515,7 @@ export default {
     }),
     ...mapState(useAppStore, {
       getSchoolsList: "getSchoolsList",
+      displaySchoolCategoryCode: "displaySchoolCategoryCode",
     }),
   },
   ...mapActions(useStudentStore, ["unsetStudent"]),
@@ -603,7 +604,9 @@ export default {
           student.schoolOfRecordName =
             school.displayNameNoSpecialChars || school.displayName; // Update schoolOfRecordName
           student.mincode = school.mincode; // Update mincode
-          student.schoolCategoryCode = school.schoolCategoryCode; // Add schoolCategoryCode
+          student.schoolCategoryCode = this.displaySchoolCategoryCode(
+            school.schoolCategoryCode
+          ); // Add schoolCategoryCode
         }
       });
     },

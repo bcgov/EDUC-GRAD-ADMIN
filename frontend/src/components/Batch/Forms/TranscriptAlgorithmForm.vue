@@ -325,7 +325,9 @@ export default {
           );
         } else {
           this.snackbarStore.showSnackbar(
-            "Transcript verification report request submitted",
+            "Batch " + 
+            response.data.batchId +
+            "- Transcript verification report request submitted",
             "success",
             10000
           );

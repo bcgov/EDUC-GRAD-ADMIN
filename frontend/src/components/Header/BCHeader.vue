@@ -160,7 +160,7 @@ export default {
         { id: "codes", title: "Codes", route: "/codes" },
         {
           id: "schoolReports",
-          title: "School Reports",
+          title: "Reports",
           route: "/school-reports",
         },
         {

@@ -4,7 +4,9 @@
       <v-card-text class="py-1">
         <div v-if="studentGradStatus.studentGradData">
           <div v-if="studentGradStatus.studentGradData.school">
-            <div v-if="!isTranscriptEligible()">
+            <div
+              v-if="!isTranscriptEligible(studentGradStatus.schoolOfRecordId)"
+            >
               <v-alert type="info" class="">
                 <h4 class="alert-heading">
                   Ineligible for Ministry transcripts
@@ -106,6 +108,7 @@
 <script>
 import { mapState } from "pinia";
 import { useStudentStore } from "../../../store/modules/student";
+import { useAppStore } from "../../../store/modules/app.js";
 import sharedMethods from "../../../sharedMethods.js";
 export default {
   name: "StudentGraduationReports",
@@ -117,31 +120,22 @@ export default {
       studentGradStatus: "getStudentGradStatus",
       optionalPrograms: "getStudentOptionalPrograms",
     }),
+    ...mapState(useAppStore, {
+      getSchoolById: "getSchoolById",
+    }),
   },
   methods: {
     downloadFile: function (data, mimeType, filename) {
       sharedMethods.base64ToFileTypeAndOpenWindow(data, mimeType, filename);
     },
-    isTranscriptEligible: function () {
-      return (
-        this.studentGradStatus.studentGradData.school.transcriptEligibility ===
-        "Y"
-      );
+    isTranscriptEligible: function (schoolId) {
+      return this.getSchoolById(schoolId)?.canIssueTranscripts;
     },
+
     showXMLPreview: function () {
       return (
-        this.studentGradStatus &&
-        this.studentGradStatus.studentGradData &&
-        ((this.studentGradStatus.studentGradData.studentAssessments &&
-          this.studentGradStatus.studentGradData.studentAssessments
-            .studentAssessmentList.length) ||
-          (this.studentGradStatus.studentGradData.studentCourses &&
-            this.studentGradStatus.studentGradData.studentCourses
-              .studentCourseList.length) ||
-          (this.studentGradStatus.studentGradData.studentExams &&
-            this.studentGradStatus.studentGradData.studentExams.length) ||
-          (this.optionalPrograms && this.optionalPrograms.length)) &&
-        this.isTranscriptEligible()
+        !!this.studentGradStatus &&
+        this.isTranscriptEligible(this.studentGradStatus.schoolOfRecordId)
       );
     },
   },

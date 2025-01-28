@@ -4,9 +4,7 @@
       variant="text"
       @click="schoolDialog = !schoolDialog"
       class="text-left px-0 text-none"
-      >{{ school.displayName }}<br />{{
-        school.mincode
-      }}</v-btn
+      >{{ school.displayName }}<br />{{ school.mincode }}</v-btn
     >
     <v-dialog v-model="schoolDialog" max-width="600px">
       <v-card :title="title">
@@ -31,9 +29,7 @@
           </div>
           <div class="my-1">
             <strong>School Category </strong
-            >{{
-              getInstituteCategoryByCode(school.schoolCategoryCode)?.legacyCode
-            }}&nbsp;{{ school.schoolCategoryCode }}
+            >{{ displaySchoolCategoryCode(school.schoolCategoryCode) }}
           </div>
           <div class="my-1">
             <strong>Issue Transcripts </strong
@@ -56,16 +52,13 @@ import { formatFlag } from "@/utils/common.js";
 
 export default {
   props: {
-    school: {
-      type: Object,
-      required: true,
-    },
+    school: Object,
     title: String,
   },
   computed: {
     ...mapState(useAppStore, {
       getDistrictById: "getDistrictById",
-      getInstituteCategoryByCode: "getInstituteCategoryByCode",
+      displaySchoolCategoryCode: "displaySchoolCategoryCode",
     }),
   },
   methods: {

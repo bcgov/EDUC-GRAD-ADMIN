@@ -50,8 +50,7 @@ nconf.defaults({
     programAPIURL: process.env.PROGRAM_API_URL,
     studentAPIURL: process.env.GRAD_STUDENT_API_URL,
     studentGraduationAPIURL: process.env.STUDENT_GRADUATION_API_URL,
-    gradTraxAPIURLv1: process.env.GRAD_TRAX_API_URL,
-    gradTraxAPIURLv2: process.env.GRAD_TRAX_API_URL_V2,
+    gradTraxAPIURL: process.env.GRAD_TRAX_API_URL,
     reportAPIURL: process.env.GRAD_REPORT_API_URL,
     distributionAPIURL: process.env.DISTRIBUTION_API_URL,
     instituteAPIURL: process.env.INSTITUTE_API_URL,
@@ -60,6 +59,8 @@ nconf.defaults({
     publicKey: process.env.SOAM_PUBLIC_KEY,
     clientId: process.env.SOAM_CLIENT_ID,
     clientSecret: process.env.SOAM_CLIENT_SECRET,
+    serviceClientId: process.env.SOAM_SERVICE_CLIENT_ID,
+    serviceClientSecret: process.env.SOAM_SERVICE_CLIENT_SECRET,
     discovery: process.env.SOAM_DISCOVERY,
   },
   tokenGenerate: {

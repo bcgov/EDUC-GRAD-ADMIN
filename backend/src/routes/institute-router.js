@@ -6,8 +6,7 @@ const auth = require("../components/auth");
 const roles = require("../components/roles");
 const {
   errorResponse,
-  getBackendToken,
-  getData,
+  getCommonServiceData,
   postData,
   putData,
   deleteData,
@@ -25,10 +24,12 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
 router.get("/*", getInstituteAPI);
 
 async function getInstituteAPI(req, res) {
-  const token = getBackendToken(req);
+  const version = req.version;
   try {
-    const url = `${config.get("server:instituteAPIURL")}/institute` + req.url;
-    const data = await getData(token, url, req.session?.correlationID);
+    const url = `${config.get(
+      "server:instituteAPIURL"
+    )}/api/${version}/institute${req.url}`;
+    const data = await getCommonServiceData(url);
     return res.status(200).json(data);
   } catch (e) {
     if (e.data.message) {
