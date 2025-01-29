@@ -156,14 +156,6 @@ describe('Student Search', () => {
     beforeEach(() => {
       cy.login()
       cy.visit('/')
-
-      // If still not logged in, login
-      cy.doesExist(selectors.login.loginBtn).then((exist) => {
-        if (exist) {
-          cy.get(selectors.login.loginBtn).eq(0).click()
-        }
-      })
-      
       cy.get(studentSearchSelectors.title).should('contain.text', 'Student Search')
       cy.get(studentSearchSelectors.advancedSearchBtn).click()
       cy.contains('Advanced Student Search')
@@ -199,14 +191,6 @@ describe('Student Search', () => {
     before(() => {
       cy.login()
       cy.visit('/')
-
-      // If still not logged in, login
-      cy.doesExist(selectors.login.loginBtn).then((exist) => {
-        if (exist) {
-          cy.get(selectors.login.loginBtn).eq(0).click()
-        }
-      })
-      
       cy.get(studentSearchSelectors.title).should('contain.text', 'Student Search')
     })
 
