@@ -74,5 +74,8 @@ nconf.defaults({
     port: process.env.REDIS_PORT,
     password: process.env.REDIS_PASSWORD,
   },
+  frontendConfig: {
+    studentAdminURL: process.env.STUDENT_ADMIN_URL
+  },
 });
 module.exports = nconf;

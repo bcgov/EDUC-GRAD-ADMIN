@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import ApiService from "../../common/apiService.js";
 import InstituteService from "../../services/InstituteService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
+import CommonService from "../../services/CommonService.js";
+
 import sharedMethods from "../../sharedMethods.js";
 export const useAppStore = defineStore("app", {
   state: () => ({
@@ -12,7 +14,8 @@ export const useAppStore = defineStore("app", {
     districtsList: [],
     schoolsList: [],
     transcriptTypes: [],
-    certificationTypes: []
+    certificationTypes: [],
+    config: null
   }),
   getters: {
     getProgramOptions: (state) => state.programOptions,
@@ -87,7 +90,8 @@ export const useAppStore = defineStore("app", {
         );
     },
     getTranscriptTypes: (state) => state.transcriptTypes,
-    getCertificateTypes: (state) => state.certificationTypes
+    getCertificateTypes: (state) => state.certificationTypes,
+    getConfig: (state) => state.config
   },
   actions: {
     setApplicationVariables() {
@@ -98,7 +102,13 @@ export const useAppStore = defineStore("app", {
           });
           this.programOptions = programs;
         });
-
+        CommonService.getConfig().then((response) => {   
+           try {
+             this.config = response.data;
+           } catch (error) {
+             console.log(error);
+           }
+         });
         ApiService.apiAxios
           .get("/api/v1/student/studentstatus")
           .then((response) => {
@@ -208,7 +218,7 @@ export const useAppStore = defineStore("app", {
               );
             }
           }
-        })
+        });        
       }
     },
   },
