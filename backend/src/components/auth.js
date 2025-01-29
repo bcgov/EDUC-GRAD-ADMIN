@@ -335,8 +335,8 @@ const auth = {
       const response = await axios.post(
         discovery.token_endpoint,
         qs.stringify({
-          client_id: config.get("oidc:clientId"),
-          client_secret: config.get("oidc:clientSecret"),
+          client_id: config.get("oidc:serviceClientId"),
+          client_secret: config.get("oidc:serviceClientSecret"),
           grant_type: "client_credentials",
           scope: "profile openid",
         }),
