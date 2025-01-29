@@ -210,18 +210,14 @@ const router = createRouter({
       name: "Schools",
       beforeEnter: (to, from, next) => {
         const authStore = useAuthStore();
-        const appStore = useAppStore();
-        
+        const appStore = useAppStore();        
         if(appStore.config && appStore.config?.STUDENT_ADMIN_URL) {
           // Open the route in a new tab
-          window.open(appStore.config.STUDENT_ADMIN_URL+"/api/auth/silent_idir_login?schoolSearch=true&idir_guid="+authStore.userInfo.userGuid.toLowerCase(), '_blank');   
-          // Prevent normal navigation since we've opened the link in a new tab
-          next(false);
-        } else {
-          next();
-        }        
-      },
-      component: () => import("../views/Schools.vue"),
+          window.open(appStore.config.STUDENT_ADMIN_URL+"/api/auth/silent_idir_login?schoolSearch=true&idir_guid="+authStore.userInfo.userGuid.toLowerCase(), '_blank');  
+        }
+        // Prevent normal navigation since we've opened the link in a new tab 
+        next(false);        
+      },      
       meta: {
         requiresAuth: true,
       },
