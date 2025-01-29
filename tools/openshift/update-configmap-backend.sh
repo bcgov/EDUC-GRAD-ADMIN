@@ -12,6 +12,7 @@ COMMON_NAMESPACE=$8
 GRAD_NAMESPACE=$9
 GRAD_BUSINESS_NAMESPACE=${10}
 SOAM_SERVICE_CLIENT_SECRET=${11}
+STUDENT_ADMIN_NAMESPACE=${12}
 
 SOAM_KC_REALM_ID="master"
 SOAM_KC=soam-$ENV.apps.silver.devops.gov.bc.ca
@@ -100,6 +101,7 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=GRAD_REPORT_API_URL="http://educ-grad-report-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --from-literal=GRAD_TRAX_API_URL="http://educ-grad-trax-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --from-literal=INSTITUTE_API_URL="http://institute-api-master.$COMMON_NAMESPACE-$ENV.svc.cluster.local:8080" \
+  --from-literal=STUDENT_ADMIN_URL="https://student-admin-$STUDENT_ADMIN_NAMESPACE-$ENV.apps.silver.devops.gov.bc.ca" \
   --dry-run=client -o yaml | oc apply -f -
 
 #### splunk
