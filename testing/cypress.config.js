@@ -4,13 +4,17 @@ module.exports = defineConfig({
   chromeWebSecurity: false,
   defaultCommandTimeout: 10000,
   numTestsKeptInMemory: 0,
-  experimentalMemoryManagement: true,
-  screenshotOnRunFailure: true,
+  experimentalMemoryManagement: true, 
+  screenshotOnRunFailure: false,
   watchForFileChanges: false,
-  retries: 1,
+  retries: {
+    runMode: 1,
+    openMode: 0
+  },
   e2e: {
     baseUrl: 'https://dev.grad.gov.bc.ca',
-    excludeSpecPattern: ['cypress/e2e/batchProcessing/*.cy.js'],
+    experimentalRunAllSpecs: true,
+    excludeSpecPattern: ['cypress/e2e/batchProcessing/graduationAlgorithm.cy.js'],
     setupNodeEvents(on, config) {
 
     },

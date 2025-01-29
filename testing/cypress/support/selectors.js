@@ -119,6 +119,19 @@ export default {
         rows: 'div.schools-view .v-table > .v-table__wrapper > table > tbody > tr'
     },
 
+    psi: {
+        navBtn: 'a[href="/psi"]',
+        psiReqForm: 'form#psiReqForm',
+        psiCodeInput: 'input#psiCode',
+        psiNameInput: 'input#psiName',
+        cslCodeInput: 'input#cslCode',
+        activeFlagSelection: 'form#psiReqForm div[role="combobox"] input',
+        transmissionModeInput: 'input#transmissionMode',
+        selections: 'div.v-menu',
+        rows: 'div.psi-view .v-table > .v-table__wrapper > table > tbody > tr',
+        errorMsg: 'form#psiReqForm div.text-error:visible'
+    },
+
     codes: {
         navBtn: 'a[href="/codes"]',
         careerProgramCodesBtn: 'a[href="/codes/career-programs"]',
@@ -147,12 +160,23 @@ export default {
 
     batchProcessing: {
         navBtn: 'a[href="/batch-processing"]',
+        batchRunsBtn: 'button[value="batchRuns"]',
         newRequestBtn: 'button[value="newBatchRequest"]',
+        userScheduledBtn: 'button[value="scheduledRuns"]',
+        scheduledRoutinesBtn: 'button[value="batchRoutines"]',
         selections: 'div.v-menu',
         overlayWindow: 'body > div.v-overlay-container > .v-overlay--active > .v-overlay__content .v-sheet',
         autocomplete: 'div.v-autocomplete__selection',
-        batchRunsTable: 'div#id > .v-table__wrapper > table > tbody',
-        newRow: 'tr.v-data-table__tr:nth-child(1)',
-        batchStatusCol: 'td:nth-child(7)'
+        batchTable: '.v-table__wrapper > table > tbody:visible',
+        itemPerPage: 'div[role="combobox"][aria-haspopup="listbox"]',
+        rows: 'tr.v-data-table__tr',
+        firstRow: 'tr.v-data-table__tr:nth-child(1)',
+        secondRow: 'tr:nth-child(2)',
+        batchStatusCol: 'td:nth-child(7)',
+        viewBatchResultBtn: 'div.v-overlay-container .v-overlay__content .v-list > .v-list-item:nth-child(1)',
+        rerunSchoolReportBtn: 'div.v-overlay-container .v-overlay__content .v-list > .v-list-item:nth-child(2)',
+        activeWindow: 'div.batch-processing-view > div > .v-window > .v-window__container > .v-window-item:visible',
+        batchJobResultTable: 'div.v-row > div:nth-child(2) .v-table > .v-table__wrapper > table > tbody',
+        batchJobResultTableWrapper: 'div.v-row > div:nth-child(2) .v-table'
     }
 }

@@ -1,10 +1,10 @@
 import selectors from "../../support/selectors"
 const batchProcessingSelectors = selectors.batchProcessing
 
-// Problem: Only looks at the first row
+// Problem: Only looks at the first row (not working)
 function refreshTableTillComplete(timeout, interval = 3000) {
     let refreshCount = timeout / interval
-    const statusColSelector = batchProcessingSelectors.batchRunsTable + " " + batchProcessingSelectors.newRow + " " + batchProcessingSelectors.batchStatusCol
+    const statusColSelector = batchProcessingSelectors.batchRunsTable + " " + batchProcessingSelectors.firstRow + " " + batchProcessingSelectors.batchStatusCol
 
     cy.get(statusColSelector).should('contain.text', 'STARTED')
 
@@ -50,12 +50,12 @@ describe('Graduation Algorithm', () => {
             cy.get(batchProcessingSelectors.overlayWindow).contains('Submit').click()
 
             // Batch run result
-            // cy.get(batchProcessingSelectors.batchRunsTable).find(batchProcessingSelectors.newRow).find(batchProcessingSelectors.batchStatusCol).should('contain.text', 'STARTED')
+            // cy.get(batchProcessingSelectors.batchRunsTable).find(batchProcessingSelectors.firstRow).find(batchProcessingSelectors.batchStatusCol).should('contain.text', 'STARTED')
             // cy.wait(10000)
             // cy.contains('Update').click({force: true})
-            // cy.get(batchProcessingSelectors.batchRunsTable).find(batchProcessingSelectors.newRow).find(batchProcessingSelectors.batchStatusCol).should('contain.text', 'COMPLETED')
+            // cy.get(batchProcessingSelectors.batchRunsTable).find(batchProcessingSelectors.firstRow).find(batchProcessingSelectors.batchStatusCol).should('contain.text', 'COMPLETED')
             refreshTableTillComplete(30000)
-            cy.get(batchProcessingSelectors.batchRunsTable).find(batchProcessingSelectors.newRow).find(batchProcessingSelectors.batchStatusCol).should('contain.text', 'COMPLETED')
+            cy.get(batchProcessingSelectors.batchRunsTable).find(batchProcessingSelectors.firstRow).find(batchProcessingSelectors.batchStatusCol).should('contain.text', 'COMPLETED')
             cy.get(batchProcessingSelectors.batchRunsTable).find(batchProcessingSelectors.batchJobId).then(($element) => {
                 const text = $element.text()
                 
