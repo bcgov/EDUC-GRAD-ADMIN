@@ -315,10 +315,7 @@
                   >
                     Warning: School
                     {{
-                      getSchoolMincodeById(
-                        getSchoolsList,
-                        editedGradStatus.schoolOfRecordId
-                      )
+                      getSchoolMincodeById(editedGradStatus.schoolOfRecordId)
                     }}
                     is not reported with grade 10-12 enrolments.
                   </div>
@@ -329,10 +326,7 @@
                   >
                     Warning: School
                     {{
-                      getSchoolMincodeById(
-                        getSchoolsList,
-                        editedGradStatus.schoolOfRecordId
-                      )
+                      getSchoolMincodeById(editedGradStatus.schoolOfRecordId)
                     }}
                     is not authorized to issue Transcripts.
                   </div>
@@ -389,9 +383,9 @@
                   <strong>School at graduation:</strong><br />
                   <div hidden>
                     {{ v$.editedGradStatus.ifSchoolAtGradGrades10To12 }}
-                    {{
+                    <!-- {{
                       v$.editedGradStatus.ifSchoolAtGradTranscriptEligibility
-                    }}
+                    }} -->
                   </div>
 
                   <!-- <div
@@ -408,12 +402,7 @@
                     v-if="warningFlags.schoolAtGrad10To12Warning == true"
                   >
                     Warning: School
-                    {{
-                      getSchoolMincodeById(
-                        getSchoolsList,
-                        editedGradStatus.schoolAtGradId
-                      )
-                    }}
+                    {{ getSchoolMincodeById(editedGradStatus.schoolAtGradId) }}
                     is not reported with grade 10-12 enrolments.
                   </div>
                   <div
@@ -421,12 +410,7 @@
                     v-if="warningFlags.schoolAtGradTranscriptWarning == true"
                   >
                     Warning: School
-                    {{
-                      getSchoolMincodeById(
-                        getSchoolsList,
-                        editedGradStatus.schoolAtGradId
-                      )
-                    }}
+                    {{ getSchoolMincodeById(editedGradStatus.schoolAtGradId) }}
                     is not authorized to issue Transcripts.
                   </div>
                   <div
@@ -662,6 +646,8 @@ export default {
       programOptions: "getProgramOptions",
       studentStatusOptions: "getStudentStatusOptions",
       getSchoolsList: "getSchoolsList",
+      getSchoolMincodeById: "getSchoolMincodeById",
+      getSchoolById: "getSchoolById",
     }),
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
@@ -821,7 +807,6 @@ export default {
               this.editedGradStatus.program !== "1950" ||
               !(
                 this.getSchoolMincodeById(
-                  this.getSchoolsList,
                   this.editedGradStatus.schoolOfRecordId
                 ).search(/^103.*/) >= 0
               )
@@ -1238,12 +1223,9 @@ export default {
           );
         });
     },
-    validateSchoolInfo(schoolToValidate) {
+    validateSchoolInfo(schoolToValidateId) {
       this.warningFlags.schoolWarning = false;
-      let schoolInfo = this.getSchoolByMincode(
-        this.getSchoolsList,
-        schoolToValidate
-      );
+      let schoolInfo = this.getSchoolById(schoolToValidateId);
       this.warningFlags.schoolWarning = !this.isSchoolOpen(schoolInfo);
     },
     async isSchoolGrades10To12(type, schoolId) {
@@ -1253,6 +1235,7 @@ export default {
         const schoolGradesToCheck = ["GRADE10", "GRADE11", "GRADE12"];
         // Create a Set from the schoolGradesToCheck array for efficient lookups.
         const gradesToCheckSet = new Set(schoolGradesToCheck);
+        // Calling out to institute for GRADES
         const response = await InstituteService.getSchoolById(schoolId);
         const schoolGrades = response?.data?.grades;
         for (const grade of schoolGrades) {
@@ -1274,7 +1257,7 @@ export default {
       }
     },
     isSchoolTranscriptEligible(type, schoolId) {
-      let school = this.getSchoolById(this.getSchoolsList, schoolId);
+      let school = this.getSchoolById(schoolId);
       if (school) {
         if (type == "schoolOfRecord") {
           this.warningFlags.schoolOfRecordTranscriptWarning =
@@ -1290,16 +1273,6 @@ export default {
         return false;
       }
     },
-    getSchoolByMincode(schools, mincode) {
-      return schools.find((school) => school.mincode === mincode) || null;
-    },
-    getSchoolById(schools, schoolId) {
-      return schools.find((school) => school.schoolId === schoolId) || null;
-    },
-    getSchoolMincodeById(schools, schoolId) {
-      const school = schools.find((school) => school.schoolId === schoolId);
-      return school ? school.mincode : null;
-    },
     isSchoolOpen(school) {
       const openedDate = new Date(school?.openedDate);
       const closedDate = school?.closedDate
@@ -1309,13 +1282,6 @@ export default {
 
       // Check if the openedDate is in the past and closedDate is null
       return openedDate < currentDate && closedDate === null;
-    },
-    ifProgramsWithExpiry(program) {
-      for (let p of this.programsWithExpiry) {
-        if (program == p) {
-          return true;
-        }
-      }
     },
   },
 };
