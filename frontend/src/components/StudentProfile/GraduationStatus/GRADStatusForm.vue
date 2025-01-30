@@ -1015,6 +1015,9 @@ export default {
     schoolOfRecordIdChange: function () {
       this.checkForErrors();
     },
+    schoolAtGradIdChange: function () {
+      this.checkForErrors();
+    },
   },
 
   methods: {
