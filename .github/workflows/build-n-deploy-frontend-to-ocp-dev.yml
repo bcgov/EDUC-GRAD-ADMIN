@@ -1,4 +1,4 @@
-name: Build & Deploy Frontend-DEV
+ name: Build & Deploy Frontend-DEV
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -41,6 +41,15 @@ on:
   workflow_dispatch:
 
 jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@2
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        
   openshift-ci-cd:
     name: Build & Deploy Frontend to DEV
     # ubuntu-latest can also be used.
@@ -145,7 +154,7 @@ jobs:
           # Create the image stream if it doesn't exist
           oc create imagestream ${{ env.APP_NAME }}-frontend 2> /dev/null || true && echo "Frontend image stream in place"
           oc tag ${{ steps.push-image-frontend.outputs.registry-path }} ${{ env.APP_NAME }}-frontend:${{ env.TAG }}
-
+      
         # https://github.com/redhat-actions/oc-login#readme
       - uses: actions/checkout@v2
       - name: Deploy
