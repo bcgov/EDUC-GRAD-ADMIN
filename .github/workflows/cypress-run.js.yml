@@ -2,7 +2,7 @@ name: Run Cypress Tests
 
 on: 
   workflow_run:
-    workflows: ["Build & Deploy Frontend-DEV"]
+    workflows: [Build & Deploy Frontend-DEV]
     types:
       - completed
     workflow_dispatch:
