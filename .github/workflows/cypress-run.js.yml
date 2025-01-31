@@ -1,6 +1,11 @@
 name: Run Cypress Tests
 
-on: push
+on: 
+  workflow_run:
+    workflows: ["Build & Deploy Frontend-DEV"]
+    types:
+      - completed
+    workflow_dispatch:
 
 jobs:
   cypress-run:
