@@ -427,6 +427,19 @@
                         .$message
                     }}
                   </div>
+                  <div
+                    class="bg-error"
+                    v-if="
+                      v$.editedGradStatus
+                        .ifSchoolAtGradIdProgramIs1950AndOffshore.$invalid ==
+                      true
+                    "
+                  >
+                    {{
+                      v$.editedGradStatus
+                        .ifSchoolAtGradIdProgramIs1950AndOffshore.$message
+                    }}
+                  </div>
                   <v-autocomplete
                     data-cy="school-at-graduation-autoselect"
                     v-model="editedGradStatus.schoolAtGradId"
@@ -813,6 +826,19 @@ export default {
             );
           }
         ),
+        ifSchoolAtGradIdProgramIs1950AndOffshore: helpers.withMessage(
+          "Offshore schools do not support the Adult Graduation Program.",
+          (value) => {
+            return (
+              this.editedGradStatus.program !== "1950" ||
+              !(
+                this.getSchoolMincodeById(
+                  this.editedGradStatus.schoolAtGradId
+                ).search(/^103.*/) >= 0
+              )
+            );
+          }
+        ),
         // End of Program Validations
         // Program Completion Date
         ifProgramCompletionDatePriorToStartOfProgram: helpers.withMessage(
@@ -1155,6 +1181,7 @@ export default {
         this.v$.editedGradStatus.ifProgramIs1950studentGradeMustbeADorAN,
         this.v$.editedGradStatus.ifProgramIsNot1950studentGradeCannotBeADorAN,
         this.v$.editedGradStatus.ifProgramIs1950AndOffshore,
+        this.v$.editedGradStatus.ifSchoolAtGradIdProgramIs1950AndOffshore,
       ];
 
       // If any of the validations are invalid, blockSave will be true
