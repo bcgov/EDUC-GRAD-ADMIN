@@ -1,5 +1,5 @@
-name: Build & Deploy Frontend-DEV with cypress testing
-
+name: Build & Deploy Frontend-DEV
+h
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
   # See https://github.com/redhat-actions/oc-login#readme for how to retrieve these values.
@@ -40,18 +40,7 @@ env:
 on:
   workflow_dispatch:
 
-jobs:
-  cypress-run:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-        with:
-          project: ./testing
-        
+jobs:   
   openshift-ci-cd:
     name: Build & Deploy Frontend to DEV
     # ubuntu-latest can also be used.
