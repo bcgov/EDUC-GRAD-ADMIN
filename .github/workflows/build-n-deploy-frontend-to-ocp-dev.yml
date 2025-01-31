@@ -1,4 +1,4 @@
-name: Build & Deploy Frontend-DEV
+name: Build & Deploy Frontend-DEV with cypress testing
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@2
+        uses: actions/checkout@4
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
