@@ -5,7 +5,7 @@ on:
     workflows: [Build & Deploy Frontend-DEV]
     types:
       - completed
-    workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   cypress-run:
