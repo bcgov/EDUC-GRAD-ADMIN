@@ -15,7 +15,13 @@ module.exports = defineConfig({
     baseUrl: 'https://dev.grad.gov.bc.ca',
     experimentalRunAllSpecs: true,
     setupNodeEvents(on, config) {
+      on('task', {
+        log(message) {
+          console.log(message)
 
+          return null
+        }
+      })
     },
   },
 });

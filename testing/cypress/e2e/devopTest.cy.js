@@ -5,7 +5,7 @@ describe('Test for cypress deployment', () => {
       'To access the Graduation Administration Application, you must have a valid IDIR.'
     )
 
-    cy.log(Cypress.env('username'))
+    cy.task('log', Cypress.env('username'))
     cy.login()
     cy.visit('/')
     cy.get('body').should('contain.text', 
