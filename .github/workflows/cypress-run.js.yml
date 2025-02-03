@@ -4,6 +4,12 @@ env:
   TARGET_ENV: "dev"
 
 on: 
+  workflow_run: # Run after cypress branch is deployed
+    workflows: [Build & Deploy Frontend-DEV]
+    types:
+      - completed
+    branches:
+      - cypress
   workflow_dispatch:
 
 jobs:
