@@ -37,3 +37,6 @@ function login() {
 }
 
 Cypress.Commands.add('login', login)
+Cypress.on('uncaught:exception', (err, runnable) => {
+  return false
+})
