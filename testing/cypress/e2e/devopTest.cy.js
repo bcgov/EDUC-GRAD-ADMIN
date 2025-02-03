@@ -5,6 +5,11 @@ describe('Test for cypress deployment', () => {
       'To access the Graduation Administration Application, you must have a valid IDIR.'
     )
 
-    
+    cy.login()
+    cy.visit('/')
+
+    cy.get('body').should('contain.text', 
+      'PEN Search'
+    )
   })
 })
