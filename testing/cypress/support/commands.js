@@ -23,3 +23,18 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+import selectors from "./selectors"
+import Routes from ''
+
+function login() {
+    cy.session('loginSession', () => {
+        cy.visit(Routes.LOGIN)
+        cy.get(selectors.login.idirLoginBtn).click()
+        cy.get(selectors.login.user).type(Cypress.env('username'))
+        cy.get(selectors.login.password).type(Cypress.env('password'))
+        cy.get(selectors.login.idirSubmitBtn).click()
+        cy.get(selectors.studentSearch.title).should('contain.text', 'Student Search')
+    })
+}
+
+Cypress.Commands.add('login', login)
