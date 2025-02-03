@@ -4,5 +4,7 @@ describe('Test for cypress deployment', () => {
     cy.get('body').should('contain.text', 
       'To access the Graduation Administration Application, you must have a valid IDIR.'
     )
+
+    
   })
 })

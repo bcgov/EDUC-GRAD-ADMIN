@@ -9,6 +9,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: cypress.env.json
+        run: echo '${{ secrets.CYPRESS_ENV_CI }}' > cypress.env.json
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
