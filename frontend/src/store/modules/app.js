@@ -62,12 +62,16 @@ export const useAppStore = defineStore("app", {
         );
     },
     getInstituteCategoryCodes: (state) => state.instituteCategoryCodes,
-    getInstituteCategoryByCode: (state) => {
-      return (code) =>
-        state.instituteCategoryCodes.find(
-          (categoryCode) => code === categoryCode.schoolCategoryCode
-        );
+    getBatchSchoolCategoryCodes: (state) => {
+      const includedCategories = ["PUBLIC", "INDEPEND", "FED_BAND", "YUKON", "OFFSHORE"];
+      return state.instituteCategoryCodes
+        .filter(item => includedCategories.includes(item.schoolCategoryCode))
+        .map(item => ({
+          ...item,
+          schoolCategoryCode: item.schoolCategoryCode === "INDEPEND" ? "INDEPEND, INDP_FNS" : item.schoolCategoryCode
+        })); // Independent includes Independent First nations schools, and we will send it in the payload for batch jobs
     },
+   
     displaySchoolCategoryCode: (state) => (code) => {
       const categoryCode = state.instituteCategoryCodes.find(
         (categoryCode) => code === categoryCode.schoolCategoryCode
