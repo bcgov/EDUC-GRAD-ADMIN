@@ -402,8 +402,7 @@
                           <p>
                             You are about to delete the
                             <strong
-                              >{{ item.careerProgramCode }} -
-                              {{ item.careerProgramName }}</strong
+                              >{{ item.optionalProgramName }} ({{ item.optionalProgramCode }})</strong
                             >
                             Career Program from this student
                           </p>
