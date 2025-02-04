@@ -54,6 +54,7 @@ describe('Batch Processing Tables' , () => {
     cy.wait(500)
     cy.get(currentBatchTable).find(batchProcessingSelectors.rows).its('length').should('be.gt', 0)
     cy.get(currentBatchTable).find(batchProcessingSelectors.firstRow).children().eq(0).find('button').click({force: true})
+    cy.wait(500)
     cy.get(currentBatchTable).find(batchProcessingSelectors.secondRow).should('contain.text', 'localDownload')
 
     // Scheduled Routines table
