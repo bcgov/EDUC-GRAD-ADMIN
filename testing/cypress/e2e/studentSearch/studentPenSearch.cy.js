@@ -31,6 +31,18 @@ function editStudentProfile(student, reset = false) {
     cy.get(studentSearchSelectors.saveStatusBtn).click({force: true})
 }
 
+function checkItemsInWindowTable(windowSelector) {
+    const selector = windowSelector + " " + studentSearchSelectors.noRow
+    cy.wait(500)
+    cy.doesExist(selector).then((exist) => {
+        if (exist) {
+            cy.get(selector).should('contain.text', 'No data available')
+        } else {
+            cy.get(windowSelector).find(studentSearchSelectors.rows).its('length').should('be.gt', 0)
+        }
+    })
+}
+
 describe('Student Search', () => {
   const test_student1 = Cypress.env('test_student1')
 
@@ -62,17 +74,17 @@ describe('Student Search', () => {
       // Courses Window
       cy.get(studentSearchSelectors.coursesBtn).click()
       cy.get(studentSearchSelectors.coursesWindow).should('not.contain.css', 'display', 'none')
-      cy.checkItemsInWindowTable(studentSearchSelectors.coursesWindow)
+      checkItemsInWindowTable(studentSearchSelectors.coursesWindow)
       // Assessments Window
       cy.get(studentSearchSelectors.assessmentBtn).click()
       cy.get(studentSearchSelectors.coursesWindow).should('contain.css', 'display', 'none')
       cy.get(studentSearchSelectors.assessmentsWindow).should('not.contain.css', 'display', 'none')
-      cy.checkItemsInWindowTable(studentSearchSelectors.assessmentsWindow)
+      checkItemsInWindowTable(studentSearchSelectors.assessmentsWindow)
       // Exams Details Window
       cy.get(studentSearchSelectors.examsBtn).click()
       cy.get(studentSearchSelectors.assessmentsWindow).should('contain.css', 'display', 'none')
       cy.get(studentSearchSelectors.examsWindow).should('not.contain.css', 'display', 'none')
-      cy.checkItemsInWindowTable(studentSearchSelectors.examsWindow)
+      checkItemsInWindowTable(studentSearchSelectors.examsWindow)
       // Optional Programs Window
       cy.get(studentSearchSelectors.optionalBtn).click()
       cy.get(studentSearchSelectors.examsWindow).should('contain.css', 'display', 'none')
@@ -89,12 +101,12 @@ describe('Student Search', () => {
       cy.get(studentSearchSelectors.auditBtn).click()
       cy.get(studentSearchSelectors.optionalWindow).should('contain.css', 'display', 'none')
       cy.get(studentSearchSelectors.auditWindow).should('not.contain.css', 'display', 'none')
-      cy.checkItemsInWindowTable(studentSearchSelectors.auditWindow + " .v-window-item:nth-child(1)")
+      checkItemsInWindowTable(studentSearchSelectors.auditWindow + " .v-window-item:nth-child(1)")
       cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.firstExpandArrow).click()
       cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.secondRowJsonData).should('contain.text', 'createUser')
 
       cy.get(studentSearchSelectors.optionalProgramChangeHistoryBtn).click()
-      cy.checkItemsInWindowTable(studentSearchSelectors.auditWindow + " .v-window-item:nth-child(2)")
+      checkItemsInWindowTable(studentSearchSelectors.auditWindow + " .v-window-item:nth-child(2)")
       cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.firstExpandArrow).click()
       cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.secondRowJsonData).should('contain.text', 'createUser')
       
@@ -102,7 +114,7 @@ describe('Student Search', () => {
       cy.get(studentSearchSelectors.undoBtn).click()
       cy.get(studentSearchSelectors.auditWindow).should('contain.css', 'display', 'none')
       cy.get(studentSearchSelectors.undoWindow).should('not.contain.css', 'display', 'none')
-      cy.checkItemsInWindowTable(studentSearchSelectors.undoWindow)
+      checkItemsInWindowTable(studentSearchSelectors.undoWindow)
     })
 
     it('Adds and removes optional program and note', () => {

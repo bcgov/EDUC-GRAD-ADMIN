@@ -177,6 +177,7 @@ export default {
         rerunSchoolReportBtn: 'div.v-overlay-container .v-overlay__content .v-list > .v-list-item:nth-child(2)',
         activeWindow: 'div.batch-processing-view > div > .v-window > .v-window__container > .v-window-item:visible',
         batchJobResultTable: 'div.v-row > div:nth-child(2) .v-table > .v-table__wrapper > table > tbody',
-        batchJobResultTableWrapper: 'div.v-row > div:nth-child(2) .v-table'
+        batchJobResultTableWrapper: 'div.v-row > div:nth-child(2) .v-table',
+        batchJobResultNoData: 'tr.v-data-table-rows-no-data'
     }
 }

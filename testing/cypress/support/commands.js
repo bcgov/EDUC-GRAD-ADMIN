@@ -43,21 +43,8 @@ function doesExist(selector) {
     })
 }
 
-function checkItemsInWindowTable(windowSelector) {
-    const selector = windowSelector + " " + selectors.studentSearch.noRow
-    cy.wait(500)
-    cy.doesExist(selector).then((exist) => {
-        if (exist) {
-            cy.get(selector).should('contain.text', 'No data available')
-        } else {
-            cy.get(windowSelector).find(selectors.studentSearch.rows).its('length').should('be.gt', 0)
-        }
-    })
-}
-
 Cypress.Commands.add('login', login)
 Cypress.Commands.add('doesExist', doesExist)
-Cypress.Commands.add('checkItemsInWindowTable', checkItemsInWindowTable)
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     return false
