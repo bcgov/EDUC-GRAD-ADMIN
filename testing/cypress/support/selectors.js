@@ -66,7 +66,14 @@ export default {
         editTextarea: '.v-list-item textarea',
         saveNoteBtn: '.v-list-item button.bg-error',
         deleteNoteBtn: 'i.mdi-delete',
-        errorMsg: 'div.studentlist div.text-error > .v-alert__content:visible'
+        errorMsg: 'div.studentlist div.text-error > .v-alert__content:visible',
+
+        transcriptTVRBtn: 'button#actions',
+        undoCompletionReasonInput: 'div.v-overlay-container .v-card-text input[type="text"]',
+        undoCompletionReasonTextarea: 'div.v-overlay-container .v-card-text textarea',
+        undoCompletionConfirmCheckbox: 'div.v-overlay-container .v-card-text input[type="checkbox"]',
+        undoCompletionBtn: 'div.v-overlay-container .v-card-actions > button.bg-error'
+
     },
 
     programs: {

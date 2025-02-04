@@ -90,11 +90,11 @@ describe('Student Search', () => {
       cy.get(studentSearchSelectors.examsWindow).should('contain.css', 'display', 'none')
       cy.get(studentSearchSelectors.optionalWindow).should('not.contain.css', 'display', 'none')
       const optionalWindowRow = studentSearchSelectors.optionalWindow + " " + studentSearchSelectors.rows
-        cy.doesExist(optionalWindowRow).then((exist) => {
+        cy.doesExist(optionalWindowRow).then(exist => {
             if (exist) {
-                cy.get(optionalWindowRow).its('length').should('be.gt', 0)
+              cy.get(optionalWindowRow).its('length').should('be.gt', 0)
             } else {
-                cy.get(studentSearchSelectors.optionalWindow).should('contain.text', 'This student does not have any optional programs.')
+              cy.get(studentSearchSelectors.optionalWindow).should('contain.text', 'This student does not have any optional programs.')
             }
         })
       // Audit History Window
@@ -118,6 +118,23 @@ describe('Student Search', () => {
     })
 
     it('Adds and removes optional program and note', () => {
+      // Undo completion if the student is graduated
+      const schoolAtGraduationText = studentSearchSelectors.table + " " + studentSearchSelectors.schoolAtGraduation
+      cy.doesExist(schoolAtGraduationText).then(exist => {
+        if (exist) {
+          cy.get(studentSearchSelectors.selections).contains('Undo Completion').click({force: true})
+          cy.wait(1000)
+          cy.get(studentSearchSelectors.undoCompletionReasonInput).click({force: true})
+          cy.get(studentSearchSelectors.selections).contains('Other').click({force: true})
+          cy.get(studentSearchSelectors.undoCompletionReasonTextarea).type('Cypress testing')
+          cy.get(studentSearchSelectors.undoCompletionConfirmCheckbox).click()
+          cy.get(studentSearchSelectors.undoCompletionBtn).click()
+          cy.get(studentSearchSelectors.transcriptTVRBtn).click()
+        } else {
+          cy.log("Student is not graduated")
+        }
+      })
+        
       // Optional Program
       const optionalCourseToAdd = 'French Immersion'
       cy.get(studentSearchSelectors.optionalBtn).click()
