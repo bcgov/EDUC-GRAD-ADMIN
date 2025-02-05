@@ -501,6 +501,7 @@ export default {
       studentCareerPrograms: "getStudentCareerPrograms",
       studentGradStatus: "getStudentGradStatus",
     }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
   },
   validations() {
     return {
@@ -621,7 +622,6 @@ export default {
       removeStudentOptionalProgram: "removeStudentOptionalProgram",
       removeStudentCareerProgram: "removeStudentCareerProgram",
     }),
-    ...mapState(useAccessStore, ["hasPermissions"]),
     isProgramComplete(date, program) {
       return isProgramComplete(date, program);
     },

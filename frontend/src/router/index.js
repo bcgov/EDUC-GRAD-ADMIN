@@ -364,6 +364,14 @@ const router = createRouter({
         requiresAuth: true,
       },
     },
+    {
+      path: "/admin",
+      name: "admin",
+      component: () => import("../views/Admin.vue"),
+      meta: {
+        requiresAuth: true,
+      },
+    },
   ],
 });
 //Fix for multiple next() call warning
