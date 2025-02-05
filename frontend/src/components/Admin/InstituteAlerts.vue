@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-data-table-server
-      :items-per-page="itemsPerPage"
+      v-model:items-per-page="itemsPerPage"
       :headers="alertHeaders"
       :items="instituteAlerts"
       :items-length="totalElements"
@@ -14,8 +14,6 @@
       </template>
 
       <template v-slot:item.subject="{ item }">
-        <!-- <span v-if="isDistrictActivity(item)"> district </span>
-        <span v-else-if="isSchoolActivity(item)"> school </span> -->
         <a :href="getPassthroughURL(item)" target="_blank">{{
           getPassthroughURLText(item)
         }}</a
@@ -95,18 +93,18 @@ export default {
       authStore: useAuthStore(),
       snackbarStore: useSnackbarStore(),
       currentPage: 1,
-      itemsPerPage: 5,
+      itemsPerPage: 10,
       loadingTable: false,
       instituteAlerts: [],
       totalElements: 0,
       alertHeaders: [
-        { key: "createDate", title: "Create Date" },
-        { key: "event.eventType", title: "Alert Event Type" },
-        { key: "subject", title: "Subject" },
-        { key: "acknowledgeFlag", title: "Acknowledge" },
-        { key: "updateUser", title: "IDIR" },
-        { key: "updateDate", title: "Acknowledge Date" },
-        { key: "actions", title: "Actions" },
+        { key: "createDate", title: "Create Date", sortable: false },
+        { key: "event.eventType", title: "Alert Event Type", sortable: false },
+        { key: "subject", title: "Subject", sortable: false },
+        { key: "acknowledgeFlag", title: "Acknowledge", sortable: false },
+        { key: "updateUser", title: "IDIR", sortable: false },
+        { key: "updateDate", title: "Acknowledge Date", sortable: false },
+        { key: "actions", title: "Actions", sortable: false },
       ],
       // these should align with events defined in TRAX API:
       // https://github.com/bcgov/EDUC-GRAD-TRAX-API/blob/main/api/src/main/java/ca/bc/gov/educ/api/trax/constant/EventType.java
@@ -181,11 +179,11 @@ export default {
     getPassthroughURL(activity) {
       if (this.isDistrictActivity(activity)) {
         return `${
-          this.appStore.config.STUDENT_ADMIN_URL
+          this.appStore?.config?.STUDENT_ADMIN_URL
         }/api/auth/silent_idir_login?districtDetails=true&idir_guid=${this.authStore.userInfo.userGuid.toLowerCase()}&districtID=${activity.instituteId.toLowerCase()}`;
       } else if (this.isSchoolActivity(activity)) {
         return `${
-          this.appStore.config.STUDENT_ADMIN_URL
+          this.appStore?.config?.STUDENT_ADMIN_URL
         }/api/auth/silent_idir_login?schoolDetails=true&idir_guid=${this.authStore.userInfo.userGuid.toLowerCase()}&schoolID=${activity.instituteId.toLowerCase()}`;
       }
     },
@@ -193,11 +191,11 @@ export default {
       if (this.isDistrictActivity(activity)) {
         //get district info
         let district = this.getDistrictById(activity.instituteId);
-        return `${district.districtNumber} - ${district.displayName}`;
+        return `${district?.districtNumber} - ${district?.displayName}`;
       } else if (this.isSchoolActivity(activity)) {
         //get school info
         let school = this.getSchoolById(activity.instituteId);
-        return `${school.mincode} - ${school.displayName}`;
+        return `${school?.mincode} - ${school?.displayName}`;
       }
     },
     updateDataTable({ page }) {

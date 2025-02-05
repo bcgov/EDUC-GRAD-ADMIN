@@ -9,7 +9,9 @@ export default {
   },
   getInstituteEventHistory(params) {
     return ApiService.apiAxios.get(
-      "/api/v1/trax/event/history/paginated?" + params
+      "/api/v1/trax/event/history/paginated?" +
+        params +
+        "&sort=%7B%22createDate%22%3A%22DEC%22%7D"
     );
   },
   putInstituteEventHistory(json) {
