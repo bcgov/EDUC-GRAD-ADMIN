@@ -34,21 +34,25 @@
               :to="link.route"
               variant="text"
               color="primary"
-              style="
-                text-transform: none;
-                text-decoration: none;
-                color: inherit;
-              "
-              class="text-start"
+              class="text-start small-screen-links"
             >
               <v-list-item-title>{{ link.title }}</v-list-item-title>
             </v-btn>
+          </v-list-item>
+          <v-list-item v-if="hasPermissions('ADMIN', 'readPage')">
+            <v-btn
+              to="/admin"
+              variant="text"
+              color="primary"
+              class="text-start small-screen-links"
+              ><v-list-item-title>Admin</v-list-item-title></v-btn
+            >
           </v-list-item>
           <v-spacer />
           <v-list-item v-if="!profile.pen">
             <a
               id="profile-route"
-              class="text-decoration-none text-disabled"
+              class="text-decoration-none text-disabled ml-4"
               :disabled="true"
               >Profile (Student Not Loaded)</a
             >
@@ -57,6 +61,7 @@
             <router-link
               :to="`/student-profile/${profile.studentID}`"
               id="profile-route"
+              class="ml-4"
               >Profile ({{ profile.pen }})</router-link
             >
           </v-list-item>
@@ -76,6 +81,14 @@
         >
           {{ link.title }}
         </v-btn>
+        <v-btn
+          v-if="hasPermissions('ADMIN', 'readPage')"
+          id="admin"
+          size="small"
+          class="text-none"
+          to="/admin"
+          >Admin</v-btn
+        >
         <v-btn
           v-if="!profile.pen"
           id="profile-route"
@@ -131,6 +144,7 @@ import StudentService from "@/services/StudentService.js";
 import { loadStudent } from "../../utils/common.js"; // Import your loadStudent function
 import { useSnackbarStore } from "@/store/modules/snackbar"; // Import your snackbar store
 import { useStudentStore } from "@/store/modules/student"; // Import your student store
+import { useAccessStore } from "@/store/modules/access";
 import { mapState } from "pinia"; // Import mapState from Pinia
 import CommonService from "@/services/CommonService.js";
 import EnvironmentBanner from "@/components/Header/EnvironmentBanner.vue";
@@ -176,6 +190,7 @@ export default {
     ...mapState(useStudentStore, {
       profile: "getStudentProfile",
     }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
     screenSize() {
       return window.innerWidth;
     },
@@ -295,5 +310,10 @@ export default {
   background-color: rgba(var(--v-theme-bcGovBlue), var(--v-hover-opacity));
   border-radius: 4px;
   padding: 12px;
+}
+:deep(.small-screen-links) {
+  text-transform: none;
+  text-decoration: none;
+  color: inherit;
 }
 </style>

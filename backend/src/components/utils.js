@@ -298,8 +298,13 @@ async function putData(token, data, url, correlationID) {
 
     log.info("put Data Url", url);
     log.verbose("put Data Req", data);
-    data.updateUser = "GRAD";
-    const response = await axios.put(url, {}, putDataConfig);
+
+    // set updateUser to GRAD by default if key isn't provided in payload
+    if (!data.updateUser) {
+      data.updateUser = "GRAD";
+    }
+
+    const response = await axios.put(url, data, putDataConfig);
 
     log.info(`put Data Status for url ${url} :: is :: `, response.status);
     log.info(
