@@ -62,12 +62,11 @@ export const useAppStore = defineStore("app", {
         );
     },
     getInstituteCategoryCodes: (state) => state.instituteCategoryCodes,
-    getInstituteCategoryByCode: (state) => {
-      return (code) =>
-        state.instituteCategoryCodes.find(
-          (categoryCode) => code === categoryCode.schoolCategoryCode
-        );
+    getBatchSchoolCategoryCodes: (state) => {
+      const includedCategories = ["PUBLIC", "INDEPEND", "FED_BAND", "YUKON", "OFFSHORE"];
+      return state.instituteCategoryCodes.filter(item => includedCategories.includes(item.schoolCategoryCode));
     },
+   
     displaySchoolCategoryCode: (state) => (code) => {
       const categoryCode = state.instituteCategoryCodes.find(
         (categoryCode) => code === categoryCode.schoolCategoryCode
