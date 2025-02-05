@@ -4,8 +4,8 @@ const fs = require("fs")
 const specsFilename = "specs.json"
 const specs = JSON.parse(fs.readFileSync(__dirname + "/" + specsFilename, "utf8"))
 // Get env variables from GitHub Action
-const totalContainers = parseInt(process.env.TOTAL_CONTAINERS || "1", 10)
-const containerIndex = parseInt(process.env.CONTAINER_INDEX || "0", 10)
+const totalContainers = parseInt(process.argv[2] || "1", 10)
+const containerIndex = parseInt(process.argv[3] || "0", 10)
 
 // Sort tests by execution time (largest first)
 const sortedTests = Object.entries(specs).sort((a, b) => b[1] - a[1])
