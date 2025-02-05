@@ -30,7 +30,7 @@ jobs:
         id: get-tests
         run: |
           echo "SPEC_FILES=$(node testing/split-tests.js ${{ matrix.container }} 3)" >> $GITHUB_ENV
-          echo "${{SPEC_FILES}}"
+          echo "${{env.SPEC_FILES}}"
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
