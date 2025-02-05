@@ -23,4 +23,5 @@ for (const [test, time] of sortedTests) {
 
 // Get the tests assigned to the current container
 const selectedTests = containers[containerIndex]?.tests || []
+// Use GitHub EOF syntax to seach multiple specs in yml
 console.log(`SPEC_FILES<<EOF\n${selectedTests.join("\n")}\nEOF`)
