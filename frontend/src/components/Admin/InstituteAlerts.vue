@@ -14,8 +14,6 @@
       </template>
 
       <template v-slot:item.subject="{ item }">
-        <!-- <span v-if="isDistrictActivity(item)"> district </span>
-        <span v-else-if="isSchoolActivity(item)"> school </span> -->
         <a :href="getPassthroughURL(item)" target="_blank">{{
           getPassthroughURLText(item)
         }}</a
@@ -95,7 +93,7 @@ export default {
       authStore: useAuthStore(),
       snackbarStore: useSnackbarStore(),
       currentPage: 1,
-      itemsPerPage: 5,
+      itemsPerPage: 10,
       loadingTable: false,
       instituteAlerts: [],
       totalElements: 0,
