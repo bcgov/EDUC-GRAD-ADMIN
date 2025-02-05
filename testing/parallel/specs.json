@@ -1,0 +1,6 @@
+{
+  "cypress/e2e/test1.cy.js": 13,
+  "cypress/e2e/test2.cy.js": 23,
+  "cypress/e2e/testDir/test3.cy.js": 33,
+  "cypress/e2e/testDir/test4.cy.js": 13 
+}
