@@ -23,5 +23,4 @@ for (const [test, time] of sortedTests) {
 
 // Get the tests assigned to the current container
 const selectedTests = containers[containerIndex]?.tests || []
-console.log(`Container ${containerIndex} running tests:`, selectedTests)
-console.log(selectedTests.join("\n"))
+selectedTests.join("\n")
