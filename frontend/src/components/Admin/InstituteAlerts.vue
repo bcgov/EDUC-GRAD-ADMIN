@@ -16,7 +16,9 @@
       <template v-slot:item.subject="{ item }">
         <!-- <span v-if="isDistrictActivity(item)"> district </span>
         <span v-else-if="isSchoolActivity(item)"> school </span> -->
-        <a href="#">{{ getPassthroughURLText(item) }}</a
+        <a :href="getPassthroughURL(item)" target="_blank">{{
+          getPassthroughURLText(item)
+        }}</a
         >&nbsp;
         <i>{{ getInstituteEventLabel(item.event.eventType) }}</i>
       </template>
@@ -89,6 +91,8 @@ export default {
   name: "InstituteAlerts",
   data() {
     return {
+      appStore: useAppStore(),
+      authStore: useAuthStore(),
       snackbarStore: useSnackbarStore(),
       currentPage: 1,
       itemsPerPage: 5,
@@ -162,6 +166,7 @@ export default {
     }),
   },
   methods: {
+    //NOTE: Business does not need to see Institute updates, but it can be supported if that changes
     isDistrictActivity(activity) {
       return activity.event.eventType.includes("DISTRICT");
     },
@@ -171,6 +176,18 @@ export default {
     getInstituteEventLabel(key) {
       return this.instituteEvents.find((event) => key === event.key)
         ?.description;
+    },
+    ///<user guid>&schoolID=<your schoolID>
+    getPassthroughURL(activity) {
+      if (this.isDistrictActivity(activity)) {
+        return `${
+          this.appStore.config.STUDENT_ADMIN_URL
+        }/api/auth/silent_idir_login?districtDetails=true&idir_guid=${this.authStore.userInfo.userGuid.toLowerCase()}&districtID=${activity.instituteId.toLowerCase()}`;
+      } else if (this.isSchoolActivity(activity)) {
+        return `${
+          this.appStore.config.STUDENT_ADMIN_URL
+        }/api/auth/silent_idir_login?schoolDetails=true&idir_guid=${this.authStore.userInfo.userGuid.toLowerCase()}&schoolID=${activity.instituteId.toLowerCase()}`;
+      }
     },
     getPassthroughURLText(activity) {
       if (this.isDistrictActivity(activity)) {
