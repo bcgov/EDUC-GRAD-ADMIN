@@ -28,11 +28,11 @@ jobs:
           echo '${{ secrets.CYPRESS_ENV_CI }}' > testing/cypress.env.json
       - name: Get tests for this container
         id: get-tests
-        run: echo "${{matrix.container}}"
+        run: echo "SPEC_FILES=$(node testing/split-tests.js ${{ matrix.container }} 3)" >> $GITHUB_ENV
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
           working-directory: testing
           browser: chrome
           spec: |
-            ${{ env.SPEC_FILES }}
+            "cypress/e2e/test1.cy.js"
