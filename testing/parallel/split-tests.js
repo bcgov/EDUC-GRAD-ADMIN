@@ -23,5 +23,6 @@ for (const [test, time] of sortedTests) {
 
 // Get the tests assigned to the current container
 const selectedTests = containers[containerIndex]?.tests || []
+const formattedTests = selectedTests.map(test => `cypress/e2e/${test}`).join("\n")
 // Use GitHub EOF syntax to seach multiple specs in yml
-console.log(`SPEC_FILES<<EOF\n${selectedTests.join("\n")}\nEOF`)
+console.log(`SPEC_FILES<<EOF\n${formattedTests}\nEOF`)
