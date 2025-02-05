@@ -1124,12 +1124,21 @@ export default {
         this.disableStudentGrade = true;
         this.disableConsumerEdReqMet = true;
         this.disableSchoolAtGrad = false;
+      } else if (
+        this.studentGradStatus?.programCompletionDate &&
+        this.studentGradStatus?.program == "SCCP"
+      ) {
+        this.disableProgramInput = false;
+        this.disableStudentGrade = false;
+        this.disableConsumerEdReqMet = false;
+        this.disableSchoolAtGrad = false;
       } else {
         this.disableProgramInput = false;
         this.disableStudentGrade = false;
         this.disableConsumerEdReqMet = false;
         this.disableSchoolAtGrad = true;
       }
+
       if (this.studentGradStatus?.program != "1986-EN") {
         this.disableConsumerEdReqMet = true;
       } else {
