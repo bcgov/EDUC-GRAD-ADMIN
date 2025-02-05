@@ -315,10 +315,7 @@
                   >
                     Warning: School
                     {{
-                      getSchoolMincodeById(
-                        getSchoolsList,
-                        editedGradStatus.schoolOfRecordId
-                      )
+                      getSchoolMincodeById(editedGradStatus.schoolOfRecordId)
                     }}
                     is not reported with grade 10-12 enrolments.
                   </div>
@@ -329,10 +326,7 @@
                   >
                     Warning: School
                     {{
-                      getSchoolMincodeById(
-                        getSchoolsList,
-                        editedGradStatus.schoolOfRecordId
-                      )
+                      getSchoolMincodeById(editedGradStatus.schoolOfRecordId)
                     }}
                     is not authorized to issue Transcripts.
                   </div>
@@ -389,9 +383,9 @@
                   <strong>School at graduation:</strong><br />
                   <div hidden>
                     {{ v$.editedGradStatus.ifSchoolAtGradGrades10To12 }}
-                    {{
+                    <!-- {{
                       v$.editedGradStatus.ifSchoolAtGradTranscriptEligibility
-                    }}
+                    }} -->
                   </div>
 
                   <!-- <div
@@ -408,12 +402,7 @@
                     v-if="warningFlags.schoolAtGrad10To12Warning == true"
                   >
                     Warning: School
-                    {{
-                      getSchoolMincodeById(
-                        getSchoolsList,
-                        editedGradStatus.schoolAtGradId
-                      )
-                    }}
+                    {{ getSchoolMincodeById(editedGradStatus.schoolAtGradId) }}
                     is not reported with grade 10-12 enrolments.
                   </div>
                   <div
@@ -421,12 +410,7 @@
                     v-if="warningFlags.schoolAtGradTranscriptWarning == true"
                   >
                     Warning: School
-                    {{
-                      getSchoolMincodeById(
-                        getSchoolsList,
-                        editedGradStatus.schoolAtGradId
-                      )
-                    }}
+                    {{ getSchoolMincodeById(editedGradStatus.schoolAtGradId) }}
                     is not authorized to issue Transcripts.
                   </div>
                   <div
@@ -441,6 +425,19 @@
                       v$.editedGradStatus
                         .ifSchoolAtGraduationEmptyAndProgramCompletionNotEmpty
                         .$message
+                    }}
+                  </div>
+                  <div
+                    class="bg-error"
+                    v-if="
+                      v$.editedGradStatus
+                        .ifSchoolAtGradIdProgramIs1950AndOffshore.$invalid ==
+                      true
+                    "
+                  >
+                    {{
+                      v$.editedGradStatus
+                        .ifSchoolAtGradIdProgramIs1950AndOffshore.$message
                     }}
                   </div>
                   <v-autocomplete
@@ -662,6 +659,8 @@ export default {
       programOptions: "getProgramOptions",
       studentStatusOptions: "getStudentStatusOptions",
       getSchoolsList: "getSchoolsList",
+      getSchoolMincodeById: "getSchoolMincodeById",
+      getSchoolById: "getSchoolById",
     }),
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
@@ -819,7 +818,24 @@ export default {
           (value) => {
             return (
               this.editedGradStatus.program !== "1950" ||
-              !(this.editedGradStatus.schoolOfRecord.search(/^103.*/) >= 0)
+              !(
+                this.getSchoolMincodeById(
+                  this.editedGradStatus.schoolOfRecordId
+                ).search(/^103.*/) >= 0
+              )
+            );
+          }
+        ),
+        ifSchoolAtGradIdProgramIs1950AndOffshore: helpers.withMessage(
+          "Offshore schools do not support the Adult Graduation Program.",
+          (value) => {
+            return (
+              this.editedGradStatus.program !== "1950" ||
+              !(
+                this.getSchoolMincodeById(
+                  this.editedGradStatus.schoolAtGradId
+                ).search(/^103.*/) >= 0
+              )
             );
           }
         ),
@@ -898,14 +914,14 @@ export default {
         ),
         ifSchoolOfRecordIsValid: helpers.withMessage(
           () => {
-            if (this.editedGradStatus.schoolOfRecord) {
+            if (this.editedGradStatus.schoolOfRecordId) {
               return this.validateSchoolInfo(
-                this.editedGradStatus.schoolOfRecord
+                this.editedGradStatus.schoolOfRecordId
               );
             }
           },
           (value) => {
-            return this.editedGradStatus.schoolOfRecord;
+            return this.editedGradStatus.schoolOfRecordId;
           }
         ),
         //School at Grad
@@ -937,14 +953,14 @@ export default {
         // ),
         ifSchoolAtGraduation: helpers.withMessage(
           () => {
-            if (this.editedGradStatus.schoolAtGrad) {
+            if (this.editedGradStatus.schoolAtGradId) {
               return this.validateSchoolInfo(
-                this.editedGradStatus.schoolAtGrad
+                this.editedGradStatus.schoolAtGradId
               ); // Call your dynamic function here
             }
           },
           (value) => {
-            return this.editedGradStatus.schoolAtGrad;
+            return this.editedGradStatus.schoolAtGradId;
           }
         ),
         ifSchoolAtGraduationEmptyAndProgramCompletionNotEmpty:
@@ -1020,6 +1036,12 @@ export default {
       this.checkForErrors();
     },
     schoolOfRecordChange: function () {
+      this.checkForErrors();
+    },
+    schoolOfRecordIdChange: function () {
+      this.checkForErrors();
+    },
+    schoolAtGradIdChange: function () {
       this.checkForErrors();
     },
   },
@@ -1159,6 +1181,7 @@ export default {
         this.v$.editedGradStatus.ifProgramIs1950studentGradeMustbeADorAN,
         this.v$.editedGradStatus.ifProgramIsNot1950studentGradeCannotBeADorAN,
         this.v$.editedGradStatus.ifProgramIs1950AndOffshore,
+        this.v$.editedGradStatus.ifSchoolAtGradIdProgramIs1950AndOffshore,
       ];
 
       // If any of the validations are invalid, blockSave will be true
@@ -1233,12 +1256,9 @@ export default {
           );
         });
     },
-    validateSchoolInfo(schoolToValidate) {
+    validateSchoolInfo(schoolToValidateId) {
       this.warningFlags.schoolWarning = false;
-      let schoolInfo = this.getSchoolByMincode(
-        this.getSchoolsList,
-        schoolToValidate
-      );
+      let schoolInfo = this.getSchoolById(schoolToValidateId);
       this.warningFlags.schoolWarning = !this.isSchoolOpen(schoolInfo);
     },
     async isSchoolGrades10To12(type, schoolId) {
@@ -1248,6 +1268,7 @@ export default {
         const schoolGradesToCheck = ["GRADE10", "GRADE11", "GRADE12"];
         // Create a Set from the schoolGradesToCheck array for efficient lookups.
         const gradesToCheckSet = new Set(schoolGradesToCheck);
+        // Calling out to institute for GRADES
         const response = await InstituteService.getSchoolById(schoolId);
         const schoolGrades = response?.data?.grades;
         for (const grade of schoolGrades) {
@@ -1269,7 +1290,7 @@ export default {
       }
     },
     isSchoolTranscriptEligible(type, schoolId) {
-      let school = this.getSchoolById(this.getSchoolsList, schoolId);
+      let school = this.getSchoolById(schoolId);
       if (school) {
         if (type == "schoolOfRecord") {
           this.warningFlags.schoolOfRecordTranscriptWarning =
@@ -1285,16 +1306,6 @@ export default {
         return false;
       }
     },
-    getSchoolByMincode(schools, mincode) {
-      return schools.find((school) => school.mincode === mincode) || null;
-    },
-    getSchoolById(schools, schoolId) {
-      return schools.find((school) => school.schoolId === schoolId) || null;
-    },
-    getSchoolMincodeById(schools, schoolId) {
-      const school = schools.find((school) => school.schoolId === schoolId);
-      return school ? school.mincode : null;
-    },
     isSchoolOpen(school) {
       const openedDate = new Date(school?.openedDate);
       const closedDate = school?.closedDate
@@ -1304,13 +1315,6 @@ export default {
 
       // Check if the openedDate is in the past and closedDate is null
       return openedDate < currentDate && closedDate === null;
-    },
-    ifProgramsWithExpiry(program) {
-      for (let p of this.programsWithExpiry) {
-        if (program == p) {
-          return true;
-        }
-      }
     },
   },
 };

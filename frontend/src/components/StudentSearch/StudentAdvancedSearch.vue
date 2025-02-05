@@ -600,9 +600,7 @@ export default {
         const schoolOfRecordId = student.schoolOfRecordId;
         if (schoolIdMap.has(schoolOfRecordId)) {
           const school = schoolIdMap.get(schoolOfRecordId);
-          // Use displayNameNoSpecialChars if it's not null, otherwise use displayName
-          student.schoolOfRecordName =
-            school.displayNameNoSpecialChars || school.displayName; // Update schoolOfRecordName
+          student.schoolOfRecordName = school.displayName; // Update schoolOfRecordName
           student.mincode = school.mincode; // Update mincode
           student.schoolCategoryCode = this.displaySchoolCategoryCode(
             school.schoolCategoryCode

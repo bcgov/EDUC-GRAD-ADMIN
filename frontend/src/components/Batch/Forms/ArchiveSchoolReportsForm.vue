@@ -289,8 +289,8 @@ export default {
               ) {
                 if (this.group === "School") {
                   isValid =
-                    this.getBatchRequest.schoolOfRecords &&
-                    this.getBatchRequest.schoolOfRecords.length > 0;
+                    this.getBatchRequest.schoolIds &&
+                    this.getBatchRequest.schoolIds.length > 0;
                 } else if (this.group === "All Schools") {
                   isValid = true;
                 } else {
@@ -358,7 +358,7 @@ export default {
     async submit() {
       this.batchLoading = true;
       const requestTemplate = [
-        "districts",
+        "districtIds",
         "gradDateFrom",
         "gradDateTo",
         "localDownload",
@@ -368,7 +368,7 @@ export default {
         "quantity",
         "reportTypes",
         "schoolCategoryCodes",
-        "schoolOfRecords",
+        "schoolIds",
         "validateInput",
       ];
       const requestPayload = generateRequestPayload(

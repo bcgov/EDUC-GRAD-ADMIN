@@ -206,8 +206,8 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
       let request = {
         runtype: state.runType,
         pens: state.who === "Student" ? state.students.map(student => student.pen) : [],
-        schoolOfRecords: state.who === "School" ? state.schools.map(school => school.mincode) : [],
-        districts: state.who === "School Category" ? state.districts.map(district => district.district) : [],
+        schoolIds: state.who === "School" ? state.schools.map(school => school.info.schoolId) : [],
+        districtIds: state.who === "School Category" ? state.districts.map(district => district.info.districtId) : [],
         programs: state.who === "Program" ? state.programs.map(program => program.program) : [],
         psiCodes: state.who === "Psi" ? state.psi.map(postSecondaryInstitution => postSecondaryInstitution.psi) : [],
         psiYear: state.psiYear ? state.psiYear : "",
@@ -218,7 +218,6 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         reportTypes: state.reportType ? [state.reportType] : [],
         gradDateFrom: state.getFormattedGradDateFrom,
         gradDateTo: state.getFormattedGradDateTo,
-    
         credentialTypeCode: [
           ...state.blankCertificateDetails,
           ...state.blankTranscriptDetails
@@ -229,9 +228,6 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         ...(state.distribution === "User" ? { user: "", address: state.getUserDistributionAddress } : {}),
         runMode: "Y",
       };
-    
-
-    
       return request;
     },
     

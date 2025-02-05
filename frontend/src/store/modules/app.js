@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import ApiService from "../../common/apiService.js";
 import InstituteService from "../../services/InstituteService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
+import CommonService from "../../services/CommonService.js";
+
 import sharedMethods from "../../sharedMethods.js";
 export const useAppStore = defineStore("app", {
   state: () => ({
@@ -12,7 +14,8 @@ export const useAppStore = defineStore("app", {
     districtsList: [],
     schoolsList: [],
     transcriptTypes: [],
-    certificationTypes: []
+    certificationTypes: [],
+    config: null
   }),
   getters: {
     getProgramOptions: (state) => state.programOptions,
@@ -23,6 +26,21 @@ export const useAppStore = defineStore("app", {
       return (schoolId) =>
         state.schoolsList.find((school) => schoolId === school.schoolId);
     },
+    getSchoolMincodeById: (state) => {
+      return (schoolId) => {
+        if (schoolId === "00000000-0000-0000-0000-000000000000") {
+          // Special school code for Ministry of Advanced Education 
+          return "Ministry of Advanced Education";
+        }
+        return state.schoolsList.find((school) => schoolId === school.schoolId)?.mincode 
+      };
+    },
+    getDistrictCodeById: (state) => {
+      return (districtId) => {
+        return state.districtsList.find((district) => districtId === district.districtId)?.districtNumber;
+      };
+    },    
+
     getDistrictList: (state) => state.districtsList,
     getDistrictById: (state) => {
       return (districtId) =>
@@ -30,6 +48,12 @@ export const useAppStore = defineStore("app", {
           (district) => districtId === district.districtId
         );
     },
+    getDistrictByDistrictNumber: (state) => {
+      return (districtNumber) =>
+        state.districtsList.find(
+          (district) => districtNumber === district.districtNumber
+        );
+    },    
     getInstituteAddressTypeCodes: (state) => state.instituteAddressTypeCodes,
     getInstituteAddressTypeCode: (state) => {
       return (code) =>
@@ -66,7 +90,8 @@ export const useAppStore = defineStore("app", {
         );
     },
     getTranscriptTypes: (state) => state.transcriptTypes,
-    getCertificateTypes: (state) => state.certificationTypes
+    getCertificateTypes: (state) => state.certificationTypes,
+    getConfig: (state) => state.config
   },
   actions: {
     setApplicationVariables() {
@@ -77,7 +102,13 @@ export const useAppStore = defineStore("app", {
           });
           this.programOptions = programs;
         });
-
+        CommonService.getConfig().then((response) => {   
+           try {
+             this.config = response.data;
+           } catch (error) {
+             console.log(error);
+           }
+         });
         ApiService.apiAxios
           .get("/api/v1/student/studentstatus")
           .then((response) => {
@@ -112,6 +143,7 @@ export const useAppStore = defineStore("app", {
         InstituteService.getDistrictsList().then((response) => {
           try {
             this.districtsList = response.data;
+            this.districtsList = sharedMethods.sortDistrictListByActiveAndDistrictNumber(this.districtsList)
           } catch (error) {
             console.error(error);
           }
@@ -186,7 +218,7 @@ export const useAppStore = defineStore("app", {
               );
             }
           }
-        })
+        });        
       }
     },
   },
