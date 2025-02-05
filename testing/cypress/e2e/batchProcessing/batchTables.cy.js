@@ -29,7 +29,6 @@ function checkResultTable(rowIndex) {
           cy.get(batchProcessingSelectors.navBtn).click()
         }
   
-        cy.wait(1000)
       })
     })
 }
