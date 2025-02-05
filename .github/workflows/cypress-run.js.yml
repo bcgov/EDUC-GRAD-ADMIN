@@ -38,5 +38,4 @@ jobs:
         with:
           working-directory: testing
           browser: chrome
-          spec: |
-            ${{ env.SPEC_FILES }}
+          spec: ${{ env.SPEC_FILES }}
