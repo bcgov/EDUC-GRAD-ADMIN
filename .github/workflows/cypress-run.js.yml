@@ -29,10 +29,7 @@ jobs:
       - name: Get tests for this container
         id: get-tests
         run: |
-          echo "$(node testing/parallel/split-tests.js 3 ${{ matrix.container }})" >> specs.txt
-          echo "SPEC_FILES<<EOF" >> $GITHUB_ENV
-          cat specs.txt >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "$(node testing/parallel/split-tests.js 3 ${{ matrix.container }})" >> $GITHUB_ENV
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:

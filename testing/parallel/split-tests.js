@@ -23,4 +23,4 @@ for (const [test, time] of sortedTests) {
 
 // Get the tests assigned to the current container
 const selectedTests = containers[containerIndex]?.tests || []
-selectedTests.join("\n")
+console.log(`SPEC_FILES<<EOF\n${selectedTests.join("\n")}\nEOF`)
