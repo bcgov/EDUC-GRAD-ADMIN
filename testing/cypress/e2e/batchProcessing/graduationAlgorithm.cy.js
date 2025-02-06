@@ -44,7 +44,7 @@ describe('Graduation Algorithm', () => {
             cy.get(batchProcessingSelectors.selections).contains('School').click()
             cy.wait(500)
             cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.autocomplete).click({force: true})
-            cy.get(batchProcessingSelectors.selections).contains(test_student1.original_school).click()
+            cy.get(batchProcessingSelectors.selections).contains(test_student1.og_school).click()
             cy.get(batchProcessingSelectors.overlayWindow).contains('Add School').click({force: true})
             cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
             cy.get(batchProcessingSelectors.overlayWindow).contains('Submit').click()

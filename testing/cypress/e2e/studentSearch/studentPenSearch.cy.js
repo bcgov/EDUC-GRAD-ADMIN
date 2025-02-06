@@ -10,13 +10,13 @@ function editStudentProfile(student, reset = false) {
     if (reset) {
       // Reset to original data
       cy.get(studentSearchSelectors.status).click({force: true})
-      cy.get(studentSearchSelectors.selections).contains(student.original_status).click()
+      cy.get(studentSearchSelectors.selections).contains(student.og_status).click()
       cy.get(studentSearchSelectors.grade).click({force: true})
-      cy.get(studentSearchSelectors.selections).contains(student.original_grade).click()
+      cy.get(studentSearchSelectors.selections).contains(student.og_grade).click()
       cy.get(studentSearchSelectors.schoolOfRecord).click({force: true})
-      cy.get(studentSearchSelectors.selections).contains(student.original_school).click()
+      cy.get(studentSearchSelectors.selections).contains(student.og_school).click()
       //cy.get(studentSearchSelectors.schoolAtGraduation).click({force: true})
-      //cy.get(studentSearchSelectors.selections).contains(student.original_school).click()
+      //cy.get(studentSearchSelectors.selections).contains(student.og_school).click()
     } else {
       // Change to new data
       cy.get(studentSearchSelectors.status).click({force: true})
@@ -35,12 +35,23 @@ function checkItemsInWindowTable(windowSelector) {
     const selector = windowSelector + " " + studentSearchSelectors.noRow
     cy.wait(500)
     cy.doesExist(selector).then((exist) => {
-        if (exist) {
-            cy.get(selector).should('contain.text', 'No data available')
-        } else {
-            cy.get(windowSelector).find(studentSearchSelectors.rows).its('length').should('be.gt', 0)
-        }
+      if (exist) {
+          cy.get(selector).should('contain.text', 'No data available')
+      } else {
+          cy.get(windowSelector).find(studentSearchSelectors.rows).its('length').should('be.gt', 0)
+      }
     })
+}
+
+function undoCompletion() {
+  cy.get(studentSearchSelectors.transcriptTVRBtn).click()
+  cy.get(studentSearchSelectors.selections).contains('Undo Completion').click({force: true})
+  cy.wait(1000)
+  cy.get(studentSearchSelectors.undoCompletionReasonInput).click({force: true})
+  cy.get(studentSearchSelectors.selections).contains('Other').click({force: true})
+  cy.get(studentSearchSelectors.undoCompletionReasonTextarea).type('Cypress testing')
+  cy.get(studentSearchSelectors.undoCompletionConfirmCheckbox).click()
+  cy.get(studentSearchSelectors.undoCompletionBtn).click()
 }
 
 describe('Student Search', () => {
@@ -56,15 +67,16 @@ describe('Student Search', () => {
       cy.wait(5000) // Need to wait so that fields load up in Edit window
     })
 
-    it('Edits GRAD status', () => {
+    it('Edits GRAD status to make sure data is updated on UI immediately', () => {
       // Edit
       editStudentProfile(Cypress.env('test_student1'))
 
       // Check to see if values are changed
-      cy.get(studentSearchSelectors.table).find(studentSearchSelectors.statusText).should('contain.text', test_student1.new_status)
-      cy.get(studentSearchSelectors.table).find(studentSearchSelectors.gradeText).should('contain.text', test_student1.new_grade)
-      cy.get(studentSearchSelectors.table).find(studentSearchSelectors.schoolOfRecordText).should('contain.text', test_student1.new_school)
-      //cy.get(studentSearchSelectors.table).find(studentSearchSelectors.schoolAtGraduationText).should('contain.text', test_student1.new_school)
+      const gradStatusTable = () => cy.get(studentSearchSelectors.table)
+      gradStatusTable().find(studentSearchSelectors.statusText).should('contain.text', test_student1.new_status)
+      gradStatusTable().find(studentSearchSelectors.gradeText).should('contain.text', test_student1.new_grade)
+      gradStatusTable().find(studentSearchSelectors.schoolOfRecordText).should('contain.text', test_student1.new_school)
+      //gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('contain.text', test_student1.new_school)
 
       // Clean up data
       editStudentProfile(Cypress.env('test_student1'), true)
@@ -91,11 +103,11 @@ describe('Student Search', () => {
       cy.get(studentSearchSelectors.optionalWindow).should('not.contain.css', 'display', 'none')
       const optionalWindowRow = studentSearchSelectors.optionalWindow + " " + studentSearchSelectors.rows
         cy.doesExist(optionalWindowRow).then(exist => {
-            if (exist) {
-              cy.get(optionalWindowRow).its('length').should('be.gt', 0)
-            } else {
-              cy.get(studentSearchSelectors.optionalWindow).should('contain.text', 'This student does not have any optional programs.')
-            }
+          if (exist) {
+            cy.get(optionalWindowRow).its('length').should('be.gt', 0)
+          } else {
+            cy.get(studentSearchSelectors.optionalWindow).should('contain.text', 'This student does not have any optional programs.')
+          }
         })
       // Audit History Window
       cy.get(studentSearchSelectors.auditBtn).click()
@@ -122,14 +134,7 @@ describe('Student Search', () => {
       const schoolAtGraduationText = studentSearchSelectors.table + " " + studentSearchSelectors.schoolAtGraduationText
       cy.doesExist(schoolAtGraduationText).then(exist => {
         if (exist) {
-          cy.get(studentSearchSelectors.transcriptTVRBtn).click()
-          cy.get(studentSearchSelectors.selections).contains('Undo Completion').click({force: true})
-          cy.wait(1000)
-          cy.get(studentSearchSelectors.undoCompletionReasonInput).click({force: true})
-          cy.get(studentSearchSelectors.selections).contains('Other').click({force: true})
-          cy.get(studentSearchSelectors.undoCompletionReasonTextarea).type('Cypress testing')
-          cy.get(studentSearchSelectors.undoCompletionConfirmCheckbox).click()
-          cy.get(studentSearchSelectors.undoCompletionBtn).click()
+          undoCompletion()
         } else {
           cy.log("Student is not graduated")
         }
