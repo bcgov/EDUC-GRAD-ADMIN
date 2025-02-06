@@ -123,14 +123,6 @@
               >
                 <template v-slot:item.description="{ item }">
                   {{ item.description }}
-                  <v-tooltip max-width="800">
-                    {{ userBatchDistRuleDesc }}
-                    <template v-slot:activator="{ props }">
-                      <v-icon v-bind="props" color="bcGovBlue" small size="18"
-                        >mdi-information</v-icon
-                      >
-                    </template>
-                  </v-tooltip>
                 </template>
               </v-data-table>
               <v-table>
@@ -406,7 +398,7 @@ export default {
       userBatchDistRuleDesc: `If Current Students selected and the User has requested Transcripts,  all students with a status of CUR will be selected by school at graduation. \n
                               If Current Students selected and the User has requested Original Certificate or Reprint Certificate, all students, except 'DEC','MER',  with a certificate with a null distribution date will be selected by school at graduation. \n
                               If Date Range selected, and the User has requested Transcript print, all students, except 'DEC', 'MER', who have completed their program within the date range will be selected by school at graduation. \n
-                              If Date Range selected, and the User has requested Original Certificate or Reprint Certificate, all students, except 'DEC','MER', who have completed their program within the date range will be selected by school of graduation.`
+                              If Date Range selected, and the User has requested Original Certificate or Reprint Certificate, all students, except 'DEC','MER', who have completed their program within the date range will be selected by school of graduation.`,
     };
   },
   created() {
