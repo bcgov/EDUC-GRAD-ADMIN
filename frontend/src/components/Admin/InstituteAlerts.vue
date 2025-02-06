@@ -2,6 +2,7 @@
   <div>
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
+      :items-per-page-options="itemsPerPageOptions"
       :headers="alertHeaders"
       :items="instituteAlerts"
       :items-length="totalElements"
@@ -94,6 +95,12 @@ export default {
       snackbarStore: useSnackbarStore(),
       currentPage: 1,
       itemsPerPage: 10,
+      itemsPerPageOptions: [
+        { title: "10", value: 10 },
+        { title: "25", value: 25 },
+        { title: "50", value: 50 },
+        { title: "100", value: 100 },
+      ],
       loadingTable: false,
       instituteAlerts: [],
       totalElements: 0,
@@ -175,7 +182,6 @@ export default {
       return this.instituteEvents.find((event) => key === event.key)
         ?.description;
     },
-    ///<user guid>&schoolID=<your schoolID>
     getPassthroughURL(activity) {
       if (this.isDistrictActivity(activity)) {
         return `${
@@ -227,8 +233,6 @@ export default {
         id: id,
         acknowledgeFlag: acknowledgeFlag,
       };
-      //console.log(payload);
-      //this.loadingBtn = true;
       TRAXService.putInstituteEventHistory(payload)
         .then((response) => {
           this.getInstituteAlerts();

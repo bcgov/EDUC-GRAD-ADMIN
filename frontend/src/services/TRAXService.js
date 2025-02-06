@@ -7,6 +7,7 @@ export default {
   getDistrict(district) {
     return ApiService.apiAxios.get("/api/v1/trax/district/" + district);
   },
+  // Note: Sort is currently hard coded in the URL, however we'll want to update this when we tackle sorting & filtering in a future ticket
   getInstituteEventHistory(params) {
     return ApiService.apiAxios.get(
       "/api/v1/trax/event/history/paginated?" +
