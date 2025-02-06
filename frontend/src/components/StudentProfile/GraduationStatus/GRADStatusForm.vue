@@ -172,6 +172,7 @@
                     {{ v$.editedGradStatus.ifClosedProgramWarning.$message }}
                   </div>
                   <v-select
+                    data-cy="program-select"
                     :disabled="disableProgramInput"
                     v-model="editedGradStatus.program"
                     :items="programOptions"
@@ -218,6 +219,7 @@
                     }}
                   </div>
                   <v-text-field
+                    data-cy="program-completion-date-textfield"
                     v-model="editedGradStatus.programCompletionDate"
                     label="Date"
                     maxLength="7"
@@ -529,6 +531,7 @@
                     }}
                   </div>
                   <v-text-field
+                    data-cy="adult-start-date-textfield"
                     :disabled="editedGradStatus.program != '1950'"
                     v-model="editedGradStatus.adultStartDate"
                     label="Date"
@@ -560,6 +563,7 @@
                 <td>
                   <strong>Recalculate Grad Status:</strong><br />
                   <v-select
+                    data-cy="recalculate-grad-select"
                     :disabled="!allowUpdateRecalcFlags"
                     v-model="editedGradStatus.recalculateGradStatus"
                     :items="recalcFlags"
@@ -578,6 +582,7 @@
                 <td>
                   <strong>Recalculate Projected Grad:</strong><br />
                   <v-select
+                    data-cy="recalculate-projected-select"
                     :disabled="!allowUpdateRecalcFlags"
                     v-model="editedGradStatus.recalculateProjectedGrad"
                     :items="recalcFlags"

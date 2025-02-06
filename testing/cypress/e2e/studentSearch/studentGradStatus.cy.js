@@ -26,11 +26,11 @@ function resetToOriginalState(test_student) {
   cy.wait(1000)
   // Reset to original data
   cy.get(studentSearchSelectors.status).click({force: true})
-  cy.get(studentSearchSelectors.selections).contains(student.og_status).click()
+  cy.get(studentSearchSelectors.selections).contains(test_student.og_status).click()
   cy.get(studentSearchSelectors.grade).click({force: true})
-  cy.get(studentSearchSelectors.selections).contains(student.og_grade).click()
+  cy.get(studentSearchSelectors.selections).contains(test_student.og_grade).click()
   cy.get(studentSearchSelectors.schoolOfRecord).click({force: true})
-  cy.get(studentSearchSelectors.selections).contains(student.og_school).click()
+  cy.get(studentSearchSelectors.selections).contains(test_student.og_school).click()
 }
 
 describe('Student Grad Status', () => {
