@@ -43,6 +43,7 @@ export default {
 		undoWindow: '[data-cy="undo-window-item"]',
 		noRow: '.v-table__wrapper .v-data-table-rows-no-data',
 		rows: '.v-table__wrapper .v-data-table__tr',
+		firstRow: '.v-table__wrapper .v-data-table__tr:nth-child(1)',
 		firstExpandArrow: '.v-table__wrapper .v-data-table__tr:nth-child(1) > td:nth-child(1) > td > button:visible',
 		secondRowJsonData: '.v-table__wrapper tr:nth-child(2) > td > div > pre:visible',
 
@@ -54,10 +55,10 @@ export default {
 		searchResultTableRow: 'div.table-responsive .v-table__wrapper tbody > tr',
 		penLink: 'td:nth-child(2) > a',
 
+		optionalTableRows: 'div > div > .v-table > .v-table__wrapper > table > tbody > .v-data-table__tr',
 		chooseOptional: 'body > div.v-overlay-container .v-overlay__content .v-window-item:nth-child(1) input[type="text"]',
 		nextOptional: 'body > div.v-overlay-container .v-overlay__content > .v-sheet > .row > button.v-btn--elevated',
-		optionalProgramTable: '.v-table tbody > tr',
-		deleteOptinalBtn: 'i.mdi-delete-forever',
+		deleteOptionalBtn: 'i.mdi-delete-forever',
 		deleteOptionalConfirmBtn: 'body > div.v-overlay-container .v-overlay__content .v-card-actions > button.bg-error',
 		addNoteBtn: '.v-row > button',
 		noteTextarea: 'body > div.v-overlay-container .v-overlay__content .v-card-text textarea',
