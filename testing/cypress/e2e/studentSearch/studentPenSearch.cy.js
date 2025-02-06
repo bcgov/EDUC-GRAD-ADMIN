@@ -119,9 +119,10 @@ describe('Student Search', () => {
 
     it('Adds and removes optional program and note', () => {
       // Undo completion if the student is graduated
-      const schoolAtGraduationText = studentSearchSelectors.table + " " + studentSearchSelectors.schoolAtGraduation
+      const schoolAtGraduationText = studentSearchSelectors.table + " " + studentSearchSelectors.schoolAtGraduationText
       cy.doesExist(schoolAtGraduationText).then(exist => {
         if (exist) {
+          cy.get(studentSearchSelectors.transcriptTVRBtn).click()
           cy.get(studentSearchSelectors.selections).contains('Undo Completion').click({force: true})
           cy.wait(1000)
           cy.get(studentSearchSelectors.undoCompletionReasonInput).click({force: true})
@@ -129,7 +130,6 @@ describe('Student Search', () => {
           cy.get(studentSearchSelectors.undoCompletionReasonTextarea).type('Cypress testing')
           cy.get(studentSearchSelectors.undoCompletionConfirmCheckbox).click()
           cy.get(studentSearchSelectors.undoCompletionBtn).click()
-          cy.get(studentSearchSelectors.transcriptTVRBtn).click()
         } else {
           cy.log("Student is not graduated")
         }
@@ -140,6 +140,24 @@ describe('Student Search', () => {
       cy.get(studentSearchSelectors.optionalBtn).click()
       cy.get(studentSearchSelectors.examsWindow).should('contain.css', 'display', 'none')
       cy.get(studentSearchSelectors.optionalWindow).should('not.contain.css', 'display', 'none')
+      
+      // Remove optinal program if there is any
+      const optionalProgramRows = studentSearchSelectors.optionalWindow + " > " + studentSearchSelectors.optionalTableRows
+      cy.doesExist(optionalProgramRows).then(exist => {
+        if (exist) {
+          cy.get(optionalProgramRows).then($rows => {
+            const count = $rows.length
+            for (let i = 0; i < count; i++) {
+              cy.get(studentSearchSelectors.optionalWindow).find(studentSearchSelectors.firstRow).find(studentSearchSelectors.deleteOptionalBtn).click({force: true})
+              cy.get(studentSearchSelectors.deleteOptionalConfirmBtn).click()
+              cy.wait(500)
+            }
+          })
+        } else {
+          cy.log('Student does not have optional programs')
+        }
+      })
+
       // Add Optional Program
       cy.get(studentSearchSelectors.optionalWindow).should('contain.text', 'This student does not have any optional programs.')
       cy.get(studentSearchSelectors.optionalWindow).find('button').click()
@@ -150,10 +168,10 @@ describe('Student Search', () => {
       cy.get(studentSearchSelectors.nextOptional).click()
       cy.contains(`You are about to add the ${optionalCourseToAdd}`)
       cy.get(studentSearchSelectors.nextOptional).click()
-      cy.get(studentSearchSelectors.optionalWindow).find(studentSearchSelectors.optionalProgramTable).its('length').should('eq', 1)
+      cy.get(studentSearchSelectors.optionalWindow).find(studentSearchSelectors.rows).its('length').should('eq', 1)
       cy.get(studentSearchSelectors.optionalWindow).should('contain.text', optionalCourseToAdd)
       // Delete Optional Program
-      cy.get(studentSearchSelectors.optionalWindow).find(studentSearchSelectors.deleteOptinalBtn).click({force: true})
+      cy.get(studentSearchSelectors.optionalWindow).find(studentSearchSelectors.deleteOptionalBtn).click({force: true})
       cy.contains('This student is not active.')
       cy.contains(`You are about to delete the ${optionalCourseToAdd}`)
       cy.get(studentSearchSelectors.deleteOptionalConfirmBtn).click()

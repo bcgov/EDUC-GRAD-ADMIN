@@ -3,9 +3,6 @@ const assessmentsSelectors = selectors.assessments
 
 function shouldHaveData(selector) {
   cy.wait(400)
-  cy.get(assessmentsSelectors.itemPerPage).click({force: true})
-  cy.wait(400)
-  cy.get(assessmentsSelectors.selections).contains('All').click({force: true})
   cy.get(selector).find(assessmentsSelectors.rows).its('length').should('be.gt', 1)
 }
 

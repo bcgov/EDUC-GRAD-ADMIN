@@ -3,9 +3,6 @@ const programsSelectors = selectors.programs
 
 function shouldHaveData(selector) {
     cy.wait(400)
-    cy.get(programsSelectors.itemPerPage).click({force: true})
-    cy.wait(400)
-    cy.get(programsSelectors.selections).contains('All').click({force: true})
     cy.get(selector).find(programsSelectors.rows).its('length').should('be.gt', 1)
 }
 
