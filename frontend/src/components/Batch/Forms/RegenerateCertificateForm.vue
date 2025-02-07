@@ -303,7 +303,6 @@ export default {
             this.getBatchRequestCrontime
           );
         }
-        console.log("returned");
 
         this.batchLoading = false;
         if (this.getBatchRequestCrontime) {
