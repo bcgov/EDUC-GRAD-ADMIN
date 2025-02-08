@@ -28,6 +28,7 @@ export default {
 		recalcProjected: '[data-cy="recalculate-projected-select"] input',
 		errorMsg: 'div.bg-error',
 		warningMsg: 'div.bg-warning',
+		snackBar: 'div.v-overlay .v-snackbar__content',
 
 		table: '.graduation-status > .v-card > .v-card-text > .v-table > .v-table__wrapper > table',
 		programText: 'tbody > tr:nth-child(1) > td:nth-child(2)',

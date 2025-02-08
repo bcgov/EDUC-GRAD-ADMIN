@@ -1,6 +1,17 @@
 import selectors from "../../support/selectors"
 const studentSearchSelectors = selectors.studentSearch
 
+function selectDropdown(selector, text, forceFlag = false) {
+  cy.get(selector).click({force: true})
+  cy.get(studentSearchSelectors.selections).contains(text).click({force: forceFlag})
+}
+
+function selectAutoselect(selector, text) {
+  cy.get(selector).clear()
+  cy.get(selector).type(text)
+  selectDropdown(selector, text)
+}
+
 function getNextMonthYYYYMM() {
   const date = new Date()
   date.setMonth(date.getMonth() + 1) // Move to next month
@@ -9,10 +20,6 @@ function getNextMonthYYYYMM() {
 
   return `${year}${month}`
 }
-
-// Example usage
-console.log(getNextMonthYYYYMM()); // Example output: "202502"
-
 
 function undoCompletion() {
   cy.get(studentSearchSelectors.transcriptTVRBtn).click()
@@ -49,20 +56,16 @@ function resetToOriginalState(test_student) {
   // Reset to original data
   // if student hasn't completed program, it is not disabled
   if (!test_student.isCompleted) {
-    cy.get(studentSearchSelectors.program).click({force: true})
-    cy.get(studentSearchSelectors.selections).contains(test_student.og_program).click()
+    selectDropdown(studentSearchSelectors.program, test_student.og_program)
   }
   // if student is in SCPP, it is not disabled
   if (test_student.og_program == 'SCPP') {
-    cy.get(studentSearchSelectors.programCompletionDate).click({force: true})
-    cy.get(studentSearchSelectors.selections).contains(test_student.og_completion_date).click()
+    selectDropdown(studentSearchSelectors.programCompletionDate, test_student.og_completion_date)
   }
-  cy.get(studentSearchSelectors.status).click({force: true})
-  cy.get(studentSearchSelectors.selections).contains(test_student.og_status).click()
-  cy.get(studentSearchSelectors.grade).click({force: true})
-  cy.get(studentSearchSelectors.selections).contains(test_student.og_grade).click()
-  cy.get(studentSearchSelectors.schoolOfRecord).click({force: true})
-  cy.get(studentSearchSelectors.selections).contains(test_student.og_school).click()
+  selectDropdown(studentSearchSelectors.status, test_student.og_status)
+  selectDropdown(studentSearchSelectors.grade, test_student.og_grade)
+  selectAutoselect(studentSearchSelectors.schoolOfRecord, test_student.og_school)
+
   // if student is taking 1950 program, adult start date will change
   if (test_student.og_program == '1950') {
     cy.get(studentSearchSelectors.adultStartDate).type(test_student.og_adult_start_date)
@@ -74,19 +77,24 @@ function resetToOriginalState(test_student) {
   cy.get(studentSearchSelectors.editBtn).click()
   cy.wait(1000)
   cy.get(studentSearchSelectors.recalcGrad).click({force: true})
-  cy.get(studentSearchSelectors.selections).contains(test_student.og_recalc_grad).click()
-  cy.get(studentSearchSelectors.recalcProjected).click({force: true})
-  cy.get(studentSearchSelectors.selections).contains(test_student.og_recalc_proj).click()
+  selectDropdown(studentSearchSelectors.recalcGrad, test_student.og_recalc_grad, true)
+  selectDropdown(studentSearchSelectors.recalcProjected, test_student.og_recalc_proj, true)
   cy.get(studentSearchSelectors.saveStatusBtn).click({force: true})
 }
+
 
 describe('Student Grad Status', () => {
 
   const messages = {
     programChangeWarning: 'Warning, any optional programs associated with the original program will be deleted. You must add back in any pertinent optional programs once you have saved the changes to Program.',
     program1950Error: 'Student grade should be one of AD or AN if the student program is 1950', 
-    completionDatePriorSCCPWarning: 'The program completion date cannot be prior to the start of the program'
-
+    completionDatePriorSCCPWarning: 'The program completion date cannot be prior to the start of the program',
+    invalidStatusError: 'Status code selected does not match with the PEN data for this student',
+    gradeADANError: 'Student grade should not be AD or AN for this program',
+    schoolNo10to12EnrollmentWarning: 'Warning: School 03636089 is not reported with grade 10-12 enrolments.',
+    schoolNoTranscriptWarning: 'Warning: School 03636089 is not authorized to issue Transcripts.',
+    adultStartDateEmptyError: 'Students on the 1950 Program must have an adult start date. Please enter a valid date.',
+    adultStartDateInvalidFormatError: 'The adult start date format is invalid. Please follow the date format YYYY-MM-DD',
   }
 
   beforeEach(() => {
@@ -95,7 +103,7 @@ describe('Student Grad Status', () => {
     cy.get(studentSearchSelectors.title).should('contain.text', 'Student Search')
   })
 
-  it('Edits a single student record and makes sure messages are correct', () => {
+  it('Edits grad status for an ungraduated student', () => {
     const test_student2 = Cypress.env('test_student2')
     cy.get(studentSearchSelectors.searchByPEN).type(test_student2.PEN)
     cy.get(studentSearchSelectors.searchSubmit).click()
@@ -127,20 +135,17 @@ describe('Student Grad Status', () => {
 
     // Program
     // If the User changes a students' Program a warning will be displayed to notify the User that any Optional Programs associated with the original Program will be deleted. 
-    cy.get(studentSearchSelectors.program).click({force: true})
-    cy.get(studentSearchSelectors.selections).contains('2018-PF').click()
+    selectDropdown(studentSearchSelectors.program, '2018-PF')
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.programChangeWarning)
     // If User selects 1950* check student grade for AD or AN
-    cy.get(studentSearchSelectors.program).click({force: true})
-    cy.get(studentSearchSelectors.selections).contains('1950').click()
+    selectDropdown(studentSearchSelectors.program, '1950')
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.program1950Error)
     cy.get(studentSearchSelectors.saveStatusBtn).should('be.disabled')
     
     // Program Completion Date
     // Non-modifiable except for students on SCCP
     cy.get(studentSearchSelectors.programCompletionDate).should('be.disabled')
-    cy.get(studentSearchSelectors.program).click({force: true})
-    cy.get(studentSearchSelectors.selections).contains('SCCP').click()
+    selectDropdown(studentSearchSelectors.program, 'SCCP')
     cy.get(studentSearchSelectors.programCompletionDate).should('not.be.disabled')
     // SCCP Rules:
     // If program completion date is blank, User can enter a program completion date, the date can be in the future  
@@ -148,6 +153,54 @@ describe('Student Grad Status', () => {
     cy.get(studentSearchSelectors.programCompletionDate).type('200312')
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.completionDatePriorSCCPWarning)
     // Program completion date can be in the future
+    cy.get(studentSearchSelectors.programCompletionDate).clear()
     cy.get(studentSearchSelectors.programCompletionDate).type(getNextMonthYYYYMM())
+
+    // Student Status
+    // Compare status selected with STUD STATUS from STUDENT (PEN) Database
+    selectDropdown(studentSearchSelectors.status, 'Merged')
+    cy.get(studentSearchSelectors.saveStatusBtn).click()
+    cy.get(studentSearchSelectors.snackBar).should('contain.text', messages.invalidStatusError)
+    selectDropdown(studentSearchSelectors.status, 'Archived')
+
+    // Grade & Adult Start Date
+    // Grade - If User selects AD or AN ensure Student is on Program 1950*
+    selectDropdown(studentSearchSelectors.grade, 'AD')
+    cy.get(studentSearchSelectors.editForm).should('contain.text', messages.gradeADANError)
+    cy.get(studentSearchSelectors.saveStatusBtn).should('be.disabled')
+    selectDropdown(studentSearchSelectors.grade, 'AN')
+    cy.get(studentSearchSelectors.editForm).should('contain.text', messages.gradeADANError)
+    cy.get(studentSearchSelectors.saveStatusBtn).should('be.disabled')
+    // Adult Start Date - Only modifiable if student is on the 1950 program
+    cy.get(studentSearchSelectors.adultStartDate).should('be.disabled')
+    // Select 1950 to make sure error dissapears
+    selectDropdown(studentSearchSelectors.program, '1950')
+    cy.get(studentSearchSelectors.editForm).should('not.contain.text', messages.gradeADANError)
+    cy.get(studentSearchSelectors.adultStartDate).should('not.be.disabled')
+    // Adult Start Date - Date format validattion
+    cy.get(studentSearchSelectors.adultStartDate).clear()
+    cy.get(studentSearchSelectors.editForm).should('contain.text', messages.adultStartDateEmptyError)
+    cy.get(studentSearchSelectors.adultStartDate).type('hello')
+    cy.get(studentSearchSelectors.editForm).should('contain.text', messages.adultStartDateInvalidFormatError)
+    cy.get(studentSearchSelectors.adultStartDate).clear()
+    cy.get(studentSearchSelectors.adultStartDate).type('2000-10-10')
+    cy.get(studentSearchSelectors.editForm).should('not.contain.text', messages.adultStartDateInvalidFormatError)
+      .and('not.contain.text', messages.adultStartDateEmptyError)
+    
+    // Back to SCCP
+    selectDropdown(studentSearchSelectors.program, 'SCCP')
+    selectDropdown(studentSearchSelectors.grade, '12')
+
+    // School Of Record
+    // If User modifies School Of Record check if the school supports 10-12 enrollment and transcript 
+    selectAutoselect(studentSearchSelectors.schoolOfRecord, 'Jessie Lee Elementary')
+    cy.get(studentSearchSelectors.editForm).should('contain.text', messages.schoolNo10to12EnrollmentWarning)
+    cy.get(studentSearchSelectors.editForm).should('contain.text', messages.schoolNoTranscriptWarning)
+
+    // School At Graduation
+    cy.get(studentSearchSelectors.schoolAtGraduation).should('be.disabled')
+    
+    // Save
+    cy.get(studentSearchSelectors.saveStatusBtn).click()
   })
 })
