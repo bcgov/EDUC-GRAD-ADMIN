@@ -94,7 +94,9 @@ export default {
 		undoCompletionReasonInput: 'div.v-overlay-container .v-card-text input[type="text"]',
 		undoCompletionReasonTextarea: 'div.v-overlay-container .v-card-text textarea',
 		undoCompletionConfirmCheckbox: 'div.v-overlay-container .v-card-text input[type="checkbox"]',
-		undoCompletionBtn: 'div.v-overlay-container .v-card-actions > button.bg-error'
+		undoCompletionBtn: 'div.v-overlay-container .v-card-actions > button.bg-error',
+
+		noCompletionTable: 'div.requirements-not-met .v-card-text .v-table__wrapper tbody'
 	},
 
 	programs: {
