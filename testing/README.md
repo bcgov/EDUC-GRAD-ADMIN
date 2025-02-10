@@ -21,4 +21,4 @@ Estimate time is a simply arbitrary value that represents the time it takes to r
 
 ### Additional Note
 ##### Login issue
-If your test fails due to login when you are running Cypress on UI, it is most likely that the refresh token in the current session has been expired. In that case, click **"Clear All Sessions"** at the top of testing log next to "SESSIONS" tab. 
+If your test fails due to login when you are running Cypress on UI, it is most likely that the refresh token in the current session has been expired. In that case, click **"Clear All Sessions"** at the top of testing log next to "SESSIONS" tab to re-login and obtain a new token. 
