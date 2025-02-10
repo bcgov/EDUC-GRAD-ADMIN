@@ -7,8 +7,7 @@ function selectDropdown(selector, text, forceFlag = false) {
 }
 
 function selectAutoselect(selector, text) {
-  cy.get(selector).clear()
-  cy.get(selector).type(text)
+  cy.get(selector).clear().type(text)
   selectDropdown(selector, text)
 }
 
@@ -35,7 +34,7 @@ function undoCompletion() {
 function updateGradStatus() {
   cy.get(studentSearchSelectors.transcriptTVRBtn).click()
   cy.get(studentSearchSelectors.selections).contains('Update Grad Status').click({force: true})
-  cy.wait(1000)
+  cy.wait(3000)
 }
 
 function resetToOriginalState(test_student) {
@@ -86,6 +85,7 @@ function resetToOriginalState(test_student) {
 describe('Student Grad Status', () => {
 
   const messages = {
+    arcStudentWarning: 'This student is not active. Re-activate by setting their status to "Current" if they are currently attending school',
     programChangeWarning: 'Warning, any optional programs associated with the original program will be deleted. You must add back in any pertinent optional programs once you have saved the changes to Program.',
     program1950Error: 'Student grade should be one of AD or AN if the student program is 1950', 
     completionDatePriorSCCPWarning: 'The program completion date cannot be prior to the start of the program',
@@ -154,8 +154,7 @@ describe('Student Grad Status', () => {
     // cy.get(studentSearchSelectors.programCompletionDate).type('200312')
     // cy.get(studentSearchSelectors.editForm).should('contain.text', messages.completionDatePriorSCCPWarning)
     // // Program completion date can be in the future
-    // cy.get(studentSearchSelectors.programCompletionDate).clear()
-    // cy.get(studentSearchSelectors.programCompletionDate).type(getNextMonthYYYYMM())
+    // cy.get(studentSearchSelectors.programCompletionDate).clear().type(getNextMonthYYYYMM())
 
     // // Student Status
     // // Compare status selected with STUD STATUS from STUDENT (PEN) Database
@@ -183,8 +182,7 @@ describe('Student Grad Status', () => {
     // cy.get(studentSearchSelectors.editForm).should('contain.text', messages.adultStartDateEmptyError)
     // cy.get(studentSearchSelectors.adultStartDate).type('hello')
     // cy.get(studentSearchSelectors.editForm).should('contain.text', messages.adultStartDateInvalidFormatError)
-    // cy.get(studentSearchSelectors.adultStartDate).clear()
-    // cy.get(studentSearchSelectors.adultStartDate).type('2000-10-10')
+    // cy.get(studentSearchSelectors.adultStartDate).clear().type('2000-10-10')
     // cy.get(studentSearchSelectors.editForm).should('not.contain.text', messages.adultStartDateInvalidFormatError)
     //   .and('not.contain.text', messages.adultStartDateEmptyError)
     
@@ -197,6 +195,7 @@ describe('Student Grad Status', () => {
     // selectAutoselect(studentSearchSelectors.schoolOfRecord, 'Jessie Lee Elementary')
     // cy.get(studentSearchSelectors.editForm).should('contain.text', messages.schoolNo10to12EnrollmentWarning)
     // cy.get(studentSearchSelectors.editForm).should('contain.text', messages.schoolNoTranscriptWarning)
+    // selectAutoselect(studentSearchSelectors.schoolOfRecord, test_student2.og_school)
 
     // // School At Graduation
     // cy.get(studentSearchSelectors.schoolAtGraduation).should('be.disabled')
@@ -215,5 +214,19 @@ describe('Student Grad Status', () => {
     updateGradStatus()
     gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('be.empty')
     cy.get(studentSearchSelectors.noCompletionTable).should('contain.text', messages.noCompletionFuture)
+    // Change completion date to past date
+    cy.get(studentSearchSelectors.editBtn).click()
+    cy.wait(1000)
+    cy.get(studentSearchSelectors.programCompletionDate).clear().type('201010')
+    // If a User Edits a students' GRAD data and the student has a status of "ARC", a warning will show
+    cy.get(studentSearchSelectors.editForm).should('contain.text', messages.arcStudentWarning)
+    cy.get(studentSearchSelectors.saveStatusBtn).click()
+    updateGradStatus()
+    gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('contain.text', test_student2.og_school)
+    // If program completion date is not blank, User cannot modify the program completion date. 
+    cy.get(studentSearchSelectors.editBtn).click()
+    cy.get(studentSearchSelectors.programCompletionDate).should('be.disabled')
+    // If students are graduated, they can modify SchoolAtGraduation
+    cy.get(studentSearchSelectors.schoolAtGraduation).should('not.be.disabled')
   })
 })

@@ -12,9 +12,13 @@ In the `testing` dir, you can run Cypress testing in multiple ways, either in th
 ### When Adding, Modifying, and Deleting spec files
 Make sure to:
 - Put them under `testing/cypress/e2e` so that Cypress can recognize them as specs
-- Update `testing/parallel/specs.json` if you need to run **Cypress Testing on GitHub Action***
+- Update `testing/parallel/specs.json` if you need to run **Cypress Testing on GitHub Action**
 
 ##### Cypress Testing on GitHub Action
 When you run Cypress workflow on GitHub Action, all specs run in parallel by being distributed into multiple containers that run simultaneously. `testing/parallel/split-tests.js` takes the index and number of containers from GitHub Action, then tries to distribute tests equally based on the "estimate time" that developers have to define as they develop or create specs in `testing/parallel/specs.json`.
 
 Estimate time is a simply arbitrary value that represents the time it takes to run the test in seconds. It can be the actual time it took to run in a previous test or a complete estimate.
+
+### Additional Note
+##### Login issue
+If your test fails due to login when you are running Cypress on UI, it is most likely that the refresh token in the current session is expired. In that case, click **"Clear All Sessions"** at the top of testing log next to "SESSIONS" tab. 
