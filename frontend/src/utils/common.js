@@ -98,7 +98,13 @@ export function generateRequestPayload(batchRequest, template) {
   return template.reduce((acc, field) => {
     if (batchRequest[field] !== undefined) {
       acc[field] = batchRequest[field];
+      //covert districts ["all"] to empty array
+      if (field == "districtIds" && Array.isArray(acc[field]) && acc[field].length === 1 && acc[field][0].toLowerCase() === "all") {
+        // If the condition is true, set districts to an empty array
+        acc[field] = []; 
+      }
     }
+    
     return acc;
   }, {});
 }
