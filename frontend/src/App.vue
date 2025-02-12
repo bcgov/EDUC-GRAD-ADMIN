@@ -95,18 +95,29 @@ export default {
     Snackbar,
   },
   async created() {
-    this.getJwtToken()
-      .then(() => this.setApplicationVariables())
-      .catch((e) => {
-        if (!e.response) {
-          this.logout();
-          this.$router.replace({
-            name: "error",
-            query: { message: `500_${e.data || "ServerError"}` },
-          });
-        }
-      })
-      .finally(() => {});
+    try {
+      await this.getJwtToken();
+      await this.setApplicationVariables();
+    } catch (e) {
+      if (!e.response) {
+        this.logout();
+        this.$router.replace({
+          name: "error",
+          query: { message: `500_${e.data || "ServerError"}` },
+        });
+      }
+    }
+    // .then(() => this.setApplicationVariables())
+    // .catch((e) => {
+    //   if (!e.response) {
+    //     this.logout();
+    //     this.$router.replace({
+    //       name: "error",
+    //       query: { message: `500_${e.data || "ServerError"}` },
+    //     });
+    //   }
+    // })
+    // .finally(() => {});
   },
   data() {
     return {
