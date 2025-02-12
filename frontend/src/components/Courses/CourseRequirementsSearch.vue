@@ -84,25 +84,6 @@
               class="text-none"
               >Search</v-btn
             >
-            <!-- <v-btn
-              v-on:click="courseRequirementsSearch"
-              v-if="!courseRequirementLoading"
-              color="primary"
-              tabindex="6"
-            >
-              <i class="fas fa-search" aria-hidden="true"></i>
-              &nbsp;Search
-            </v-btn>
-            <v-btn color="success" v-if="courseRequirementLoading" tabindex="6">
-              <i class="fas fa-search" aria-hidden="true"></i>
-              &nbsp;Search
-              <v-progress-circular
-                v-if="courseRequirementLoading"
-                indeterminate
-                color="green"
-              >
-              </v-progress-circular>
-            </v-btn> -->
             <v-btn
               v-on:click="clearInput()"
               variant="outlined"

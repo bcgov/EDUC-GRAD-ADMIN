@@ -22,89 +22,97 @@ export const Routes = Object.freeze(object);
 export const RolePermissions = Object.freeze({
   STUDENT: {
     updateGradStatus: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR', 'GRAD_INFO_OFFICER'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"],
     },
     createStudentNotes: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR', 'GRAD_INFO_OFFICER'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"],
     },
     updateRecalcFlags: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
     optionalProgramUpdate: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR', 'GRAD_INFO_OFFICER'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"],
+    },
+  },
+  ADMIN: {
+    readPage: {
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
+    },
+    readInstituteEventMessaging: {
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
+    },
+    updateInstituteEventMessaging: {
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
   },
   BATCH: {
     createBatchJob: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR', 'GRAD_INFO_OFFICER'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"],
     },
     runArchiveStudents: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
     runArchiveSchoolReports: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
     runTVRDelete: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR', 'GRAD_INFO_OFFICER'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"],
     },
     selectTVRDeleteSchools: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
     selectAllOption: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
-   
+
     runGradAlgorithm: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR', 'GRAD_INFO_OFFICER'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"],
     },
     runTVR: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR', 'GRAD_INFO_OFFICER'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"],
     },
-  
+
     selectSchoolCategoryGroup: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
     selectProgramGroup: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
     runDistrunYE: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
     runDistrun: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR', 'GRAD_INFO_OFFICER'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"],
     },
     runCredentialsandTranscriptDistributionRun: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
     runNonGradRun: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
     runDistrunSupplemental: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
     runPSIBatch: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
-    runCertificateRegeneration:{
-      allowed: ['GRAD_SYSTEM_COORDINATOR', 'GRAD_INFO_OFFICER'],
-    },  
-    runSchoolReportRegeneration:{
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
-    },    
+    runCertificateRegeneration: {
+      allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"],
+    },
+    runSchoolReportRegeneration: {
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
+    },
     toggleBatchRoutines: {
-      allowed: ['GRAD_SYSTEM_COORDINATOR'],
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
   },
 });
-
-
-
 
 //role access
 export const Roles = Object.freeze({
   GRAD_PROGRAM_AREA_BA: "GRAD_PROGRAM_AREA_BA",
   GRAD_INFO_OFFICER: "GRAD_INFO_OFFICER",
-  GRAD_SYSTEM_COORDINATOR: "GRAD_SYSTEM_COORDINATOR"
+  GRAD_SYSTEM_COORDINATOR: "GRAD_SYSTEM_COORDINATOR",
 });
 
 export const MinistryAddress = Object.freeze({

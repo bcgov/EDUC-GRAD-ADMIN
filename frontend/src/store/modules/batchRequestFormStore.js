@@ -124,7 +124,14 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     getCopies: (state) => state.copies,
     getBatchRunTime: (state) => state.batchRunTime,
     getActivityCode:(state) => state.activityCode,
-    getSchoolCategory: (state) => state.categoryCode,
+    getSchoolCategory: (state) => {
+      if (state.categoryCode === "INDEPEND") {
+        return ["INDEPEND", "INDP_FNS"];
+      }else{
+        return state.categoryCode ? [state.categoryCode] : [];
+      }
+      
+    },
     getLocalDownload: (state) => state.distribution == "Download"?"Y":"N", 
     getBatchRequestCrontime: (state) => {   
         if (state.batchRunSchedule == "N") {
@@ -206,19 +213,18 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
       let request = {
         runtype: state.runType,
         pens: state.who === "Student" ? state.students.map(student => student.pen) : [],
-        schoolOfRecords: state.who === "School" ? state.schools.map(school => school.mincode) : [],
-        districts: state.who === "School Category" ? state.districts.map(district => district.district) : [],
+        schoolIds: state.who === "School" ? state.schools.map(school => school.info.schoolId) : [],
+        districtIds: state.who === "School Category" ? state.districts.map(district => district.info.districtId) : [],
         programs: state.who === "Program" ? state.programs.map(program => program.program) : [],
         psiCodes: state.who === "Psi" ? state.psi.map(postSecondaryInstitution => postSecondaryInstitution.psi) : [],
         psiYear: state.psiYear ? state.psiYear : "",
         psiTransmissionMode: state.psiTransmissionMode,
-        schoolCategoryCodes: state.categoryCode ? [state.categoryCode] : [],
+        schoolCategoryCodes: state.getSchoolCategory,
         validateInput: true,
         activityCode: state.activityCode,
         reportTypes: state.reportType ? [state.reportType] : [],
         gradDateFrom: state.getFormattedGradDateFrom,
         gradDateTo: state.getFormattedGradDateTo,
-    
         credentialTypeCode: [
           ...state.blankCertificateDetails,
           ...state.blankTranscriptDetails
@@ -229,9 +235,6 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         ...(state.distribution === "User" ? { user: "", address: state.getUserDistributionAddress } : {}),
         runMode: "Y",
       };
-    
-
-    
       return request;
     },
     

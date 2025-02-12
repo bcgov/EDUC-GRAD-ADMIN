@@ -5,6 +5,7 @@ import SessionExpired from "@/components/SessionExpired.vue";
 import UnAuthorized from "@/components/UnAuthorized.vue";
 import UnAuthorizedPage from "@/components/UnAuthorizedPage.vue";
 import { useAuthStore } from "../store/modules/auth";
+import { useAppStore } from "../store/modules/app";
 import { useAccessStore } from "../store/modules/access";
 
 // Dyanmic imports were causing issues with state for Codes components
@@ -207,7 +208,16 @@ const router = createRouter({
     {
       path: "/schools",
       name: "Schools",
-      component: () => import("../views/Schools.vue"),
+      beforeEnter: (to, from, next) => {
+        const authStore = useAuthStore();
+        const appStore = useAppStore();        
+        if(appStore.config && appStore.config?.STUDENT_ADMIN_URL) {
+          // Open the route in a new tab
+          window.open(appStore.config.STUDENT_ADMIN_URL+"/api/auth/silent_idir_login?schoolSearch=true&idir_guid="+authStore.userInfo.userGuid.toLowerCase(), '_blank');  
+        }
+        // Prevent normal navigation since we've opened the link in a new tab 
+        next(false);        
+      },      
       meta: {
         requiresAuth: true,
       },
@@ -359,7 +369,15 @@ const router = createRouter({
     {
       path: "/school-reports",
       name: "school-reports",
-      component: () => import("../views/SchoolReports.vue"),
+      component: () => import("../views/Reports.vue"),
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: "/admin",
+      name: "admin",
+      component: () => import("../views/Admin.vue"),
       meta: {
         requiresAuth: true,
       },

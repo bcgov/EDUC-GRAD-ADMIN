@@ -172,6 +172,7 @@
                     {{ v$.editedGradStatus.ifClosedProgramWarning.$message }}
                   </div>
                   <v-select
+                    data-cy="program-select"
                     :disabled="disableProgramInput"
                     v-model="editedGradStatus.program"
                     :items="programOptions"
@@ -218,10 +219,10 @@
                     }}
                   </div>
                   <v-text-field
+                    data-cy="program-completion-date-textfield"
                     v-model="editedGradStatus.programCompletionDate"
                     label="Date"
                     maxLength="7"
-                    :formatter="formatYYYYMMDate"
                     density="compact"
                     variant="outlined"
                     clearable
@@ -242,6 +243,7 @@
                   <strong>Student status: </strong>
                   <br />
                   <v-select
+                    data-cy="student-status-select"
                     v-model="editedGradStatus.studentStatus"
                     :items="studentStatusOptions"
                     item-title="label"
@@ -274,6 +276,7 @@
                     }}
                   </div>
                   <v-select
+                    data-cy="student-grade-select"
                     v-model="editedGradStatus.studentGrade"
                     :items="gradeOptions"
                     item-title="text"
@@ -290,7 +293,47 @@
               <tr>
                 <td>
                   <strong>School of record:</strong><br />
+                  <div
+                    class="bg-warning"
+                    v-if="
+                      v$.editedGradStatus.ifSchoolOfRecordTranscriptEligibility
+                        .$invalid == true
+                    "
+                  >
+                    Please select a school
+                  </div>
+                  <!-- "Warning, Transcript Eligibility flag is not set to Y -->
+
+                  <div hidden>
+                    {{
+                      v$.editedGradStatus.ifSchoolOfRecordTranscriptEligibility
+                    }}
+                    {{ v$.editedGradStatus.ifSchoolOfRecordGrades10To12 }}
+                  </div>
+                  <div
+                    class="bg-warning"
+                    v-if="warningFlags.schoolOfRecord10To12Warning == true"
+                  >
+                    Warning: School
+                    {{
+                      getSchoolMincodeById(editedGradStatus.schoolOfRecordId)
+                    }}
+                    is not reported with grade 10-12 enrolments.
+                  </div>
+
+                  <div
+                    class="bg-warning"
+                    v-if="warningFlags.schoolOfRecordTranscriptWarning == true"
+                  >
+                    Warning: School
+                    {{
+                      getSchoolMincodeById(editedGradStatus.schoolOfRecordId)
+                    }}
+                    is not authorized to issue Transcripts.
+                  </div>
+
                   <!-- Warning if school of record missing; Samara to investigate if we use this since msg is same as scoolOfRecordWarning -->
+
                   <div
                     class="bg-error"
                     v-if="
@@ -317,12 +360,13 @@
                     }}
                   </div>
                   <v-autocomplete
-                    v-model="editedGradStatus.schoolOfRecord"
+                    data-cy="school-of-record-autoselect"
+                    v-model="editedGradStatus.schoolOfRecordId"
                     :disabled="disableSchoolOfRecord"
                     label="Select a school"
                     :items="getSchoolsList"
                     :item-title="schoolTitle"
-                    item-value="minCode"
+                    item-value="schoolId"
                     variant="outlined"
                     density="compact"
                     class="mt-4"
@@ -338,6 +382,38 @@
               <tr>
                 <td>
                   <strong>School at graduation:</strong><br />
+                  <div hidden>
+                    {{ v$.editedGradStatus.ifSchoolAtGradGrades10To12 }}
+                    <!-- {{
+                      v$.editedGradStatus.ifSchoolAtGradTranscriptEligibility
+                    }} -->
+                  </div>
+
+                  <!-- <div
+                    class="bg-warning"
+                    v-if="
+                      v$.editedGradStatus.ifSchoolAtGradTranscriptEligibility
+                        .$invalid == true
+                    "
+                  >
+                    Please select a school
+                  </div> -->
+                  <div
+                    class="bg-warning"
+                    v-if="warningFlags.schoolAtGrad10To12Warning == true"
+                  >
+                    Warning: School
+                    {{ getSchoolMincodeById(editedGradStatus.schoolAtGradId) }}
+                    is not reported with grade 10-12 enrolments.
+                  </div>
+                  <div
+                    class="bg-warning"
+                    v-if="warningFlags.schoolAtGradTranscriptWarning == true"
+                  >
+                    Warning: School
+                    {{ getSchoolMincodeById(editedGradStatus.schoolAtGradId) }}
+                    is not authorized to issue Transcripts.
+                  </div>
                   <div
                     class="bg-error"
                     v-if="
@@ -352,16 +428,30 @@
                         .$message
                     }}
                   </div>
-                  <!--    :disabled="disableSchoolAtGrad" -->
+                  <div
+                    class="bg-error"
+                    v-if="
+                      v$.editedGradStatus
+                        .ifSchoolAtGradIdProgramIs1950AndOffshore.$invalid ==
+                      true
+                    "
+                  >
+                    {{
+                      v$.editedGradStatus
+                        .ifSchoolAtGradIdProgramIs1950AndOffshore.$message
+                    }}
+                  </div>
                   <v-autocomplete
-                    v-model="editedGradStatus.schoolAtGrad"
+                    data-cy="school-at-graduation-autoselect"
+                    v-model="editedGradStatus.schoolAtGradId"
                     label="Select a school"
                     :items="getSchoolsList"
                     :item-title="schoolTitle"
-                    item-value="minCode"
+                    item-value="schoolId"
                     variant="outlined"
                     class="mt-4"
                     density="compact"
+                    :disabled="disableSchoolAtGrad"
                   >
                     <template v-slot:label="label">
                       {{ label.label }}
@@ -441,6 +531,7 @@
                     }}
                   </div>
                   <v-text-field
+                    data-cy="adult-start-date-textfield"
                     :disabled="editedGradStatus.program != '1950'"
                     v-model="editedGradStatus.adultStartDate"
                     label="Date"
@@ -472,6 +563,7 @@
                 <td>
                   <strong>Recalculate Grad Status:</strong><br />
                   <v-select
+                    data-cy="recalculate-grad-select"
                     :disabled="!allowUpdateRecalcFlags"
                     v-model="editedGradStatus.recalculateGradStatus"
                     :items="recalcFlags"
@@ -490,6 +582,7 @@
                 <td>
                   <strong>Recalculate Projected Grad:</strong><br />
                   <v-select
+                    data-cy="recalculate-projected-select"
                     :disabled="!allowUpdateRecalcFlags"
                     v-model="editedGradStatus.recalculateProjectedGrad"
                     :items="recalcFlags"
@@ -515,6 +608,7 @@
           </v-btn>
           <v-spacer />
           <v-btn
+            id="save-status-btn"
             color="error"
             variant="flat"
             :disabled="blockSave"
@@ -544,10 +638,9 @@ import {
   parseStudentStatus,
 } from "../../../utils/common.js";
 
-import SchoolService from "@/services/SchoolService.js";
 import sharedMethods from "../../../sharedMethods";
 import StudentService from "@/services/StudentService.js";
-
+import InstituteService from "@/services/InstituteService.js";
 export default {
   name: "GRADStatusForm",
   created() {
@@ -569,6 +662,8 @@ export default {
       programOptions: "getProgramOptions",
       studentStatusOptions: "getStudentStatusOptions",
       getSchoolsList: "getSchoolsList",
+      getSchoolMincodeById: "getSchoolMincodeById",
+      getSchoolById: "getSchoolById",
     }),
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
@@ -576,31 +671,37 @@ export default {
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
     studentGradeChange() {
-      return this.editedGradStatus.studentGrade;
+      return this.editedGradStatus?.studentGrade;
     },
     programChange() {
-      return this.editedGradStatus.program;
+      return this.editedGradStatus?.program;
     },
     programCompletionDateChange() {
-      return this.editedGradStatus.programCompletionDate;
+      return this.editedGradStatus?.programCompletionDate;
     },
     schoolOfRecordChange() {
-      return this.editedGradStatus.schoolOfRecord;
+      return this.editedGradStatus?.schoolOfRecord;
+    },
+    schoolOfRecordIdChange() {
+      return this.editedGradStatus?.schoolOfRecordId;
     },
     schoolAtGradChange() {
-      return this.editedGradStatus.schoolAtGrad;
+      return this.editedGradStatus?.schoolAtGrad;
+    },
+    schoolAtGradIdChange() {
+      return this.editedGradStatus?.schoolAtGradId;
     },
     adultStartDateChange() {
-      return this.editedGradStatus.adultStartDate;
+      return this.editedGradStatus?.adultStartDate;
     },
     recalculateFlag() {
-      return this.studentGradStatus.recalculateGradStatus;
+      return this.studentGradStatus?.recalculateGradStatus;
     },
     recalculateProjectedGradFlag() {
-      return this.studentGradStatus.recalculateProjectedGrad;
+      return this.studentGradStatus?.recalculateProjectedGrad;
     },
     allSet() {
-      if (this.getSchoolsList.length == 0) {
+      if (this.getSchoolsList?.length == 0) {
         return true;
       } else {
         this.searchLoading = false;
@@ -608,7 +709,7 @@ export default {
       }
     },
     mergedStudent() {
-      if (this.studentGradStatus.studentStatus === "MER") {
+      if (this.studentGradStatus?.studentStatus === "MER") {
         return true;
       } else {
         this.searchLoading = false;
@@ -644,6 +745,10 @@ export default {
       warningFlags: {
         closedProgramWarning: false,
         schoolWarning: false, //look at moving to error flags, but fine for now since backend prevents submission
+        schoolOfRecordTranscriptWarning: false,
+        schoolAtGradTranscriptWarning: false,
+        schoolOfRecord10To12Warning: false,
+        schoolAtGrad10To12Warning: false,
       },
       updateStatus: [],
       schoolOfRecord: "",
@@ -692,22 +797,22 @@ export default {
           "Warning, any optional programs associated with the original program will be deleted. You must add back in any pertinent optional programs once you have saved the changes to Program.",
           (value) => {
             return (
-              this.editedGradStatus.program === this.studentGradStatus.program
+              this.editedGradStatus?.program === this.studentGradStatus?.program
             );
           }
         ),
         ifClosedProgramWarning: helpers.withMessage(
           "Warning: This program is closed.",
           (value) => {
-            return !this.warningFlags.closedProgramWarning;
+            return !this.warningFlags?.closedProgramWarning;
           }
         ),
         ifProgramIs1950ButNoAdultStartDate: helpers.withMessage(
           "Students on the 1950 Program must have an adult start date. Please enter a valid date.",
           (value) => {
             return (
-              this.editedGradStatus.program !== "1950" ||
-              this.editedGradStatus.adultStartDate
+              this.editedGradStatus?.program !== "1950" ||
+              this.editedGradStatus?.adultStartDate
             );
           }
         ),
@@ -715,8 +820,19 @@ export default {
           "Offshore schools do not support the Adult Graduation Program.",
           (value) => {
             return (
-              this.editedGradStatus.program !== "1950" ||
-              !(this.editedGradStatus.schoolOfRecord.search(/^103.*/) >= 0)
+              this.editedGradStatus?.program !== "1950" ||
+              this.getSchoolById(this.editedGradStatus?.schoolOfRecordId)
+                ?.schoolCategoryCode != "OFFSHORE"
+            );
+          }
+        ),
+        ifSchoolAtGradIdProgramIs1950AndOffshore: helpers.withMessage(
+          "Offshore schools do not support the Adult Graduation Program.",
+          (value) => {
+            return (
+              this.editedGradStatus?.program !== "1950" ||
+              this.getSchoolById(this.editedGradStatus?.schoolAtGradId)
+                ?.schoolCategoryCode != "OFFSHORE"
             );
           }
         ),
@@ -725,16 +841,16 @@ export default {
         ifProgramCompletionDatePriorToStartOfProgram: helpers.withMessage(
           "The program completion date cannot be prior to the start of the program",
           (value) => {
-            return !this.errorFlags.rangeError.programCompletionDate;
+            return !this.errorFlags?.rangeError?.programCompletionDate;
           }
         ),
         ifProgramCompletionDateInvalid: helpers.withMessage(
           "The program completion date format is invalid. Please follow the date format YYYY/MM",
           (value) => {
             return (
-              !this.errorFlags.numberError.programCompletionDate ||
+              !this.errorFlags?.numberError?.programCompletionDate ||
               !this.containsAnyLetters(
-                this.editedGradStatus.programCompletionDate
+                this.editedGradStatus?.programCompletionDate
               )
             );
           }
@@ -761,50 +877,104 @@ export default {
           }
         ),
         // SchoolOfRecord
-        ifSchoolOfRecordIsEmpty: helpers.withMessage(
-          "A student must have a school of record. Please enter a school code",
-          (value) => {
-            return this.editedGradStatus.schoolOfRecord;
-          }
-        ),
-        ifSchoolOfRecordIsValid: helpers.withMessage(
+        ifSchoolOfRecordGrades10To12: helpers.withMessage(
           () => {
-            if (this.editedGradStatus.schoolOfRecord) {
-              return this.validateSchoolInfo(
-                this.editedGradStatus.schoolOfRecord
-              );
-            }
-          },
-          (value) => {
-            return this.editedGradStatus.schoolOfRecord;
-          }
-        ),
-        //School at Grad
-        ifSchoolAtGraduation: helpers.withMessage(
-          () => {
-            if (this.editedGradStatus.schoolAtGrad) {
-              return this.validateSchoolInfo(
-                this.editedGradStatus.schoolAtGrad
+            if (this.editedGradStatus?.schoolOfRecordId) {
+              return this.isSchoolGrades10To12(
+                "schoolOfRecord",
+                this.editedGradStatus?.schoolOfRecordId
               ); // Call your dynamic function here
             }
           },
           (value) => {
-            return this.editedGradStatus.schoolAtGrad;
+            return this.editedGradStatus?.schoolOfRecordId;
+          }
+        ),
+        ifSchoolOfRecordTranscriptEligibility: helpers.withMessage(
+          () => {
+            if (this.editedGradStatus?.schoolOfRecordId) {
+              return this.isSchoolTranscriptEligible(
+                "schoolOfRecord",
+                this.editedGradStatus?.schoolOfRecordId
+              ); // Call your dynamic function here
+            }
+          },
+          (value) => {
+            return this.editedGradStatus?.schoolOfRecordId;
+          }
+        ),
+        ifSchoolOfRecordIsEmpty: helpers.withMessage(
+          "A student must have a school of record. Please enter a school code",
+          (value) => {
+            return this.editedGradStatus?.schoolOfRecordId;
+          }
+        ),
+        ifSchoolOfRecordIsValid: helpers.withMessage(
+          () => {
+            if (this.editedGradStatus?.schoolOfRecordId) {
+              return this.validateSchoolInfo(
+                this.editedGradStatus?.schoolOfRecordId
+              );
+            }
+          },
+          (value) => {
+            return this.editedGradStatus?.schoolOfRecordId;
+          }
+        ),
+        //School at Grad
+        ifSchoolAtGradGrades10To12: helpers.withMessage(
+          () => {
+            if (this.editedGradStatus?.schoolAtGradId) {
+              return this.isSchoolGrades10To12(
+                "schoolAtGrad",
+                this.editedGradStatus?.schoolAtGradId
+              ); // Call your dynamic function here
+            }
+          },
+          (value) => {
+            return this.editedGradStatus?.schoolAtGradId;
+          }
+        ),
+        // ifSchoolAtGradTranscriptEligibility: helpers.withMessage(
+        //   () => {
+        //     if (this.editedGradStatus.schoolAtGradId) {
+        //       return this.isSchoolTranscriptEligible(
+        //         "schoolAtGrad",
+        //         this.editedGradStatus.schoolAtGradId
+        //       );
+        //     }
+        //   },
+        //   (value) => {
+        //     return this.editedGradStatus.schoolAtGradId;
+        //   }
+        // ),
+        ifSchoolAtGraduation: helpers.withMessage(
+          () => {
+            if (this.editedGradStatus?.schoolAtGradId) {
+              return this.validateSchoolInfo(
+                this.editedGradStatus?.schoolAtGradId
+              ); // Call your dynamic function here
+            }
+          },
+          (value) => {
+            return this.editedGradStatus?.schoolAtGradId;
           }
         ),
         ifSchoolAtGraduationEmptyAndProgramCompletionNotEmpty:
           helpers.withMessage(
             "If program completion date is not blank, school at graduation cannot be blank",
             (value) => {
-              let { programCompletionDate, schoolAtGrad } =
+              let { program, programCompletionDate, schoolAtGradId } =
                 this.editedGradStatus;
-              return !programCompletionDate || schoolAtGrad;
+              return (
+                program == "SCCP" || !programCompletionDate || schoolAtGradId
+              );
             }
           ),
         ifAdultStartDateInvalid: helpers.withMessage(
           "The adult start date format is invalid. Please follow the date format YYYY-MM-DD",
           (value) => {
-            let adultStartDate = this.editedGradStatus.adultStartDate;
+            let adultStartDate = this.editedGradStatus?.adultStartDate;
             return (
               !adultStartDate ||
               (!this.containsAnyLetters(adultStartDate) &&
@@ -819,8 +989,8 @@ export default {
     programChange: function () {
       if (
         this.editedGradStatus.hasOwnProperty("adultStartDate") &&
-        this.studentGradStatus.adultStartDate !=
-          this.editedGradStatus.adultStartDate
+        this.studentGradStatus?.adultStartDate !=
+          this.editedGradStatus?.adultStartDate
       ) {
         this.editedGradStatus.adultStartDate =
           this.studentGradStatus.adultStartDate;
@@ -831,17 +1001,19 @@ export default {
       //not a validation function
       let programNameSearch = this.editedGradStatus.program;
       for (let programOpt of this.programOptions) {
-        if (programOpt.programCode == programNameSearch) {
+        if (programOpt?.programCode == programNameSearch) {
           this.programEffectiveDate = programOpt.effectiveDate;
           this.programExpiryDate = programOpt.expiryDate;
         }
       }
-      if (this.editedGradStatus.programCompletionDate) {
+      if (this.editedGradStatus?.programCompletionDate) {
         if (
-          !this.containsAnyLetters(this.editedGradStatus.programCompletionDate)
+          !this.containsAnyLetters(this.editedGradStatus?.programCompletionDate)
         ) {
           this.errorFlags.numberError.programCompletionDate = false;
-          this.validCompletionDate(this.editedGradStatus.programCompletionDate);
+          this.validCompletionDate(
+            this.editedGradStatus?.programCompletionDate
+          );
         }
       } else {
         this.errorFlags.numberError.programCompletionDate = false;
@@ -849,12 +1021,12 @@ export default {
       this.checkForErrors();
     },
     adultStartDateChange: function () {
-      if (this.editedGradStatus.adultStartDate) {
+      if (this.editedGradStatus?.adultStartDate) {
         if (
-          !this.containsAnyLetters(this.editedGradStatus.adultStartDate) ||
-          this.editedGradStatus.adultStartDate.length > 8
+          !this.containsAnyLetters(this.editedGradStatus?.adultStartDate) ||
+          this.editedGradStatus?.adultStartDate?.length > 8
         ) {
-          this.validAdultStartDate(this.editedGradStatus.adultStartDate);
+          this.validAdultStartDate(this.editedGradStatus?.adultStartDate);
         }
       }
       this.checkForErrors();
@@ -863,6 +1035,12 @@ export default {
       this.checkForErrors();
     },
     schoolOfRecordChange: function () {
+      this.checkForErrors();
+    },
+    schoolOfRecordIdChange: function () {
+      this.checkForErrors();
+    },
+    schoolAtGradIdChange: function () {
       this.checkForErrors();
     },
   },
@@ -878,7 +1056,7 @@ export default {
     schoolTitle(item) {
       // Customize this method to return the desired format
       if (item) {
-        return `${item.minCode} - ${item.schoolName}`;
+        return `${item.mincode} - ${item.displayName}`;
       } else {
         return null;
       }
@@ -888,7 +1066,7 @@ export default {
     },
     validCompletionDate(date) {
       // format date to valid SCCP date
-      if (this.editedGradStatus.program === "SCCP") {
+      if (this.editedGradStatus?.program === "SCCP") {
         this.editedGradStatus.programCompletionDate =
           sharedMethods.dateFormatYYYYMM(date);
       }
@@ -913,15 +1091,20 @@ export default {
     },
     editGradStatus() {
       // reset object
-      this.editedGradStatus = {};
+      // this.editedGradStatus = {};
       this.dialog = true;
       this.editedGradStatus.pen = this.studentGradStatus.pen;
       this.editedGradStatus.program = this.studentGradStatus.program;
       this.editedGradStatus.studentGrade = this.studentGradStatus.studentGrade;
-      this.editedGradStatus.schoolName = this.studentGradStatus.schoolName;
+      this.editedGradStatus.schoolOfRecordName =
+        this.studentGradStatus.schoolOfRecordName;
       this.editedGradStatus.schoolOfRecord =
         this.studentGradStatus.schoolOfRecord;
+      this.editedGradStatus.schoolOfRecordId =
+        this.studentGradStatus.schoolOfRecordId;
       this.editedGradStatus.schoolAtGrad = this.studentGradStatus.schoolAtGrad;
+      this.editedGradStatus.schoolAtGradId =
+        this.studentGradStatus.schoolAtGradId;
       this.editedGradStatus.schoolAtGradName =
         this.studentGradStatus.schoolAtGradName;
       this.editedGradStatus.studentStatus =
@@ -939,12 +1122,20 @@ export default {
       this.editedGradStatus.recalculateProjectedGrad =
         this.studentGradStatus.recalculateProjectedGrad;
       if (
-        this.studentGradStatus.programCompletionDate &&
-        this.studentGradStatus.program != "SCCP"
+        this.studentGradStatus?.programCompletionDate &&
+        this.studentGradStatus?.program != "SCCP"
       ) {
         this.disableProgramInput = true;
         this.disableStudentGrade = true;
         this.disableConsumerEdReqMet = true;
+        this.disableSchoolAtGrad = false;
+      } else if (
+        this.studentGradStatus?.programCompletionDate &&
+        this.studentGradStatus?.program == "SCCP"
+      ) {
+        this.disableProgramInput = false;
+        this.disableStudentGrade = false;
+        this.disableConsumerEdReqMet = false;
         this.disableSchoolAtGrad = false;
       } else {
         this.disableProgramInput = false;
@@ -952,14 +1143,15 @@ export default {
         this.disableConsumerEdReqMet = false;
         this.disableSchoolAtGrad = true;
       }
-      if (this.studentGradStatus.program != "1986-EN") {
+
+      if (this.studentGradStatus?.program != "1986-EN") {
         this.disableConsumerEdReqMet = true;
       } else {
         this.disableConsumerEdReqMet = false;
       }
       if (
-        this.studentGradStatus.programCompletionDate != null &&
-        this.studentGradStatus.program !== "SCCP"
+        this.studentGradStatus?.programCompletionDate != null &&
+        this.studentGradStatus?.program !== "SCCP"
       ) {
         this.disableProgramInput = true;
       } else {
@@ -967,13 +1159,13 @@ export default {
       }
 
       if (
-        this.studentGradStatus.studentStatus == "TER" ||
-        this.studentGradStatus.studentStatus == "N"
+        this.studentGradStatus?.studentStatus == "TER" ||
+        this.studentGradStatus?.studentStatus == "N"
       ) {
         this.disableProgramInput = false;
       }
       this.showEdit = true;
-      if (this.studentGradStatus.programCompletionDate) {
+      if (this.studentGradStatus?.programCompletionDate) {
         this.editedGradStatus.programCompletionDate =
           this.studentGradStatus.programCompletionDate;
       } else {
@@ -997,6 +1189,7 @@ export default {
         this.v$.editedGradStatus.ifProgramIs1950studentGradeMustbeADorAN,
         this.v$.editedGradStatus.ifProgramIsNot1950studentGradeCannotBeADorAN,
         this.v$.editedGradStatus.ifProgramIs1950AndOffshore,
+        this.v$.editedGradStatus.ifSchoolAtGradIdProgramIs1950AndOffshore,
       ];
 
       // If any of the validations are invalid, blockSave will be true
@@ -1008,10 +1201,10 @@ export default {
       this.editedGradStatus.studentID = id;
       this.editedGradStatus.pen = this.studentPen;
       //process the program completion date
-      if (this.editedGradStatus.programCompletionDate == "") {
+      if (this.editedGradStatus?.programCompletionDate == "") {
         this.editedGradStatus.programCompletionDate = null;
       }
-      if (this.editedGradStatus.programCompletionDate != null) {
+      if (this.editedGradStatus?.programCompletionDate != null) {
         this.editedGradStatus.programCompletionDate =
           this.editedGradStatus.programCompletionDate.replace("/", "-");
         let date;
@@ -1026,15 +1219,15 @@ export default {
           this.snackbarStore.showSnackbar(error, "error", 5000);
         }
       }
-      if (this.editedGradStatus.schoolOfRecord == "") {
+      if (this.editedGradStatus?.schoolOfRecord == "") {
         this.editedGradStatus.schoolOfRecord = null;
       }
-      if (this.editedGradStatus.schoolAtGrad == "") {
-        this.editedGradStatus.schoolAtGrad = null;
+      if (this.editedGradStatus?.schoolAtGradId == "") {
+        this.editedGradStatus.schoolAtGradId = null;
       }
       if (
-        this.studentGradStatus.program == "1950" &&
-        this.editedGradStatus.program != "1950"
+        this.studentGradStatus?.program == "1950" &&
+        this.editedGradStatus?.program != "1950"
       ) {
         this.editedGradStatus.adultStartDate = "";
         this.studentGradStatus.adultStartDate = "";
@@ -1045,16 +1238,12 @@ export default {
           this.updateStatus = response.data;
           this.setStudentGradStatus(response.data);
           this.loadStudentReportsAndCertificates();
-          // this.getStudentReportsAndCertificates();
           this.loadStudentOptionalPrograms(id);
-          // this.refreshStudentHistory();
           this.loadStudentHistory(id);
           this.loadStudentOptionalProgramHistory(id);
           this.studentGradStatus.studentStatusName = this.sortStudentStatus(
             response.data.studentStatus
           );
-          this.getSchoolInfo(response.data.schoolOfRecord, "schoolOfRecord");
-          this.getSchoolInfo(response.data.schoolAtGrad, "schoolAtGrad");
           this.showEdit = false;
           this.editedGradStatus = {};
           this.snackbarStore.showSnackbar("GRAD Status Saved", "success", 5000);
@@ -1075,34 +1264,55 @@ export default {
           );
         });
     },
-    getSchoolInfo(mincode, type) {
-      if (mincode != null) {
-        SchoolService.getSchoolInfo(mincode)
-          .then((response) => {
-            if (type == "schoolOfRecord") {
-              this.schoolOfRecord = response.data;
-            }
-            if (type == "schoolAtGrad") {
-              this.schoolAtGraduation = response.data;
-            }
-          })
-          .catch((error) => {
-            // eslint-disable-next-line
-            console.log("There was an error:" + error?.response);
-            this.snackbarStore.showSnackbar(error?.response, "error", 5000);
-          });
-      }
-    },
-    validateSchoolInfo(schoolToValidate) {
+    validateSchoolInfo(schoolToValidateId) {
       this.warningFlags.schoolWarning = false;
-      let schoolInfo = this.getSchoolByMincode(
-        this.getSchoolsList,
-        schoolToValidate
-      );
+      let schoolInfo = this.getSchoolById(schoolToValidateId);
       this.warningFlags.schoolWarning = !this.isSchoolOpen(schoolInfo);
     },
-    getSchoolByMincode(schools, mincode) {
-      return schools.find((school) => school.mincode === mincode) || null;
+    async isSchoolGrades10To12(type, schoolId) {
+      try {
+        this.warningFlags.schoolOfRecord10To12Warning = false;
+        this.warningFlags.schoolAtGrad10To12Warning = false;
+        const schoolGradesToCheck = ["GRADE10", "GRADE11", "GRADE12"];
+        // Create a Set from the schoolGradesToCheck array for efficient lookups.
+        const gradesToCheckSet = new Set(schoolGradesToCheck);
+        // Calling out to institute for GRADES
+        const response = await InstituteService.getSchoolById(schoolId);
+        const schoolGrades = response?.data?.grades;
+        for (const grade of schoolGrades) {
+          // If the current grade's schoolGradeCode is in the Set, return true.
+          if (gradesToCheckSet.has(grade.schoolGradeCode)) {
+            return true;
+          }
+        }
+        // If none of the grades matched, return false and switch on the warning flags.
+        if (type == "schoolOfRecord") {
+          this.warningFlags.schoolOfRecord10To12Warning = true;
+        } else {
+          this.warningFlags.schoolAtGrad10To12Warning = true;
+        }
+        return false;
+      } catch (error) {
+        // eslint-disable-next-line
+        console.error("Error fetching school data:", error);
+      }
+    },
+    isSchoolTranscriptEligible(type, schoolId) {
+      let school = this.getSchoolById(schoolId);
+      if (school) {
+        if (type == "schoolOfRecord") {
+          this.warningFlags.schoolOfRecordTranscriptWarning =
+            !school.canIssueTranscripts;
+          return school.canIssueTranscripts;
+        } else {
+          this.warningFlags.schoolAtGradTranscriptWarning =
+            !school.canIssueTranscripts;
+          return school.canIssueTranscripts;
+        }
+      } else {
+        // If the school is not found, return false (or handle the error as needed)
+        return false;
+      }
     },
     isSchoolOpen(school) {
       const openedDate = new Date(school?.openedDate);
@@ -1113,13 +1323,6 @@ export default {
 
       // Check if the openedDate is in the past and closedDate is null
       return openedDate < currentDate && closedDate === null;
-    },
-    ifProgramsWithExpiry(program) {
-      for (let p of this.programsWithExpiry) {
-        if (program == p) {
-          return true;
-        }
-      }
     },
   },
 };

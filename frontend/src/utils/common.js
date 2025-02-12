@@ -27,6 +27,22 @@ export function parseStudentStatus(code, studentStatusOptions) {
 }
 
 /**
+ * FORMATTING
+ */
+export function formatFlag(flag) {
+  switch (flag) {
+    case null:
+      return "null";
+    case false:
+    case "N" || "n":
+      return "N";
+    case true:
+    case "Y" || "y":
+      return "Y";
+  }
+}
+
+/**
  * SORTING
  */
 
@@ -67,13 +83,6 @@ export function isPFSchool(mincode) {
 }
 
 export function isProgramComplete(completionDate, programCode) {
-  console.debug(
-    "DEBUG: Program is Complete data:\n completionDate - " +
-      completionDate +
-      "\n programCode - " +
-      programCode
-  );
-
   if (programCode === "SCCP") {
     let today = new Date();
     return !!completionDate && new Date(completionDate) <= today;
@@ -89,7 +98,13 @@ export function generateRequestPayload(batchRequest, template) {
   return template.reduce((acc, field) => {
     if (batchRequest[field] !== undefined) {
       acc[field] = batchRequest[field];
+      //covert districts ["all"] to empty array
+      if (field == "districtIds" && Array.isArray(acc[field]) && acc[field].length === 1 && acc[field][0].toLowerCase() === "all") {
+        // If the condition is true, set districts to an empty array
+        acc[field] = []; 
+      }
     }
+    
     return acc;
   }, {});
 }

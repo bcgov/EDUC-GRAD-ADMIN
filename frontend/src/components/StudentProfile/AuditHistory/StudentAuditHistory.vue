@@ -25,14 +25,15 @@
         <v-window-item value="studentChangeHistory">
           <v-data-table
             :sortBy="sortBy"
-            :items="studentHistory"
+            :items="studentHistoryWithPrevData"
             :headers="studentChangeFields"
-            :items-per-page="'50'"
+            :items-per-page="50"
             item-value="historyID"
             density="compact"
           >
             <template v-slot:expanded-row="{ columns, item }">
               <tr>
+                {{ hisotryID }}
                 <td :colspan="columns.length">
                   <div class="mx-5 my-5">
                     <p>
@@ -80,6 +81,41 @@
             <template v-slot:item.updateDate="{ item }">
               {{ $filters.formatTime(item.updateDate) }}
             </template>
+
+            <template v-slot:item.program="{ item }">
+              <span :class="{'important-change': item.previous && item.program !== item.previous.program}">{{ item.program }}</span>
+            </template>
+            <template v-slot:item.programCompletionDate="{ item }">
+              <span :class="{'important-change': item.previous && item.programCompletionDate !== item.previous.programCompletionDate}">{{ item.programCompletionDate }}</span>
+            </template>
+            <template v-slot:item.studentStatus="{ item }">
+              <span :class="{'important-change': item.previous && item.studentStatus !== item.previous.studentStatus}">{{ item.studentStatus }}</span>
+            </template>
+            <template v-slot:item.studentGrade="{ item }">
+              <span :class="{'important-change': item.previous && item.studentGrade !== item.previous.studentGrade}">{{ item.studentGrade }}</span>
+            </template>
+            <template v-slot:item.schoolOfRecord="{ item }">
+              <span :class="{'important-change': item.previous && item.schoolOfRecord !== item.previous.schoolOfRecord}">{{ item.schoolOfRecord }}</span>
+            </template>
+            <template v-slot:item.schoolAtGrad="{ item }">
+              <span :class="{'important-change': item.previous && item.schoolAtGrad !== item.previous.schoolAtGrad}">{{ item.schoolAtGrad }}</span>
+            </template>
+            <template v-slot:item.consumerEducationRequirementMet="{ item }">
+              <span :class="{'important-change': item.previous && item.consumerEducationRequirementMet !== item.previous.consumerEducationRequirementMet}">{{ item.consumerEducationRequirementMet }}</span>
+            </template>
+            <template v-slot:item.honoursStanding="{ item }">
+              <span :class="{'important-change': item.previous && item.honoursStanding !== item.previous.honoursStanding}">{{ item.honoursStanding }}</span>
+            </template>
+            <template v-slot:item.gpa="{ item }">
+              <span :class="{'important-change': item.previous && item.gpa !== item.previous.gpa}">{{ item.gpa }}</span>
+            </template>
+            <template v-slot:item.recalculateProjectedGrad="{ item }">
+              <span :class="{'important-change': item.previous && item.recalculateProjectedGrad !== item.previous.recalculateProjectedGrad}">{{ item.recalculateProjectedGrad }}</span>
+            </template>
+            <template v-slot:item.recalculateGradStatus="{ item }">
+              <span :class="{'important-change': item.previous && item.recalculateGradStatus !== item.previous.recalculateGradStatus}">{{ item.recalculateGradStatus }}</span>
+            </template>
+
           </v-data-table>
         </v-window-item>
 
@@ -151,6 +187,7 @@
 import { useStudentStore } from "../../../store/modules/student";
 import { mapState } from "pinia";
 import DisplayTable from "@/components/DisplayTable.vue";
+import { useAppStore } from "../../../store/modules/app";
 
 export default {
   name: "StudentAuditHistory",
@@ -166,6 +203,22 @@ export default {
       studentUngradReasons: "getStudentUngradReasons",
       studentNotes: "getStudentNotes",
     }),
+    ...mapState(useAppStore, {
+      getSchoolById: "getSchoolById"
+    }),
+    studentHistoryWithPrevData() {
+
+      this.studentHistory.sort((a, b) => new Date(b.updateDate) - new Date(a.updateDate))
+      for (const key of Object.keys(this.studentHistory)) {
+        const record = this.studentHistory[key]
+        record.schoolOfRecord = !!record.schoolOfRecordId ? this.getSchoolById(record.schoolOfRecordId).mincode : null
+        record.schoolAtGrad = !!record.schoolAtGradId ? this.getSchoolById(record.schoolAtGradId).mincode : null
+      }
+      return this.studentHistory.map((item, index, array) => ({
+        ...item,
+        previous: array[index + 1] || null,
+      }))
+    }
   },
   data: function () {
     return {
@@ -264,7 +317,6 @@ export default {
           sortable: false,
         },
       ],
-      studentChangeHighlight: [],
       optionalProgramChangeFields: [
         {
           key: "data-table-expand",
@@ -309,20 +361,11 @@ export default {
     };
   },
   mounted() {
-    // this.highlightStudentHistoryChanges();
-    // this.highlightOptionalProgramHistoryChanges();
+    this.studentHistoryWithPrevData
   },
   created() {
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
-  },
-  watch: {
-    // studentHistory: function () {
-    //   this.highlightStudentHistoryChanges();
-    // },
-    // optionalProgramHistory: function () {
-    //   this.highlightOptionalProgramHistoryChanges();
-    // },
   },
   methods: {
     handleResize() {
@@ -333,37 +376,6 @@ export default {
       } else {
         this.smallScreen = false;
       }
-    },
-    highlightStudentHistoryChanges() {
-      const changes = [];
-
-      for (const [index, value] of this.studentHistory.entries()) {
-        // temp entry to build our change highlight
-        let tempEntry = {};
-        for (const field of this.studentChangeFields) {
-          if (
-            index > 0 &&
-            field.key != "createDate" &&
-            field.key != "data-table-expand" &&
-            field.key != "activityCode"
-          ) {
-            tempEntry[field.key] = {
-              value: value[field.key],
-              changed:
-                value[field.key] !== this.studentHistory[index - 1][field.key],
-            };
-          } else {
-            tempEntry[field.key] = {
-              value: value[field.key],
-              changed: true,
-            };
-          }
-          tempEntry["data"] = value;
-        }
-        changes.push(tempEntry);
-      }
-
-      this.studentChangeHighlight = changes;
     },
     highlightOptionalProgramHistoryChanges() {
       const changes = [];
@@ -429,7 +441,7 @@ export default {
   font-size: 87.5%;
 }
 
-:deep(.value-changed) {
+.important-change {
   font-weight: bold;
 }
 </style>

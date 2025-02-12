@@ -246,8 +246,7 @@
                 <p>
                   You are about to delete the
                   <strong
-                    >{{ item.optionalProgramCode }} -
-                    {{ item.optionalProgramName }}</strong
+                    >{{ item.optionalProgramName }} ({{ item.optionalProgramCode }})</strong
                   >
                   Optional Program from this student
                 </p>
@@ -403,8 +402,7 @@
                           <p>
                             You are about to delete the
                             <strong
-                              >{{ item.careerProgramCode }} -
-                              {{ item.careerProgramName }}</strong
+                              >{{ item.optionalProgramName }} ({{ item.optionalProgramCode }})</strong
                             >
                             Career Program from this student
                           </p>
@@ -501,6 +499,7 @@ export default {
       studentCareerPrograms: "getStudentCareerPrograms",
       studentGradStatus: "getStudentGradStatus",
     }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
   },
   validations() {
     return {
@@ -621,7 +620,6 @@ export default {
       removeStudentOptionalProgram: "removeStudentOptionalProgram",
       removeStudentCareerProgram: "removeStudentCareerProgram",
     }),
-    ...mapState(useAccessStore, ["hasPermissions"]),
     isProgramComplete(date, program) {
       return isProgramComplete(date, program);
     },

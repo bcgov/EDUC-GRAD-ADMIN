@@ -93,20 +93,10 @@
                     />
                   </v-row>
                   <v-row v-if="group == 'School'">
-                    <SchoolInput> </SchoolInput>
+                    <SchoolInput disableSelectStudents> </SchoolInput>
                   </v-row>
                   <v-row v-if="group == 'School Category'">
-                    <DistrictInput> </DistrictInput>
-                  </v-row>
-                  <v-row v-if="group == 'All Schools'">
-                    <v-alert type="info" class="pb-2">
-                      <p>
-                        This will archive current school reports, which will
-                        become static and no longer be updated. School reports
-                        must be archived before the new data collection cycle
-                        begins so they are not overwritten entirely.
-                      </p>
-                    </v-alert>
+                    <DistrictInput disableSelectStudents> </DistrictInput>
                   </v-row>
                 </v-stepper-window-item>
 
@@ -239,12 +229,12 @@ export default {
               ) {
                 if (this.group === "School") {
                   isValid =
-                    this.getBatchRequest.schoolOfRecords &&
-                    this.getBatchRequest.schoolOfRecords.length > 0;
+                    this.getBatchRequest.schoolIds &&
+                    this.getBatchRequest.schoolIds.length > 0;
                 } else if (this.group === "School Category") {
                   isValid =
-                    this.getBatchRequest.districts &&
-                    this.getBatchRequest.districts.length > 0;
+                    this.getBatchRequest.districtIds &&
+                    this.getBatchRequest.districtIds.length > 0;
                 } else if (this.group === "All Schools") {
                   isValid = true;
                 }
@@ -309,7 +299,7 @@ export default {
       this.batchLoading = true;
       try {
         const requestTemplate = [
-          "districts",
+          "districtIds",
           "gradDateFrom",
           "gradDateTo",
           "localDownload",
@@ -319,7 +309,7 @@ export default {
           "quantity",
           "reportTypes",
           "schoolCategoryCodes",
-          "schoolOfRecords",
+          "schoolIds",
           "validateInput",
         ];
         const requestPayload = generateRequestPayload(

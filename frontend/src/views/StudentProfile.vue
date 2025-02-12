@@ -98,7 +98,7 @@
               </v-tabs>
               <v-card-text>
                 <v-window v-model="selectedTab">
-                  <v-window-item value="GRAD">
+                  <v-window-item value="GRAD" data-cy="grad-window-item">
                     <v-tabs v-model="selectedSubTab" color="primary">
                       <v-tab value="gradStatusTab" class="text-none"
                         ><v-chip
@@ -138,21 +138,6 @@
 
                     <v-window v-model="selectedSubTab">
                       <v-window-item value="gradStatusTab">
-                        <div v-if="studentGradStatus.studentGradData">
-                          <v-alert
-                            type="info"
-                            variant="tonal"
-                            border="start"
-                            class="mt-4"
-                            v-if="
-                              studentGradStatus.studentGradData.gradMessage &&
-                              !studentGradStatus.recalculateGradStatus
-                            "
-                          >
-                            {{ studentGradStatus.studentGradData.gradMessage }}
-                          </v-alert>
-                        </div>
-
                         <StudentGraduationStatus></StudentGraduationStatus>
                       </v-window-item>
 
@@ -170,7 +155,7 @@
                       </v-progress-circular>
                     </div>
                   </v-window-item>
-                  <v-window-item value="Courses">
+                  <v-window-item value="Courses" data-cy="courses-window-item">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -179,7 +164,7 @@
                     </v-progress-circular>
                     <StudentCourses></StudentCourses
                   ></v-window-item>
-                  <v-window-item value="Assessments">
+                  <v-window-item value="Assessments" data-cy="assessments-window-item">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -188,7 +173,7 @@
                     </v-progress-circular>
                     <StudentAssessments
                   /></v-window-item>
-                  <v-window-item value="Exams">
+                  <v-window-item value="Exams" data-cy="exams-window-item">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -197,7 +182,7 @@
                     </v-progress-circular>
                     <StudentExams />
                   </v-window-item>
-                  <v-window-item value="Optional">
+                  <v-window-item value="Optional" data-cy="optional-window-item">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -206,7 +191,7 @@
                     </v-progress-circular>
                     <StudentOptionalPrograms></StudentOptionalPrograms
                   ></v-window-item>
-                  <v-window-item value="Audit">
+                  <v-window-item value="Audit" data-cy="audit-window-item">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -226,7 +211,7 @@
                     </v-progress-circular>
                     <StudentNotes></StudentNotes>
                   </v-window-item>
-                  <v-window-item value="Undo Completion Reasons">
+                  <v-window-item value="Undo Completion Reasons" data-cy="undo-window-item">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -939,6 +924,10 @@ export default {
       this.tabLoading = true;
       GraduationService.updateStudentReports(this.studentId)
         .then(() => {
+          this.loadStudentOptionalPrograms(this.studentId);
+          this.loadStudentHistory(this.studentId);
+          this.loadStudentOptionalProgramHistory(this.studentId);
+
           this.loadStudentReportsAndCertificates();
           StudentService.getGraduationStatus(this.studentId)
             .then((res) => {
@@ -1207,7 +1196,7 @@ export default {
 }
 .last-updated-date {
   position: absolute;
-  top: 15px;
+  top: -1px;
   right: 0;
 }
 .student-profile {

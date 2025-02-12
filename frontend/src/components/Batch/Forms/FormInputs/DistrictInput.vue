@@ -12,9 +12,9 @@
           <v-col md="10">
             <v-select
               v-model="schoolCategory"
-              :items="schoolCategoryOptions"
-              item-title="title"
-              item-value="value"
+              :items="getBatchSchoolCategoryCodes"
+              item-title="label"
+              item-value="schoolCategoryCode"
               label="School Category"
               class="my-2"
               variant="outlined"
@@ -30,8 +30,8 @@
         </v-row>
         <v-row
           v-if="
-            schoolCategory !== '04' &&
-            schoolCategory !== '09' &&
+            schoolCategory !== 'YUKON' &&
+            schoolCategory !== 'OFFSHORE' &&
             !disableSelectDistrict
           "
         >
@@ -103,7 +103,7 @@
         >
           <template v-slot:item.remove="{ item }">
             <v-btn
-              v-if="schoolCategory != '09' && schoolCategory != '04'"
+              v-if="schoolCategory != 'YUKON' && schoolCategory != 'OFFSHORE'"
               @click="removeDistrict(item.district)"
               color="primary"
             >
@@ -160,10 +160,11 @@ export default {
   watch: {
     schoolCategory(newValue, previousValue) {
       if (previousValue != newValue) {
+        this.selectAllDistricts = false;
         this.districts.splice(0);
       }
       if (this.runType == "DISTRUN_YE") {
-        if (newValue == "02" || newValue == "03") {
+        if (newValue == "PUBLIC" || newValue == "INDEPEND") {
           //default districts to all
           this.district = "all";
           this.districtInfo = {
@@ -174,20 +175,28 @@ export default {
           this.addDistrict();
         }
       }
-      if (newValue == "04") {
+      if (newValue == "YUKON") {
         this.districts.splice(0);
         this.district = "098";
+        let districtId = this.getDistrictByDistrictNumber(
+          this.district
+        ).districtId;
         this.districtInfo = {
+          districtId: districtId,
           districtNumber: "098",
           districtName: "YUKON TERRITORIES",
           activeFlag: "Y",
         };
         this.addDistrict();
       }
-      if (newValue == "09") {
+      if (newValue == "OFFSHORE") {
         this.districts.splice(0);
         this.district = "103";
+        let districtId = this.getDistrictByDistrictNumber(
+          this.district
+        ).districtId;
         this.districtInfo = {
+          districtId: districtId,
           districtNumber: "103",
           districtName: "OFFSHORE INDEPENDENT",
           activeFlag: "Y",
@@ -204,13 +213,6 @@ export default {
       selectAllDistricts: false,
       addMode: true,
       includeStudents: "Current Students",
-      schoolCategoryOptions: [
-        { title: "01 Public", value: "01" },
-        { title: "02 Independent", value: "02" },
-        { title: "03 Federally Operated Band School", value: "03" },
-        { title: "04 Yukon School", value: "04" },
-        { title: "09 Offshore", value: "09" },
-      ],
       district: "",
       districtInfo: "",
       districtValidating: false,
@@ -230,7 +232,7 @@ export default {
         },
         {
           key: "remove",
-          title: "remove",
+          title: "",
           sortable: true,
           class: "text-left",
         },
@@ -242,7 +244,7 @@ export default {
   methods: {
     districtTitle(item) {
       if (item) {
-        return `${item.districtNumber} - ${item.districtName}`;
+        return `${item.districtNumber} - ${item.displayName}`;
       } else {
         return null;
       }
@@ -272,6 +274,7 @@ export default {
         this.districts.splice(0, this.districts.length, {
           district: "all",
           info: {
+            districtId: "all",
             districtNumber: "all",
             districtName: "All School Districts",
             activeFlag: "ALL",
@@ -286,13 +289,12 @@ export default {
       }
     },
     addDistrict() {
-      let info = this.getDistrictList.find(
-        (districtObject) => districtObject.districtNumber === this.district
-      );
+      let info = this.getDistrictByDistrictNumber(this.district);
       this.districtInfo = {
+        districtId: info.districtId,
         districtNumber: info.districtNumber,
-        districtName: info.districtName,
-        activeFlag: info.activeFlag,
+        districtName: info.displayName,
+        activeFlag: info.districtStatusCode,
       };
       this.districts.splice(0, 0, {
         district: this.district,
@@ -334,7 +336,13 @@ export default {
   },
 
   computed: {
-    ...mapState(useAppStore, ["getDistrictList"]),
+    ...mapState(useAppStore, [
+      "getDistrictList",
+      "getDistrictById",
+      "getDistrictByDistrictNumber",
+      "getBatchSchoolCategoryCodes",
+      "getInstituteCategoryCodes",
+    ]),
     ...mapState(useBatchRequestFormStore, [
       "getDistricts",
       "getBatchRequest",

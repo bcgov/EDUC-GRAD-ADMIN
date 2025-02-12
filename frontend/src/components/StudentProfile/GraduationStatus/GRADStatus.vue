@@ -45,207 +45,22 @@
             <tr>
               <td><strong>School of record: </strong></td>
               <td>
-                <v-btn
-                  class="v-btn-link p-0 text-left"
-                  variant="plain"
-                  @click="
-                    schoolOfRecordDialog = true;
-                    getSchoolInfo(
-                      studentGradStatus.schoolOfRecord,
-                      'schoolOfRecord'
-                    );
-                  "
-                >
-                  {{
-                    studentGradStatus.schoolName
-                      ? studentGradStatus.schoolName
-                      : schoolOfRecord.schoolName
-                  }}<br />
-                  {{ studentGradStatus.schoolOfRecord }}
-                </v-btn>
-
-                <v-dialog v-model="schoolOfRecordDialog" max-width="600px">
-                  <v-card>
-                    <v-card-title class="text-h6"
-                      >School of record
-                      <v-progress-circular
-                        v-if="schoolSearchLoading"
-                        indeterminate
-                        color="green"
-                      >
-                      </v-progress-circular
-                    ></v-card-title>
-                    <v-card-text>
-                      <v-table role="presentation" aria-label="grad status">
-                        <template v-if="schoolOfRecord.districtName">
-                          <tbody>
-                            <tr>
-                              <td><strong>District:</strong></td>
-                              <td>{{ schoolOfRecord.districtName }}</td>
-                            </tr>
-                            <tr>
-                              <td><strong>School Code and Name:</strong></td>
-                              <td>
-                                {{
-                                  schoolOfRecord.minCode +
-                                  " " +
-                                  schoolOfRecord.schoolName
-                                }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Status:</strong></td>
-                              <td>
-                                {{
-                                  schoolOfRecord.openFlag == "Y"
-                                    ? "Open"
-                                    : "Closed"
-                                }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Independent type:</strong></td>
-                              <td>
-                                {{ schoolOfRecord.independentDesignation }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Independent affiliation:</strong></td>
-                              <td>
-                                {{ schoolOfRecord.independentAffiliation }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Transcript eligible:</strong></td>
-                              <td>
-                                {{ schoolOfRecord.transcriptEligibility }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Dogwood eligibility:</strong></td>
-                              <td>
-                                {{ schoolOfRecord.certificateEligibility }}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </template>
-                      </v-table>
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        color="primary"
-                        @click="schoolOfRecordDialog = false"
-                        >Close</v-btn
-                      >
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
+                <SchoolDetailsDialog
+                  v-if="!!studentGradStatus?.schoolOfRecordId"
+                  title="School Of Record"
+                  :school="getSchoolById(studentGradStatus.schoolOfRecordId)"
+                />
               </td>
             </tr>
             <!-- School at graduation -->
             <tr>
               <td><strong>School at graduation: </strong></td>
               <td>
-                <v-btn
-                  v-if="studentGradStatus && studentGradStatus.schoolAtGrad"
-                  class="p-0 text-left v-btn-link"
-                  variant="plain"
-                  @click="
-                    schoolAtGradDialog = true;
-                    getSchoolInfo(
-                      studentGradStatus.schoolAtGrad,
-                      'schoolAtGrad'
-                    );
-                  "
-                >
-                  {{
-                    studentGradStatus.schoolAtGradName
-                      ? studentGradStatus.schoolAtGradName
-                      : schoolAtGraduation.schoolName
-                  }}<br />
-                  {{ studentGradStatus.schoolAtGrad }}
-                  <v-progress-circular
-                    v-if="schoolSearchLoading"
-                    indeterminate
-                    color="green"
-                  >
-                  </v-progress-circular>
-                </v-btn>
-
-                <v-dialog v-model="schoolAtGradDialog" max-width="600px">
-                  <v-card>
-                    <v-card-title class="text-h6"
-                      >School at graduation</v-card-title
-                    >
-                    <v-card-text>
-                      <v-table
-                        role="presentation"
-                        aria-label="edit graduation status"
-                      >
-                        <template v-if="schoolAtGraduation.districtName">
-                          <tbody>
-                            <tr>
-                              <td><strong>District:</strong></td>
-                              <td>{{ schoolAtGraduation.districtName }}</td>
-                            </tr>
-                            <tr>
-                              <td><strong>School Code and Name:</strong></td>
-                              <td>
-                                {{
-                                  schoolAtGraduation.minCode +
-                                  " " +
-                                  schoolAtGraduation.schoolName
-                                }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Status:</strong></td>
-                              <td>
-                                {{
-                                  schoolAtGraduation.openFlag == "Y"
-                                    ? "Open"
-                                    : "Closed"
-                                }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Independent type:</strong></td>
-                              <td>
-                                {{ schoolAtGraduation.independentDesignation }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Independent affiliation:</strong></td>
-                              <td>
-                                {{ schoolAtGraduation.independentAffiliation }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Transcript eligible:</strong></td>
-                              <td>
-                                {{ schoolAtGraduation.transcriptEligibility }}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td><strong>Dogwood eligibility:</strong></td>
-                              <td>
-                                {{ schoolAtGraduation.certificateEligibility }}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </template>
-                      </v-table>
-                    </v-card-text>
-
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="primary" @click="schoolAtGradDialog = false"
-                        >Close</v-btn
-                      >
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
+                <SchoolDetailsDialog
+                  v-if="!!studentGradStatus?.schoolAtGradId"
+                  title="School At Graduation"
+                  :school="getSchoolById(studentGradStatus.schoolAtGradId)"
+                />
               </td>
             </tr>
             <!-- Honours standing -->
@@ -336,9 +151,11 @@ import {
   containsAnyLetters,
   parseStudentStatus,
 } from "../../../utils/common.js";
-import SchoolService from "@/services/SchoolService.js";
+import sharedMethods from "../../../sharedMethods";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import GRADStatusForm from "./GRADStatusForm.vue";
+import SchoolDetailsDialog from "@/components/Common/SchoolDetailsDialog.vue";
+
 export default {
   name: "GRADStatus",
   created() {
@@ -351,6 +168,7 @@ export default {
   },
   components: {
     GRADStatusForm: GRADStatusForm,
+    SchoolDetailsDialog: SchoolDetailsDialog,
   },
   computed: {
     ...mapState(useStudentStore, {
@@ -361,6 +179,8 @@ export default {
     ...mapState(useAppStore, {
       programOptions: "getProgramOptions",
       studentStatusOptions: "getStudentStatusOptions",
+      getSchoolsList: "getSchoolsList",
+      getSchoolById: "getSchoolById", // IDK if this will work like this
     }),
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
@@ -400,25 +220,35 @@ export default {
     sortStudentStatus(code) {
       return this.parseStudentStatus(code, this.studentStatusOptions);
     },
-    getSchoolInfo(mincode, type) {
-      if (mincode != null) {
+    //TODO refactor to use computed properties? Also look at creating a shared school details component
+    getSchoolInfo(schoolId, type) {
+      if (schoolId) {
         this.schoolSearchLoading = true;
-        SchoolService.getSchoolInfo(mincode)
-          .then((response) => {
-            if (type == "schoolOfRecord") {
-              this.schoolOfRecord = response.data;
-              this.schoolSearchLoading = false;
-            }
-            if (type == "schoolAtGrad") {
-              this.schoolAtGraduation = response.data;
-              this.schoolSearchLoading = false;
-            }
-          })
-          .catch((error) => {
-            // eslint-disable-next-line
-            console.log("There was an error:" + error.response);
-          });
+        if (type === "schoolOfRecord") {
+          this.schoolOfRecord = this.schoolOfRecord =
+            this.getSchoolById(schoolId);
+          this.schoolSearchLoading = false;
+        }
+        if (type === "schoolAtGrad") {
+          this.schoolAtGraduation = this.getSchoolById(schoolId);
+          this.schoolSearchLoading = false;
+        }
       }
+    },
+    isSchoolOpenStatus(school) {
+      const openedDate = new Date(school.openedDate);
+      const closedDate = school.closedDate ? new Date(school.closedDate) : null;
+      const today = new Date();
+
+      // Remove the time part from today's date for a precise comparison
+      today.setHours(0, 0, 0, 0);
+
+      return openedDate < today && !closedDate ? "Open" : "Closed";
+    },
+    findSchoolByMinCode(minCode) {
+      return (
+        this.getSchoolsList.find((school) => school.mincode === minCode) || null
+      );
     },
     ifProgramsWithExpiry(program) {
       for (let p of this.programsWithExpiry) {

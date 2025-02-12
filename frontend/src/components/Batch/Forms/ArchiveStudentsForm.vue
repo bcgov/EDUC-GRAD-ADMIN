@@ -86,7 +86,9 @@
                       Districts:
                       <v-list>
                         <v-list-item
-                          v-for="(district, index) in getBatchRequest.districts"
+                          v-for="(
+                            district, index
+                          ) in getBatchRequest.districtIds"
                           :key="index"
                         >
                           <v-list-item-content>
@@ -298,8 +300,8 @@ export default {
               ) {
                 if (this.group === "School") {
                   isValid =
-                    this.getBatchRequest.schoolOfRecords &&
-                    this.getBatchRequest.schoolOfRecords.length > 0;
+                    this.getBatchRequest.schoolIds &&
+                    this.getBatchRequest.schoolIds.length > 0;
                 } else if (this.group === "All Students") {
                   isValid = true;
                 } else {
@@ -320,6 +322,7 @@ export default {
     SchoolInput: SchoolInput,
   },
   data: () => ({
+    snackbarStore: useSnackbarStore(),
     step: 0,
     batchLoading: false,
     dialog: false,
@@ -333,31 +336,6 @@ export default {
       "batchRunTimeSet",
       "getBatchRequestCrontime",
     ]),
-    requestPayload() {
-      const requestTemplate = [
-        "districts",
-        "gradDateFrom",
-        "gradDateTo",
-        "localDownload",
-        "pens",
-        "programs",
-        "psiCodes",
-        "quantity",
-        "reportTypes",
-        "schoolCategoryCodes",
-        "schoolOfRecords",
-        "validateInput",
-      ];
-      const batchRequest = this.getBatchRequest;
-
-      // Filter the batch request using the requestTemplate array
-      return requestTemplate.reduce((acc, field) => {
-        if (batchRequest[field] !== undefined) {
-          acc[field] = batchRequest[field];
-        }
-        return acc;
-      }, {});
-    },
   },
   methods: {
     ...mapActions(useBatchRequestFormStore, [
@@ -387,7 +365,7 @@ export default {
       this.batchLoading = true;
       const requestTemplate = [
         "credentialTypeCode",
-        "districts",
+        "districtIds",
         "gradDateFrom",
         "gradDateTo",
         "localDownload",
@@ -397,48 +375,48 @@ export default {
         "quantity",
         "reportTypes",
         "schoolCategoryCodes",
-        "schoolOfRecords",
+        "schoolIds",
         "validateInput",
+        "activityCode",
       ];
       const requestPayload = generateRequestPayload(
         this.getBatchRequest,
         requestTemplate
       );
-      if (this.group == "All Students")
-        try {
-          let response = await BatchProcessingService.runArchiveStudents(
-            requestPayload,
-            this.getBatchRequestCrontime
-          );
-          this.batchLoading = false;
-          if (this.getBatchRequestCrontime) {
-            this.snackbarStore.showSnackbar(
-              "Archive student batch process has been successfully scheduled",
-              10000
-            );
-          } else {
-            this.snackbarStore.showSnackbar(
-              "Batch " +
-                response.data.batchId +
-                "- Archive student batch process submitted",
-              "success",
-              10000
-            );
-          }
-          this.closeDialogAndResetForm();
-          this.setActiveTab("batchRuns");
-          //add a wait before updating dashboard
-          setTimeout(() => {
-            this.updateDashboards();
-          }, 2000);
-        } catch (error) {
-          // handle the error and show the notification
+      try {
+        let response = await BatchProcessingService.runArchiveStudents(
+          requestPayload,
+          this.getBatchRequestCrontime
+        );
+        this.batchLoading = false;
+        if (this.getBatchRequestCrontime) {
           this.snackbarStore.showSnackbar(
-            "An error occurred: " + error.message,
-            "danger",
+            "Archive student batch process has been successfully scheduled",
+            10000
+          );
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Batch " +
+              response.data.batchId +
+              "- Archive student batch process submitted",
+            "success",
             10000
           );
         }
+        this.closeDialogAndResetForm();
+        this.setActiveTab("batchRuns");
+        //add a wait before updating dashboard
+        setTimeout(() => {
+          this.updateDashboards();
+        }, 2000);
+      } catch (error) {
+        // handle the error and show the notification
+        this.snackbarStore.showSnackbar(
+          "An error occurred: " + error.message,
+          "danger",
+          10000
+        );
+      }
     },
   },
 };

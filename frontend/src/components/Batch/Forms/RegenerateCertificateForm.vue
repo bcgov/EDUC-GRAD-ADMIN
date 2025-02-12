@@ -218,8 +218,8 @@ export default {
                     this.getBatchRequest.pens.length > 0;
                 } else if (this.getGroup === "School Category") {
                   isValid =
-                    this.getBatchRequest.districts &&
-                    this.getBatchRequest.districts.length > 0;
+                    this.getBatchRequest.districtIds &&
+                    this.getBatchRequest.districtIds.length > 0;
                 } else if (this.getGroup === "all") {
                   isValid = true;
                 }
@@ -280,13 +280,13 @@ export default {
     async submit() {
       this.batchLoading = true;
       const requestTemplate = [
-        "districts",
+        "districtIds",
         "pens",
         "programs",
         "psiCodes",
         "reportTypes",
         "runMode",
-        "schoolOfRecords",
+        "schoolIds",
         "validateInput",
       ];
       const requestPayload = generateRequestPayload(
@@ -303,7 +303,6 @@ export default {
             this.getBatchRequestCrontime
           );
         }
-        console.log("returned");
 
         this.batchLoading = false;
         if (this.getBatchRequestCrontime) {

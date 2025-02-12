@@ -121,6 +121,9 @@
                 :sortBy="[{ key: 'displayOrder', order: 'asc' }]"
                 class="pb-3"
               >
+                <template v-slot:item.description="{ item }">
+                  {{ item.description }}
+                </template>
               </v-data-table>
               <v-table>
                 <tbody>
@@ -392,6 +395,10 @@ export default {
       distributionBatchRunOptions: [],
       PSIBatchRunOptions: [],
       yearEndBatchRunOptions: [],
+      userBatchDistRuleDesc: `If Current Students selected and the User has requested Transcripts,  all students with a status of CUR will be selected by school at graduation. \n
+                              If Current Students selected and the User has requested Original Certificate or Reprint Certificate, all students, except 'DEC','MER',  with a certificate with a null distribution date will be selected by school at graduation. \n
+                              If Date Range selected, and the User has requested Transcript print, all students, except 'DEC', 'MER', who have completed their program within the date range will be selected by school at graduation. \n
+                              If Date Range selected, and the User has requested Original Certificate or Reprint Certificate, all students, except 'DEC','MER', who have completed their program within the date range will be selected by school of graduation.`,
     };
   },
   created() {
