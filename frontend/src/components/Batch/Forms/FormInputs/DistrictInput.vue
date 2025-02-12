@@ -274,6 +274,7 @@ export default {
         this.districts.splice(0, this.districts.length, {
           district: "all",
           info: {
+            districtId: "all",
             districtNumber: "all",
             districtName: "All School Districts",
             activeFlag: "ALL",
