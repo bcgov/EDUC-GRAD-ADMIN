@@ -67,7 +67,7 @@ jobs:
           oc rollout cancel deployment/${{ env.APP_NAME_BACKEND }} 2> /dev/null \
           || true && echo "No rollout in progress"
 
-          oc tag ${{ env.NAMESPACE }}-dev/${{ env.APP_NAME_BACKEND }}:${{ steps.get-latest-tag.outputs.tag }} ${{ env.NAMESPACE }}-test/${{ env.APP_NAME_BACKEND }}:${{ steps.get-latest-tag.outputs.tag }}
+          oc tag ${{ secrets.UI_NAMESPACE }}-dev/${{ env.APP_NAME_BACKEND }}:${{ steps.get-latest-tag.outputs.tag }} ${{ secrets.UI_NAMESPACE }}-test/${{ env.APP_NAME_BACKEND }}:${{ steps.get-latest-tag.outputs.tag }}
 
           # Process template
           oc process -f tools/openshift/backend-dc.yaml \
