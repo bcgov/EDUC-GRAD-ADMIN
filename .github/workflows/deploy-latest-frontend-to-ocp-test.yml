@@ -68,7 +68,7 @@ jobs:
           || true && echo "No rollout in progress"
 
           echo "Tagging the image"
-          oc tag ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-frontend:latest ${{ env.NAMESPACE }}-test/${{ env.REPO_NAME }}-frontend:latest
+          oc tag ${{ env.NAMESPACE }}-dev/${{ env.APP_NAME }}-frontend:latest ${{ env.NAMESPACE }}-test/${{ env.APP_NAME }}-frontend:latest
           
           # Process template
           oc process -f tools/openshift/frontend-dc.yaml \
