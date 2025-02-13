@@ -25,7 +25,7 @@ function refreshTableTillComplete(timeout, interval = 3000) {
 }
 
 describe('Graduation Algorithm', () => {
-    const test_student1 = Cypress.env('test_student1')
+    const graduated_student_with_gpa = Cypress.env('graduated_student_with_gpa')
 
     context('School Group', () => {
         beforeEach(() => {
@@ -44,7 +44,7 @@ describe('Graduation Algorithm', () => {
             cy.get(batchProcessingSelectors.selections).contains('School').click()
             cy.wait(500)
             cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.autocomplete).click({force: true})
-            cy.get(batchProcessingSelectors.selections).contains(test_student1.og_school).click()
+            cy.get(batchProcessingSelectors.selections).contains(graduated_student_with_gpa.og_school).click()
             cy.get(batchProcessingSelectors.overlayWindow).contains('Add School').click({force: true})
             cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
             cy.get(batchProcessingSelectors.overlayWindow).contains('Submit').click()

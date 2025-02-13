@@ -31,14 +31,14 @@ function undoCompletion() {
 }
 
 describe('Student Search', () => {
-  const test_student1 = Cypress.env('test_student1')
+  const graduated_student_with_gpa = Cypress.env('graduated_student_with_gpa')
 
   context('with PEN Search', () => {
     beforeEach(() => {
       cy.login()
       cy.visit('/')
       cy.get(studentSearchSelectors.title).should('contain.text', 'Student Search')
-      cy.get(studentSearchSelectors.searchByPEN).type(test_student1.PEN)
+      cy.get(studentSearchSelectors.searchByPEN).type(graduated_student_with_gpa.PEN)
       cy.get(studentSearchSelectors.searchSubmit).click()
       cy.wait(5000) // Need to wait so that fields load up in Edit window
     })
@@ -232,8 +232,8 @@ describe('Student Search', () => {
      * 3. Ensure the PEN link leads to Student Grad Status properly
      */
     it('Searches one student', () => {
-        cy.get(studentSearchSelectors.legalSurnameInput).type(test_student1.surname)
-        cy.get(studentSearchSelectors.legalGivennameInput).type(test_student1.given)
+        cy.get(studentSearchSelectors.legalSurnameInput).type(graduated_student_with_gpa.surname)
+        cy.get(studentSearchSelectors.legalGivennameInput).type(graduated_student_with_gpa.given)
         cy.get(studentSearchSelectors.advSearchSubmit).click()
         cy.get(studentSearchSelectors.searchResultTableRow).its('length').should('eq', 1)
         cy.get(studentSearchSelectors.searchResultTableRow).find(studentSearchSelectors.penLink).click()
@@ -252,13 +252,13 @@ describe('Student Search', () => {
      * 3. Click Reset to make sure it cleans table and input field
      */
     it('Searches multiple students', () => {
-      const test_student2 = Cypress.env("test_student2")
-      cy.get(studentSearchSelectors.legalGivennameInput).type(test_student2.given)
+      const ungraduated_student = Cypress.env("ungraduated_student")
+      cy.get(studentSearchSelectors.legalGivennameInput).type(ungraduated_student.given)
       cy.get(studentSearchSelectors.advSearchSubmit).click()
       cy.get(studentSearchSelectors.searchResultTableRow).its('length').should('eq', 4)
 
       cy.get(studentSearchSelectors.advSearchReset).click()
-      cy.get(studentSearchSelectors.legalGivennameInput).should('not.contain.text', test_student2.given)
+      cy.get(studentSearchSelectors.legalGivennameInput).should('not.contain.text', ungraduated_student.given)
     })
   })
 

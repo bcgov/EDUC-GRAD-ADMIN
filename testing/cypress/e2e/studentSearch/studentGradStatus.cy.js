@@ -168,30 +168,30 @@ describe('Student Grad Status', () => {
    * 28. **Click Cancel**
    */
   it('Edits grad status for an non-graduated student', () => {
-    const test_student2 = Cypress.env('test_student2')
-    cy.get(studentSearchSelectors.searchByPEN).type(test_student2.PEN)
+    const ungraduated_student = Cypress.env('ungraduated_student')
+    cy.get(studentSearchSelectors.searchByPEN).type(ungraduated_student.PEN)
     cy.get(studentSearchSelectors.searchSubmit).click()
     cy.wait(5000) // Need to wait so that fields load up in Edit window
 
     const reset = true // TODO: This is for faster development. Remove this.
     if (reset)
-      resetToOriginalState(test_student2)
+      resetToOriginalState(ungraduated_student)
 
     // Make sure data is in original state
     const gradStatusTable = () => cy.get(studentSearchSelectors.table)
-    gradStatusTable().find(studentSearchSelectors.programText).should('contain.text', test_student2.og_program)
+    gradStatusTable().find(studentSearchSelectors.programText).should('contain.text', ungraduated_student.og_program)
     gradStatusTable().find(studentSearchSelectors.programCompletionDateText).should('be.empty')
-    gradStatusTable().find(studentSearchSelectors.statusText).should('contain.text', test_student2.og_status)
-    gradStatusTable().find(studentSearchSelectors.gradeText).should('contain.text', test_student2.og_grade)
-    gradStatusTable().find(studentSearchSelectors.schoolOfRecordText).should('contain.text', test_student2.og_school)
+    gradStatusTable().find(studentSearchSelectors.statusText).should('contain.text', ungraduated_student.og_status)
+    gradStatusTable().find(studentSearchSelectors.gradeText).should('contain.text', ungraduated_student.og_grade)
+    gradStatusTable().find(studentSearchSelectors.schoolOfRecordText).should('contain.text', ungraduated_student.og_school)
     gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('be.empty')
     gradStatusTable().find(studentSearchSelectors.honoursStandingText).should('be.empty')
     gradStatusTable().find(studentSearchSelectors.gpaText).should('be.empty')
     gradStatusTable().find(studentSearchSelectors.optionalProgramsText).should('be.empty')
     gradStatusTable().find(studentSearchSelectors.adultStartDateText).should('be.empty')
     gradStatusTable().find(studentSearchSelectors.cerText).should('be.empty')
-    gradStatusTable().find(studentSearchSelectors.recalcGradText).should('contain.text', test_student2.og_recalc_grad)
-    gradStatusTable().find(studentSearchSelectors.recalcProjectedText).should('contain.text', test_student2.og_recalc_proj)
+    gradStatusTable().find(studentSearchSelectors.recalcGradText).should('contain.text', ungraduated_student.og_recalc_grad)
+    gradStatusTable().find(studentSearchSelectors.recalcProjectedText).should('contain.text', ungraduated_student.og_recalc_proj)
 
     // Edit
     cy.get(studentSearchSelectors.editBtn).click()
@@ -257,7 +257,7 @@ describe('Student Grad Status', () => {
     selectAutoselect(studentSearchSelectors.schoolOfRecord, 'Jessie Lee Elementary')
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.schoolNo10to12EnrollmentWarning)
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.schoolNoTranscriptWarning)
-    selectAutoselect(studentSearchSelectors.schoolOfRecord, test_student2.og_school)
+    selectAutoselect(studentSearchSelectors.schoolOfRecord, ungraduated_student.og_school)
 
     // School At Graduation
     cy.get(studentSearchSelectors.schoolAtGraduation).should('be.disabled')
@@ -287,7 +287,7 @@ describe('Student Grad Status', () => {
     cy.wait(1000)
     // Make sure this student is graduated
     updateGradStatus()
-    gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('contain.text', test_student2.og_school)
+    gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('contain.text', ungraduated_student.og_school)
     cy.get(studentSearchSelectors.noCompletionCard).should('contain.text', messages.allRequirementMet)
     cy.get(studentSearchSelectors.certificateDogwoodsCard).find(studentSearchSelectors.pdfLink).should('contain.text', 'Evergreen')
     // If program completion date is not blank, User cannot modify the program completion date. 
