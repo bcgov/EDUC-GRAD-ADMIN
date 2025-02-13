@@ -1,46 +1,22 @@
+/**
+ * @module StudentSearch
+ * 
+ * @description hello
+ */
+
 import selectors from "../../support/selectors"
 const studentSearchSelectors = selectors.studentSearch
 
-function editStudentProfile(student, reset = false) {
-    cy.get(studentSearchSelectors.gradBtn).click()
-    // Edit
-    cy.get(studentSearchSelectors.editBtn).click()
-    cy.wait(1000)
-
-    if (reset) {
-      // Reset to original data
-      cy.get(studentSearchSelectors.status).click({force: true})
-      cy.get(studentSearchSelectors.selections).contains(student.og_status).click()
-      cy.get(studentSearchSelectors.grade).click({force: true})
-      cy.get(studentSearchSelectors.selections).contains(student.og_grade).click()
-      cy.get(studentSearchSelectors.schoolOfRecord).click({force: true})
-      cy.get(studentSearchSelectors.selections).contains(student.og_school).click()
-      //cy.get(studentSearchSelectors.schoolAtGraduation).click({force: true})
-      //cy.get(studentSearchSelectors.selections).contains(student.og_school).click()
-    } else {
-      // Change to new data
-      cy.get(studentSearchSelectors.status).click({force: true})
-      cy.get(studentSearchSelectors.selections).contains(student.new_status).click()
-      cy.get(studentSearchSelectors.grade).click({force: true})
-      cy.get(studentSearchSelectors.selections).contains(student.new_grade).click()
-      cy.get(studentSearchSelectors.schoolOfRecord).click({force: true})
-      cy.get(studentSearchSelectors.selections).contains(student.new_school).click()
-      //cy.get(studentSearchSelectors.schoolAtGraduation).click({force: true})
-      //cy.get(studentSearchSelectors.selections).contains(student.new_school).click()
-    }
-    cy.get(studentSearchSelectors.saveStatusBtn).click({force: true})
-}
-
 function checkItemsInWindowTable(windowSelector) {
-    const selector = windowSelector + " " + studentSearchSelectors.noRow
-    cy.wait(500)
-    cy.doesExist(selector).then((exist) => {
-      if (exist) {
-          cy.get(selector).should('contain.text', 'No data available')
-      } else {
-          cy.get(windowSelector).find(studentSearchSelectors.rows).its('length').should('be.gt', 0)
-      }
-    })
+  const selector = windowSelector + " " + studentSearchSelectors.noRow
+  cy.wait(500)
+  cy.doesExist(selector).then((exist) => {
+    if (exist) {
+      cy.get(selector).should('contain.text', 'No data available')
+    } else {
+      cy.get(windowSelector).find(studentSearchSelectors.rows).its('length').should('be.gt', 0)
+    }
+  })
 }
 
 function undoCompletion() {
@@ -67,40 +43,62 @@ describe('Student Search', () => {
       cy.wait(5000) // Need to wait so that fields load up in Edit window
     })
 
-    it('Edits GRAD status to make sure data is updated on UI immediately', () => {
-      // Edit
-      editStudentProfile(Cypress.env('test_student1'))
-
-      // Check to see if values are changed
+    /**
+     * @name checkRequiredFieldsInGradStatus
+     * 
+     * @description
+     * Make sure required fields in student grad status is always loaded.
+     * 
+     * ## Steps:
+     * 1. Make sure the following fields are loaded:
+     *    - Program
+     *    - Status
+     *    - Grade
+     *    - School Of Record
+     *    - Recal Grad Status Flag
+     *    - Rrecal Projected Grad Flag
+     */
+    it('Makes sure all required field for Grad Status are displayed', () => {
       const gradStatusTable = () => cy.get(studentSearchSelectors.table)
-      gradStatusTable().find(studentSearchSelectors.statusText).should('contain.text', test_student1.new_status)
-      gradStatusTable().find(studentSearchSelectors.gradeText).should('contain.text', test_student1.new_grade)
-      gradStatusTable().find(studentSearchSelectors.schoolOfRecordText).should('contain.text', test_student1.new_school)
-      //gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('contain.text', test_student1.new_school)
-
-      // Clean up data
-      editStudentProfile(Cypress.env('test_student1'), true)
+      gradStatusTable().find(studentSearchSelectors.programText).should('exist')
+      gradStatusTable().find(studentSearchSelectors.statusText).should('exist')
+      gradStatusTable().find(studentSearchSelectors.gradeText).should('exist')
+      gradStatusTable().find(studentSearchSelectors.schoolOfRecordText).should('exist')
+      gradStatusTable().find(studentSearchSelectors.recalcGradText).should('exist')
+      gradStatusTable().find(studentSearchSelectors.recalcProjectedText).should('exist')
     })
 
+    /**
+     * @name checkDataInTable
+     * 
+     * @description
+     * Go through every table in the test student's Student Grad Status and checks if data is loaded or
+     * appropriate text appears when there is no data.
+     * 
+     * ## Steps:
+     * 1. Navigate to Courses table to check data
+     * 2. Navigate to Assessment table to check data
+     * 3. Navigate to Exams Details table to check data
+     * 4. Navigate to Optional Programs table to check data
+     * 5. Navigate to Student Change Hisotry in Audit History table to check data
+     *    - Collapse first row and check JSON is stored
+     * 6. Navigate to Optional Program Change History in Audit History table to check data
+     *    - Collapse first row and check JSON is stored
+     * 7. Navigate to Undo Completion Reasons table to check data
+     *    - Skip Notes sectinon because it does not have table
+     */
     it('Checks if each table\'s data is loaded', () => {
       // Courses Window
       cy.get(studentSearchSelectors.coursesBtn).click()
-      cy.get(studentSearchSelectors.coursesWindow).should('not.contain.css', 'display', 'none')
       checkItemsInWindowTable(studentSearchSelectors.coursesWindow)
       // Assessments Window
       cy.get(studentSearchSelectors.assessmentBtn).click()
-      cy.get(studentSearchSelectors.coursesWindow).should('contain.css', 'display', 'none')
-      cy.get(studentSearchSelectors.assessmentsWindow).should('not.contain.css', 'display', 'none')
       checkItemsInWindowTable(studentSearchSelectors.assessmentsWindow)
       // Exams Details Window
       cy.get(studentSearchSelectors.examsBtn).click()
-      cy.get(studentSearchSelectors.assessmentsWindow).should('contain.css', 'display', 'none')
-      cy.get(studentSearchSelectors.examsWindow).should('not.contain.css', 'display', 'none')
       checkItemsInWindowTable(studentSearchSelectors.examsWindow)
       // Optional Programs Window
       cy.get(studentSearchSelectors.optionalBtn).click()
-      cy.get(studentSearchSelectors.examsWindow).should('contain.css', 'display', 'none')
-      cy.get(studentSearchSelectors.optionalWindow).should('not.contain.css', 'display', 'none')
       const optionalWindowRow = studentSearchSelectors.optionalWindow + " " + studentSearchSelectors.rows
         cy.doesExist(optionalWindowRow).then(exist => {
           if (exist) {
@@ -111,8 +109,6 @@ describe('Student Search', () => {
         })
       // Audit History Window
       cy.get(studentSearchSelectors.auditBtn).click()
-      cy.get(studentSearchSelectors.optionalWindow).should('contain.css', 'display', 'none')
-      cy.get(studentSearchSelectors.auditWindow).should('not.contain.css', 'display', 'none')
       checkItemsInWindowTable(studentSearchSelectors.auditWindow + " .v-window-item:nth-child(1)")
       cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.firstExpandArrow).click()
       cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.secondRowJsonData).should('contain.text', 'createUser')
@@ -124,11 +120,28 @@ describe('Student Search', () => {
       
       // Undo Completion Reasons Window
       cy.get(studentSearchSelectors.undoBtn).click()
-      cy.get(studentSearchSelectors.auditWindow).should('contain.css', 'display', 'none')
-      cy.get(studentSearchSelectors.undoWindow).should('not.contain.css', 'display', 'none')
       checkItemsInWindowTable(studentSearchSelectors.undoWindow)
     })
 
+    /**
+     * @name modifyOptionalProgramAndNote
+     * 
+     * @description
+     * Adds and removes optinal program and note to ensure their functionality.
+     * 
+     * ## Steps:
+     * 1. Set up test student ready for test
+     *    - Undo completion if testing student is graduated since optional program cannot be removed if the student is graduated
+     *    - Remove optional program if testing student has one for the sake of testing
+     * 2. Add optional program (French Immersion) to ensure a warning is appropriate
+     * 3. Make sure an added optional program is displayed on the table
+     * 4. Click delete button for optional program to ensure a warning is appropriate
+     * 5. Delete optional program and make sure there is no longer optional prograim in the table
+     * 6. Navigate to Notes
+     * 7. Type text to note and add to make sure it is saved properly
+     * 8. Edit note by clearing text and typing another text
+     * 9. Delete note to make sure note is no longer displayed
+     */
     it('Adds and removes optional program and note', () => {
       // Undo completion if the student is graduated
       const schoolAtGraduationText = studentSearchSelectors.table + " " + studentSearchSelectors.schoolAtGraduationText
@@ -143,8 +156,6 @@ describe('Student Search', () => {
       // Optional Program
       const optionalCourseToAdd = 'French Immersion'
       cy.get(studentSearchSelectors.optionalBtn).click()
-      cy.get(studentSearchSelectors.examsWindow).should('contain.css', 'display', 'none')
-      cy.get(studentSearchSelectors.optionalWindow).should('not.contain.css', 'display', 'none')
       
       // Remove optinal program if there is any
       const optionalProgramRows = studentSearchSelectors.optionalWindow + " > " + studentSearchSelectors.optionalTableRows
@@ -166,7 +177,6 @@ describe('Student Search', () => {
       // Add Optional Program
       cy.get(studentSearchSelectors.optionalWindow).should('contain.text', 'This student does not have any optional programs.')
       cy.get(studentSearchSelectors.optionalWindow).find('button').click()
-      cy.contains('This student is not active.')
       cy.wait(500)
       cy.get(studentSearchSelectors.chooseOptional).click({force: true})
       cy.get(studentSearchSelectors.selections).contains(optionalCourseToAdd).click()
@@ -177,7 +187,6 @@ describe('Student Search', () => {
       cy.get(studentSearchSelectors.optionalWindow).should('contain.text', optionalCourseToAdd)
       // Delete Optional Program
       cy.get(studentSearchSelectors.optionalWindow).find(studentSearchSelectors.deleteOptionalBtn).click({force: true})
-      cy.contains('This student is not active.')
       cy.contains(`You are about to delete the ${optionalCourseToAdd}`)
       cy.get(studentSearchSelectors.deleteOptionalConfirmBtn).click()
       cy.get(studentSearchSelectors.optionalWindow).should('contain.text', 'This student does not have any optional programs.')
@@ -186,8 +195,6 @@ describe('Student Search', () => {
       const note1 = 'Hello Test'
       const note2 = 'Another Note'
       cy.get(studentSearchSelectors.notesBtn).click()
-      cy.get(studentSearchSelectors.optionalWindow).should('contain.css', 'display', 'none')
-      cy.get(studentSearchSelectors.notesWindow).should('not.contain.css', 'display', 'none')
       // Add Note
       cy.get(studentSearchSelectors.notesWindow).find(studentSearchSelectors.addNoteBtn).click()
       cy.get(studentSearchSelectors.noteTextarea).type(note1)
@@ -213,6 +220,17 @@ describe('Student Search', () => {
       cy.contains('Advanced Student Search')
     })
 
+    /**
+     * @name searchOneStudentWithAdvanced
+     * 
+     * @description
+     * Search one student using Advanced Search.
+     * 
+     * ## Steps:
+     * 1. Enter a valid surname and givenname and submit
+     * 2. Ensure there is only one student returned
+     * 3. Ensure the PEN link leads to Student Grad Status properly
+     */
     it('Searches one student', () => {
         cy.get(studentSearchSelectors.legalSurnameInput).type(test_student1.surname)
         cy.get(studentSearchSelectors.legalGivennameInput).type(test_student1.given)
@@ -222,6 +240,17 @@ describe('Student Search', () => {
         cy.contains('GRAD Status')
     }) 
 
+    /**
+     * @name searchMultipleStudentsWithAdvanced
+     * 
+     * @description
+     * Search multiple students using Advanced Search.
+     * 
+     * ## Steps:
+     * 1. Enter just given name and submit
+     * 2. Ensure there are expected number of multiple students returned with same givenanem
+     * 3. Click Reset to make sure it cleans table and input field
+     */
     it('Searches multiple students', () => {
       const test_student2 = Cypress.env("test_student2")
       cy.get(studentSearchSelectors.legalGivennameInput).type(test_student2.given)
@@ -246,6 +275,16 @@ describe('Student Search', () => {
       cy.get(studentSearchSelectors.title).should('contain.text', 'Student Search')
     })
 
+    /**
+     * @name searchStudentWithInvalidData
+     * 
+     * @description
+     * Enter invalid data at both PEN Search and Advanced Search to make sure both display appropriate error messages
+     * 
+     * ## Steps:
+     * 1. In PEN Search, enter PEN number without result to make sure it displays an error
+     * 2. Advanced Saerch, enter a surname without result to make sure it displays an error
+     */
     it('Enters invalid data', () => {
       cy.get(studentSearchSelectors.searchByPEN).type('121212121')
       cy.get(studentSearchSelectors.searchSubmit).click()

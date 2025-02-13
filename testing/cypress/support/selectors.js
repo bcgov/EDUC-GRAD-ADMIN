@@ -96,7 +96,10 @@ export default {
 		undoCompletionConfirmCheckbox: 'div.v-overlay-container .v-card-text input[type="checkbox"]',
 		undoCompletionBtn: 'div.v-overlay-container .v-card-actions > button.bg-error',
 
-		noCompletionTable: 'div.requirements-not-met .v-card-text .v-table__wrapper tbody'
+		noCompletionCard: 'div.requirements-not-met .v-card-text',
+		graduationReportsCard: 'div.graduation-reports',
+		certificateDogwoodsCard: 'div.certification-dogwoods',
+		pdfLink: 'a.pdf-link',
 	},
 
 	programs: {

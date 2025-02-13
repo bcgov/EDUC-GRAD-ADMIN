@@ -1,3 +1,10 @@
+/**
+ * @module PSI
+ * 
+ * @description
+ *  This field is comprised of several input fields that can be validated.
+ */
+
 import selectors from "../../support/selectors";
 const psiSelectors = selectors.psi;
 
@@ -27,6 +34,24 @@ describe('PSI', () => {
     cy.get(psiSelectors.navBtn).click()
   })
 
+  /**
+   * @name searchPSI
+   * 
+   * @description
+   * Search record using various criteria.
+   * 
+   * ## Steps:
+   * 1. Search with empty input to make sure an error appears
+   * 2. Search with PSI Code to make sure it only returns one result
+   * 3. Reset input
+   * 4. Search with PSI Name to make sure it returns two results
+   * 5. Reset input
+   * 6. Search with CSL Code to make sure it returns two results
+   * 7. Filter with Active Flag and make sure it only returs one result
+   * 8. Reset input
+   * 9. Search with CSL Code and Transmission Mode and make sure it only returns one result
+   * 10. Search with invalid input and make sure it displays an error when there is no psi
+   */
   it('Searches PSIs', () => {
     // Empty
     cy.get(psiSelectors.psiReqForm).contains('Search').click()

@@ -1,3 +1,10 @@
+/**
+ * @module Reports
+ * 
+ * @description
+ * This field is comprised of two sections: School Reports and Distrcit Reports. 
+ */
+
 import selectors from "../../support/selectors";
 const reportSelectors = selectors.reports
 
@@ -33,6 +40,22 @@ describe('Reports', () => {
     cy.get(reportSelectors.navBtn).click()
   })
 
+  /**
+   * @name getReports
+   * 
+   * @description
+   * Validate result and input field, and get reports for both School Reports and District Reports
+   * 
+   * ## Steps:
+   * 1. **In School Reports**
+   * 2. Search with empty field to check an error message
+   * 3. Search school reports with valid school name that has reports to make sure it displays expected number of reports
+   * 4. Search school reports with valid school name that does not have reports to check an error message
+   * 5. **In District Reports**
+   * 6. Search with empty field to check an error message
+   * 7. Search district reports with valid district name that has reports to make sure it displays expected number of reports
+   * 8. Search district reports with valid district name that does not have reports to check an error message
+   */
   it('Gets report', () => {
     // Wait a bit for institute
     cy.wait(3000)

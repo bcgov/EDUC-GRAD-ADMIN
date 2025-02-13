@@ -1,7 +1,19 @@
+/**
+ * @module BatchTable
+ * 
+ * @description
+ * Under Batch Processing window, there are mutliple tables that Cypress can quickly goes through:
+ * - Batch Runs
+ * - User Scheduled
+ * - Scheduled Routines
+ * 
+ * This file does not cover any "New Batch Request" due to its complexity
+ */
+
 import selectors from "../../support/selectors";
 const batchProcessingSelectors = selectors.batchProcessing
 
-// Test case changes if selected run have 0 update student or not
+// Test case changes based on whether selected run have 0 update student or not
 function checkResultTable(rowIndex) {
   const currentBatchTable = batchProcessingSelectors.activeWindow + " " + batchProcessingSelectors.batchTable
   // Check if there is data to display in batch result table by seeting status and actual result
@@ -40,6 +52,22 @@ describe('Batch Processing Tables' , () => {
     cy.get(batchProcessingSelectors.navBtn).click()
   })
 
+  /**
+   * @name checkDataInTable
+   * 
+   * @description
+   * Goes through every table in the Batch Processing nav and checks if they load by making sure there is at least one row
+   * loaded in it. Additionally, for Batch Runs table, it opens up multiple job results to ensure it is working as expected.
+   * 
+   * ## Steps:
+   * 1. Navigate to Batch Runs table to check data
+   * 2. Goes through Batch Result table for first multiple rows (it is 5 now) by clicking "View Batch Results"
+   *    - If there is actual result and status is completed, it should display table with affected students
+   *    - Otherwise, it should dipslay "No data available"
+   * 3. Navigate to User Scheduled table to check data
+   *    - Collapse first row and check JSON is stored
+   * 4. Navigate to Scheduled Routines table to check data
+   */
   it('Goes through each table and its content to check if they are loaded', () => {
     // Batch Runs table
     cy.wait(5000)
