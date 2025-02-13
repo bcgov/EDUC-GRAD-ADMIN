@@ -21,7 +21,7 @@ Estimate time is a simply arbitrary value that represents the time it takes to r
 
 ### Additional Note
 ##### Login issue
-If your test fails due to login when you are running Cypress on UI, it is most likely that the refresh token in the current session is expired. In that case, click **"Clear All Sessions"** at the top of testing log next to "SESSIONS" tab. 
+If your test fails due to login when you are running Cypress on UI, it is most likely that the refresh token in the current session has been expired. In that case, click **"Clear All Sessions"** at the top of testing log next to "SESSIONS" tab to re-login and obtain a new token. 
 
 ##### JSDoc documentation
 For generating documentation using JSDoc, run `npm run doc` under `testing` folder and it will create `doc` folder. To see generated HTML files, open generated `index.html` under `doc` folder in any browser.
