@@ -76,7 +76,9 @@ nconf.defaults({
   },
   messaging:{
     natsUrl:process.env.NATS_URL,
-
+  },
+  frontendConfig: {
+    studentAdminURL: process.env.STUDENT_ADMIN_URL
   },
 });
 module.exports = nconf;

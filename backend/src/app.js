@@ -57,6 +57,7 @@ const graduationRouter = require("./routes/graduation-router");
 const reportsRouter = require("./routes/reports-router");
 const commonRouter = require("./routes/common-router");
 const instituteRouter = require("./routes/institute-router");
+const configRouter = require("./routes/config-router");
 
 //initialize app
 const app = express();
@@ -209,6 +210,7 @@ apiRouter.use("/:version/graduate", addVersionToReq, graduationRouter);
 apiRouter.use("/:version/reports", addVersionToReq, reportsRouter);
 apiRouter.use("/:version/version", addVersionToReq, commonRouter);
 apiRouter.use("/:version/institute", addVersionToReq, instituteRouter);
+apiRouter.use("/:version/config",  addVersionToReq, configRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

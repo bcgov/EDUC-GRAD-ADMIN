@@ -124,7 +124,14 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     getCopies: (state) => state.copies,
     getBatchRunTime: (state) => state.batchRunTime,
     getActivityCode:(state) => state.activityCode,
-    getSchoolCategory: (state) => state.categoryCode,
+    getSchoolCategory: (state) => {
+      if (state.categoryCode === "INDEPEND") {
+        return ["INDEPEND", "INDP_FNS"];
+      }else{
+        return state.categoryCode ? [state.categoryCode] : [];
+      }
+      
+    },
     getLocalDownload: (state) => state.distribution == "Download"?"Y":"N", 
     getBatchRequestCrontime: (state) => {   
         if (state.batchRunSchedule == "N") {
@@ -212,7 +219,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
         psiCodes: state.who === "Psi" ? state.psi.map(postSecondaryInstitution => postSecondaryInstitution.psi) : [],
         psiYear: state.psiYear ? state.psiYear : "",
         psiTransmissionMode: state.psiTransmissionMode,
-        schoolCategoryCodes: state.categoryCode ? [state.categoryCode] : [],
+        schoolCategoryCodes: state.getSchoolCategory,
         validateInput: true,
         activityCode: state.activityCode,
         reportTypes: state.reportType ? [state.reportType] : [],
