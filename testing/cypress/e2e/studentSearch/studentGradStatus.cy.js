@@ -105,8 +105,10 @@ describe('Student Grad Status', () => {
     schoolNoTranscriptWarning: 'Warning: School 03636089 is not authorized to issue Transcripts.',
     adultStartDateEmptyError: 'Students on the 1950 Program must have an adult start date. Please enter a valid date.',
     adultStartDateInvalidFormatError: 'The adult start date format is invalid. Please follow the date format YYYY-MM-DD',
+    interalServerError: 'INTERNAL SERVER ERROR',
     noCompletionFuture: 'No Program Completion date or date is in the future',
-    allRequirementMet: 'All program requirements have been met'
+    allRequirementMet: 'All program requirements have been met',
+    mergedStudentError: 'tudent GRAD data cannot be updated for students with a status of \'M\' merged'
   }
 
   beforeEach(() => {
@@ -119,83 +121,66 @@ describe('Student Grad Status', () => {
    * @name editNongraduatedStudent
    * 
    * @description
-   * This is a relatively large test case involving series of steps to take to make sure it covers all
-   * of the cases and rules as a non-graduated student.
+   * Ensure data validation, error, and warning in the Grad Status Form are working as expected
+   * regarding a non-grarduated non-SCCP program student.
+   * This test cases covers most of business logics regarding 1950 program.
    * 
    * ## Steps:
-   * 1. Set student data to ready to test
-   *    - Involves setting data into pre-set value
-   *    - And performing "Undo Completion" or "Update Grad Status" if necessary
+   * 1. Make sure data is ready to be tested
    * 2. Open edit form
-   * 3. Change program
-   *    - If the User changes a students' Program a warning will be displayed to notify the User that any Optional Programs associated with the original Program will be deleted. 
-   *    - If User selects 1950* check student grade for AD or AN
+   * 3. Change student status
+   *    - Selected student status has to match with student status from STUDENT (PEN) Database
    * 4. Check program completion date
    *    - Make sure it is non-modifiable except for students on SCCP
-   * 5. Set program to SCCP to make sure Program Completion Date is modifiable for SCCP Students
-   * 6. Make sure SCCP Rules apply
-   *    - Program completion date cannot be before the program effective date
-   *    - Program completion date can be in the future
-   * 7. Change student status
-   *    - Selected student status has to match with student status from STUDENT (PEN) Database
-   * 8. Change grade & adult start date
+   * 5. Change program
+   *    - If the User changes a students' Program a warning will be displayed to notify the User that any Optional Programs associated with the original Program will be deleted. 
+   *    - If User selects 1950* check student grade for AD or AN
+   * 6. Select back to original program
+   * 7. Change grade & adult start date
    *    - Grade - If User selects AD or AN ensure Student is on Program 1950*
    *    - Adult Start Date - Only modifiable if student is on the 1950 program
-   * 9. Select 1950 program to make sure error dissapears for Grade and adult start date is enabled
-   * 10. Enter date for Adult Start Date for date validation
-   * 11. Select SCCP Program and grade 12 to go on testing
-   * 12. Change school of record
+   * 8. Select 1950 program to make sure error dissapears for Grade and adult start date is enabled
+   * 9. Enter date for Adult Start Date for date validation
+   *    - Cannot be empty
+   *    - Invalid format
+   *    - Incomplete input (try to save)
+   * 10. Enter valid date for Adult Start date to make sure there is no error
+   * 11. Change school of record
    *     - If User modifies School Of Record check if the school supports 10-12 enrollment and transcript 
-   * 13. Make sure school at graduation is disabled 
-   * 14. **Save Changes**
-   * 15. Make sure Graduation Recalc Flag for re-running the graduation algorithm will be set to "Y"
-   * 16. Make sure audit history is updated 
-   *     - A record will be inserted in the Student History table with Activity Code of USEREDIT
-   * 17. Make sure the student is not considered as graduated by running "Update Grad Status"
-   *     - SCCP students are graduated if their program completion date is less than the current date
-   * 18. Open edit form
-   * 19. Make sure a warning appeats for ARC student
-   * 20. Change program completion date to past date to graduate a student
-   * 21. **Save Changes**
-   * 
-   * 22. Run "Update Grad Status" to make sure this student is graduated
-   * 23. Make sure all requirement is met in no completion table
-   * 24. Make sure this SCCP student has Evergreen pdf link
-   * 25. Open edit form
-   * 26. Make sure user cannot modify the program completion date 
-   * 27. Make sure user can modify school at graduation because this student is graduated
-   *     - If User modifies School At Graduation check if the school supports 10-12 enrollment
-   * 28. **Click Cancel**
+   * 12. Make sure school at graduation is disabled 
    */
-  it('Edits grad status for an non-graduated student', () => {
+  it('Edits grad status for an non-graduated student on non-SCCP program', () => {
     const ungraduated_student = Cypress.env('ungraduated_student')
     cy.get(studentSearchSelectors.searchByPEN).type(ungraduated_student.PEN)
     cy.get(studentSearchSelectors.searchSubmit).click()
     cy.wait(5000) // Need to wait so that fields load up in Edit window
 
-    const reset = true // TODO: This is for faster development. Remove this.
-    if (reset)
-      resetToOriginalState(ungraduated_student)
+    // const reset = true // TODO: This is for faster development. Remove this.
+    // if (reset)
+    //   resetToOriginalState(ungraduated_student)
 
-    // Make sure data is in original state
+    // Make sure data is in testable state
     const gradStatusTable = () => cy.get(studentSearchSelectors.table)
     gradStatusTable().find(studentSearchSelectors.programText).should('contain.text', ungraduated_student.og_program)
     gradStatusTable().find(studentSearchSelectors.programCompletionDateText).should('be.empty')
     gradStatusTable().find(studentSearchSelectors.statusText).should('contain.text', ungraduated_student.og_status)
-    gradStatusTable().find(studentSearchSelectors.gradeText).should('contain.text', ungraduated_student.og_grade)
     gradStatusTable().find(studentSearchSelectors.schoolOfRecordText).should('contain.text', ungraduated_student.og_school)
     gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('be.empty')
-    gradStatusTable().find(studentSearchSelectors.honoursStandingText).should('be.empty')
-    gradStatusTable().find(studentSearchSelectors.gpaText).should('be.empty')
-    gradStatusTable().find(studentSearchSelectors.optionalProgramsText).should('be.empty')
-    gradStatusTable().find(studentSearchSelectors.adultStartDateText).should('be.empty')
-    gradStatusTable().find(studentSearchSelectors.cerText).should('be.empty')
-    gradStatusTable().find(studentSearchSelectors.recalcGradText).should('contain.text', ungraduated_student.og_recalc_grad)
-    gradStatusTable().find(studentSearchSelectors.recalcProjectedText).should('contain.text', ungraduated_student.og_recalc_proj)
 
     // Edit
     cy.get(studentSearchSelectors.editBtn).click()
     cy.wait(1000)
+
+    // Student Status
+    // Selected student status has to match with student status from STUDENT (PEN) Database
+    selectDropdown(studentSearchSelectors.status, 'Merged')
+    cy.get(studentSearchSelectors.saveStatusBtn).click()
+    cy.get(studentSearchSelectors.snackBar).should('contain.text', messages.invalidStatusError)
+    selectDropdown(studentSearchSelectors.status, 'Archived')
+
+    // Program Completion Date
+    // Non-modifiable except for students on SCCP
+    cy.get(studentSearchSelectors.programCompletionDate).should('be.disabled')
 
     // Program
     // If the User changes a students' Program a warning will be displayed to notify the User that any Optional Programs associated with the original Program will be deleted. 
@@ -205,26 +190,8 @@ describe('Student Grad Status', () => {
     selectDropdown(studentSearchSelectors.program, '1950')
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.program1950Error)
     cy.get(studentSearchSelectors.saveStatusBtn).should('be.disabled')
+    selectDropdown(studentSearchSelectors.program, '2018-PF')
     
-    // Program Completion Date
-    // Non-modifiable except for students on SCCP
-    cy.get(studentSearchSelectors.programCompletionDate).should('be.disabled')
-    selectDropdown(studentSearchSelectors.program, 'SCCP')
-    cy.get(studentSearchSelectors.programCompletionDate).should('not.be.disabled')
-    // SCCP Rules:
-    // Program completion date cannot be before the program effective date
-    cy.get(studentSearchSelectors.programCompletionDate).type('200312')
-    cy.get(studentSearchSelectors.editForm).should('contain.text', messages.completionDatePriorSCCPWarning)
-    // Program completion date can be in the future
-    cy.get(studentSearchSelectors.programCompletionDate).clear().type(getNextMonthYYYYMM())
-
-    // Student Status
-    // Selected student status has to match with student status from STUDENT (PEN) Database
-    selectDropdown(studentSearchSelectors.status, 'Merged')
-    cy.get(studentSearchSelectors.saveStatusBtn).click()
-    cy.get(studentSearchSelectors.snackBar).should('contain.text', messages.invalidStatusError)
-    selectDropdown(studentSearchSelectors.status, 'Archived')
-
     // Grade & Adult Start Date
     // Grade - If User selects AD or AN ensure Student is on Program 1950*
     selectDropdown(studentSearchSelectors.grade, 'AD')
@@ -239,18 +206,21 @@ describe('Student Grad Status', () => {
     selectDropdown(studentSearchSelectors.program, '1950')
     cy.get(studentSearchSelectors.editForm).should('not.contain.text', messages.gradeADANError)
     cy.get(studentSearchSelectors.adultStartDate).should('not.be.disabled')
-    // Adult Start Date - Date format validattion
+    // Adult Start Date - Date format validation
+    // Empty
     cy.get(studentSearchSelectors.adultStartDate).clear()
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.adultStartDateEmptyError)
+    // Invalid format
     cy.get(studentSearchSelectors.adultStartDate).type('hello')
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.adultStartDateInvalidFormatError)
+    // Incomplete format
+    cy.get(studentSearchSelectors.adultStartDate).clear().type('2000-10')
+    cy.get(studentSearchSelectors.saveStatusBtn).click()
+    cy.get(studentSearchSelectors.snackBar).should('contain.text', messages.interalServerError)
+    // valid
     cy.get(studentSearchSelectors.adultStartDate).clear().type('2000-10-10')
     cy.get(studentSearchSelectors.editForm).should('not.contain.text', messages.adultStartDateInvalidFormatError)
       .and('not.contain.text', messages.adultStartDateEmptyError)
-    
-    // Back to SCCP
-    selectDropdown(studentSearchSelectors.program, 'SCCP')
-    selectDropdown(studentSearchSelectors.grade, '12')
 
     // School Of Record
     // If User modifies School Of Record check if the school supports 10-12 enrollment and transcript 
@@ -262,42 +232,178 @@ describe('Student Grad Status', () => {
     // School At Graduation
     cy.get(studentSearchSelectors.schoolAtGraduation).should('be.disabled')
     
-    // Save
-    cy.get(studentSearchSelectors.saveStatusBtn).click()
-    // The students' graduation recalc flag for re-running the graduation algorithm will be set to "Y"
-    gradStatusTable().find(studentSearchSelectors.recalcGradText).should('contain.text', 'Y')
-    // A record will be inserted in the Student History table with Activity Code of USEREDIT.
-    cy.get(studentSearchSelectors.auditBtn).click()
-    cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.rows).first().should('contain.text', 'USEREDIT')
-    cy.get(studentSearchSelectors.gradBtn).click()
+    // // Save
+    // cy.get(studentSearchSelectors.saveStatusBtn).click()
+    // // The students' graduation recalc flag for re-running the graduation algorithm will be set to "Y"
+    // gradStatusTable().find(studentSearchSelectors.recalcGradText).should('contain.text', 'Y')
+    // // A record will be inserted in the Student History table with Activity Code of USEREDIT.
+    // cy.get(studentSearchSelectors.auditBtn).click()
+    // cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.rows).first().should('contain.text', 'USEREDIT')
+    // cy.get(studentSearchSelectors.gradBtn).click()
+  })
 
-    // SCCP students are graduated if their program completion date is less than the current date
-    // Make sure this student is not graduated
-    updateGradStatus()
-    gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('be.empty')
-    cy.get(studentSearchSelectors.noCompletionCard).should('contain.text', messages.noCompletionFuture)
-    cy.get(studentSearchSelectors.certificateDogwoodsCard).find(studentSearchSelectors.pdfLink).should('not.exist')
-    // Change completion date to past date
-    cy.get(studentSearchSelectors.editBtn).click()
-    cy.wait(1000)
-    cy.get(studentSearchSelectors.programCompletionDate).clear().type('201010')
-    // If a User Edits a students' GRAD data and the student has a status of "ARC", a warning will show
-    cy.get(studentSearchSelectors.editForm).should('contain.text', messages.arcStudentWarning)
-    cy.get(studentSearchSelectors.saveStatusBtn).click()
-    cy.wait(1000)
-    // Make sure this student is graduated
-    updateGradStatus()
-    gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('contain.text', ungraduated_student.og_school)
+  /**
+   * @name editNongraduatedStudent
+   * 
+   * @description
+   * Ensure additional data for a graduated student is displayed or changes of interactability of certain fields for a graduated student 
+   * compared to a non-graduated student.
+   * 
+   * ## Steps:
+   * 1. Make sure data is ready to be tested
+   * 2. Make sure honour standing flag is correct
+   *    - If GPA > 3 then True else False value
+   * 3. Check data in cards in student profile
+   *    - Noncompletion Reasons - Should be empty
+   *    - Requirements Met - Should list all requirements
+   *    - Student Transcript Reports - Should have pdf link for Graduation Program
+   *    - Student Certificates/ Dogwoods - Should have pdf link for Dogwoods
+   * 4. Open edit
+   * 5. Make sure a warning for ARC student appears
+   *    - If a User Edits a students' GRAD data and the student has a status of "ARC", a warning will show up
+   * 6. Make sure disabled fields
+   *    - Program is non-modifiable if a student has a Program Completion Date
+   * 7. Make sure enabled fields
+   *    - If students are graduated, they can modify School At Graduation
+   * 8. Change school at graduation
+   *    - If User modifies School At Graduation check if the school supports 10-12 enrollment
+   */
+  it('Edits grad status for a graduated student on non-SCCP Program', () => {
+    const graduated_student = Cypress.env('graduated_student')
+    cy.get(studentSearchSelectors.searchByPEN).type(graduated_student.PEN)
+    cy.get(studentSearchSelectors.searchSubmit).click()
+    cy.wait(5000) // Need to wait so that fields load up in Edit window
+
+    // Should be a graduated non sccp program student
+    const gradStatusTable = () => cy.get(studentSearchSelectors.table)
+    gradStatusTable().get(studentSearchSelectors.programText).should('not.contain.text', 'SCCP')
+    gradStatusTable().get(studentSearchSelectors.schoolAtGraduationText).should('exist')
+    gradStatusTable().get(studentSearchSelectors.programCompletionDateText).should('exist')
+    gradStatusTable().get(studentSearchSelectors.statusText).should('contain.text', graduated_student.og_status)
+
+    // Honours standing flag is set to 'Y' if GPA is more thean 3
+    cy.get(studentSearchSelectors.gpaText).invoke('text').then(gpa => {
+      const honourFlag = parseFloat(gpa) > 3 ? 'Y' : 'N'
+      cy.get(studentSearchSelectors.honoursStandingText).should('contain.text', honourFlag)
+    })
+
+    // Check cards: non completion reason, requirements met, student transcript repots, and student dogwoods
     cy.get(studentSearchSelectors.noCompletionCard).should('contain.text', messages.allRequirementMet)
-    cy.get(studentSearchSelectors.certificateDogwoodsCard).find(studentSearchSelectors.pdfLink).should('contain.text', 'Evergreen')
-    // If program completion date is not blank, User cannot modify the program completion date. 
+    cy.get(studentSearchSelectors.requirementMetCard).find(studentSearchSelectors.rows).its('length').should('be.gt', 0)
+    cy.get(studentSearchSelectors.graduationReportsCard).find(studentSearchSelectors.pdfLink).should('contain.text', 'Graduation Program')
+    cy.get(studentSearchSelectors.certificateDogwoodsCard).find(studentSearchSelectors.pdfLink).should('contain.text', 'Dogwood')
+
+    // Edit
     cy.get(studentSearchSelectors.editBtn).click()
-    cy.get(studentSearchSelectors.programCompletionDate).should('be.disabled')
+    cy.wait(1000)
+    // If a User Edits a students' GRAD data and the student has a status of "ARC", a warning will show up
+    cy.get(studentSearchSelectors.editForm).should('contain.text', messages.arcStudentWarning)
+    
+    // Program
+    // Program is non-modifiable if a student has a Program Completion Date
+    cy.get(studentSearchSelectors.program).should('be.disabled')
+    
+    // School At Graduation
     // If students are graduated, they can modify School At Graduation
     cy.get(studentSearchSelectors.schoolAtGraduation).should('not.be.disabled')
     // If User modifies School At Graduation check if the school supports 10-12 enrollment
     selectAutoselect(studentSearchSelectors.schoolAtGraduation, 'Jessie Lee Elementary')
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.schoolNo10to12EnrollmentWarning)
     cy.get(studentSearchSelectors.editForm).contains('Cancel').click({force: true})
+  })
+
+  /**
+   * @name editNongraduatedSCCPStudent
+   * 
+   * @description
+   * Ensure SCCP specific rules apply to the student. This test is also supposed to make sure graduation
+   * logic for a SCCP student works  properly; however, those tests are now disabled due to the restriction of data modification with testing.
+   * 
+   * ## Steps:
+   * 1. Make sure data is ready to be tested
+   * 2. Make sure program completion date is modifiable
+   *    - Non-modifiable excep for students on SCCP
+   * 3. Check SCCP Rules for program completion date
+   *    - Program completion date cannot be before the program effective date
+   *    - Program completion date can be in the future
+   */
+  it('Edits grad status for an non-graduated student on SCCP program', () => {
+    const sccp_student = Cypress.env('sccp_student')
+    cy.get(studentSearchSelectors.searchByPEN).type(sccp_student.PEN)
+    cy.get(studentSearchSelectors.searchSubmit).click()
+    cy.wait(5000) // Need to wait so that fields load up in Edit window
+    
+    // Should be an ungraduated sccp student
+    const gradStatusTable = () => cy.get(studentSearchSelectors.table)
+    gradStatusTable().get(studentSearchSelectors.programText).should('contain.text', 'SCCP')
+    gradStatusTable().get(studentSearchSelectors.schoolAtGraduationText).should('be.empty')
+
+    // Edit
+    cy.get(studentSearchSelectors.editBtn).click()
+    cy.wait(1000)
+    // Program Completion Date
+    // Non-modifiable except for students on SCCP
+    cy.get(studentSearchSelectors.programCompletionDate).should('not.be.disabled')
+    // SCCP Rules:
+    // Program completion date cannot be before the program effective date
+    cy.get(studentSearchSelectors.programCompletionDate).type('200312')
+    cy.get(studentSearchSelectors.editForm).should('contain.text', messages.completionDatePriorSCCPWarning)
+    // Program completion date can be in the future
+    cy.get(studentSearchSelectors.programCompletionDate).clear().type(getNextMonthYYYYMM())
+
+    // // SCCP students are graduated if their program completion date is less than the current date
+    // // Make sure this student is not graduated
+    // updateGradStatus()
+    // gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('be.empty')
+    // cy.get(studentSearchSelectors.noCompletionCard).should('contain.text', messages.noCompletionFuture)
+    // cy.get(studentSearchSelectors.certificateDogwoodsCard).find(studentSearchSelectors.pdfLink).should('not.exist')
+    // // Change completion date to past date
+    // cy.get(studentSearchSelectors.editBtn).click()
+    // cy.wait(1000)
+    // cy.get(studentSearchSelectors.programCompletionDate).clear().type('201010')
+    // cy.get(studentSearchSelectors.saveStatusBtn).click()
+    // cy.wait(1000)
+    // // Make sure this student is graduated
+    // updateGradStatus()
+    // gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('contain.text', sccp_student.og_school)
+
+    // // Graduated SCCP student
+    // cy.get(studentSearchSelectors.certificateDogwoodsCard).find(studentSearchSelectors.pdfLink).should('contain.text', 'Evergreen')
+    // // If program completion date is not blank, User cannot modify the program completion date. 
+    // cy.get(studentSearchSelectors.editBtn).click()
+    // cy.get(studentSearchSelectors.programCompletionDate).should('be.disabled')
+  })
+
+  /**
+   * @name editMergedStudent
+   * 
+   * @description
+   * Try to edit grad status of a merged student; however, GRAD does not let users edit a merged student directly.
+   * 
+   * ## Steps:
+   * 1. Make sure a test student's status is 'Merged'
+   * 2. Open edit
+   * 3. Change status to 'Current'
+   * 4. Click save button to make sure it does not let user modify a merged student's grad status
+   * 
+   */
+  it('Tries to edit merged student', () => {
+    const merged_student = Cypress.env('merged_student')
+    cy.get(studentSearchSelectors.searchByPEN).type(merged_student.PEN)
+    cy.get(studentSearchSelectors.searchSubmit).click()
+    cy.wait(5000) // Need to wait so that fields load up in Edit window
+    
+    // Should be a merged student
+    const gradStatusTable = () => cy.get(studentSearchSelectors.table)
+    gradStatusTable().get(studentSearchSelectors.statusText).should('contain.text', 'Merged')
+
+    // Edit
+    cy.get(studentSearchSelectors.editBtn).click()
+    cy.wait(1000)
+    // Change something and try to save
+    selectDropdown(studentSearchSelectors.status, 'Current')
+    cy.get(studentSearchSelectors.saveStatusBtn).click()
+    // Error
+    cy.get(studentSearchSelectors.snackBar).should('contain.text', messages.mergedStudentError)
   })
 })

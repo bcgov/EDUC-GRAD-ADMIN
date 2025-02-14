@@ -6,6 +6,6 @@
   "courses/courseSearch.cy.js": 31,
   "psi/psi.cy.js": 17,
   "reports/reports.cy.js": 20,
-  "studentSearch/studentSearch.cy.js": 50,
+  "studentSearch/studentSearch.cy.js": 90,
   "studentSearch/studentGradStatus.cy.js": 50
 }

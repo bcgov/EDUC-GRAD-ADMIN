@@ -31,23 +31,24 @@ function undoCompletion() {
 }
 
 describe('Student Search', () => {
-  const graduated_student_with_gpa = Cypress.env('graduated_student_with_gpa')
+  const test_student = Cypress.env('ungraduated_student')
 
   context('with PEN Search', () => {
     beforeEach(() => {
       cy.login()
       cy.visit('/')
       cy.get(studentSearchSelectors.title).should('contain.text', 'Student Search')
-      cy.get(studentSearchSelectors.searchByPEN).type(graduated_student_with_gpa.PEN)
+      cy.get(studentSearchSelectors.searchByPEN).type(test_student.PEN)
       cy.get(studentSearchSelectors.searchSubmit).click()
       cy.wait(5000) // Need to wait so that fields load up in Edit window
     })
 
     /**
-     * @name checkRequiredFieldsInGradStatus
+     * @name checkDataInTable
      * 
      * @description
-     * Make sure required fields in student grad status is always loaded.
+     * Make sure required fields in student grad status is always loaded, then go through every table in the test student's Student Grad Status and checks if data is loaded or
+     * appropriate text appears when there is no data.
      * 
      * ## Steps:
      * 1. Make sure the following fields are loaded:
@@ -57,8 +58,18 @@ describe('Student Search', () => {
      *    - School Of Record
      *    - Recal Grad Status Flag
      *    - Rrecal Projected Grad Flag
+     * 2. Navigate to Courses table to check data
+     * 3. Navigate to Assessment table to check data
+     * 4. Navigate to Exams Details table to check data
+     * 5. Navigate to Optional Programs table to check data
+     * 6. Navigate to Student Change Hisotry in Audit History table to check data
+     *    - Collapse first row and check JSON is stored
+     * 7. Navigate to Optional Program Change History in Audit History table to check data
+     *    - Collapse first row and check JSON is stored
+     * 8. Navigate to Undo Completion Reasons table to check data
+     *    - Skip Notes sectinon because it does not have table
      */
-    it('Makes sure all required field for Grad Status are displayed', () => {
+    it('Checks if each table\'s data is loaded', () => {
       const gradStatusTable = () => cy.get(studentSearchSelectors.table)
       gradStatusTable().find(studentSearchSelectors.programText).should('exist')
       gradStatusTable().find(studentSearchSelectors.statusText).should('exist')
@@ -66,28 +77,7 @@ describe('Student Search', () => {
       gradStatusTable().find(studentSearchSelectors.schoolOfRecordText).should('exist')
       gradStatusTable().find(studentSearchSelectors.recalcGradText).should('exist')
       gradStatusTable().find(studentSearchSelectors.recalcProjectedText).should('exist')
-    })
 
-    /**
-     * @name checkDataInTable
-     * 
-     * @description
-     * Go through every table in the test student's Student Grad Status and checks if data is loaded or
-     * appropriate text appears when there is no data.
-     * 
-     * ## Steps:
-     * 1. Navigate to Courses table to check data
-     * 2. Navigate to Assessment table to check data
-     * 3. Navigate to Exams Details table to check data
-     * 4. Navigate to Optional Programs table to check data
-     * 5. Navigate to Student Change Hisotry in Audit History table to check data
-     *    - Collapse first row and check JSON is stored
-     * 6. Navigate to Optional Program Change History in Audit History table to check data
-     *    - Collapse first row and check JSON is stored
-     * 7. Navigate to Undo Completion Reasons table to check data
-     *    - Skip Notes sectinon because it does not have table
-     */
-    it('Checks if each table\'s data is loaded', () => {
       // Courses Window
       cy.get(studentSearchSelectors.coursesBtn).click()
       checkItemsInWindowTable(studentSearchSelectors.coursesWindow)
@@ -144,14 +134,14 @@ describe('Student Search', () => {
      */
     it('Adds and removes optional program and note', () => {
       // Undo completion if the student is graduated
-      const schoolAtGraduationText = studentSearchSelectors.table + " " + studentSearchSelectors.schoolAtGraduationText
-      cy.doesExist(schoolAtGraduationText).then(exist => {
-        if (exist) {
-          undoCompletion()
-        } else {
-          cy.log("Student is not graduated")
-        }
-      })
+      // const schoolAtGraduationText = studentSearchSelectors.table + " " + studentSearchSelectors.schoolAtGraduationText
+      // cy.doesExist(schoolAtGraduationText).then(exist => {
+      //   if (exist) {
+      //     undoCompletion()
+      //   } else {
+      //     cy.log("Student is not graduated")
+      //   }
+      // })
         
       // Optional Program
       const optionalCourseToAdd = 'French Immersion'
@@ -220,6 +210,7 @@ describe('Student Search', () => {
       cy.contains('Advanced Student Search')
     })
 
+
     /**
      * @name searchOneStudentWithAdvanced
      * 
@@ -232,8 +223,8 @@ describe('Student Search', () => {
      * 3. Ensure the PEN link leads to Student Grad Status properly
      */
     it('Searches one student', () => {
-        cy.get(studentSearchSelectors.legalSurnameInput).type(graduated_student_with_gpa.surname)
-        cy.get(studentSearchSelectors.legalGivennameInput).type(graduated_student_with_gpa.given)
+        cy.get(studentSearchSelectors.legalSurnameInput).type(test_student.surname)
+        cy.get(studentSearchSelectors.legalGivennameInput).type(test_student.givenname)
         cy.get(studentSearchSelectors.advSearchSubmit).click()
         cy.get(studentSearchSelectors.searchResultTableRow).its('length').should('eq', 1)
         cy.get(studentSearchSelectors.searchResultTableRow).find(studentSearchSelectors.penLink).click()
@@ -247,18 +238,19 @@ describe('Student Search', () => {
      * Search multiple students using Advanced Search.
      * 
      * ## Steps:
-     * 1. Enter just given name and submit
-     * 2. Ensure there are expected number of multiple students returned with same givenanem
+     * 1. Enter given name and select male, then submit
+     * 2. Ensure there are expected number of multiple students returned with same givename and gender
      * 3. Click Reset to make sure it cleans table and input field
      */
     it('Searches multiple students', () => {
-      const ungraduated_student = Cypress.env("ungraduated_student")
-      cy.get(studentSearchSelectors.legalGivennameInput).type(ungraduated_student.given)
+      cy.get(studentSearchSelectors.legalSurnameInput).type(test_student.surname)
+      cy.get(studentSearchSelectors.genderSelection).click({force: true})
+      cy.get(studentSearchSelectors.selections).contains('Female').click({force: true})
       cy.get(studentSearchSelectors.advSearchSubmit).click()
-      cy.get(studentSearchSelectors.searchResultTableRow).its('length').should('eq', 4)
+      cy.get(studentSearchSelectors.searchResultTableRow).its('length').should('eq', 12)
 
       cy.get(studentSearchSelectors.advSearchReset).click()
-      cy.get(studentSearchSelectors.legalGivennameInput).should('not.contain.text', ungraduated_student.given)
+      cy.get(studentSearchSelectors.legalGivennameInput).should('not.contain.text', test_student.surname)
     })
   })
 
@@ -266,7 +258,8 @@ describe('Student Search', () => {
     // Perform input validation for both pen and advanced search
     const invalidMessage = {
       noStudentPEN: 'Student cannot be found on the GRAD or PEN database',
-      noStudentAdvanced: 'There are [0] more matches on PEN'
+      noStudentAdvanced: 'There are [0] more matches on PEN',
+      tooManyReponseAdvanced: 'Change Search Criteria. Too many records as response'
     }
 
     before(() => {
@@ -283,17 +276,26 @@ describe('Student Search', () => {
      * 
      * ## Steps:
      * 1. In PEN Search, enter PEN number without result to make sure it displays an error
-     * 2. Advanced Saerch, enter a surname without result to make sure it displays an error
+     * 2. In Advanced Search, enter a surname without result to make sure it displays an error
+     * 3. In Advanced Saerch, select Male to make sure it displays error for too many records
      */
     it('Enters invalid data', () => {
+      // No result
       cy.get(studentSearchSelectors.searchByPEN).type('121212121')
       cy.get(studentSearchSelectors.searchSubmit).click()
       cy.get(studentSearchSelectors.errorMsg).should('have.text', invalidMessage.noStudentPEN)
 
+      // No result
       cy.get(studentSearchSelectors.advancedSearchBtn).click()
       cy.get(studentSearchSelectors.legalSurnameInput).type('ZZZ')
       cy.get(studentSearchSelectors.advSearchSubmit).click()
       cy.get(studentSearchSelectors.errorMsg).should('have.text', invalidMessage.noStudentAdvanced)
+      // Too many result
+      cy.get(studentSearchSelectors.advSearchReset).click()
+      cy.get(studentSearchSelectors.genderSelection).click({force: true})
+      cy.get(studentSearchSelectors.selections).contains('Male').click({force: true})
+      cy.get(studentSearchSelectors.advSearchSubmit).click()
+      cy.get(studentSearchSelectors.errorMsg, {timeout: 20000}).should('have.text', invalidMessage.tooManyReponseAdvanced)
     })
   })
 })
