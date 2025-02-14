@@ -15,7 +15,7 @@
       <v-card>
         <div class="d-flex justify-space-between align-center">
           <v-card-title
-            >-End Credentials and Transcript DistrYearibution Run</v-card-title
+            >Year-End Credentials and Transcript Distribution Run</v-card-title
           >
           <v-btn
             @click="closeDialogAndResetForm()"
@@ -197,6 +197,7 @@ export default {
     step: 0,
     batchLoading: false,
     dialog: false,
+    snackbarStore: useSnackbarStore(),
   }),
   computed: {
     ...mapState(useAccessStore, ["hasPermissions"]),
