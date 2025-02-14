@@ -1,11 +1,11 @@
 {
   "Programs/programs.cy.js": 19,
   "assessments/assessments.cy.js": 14,
-  "batchProcessing/batchTables.cy.js": 30,
+  "batchProcessing/batchTables.cy.js": 47,
   "codes/codes.cy.js": 24,
   "courses/courseSearch.cy.js": 31,
   "psi/psi.cy.js": 17,
   "reports/reports.cy.js": 20,
-  "studentSearch/studentSearch.cy.js": 90,
-  "studentSearch/studentGradStatus.cy.js": 50
+  "studentSearch/studentSearch.cy.js": 82,
+  "studentSearch/studentGradStatus.cy.js": 88
 }
