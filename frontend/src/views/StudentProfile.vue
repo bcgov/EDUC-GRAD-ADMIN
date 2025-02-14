@@ -98,7 +98,7 @@
               </v-tabs>
               <v-card-text>
                 <v-window v-model="selectedTab">
-                  <v-window-item value="GRAD" data-cy="grad-window-item">
+                  <v-window-item value="GRAD">
                     <v-tabs v-model="selectedSubTab" color="primary">
                       <v-tab value="gradStatusTab" class="text-none"
                         ><v-chip
@@ -155,7 +155,7 @@
                       </v-progress-circular>
                     </div>
                   </v-window-item>
-                  <v-window-item value="Courses" data-cy="courses-window-item">
+                  <v-window-item value="Courses">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -164,7 +164,7 @@
                     </v-progress-circular>
                     <StudentCourses></StudentCourses
                   ></v-window-item>
-                  <v-window-item value="Assessments" data-cy="assessments-window-item">
+                  <v-window-item value="Assessments">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -173,7 +173,7 @@
                     </v-progress-circular>
                     <StudentAssessments
                   /></v-window-item>
-                  <v-window-item value="Exams" data-cy="exams-window-item">
+                  <v-window-item value="Exams">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -182,7 +182,7 @@
                     </v-progress-circular>
                     <StudentExams />
                   </v-window-item>
-                  <v-window-item value="Optional" data-cy="optional-window-item">
+                  <v-window-item value="Optional">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -191,7 +191,7 @@
                     </v-progress-circular>
                     <StudentOptionalPrograms></StudentOptionalPrograms
                   ></v-window-item>
-                  <v-window-item value="Audit" data-cy="audit-window-item">
+                  <v-window-item value="Audit">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -202,7 +202,7 @@
                       <StudentAuditHistory v-if="auditTab == 'studentAudit'" />
                     </div>
                   </v-window-item>
-                  <v-window-item value="Notes" data-cy="notes-window-item">
+                  <v-window-item value="Notes">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -211,7 +211,7 @@
                     </v-progress-circular>
                     <StudentNotes></StudentNotes>
                   </v-window-item>
-                  <v-window-item value="Undo Completion Reasons" data-cy="undo-window-item">
+                  <v-window-item value="Undo Completion Reasons">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
