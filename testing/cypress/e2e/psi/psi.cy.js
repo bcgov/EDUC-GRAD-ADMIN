@@ -8,9 +8,9 @@
 import selectors from "../../support/selectors";
 const psiSelectors = selectors.psi;
 
-function searchRowNumAndReset(rowNum) {
+function searchRowNumAndReset(expectedRowNum) {
   cy.get(psiSelectors.psiReqForm).contains('Search').click()
-  cy.get(psiSelectors.rows).its('length').should('eq', rowNum)
+  cy.shouldHaveData(psiSelectors.psiView, expectedRowNum)
   cy.get(psiSelectors.psiReqForm).contains('Reset').click()
 }
 
@@ -56,7 +56,6 @@ describe('PSI', () => {
     // Empty
     cy.get(psiSelectors.psiReqForm).contains('Search').click()
     cy.get(psiSelectors.errorMsg).should('have.text', invalidMessage.empty)
-
     // With PSI Code
     cy.get(psiSelectors.psiCodeInput).type(test_psi.psiCode)
     searchRowNumAndReset(1)
@@ -66,17 +65,16 @@ describe('PSI', () => {
     // With Code
     cy.get(psiSelectors.cslCodeInput).type(test_psi.cslCode)
     cy.get(psiSelectors.psiReqForm).contains('Search').click()
-    cy.get(psiSelectors.rows).its('length').should('eq', 2)
+    cy.shouldHaveData(psiSelectors.psiView, 2)
     // Plus with Active Flag
     cy.get(psiSelectors.activeFlagSelection).click({force: true})
     cy.wait(500)
-    cy.get(psiSelectors.selections).contains(test_psi.active).click({force: true})
+    cy.get(selectors.selections).contains(test_psi.active).click({force: true})
     searchRowNumAndReset(1)
     // With Code and Transmission Mode
     cy.get(psiSelectors.cslCodeInput).type(test_psi.cslCode)
     cy.get(psiSelectors.transmissionModeInput).type(test_psi.transmission)
     searchRowNumAndReset(1)
-
     // No Match
     cy.get(psiSelectors.psiCodeInput).type('000')
     cy.get(psiSelectors.psiReqForm).contains('Search').click()

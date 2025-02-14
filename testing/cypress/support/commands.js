@@ -27,25 +27,35 @@ import { Routes } from "../../../frontend/src/utils/constants"
 import selectors from "./selectors"
 
 function login() {
-    cy.session('loginSession', () => {
-        cy.visit(Routes.LOGIN)
-        cy.get(selectors.login.idirLoginBtn).click()
-        cy.get(selectors.login.user).type(Cypress.env('username'))
-        cy.get(selectors.login.password).type(Cypress.env('password'))
-        cy.get(selectors.login.idirSubmitBtn).click()
-        cy.get(selectors.studentSearch.title).should('contain.text', 'Student Search')
-    })
+	cy.session('loginSession', () => {
+		cy.visit(Routes.LOGIN)
+		cy.get(selectors.login.idirLoginBtn).click()
+		cy.get(selectors.login.user).type(Cypress.env('username'))
+		cy.get(selectors.login.password).type(Cypress.env('password'))
+		cy.get(selectors.login.idirSubmitBtn).click()
+		cy.get(selectors.studentSearch.title).should('contain.text', 'Student Search')
+	})
 }
 
 function doesExist(selector) {
-    return cy.get('body').then(($body) => {
-        return $body.find(selector).length > 0
-    })
+	return cy.get('body').then(($body) => {
+		return $body.find(selector).length > 0
+	})
+}
+
+function shouldHaveData(selector, expectedRowNum = 0) {
+	cy.wait(400)
+	if (expectedRowNum && !isNaN(expectedRowNum)) {
+		cy.get(selector).find(selectors.rows).its('length').should('be.eq', expectedRowNum)
+	} else {
+		cy.get(selector).find(selectors.rows).its('length').should('be.gt', 0)
+	}
 }
 
 Cypress.Commands.add('login', login)
 Cypress.Commands.add('doesExist', doesExist)
+Cypress.Commands.add('shouldHaveData', shouldHaveData)
 
 Cypress.on('uncaught:exception', (err, runnable) => {
-    return false
+	return false
 })

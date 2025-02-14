@@ -13,11 +13,6 @@
 import selectors from "../../support/selectors";
 const assessmentsSelectors = selectors.assessments
 
-function shouldHaveData(selector) {
-  cy.wait(400)
-  cy.get(selector).find(assessmentsSelectors.rows).its('length').should('be.gt', 0)
-}
-
 describe('Assessments', () => {
   beforeEach(() => {
     cy.login()
@@ -37,9 +32,9 @@ describe('Assessments', () => {
    * 2. Navigate to Assessment Requirement table to check data
    */
   it('Checks each table if they are loaded', () => {
-    shouldHaveData(assessmentsSelectors.assessmentsWindow)
+    cy.shouldHaveData(assessmentsSelectors.assessmentsView)
 
     cy.get(assessmentsSelectors.navSlider).contains('Assessment Requirements').click()
-    shouldHaveData(assessmentsSelectors.requirementsWindow)
+    cy.shouldHaveData(assessmentsSelectors.assessmentsView)
   })
 })

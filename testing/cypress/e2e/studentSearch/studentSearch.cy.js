@@ -14,17 +14,17 @@ function checkItemsInWindowTable(windowSelector) {
     if (exist) {
       cy.get(selector).should('contain.text', 'No data available')
     } else {
-      cy.get(windowSelector).find(studentSearchSelectors.rows).its('length').should('be.gt', 0)
+      cy.shouldHaveData(windowSelector)
     }
   })
 }
 
 function undoCompletion() {
   cy.get(studentSearchSelectors.transcriptTVRBtn).click()
-  cy.get(studentSearchSelectors.selections).contains('Undo Completion').click({force: true})
+  cy.get(selectors.selections).contains('Undo Completion').click({force: true})
   cy.wait(1000)
   cy.get(studentSearchSelectors.undoCompletionReasonInput).click({force: true})
-  cy.get(studentSearchSelectors.selections).contains('Other').click({force: true})
+  cy.get(selectors.selections).contains('Other').click({force: true})
   cy.get(studentSearchSelectors.undoCompletionReasonTextarea).type('Cypress testing')
   cy.get(studentSearchSelectors.undoCompletionConfirmCheckbox).click()
   cy.get(studentSearchSelectors.undoCompletionBtn).click()
@@ -80,37 +80,39 @@ describe('Student Search', () => {
 
       // Courses Window
       cy.get(studentSearchSelectors.coursesBtn).click()
-      checkItemsInWindowTable(studentSearchSelectors.coursesWindow)
+      checkItemsInWindowTable(studentSearchSelectors.activeWindow)
       // Assessments Window
       cy.get(studentSearchSelectors.assessmentBtn).click()
-      checkItemsInWindowTable(studentSearchSelectors.assessmentsWindow)
+      checkItemsInWindowTable(studentSearchSelectors.activeWindow)
       // Exams Details Window
       cy.get(studentSearchSelectors.examsBtn).click()
-      checkItemsInWindowTable(studentSearchSelectors.examsWindow)
+      checkItemsInWindowTable(studentSearchSelectors.activeWindow)
       // Optional Programs Window
       cy.get(studentSearchSelectors.optionalBtn).click()
-      const optionalWindowRow = studentSearchSelectors.optionalWindow + " " + studentSearchSelectors.rows
-        cy.doesExist(optionalWindowRow).then(exist => {
-          if (exist) {
-            cy.get(optionalWindowRow).its('length').should('be.gt', 0)
-          } else {
-            cy.get(studentSearchSelectors.optionalWindow).should('contain.text', 'This student does not have any optional programs.')
-          }
-        })
+      cy.wait(500)
+      cy.get(studentSearchSelectors.activeWindow).should('contain.text', `This student is on the ${test_student.og_program} Graduation Program`)
+      const optionalProgramRows = studentSearchSelectors.activeWindow + " > " + studentSearchSelectors.optionalTableRows
+      cy.doesExist(optionalProgramRows).then(exist => {
+        if (exist) {
+          cy.shouldHaveData(studentSearchSelectors.activeWindow)
+        } else {
+          cy.get(studentSearchSelectors.activeWindow).should('contain.text', 'This student does not have any optional programs.')
+        }
+      })
       // Audit History Window
       cy.get(studentSearchSelectors.auditBtn).click()
-      checkItemsInWindowTable(studentSearchSelectors.auditWindow + " .v-window-item:nth-child(1)")
-      cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.firstExpandArrow).click()
-      cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.secondRowJsonData).should('contain.text', 'createUser')
+      checkItemsInWindowTable(studentSearchSelectors.activeWindow + " .v-window-item:nth-child(1)")
+      cy.get(studentSearchSelectors.activeWindow).find(studentSearchSelectors.firstExpandArrow).click()
+      cy.get(studentSearchSelectors.activeWindow).find(studentSearchSelectors.secondRowJsonData).should('contain.text', 'createUser')
 
       cy.get(studentSearchSelectors.optionalProgramChangeHistoryBtn).click()
-      checkItemsInWindowTable(studentSearchSelectors.auditWindow + " .v-window-item:nth-child(2)")
-      cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.firstExpandArrow).click()
-      cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.secondRowJsonData).should('contain.text', 'createUser')
+      checkItemsInWindowTable(studentSearchSelectors.activeWindow + " .v-window-item:nth-child(2)")
+      cy.get(studentSearchSelectors.activeWindow).find(studentSearchSelectors.firstExpandArrow).click()
+      cy.get(studentSearchSelectors.activeWindow).find(studentSearchSelectors.secondRowJsonData).should('contain.text', 'createUser')
       
       // Undo Completion Reasons Window
       cy.get(studentSearchSelectors.undoBtn).click()
-      checkItemsInWindowTable(studentSearchSelectors.undoWindow)
+      checkItemsInWindowTable(studentSearchSelectors.activeWindow)
     })
 
     /**
@@ -146,15 +148,16 @@ describe('Student Search', () => {
       // Optional Program
       const optionalCourseToAdd = 'French Immersion'
       cy.get(studentSearchSelectors.optionalBtn).click()
-      
+      cy.wait(500)
+
       // Remove optinal program if there is any
-      const optionalProgramRows = studentSearchSelectors.optionalWindow + " > " + studentSearchSelectors.optionalTableRows
+      const optionalProgramRows = studentSearchSelectors.activeWindow + " > " + studentSearchSelectors.optionalTableRows
       cy.doesExist(optionalProgramRows).then(exist => {
         if (exist) {
           cy.get(optionalProgramRows).then($rows => {
             const count = $rows.length
             for (let i = 0; i < count; i++) {
-              cy.get(studentSearchSelectors.optionalWindow).find(studentSearchSelectors.firstRow).find(studentSearchSelectors.deleteOptionalBtn).click({force: true})
+              cy.get(studentSearchSelectors.activeWindow).find(studentSearchSelectors.firstRow).find(studentSearchSelectors.deleteOptionalBtn).click({force: true})
               cy.get(studentSearchSelectors.deleteOptionalConfirmBtn).click()
               cy.wait(500)
             }
@@ -165,38 +168,38 @@ describe('Student Search', () => {
       })
 
       // Add Optional Program
-      cy.get(studentSearchSelectors.optionalWindow).should('contain.text', 'This student does not have any optional programs.')
-      cy.get(studentSearchSelectors.optionalWindow).find('button').click()
+      cy.get(studentSearchSelectors.activeWindow).should('contain.text', 'This student does not have any optional programs.')
+      cy.get(studentSearchSelectors.activeWindow).contains('Add Optional Program').click({force: true})
       cy.wait(500)
       cy.get(studentSearchSelectors.chooseOptional).click({force: true})
-      cy.get(studentSearchSelectors.selections).contains(optionalCourseToAdd).click()
+      cy.get(selectors.selections).contains(optionalCourseToAdd).click()
       cy.get(studentSearchSelectors.nextOptional).click()
       cy.contains(`You are about to add the ${optionalCourseToAdd}`)
       cy.get(studentSearchSelectors.nextOptional).click()
-      cy.get(studentSearchSelectors.optionalWindow).find(studentSearchSelectors.rows).its('length').should('eq', 1)
-      cy.get(studentSearchSelectors.optionalWindow).should('contain.text', optionalCourseToAdd)
+      cy.shouldHaveData(studentSearchSelectors.activeWindow, 1)
+      cy.get(studentSearchSelectors.activeWindow).should('contain.text', optionalCourseToAdd)
       // Delete Optional Program
-      cy.get(studentSearchSelectors.optionalWindow).find(studentSearchSelectors.deleteOptionalBtn).click({force: true})
+      cy.get(studentSearchSelectors.activeWindow).find(studentSearchSelectors.deleteOptionalBtn).click({force: true})
       cy.contains(`You are about to delete the ${optionalCourseToAdd}`)
       cy.get(studentSearchSelectors.deleteOptionalConfirmBtn).click()
-      cy.get(studentSearchSelectors.optionalWindow).should('contain.text', 'This student does not have any optional programs.')
+      cy.get(studentSearchSelectors.activeWindow).should('contain.text', 'This student does not have any optional programs.')
 
       // Note
       const note1 = 'Hello Test'
       const note2 = 'Another Note'
       cy.get(studentSearchSelectors.notesBtn).click()
       // Add Note
-      cy.get(studentSearchSelectors.notesWindow).find(studentSearchSelectors.addNoteBtn).click()
+      cy.get(studentSearchSelectors.activeWindow).find(studentSearchSelectors.addNoteBtn).click()
       cy.get(studentSearchSelectors.noteTextarea).type(note1)
       cy.get(studentSearchSelectors.addNoteConfirmBtn).click()
-      cy.get(studentSearchSelectors.notesWindow).should('contain.text', note1)
+      cy.get(studentSearchSelectors.activeWindow).should('contain.text', note1)
       // Edit Note
-      cy.get(studentSearchSelectors.notesWindow).find(studentSearchSelectors.editNoteBtn).click({force: true})
-      cy.get(studentSearchSelectors.notesWindow).find(studentSearchSelectors.editTextarea).clear().type(note2)
-      cy.get(studentSearchSelectors.notesWindow).find(studentSearchSelectors.saveNoteBtn).click()
-      cy.get(studentSearchSelectors.notesWindow).should('contain.text', note2)
-      cy.get(studentSearchSelectors.notesWindow).find(studentSearchSelectors.deleteNoteBtn).click({force: true})
-      cy.get(studentSearchSelectors.notesWindow).should('not.contain.text', note2)
+      cy.get(studentSearchSelectors.activeWindow).find(studentSearchSelectors.editNoteBtn).click({force: true})
+      cy.get(studentSearchSelectors.activeWindow).find(studentSearchSelectors.editTextarea).clear().type(note2)
+      cy.get(studentSearchSelectors.activeWindow).find(studentSearchSelectors.saveNoteBtn).click()
+      cy.get(studentSearchSelectors.activeWindow).should('contain.text', note2)
+      cy.get(studentSearchSelectors.activeWindow).find(studentSearchSelectors.deleteNoteBtn).click({force: true})
+      cy.get(studentSearchSelectors.activeWindow).should('not.contain.text', note2)
     })
   })
 
@@ -245,7 +248,7 @@ describe('Student Search', () => {
     it('Searches multiple students', () => {
       cy.get(studentSearchSelectors.legalSurnameInput).type(test_student.surname)
       cy.get(studentSearchSelectors.genderSelection).click({force: true})
-      cy.get(studentSearchSelectors.selections).contains('Female').click({force: true})
+      cy.get(selectors.selections).contains('Female').click({force: true})
       cy.get(studentSearchSelectors.advSearchSubmit).click()
       cy.get(studentSearchSelectors.searchResultTableRow).its('length').should('eq', 12)
 
@@ -293,7 +296,7 @@ describe('Student Search', () => {
       // Too many result
       cy.get(studentSearchSelectors.advSearchReset).click()
       cy.get(studentSearchSelectors.genderSelection).click({force: true})
-      cy.get(studentSearchSelectors.selections).contains('Male').click({force: true})
+      cy.get(selectors.selections).contains('Male').click({force: true})
       cy.get(studentSearchSelectors.advSearchSubmit).click()
       cy.get(studentSearchSelectors.errorMsg, {timeout: 20000}).should('have.text', invalidMessage.tooManyReponseAdvanced)
     })

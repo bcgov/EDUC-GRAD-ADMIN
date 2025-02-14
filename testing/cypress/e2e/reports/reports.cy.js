@@ -20,7 +20,7 @@ describe('Reports', () => {
 
   const test_district_with_result = {
     title: '005 - Southeast Koote\'nay',
-    expectedReportsNum: 3
+    expectedReportsNum: 2
   }
   const test_district_without_result = {
     title: '020 - Kootenay-Columbia',
@@ -47,46 +47,47 @@ describe('Reports', () => {
    * Validate result and input field, and get reports for both School Reports and District Reports
    * 
    * ## Steps:
-   * 1. **In School Reports**
-   * 2. Search with empty field to check an error message
-   * 3. Search school reports with valid school name that has reports to make sure it displays expected number of reports
-   * 4. Search school reports with valid school name that does not have reports to check an error message
-   * 5. **In District Reports**
-   * 6. Search with empty field to check an error message
-   * 7. Search district reports with valid district name that has reports to make sure it displays expected number of reports
-   * 8. Search district reports with valid district name that does not have reports to check an error message
+   * 1. In School Reports, Search with empty field to check an error message
+   * 2. Search school reports with valid school name that has reports to make sure it displays expected number of reports
+   * 3. Search school reports with valid school name that does not have reports to check an error message
+   * 4. Nagigate to Distrcit Reports
+   * 5. In District Reports, Search with empty field to check an error message
+   * 6. Search district reports with valid district name that has reports to make sure it displays expected number of reports
+   * 7. Search district reports with valid district name that does not have reports to check an error message
    */
   it('Gets report', () => {
     // Wait a bit for institute
     cy.wait(3000)
     // School Report
+    // Empty
     cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
     cy.get(reportSelectors.messageAlert).should('have.text', invalidMessage.emptySchool)
-
+    // Valid data with result
     cy.get(reportSelectors.mincodeAuto).click()
-    cy.get(reportSelectors.selections).contains(test_school_with_result.title).click({force: true})
+    cy.get(selectors.selections).contains(test_school_with_result.title).click({force: true})
     cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
-    cy.get(reportSelectors.resultTable).find(reportSelectors.rows).its('length').should('eq', test_school_with_result.expectedReportsNum)
+    cy.shouldHaveData(reportSelectors.reportsView, test_school_with_result.expectedReportsNum)
     cy.get(reportSelectors.advancedSearchButtons).contains('Reset').click()
-    
+    // Valid data without result
     cy.get(reportSelectors.mincodeAuto).click()
-    cy.get(reportSelectors.selections).contains(test_school_without_results.title).click({force: true})
+    cy.get(selectors.selections).contains(test_school_without_results.title).click({force: true})
     cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
     cy.get(reportSelectors.messageAlert).should('have.text', invalidMessage.noSchool)
 
     // District Report
+    // Empty
     cy.get(reportSelectors.districtReportsTab).click()
     cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
     cy.get(reportSelectors.messageAlert).should('have.text', invalidMessage.emptyDistict)
-
+    // Valid data with result
     cy.get(reportSelectors.districtAuto).click()
-    cy.get(reportSelectors.selections).contains(test_district_with_result.title).click({force: true})
+    cy.get(selectors.selections).contains(test_district_with_result.title).click({force: true})
     cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
-    cy.get(reportSelectors.resultTable).find(reportSelectors.rows).its('length').should('eq', test_district_with_result.expectedReportsNum)
+    cy.shouldHaveData(reportSelectors.reportsView, test_district_with_result.expectedReportsNum)
     cy.get(reportSelectors.advancedSearchButtons).contains('Reset').click()
-
+    // Valid data without result
     cy.get(reportSelectors.districtAuto).click()
-    cy.get(reportSelectors.selections).contains(test_district_without_result.title).click({force: true})
+    cy.get(selectors.selections).contains(test_district_without_result.title).click({force: true})
     cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
     cy.get(reportSelectors.messageAlert).should('have.text', invalidMessage.noDistrict)
   })

@@ -13,7 +13,7 @@ const studentSearchSelectors = selectors.studentSearch
 
 function selectDropdown(selector, text, forceFlag = false) {
   cy.get(selector).click({force: true})
-  cy.get(studentSearchSelectors.selections).contains(text).click({force: forceFlag})
+  cy.get(selectors.selections).contains(text).click({force: forceFlag})
 }
 
 function selectAutoselect(selector, text) {
@@ -32,10 +32,10 @@ function getNextMonthYYYYMM() {
 
 function undoCompletion() {
   cy.get(studentSearchSelectors.transcriptTVRBtn).click()
-  cy.get(studentSearchSelectors.selections).contains('Undo Completion').click({force: true})
+  cy.get(selectors.selections).contains('Undo Completion').click({force: true})
   cy.wait(1000)
   cy.get(studentSearchSelectors.undoCompletionReasonInput).click({force: true})
-  cy.get(studentSearchSelectors.selections).contains('Other').click({force: true})
+  cy.get(selectors.selections).contains('Other').click({force: true})
   cy.get(studentSearchSelectors.undoCompletionReasonTextarea).type('Cypress testing')
   cy.get(studentSearchSelectors.undoCompletionConfirmCheckbox).click()
   cy.get(studentSearchSelectors.undoCompletionBtn).click()
@@ -43,7 +43,7 @@ function undoCompletion() {
 
 function updateGradStatus() {
   cy.get(studentSearchSelectors.transcriptTVRBtn).click()
-  cy.get(studentSearchSelectors.selections).contains('Update Grad Status').click({force: true})
+  cy.get(selectors.selections).contains('Update Grad Status').click({force: true})
   cy.wait(3000)
 }
 
@@ -238,7 +238,7 @@ describe('Student Grad Status', () => {
     // gradStatusTable().find(studentSearchSelectors.recalcGradText).should('contain.text', 'Y')
     // // A record will be inserted in the Student History table with Activity Code of USEREDIT.
     // cy.get(studentSearchSelectors.auditBtn).click()
-    // cy.get(studentSearchSelectors.auditWindow).find(studentSearchSelectors.rows).first().should('contain.text', 'USEREDIT')
+    // cy.get(studentSearchSelectors.auditWindow).find(selectors.rows).first().should('contain.text', 'USEREDIT')
     // cy.get(studentSearchSelectors.gradBtn).click()
   })
 
@@ -289,7 +289,7 @@ describe('Student Grad Status', () => {
 
     // Check cards: non completion reason, requirements met, student transcript repots, and student dogwoods
     cy.get(studentSearchSelectors.noCompletionCard).should('contain.text', messages.allRequirementMet)
-    cy.get(studentSearchSelectors.requirementMetCard).find(studentSearchSelectors.rows).its('length').should('be.gt', 0)
+    cy.shouldHaveData(studentSearchSelectors.requirementMetCard)
     cy.get(studentSearchSelectors.graduationReportsCard).find(studentSearchSelectors.pdfLink).should('contain.text', 'Graduation Program')
     cy.get(studentSearchSelectors.certificateDogwoodsCard).find(studentSearchSelectors.pdfLink).should('contain.text', 'Dogwood')
 

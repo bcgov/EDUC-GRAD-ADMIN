@@ -71,11 +71,11 @@ describe('Courses', () => {
     // Only TRAX Code
     typeInputFieldFoundByLabel('TRAX Code:', test_course.courseCode)
     cy.get(coursesSelectors.advancedSearchForm).contains('Search').click()
-    cy.get(coursesSelectors.activeWindow).find(coursesSelectors.rows).its('length').should('eq', test_course.courseNum)
+    cy.shouldHaveData(coursesSelectors.coursesView, test_course.courseNum)
     // Trax Code and Grade
     typeInputFieldFoundByLabel('TRAX Grade Level:', test_course.gradeLevel)
     cy.get(coursesSelectors.advancedSearchForm).contains('Search').click()
-    cy.get(coursesSelectors.activeWindow).find(coursesSelectors.rows).its('length').should('eq', 1)
+    cy.shouldHaveData(coursesSelectors.coursesView, 1)
     // Reset
     cy.get(coursesSelectors.advancedSearchForm).contains('Reset').click()
     cy.get(coursesSelectors.advancedSearchForm).contains('TRAX Code:').next().should('be.empty')
@@ -83,9 +83,9 @@ describe('Courses', () => {
     // Course Title & language
     typeInputFieldFoundByLabel('Course Title:', test_course.courseTitle)
     cy.get(coursesSelectors.advancedSearchForm).contains('Instruction Language').next().click({force: true})
-    cy.get(coursesSelectors.selections).contains(test_course.language).click({force: true})
+    cy.get(selectors.selections).contains(test_course.language).click({force: true})
     cy.get(coursesSelectors.advancedSearchForm).contains('Search').click()
-    cy.get(coursesSelectors.activeWindow).find(coursesSelectors.rows).its('length').should('eq', 1)
+    cy.shouldHaveData(coursesSelectors.coursesView, 1)
     // Enters invalid data for Course Search
     cy.get(coursesSelectors.advancedSearchForm).contains('Reset').click()
     cy.get(coursesSelectors.advancedSearchForm).contains('Search').click()
@@ -99,11 +99,11 @@ describe('Courses', () => {
     cy.get(coursesSelectors.courseRequirementsNav).click()
     typeInputFieldFoundByLabel('Course code:', test_course.courseCode)
     cy.get(coursesSelectors.courseReqForm).contains('Search').click()
-    cy.get(coursesSelectors.activeWindow).find(coursesSelectors.rows).its('length').should('eq', test_course.requirementNum)
+    cy.shouldHaveData(coursesSelectors.coursesView, test_course.requirementNum)
     // Course level
     typeInputFieldFoundByLabel('Course level:', test_course.gradeLevel)
     cy.get(coursesSelectors.courseReqForm).contains('Search').click()
-    cy.get(coursesSelectors.activeWindow).find(coursesSelectors.rows).its('length').should('eq', 2)
+    cy.shouldHaveData(coursesSelectors.coursesView, 2)
     // Reset
     cy.get(coursesSelectors.courseReqForm).contains('Reset').click()
     cy.get(coursesSelectors.courseReqForm).contains('Course code:').next().should('be.empty')
@@ -112,7 +112,7 @@ describe('Courses', () => {
     typeInputFieldFoundByLabel('Course code:', test_course.courseCode)
     typeInputFieldFoundByLabel('Rule#:', test_course.ruleNum)
     cy.get(coursesSelectors.courseReqForm).contains('Search').click()
-    cy.get(coursesSelectors.activeWindow).find(coursesSelectors.rows).its('length').should('eq', 1)
+    cy.shouldHaveData(coursesSelectors.coursesView, 1)
     // Enters invalid data for Course Requirement 
     cy.get(coursesSelectors.courseReqForm).contains('Reset').click()
     cy.get(coursesSelectors.courseReqForm).contains('Search').click()
@@ -137,18 +137,18 @@ describe('Courses', () => {
   it('Goes through tables to check if data is loaded', () => {
     cy.get(coursesSelectors.courseRestrictionNav).click()
     cy.wait(500)
-    cy.get(coursesSelectors.activeWindow).find(coursesSelectors.rows).its('length').should('be.gt', 0)
+    cy.shouldHaveData(coursesSelectors.coursesView)
 
     cy.get(coursesSelectors.fineArtAppliedSkillNav).click()
     cy.wait(500)
-    cy.get(coursesSelectors.activeWindow).find(coursesSelectors.rows).its('length').should('be.gt', 0)
+    cy.shouldHaveData(coursesSelectors.coursesView)
 
     cy.get(coursesSelectors.examSpecialCaseNav).click()
     cy.wait(500)
-    cy.get(coursesSelectors.activeWindow).find(coursesSelectors.rows).its('length').should('be.gt', 0)
+    cy.shouldHaveData(coursesSelectors.coursesView)
 
     cy.get(coursesSelectors.equivalencyOrChallengeCodesNav).click()
     cy.wait(500)
-    cy.get(coursesSelectors.activeWindow).find(coursesSelectors.rows).its('length').should('be.gt', 0)
+    cy.shouldHaveData(coursesSelectors.coursesView)
   })
 })

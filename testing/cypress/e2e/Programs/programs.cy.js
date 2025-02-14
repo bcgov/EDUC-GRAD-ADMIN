@@ -20,11 +20,6 @@
 import selectors from "../../support/selectors";
 const programsSelectors = selectors.programs
 
-function shouldHaveData(selector) {
-    cy.wait(400)
-    cy.get(selector).find(programsSelectors.rows).its('length').should('be.gt', 0)
-}
-
 describe('Programs', () => {
     beforeEach(() => {
         cy.login()
@@ -51,37 +46,35 @@ describe('Programs', () => {
      * 9. Navigate to Requirement Type Codes table to check data
      */
     it('Goes through every table in the Programs nav and checks if they load', () => {
-        cy.get(programsSelectors.algorithmRulesTable).should('exist')
-        shouldHaveData(programsSelectors.algorithmRulesTable)
+        cy.shouldHaveData(programsSelectors.programsView)
 
         cy.get(programsSelectors.navSlider).contains('Programs').click()
-        cy.get(programsSelectors.selections).contains('Programs').click({force: true})
-        shouldHaveData(programsSelectors.programTable)
+        cy.get(selectors.selections).contains('Programs').click({force: true})
+        cy.shouldHaveData(programsSelectors.programsView)
         
         cy.get(programsSelectors.navSlider).contains('Programs').click()
-        cy.get(programsSelectors.selections).contains('Program Rules').click({force: true})
-        shouldHaveData(programsSelectors.programRuleTable)
+        cy.get(selectors.selections).contains('Program Rules').click({force: true})
+        cy.shouldHaveData(programsSelectors.programsView)
 
         cy.get(programsSelectors.navSlider).contains('Programs').click()
-        cy.get(programsSelectors.selections).contains('Transcript Messaging').click({force: true})
-        shouldHaveData(programsSelectors.transcriptMessageTable)
+        cy.get(selectors.selections).contains('Transcript Messaging').click({force: true})
+        cy.shouldHaveData(programsSelectors.programsView)
 
         cy.get(programsSelectors.navSlider).contains('Optional Programs').click()
-        cy.get(programsSelectors.selections).contains('Optional Programs').click({force: true})
-        shouldHaveData(programsSelectors.optionalProgramTable)
+        cy.get(selectors.selections).contains('Optional Programs').click({force: true})
+        cy.shouldHaveData(programsSelectors.programsView)
 
         cy.get(programsSelectors.navSlider).contains('Optional Program').click()
-        cy.get(programsSelectors.selections).contains('Optional Program Rules').click({force: true})
-        shouldHaveData(programsSelectors.optionalProgramRuleTable)
+        cy.get(selectors.selections).contains('Optional Program Rules').click({force: true})
+        cy.shouldHaveData(programsSelectors.programsView)
 
-        // 'otherTable' selector can be used to other tables above, because DOM overwrites table everytime.
         cy.get(programsSelectors.navSlider).contains('Letter Grades').click()
-        shouldHaveData(programsSelectors.otherTable)
+        cy.shouldHaveData(programsSelectors.programsView)
 
         cy.get(programsSelectors.navSlider).contains('Assessment Special Case Codes').click()
-        shouldHaveData(programsSelectors.otherTable)
+        cy.shouldHaveData(programsSelectors.programsView)
 
         cy.get(programsSelectors.navSlider).contains('Requirement Type Codes').click()
-        shouldHaveData(programsSelectors.otherTable)
+        cy.shouldHaveData(programsSelectors.programsView)
     })
 })

@@ -22,20 +22,10 @@
 import selectors from "../../support/selectors";
 const codesSelectors = selectors.codes
 
-function checkRows() {
-  cy.wait(400)
-  cy.get(codesSelectors.rows).its('length').should('be.gt', 0) 
-}
-
-function checkTableForData(selector) {
-  cy.get(selector).click() 
-  checkRows()
-}
-
 function checkCredentialTableForData(credentialType) {
   cy.get(codesSelectors.credentialsBtn).click()
-  cy.get(codesSelectors.selections).contains(credentialType).click({force: true})
-  checkRows()
+  cy.get(selectors.selections).contains(credentialType).click({force: true})
+  cy.shouldHaveData(codesSelectors.codesView)
 }
 
 describe('Codes', () => {
@@ -67,7 +57,8 @@ describe('Codes', () => {
    * 12. Navigate to Batch Type Codes table to check data
    */
   it('Goes through each table to check data is loaded', () => {
-    checkTableForData(codesSelectors.careerProgramCodesBtn)
+    cy.get(codesSelectors.careerProgramCodesBtn).click()
+    cy.shouldHaveData(codesSelectors.codesView)
     // Credentials
     checkCredentialTableForData('Certificate Types')
     checkCredentialTableForData('Transcript Types')
@@ -76,14 +67,19 @@ describe('Codes', () => {
     checkCredentialTableForData('Signature Block')
     checkCredentialTableForData('Document Status Codes')
     // Report Types
-    checkTableForData(codesSelectors.reportTypesBtn)
+    cy.get(codesSelectors.reportTypesBtn).click()
+    cy.shouldHaveData(codesSelectors.codesView)
     // Student Status Codes
-    checkTableForData(codesSelectors.studentStatusCodesBtn)
+    cy.get(codesSelectors.studentStatusCodesBtn).click()
+    cy.shouldHaveData(codesSelectors.codesView)
     // Undo Completion Reason Codes
-    checkTableForData(codesSelectors.undoCompletionReasonCodesBtn)
+    cy.get(codesSelectors.undoCompletionReasonCodesBtn).click()
+    cy.shouldHaveData(codesSelectors.codesView)
     // History Activity Codes
-    checkTableForData(codesSelectors.historyActivityCodeBtn)
+    cy.get(codesSelectors.historyActivityCodeBtn).click()
+    cy.shouldHaveData(codesSelectors.codesView)
     // Batch Type Codes
-    checkTableForData(codesSelectors.batchTypeCodesBtn)
+    cy.get(codesSelectors.batchTypeCodesBtn).click()
+    cy.shouldHaveData(codesSelectors.codesView)
   })
 })
