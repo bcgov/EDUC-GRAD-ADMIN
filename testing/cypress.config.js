@@ -12,7 +12,7 @@ module.exports = defineConfig({
     openMode: 0
   },
   e2e: {
-    baseUrl: 'https://dev.grad.gov.bc.ca',
+    baseUrl: 'http://localhost:8081/',
     experimentalRunAllSpecs: true,
     excludeSpecPattern: ['cypress/e2e/batchProcessing/graduationAlgorithm.cy.js', 'cypress/e2e/schools/schoolSearch.cy.js'],
     setupNodeEvents(on, config) {

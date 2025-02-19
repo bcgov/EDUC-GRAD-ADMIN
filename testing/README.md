@@ -9,6 +9,9 @@ In the `testing` dir, you can run Cypress testing in multiple ways, either in th
 -  `npm run cy:run` - This will run Cypress testing in the terminal (run all tests in default), and outputs result.  
 -  To run a specic spec, use Cypress UI to select a spec (`npm run cy:open`), or use `npx cypress run --spec cypress/e2e/example.cy.js`.
 
+#### Running Cypress Locally
+When running Cypress in local environment, run GRAD locally and change the `baseUrl` in `cypress.config.json` to `"http:/localhost:8081"`.
+
 ### When Adding, Modifying, and Deleting spec files
 Make sure to:
 - Put them under `testing/cypress/e2e` so that Cypress can recognize them as specs

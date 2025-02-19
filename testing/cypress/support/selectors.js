@@ -6,7 +6,7 @@ export default {
 		username: 'input#username',
 		user: 'input#user',
 		password: 'input#password',
-		loginBtn: 'a[href="/api/auth/login"]',
+		loginBtn: '.v-toolbar__content a[href="/api/auth/login"]',
 		idirLoginBtn: 'a#social-idir',
 		idirSubmitBtn: 'input[value=Continue]',
 	},

@@ -261,6 +261,7 @@ describe('Student Search', () => {
     // Perform input validation for both pen and advanced search
     const invalidMessage = {
       noStudentPEN: 'Student cannot be found on the GRAD or PEN database',
+      recordNotOnGrad: 'has a PEN but does not have a GRAD system record',
       noStudentAdvanced: 'There are [0] more matches on PEN',
       tooManyReponseAdvanced: 'Change Search Criteria. Too many records as response'
     }
@@ -279,14 +280,19 @@ describe('Student Search', () => {
      * 
      * ## Steps:
      * 1. In PEN Search, enter PEN number without result to make sure it displays an error
+     * 2. Enter PEN number that has a record in TRAX but not in GRAD to masure it displays an error
      * 2. In Advanced Search, enter a surname without result to make sure it displays an error
-     * 3. In Advanced Saerch, select Male to make sure it displays error for too many records
+     * 3. In Advanced Search, select Male to make sure it displays error for too many records
      */
     it('Enters invalid data', () => {
       // No result
       cy.get(studentSearchSelectors.searchByPEN).type('121212121')
       cy.get(studentSearchSelectors.searchSubmit).click()
       cy.get(studentSearchSelectors.errorMsg).should('have.text', invalidMessage.noStudentPEN)
+      // Result not on GRAD
+      cy.get(studentSearchSelectors.searchByPEN).clear().type(Cypress.env('pen_without_record'))
+      cy.get(studentSearchSelectors.searchSubmit).click()
+      cy.get(studentSearchSelectors.errorMsg).should('contain.text', invalidMessage.recordNotOnGrad)
 
       // No result
       cy.get(studentSearchSelectors.advancedSearchBtn).click()

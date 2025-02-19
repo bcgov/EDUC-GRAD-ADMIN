@@ -23,16 +23,21 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-import { Routes } from "../../../frontend/src/utils/constants"
 import selectors from "./selectors"
 
 function login() {
+	const loginSelectors = selectors.login
 	cy.session('loginSession', () => {
-		cy.visit(Routes.LOGIN)
-		cy.get(selectors.login.idirLoginBtn).click()
-		cy.get(selectors.login.user).type(Cypress.env('username'))
-		cy.get(selectors.login.password).type(Cypress.env('password'))
-		cy.get(selectors.login.idirSubmitBtn).click()
+		cy.visit('/')
+		cy.get(loginSelectors.loginBtn).click({force: true})
+		cy.get(loginSelectors.user).type(Cypress.env('username'))
+		cy.get(loginSelectors.password).type(Cypress.env('password'))
+		cy.get(loginSelectors.idirSubmitBtn).click()
+		// If it is local, login button needs to be pressed twice
+		if (Cypress.config('baseUrl').includes('localhost')) {
+			cy.get(loginSelectors.loginBtn).click({force: true})
+		}
+		// Make sure that user has logged in
 		cy.get(selectors.studentSearch.title).should('contain.text', 'Student Search')
 	})
 }
@@ -52,9 +57,24 @@ function shouldHaveData(selector, expectedRowNum = 0) {
 	}
 }
 
+function getKeycloakToken() {
+	const token = Cypress.env('token')
+	cy.request({method: 'POST',     
+							url: token.tokenEndpoint,     
+							form: true, // Required for `application/x-www-form-urlencoded`
+							body: {grant_type: 'client_credentials'},
+							auth: {
+								username: token.clientId,
+								password: token.clientSecret,
+							}})
+		.then((response) => {expect(response.status).to.eq(200)
+												 return response.body.access_token})
+}
+
 Cypress.Commands.add('login', login)
 Cypress.Commands.add('doesExist', doesExist)
 Cypress.Commands.add('shouldHaveData', shouldHaveData)
+Cypress.Commands.add('getKeycloakToken', getKeycloakToken)
 
 Cypress.on('uncaught:exception', (err, runnable) => {
 	return false
