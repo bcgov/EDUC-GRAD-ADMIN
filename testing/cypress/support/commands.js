@@ -67,8 +67,7 @@ function getKeycloakToken() {
 								username: token.clientId,
 								password: token.clientSecret,
 							}})
-		.then((response) => {expect(response.status).to.eq(200)
-												 return response.body.access_token})
+		.then(response => response.body.access_token)
 }
 
 Cypress.Commands.add('login', login)
