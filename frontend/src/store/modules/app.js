@@ -150,7 +150,7 @@ export const useAppStore = defineStore("app", {
         InstituteService.getSchoolsList().then((response) => {
           try {
             this.schoolsList = response.data;
-            this.schoolsList = sharedMethods.sortSchoolListByCertTranscriptsAndOpenStatusAndMincode(this.schoolsList);
+            this.schoolsList = sharedMethods.sortSchoolList(this.schoolsList);
           } catch (error) {
             console.error(error);
           }

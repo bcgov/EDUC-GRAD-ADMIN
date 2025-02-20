@@ -171,7 +171,7 @@ export default {
 
     else return 'Closed'
   },
-  sortSchoolListByCertTranscriptsAndOpenStatusAndMincode(schoolsList) {
+  sortSchoolList(schoolsList) {
     if (!schoolsList) return [];
     return [...schoolsList].sort((a, b) => {
       // Sort by canIssueTranscript first (descending - true values first)
