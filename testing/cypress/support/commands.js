@@ -57,23 +57,9 @@ function shouldHaveData(selector, expectedRowNum = 0) {
 	}
 }
 
-function getKeycloakToken() {
-	const token = Cypress.env('token')
-	cy.request({method: 'POST',     
-							url: token.tokenEndpoint,     
-							form: true, // Required for `application/x-www-form-urlencoded`
-							body: {grant_type: 'client_credentials'},
-							auth: {
-								username: token.clientId,
-								password: token.clientSecret,
-							}})
-		.then(response => response.body.access_token)
-}
-
 Cypress.Commands.add('login', login)
 Cypress.Commands.add('doesExist', doesExist)
 Cypress.Commands.add('shouldHaveData', shouldHaveData)
-Cypress.Commands.add('getKeycloakToken', getKeycloakToken)
 
 Cypress.on('uncaught:exception', (err, runnable) => {
 	return false

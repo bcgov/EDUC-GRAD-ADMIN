@@ -1,4 +1,5 @@
 const { defineConfig } = require("cypress");
+const StudentAPIService = require("./cypress/services/student-api-service")
 
 module.exports = defineConfig({
   chromeWebSecurity: false,
@@ -16,7 +17,11 @@ module.exports = defineConfig({
     experimentalRunAllSpecs: true,
     excludeSpecPattern: ['cypress/e2e/batchProcessing/graduationAlgorithm.cy.js', 'cypress/e2e/schools/schoolSearch.cy.js'],
     setupNodeEvents(on, config) {
-
+      on('task', {
+        async getBatchHistoryResultById(options) {
+          return await new StudentAPIService(config).getBatchHistoryResultById(options)
+        },
+      })
     },
   },
 });

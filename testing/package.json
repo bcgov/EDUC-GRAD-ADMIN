@@ -9,5 +9,8 @@
     "cypress": "^14.0.2",
     "docdash": "^2.0.2",
     "jsdoc": "^4.0.4"
+  },
+  "dependencies": {
+    "axios": "^1.7.9"
   }
 }
