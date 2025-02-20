@@ -457,13 +457,14 @@
                       {{ label.label }}
                     </template>
                   </v-autocomplete> -->
-                  <p>
+                  <p v-if="editedGradStatus?.schoolAtGradId">
                     {{
-                      getSchoolById(editedGradStatus.schoolAtGradId).mincode
+                      getSchoolById(editedGradStatus?.schoolAtGradId)?.mincode
                     }}
                     -
                     {{
-                      getSchoolById(editedGradStatus.schoolAtGradId).displayName
+                      getSchoolById(editedGradStatus?.schoolAtGradId)
+                        ?.displayName
                     }}
                   </p>
                 </td>
