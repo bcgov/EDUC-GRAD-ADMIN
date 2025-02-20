@@ -151,7 +151,7 @@ export default {
       return aNumber - bNumber; // Numeric sorting
     });
   },
-  sortSchoolListByTranscriptsAndMincode(schoolsList) {
+  sortSchoolList(schoolsList) {
     if (!schoolsList) return [];
 
     return [...schoolsList].sort((a, b) => {
