@@ -328,17 +328,17 @@ const auth = {
   isValidUiTokenWithRoles: partial(isValidUiToken, isUserHasRoles),
   isValidUserWithRoles: partial(isValidUser, isUserHasRoles),
   ...createRoleHelpers(userRoles),
-
-  async getApiCredentials() {
+  
+  async getApiCredentials(client_id, client_secret, grant_type, scope) {
     try {
       const discovery = await auth.getOidcDiscovery();
       const response = await axios.post(
         discovery.token_endpoint,
         qs.stringify({
-          client_id: config.get("oidc:serviceClientId"),
-          client_secret: config.get("oidc:serviceClientSecret"),
-          grant_type: "client_credentials",
-          scope: "profile openid",
+          client_id: client_id,
+          client_secret: client_secret,
+          grant_type: grant_type,
+          scope: scope,
         }),
         {
           headers: {

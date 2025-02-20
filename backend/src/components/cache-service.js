@@ -17,14 +17,58 @@ let districtsNumber_ID_Map = new Map();
 let mincode_school_ID_Map = new Map();
 let activeSchools = [];
 let activeDistricts = [];
+let programCodes = [];
+let studentStatusCodes = [];
 
 const cacheService = {
+
+
+  
+
+  async loadStudentStatusCodes(){
+    log.debug('Loading all school Category Codes');
+    await retry(async () => {
+      // if anything throws, we retry
+      const data = await getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
+      
+      console.log(data.accessToken)
+      const studentStatusResponse = await getData(data.accessToken, `${config.get('server:studentGraduationAPIURL')}/api/v1/studentgraduation/undocompletion/undocompletionreason`);
+      studentStatusCodes = []; // reset the value.
+      if (studentStatusResponse && studentStatusResponse.length > 0) {
+        studentStatusCodes = studentStatusResponse
+        
+      }
+      log.info(`Loaded ${studentStatusCodes.length} program codes.`);
+    }, {
+      retries: 10
+    });
+  },
+
+
+  async loadProgramCodes(){
+    log.debug('Loading all school Category Codes');
+    await retry(async () => {
+      // if anything throws, we retry
+      const data = await getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
+      
+      console.log(data.accessToken)
+      const programResponse = await getData(data.accessToken, `${config.get('server:programAPIURL')}/api/v1/program/allprogramrules`);
+      programCodes = []; // reset the value.
+      if (programResponse && programResponse.length > 0) {
+        programCodes = programResponse
+        
+      }
+      log.info(`Loaded ${programCodes.length} program codes.`);
+    }, {
+      retries: 10
+    });
+  },
 
   async loadAllSchoolsToMap() {
     log.debug('Loading all schoolsMap');
     await retry(async () => {
       // if anything throws, we retry
-      const data = await getApiCredentials(); // get the tokens first to make api calls.
+      const data = await getApiCredentials(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
       const schoolsResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/api/v1/institute/school`);
       schools = []; // reset the value.
       schoolMap.clear();// reset the value.
@@ -63,7 +107,7 @@ const cacheService = {
   async loadAllDistrictsToMap() {
     log.debug('Loading all districtsMap');
     await retry(async () => {
-      const data = await getApiCredentials();
+      const data = await getApiCredentials(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), "client_credentials", "profile openid");
       const districtsResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/api/v1/institute/district`);
       // reset the value.
       districts = [];

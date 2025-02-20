@@ -21,16 +21,29 @@ const server = http.createServer(app);
 
 //Create Cache for schools
 const cacheService = require('./components/cache-service');
+cacheService.loadStudentStatusCodes().then(() => {
+  log.info('Loaded studentstatus code data to memory');
+}).catch((e) => {
+  log.error('Error loading student status code during boot .', e);
+});
+cacheService.loadProgramCodes().then(() => {
+  log.info('Loaded program code data to memory');
+}).catch((e) => {
+  log.error('Error loading program code during boot .', e);
+});
 cacheService.loadAllSchoolsToMap().then(() => {
   log.info('Loaded school data to memory');
 }).catch((e) => {
   log.error('Error loading schoolsMap during boot .', e);
 });
+//Create Cache for districts
 cacheService.loadAllDistrictsToMap().then(() => {
   log.info('Loaded district data to memory');
 }).catch((e) => {
   log.error('Error loading districtssMap during boot .', e);
 });
+//Create Cache for program codes.
+
 
 /**
  * Listen on provided port, on all network interfaces.
