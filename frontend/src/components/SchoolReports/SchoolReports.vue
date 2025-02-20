@@ -186,7 +186,7 @@ export default {
     },
     schoolTitle(item) {
       if (item) {
-        return `${item.mincode} - ${item.displayName}`;
+        return `${item.mincode} - ${item.displayName} (${sharedMethods.getSchoolOpenStatus(item)})`;
       } else {
         return null;
       }
