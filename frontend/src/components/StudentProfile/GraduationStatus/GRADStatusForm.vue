@@ -441,7 +441,7 @@
                         .ifSchoolAtGradIdProgramIs1950AndOffshore.$message
                     }}
                   </div>
-                  <v-autocomplete
+                  <!-- <v-autocomplete
                     data-cy="school-at-graduation-autoselect"
                     v-model="editedGradStatus.schoolAtGradId"
                     label="Select a school"
@@ -456,7 +456,17 @@
                     <template v-slot:label="label">
                       {{ label.label }}
                     </template>
-                  </v-autocomplete>
+                  </v-autocomplete> -->
+                  <p v-if="editedGradStatus?.schoolAtGradId">
+                    {{
+                      getSchoolById(editedGradStatus?.schoolAtGradId)?.mincode
+                    }}
+                    -
+                    {{
+                      getSchoolById(editedGradStatus?.schoolAtGradId)
+                        ?.displayName
+                    }}
+                  </p>
                 </td>
               </tr>
               <!-- School at graduation End-->
