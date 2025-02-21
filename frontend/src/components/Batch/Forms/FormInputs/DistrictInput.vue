@@ -43,7 +43,7 @@
               v-model="district"
               v-if="!selectAllDistricts"
               :items="getDistrictList"
-              label="Category"
+              label="District"
               variant="outlined"
               :item-title="districtTitle"
               item-value="districtNumber"
@@ -274,6 +274,7 @@ export default {
         this.districts.splice(0, this.districts.length, {
           district: "all",
           info: {
+            districtId: "all",
             districtNumber: "all",
             districtName: "All School Districts",
             activeFlag: "ALL",
