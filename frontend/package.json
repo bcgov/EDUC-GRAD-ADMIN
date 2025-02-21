@@ -38,5 +38,13 @@
     "eslint": "^8.22.0",
     "eslint-plugin-vue": "^9.3.0",
     "prettier": "^2.7.1"
+  },
+  "overrides": {
+    "cross-spawn": "7.0.6",
+    "micromatch": "4.0.8",
+    "braces": "3.0.3",
+    "esbuild": "0.25.0",
+    "request": "2.88.2",
+    "tough-cookie": "5.1.1"
   }
 }
