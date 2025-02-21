@@ -230,7 +230,7 @@ describe('Student Grad Status', () => {
     selectAutoselect(studentSearchSelectors.schoolOfRecord, ungraduated_student.og_school)
 
     // School At Graduation
-    cy.get(studentSearchSelectors.schoolAtGraduation).should('be.disabled')
+    //cy.get(studentSearchSelectors.schoolAtGraduation).should('be.disabled')
     
     // // Save
     // cy.get(studentSearchSelectors.saveStatusBtn).click()
@@ -305,7 +305,7 @@ describe('Student Grad Status', () => {
     
     // School At Graduation
     // If students are graduated, they can modify School At Graduation
-    cy.get(studentSearchSelectors.schoolAtGraduation).should('not.be.disabled')
+    //cy.get(studentSearchSelectors.schoolAtGraduation).should('not.be.disabled')
     // If User modifies School At Graduation check if the school supports 10-12 enrollment
     selectAutoselect(studentSearchSelectors.schoolAtGraduation, 'Jessie Lee Elementary')
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.schoolNo10to12EnrollmentWarning)

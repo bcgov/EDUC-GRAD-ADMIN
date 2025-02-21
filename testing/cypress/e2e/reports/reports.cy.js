@@ -8,6 +8,12 @@
 import selectors from "../../support/selectors";
 const reportSelectors = selectors.reports
 
+function selectAutoselect(selector, text) {
+  cy.get(selector).clear().type(text)
+  cy.get(selector).click({force: true})
+  cy.get(selectors.selections).contains(text).click({force: true})
+}
+
 describe('Reports', () => {
   const test_school_with_result = {
     title: '00502001 - Mount Baker Secondary',
@@ -63,14 +69,12 @@ describe('Reports', () => {
     cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
     cy.get(reportSelectors.messageAlert).should('have.text', invalidMessage.emptySchool)
     // Valid data with result
-    cy.get(reportSelectors.mincodeAuto).click()
-    cy.get(selectors.selections).contains(test_school_with_result.title).click({force: true})
+    selectAutoselect(reportSelectors.mincodeAuto, test_school_with_result.title)
     cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
     cy.shouldHaveData(reportSelectors.reportsView, test_school_with_result.expectedReportsNum)
     cy.get(reportSelectors.advancedSearchButtons).contains('Reset').click()
     // Valid data without result
-    cy.get(reportSelectors.mincodeAuto).click()
-    cy.get(selectors.selections).contains(test_school_without_results.title).click({force: true})
+    selectAutoselect(reportSelectors.mincodeAuto,test_school_without_results.title)
     cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
     cy.get(reportSelectors.messageAlert).should('have.text', invalidMessage.noSchool)
 
@@ -80,14 +84,12 @@ describe('Reports', () => {
     cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
     cy.get(reportSelectors.messageAlert).should('have.text', invalidMessage.emptyDistict)
     // Valid data with result
-    cy.get(reportSelectors.districtAuto).click()
-    cy.get(selectors.selections).contains(test_district_with_result.title).click({force: true})
+    selectAutoselect(reportSelectors.districtAuto, test_district_with_result.title)
     cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
     cy.shouldHaveData(reportSelectors.reportsView, test_district_with_result.expectedReportsNum)
     cy.get(reportSelectors.advancedSearchButtons).contains('Reset').click()
     // Valid data without result
-    cy.get(reportSelectors.districtAuto).click()
-    cy.get(selectors.selections).contains(test_district_without_result.title).click({force: true})
+    selectAutoselect(reportSelectors.districtAuto, test_district_without_result.title)
     cy.get(reportSelectors.advancedSearchButtons).contains('Search').click()
     cy.get(reportSelectors.messageAlert).should('have.text', invalidMessage.noDistrict)
   })
