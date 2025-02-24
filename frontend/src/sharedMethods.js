@@ -162,12 +162,21 @@ export default {
     const closedDate = !!closedDateString ? new Date(closedDateString) : null;
     const currentDate = new Date();
 
-    if (openedDate <= currentDate && !closedDate) return "Open";
-    if (openedDate <= currentDate && closedDate && currentDate < closedDate)
+    if (openedDate <= currentDate && !closedDate) {
+      return "Open";
+    } else if (
+      openedDate <= currentDate &&
+      closedDate &&
+      currentDate < closedDate
+    ) {
       return "Closing";
-    if (currentDate < openedDate) return "Opening";
-    if (closedDate && closedDate < currentDate) return "Closed";
-    else return "Closed";
+    } else if (currentDate < openedDate) {
+      return "Opening";
+    } else if (closedDate && closedDate < currentDate) {
+      return "Closed";
+    } else {
+      return "Invalid"; //return Invalid in case of bad data to sort at bottom of list
+    }
   },
   sortSchoolList(schoolsList) {
     if (!schoolsList) return [];
@@ -187,7 +196,13 @@ export default {
       }
 
       // Sort by school status (descending: open - closing - opening - closed)
-      const openStatusOrder = { Open: 0, Closing: 1, Opening: 2, Closed: 3 };
+      const openStatusOrder = {
+        Open: 0,
+        Closing: 1,
+        Opening: 2,
+        Closed: 3,
+        Invalid: 4,
+      };
       if (
         openStatusOrder[
           this.getSchoolOpenStatus(a?.openedDate, a?.closedDate)
