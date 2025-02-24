@@ -4,12 +4,11 @@
       variant="text"
       v-ripple
       @click="schoolDialog = !schoolDialog"
-      class="span-btn text-left px-0 d-block"
-      >{{ school.displayName }}<br />{{ school.mincode }}</span
-    >
+      class="span-btn text-left px-0 d-block">
+      {{ school.displayName }}<br />{{ school.mincode }}
+    </span>
     <v-dialog v-model="schoolDialog" max-width="600px">
       <v-card :title="title">
-        <!-- <pre>{{ school }}</pre> -->
         <v-card-text>
           <div class="my-1">
             <strong>District </strong
