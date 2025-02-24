@@ -1,10 +1,11 @@
 <template>
   <div v-if="school">
-    <v-btn
+    <span
       variant="text"
+      v-ripple
       @click="schoolDialog = !schoolDialog"
-      class="text-left px-0 text-none"
-      >{{ school.displayName }}<br />{{ school.mincode }}</v-btn
+      class="span-btn text-left px-0 d-block"
+      >{{ school.displayName }}<br />{{ school.mincode }}</span
     >
     <v-dialog v-model="schoolDialog" max-width="600px">
       <v-card :title="title">
@@ -74,4 +75,11 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.span-btn {
+  font-size: 0.875rem;
+}
+.span-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+</style>
