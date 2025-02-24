@@ -25,7 +25,7 @@ export default {
 		status: '[data-cy="student-status-select"] input',
 		grade: '[data-cy="student-grade-select"] input',
 		schoolOfRecord: '[data-cy="school-of-record-autoselect"] input',
-		schoolAtGraduation: '[data-cy="school-at-graduation-autoselect"] input',
+		schoolAtGraduation: '[data-cy="school-at-graduation-text] p',
 		adultStartDate: '[data-cy="adult-start-date-textfield"] input',
 		recalcGrad: '[data-cy="recalculate-grad-select"] input',
 		recalcProjected: '[data-cy="recalculate-projected-select"] input',

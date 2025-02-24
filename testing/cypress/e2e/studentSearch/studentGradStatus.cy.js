@@ -147,7 +147,7 @@ describe('Student Grad Status', () => {
    * 10. Enter valid date for Adult Start date to make sure there is no error
    * 11. Change school of record
    *     - If User modifies School Of Record check if the school supports 10-12 enrollment and transcript 
-   * 12. Make sure school at graduation is disabled 
+   * 12. Make sure school at graduation is empty
    */
   it('Edits grad status for an non-graduated student on non-SCCP program', () => {
     const ungraduated_student = Cypress.env('ungraduated_student')
@@ -230,7 +230,7 @@ describe('Student Grad Status', () => {
     selectAutoselect(studentSearchSelectors.schoolOfRecord, ungraduated_student.og_school)
 
     // School At Graduation
-    //cy.get(studentSearchSelectors.schoolAtGraduation).should('be.disabled')
+    cy.get(studentSearchSelectors.schoolAtGraduation).should('be.empty')
     
     // // Save
     // cy.get(studentSearchSelectors.saveStatusBtn).click()
@@ -243,7 +243,7 @@ describe('Student Grad Status', () => {
   })
 
   /**
-   * @name editNongraduatedStudent
+   * @name editGraduatedStudent
    * 
    * @description
    * Ensure additional data for a graduated student is displayed or changes of interactability of certain fields for a graduated student 
@@ -263,10 +263,8 @@ describe('Student Grad Status', () => {
    *    - If a User Edits a students' GRAD data and the student has a status of "ARC", a warning will show up
    * 6. Make sure disabled fields
    *    - Program is non-modifiable if a student has a Program Completion Date
-   * 7. Make sure enabled fields
-   *    - If students are graduated, they can modify School At Graduation
-   * 8. Change school at graduation
-   *    - If User modifies School At Graduation check if the school supports 10-12 enrollment
+   * 7. Make sure school at graduation is not empty
+   *    - School At Graduation is set to same school as School Of Graduation in default
    */
   it('Edits grad status for a graduated student on non-SCCP Program', () => {
     const graduated_student = Cypress.env('graduated_student')
@@ -304,12 +302,10 @@ describe('Student Grad Status', () => {
     cy.get(studentSearchSelectors.program).should('be.disabled')
     
     // School At Graduation
-    // If students are graduated, they can modify School At Graduation
-    //cy.get(studentSearchSelectors.schoolAtGraduation).should('not.be.disabled')
-    // If User modifies School At Graduation check if the school supports 10-12 enrollment
-    selectAutoselect(studentSearchSelectors.schoolAtGraduation, 'Jessie Lee Elementary')
-    cy.get(studentSearchSelectors.editForm).should('contain.text', messages.schoolNo10to12EnrollmentWarning)
-    cy.get(studentSearchSelectors.editForm).contains('Cancel').click({force: true})
+    // If students are graduated, school at graduation is set to same school as school of record in defauld
+    cy.get(studentSearchSelectors.schoolAtGraduation).should('not.be.empty')
+                                                     .and('contain.text', graduated_student.og_school)
+    cy.get(studentSearchSelectors.schoolOfRecord).should('contain.text', graduated_student.og_school)
   })
 
   /**
