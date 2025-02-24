@@ -230,7 +230,7 @@ describe('Student Grad Status', () => {
     selectAutoselect(studentSearchSelectors.schoolOfRecord, ungraduated_student.og_school)
 
     // School At Graduation
-    cy.get(studentSearchSelectors.schoolAtGraduation).should('be.empty')
+    cy.get(studentSearchSelectors.schoolAtGraduation).should('not.exist')
     
     // // Save
     // cy.get(studentSearchSelectors.saveStatusBtn).click()
@@ -305,7 +305,7 @@ describe('Student Grad Status', () => {
     // If students are graduated, school at graduation is set to same school as school of record in defauld
     cy.get(studentSearchSelectors.schoolAtGraduation).should('not.be.empty')
                                                      .and('contain.text', graduated_student.og_school)
-    cy.get(studentSearchSelectors.schoolOfRecord).should('contain.text', graduated_student.og_school)
+    cy.get(studentSearchSelectors.schoolOfRecordAutoselectText).should('contain.text', graduated_student.og_school)
   })
 
   /**
