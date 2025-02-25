@@ -28,6 +28,23 @@
               <template v-slot:label="label">
                 {{ label.label }}
               </template>
+              <template v-slot:append-inner
+                ><OpenStatusBadge
+                  v-if="schoolId"
+                  :compact="false"
+                  :openedDateString="getSchoolById(schoolId)?.openedDate"
+                  :closedDateString="getSchoolById(schoolId)?.closedDate"
+              /></template>
+              <template v-slot:item="{ props, item }">
+                <v-list-item v-bind="props" :key="item.value">
+                  <template v-slot:append>
+                    <OpenStatusBadge
+                      :openedDateString="item.raw.openedDate"
+                      :closedDateString="item.raw.closedDate"
+                    />
+                  </template>
+                </v-list-item>
+              </template>
             </v-autocomplete>
             <v-alert v-if="validationMessage" type="error">{{
               validationMessage
@@ -83,6 +100,7 @@ import SchoolService from "@/services/SchoolService.js";
 import StudentService from "@/services/StudentService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import DateRangeInput from "./DateRangeInput.vue";
+import OpenStatusBadge from "@/components/Common/OpenStatusBadge.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
 import { useAppStore } from "../../../../store/modules/app";
@@ -90,7 +108,10 @@ import { mapActions, mapState } from "pinia";
 import { required, minLength, helpers } from "@vuelidate/validators";
 
 export default {
-  components: { DateRangeInput: DateRangeInput },
+  components: {
+    DateRangeInput: DateRangeInput,
+    OpenStatusBadge: OpenStatusBadge,
+  },
   setup() {
     const batchRequestFormStore = useBatchRequestFormStore();
     const gradDateFrom = ref(batchRequestFormStore.gradDateFrom);
@@ -217,7 +238,11 @@ export default {
   },
 
   computed: {
-    ...mapState(useAppStore, ["getSchoolsList", "getSchoolById", "displaySchoolCategoryCode"]),
+    ...mapState(useAppStore, [
+      "getSchoolsList",
+      "getSchoolById",
+      "displaySchoolCategoryCode",
+    ]),
     isEmpty() {
       return this.students.length > 0;
     },
