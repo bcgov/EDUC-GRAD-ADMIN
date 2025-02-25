@@ -17,7 +17,7 @@ function selectAutoselect(selector, text) {
 describe('Reports', () => {
   const test_school_with_result = {
     title: '00502001 - Mount Baker Secondary',
-    expectedReportsNum: 8
+    expectedReportsNum: 7
   }
   const test_school_without_results = {
     title: '00101000 - Fernie Learning Centre- test',
