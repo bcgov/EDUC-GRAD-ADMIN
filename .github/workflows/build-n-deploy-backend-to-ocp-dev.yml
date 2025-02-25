@@ -37,7 +37,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - release/v* # Release branches
+      - release/* # Release branches
     paths:
       - 'backend/**'
 jobs:
