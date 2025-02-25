@@ -17,14 +17,16 @@ Make sure to:
 - Put them under `testing/cypress/e2e` so that Cypress can recognize them as specs
 - Update `testing/parallel/specs.json` if you need to run **Cypress Testing on GitHub Action**
 
-##### Cypress Testing on GitHub Action
+#### Cypress Testing on GitHub Action
 When you run Cypress workflow on GitHub Action, all specs run in parallel by being distributed into multiple containers that run simultaneously. `testing/parallel/split-tests.js` takes the index and number of containers from GitHub Action, then tries to distribute tests equally based on the "estimate time" that developers have to define as they develop or create specs in `testing/parallel/specs.json`.
 
 Estimate time is a simply arbitrary value that represents the time it takes to run the test in seconds. It can be the actual time it took to run in a previous test or a complete estimate.
 
+Additionally, when you update cypress.env.json file locally, you will need to update the GitHub Secret for Cypress enviroment variables as well.
+
 ### Additional Note
-##### Login issue
+#### Login issue
 If your test fails due to login when you are running Cypress on UI, it is most likely that the refresh token in the current session has been expired. In that case, click **"Clear All Sessions"** at the top of testing log next to "SESSIONS" tab to re-login and obtain a new token. 
 
-##### JSDoc documentation
+#### JSDoc documentation
 For generating documentation using JSDoc, run `npm run doc` under `testing` folder and it will create `doc` folder. To see generated HTML files, open generated `index.html` under `doc` folder in any browser.
