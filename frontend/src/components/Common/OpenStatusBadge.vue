@@ -22,7 +22,7 @@
   >
   <v-chip
     v-else-if="getSchoolOpenStatus == 'Closing'"
-    color="warn"
+    color="warning"
     variant="flat"
     :density="compact ? 'compact' : 'default'"
     >Closing</v-chip
