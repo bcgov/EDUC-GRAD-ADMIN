@@ -57,9 +57,21 @@ function shouldHaveData(selector, expectedRowNum = 0) {
 	}
 }
 
+function selectDropdown(selector, text, forceFlag = false) {
+	cy.get(selector).click({force: true})
+	cy.get(selectors.selections).contains(text).click({force: forceFlag})
+}
+
+function selectAutoselect(selector, text) {
+	cy.get(selector).clear().type(text)
+	selectDropdown(selector, text)
+}
+
 Cypress.Commands.add('login', login)
 Cypress.Commands.add('doesExist', doesExist)
 Cypress.Commands.add('shouldHaveData', shouldHaveData)
+Cypress.Commands.add('selectDropdown', selectDropdown)
+Cypress.Commands.add('selectAutoselect', selectAutoselect)
 
 Cypress.on('uncaught:exception', (err, runnable) => {
 	return false

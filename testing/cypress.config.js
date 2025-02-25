@@ -1,5 +1,6 @@
 const { defineConfig } = require("cypress");
-const StudentAPIService = require("./cypress/services/student-api-service")
+const StudentAPIService = require("./cypress/services/student-api-service");
+const BatchAPIService = require("./cypress/services/batch-api-service");
 
 module.exports = defineConfig({
   chromeWebSecurity: false,
@@ -15,12 +16,15 @@ module.exports = defineConfig({
   e2e: {
     baseUrl: 'http://localhost:8081',
     experimentalRunAllSpecs: true,
-    excludeSpecPattern: ['cypress/e2e/batchProcessing/graduationAlgorithm.cy.js', 'cypress/e2e/schools/schoolSearch.cy.js'],
+    excludeSpecPattern: ['cypress/e2e/schools/schoolSearch.cy.js'],
     setupNodeEvents(on, config) {
       on('task', {
         async getBatchHistoryResultById(options) {
           return await new StudentAPIService(config).getBatchHistoryResultById(options)
         },
+        async getBatchSummary(options) {
+          return await new BatchAPIService(config).getBatchSummary(options)
+        }
       })
     },
   },

@@ -11,16 +11,6 @@
 import selectors from "../../support/selectors"
 const studentSearchSelectors = selectors.studentSearch
 
-function selectDropdown(selector, text, forceFlag = false) {
-  cy.get(selector).click({force: true})
-  cy.get(selectors.selections).contains(text).click({force: forceFlag})
-}
-
-function selectAutoselect(selector, text) {
-  cy.get(selector).clear().type(text)
-  selectDropdown(selector, text)
-}
-
 function getNextMonthYYYYMM() {
   const date = new Date()
   date.setMonth(date.getMonth() + 1) // Move to next month
@@ -65,15 +55,15 @@ function resetToOriginalState(test_student) {
   // Reset to original data
   // if student hasn't completed program, it is not disabled
   if (!test_student.isCompleted) {
-    selectDropdown(studentSearchSelectors.program, test_student.og_program)
+    cy.selectDropdown(studentSearchSelectors.program, test_student.og_program)
   }
   // if student is in SCPP, it is not disabled
   if (test_student.og_program == 'SCPP') {
-    selectDropdown(studentSearchSelectors.programCompletionDate, test_student.og_completion_date)
+    cy.selectDropdown(studentSearchSelectors.programCompletionDate, test_student.og_completion_date)
   }
-  selectDropdown(studentSearchSelectors.status, test_student.og_status)
-  selectDropdown(studentSearchSelectors.grade, test_student.og_grade)
-  selectAutoselect(studentSearchSelectors.schoolOfRecord, test_student.og_school)
+  cy.selectDropdown(studentSearchSelectors.status, test_student.og_status)
+  cy.selectDropdown(studentSearchSelectors.grade, test_student.og_grade)
+  cy.selectAutoselect(studentSearchSelectors.schoolOfRecord, test_student.og_school)
 
   // if student is taking 1950 program, adult start date will change
   if (test_student.og_program == '1950') {
@@ -86,8 +76,8 @@ function resetToOriginalState(test_student) {
   cy.get(studentSearchSelectors.editBtn).click()
   cy.wait(1000)
   cy.get(studentSearchSelectors.recalcGrad).click({force: true})
-  selectDropdown(studentSearchSelectors.recalcGrad, test_student.og_recalc_grad, true)
-  selectDropdown(studentSearchSelectors.recalcProjected, test_student.og_recalc_proj, true)
+  cy.selectDropdown(studentSearchSelectors.recalcGrad, test_student.og_recalc_grad, true)
+  cy.selectDropdown(studentSearchSelectors.recalcProjected, test_student.og_recalc_proj, true)
   cy.get(studentSearchSelectors.saveStatusBtn).click({force: true})
 }
 
@@ -173,10 +163,10 @@ describe('Student Grad Status', () => {
 
     // Student Status
     // Selected student status has to match with student status from STUDENT (PEN) Database
-    selectDropdown(studentSearchSelectors.status, 'Merged')
+    cy.selectDropdown(studentSearchSelectors.status, 'Merged')
     cy.get(studentSearchSelectors.saveStatusBtn).click()
     cy.get(studentSearchSelectors.snackBar).should('contain.text', messages.invalidStatusError)
-    selectDropdown(studentSearchSelectors.status, 'Archived')
+    cy.selectDropdown(studentSearchSelectors.status, 'Archived')
 
     // Program Completion Date
     // Non-modifiable except for students on SCCP
@@ -184,26 +174,26 @@ describe('Student Grad Status', () => {
 
     // Program
     // If the User changes a students' Program a warning will be displayed to notify the User that any Optional Programs associated with the original Program will be deleted. 
-    selectDropdown(studentSearchSelectors.program, '2018-PF')
+    cy.selectDropdown(studentSearchSelectors.program, '2018-PF')
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.programChangeWarning)
     // If User selects 1950* check student grade for AD or AN
-    selectDropdown(studentSearchSelectors.program, '1950')
+    cy.selectDropdown(studentSearchSelectors.program, '1950')
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.program1950Error)
     cy.get(studentSearchSelectors.saveStatusBtn).should('be.disabled')
-    selectDropdown(studentSearchSelectors.program, '2018-PF')
+    cy.selectDropdown(studentSearchSelectors.program, '2018-PF')
     
     // Grade & Adult Start Date
     // Grade - If User selects AD or AN ensure Student is on Program 1950*
-    selectDropdown(studentSearchSelectors.grade, 'AD')
+    cy.selectDropdown(studentSearchSelectors.grade, 'AD')
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.gradeADANError)
     cy.get(studentSearchSelectors.saveStatusBtn).should('be.disabled')
-    selectDropdown(studentSearchSelectors.grade, 'AN')
+    cy.selectDropdown(studentSearchSelectors.grade, 'AN')
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.gradeADANError)
     cy.get(studentSearchSelectors.saveStatusBtn).should('be.disabled')
     // Adult Start Date - Only modifiable if student is on the 1950 program
     cy.get(studentSearchSelectors.adultStartDate).should('be.disabled')
     // Select 1950 to make sure error dissapears
-    selectDropdown(studentSearchSelectors.program, '1950')
+    cy.selectDropdown(studentSearchSelectors.program, '1950')
     cy.get(studentSearchSelectors.editForm).should('not.contain.text', messages.gradeADANError)
     cy.get(studentSearchSelectors.adultStartDate).should('not.be.disabled')
     // Adult Start Date - Date format validation
@@ -224,10 +214,10 @@ describe('Student Grad Status', () => {
 
     // School Of Record
     // If User modifies School Of Record check if the school supports 10-12 enrollment and transcript 
-    selectAutoselect(studentSearchSelectors.schoolOfRecord, 'Jessie Lee Elementary')
+    cy.selectAutoselect(studentSearchSelectors.schoolOfRecord, 'Jessie Lee Elementary')
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.schoolNo10to12EnrollmentWarning)
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.schoolNoTranscriptWarning)
-    selectAutoselect(studentSearchSelectors.schoolOfRecord, ungraduated_student.og_school)
+    cy.selectAutoselect(studentSearchSelectors.schoolOfRecord, ungraduated_student.og_school)
 
     // School At Graduation
     cy.get(studentSearchSelectors.schoolAtGraduation).should('not.exist')
@@ -397,7 +387,7 @@ describe('Student Grad Status', () => {
     cy.get(studentSearchSelectors.editBtn).click()
     cy.wait(1000)
     // Change something and try to save
-    selectDropdown(studentSearchSelectors.status, 'Current')
+    cy.selectDropdown(studentSearchSelectors.status, 'Current')
     cy.get(studentSearchSelectors.saveStatusBtn).click()
     // Error
     cy.get(studentSearchSelectors.snackBar).should('contain.text', messages.mergedStudentError)

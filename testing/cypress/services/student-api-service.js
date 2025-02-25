@@ -1,4 +1,3 @@
-const axios = require('axios')
 const RestUtils = require('../support/rest-utils')
 
 class StudentAPIService {
