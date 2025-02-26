@@ -176,6 +176,7 @@ export default {
 		userScheduledBtn: 'button[value="scheduledRuns"]',
 		scheduledRoutinesBtn: 'button[value="batchRoutines"]',
 		overlayWindow: 'body > .v-overlay-container > .v-overlay--active > .v-overlay__content .v-sheet',
+		innerCard: 'body > .v-overlay-container > .v-overlay--active > .v-overlay__content .v-sheet > .v-window > .v-window__container > .v-window-item:visible > .v-row:nth-child(2)',
 		autocomplete: '.v-autocomplete input',
 		numberInput: 'input[type="number"]',
 		batchTable: '.v-table__wrapper > table > tbody:visible',
