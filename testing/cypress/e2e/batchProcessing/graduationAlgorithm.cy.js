@@ -1,3 +1,12 @@
+/**
+ * @module GraduationAlgorithm
+ * 
+ * @description
+ * Run "Graduation Algorithm" in Batch Processing. This spec tests graduation algorithm by calling API directly
+ * instead of naviagting thruogh UI to speed up the testing, as well as making sure endpoints work.
+ * They are 4 different groups that need individual test cases.
+ */
+
 import selectors from "../../support/selectors"
 import { getCurrentTimestamp, isWithinMarginSeconds } from "../../support/helperMethods"
 const batchProcessingSelectors = selectors.batchProcessing
@@ -60,6 +69,26 @@ describe('Graduation Algorithm', () => {
       cy.wait(500)
     })
 
+    /**
+     * @name runsOnStudent
+     * 
+     * @description
+     * Runs Graduation Algorithm for a single student to make sure student's data is properly updated.
+     * 
+     * ## Steps:
+     * 1. Open Grad Algorithm modal on Batch Processing
+     * 2. Select Student as a group
+     * 3. Enter PEN
+     * 4. Click Add Student and Next
+     * 5. Set up network interception for specialrun to get a batch id from response
+     * 6. Click Submit 
+     *    - This will call specialrun and Cypress obtains a batch id out of the response
+     * 7. Call batch summary endpoint repeatedly until it's completed
+     *    - If it's not completed within set timeout, test fails
+     * 8. Call batch history for the batch id to ensure data is valid
+     *    - Length of content should be 1
+     *    - updateDate of a student should be same/close to current date time
+     */
     it.only('Runs on Student', () => {
       cy.get(batchProcessingSelectors.overlayWindow).find('input').click({force: true})
       cy.get(selectors.selections).contains('Student').click()
