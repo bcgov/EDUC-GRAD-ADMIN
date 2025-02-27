@@ -183,8 +183,12 @@ export default {
             lastName: student.data[0].legalLastName,
             dob: student.data[0].dob,
             status: studentGRADStatus.data.studentStatusName,
-            schoolOfRecord: this.getSchoolById(studentGRADStatus.data.schoolOfRecordId)?.displayName,
-            schoolAtGrad: this.getSchoolById(studentGRADStatus.data.schoolAtGradId)?.displayName,
+            schoolOfRecord: this.getSchoolById(
+              studentGRADStatus.data.schoolOfRecordId
+            )?.displayName,
+            schoolAtGrad: this.getSchoolById(
+              studentGRADStatus.data.schoolAtGradId
+            )?.displayName,
             program: studentGRADStatus.data.program,
           };
           if (studentGRADStatus.data.studentStatusName == "Merged") {
@@ -193,6 +197,7 @@ export default {
             this.penLoading = false;
             return;
           }
+          // validation fot students on the CERT_REGEN batch job
           if (this.runType == "CERT_REGEN") {
             //when User is entereing PENs for the REGEN process, error if the student has a null PROGRAM COMPLETION DATE
             if (!studentGRADStatus.data.programCompletionDate) {
@@ -201,6 +206,13 @@ export default {
               this.penLoading = false;
               return;
             }
+            if (student.data[0]?.certificateEligibility == "N") {
+              this.validationMessage =
+                "This students' school at graduation is not eligible for certificates";
+              this.penLoading = false;
+              return;
+            }
+            console.log("TRANSCRIPT " + student.data[0].certificateEligibility);
           }
 
           //check if what credentialType was selected
@@ -250,13 +262,13 @@ export default {
 
   computed: {
     ...mapState(useBatchRequestFormStore, [
-        "getBatchRequest",
-        "getBatchRunTime",
-        "getCredential",
-      ]),
+      "getBatchRequest",
+      "getBatchRunTime",
+      "getCredential",
+    ]),
     ...mapState(useAppStore, {
-        getSchoolById: "getSchoolById"
-      }),
+      getSchoolById: "getSchoolById",
+    }),
     isEmpty() {
       return this.students.length > 0;
     },
