@@ -23,6 +23,16 @@ async function getBackendServiceToken() {
   return await auth.getBackendServiceToken();
 }
 
+function getUsernameFromToken(token) {
+  try {
+      const decoded = jsonwebtoken.decode(token); // Use decode if you don't need verification
+      return decoded?.name || null;
+  } catch (error) {
+      console.error('Invalid token:', error);
+      return null;
+  }
+}
+
 function getUser(req) {
   const thisSession = req.session;
   if (
@@ -69,10 +79,12 @@ function getAccessToken(req) {
 
 async function deleteData(token, url, correlationID) {
   try {
+    const username = getUsernameFromToken(token)
     const delConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
+        username: username || 'n/a'
       },
     };
 
@@ -165,11 +177,13 @@ async function getCommonServiceData(url, params) {
 }
 
 async function getData(token, url, correlationID) {
+  const username = getUsernameFromToken(token)
   try {
     const getDataConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
+        username: username || 'n/a'
       },
     };
     // log.info('get Data Url', url);
@@ -190,9 +204,11 @@ async function getData(token, url, correlationID) {
 
 async function getDataWithParams(token, url, params, correlationID) {
   try {
+    const username = getUsernameFromToken(token)
     params.headers = {
       Authorization: `Bearer ${token}`,
       correlationID: correlationID || uuidv4(),
+      username: username || 'n/a'
     };
 
     log.info("get Data Url", url);
@@ -246,10 +262,12 @@ async function forwardPostReq(req, res, url) {
 
 async function postData(token, url, data, correlationID) {
   try {
+    const username = getUsernameFromToken(token)
     const postDataConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
+        username: username || 'n/a'
       },
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
@@ -289,10 +307,12 @@ async function postData(token, url, data, correlationID) {
 
 async function putData(token, data, url, correlationID) {
   try {
+    const username = getUsernameFromToken(token)
     const putDataConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
+        username: username || 'n/a'
       },
     };
 
