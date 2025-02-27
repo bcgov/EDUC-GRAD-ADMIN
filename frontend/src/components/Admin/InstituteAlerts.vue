@@ -4,9 +4,9 @@
       ><v-card-text>
         <!--TODO: Review this when we implement batch filtering in GRAD2-2553 -->
         <v-radio-group
+          class="mt-6"
           v-model="filterOptions.acknowledgeFlag"
           inline
-          label="Acknowledge Flag"
           @input="getInstituteAlerts"
         >
           <v-radio label="Unacknowledged" value="N" />
