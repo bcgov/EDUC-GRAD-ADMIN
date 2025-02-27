@@ -194,6 +194,7 @@ export default {
     ScheduleInput: ScheduleInput,
   },
   data: () => ({
+    snackbarStore: useSnackbarStore(),
     step: 0,
     batchLoading: false,
     dialog: false,
