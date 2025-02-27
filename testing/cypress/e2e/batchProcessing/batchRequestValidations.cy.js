@@ -14,4 +14,23 @@ const batchProcessingSelectors = selectors.batchProcessing
 
 describe('Batch Request Validations', () => {
   const batch_test_student = Cypress.env('batch_test_student')
+
+  beforeEach(() => {
+    cy.login()
+    cy.visit('/')
+    
+    // Go to Batch Processing => New Batch Request
+    cy.get(batchProcessingSelectors.navBtn).click()
+    cy.get(batchProcessingSelectors.newRequestBtn).click()
+  })
+
+  /**
+   * @name cancelModal
+   * 
+   * @description
+   * Make sure Cancel button closes a opening modal and reset the data that was entered in the modal.
+   */
+  it('Cancels to close moals', () => {
+
+  })
 })
