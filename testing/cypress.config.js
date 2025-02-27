@@ -14,7 +14,7 @@ module.exports = defineConfig({
     openMode: 0
   },
   e2e: {
-    baseUrl: 'http://localhost:8081',
+    baseUrl: 'https://dev.grad.gov.bc.ca',
     experimentalRunAllSpecs: true,
     excludeSpecPattern: ['cypress/e2e/schools/schoolSearch.cy.js'],
     setupNodeEvents(on, config) {

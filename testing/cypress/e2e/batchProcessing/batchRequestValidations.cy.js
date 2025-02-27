@@ -30,7 +30,22 @@ describe('Batch Request Validations', () => {
    * @description
    * Make sure Cancel button closes a opening modal and reset the data that was entered in the modal.
    */
-  it('Cancels to close moals', () => {
+  it('Cancel button to close moals', () => {
+    // Graduation Algorithm
+    cy.contains('Graduation Algorithm').next().find('button').click()
+    cy.wait(500)
+    cy.get(batchProcessingSelectors.overlayWindow).find('input').click({force: true})
+    cy.get(selectors.selections).contains('Student').click()
+    cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.numberInput).type(batch_test_student.PEN)
+    cy.get(batchProcessingSelectors.overlayWindow).contains('Add Student').click({force: true})
+    cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
+    // Cancel and make sure entered data is no longer there
+    cy.get(batchProcessingSelectors.overlayWindow).contains('Cancel').click()
+    cy.contains('Graduation Algorithm').next().find('button').click()
+    cy.wait(500)
+    cy.get(batchProcessingSelectors.overlayWindow).should('not.contain.text', batch_test_student.givenname)
+    cy.get(batchProcessingSelectors.overlayWindow).contains('Cancel').click()
 
+    // TVR
   })
 })

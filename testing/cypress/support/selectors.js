@@ -175,7 +175,7 @@ export default {
 		newRequestBtn: 'button[value="newBatchRequest"]',
 		userScheduledBtn: 'button[value="scheduledRuns"]',
 		scheduledRoutinesBtn: 'button[value="batchRoutines"]',
-		overlayWindow: 'body > .v-overlay-container > .v-overlay--active > .v-overlay__content .v-sheet',
+		overlayWindow: 'body > .v-overlay-container > .v-overlay--active > .v-overlay__content > .v-card',
 		innerCard: 'body > .v-overlay-container > .v-overlay--active > .v-overlay__content .v-sheet > .v-window > .v-window__container > .v-window-item:visible > .v-row:nth-child(2)',
 		autocomplete: '.v-autocomplete input',
 		numberInput: 'input[type="number"]',
