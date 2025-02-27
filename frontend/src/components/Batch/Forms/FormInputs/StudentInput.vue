@@ -212,7 +212,6 @@ export default {
               this.penLoading = false;
               return;
             }
-            console.log("TRANSCRIPT " + student.data[0].certificateEligibility);
           }
 
           //check if what credentialType was selected
