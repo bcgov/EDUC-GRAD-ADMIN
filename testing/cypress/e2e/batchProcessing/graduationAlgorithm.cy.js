@@ -177,7 +177,7 @@ describe('Graduation Algorithm', () => {
       cy.get(batchProcessingSelectors.overlayWindow).find('input').click({force: true})
       cy.get(selectors.selections).contains('School Category').click()
       cy.wait(500)
-      cy.get(batchProcessingSelectors.innerCard).contains('School Category').next().click({force: true})
+      cy.get(batchProcessingSelectors.innerCard).contains('label', 'School Category').next().click({force: true})
       cy.get(selectors.selections).contains('Public').click()
       cy.selectAutoselect(batchProcessingSelectors.autocomplete, batch_test_student.og_district)
       cy.get(batchProcessingSelectors.overlayWindow).contains('Add District').click({force: true})

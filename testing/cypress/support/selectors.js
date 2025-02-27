@@ -175,10 +175,6 @@ export default {
 		newRequestBtn: 'button[value="newBatchRequest"]',
 		userScheduledBtn: 'button[value="scheduledRuns"]',
 		scheduledRoutinesBtn: 'button[value="batchRoutines"]',
-		overlayWindow: 'body > .v-overlay-container > .v-overlay--active > .v-overlay__content > .v-card',
-		innerCard: 'body > .v-overlay-container > .v-overlay--active > .v-overlay__content .v-sheet > .v-window > .v-window__container > .v-window-item:visible > .v-row:nth-child(2)',
-		autocomplete: '.v-autocomplete input',
-		numberInput: 'input[type="number"]',
 		batchTable: '.v-table__wrapper > table > tbody:visible',
 		itemPerPage: 'div[role="combobox"][aria-haspopup="listbox"]',
 		firstRow: '.v-table:visible tbody tr.v-data-table__tr:nth-child(1)',
@@ -187,6 +183,13 @@ export default {
 		viewBatchResultBtn: '.v-overlay-container .v-overlay__content .v-list > .v-list-item:nth-child(1)',
 		rerunSchoolReportBtn: '.v-overlay-container .v-overlay__content .v-list > .v-list-item:nth-child(2)',
 		batchJobResultWrapper: '.v-row > div:nth-child(2)',
-		batchJobResultNoData: 'tr.v-data-table-rows-no-data'
+		batchJobResultNoData: 'tr.v-data-table-rows-no-data',
+
+		overlayWindow: 'body > .v-overlay-container > .v-overlay--active > .v-overlay__content > .v-card',
+		innerCard: 'body > .v-overlay-container > .v-overlay--active > .v-overlay__content .v-sheet > .v-window > .v-window__container > .v-window-item:visible > .v-row:nth-child(2)',
+		autocomplete: '.v-autocomplete input',
+		numberInput: 'input[type="number"]',
+		runNowRadioBtn: 'input[value="Run Now"]',
+		runLaterRadioBtn: 'input[value="Run Later"]',
 	}
 }
