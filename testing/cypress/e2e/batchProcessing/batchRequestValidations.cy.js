@@ -90,7 +90,7 @@ describe('Batch Request Validations', () => {
    * Make sure Cancel button closes a opening modal and reset the data that was entered in the modal for any requests under User Requests section.
    * This test is directly dependent on label; therefore, it needs to be updated whenever label for button changes.
    */
-  it.only('Test Cancel button for User Requests', () => {
+  it('Test Cancel button for User Requests', () => {
     // Blank certificate print
     openBatchRequestByLabel('Blank certificate print')
     cy.get(batchProcessingSelectors.overlayWindow).find('input[value="FN"]').click({force: true})
@@ -167,7 +167,6 @@ describe('Batch Request Validations', () => {
     cy.get(batchProcessingSelectors.overlayWindow).contains('Cancel').click()
 
     // Transcript
-    cy.wait(500)
     openBatchRequestByLabel('Transcript', true)
     selelctStudentGroup(batch_test_student)
     cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
@@ -182,5 +181,39 @@ describe('Batch Request Validations', () => {
     cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
     cy.get(batchProcessingSelectors.overlayWindow).should('not.contain.text', 'Download')
     cy.get(batchProcessingSelectors.overlayWindow).contains('Cancel').click()
+  })
+
+  /**
+   * @name testCancelBtnForRegeneration
+   * 
+   * @description
+   * Make sure Cancel button closes a opening modal and reset the data that was entered in the modal for any requests under Regeneration section.
+   * This test is directly dependent on label; therefore, it needs to be updated whenever label for button changes.
+   */
+  it.only('Test Cancel button for Regeneration', () => {
+    // User Request Certificate Regeneration
+    openBatchRequestByLabel('User Request Certificate Regeneration')
+    selelctStudentGroup(batch_test_student)
+    cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
+    // Cancel and make sure entered data is no longer there
+    cy.get(batchProcessingSelectors.overlayWindow).contains('Cancel').click()
+    openBatchRequestByLabel('User Request Certificate Regeneration')
+    cy.get(batchProcessingSelectors.overlayWindow).find('input').should('be.empty')
+    cy.get(batchProcessingSelectors.overlayWindow).should('not.contain.text', batch_test_student.givenname) 
+    cy.get(batchProcessingSelectors.overlayWindow).contains('Cancel').click()
+
+    // User Request School Report Regeneration
+    // Does not work
+  })
+
+  /**
+   * @name testCancelBtnForRegeneration
+   * 
+   * @description
+   * Make sure Cancel button closes a opening modal and reset the data that was entered in the modal for any requests under Year-End Administration section.
+   * This test is directly dependent on label; therefore, it needs to be updated whenever label for button changes.
+   */
+  it('Test Cancel button for Year-End Administration', () => {
+
   })
 })
