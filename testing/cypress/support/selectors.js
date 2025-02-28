@@ -186,9 +186,13 @@ export default {
 		batchJobResultNoData: 'tr.v-data-table-rows-no-data',
 
 		overlayWindow: 'body > .v-overlay-container > .v-overlay--active > .v-overlay__content > .v-card',
+
 		innerCard: 'body > .v-overlay-container > .v-overlay--active > .v-overlay__content .v-sheet > .v-window > .v-window__container > .v-window-item:visible > .v-row:nth-child(2)',
 		autocomplete: '.v-autocomplete input',
+		selectInput: '.v-select input',
+		select: '.v-select', 
 		numberInput: 'input[type="number"]',
+		psiInput: 'input[maxlength="3"]',
 		runNowRadioBtn: 'input[value="Run Now"]',
 		runLaterRadioBtn: 'input[value="Run Later"]',
 	}

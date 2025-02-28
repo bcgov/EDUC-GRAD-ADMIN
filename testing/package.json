@@ -6,7 +6,7 @@
     "doc": "jsdoc --verbose -d docs -c jsdoc.json"
   },
   "devDependencies": {
-    "cypress": "^14.0.2",
+    "cypress": "^14.1.0",
     "docdash": "^2.0.2",
     "jsdoc": "^4.0.4"
   },

@@ -4,6 +4,7 @@
   "batchProcessing/batchTables.cy.js": 47,
   "batchProcessing/graduationAlgorithm.cy.js": 40,
   "batchProcessing/transcriptVerificationReport.cy.js": 20,
+  "batchProcessing/batchRequestValidations.cy.js": 70,
   "codes/codes.cy.js": 24,
   "courses/courseSearch.cy.js": 31,
   "psi/psi.cy.js": 17,
