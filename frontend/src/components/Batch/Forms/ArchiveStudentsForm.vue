@@ -351,6 +351,7 @@ export default {
       this.dialog = false;
       this.clearBatchDetails();
       this.step = 0;
+      this.selectedConfirmations = [];
     },
     cancel() {
       this.group = null;

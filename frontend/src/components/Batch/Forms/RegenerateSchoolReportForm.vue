@@ -285,6 +285,7 @@ export default {
       this.dialog = false;
       this.clearBatchDetails();
       this.step = 0;
+      this.reportType = null;
     },
     cancel() {
       this.group = null;
