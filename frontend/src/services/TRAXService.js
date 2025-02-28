@@ -7,12 +7,15 @@ export default {
   getDistrict(district) {
     return ApiService.apiAxios.get("/api/v1/trax/district/" + district);
   },
-  // Note: Sort is currently hard coded in the URL, however we'll want to update this when we tackle sorting & filtering in a future ticket
+  // TODO: Review this when we implement batch filtering in GRAD2-2553
   getInstituteEventHistory(params) {
+    const encodedSortParams = encodeURIComponent(JSON.stringify(params.sort));
+    const encodedSearchParams = encodeURIComponent(
+      JSON.stringify(params.searchParams)
+    );
+    console.log(params.pageSize);
     return ApiService.apiAxios.get(
-      "/api/v1/trax/event/history/paginated?" +
-        params +
-        "&sort=%7B%22createDate%22%3A%22DEC%22%7D"
+      `/api/v1/trax/event/history/paginated?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&sort=${encodedSortParams}&searchParams=${encodedSearchParams}`
     );
   },
   putInstituteEventHistory(json) {
