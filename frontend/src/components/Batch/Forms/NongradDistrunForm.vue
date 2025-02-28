@@ -64,7 +64,7 @@
                     <DistrictInput
                       disableSelectStudents
                       :disableSelectDistrict="
-                        !getBatchRequest.schoolCategoryCodes.includes('01')
+                        !getBatchRequest.schoolCategoryCodes.includes('PUBLIC')
                       "
                     ></DistrictInput>
                   </v-row>
