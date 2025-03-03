@@ -194,6 +194,7 @@ export default {
 		psiInput: 'input[maxlength="3"]',
 		runNowRadioBtn: 'input[value="Run Now"]',
 		runLaterRadioBtn: 'input[value="Run Later"]',
+		errorAlert: '.v-alert.bg-error[role="alert"]',
 		selectedIcon: 'body > .v-overlay-container > .v-overlay--active > .v-overlay__content .v-sheet .v-stepper-header > .v-stepper-item--selected i'
 	}
 }

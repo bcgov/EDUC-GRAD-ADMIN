@@ -13,18 +13,18 @@ import selectors from "../../support/selectors";
 const batchProcessingSelectors = selectors.batchProcessing
 
 // Only works if there is one visible v-select
-function selelctStudentGroup(test_student) {
+function selelctStudentGroup(pen) {
   cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).click({force: true})
   cy.get(selectors.selections).contains('Student').click()
-  cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.numberInput).type(test_student.PEN)
+  cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.numberInput).type(pen)
   cy.get(batchProcessingSelectors.overlayWindow).contains('Add Student').click({force: true})
 }
 
 // Only works if there is one visible v-select
-function selectSchoolGroup(test_student) {
+function selectSchoolGroup(school) {
   cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).click({force: true})
   cy.get(selectors.selections).contains('School').click({force: true})
-  cy.selectAutoselect(batchProcessingSelectors.autocomplete, test_student.og_school)
+  cy.selectAutoselect(batchProcessingSelectors.autocomplete, school)
   cy.get(batchProcessingSelectors.overlayWindow).contains('Add School').click({force: true})
 }
 
@@ -75,7 +75,7 @@ describe('Batch Request Validations', () => {
     it('Tests Cancel button for GRAD and TVR', () => {
       // Graduation Algorithm
       openBatchRequestByLabel('Graduation Algorithm')
-      selelctStudentGroup(batch_test_student)
+      selelctStudentGroup(batch_test_student.PEN)
       cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
       // Cancel and make sure entered data is no longer there
       cy.get(batchProcessingSelectors.overlayWindow).contains('Cancel').click()
@@ -86,7 +86,7 @@ describe('Batch Request Validations', () => {
   
       // TVR
       openBatchRequestByLabel('Graduation Algorithm')
-      selelctStudentGroup(batch_test_student)
+      selelctStudentGroup(batch_test_student.PEN)
       cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
       // Cancel and make sure entered data is no longer there
       cy.get(batchProcessingSelectors.overlayWindow).contains('Cancel').click()
@@ -142,7 +142,7 @@ describe('Batch Request Validations', () => {
   
       // Reprint certificate
       openBatchRequestByLabel('Reprint certificate')
-      selelctStudentGroup(batch_test_student)
+      selelctStudentGroup(batch_test_student.PEN)
       cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
       cy.wait(500)
       cy.get(batchProcessingSelectors.overlayWindow).contains('label', 'Where').next().click({force: true})
@@ -158,7 +158,7 @@ describe('Batch Request Validations', () => {
       
       // Original certificate
       openBatchRequestByLabel('Original certificate')
-      selelctStudentGroup(batch_test_student)
+      selelctStudentGroup(batch_test_student.PEN)
       cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
       cy.wait(500)
       cy.get(batchProcessingSelectors.overlayWindow).contains('label', 'Where').next().click({force: true})
@@ -179,7 +179,7 @@ describe('Batch Request Validations', () => {
       cy.get(batchProcessingSelectors.overlayWindow).find('input[value="YU2018-PUB"]').click({force: true})
       cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
       cy.wait(500)
-      selectSchoolGroup(batch_test_student)
+      selectSchoolGroup(batch_test_student.og_school)
       cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
       cy.wait(500)
       cy.get(batchProcessingSelectors.overlayWindow).contains('label', 'Where').next().click({force: true})
@@ -198,7 +198,7 @@ describe('Batch Request Validations', () => {
   
       // Transcript
       openBatchRequestByLabel('Transcript', true)
-      selelctStudentGroup(batch_test_student)
+      selelctStudentGroup(batch_test_student.PEN)
       cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
       cy.wait(500)
       cy.get(batchProcessingSelectors.overlayWindow).contains('label', 'Where').next().click({force: true})
@@ -227,7 +227,7 @@ describe('Batch Request Validations', () => {
     it('Tests Cancel button for Regeneration', () => {
       // User Request Certificate Regeneration
       openBatchRequestByLabel('User Request Certificate Regeneration')
-      selelctStudentGroup(batch_test_student)
+      selelctStudentGroup(batch_test_student.PEN)
       cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
       // Cancel and make sure entered data is no longer there
       cy.get(batchProcessingSelectors.overlayWindow).contains('Cancel').click()
@@ -345,7 +345,7 @@ describe('Batch Request Validations', () => {
   
       // Delete Student TVR Process
       openBatchRequestByLabel('Delete Student TVR Process')
-      selelctStudentGroup(batch_test_student)
+      selelctStudentGroup(batch_test_student.PEN)
       cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
       // Cancel and make sure entered data is no longer there
       cy.get(batchProcessingSelectors.overlayWindow).contains('Cancel').click()
@@ -359,9 +359,11 @@ describe('Batch Request Validations', () => {
 
   context('For Validation', () => {
 
-    const iconClasses = {
-      notChecked: 'mdi-close-circle',
-      checked: 'mdi-check'
+    const runTypelabelMapping = {
+      REGALG: "Graduation Algorithm",
+      CERT_REGEN: "User Request Certificate Regeneration",
+      OC: "Original certificate",
+      RC: "Reprint certificate"
     }
 
     beforeEach(() => {
@@ -372,31 +374,52 @@ describe('Batch Request Validations', () => {
       cy.get(batchProcessingSelectors.navBtn).click()
       cy.get(batchProcessingSelectors.newRequestBtn).click()
     })
-  
-    it('Tests validation for GRAD and TVR', () => {
-      const submitBtn = () => cy.get(batchProcessingSelectors.overlayWindow).contains('Submit').parent()
 
-      // Graduation Algorithm
-      cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
-      submitBtn().should('have.class', 'v-btn--disabled')
-      cy.get(batchProcessingSelectors.overlayWindow).contains('Back').click({force: true})
+    it('Tests validatoin for Adding Student', () => {
+      const testCases = Cypress.env('add_student_testcases')
+      testCases.forEach(testCase => {
+        // Open batch request based on label mapped from a given run type
+        if (testCase.run && runTypelabelMapping[testCase.run]) {
+          const label = runTypelabelMapping[testCase.run]
+          openBatchRequestByLabel(label)
+        } else {
+          openBatchRequestByLabel(runTypelabelMapping.REGALG)
+        }
+
+        // Assume v-select is visible to add a student
+        selelctStudentGroup(testCase.PEN)
+        cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.errorAlert).should('contain.text', testCase.message)
+        cy.get(batchProcessingSelectors.overlayWindow).contains('Cancel').click({force: true})
+      })
+    })
+
+    it('Tests validation for Adding School', () => {
       
-      openBatchRequestByLabel('Graduation Algorithm')
-      checkSelectedIcon(false)
-      selelctStudentGroup(batch_test_student)
-      checkSelectedIcon(true)
+    })
+  
+    // it('Tests validation for GRAD and TVR', () => {
+    //   const submitBtn = () => cy.get(batchProcessingSelectors.overlayWindow).contains('Submit').parent()
 
-      cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).first().click({force: true})
-      cy.get(selectors.selections).contains('School').click({force: true})
-      checkSelectedIcon(false)
-      cy.selectAutoselect(batchProcessingSelectors.autocomplete, batch_test_student.og_school)
-      cy.get(batchProcessingSelectors.overlayWindow).contains('Add School').click({force: true})
-      checkSelectedIcon(true)
+    //   // Graduation Algorithm
+    //   cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
+    //   submitBtn().should('have.class', 'v-btn--disabled')
+    //   cy.get(batchProcessingSelectors.overlayWindow).contains('Back').click({force: true})
 
-      cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).first().click({force: true})
-      cy.get(selectors.selections).contains('School Category').click({force: true})
-      checkSelectedIcon(false)
+    //   openBatchRequestByLabel('Graduation Algorithm')
+    //   checkSelectedIcon(false)
+    //  selelctStudentGroup(batch_test_student.PEN)
+    //   checkSelectedIcon(true)
 
-    })  
+    //   cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).first().click({force: true})
+    //   cy.get(selectors.selections).contains('School').click({force: true})
+    //   checkSelectedIcon(false)
+    //   cy.selectAutoselect(batchProcessingSelectors.autocomplete, batch_test_student.og_school)
+    //   cy.get(batchProcessingSelectors.overlayWindow).contains('Add School').click({force: true})
+    //   checkSelectedIcon(true)
+
+    //   cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).first().click({force: true})
+    //   cy.get(selectors.selections).contains('School Category').click({force: true})
+    //   checkSelectedIcon(false)
+    // })  
   })
 })

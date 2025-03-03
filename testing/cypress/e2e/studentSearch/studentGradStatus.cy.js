@@ -140,7 +140,7 @@ describe('Student Grad Status', () => {
    * 12. Make sure school at graduation is empty
    */
   it('Edits grad status for an non-graduated student on non-SCCP program', () => {
-    const ungraduated_student = Cypress.env('ungraduated_student')
+    const ungraduated_student = Cypress.env('test_students').ungraduated_student
     cy.get(studentSearchSelectors.searchByPEN).type(ungraduated_student.PEN)
     cy.get(studentSearchSelectors.searchSubmit).click()
     cy.wait(5000) // Need to wait so that fields load up in Edit window
@@ -257,7 +257,7 @@ describe('Student Grad Status', () => {
    *    - School At Graduation is set to same school as School Of Graduation in default
    */
   it('Edits grad status for a graduated student on non-SCCP Program', () => {
-    const graduated_student = Cypress.env('graduated_student')
+    const graduated_student = Cypress.env('test_students').graduated_student
     cy.get(studentSearchSelectors.searchByPEN).type(graduated_student.PEN)
     cy.get(studentSearchSelectors.searchSubmit).click()
     cy.wait(5000) // Need to wait so that fields load up in Edit window
@@ -314,7 +314,7 @@ describe('Student Grad Status', () => {
    *    - Program completion date can be in the future
    */
   it('Edits grad status for an non-graduated student on SCCP program', () => {
-    const sccp_student = Cypress.env('sccp_student')
+    const sccp_student = Cypress.env('test_students').sccp_student
     cy.get(studentSearchSelectors.searchByPEN).type(sccp_student.PEN)
     cy.get(studentSearchSelectors.searchSubmit).click()
     cy.wait(5000) // Need to wait so that fields load up in Edit window
@@ -374,7 +374,7 @@ describe('Student Grad Status', () => {
    * 
    */
   it('Tries to edit merged student', () => {
-    const merged_student = Cypress.env('merged_student')
+    const merged_student = Cypress.env('test_students').merged_student
     cy.get(studentSearchSelectors.searchByPEN).type(merged_student.PEN)
     cy.get(studentSearchSelectors.searchSubmit).click()
     cy.wait(5000) // Need to wait so that fields load up in Edit window

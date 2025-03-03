@@ -31,7 +31,7 @@ function undoCompletion() {
 }
 
 describe('Student Search', () => {
-  const test_student = Cypress.env('ungraduated_student')
+  const test_student = Cypress.env('test_students').ungraduated_student
 
   context('with PEN Search', () => {
     beforeEach(() => {
