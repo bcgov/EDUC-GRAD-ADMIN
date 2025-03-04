@@ -61,12 +61,7 @@
                     ></v-select>
                   </v-row>
                   <v-row v-if="getGroup == 'School Category'">
-                    <DistrictInput
-                      disableSelectStudents
-                      :disableSelectDistrict="
-                        !getBatchRequest.schoolCategoryCodes.includes('PUBLIC')
-                      "
-                    ></DistrictInput>
+                    <DistrictInput disableSelectStudents></DistrictInput>
                   </v-row>
                 </v-stepper-window-item>
 
