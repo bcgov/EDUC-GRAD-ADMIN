@@ -402,7 +402,7 @@ describe('Batch Request Validations', () => {
       })
     })
   
-    it.only('Tests validation for GRAD and TVR', () => {
+    it('Tests validation for GRAD and TVR', () => {
       const submitBtn = () => cy.get(batchProcessingSelectors.overlayWindow).contains('Submit')
 
       // Graduation Algorithm
