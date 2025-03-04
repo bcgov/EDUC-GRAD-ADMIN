@@ -21,16 +21,6 @@ const server = http.createServer(app);
 
 //Create Cache for schools
 const cacheService = require('./components/cache-service');
-cacheService.loadStudentStatusCodes().then(() => {
-  log.info('Loaded studentstatus code data to memory');
-}).catch((e) => {
-  log.error('Error loading student status code during boot .', e);
-});
-cacheService.loadProgramCodes().then(() => {
-  log.info('Loaded program code data to memory');
-}).catch((e) => {
-  log.error('Error loading program code during boot .', e);
-});
 cacheService.loadAllSchoolsToMap().then(() => {
   log.info('Loaded school data to memory');
 }).catch((e) => {
