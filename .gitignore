@@ -11,6 +11,9 @@ frontend/.env.development
 frontend/.env.production
 **/local.json
 
+#ignore cypress testing
+testing/
+
 #ignore modules
 backend/node_modules
 backend/src/config/local.json

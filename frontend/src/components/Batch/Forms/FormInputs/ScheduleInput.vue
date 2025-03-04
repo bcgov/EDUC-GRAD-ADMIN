@@ -60,7 +60,7 @@
           hide-default-header
           hide-default-footer
           ><template #no-data>
-            At least one school category must be selected
+            At least one district must be selected
           </template></v-data-table
         >
       </div>

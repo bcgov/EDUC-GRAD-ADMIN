@@ -1,4 +1,4 @@
-name: Deploy Backend-TEST
+name: Deploy latest Backend-TEST
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -46,10 +46,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      - name: Get latest tag
-        uses: actions-ecosystem/action-get-latest-tag@v1
-        id: get-latest-tag
-
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
         with:
@@ -67,12 +63,12 @@ jobs:
           oc rollout cancel deployment/${{ env.APP_NAME_BACKEND }} 2> /dev/null \
           || true && echo "No rollout in progress"
 
-          oc tag ${{ secrets.UI_NAMESPACE }}-dev/${{ env.APP_NAME_BACKEND }}:${{ steps.get-latest-tag.outputs.tag }} ${{ secrets.UI_NAMESPACE }}-test/${{ env.APP_NAME_BACKEND }}:${{ steps.get-latest-tag.outputs.tag }}
+          oc tag ${{ secrets.UI_NAMESPACE }}-dev/${{ env.APP_NAME_BACKEND }}:latest ${{ secrets.UI_NAMESPACE }}-test/${{ env.APP_NAME_BACKEND }}:latest
 
           # Process template
           oc process -f tools/openshift/backend-dc.yaml \
           -p IS_NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
-          -p TAG_NAME=${{ steps.get-latest-tag.outputs.tag }} \
+          -p TAG_NAME=latest \
           -p APP_NAME=${{ env.APP_NAME }} \
           -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
           -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
