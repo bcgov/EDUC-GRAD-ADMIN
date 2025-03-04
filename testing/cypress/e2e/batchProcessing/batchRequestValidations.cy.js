@@ -48,9 +48,9 @@ function checkSelectedIcon(isChecked) {
 }
 
 describe('Batch Request Validations', () => {
-  const batch_test_student = Cypress.env('batch_test_student')
+  const batch_test_student = Cypress.env('test_students').batch_test_student
 
-  context.skip('For Cancel Btn', () => {
+  context('For Cancel Btn', () => {
 
     beforeEach(() => {
       cy.login()
@@ -359,11 +359,20 @@ describe('Batch Request Validations', () => {
 
   context('For Validation', () => {
 
+    // Hardcoded for now, needs better implementaion
     const runTypelabelMapping = {
-      REGALG: "Graduation Algorithm",
-      CERT_REGEN: "User Request Certificate Regeneration",
-      OC: "Original certificate",
-      RC: "Reprint certificate"
+      REGALG: 'Graduation Algorithm',
+      TVRRUN: 'Transcript Verification Report',
+      OC: 'Original certificate',
+      RC: 'Reprint certificate',
+      CERT_REGEN: 'User Request Certificate Regeneration',
+      SCHL_RPT_REGEN: 'User Request School Report Regeneration',
+      TVR_DELETE: 'Delete Student TVR Process',
+      DISTRUN_YE: 'Year-End Credentials and Transcript Distribution Run',
+      NONGRADRUN: 'Non-Graduate Transcript Distribution Run',
+      PSIRUN: 'PSI Run FTP / Paper',
+      ARC_SCH_REPORTS: 'Archive School Reports Process',
+      ARC_STUDENTS: 'Archive Student Batch Process',
     }
 
     beforeEach(() => {
@@ -391,10 +400,6 @@ describe('Batch Request Validations', () => {
         cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.errorAlert).should('contain.text', testCase.message)
         cy.get(batchProcessingSelectors.overlayWindow).contains('Cancel').click({force: true})
       })
-    })
-
-    it('Tests validation for Adding School', () => {
-      
     })
   
     // it('Tests validation for GRAD and TVR', () => {
