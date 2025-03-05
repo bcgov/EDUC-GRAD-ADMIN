@@ -1,4 +1,5 @@
-name: VUE3 Build & Deploy Backend-DEV
+name: ZZ-VUE3 Build & Deploy Backend-DEV
+# Archiving this workflow file as it is no longer in use.
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
