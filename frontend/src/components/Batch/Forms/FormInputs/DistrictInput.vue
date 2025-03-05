@@ -43,7 +43,7 @@
               v-model="district"
               v-if="!selectAllDistricts"
               :items="getDistrictList"
-              label="Category"
+              label="District"
               variant="outlined"
               :item-title="districtTitle"
               item-value="districtNumber"
