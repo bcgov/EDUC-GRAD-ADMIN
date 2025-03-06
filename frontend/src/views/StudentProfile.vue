@@ -34,13 +34,11 @@
                 :disabled="studentGradStatus.studentStatus === 'MER'"
                 v-on:click="projectedGradStatusWithFinalAndReg"
                 >Update TVR</v-list-item
-              >
+              > 
               <v-list-item
                 :disabled="
-                  studentGradStatus.recalculateGradStatus !== 'Y' ||
                   studentGradStatus.studentStatus === 'MER' ||
-                  (!!studentGradStatus.programCompletionDate &&
-                    studentGradStatus.program !== 'SCCP')
+                  !!studentGradStatus.programCompletionDate
                 "
                 v-on:click="graduateStudent"
                 >Update Grad Status</v-list-item
