@@ -133,7 +133,11 @@
                 >
                 <v-spacer />
                 <!-- Right Action Button -->
-                <v-btn v-if="step < 1" @click="step++" color="bcGovBlue"
+                <v-btn
+                  v-if="step < 1" 
+                  @click="step++" 
+                  :disabled="v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid" 
+                  color="bcGovBlue"
                   >Next</v-btn
                 >
                 <v-btn
