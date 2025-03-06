@@ -102,6 +102,7 @@ export default {
     return {
       pen: {
         minLength: minLength(9),
+        maxLength: maxLength(9),
       }, // Matches this.firstName
     };
   },
