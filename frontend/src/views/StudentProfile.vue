@@ -38,7 +38,7 @@
               <v-list-item
                 :disabled="
                   studentGradStatus.studentStatus === 'MER' ||
-                  !!studentGradStatus.programCompletionDate
+                  isProgramComplete(studentGradStatus.programCompletionDate, studentGradStatus.program)
                 "
                 v-on:click="graduateStudent"
                 >Update Grad Status</v-list-item
@@ -582,6 +582,9 @@ import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/Studen
 import StudentUndoCompletionReasons from "@/components/StudentProfile/StudentUndoCompletionReasons.vue";
 import StudentNotes from "@/components/StudentProfile/AuditHistory/StudentNotes.vue";
 import DisplayTable from "@/components/DisplayTable.vue";
+
+// shared functions
+import { isProgramComplete } from "../utils/common";
 
 // pinia store
 import { useSnackbarStore } from "@/store/modules/snackbar";
@@ -1183,6 +1186,9 @@ export default {
             );
           }
         });
+    },
+    isProgramComplete(date, program) {
+      return isProgramComplete(date, program)
     },
   },
 };
