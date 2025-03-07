@@ -17,55 +17,13 @@ let districtsNumber_ID_Map = new Map();
 let mincode_school_ID_Map = new Map();
 let activeSchools = [];
 let activeDistricts = [];
-let programCodes = [];
-let studentStatusCodes = [];
+let addressTypeCodes = [];
+let schoolCategoryCodes = [];
+let facilityCodes = [];
+let gradeCodes = [];
 
 const cacheService = {
-
-
-  
-
-  async loadStudentStatusCodes(){
-    log.debug('Loading all school Category Codes');
-    await retry(async () => {
-      // if anything throws, we retry
-      const data = await getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
-      
-      console.log(data.accessToken)
-      const studentStatusResponse = await getData(data.accessToken, `${config.get('server:studentGraduationAPIURL')}/api/v1/studentgraduation/undocompletion/undocompletionreason`);
-      studentStatusCodes = []; // reset the value.
-      if (studentStatusResponse && studentStatusResponse.length > 0) {
-        studentStatusCodes = studentStatusResponse
-        
-      }
-      log.info(`Loaded ${studentStatusCodes.length} program codes.`);
-    }, {
-      retries: 10
-    });
-  },
-
-
-  async loadProgramCodes(){
-    log.debug('Loading all school Category Codes');
-    await retry(async () => {
-      // if anything throws, we retry
-      const data = await getApiCredentials(config.get("oidc:clientId"), config.get("oidc:clientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
-      
-      console.log(data.accessToken)
-      const programResponse = await getData(data.accessToken, `${config.get('server:programAPIURL')}/api/v1/program/allprogramrules`);
-      programCodes = []; // reset the value.
-      if (programResponse && programResponse.length > 0) {
-        programCodes = programResponse
-        
-      }
-      log.info(`Loaded ${programCodes.length} program codes.`);
-    }, {
-      retries: 10
-    });
-  },
-
   async loadAllSchoolsToMap() {
-    log.debug('Loading all schoolsMap');
     await retry(async () => {
       // if anything throws, we retry
       const data = await getApiCredentials(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
@@ -91,6 +49,74 @@ const cacheService = {
       retries: 10
     });
   },
+  async loadAddressTypeCodes() {
+    await retry(async () => {
+      // if anything throws, we retry
+      const data = await getApiCredentials(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
+      const addressTypeCodesResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/api/v1/institute/address-type-codes`);
+      addressTypeCodes = []; // reset the value.
+      if (addressTypeCodesResponse && addressTypeCodesResponse.length > 0) {
+          addressTypeCodes = addressTypeCodesResponse
+      }
+      log.info(`Loaded ${addressTypeCodes.length} address type codes.`);
+    }, {
+      retries: 10
+    });
+  },
+  async loadSchoolCategoryCodes() {
+    await retry(async () => {
+      // if anything throws, we retry
+      const data = await getApiCredentials(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
+      const categoryCodesResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/api/v1/institute/category-codes`);
+      schoolCategoryCodes = []; // reset the value.
+      if (categoryCodesResponse && categoryCodesResponse.length > 0) {
+          schoolCategoryCodes = categoryCodesResponse
+      }
+      log.info(`Loaded ${schoolCategoryCodes.length} school category codes.`);
+    }, {
+      retries: 10
+    });
+  },
+  async loadFacilityCodes() {
+    await retry(async () => {
+      // if anything throws, we retry
+      const data = await getApiCredentials(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
+      const facilityCodesResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/api/v1/institute/facility-codes`);
+      facilityCodes = []; // reset the value.
+      if (facilityCodesResponse && facilityCodesResponse.length > 0) {
+        facilityCodes = facilityCodesResponse
+      }
+      log.info(`Loaded ${facilityCodes.length} facility codes.`);
+    }, {
+      retries: 10
+    });
+  },
+  async loadGradeCodes() {
+    await retry(async () => {
+      // if anything throws, we retry
+      const data = await getApiCredentials(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), "client_credentials", "profile openid"); // get the tokens first to make api calls.
+      const gradeCodesResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/api/v1/institute/grade-codes`);
+      gradeCodes = []; // reset the value.
+      if (gradeCodesResponse && gradeCodesResponse.length > 0) {
+        gradeCodes = gradeCodesResponse
+      }
+      log.info(`Loaded ${gradeCodes.length} grade codes.`);
+    }, {
+      retries: 10
+    });
+  },  
+  getGradeCodes(){
+    return gradeCodes;
+  },
+  getFacilityCodes(){
+    return facilityCodes;
+  },
+  getCategoryCodes(){
+    return schoolCategoryCodes;
+  },
+  getAddressTypeCodes(){
+     return addressTypeCodes;
+  },
   getAllSchoolsJSON() {
     return schools;
   },
@@ -105,7 +131,6 @@ const cacheService = {
   },
  
   async loadAllDistrictsToMap() {
-    log.debug('Loading all districtsMap');
     await retry(async () => {
       const data = await getApiCredentials(config.get("oidc:serviceClientId"), config.get("oidc:serviceClientSecret"), "client_credentials", "profile openid");
       const districtsResponse = await getData(data.accessToken, `${config.get('server:instituteAPIURL')}/api/v1/institute/district`);
@@ -130,7 +155,6 @@ const cacheService = {
     }, {
       retries: 50
     });
-
   },
   getAllDistrictsJSON() {
     return districts;

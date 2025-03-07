@@ -4,7 +4,7 @@ const router = express.Router();
 const config = require("../config/index");
 const auth = require("../components/auth");
 const roles = require("../components/roles");
-const { getAllSchoolsList,  getSchoolBySchoolID, getAllSchoolDetails, getFullSchoolDetails, getAllCachedSchools } = require('../components/school');
+const { getAllSchoolsList,  getSchoolBySchoolID, getAllSchoolDetails, getFullSchoolDetails, getAllCachedSchools, getAddressTypeCodes, getCategoryCodes, getFacilityCodes, getGradeCodes } = require('../components/school');
 const { getAllDistrictList, getDistrictByDistrictID } = require('../components/district');
 const {
   errorResponse,
@@ -27,6 +27,10 @@ router.get('/school', passport.authenticate('jwt', {session: false}, undefined),
 router.get('/school/list', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getAllSchoolsList);
 router.get('/school/:schoolID',passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getFullSchoolDetails);
 router.get('/district/list', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getAllDistrictList);
+router.get('/address-type-codes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getAddressTypeCodes);
+router.get('/category-codes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getCategoryCodes);
+router.get('/facility-codes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getFacilityCodes);
+router.get('/grade-codes', passport.authenticate('jwt', {session: false}, undefined), isValidUiTokenWithStaffRoles, getGradeCodes);
 
 router.get("/*", getInstituteAPI);
 

@@ -19,6 +19,9 @@ const port = normalizePort(config.get('server:port'));
 app.set('port', port);
 const server = http.createServer(app);
 
+
+
+
 //Create Cache for schools
 const cacheService = require('./components/cache-service');
 cacheService.loadAllSchoolsToMap().then(() => {
@@ -32,7 +35,31 @@ cacheService.loadAllDistrictsToMap().then(() => {
 }).catch((e) => {
   log.error('Error loading districtssMap during boot .', e);
 });
-//Create Cache for program codes.
+//Create Cache for address type codes.
+cacheService.loadAddressTypeCodes().then(() => {
+  log.info('Loaded address type codes to memory');
+}).catch((e) => {
+  log.error('Error loading address type codes during boot .', e);
+});
+
+//Create Cache for category codes.
+cacheService.loadSchoolCategoryCodes().then(() => {
+  log.info('Loaded category codes to memory');
+}).catch((e) => {
+  log.error('Error loading category codes during boot .', e);
+});
+//Create Cache for Grade Codes.
+cacheService.loadGradeCodes().then(() => {
+  log.info('Loaded grade codes to memory');
+}).catch((e) => {
+  log.error('Error loading grade codes during boot .', e);
+});
+//Create Cache for facility codes.
+cacheService.loadFacilityCodes().then(() => {
+  log.info('Loaded facility codes to memory');
+}).catch((e) => {
+  log.error('Error loading facility codes during boot .', e);
+});
 
 
 /**

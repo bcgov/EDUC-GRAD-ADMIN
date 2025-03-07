@@ -16,6 +16,7 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return 
     }else{
+      
       return ApiService.apiAxios.post('/api/v1/batch/specialrun', request);
     }
   },

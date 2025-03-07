@@ -13,7 +13,6 @@ export const useAppStore = defineStore("app", {
     pageTitle: "GRAD",
     districtsList: [],
     schoolsList: [],
-    schoolsList2: [],
     transcriptTypes: [],
     certificationTypes: [],
     config: null
@@ -134,15 +133,6 @@ export const useAppStore = defineStore("app", {
           .then((response) => {
             try {
               this.batchTypeCodes = response.data;
-            } catch (error) {
-              console.log(error);
-            }
-          });
-          ApiService.apiAxios
-          .get("/api/v1/institute/school/list")
-          .then((response) => {
-            try {
-              this.schoolsList2 = response.data;
             } catch (error) {
               console.log(error);
             }

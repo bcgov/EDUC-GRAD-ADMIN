@@ -3,14 +3,19 @@ const { LocalDate, DateTimeFormatter } = require('@js-joda/core');
 
 function generateSchoolObject(school) {
   return {
-    schoolID: school.schoolId,
+    schoolId: school.schoolId,
     districtID: school.districtId,
     mincode: school.mincode,
-    schoolName: school.displayName,
-    effectiveDate: school.openedDate,
-    expiryDate: school.closedDate,
+    independentAuthorityId: school.independentAuthorityId,
+    schoolNumber: school.schoolNumber,
+    displayName: school.displayName,
+    displayNameNoSpecialChars: school.displayNameNoSpecialChars,
     schoolCategoryCode: school.schoolCategoryCode,
-    facilityTypeCode: school.facilityTypeCode
+    facilityTypeCode: school.facilityTypeCode,
+    openedDate: school.openedDate,
+    closedDate: school.closedDate,
+    canIssueCertificates: school.canIssueCertificates,
+    canIssueTranscripts: school.canIssueTranscripts
   };
 }
 

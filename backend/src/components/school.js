@@ -29,10 +29,47 @@ async function getSchoolBySchoolID(req, res) {
 
 async function getAllCachedSchools(_req, res){
   try {
-    let allActiveSchools = cacheService.getAllSchoolsJSON();
-    return res.status(200).json(allActiveSchools ? allActiveSchools : []);
+    let cachedSchools = cacheService.getAllSchoolsJSON();
+    return res.status(200).json(cachedSchools ? cachedSchools : []);
   } catch (e) {
     logApiError(e, 'getAllCachedSchools', 'Error occurred while attempting to GET school entity.');
+    return errorResponse(res);
+  }
+}
+
+async function getAddressTypeCodes(_req, res){
+  try {
+    let addressTypeCodes = cacheService.getAddressTypeCodes();
+    return res.status(200).json(addressTypeCodes ? addressTypeCodes : []);
+  } catch (e) {
+    logApiError(e, 'getAddressTypeCodes', 'Error occurred while attempting to GET address type codes.');
+    return errorResponse(res);
+  }
+}
+async function getCategoryCodes(_req, res){
+  try {
+    let categoryCodes = cacheService.getCategoryCodes();
+    return res.status(200).json(categoryCodes ? categoryCodes : []);
+  } catch (e) {
+    logApiError(e, 'getCategoryCodes', 'Error occurred while attempting to GET category codes.');
+    return errorResponse(res);
+  }
+}
+async function getFacilityCodes(_req, res){
+  try {
+    let facilityCodes = cacheService.getFacilityCodes();
+    return res.status(200).json(facilityCodes ? facilityCodes : []);
+  } catch (e) {
+    logApiError(e, 'getFacilityCodes', 'Error occurred while attempting to GET facility codes.');
+    return errorResponse(res);
+  }
+}
+async function getGradeCodes(_req, res){
+  try {
+    let gradeCodes = cacheService.getGradeCodes();
+    return res.status(200).json(gradeCodes ? gradeCodes : []);
+  } catch (e) {
+    logApiError(e, 'getGradeCodes', 'Error occurred while attempting to GET grade codes.');
     return errorResponse(res);
   }
 }
@@ -162,5 +199,9 @@ module.exports = {
   getFullSchoolDetails,
   checkSchoolBelongsToDistrict,
   getAllSchoolsList,
+  getAddressTypeCodes,
+  getCategoryCodes,
+  getFacilityCodes,
+  getGradeCodes
 
 };
