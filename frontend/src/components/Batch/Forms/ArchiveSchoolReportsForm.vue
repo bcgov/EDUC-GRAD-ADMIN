@@ -27,7 +27,11 @@
             <template v-slot:default="{ prev, next }">
               <v-stepper-header>
                 <v-stepper-item
-                  :rules="[() => !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid]"
+                  :rules="[
+                      () =>
+                        !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid &&
+                        !v$.getBatchRequest.reportTypeRequired.$invalid
+                    ]"
                   complete
                   editable
                   title="Group"
@@ -198,7 +202,9 @@
                 <v-btn
                   v-if="step < 1" 
                   @click="step++" 
-                  :disabled="v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid" 
+                  :disabled="
+                    v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid || 
+                    v$.getBatchRequest.reportTypeRequired.$invalid" 
                   color="bcGovBlue">
                   Next
                 </v-btn>
@@ -273,6 +279,16 @@ export default {
         ),
       },
       getBatchRequest: {
+        reportTypeRequired: helpers.withMessage(
+          "Select a Report Type",
+          (value) => {
+            if (this.getReportType.length > 0) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+        ),
         batchRunTimeSet: helpers.withMessage("Runtime not set", (value) => {
           if (this.getBatchRunTime) {
             if (this.getBatchRunTime == "Run Now") {
