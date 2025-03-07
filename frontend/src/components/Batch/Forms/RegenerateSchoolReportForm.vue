@@ -30,7 +30,7 @@
                   :rules="[
                     () =>
                       !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid &&
-                      !v$.getBatchRequest.reportTypeRequired.$invalid,
+                      !v$.getBatchRequest.reportTypeRequired.$invalid
                   ]"
                   complete
                   editable
@@ -78,19 +78,21 @@
                     <v-col> </v-col>
                   </v-row>
                   <v-row>
-                    <v-select
-                      class="mt-2"
-                      v-model="group"
-                      :item-title="title"
-                      :item-value="value"
-                      :items="[
-                        'School',
-                        'School Category',
-                        { title: 'All', value: 'All Schools' },
-                      ]"
-                      label="Select a group"
-                      variant="outlined"
-                    />
+                    <v-col>
+                      <v-select
+                        class="mt-2"
+                        v-model="group"
+                        :item-title="title"
+                        :item-value="value"
+                        :items="[
+                          'School',
+                          'School Category',
+                          { title: 'All', value: 'All Schools' },
+                        ]"
+                        label="Select a group"
+                        variant="outlined"
+                      />
+                    </v-col>
                   </v-row>
                   <v-row v-if="group == 'School'">
                     <SchoolInput disableSelectStudents> </SchoolInput>
@@ -127,14 +129,20 @@
                   @click="step--"
                   color="bcGovBlue"
                   :disabled="step == 0"
-                  variant="outlined"
-                  >Back</v-btn
-                >
+                  variant="outlined">
+                  Back
+                </v-btn>
                 <v-spacer />
                 <!-- Right Action Button -->
-                <v-btn v-if="step < 1" @click="step++" color="bcGovBlue"
-                  >Next</v-btn
-                >
+                <v-btn
+                  v-if="step < 1" 
+                  @click="step++" 
+                  :disabled="
+                    v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid || 
+                    v$.getBatchRequest.reportTypeRequired.$invalid" 
+                  color="bcGovBlue">
+                  Next
+                </v-btn>
                 <v-btn
                   v-else
                   color="error"
@@ -143,9 +151,9 @@
                   density="default"
                   @click="submit"
                   :loading="batchLoading"
-                  :disabled="v$.$invalid || batchLoading"
-                  >Submit</v-btn
-                >
+                  :disabled="v$.$invalid || batchLoading">
+                  Submit
+                </v-btn>
               </div>
             </template>
           </v-stepper>
