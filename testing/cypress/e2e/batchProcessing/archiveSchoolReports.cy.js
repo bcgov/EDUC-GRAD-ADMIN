@@ -25,7 +25,29 @@ describe('Archive School Reports', () => {
     cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
     cy.get(batchProcessingSelectors.overlayWindow).find('input[value="REQUIRED_CONFIRMATION_1"]').click({force: true})
     cy.get(batchProcessingSelectors.overlayWindow).find('input[value="REQUIRED_CONFIRMATION_2"]').click({force: true})
-    
+
+    // Setup interception for getting job exec id
+    cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/report/school/archive`).as('batchRun')
+    cy.get(batchProcessingSelectors.overlayWindow).contains('Submit').click()
+    cy.wait('@batchRun').then(({response}) => {
+      cy.wrap(response.body).as('batchRunStatus')
+    })
+
+    // Watch Batch result through API
+    cy.get('@batchRunStatus').then(data => {
+      const batchId = data.batchId
+      cy.callBatchJobTillComplete(batchId, Date.now(), 10000)
+      // Batch job is completed -> call studentHistory API to make sure student is updated
+      cy.task('getBatchHistoryResultById', {batchJobResultId: batchId}).then((data) => {
+        const content = data.content
+        const endTime = getCurrentTimestamp()
+        if (content && content.length) {
+          expect(content).to.have.length(1)
+          // Make sure updateDate is properly updated
+          expect(isWithinMarginSeconds(content[0].updateDate, endTime)).to.be.true
+        }
+      })
+    })
   })
 
   it('Archives GRADREG', () => {
