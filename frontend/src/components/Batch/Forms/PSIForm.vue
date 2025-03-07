@@ -96,14 +96,18 @@
                   @click="step--"
                   color="bcGovBlue"
                   :disabled="step == 0"
-                  variant="outlined"
-                  >Back</v-btn
-                >
+                  variant="outlined">
+                  Back
+                </v-btn>
                 <v-spacer />
                 <!-- Right Action Button -->
-                <v-btn v-if="step < 1" @click="step++" color="bcGovBlue"
-                  >Next</v-btn
-                >
+                <v-btn
+                  v-if="step < 1" 
+                  @click="step++" 
+                  :disabled="v$.getBatchRequest.hasAtLeastOnePSiValue.$invalid" 
+                  color="bcGovBlue">
+                  Next
+                </v-btn>
                 <v-btn
                   v-else
                   color="error"
@@ -112,9 +116,9 @@
                   density="default"
                   @click="submit"
                   :loading="batchLoading"
-                  :disabled="v$.$invalid || batchLoading"
-                  >Submit</v-btn
-                >
+                  :disabled="v$.$invalid || batchLoading">
+                  Submit
+                </v-btn>
               </div>
             </template>
           </v-stepper>

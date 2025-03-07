@@ -27,9 +27,7 @@
             <template v-slot:default="{ prev, next }">
               <v-stepper-header>
                 <v-stepper-item
-                  :rules="[
-                    () => !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
-                  ]"
+                  :rules="[() => !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid]"
                   complete
                   editable
                   title="Group"
@@ -39,7 +37,11 @@
                 <v-divider></v-divider>
 
                 <v-stepper-item
-                  :rules="[() => !v$.getBatchRequest.batchRunTimeSet.$invalid]"
+                  :rules="[
+                    () => 
+                      !v$.getBatchRequest.batchRunTimeSet.$invalid && 
+                      !v$.selectedConfirmations.allConfirmationsSelected.$invalid
+                  ]"
                   complete
                   editable
                   title="Run/Schedule"
@@ -193,9 +195,13 @@
                 >
                 <v-spacer />
                 <!-- Right Action Button -->
-                <v-btn v-if="step < 1" @click="step++" color="bcGovBlue"
-                  >Next</v-btn
-                >
+                <v-btn
+                  v-if="step < 1" 
+                  @click="step++" 
+                  :disabled="v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid" 
+                  color="bcGovBlue">
+                  Next
+                </v-btn>
                 <v-btn
                   v-else
                   color="error"

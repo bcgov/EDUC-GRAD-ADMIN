@@ -52,12 +52,15 @@
               <v-stepper-window>
                 <v-stepper-window-item value="0">
                   <v-row>
-                    <v-select
-                      class="mt-2"
-                      v-model="group"
-                      :items="['School', 'All Students']"
-                      label="Select a group"
-                    ></v-select>
+                    <v-col>
+                      <v-select
+                        class="mt-2"
+                        v-model="group"
+                        :items="['School', 'All Students']"
+                        label="Select a group"
+                        variant="outlined"
+                      ></v-select>
+                    </v-col>
                   </v-row>
                   <v-row v-if="group == 'School'">
                     <SchoolInput>
@@ -202,14 +205,18 @@
                   @click="step--"
                   color="bcGovBlue"
                   :disabled="step == 0"
-                  variant="outlined"
-                  >Back</v-btn
-                >
+                  variant="outlined">
+                  Back
+                </v-btn>
                 <v-spacer />
                 <!-- Right Action Button -->
-                <v-btn v-if="step < 1" @click="step++" color="bcGovBlue"
-                  >Next</v-btn
-                >
+                <v-btn
+                  v-if="step < 1" 
+                  @click="step++" 
+                  :disabled="v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid" 
+                  color="bcGovBlue">
+                  Next
+                </v-btn>
                 <v-btn
                   v-else
                   color="error"
@@ -218,9 +225,9 @@
                   density="default"
                   @click="submit"
                   :loading="batchLoading"
-                  :disabled="v$.$invalid || batchLoading"
-                  >Submit</v-btn
-                >
+                  :disabled="v$.$invalid || batchLoading">
+                  Submit
+                </v-btn>
               </div>
             </template>
           </v-stepper>
