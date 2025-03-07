@@ -63,16 +63,16 @@
                     </v-col>
                   </v-row>
                   <v-row v-if="group == 'School'">
-                    <SchoolInput>
-                      <template #inputWarning>
-                        <p>
-                          All students with a School of Record matching the
-                          entered school and with a student status of CUR or a
-                          student status of TER will have their status changed
-                          to ARC
-                        </p>
-                      </template>
-                    </SchoolInput>
+                      <SchoolInput>
+                        <template #inputWarning>
+                          <p>
+                            All students with a School of Record matching the
+                            entered school and with a student status of CUR or a
+                            student status of TER will have their status changed
+                            to ARC
+                          </p>
+                        </template>
+                      </SchoolInput>
                   </v-row>
                   <v-row v-if="group == 'All Students'">
                     <v-alert>
