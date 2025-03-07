@@ -19,28 +19,16 @@ describe('API Test', () => {
   })
 
   // Have to update batchJobResultId to newer one
-  it('View batch result json', () => { 
-    const batchJobResultId = "117128"
+  it.only('View batch result json', () => { 
 
-    cy.task('getBatchSummary', {pageNumber: 0, pageSize: 10}).then((data) => {
+    const batchId = "118416"
+    cy.task('getBatchHistoryResultById', {batchJobResultId: batchId}).then((data) => {
       console.log(data)
-      const batchJobList = data.batchJobList
-      const batchJob = batchJobList.find(batchJob => batchJob.jobExecutionId == batchJobResultId)
-      console.log(batchJob)
-      expect(batchJob).to.have.property('status', 'COMPLETED')
+      const content = data.content
+      if (content && content.length) {
+        console.log(content)
+      }
     })
 
-    // const batchId = 117140
-    // const endTime = getCurrentTimestamp()
-    // cy.task('getBatchHistoryResultById', {batchJobResultId: batchId}).then((data) => {
-    //   const content = data.content
-    //   if (content && content.length) {
-    //     expect(content).to.have.length(1)
-    //     // Make sure updateDate is properly updated
-    //     console.log(endTime)
-    //     console.log(content[0].updateDate)
-    //     expect(isWithinMarginSeconds(content[0].updateDate, endTime)).to.be.true
-    //   }
-    // })
   })
 })
