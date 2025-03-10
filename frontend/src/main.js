@@ -18,6 +18,8 @@ import Snackbar from "./components/Common/Snackbar.vue";
 import "./assets/css/bcgov.css";
 import "./assets/css/global.css";
 
+// test comment
+
 //define custom theme
 const bcGovTheme = {
   dark: false,

@@ -7,7 +7,7 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
-  OPENSHIFT_NAMESPACE: bbe4c3-dev
+  OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-dev
 
   # 🖊️ EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
@@ -39,12 +39,16 @@ env:
 
 on:
   workflow_dispatch:
-
+  push:
+    branches:
+      - 'release/**'
+    paths:
+      - 'frontend/**'
 jobs:
   openshift-ci-cd:
     name: Build & Deploy Frontend to DEV
     # ubuntu-latest can also be used.
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     environment: dev
 
     steps:
@@ -87,7 +91,9 @@ jobs:
             }
 
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       - name: Determine app name
         if: env.APP_NAME_FRONTEND == ''
@@ -133,7 +139,7 @@ jobs:
           oc: 4
 
         # https://github.com/redhat-actions/oc-login#readme
-      - uses: actions/checkout@v2
+
       - name: Build frontend static
         id: build-image-frontend-static
         run: |
@@ -147,7 +153,7 @@ jobs:
           oc tag ${{ steps.push-image-frontend.outputs.registry-path }} ${{ env.APP_NAME }}-frontend:${{ env.TAG }}
 
         # https://github.com/redhat-actions/oc-login#readme
-      - uses: actions/checkout@v2
+
       - name: Deploy
         run: |
           set -eux

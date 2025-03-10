@@ -134,42 +134,49 @@ export default {
   },
   sortDistrictListByActiveAndDistrictNumber(districtsList) {
     if (!districtsList) return [];
-  
+
     return districtsList.sort((a, b) => {
       // First, prioritize districts with districtStatusCode "ACTIVE"
-      if (a.districtStatusCode === "ACTIVE" && b.districtStatusCode !== "ACTIVE") {
+      if (
+        a.districtStatusCode === "ACTIVE" &&
+        b.districtStatusCode !== "ACTIVE"
+      ) {
         return -1; // "ACTIVE" comes first
       }
-      if (a.districtStatusCode !== "ACTIVE" && b.districtStatusCode === "ACTIVE") {
+      if (
+        a.districtStatusCode !== "ACTIVE" &&
+        b.districtStatusCode === "ACTIVE"
+      ) {
         return 1; // "ACTIVE" comes first
       }
-  
+
       // Second, sort by districtNumber (as numeric, handling strings like "103", "005", etc.)
       const aNumber = parseInt(a.districtNumber, 10);
       const bNumber = parseInt(b.districtNumber, 10);
-  
+
       return aNumber - bNumber; // Numeric sorting
     });
   },
-  getSchoolOpenStatus(school) {
-    if (!school) return 'Closed'
-
-    const openedDate = new Date(school?.openedDate);
-    const closedDate = school?.closedDate
-      ? new Date(school?.closedDate)
-      : null;
+  getSchoolOpenStatus(openedDateString, closedDateString) {
+    const openedDate = new Date(openedDateString);
+    const closedDate = !!closedDateString ? new Date(closedDateString) : null;
     const currentDate = new Date();
 
-    if (openedDate <= currentDate && !closedDate) 
-      return 'Open'
-    if (openedDate <= currentDate && closedDate && currentDate < closedDate)
-      return 'Closing'
-    if (currentDate < openedDate)
-      return 'Opening'
-    if (closedDate && closedDate < currentDate)
-      return 'Closed'
-
-    else return 'Closed'
+    if (openedDate <= currentDate && !closedDate) {
+      return "Open";
+    } else if (
+      openedDate <= currentDate &&
+      closedDate &&
+      currentDate < closedDate
+    ) {
+      return "Closing";
+    } else if (currentDate < openedDate) {
+      return "Opening";
+    } else if (closedDate && closedDate < currentDate) {
+      return "Closed";
+    } else {
+      return "Invalid"; //return Invalid in case of bad data to sort at bottom of list
+    }
   },
   sortSchoolList(schoolsList) {
     if (!schoolsList) return [];
@@ -189,10 +196,26 @@ export default {
       }
 
       // Sort by school status (descending: open - closing - opening - closed)
-      const openStatusOrder = {'Open': 0, 'Closing': 1, 'Opening': 2, 'Closed': 3}
-      if (openStatusOrder[this.getSchoolOpenStatus(a)] < openStatusOrder[this.getSchoolOpenStatus(b)]) {
+      const openStatusOrder = {
+        Open: 0,
+        Closing: 1,
+        Opening: 2,
+        Closed: 3,
+        Invalid: 4,
+      };
+      if (
+        openStatusOrder[
+          this.getSchoolOpenStatus(a?.openedDate, a?.closedDate)
+        ] <
+        openStatusOrder[this.getSchoolOpenStatus(b?.openedDate, b?.closedDate)]
+      ) {
         return -1;
-      } else if (openStatusOrder[this.getSchoolOpenStatus(a)] > openStatusOrder[this.getSchoolOpenStatus(b)]) {
+      } else if (
+        openStatusOrder[
+          this.getSchoolOpenStatus(a?.openedDate, a?.closedDate)
+        ] >
+        openStatusOrder[this.getSchoolOpenStatus(b?.openedDate, b?.closedDate)]
+      ) {
         return 1;
       }
 
