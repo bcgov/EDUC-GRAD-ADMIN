@@ -74,8 +74,6 @@ export const useAppStore = defineStore("app", {
       const categoryCode = state.instituteCategoryCodes.find(
         (categoryCode) => code === categoryCode.schoolCategoryCode
       );
-      console.log(code);
-      console.log(state.instituteCategoryCodes);
 
       return categoryCode?.legacyCode + " - " + categoryCode?.label;
     },
