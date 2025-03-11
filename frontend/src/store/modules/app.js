@@ -56,6 +56,12 @@ export const useAppStore = defineStore("app", {
           (district) => districtId === district.districtId
         );
     },
+    getDistrictByDistrictNumber: (state) => {
+      return (districtNumber) =>
+        state.districtsList.find(
+          (district) => districtNumber === district.districtNumber
+        );
+    },
     getInstituteAddressTypeCodes: (state) => state.instituteAddressTypeCodes,
     getInstituteAddressTypeCode: (state) => {
       return (code) =>
@@ -63,7 +69,20 @@ export const useAppStore = defineStore("app", {
           (addressTypeCode) => code === addressTypeCode.addressTypeCode
         );
     },
+    // We should move to rename these to drop the "get" part to align with student admin and avoid naming conflicts
     schoolCategoryCodes: (state) => state.instituteCategoryCodes,
+    getBatchSchoolCategoryCodes: (state) => {
+      const includedCategories = [
+        "PUBLIC",
+        "INDEPEND",
+        "FED_BAND",
+        "YUKON",
+        "OFFSHORE",
+      ];
+      return state.instituteCategoryCodes.filter((item) =>
+        includedCategories.includes(item.schoolCategoryCode)
+      );
+    },
     getInstituteCategoryByCode: (state) => {
       return (code) =>
         state.instituteCategoryCodes.find(
