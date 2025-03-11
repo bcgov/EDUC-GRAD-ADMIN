@@ -250,7 +250,7 @@ export const useAppStore = defineStore("app", {
       }
     },
     async setInstituteFacilityCodes(facilityCodes) {
-      this.instituteCategoryCodes =
+      this.instituteFacilityCodes =
         sharedMethods.applyDisplayOrder(facilityCodes);
     },
     async getInstituteGradeCodes(getNewData = true) {
