@@ -94,7 +94,6 @@ export const useAppStore = defineStore("app", {
   actions: {
     async setApplicationVariables() {
       if (localStorage.getItem("jwtToken")) {
-        console.log("set app vars");
         // GET & SET CONFIG
         await this.getConfig();
         // GET & SET GRAD CODES
@@ -197,8 +196,7 @@ export const useAppStore = defineStore("app", {
       }
     },
     async setSchoolsList(schools) {
-      this.schoolsList =
-        sharedMethods.sortSchoolListByTranscriptsAndMincode(schools);
+      this.schoolsList = sharedMethods.sortSchoolList(schools);
     },
     async setSchoolsMap(schools) {
       this.schoolsMap = new Map();
