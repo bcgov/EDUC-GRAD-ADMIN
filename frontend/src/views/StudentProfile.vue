@@ -34,11 +34,14 @@
                 :disabled="studentGradStatus.studentStatus === 'MER'"
                 v-on:click="projectedGradStatusWithFinalAndReg"
                 >Update TVR</v-list-item
-              > 
+              >
               <v-list-item
                 :disabled="
                   studentGradStatus.studentStatus === 'MER' ||
-                  isProgramComplete(studentGradStatus.programCompletionDate, studentGradStatus.program)
+                  isProgramComplete(
+                    studentGradStatus.programCompletionDate,
+                    studentGradStatus.program
+                  )
                 "
                 v-on:click="graduateStudent"
                 >Update Grad Status</v-list-item
@@ -664,6 +667,7 @@ export default {
       await this.getDistricts(false);
       await this.getProgramOptions(false);
       await this.getUngradReasons(false);
+      await this.getInstituteCategoryCodes(false);
     } catch (e) {
       if (e.response.status) {
         this.snackbarStore.showSnackbar(
@@ -845,6 +849,7 @@ export default {
       "getDistricts",
       "getProgramOptions",
       "getUngradReasons",
+      "getInstituteCategoryCodes",
     ]),
     submitStudentUndoCompletion() {
       this.ungraduateStudent();
@@ -1218,7 +1223,7 @@ export default {
         });
     },
     isProgramComplete(date, program) {
-      return isProgramComplete(date, program)
+      return isProgramComplete(date, program);
     },
   },
 };

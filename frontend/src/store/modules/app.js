@@ -74,6 +74,8 @@ export const useAppStore = defineStore("app", {
       const categoryCode = state.instituteCategoryCodes.find(
         (categoryCode) => code === categoryCode.schoolCategoryCode
       );
+      console.log(code);
+      console.log(state.instituteCategoryCodes);
 
       return categoryCode?.legacyCode + " - " + categoryCode?.label;
     },
@@ -250,7 +252,7 @@ export const useAppStore = defineStore("app", {
       }
     },
     async setInstituteFacilityCodes(facilityCodes) {
-      this.instituteCategoryCodes =
+      this.instituteFacilityCodes =
         sharedMethods.applyDisplayOrder(facilityCodes);
     },
     async getInstituteGradeCodes(getNewData = true) {
