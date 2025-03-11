@@ -34,13 +34,11 @@
                 :disabled="studentGradStatus.studentStatus === 'MER'"
                 v-on:click="projectedGradStatusWithFinalAndReg"
                 >Update TVR</v-list-item
-              >
+              > 
               <v-list-item
                 :disabled="
-                  studentGradStatus.recalculateGradStatus !== 'Y' ||
                   studentGradStatus.studentStatus === 'MER' ||
-                  (!!studentGradStatus.programCompletionDate &&
-                    studentGradStatus.program !== 'SCCP')
+                  isProgramComplete(studentGradStatus.programCompletionDate, studentGradStatus.program)
                 "
                 v-on:click="graduateStudent"
                 >Update Grad Status</v-list-item
@@ -572,6 +570,7 @@
 import AssessmentService from "@/services/AssessmentService.js";
 import CourseService from "@/services/CourseService.js";
 import StudentService from "@/services/StudentService.js";
+import StudentGraduationService from "@/services/StudentGraduationService.js";
 import GraduationService from "@/services/GraduationService.js";
 import GRADRequirementDetails from "@/components/StudentProfile/GRADRequirementDetails.vue";
 import StudentInformation from "@/components/StudentProfile/StudentInformation.vue";
@@ -584,6 +583,9 @@ import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/Studen
 import StudentUndoCompletionReasons from "@/components/StudentProfile/StudentUndoCompletionReasons.vue";
 import StudentNotes from "@/components/StudentProfile/AuditHistory/StudentNotes.vue";
 import DisplayTable from "@/components/DisplayTable.vue";
+
+// shared functions
+import { isProgramComplete } from "../utils/common";
 
 // pinia store
 import { useSnackbarStore } from "@/store/modules/snackbar";
@@ -646,6 +648,23 @@ export default {
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
   },
+  async beforeMount() {
+    // load store with items used in this view
+    try {
+      await this.getSchools(false);
+      await this.getDistricts(false);
+      await this.getProgramOptions(false);
+      await this.getUngradReasons(false);
+    } catch (e) {
+      if (e.response.status) {
+        this.snackbarStore.showSnackbar(
+          "There was an error: " + e.response.status,
+          "error",
+          5000
+        );
+      }
+    }
+  },
   components: {
     StudentInformation: StudentInformation,
     StudentUndoCompletionReasons: StudentUndoCompletionReasons,
@@ -677,9 +696,6 @@ export default {
         description: null,
         confirm: false,
       },
-      // studentUngradReasonSelected: "",
-      // studentUngradReasonDescription: "",
-      // confirmStudentUndoCompletion: false,
       selectedSubTab: "gradStatus",
       selectedTab: 0,
       projectedGradStatus: [],
@@ -815,6 +831,12 @@ export default {
       "setStudentPen",
       "setStudentId",
     ]),
+    ...mapActions(useAppStore, [
+      "getSchools",
+      "getDistricts",
+      "getProgramOptions",
+      "getUngradReasons",
+    ]),
     submitStudentUndoCompletion() {
       this.ungraduateStudent();
       this.closeStudentUndoCompletionDialog();
@@ -836,7 +858,7 @@ export default {
       }
       StudentService.ungradStudent(this.studentId, ungradCode, ungradDesc)
         .then(() => {
-          StudentService.getStudentUngradReasons(this.studentId)
+          StudentGraduationService.getStudentUngradReasons(this.studentId)
             .then((response) => {
               this.setStudentUngradReasons(response.data);
             })
@@ -1172,7 +1194,7 @@ export default {
         });
     },
     loadStudentUngradReasons(studentIdFromURL) {
-      StudentService.getStudentUngradReasons(studentIdFromURL)
+      StudentGraduationService.getStudentUngradReasons(studentIdFromURL)
         .then((response) => {
           this.setStudentUngradReasons(response.data);
         })
@@ -1185,6 +1207,9 @@ export default {
             );
           }
         });
+    },
+    isProgramComplete(date, program) {
+      return isProgramComplete(date, program)
     },
   },
 };
