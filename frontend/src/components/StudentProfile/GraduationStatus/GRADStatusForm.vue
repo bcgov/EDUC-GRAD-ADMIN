@@ -374,6 +374,32 @@
                     <template v-slot:label="label">
                       {{ label.label }}
                     </template>
+
+                    <template v-slot:append-inner>
+                      <OpenStatusBadge
+                        v-if="editedGradStatus.schoolOfRecordId"
+                        :compact="false"
+                        :openedDateString="
+                          getSchoolById(editedGradStatus.schoolOfRecordId)
+                            ?.openedDate
+                        "
+                        :closedDateString="
+                          getSchoolById(editedGradStatus.schoolOfRecordId)
+                            ?.closedDate
+                        "
+                      />
+                    </template>
+
+                    <template v-slot:item="{ props, item }">
+                      <v-list-item v-bind="props" :key="item.value">
+                        <template v-slot:append>
+                          <OpenStatusBadge
+                            :openedDateString="item.raw.openedDate"
+                            :closedDateString="item.raw.closedDate"
+                          />
+                        </template>
+                      </v-list-item>
+                    </template>
                   </v-autocomplete>
                 </td>
               </tr>
@@ -441,7 +467,7 @@
                         .ifSchoolAtGradIdProgramIs1950AndOffshore.$message
                     }}
                   </div>
-                  <v-autocomplete
+                  <!-- <v-autocomplete
                     data-cy="school-at-graduation-autoselect"
                     v-model="editedGradStatus.schoolAtGradId"
                     label="Select a school"
@@ -456,7 +482,19 @@
                     <template v-slot:label="label">
                       {{ label.label }}
                     </template>
-                  </v-autocomplete>
+                  </v-autocomplete> -->
+                  <p
+                    data-cy="school-at-graduation-text" 
+                    v-if="editedGradStatus?.schoolAtGradId">
+                    {{
+                      getSchoolById(editedGradStatus?.schoolAtGradId)?.mincode
+                    }}
+                    -
+                    {{
+                      getSchoolById(editedGradStatus?.schoolAtGradId)
+                        ?.displayName
+                    }}
+                  </p>
                 </td>
               </tr>
               <!-- School at graduation End-->
@@ -638,11 +676,16 @@ import {
   parseStudentStatus,
 } from "../../../utils/common.js";
 
+import OpenStatusBadge from "@/components/Common/OpenStatusBadge.vue";
+
 import sharedMethods from "../../../sharedMethods";
 import StudentService from "@/services/StudentService.js";
 import InstituteService from "@/services/InstituteService.js";
 export default {
   name: "GRADStatusForm",
+  components: {
+    OpenStatusBadge: OpenStatusBadge,
+  },
   created() {
     this.containsAnyLetters = containsAnyLetters;
     this.parseStudentStatus = parseStudentStatus;

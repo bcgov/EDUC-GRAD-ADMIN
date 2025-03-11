@@ -157,17 +157,69 @@ export default {
       return aNumber - bNumber; // Numeric sorting
     });
   },
-  sortSchoolListByTranscriptsAndMincode(schoolsList) {
-    if (!schoolsList) return [];
+  getSchoolOpenStatus(openedDateString, closedDateString) {
+    const openedDate = new Date(openedDateString);
+    const closedDate = !!closedDateString ? new Date(closedDateString) : null;
+    const currentDate = new Date();
 
+    if (openedDate <= currentDate && !closedDate) {
+      return "Open";
+    } else if (
+      openedDate <= currentDate &&
+      closedDate &&
+      currentDate < closedDate
+    ) {
+      return "Closing";
+    } else if (currentDate < openedDate) {
+      return "Opening";
+    } else if (closedDate && closedDate < currentDate) {
+      return "Closed";
+    } else {
+      return "Invalid"; //return Invalid in case of bad data to sort at bottom of list
+    }
+  },
+  sortSchoolList(schoolsList) {
+    if (!schoolsList) return [];
     return [...schoolsList].sort((a, b) => {
-      // Sort by canIssueCertificates first (descending - true values first)
+      // Sort by canIssueTranscript first (descending - true values first)
       if (a.canIssueTranscripts && !b.canIssueTranscripts) {
         return -1;
       } else if (!a.canIssueTranscripts && b.canIssueTranscripts) {
         return 1;
       }
-      // If canIssueTranscripts is the same, sort by mincode (ascending)
+
+      // Sort by canIssueCertificates first (descending - true values first)
+      if (a.canIssueCertificates && !b.canIssueCertificates) {
+        return -1;
+      } else if (!a.canIssueCertificates && b.canIssueCertificates) {
+        return 1;
+      }
+
+      // Sort by school status (descending: open - closing - opening - closed)
+      const openStatusOrder = {
+        Open: 0,
+        Closing: 1,
+        Opening: 2,
+        Closed: 3,
+        Invalid: 4,
+      };
+      if (
+        openStatusOrder[
+          this.getSchoolOpenStatus(a?.openedDate, a?.closedDate)
+        ] <
+        openStatusOrder[this.getSchoolOpenStatus(b?.openedDate, b?.closedDate)]
+      ) {
+        return -1;
+      } else if (
+        openStatusOrder[
+          this.getSchoolOpenStatus(a?.openedDate, a?.closedDate)
+        ] >
+        openStatusOrder[this.getSchoolOpenStatus(b?.openedDate, b?.closedDate)]
+      ) {
+        return 1;
+      }
+
+      // If they all are the same, sort by mincode (ascending)
       return a.mincode.localeCompare(b.mincode);
     });
   },

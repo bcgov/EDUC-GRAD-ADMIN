@@ -34,13 +34,11 @@
                 :disabled="studentGradStatus.studentStatus === 'MER'"
                 v-on:click="projectedGradStatusWithFinalAndReg"
                 >Update TVR</v-list-item
-              >
+              > 
               <v-list-item
                 :disabled="
-                  studentGradStatus.recalculateGradStatus !== 'Y' ||
                   studentGradStatus.studentStatus === 'MER' ||
-                  (!!studentGradStatus.programCompletionDate &&
-                    studentGradStatus.program !== 'SCCP')
+                  isProgramComplete(studentGradStatus.programCompletionDate, studentGradStatus.program)
                 "
                 v-on:click="graduateStudent"
                 >Update Grad Status</v-list-item
@@ -594,6 +592,9 @@ import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/Studen
 import StudentUndoCompletionReasons from "@/components/StudentProfile/StudentUndoCompletionReasons.vue";
 import StudentNotes from "@/components/StudentProfile/AuditHistory/StudentNotes.vue";
 import DisplayTable from "@/components/DisplayTable.vue";
+
+// shared functions
+import { isProgramComplete } from "../utils/common";
 
 // pinia store
 import { useSnackbarStore } from "@/store/modules/snackbar";
@@ -1215,6 +1216,9 @@ export default {
             );
           }
         });
+    },
+    isProgramComplete(date, program) {
+      return isProgramComplete(date, program)
     },
   },
 };
