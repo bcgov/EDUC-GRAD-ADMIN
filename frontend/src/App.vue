@@ -107,17 +107,6 @@ export default {
         });
       }
     }
-    // .then(() => this.setApplicationVariables())
-    // .catch((e) => {
-    //   if (!e.response) {
-    //     this.logout();
-    //     this.$router.replace({
-    //       name: "error",
-    //       query: { message: `500_${e.data || "ServerError"}` },
-    //     });
-    //   }
-    // })
-    // .finally(() => {});
   },
   data() {
     return {

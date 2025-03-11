@@ -215,7 +215,6 @@ export const useAppStore = defineStore("app", {
         sharedMethods.sortDistrictListByActiveAndDistrictNumber(districts);
     },
     async getInstituteCategoryCodes(getNewData = true) {
-      console.log("WHY");
       if (
         getNewData ||
         !sharedMethods.dataArrayExists(this.instituteCategoryCodes)
