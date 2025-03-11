@@ -1,8 +1,14 @@
 import { defineStore } from "pinia";
-import ApiService from "../../common/apiService.js";
-import InstituteService from "../../services/InstituteService.js";
+
+import CommonService from "@/services/CommonService.js";
+import InstituteService from "@/services/InstituteService.js";
+import StudentService from "@/services/StudentService.js";
+import StudentGraduationService from "@/services/StudentGraduationService.js";
+import ProgramManagementService from "@/services/ProgramManagementService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
-import sharedMethods from "../../sharedMethods.js";
+import BatchProcessingService from "@/services/BatchProcessingService.js";
+
+import sharedMethods from "@/sharedMethods.js";
 export const useAppStore = defineStore("app", {
   state: () => ({
     pageTitle: "GRAD",
@@ -13,11 +19,13 @@ export const useAppStore = defineStore("app", {
     transcriptTypes: [],
     certificationTypes: [],
     schoolsList: [],
+    schoolsMap: new Map(),
     districtsList: [],
     instituteAddressTypeCodes: [],
     instituteCategoryCodes: [],
     instituteFacilityCodes: [],
     instituteGradeCodes: [],
+    config: null,
   }),
   getters: {
     getProgramOptions: (state) => state.programOptions,
@@ -25,11 +33,18 @@ export const useAppStore = defineStore("app", {
     getUngradReasons: (state) => state.ungradReasons,
     getSchoolsList: (state) => state.schoolsList,
     getSchoolById: (state) => {
-      if (!sharedMethods.dataArrayExists(state.schoolsList)) {
-        getSchoolsList();
-      }
       return (schoolId) =>
         state.schoolsList.find((school) => schoolId === school.schoolId);
+    },
+    getSchoolMincodeById: (state) => {
+      return (schoolId) => {
+        if (schoolId === "00000000-0000-0000-0000-000000000000") {
+          // Special school code for Ministry of Advanced Education
+          return "Ministry of Advanced Education";
+        }
+        return state.schoolsList.find((school) => schoolId === school.schoolId)
+          ?.mincode;
+      };
     },
     getDistrictList: (state) => state.districtsList,
     getDistrictById: (state) => {
@@ -45,7 +60,7 @@ export const useAppStore = defineStore("app", {
           (addressTypeCode) => code === addressTypeCode.addressTypeCode
         );
     },
-    getInstituteCategoryCodes: (state) => state.instituteCategoryCodes,
+    schoolCategoryCodes: (state) => state.instituteCategoryCodes,
     getInstituteCategoryByCode: (state) => {
       return (code) =>
         state.instituteCategoryCodes.find(
@@ -59,15 +74,15 @@ export const useAppStore = defineStore("app", {
 
       return categoryCode?.legacyCode + " - " + categoryCode?.label;
     },
-    getInstituteFacilityCodes: (state) => state.instituteFacilityCodes,
-    getInstituteFacilityCode: (state) => {
+    getFacilityCodes: (state) => state.instituteFacilityCodes,
+    getFacilityCode: (state) => {
       return (code) =>
         state.instituteFacilityCodes.find(
           (facilityCode) => code === facilityCode.facilityTypeCode
         );
     },
-    getInstituteGradeCodes: (state) => state.instituteGradeCodes,
-    getInstituteGradeCode: (state) => {
+    getGradeCodes: (state) => state.instituteGradeCodes,
+    getGradeCode: (state) => {
       return (code) =>
         state.instituteGradeCodes.find(
           (gradeCode) => code === gradeCode.schoolGradeCode
@@ -79,159 +94,166 @@ export const useAppStore = defineStore("app", {
   actions: {
     async setApplicationVariables() {
       if (localStorage.getItem("jwtToken")) {
-        await this.setProgramOptions();
-        await this.setStudentStatusOptions();
-        await this.setUndoCompletionReasons();
-        await this.setBatchJobTypes();
-        await this.setTranscriptTypes();
-        await this.setCertificateTypes();
-        // SET INSTITUTE SCHOOL AND DISTRICT DATA
-        await this.setSchoolsList();
-        await this.setDistrictsList();
-        // SET INSTITUTE CODES
-        await this.setInstituteCategoryCodes();
-        await this.setInstituteFacilityCodes();
-        await this.setInstituteGradeCodes();
+        console.log("set app vars");
+        // GET & SET CONFIG
+        await this.getConfig();
+        // GET & SET GRAD CODES
+        await this.getProgramOptionCodes();
+        await this.getStudentStatusOptionCodes();
+        await this.getUndoCompletionReasonCodes();
+        await this.getBatchJobTypeCodes();
+        await this.getTranscriptTypeCodes();
+        await this.getCertificateTypeCodes();
+        // GET & SET INSTITUTE SCHOOL AND DISTRICT LISTS
+        await this.getSchools();
+        await this.getDistricts();
+        // GET & SET INSTITUTE CODES
+        await this.getInstituteCategoryCodes();
+        await this.getInstituteFacilityCodes();
+        await this.getInstituteGradeCodes();
       }
     },
-    async setProgramOptions() {
-      await ApiService.apiAxios
-        .get("/api/v1/program/programs")
-        .then((response) => {
-          const programs = response.data.filter((obj) => {
-            return obj.programCode !== "NOPROG";
-          });
-          this.programOptions = sharedMethods.applyDisplayOrder(programs);
-        });
+    async getConfig() {
+      let response = await CommonService.getConfig();
+      await this.setConfig(response.data);
     },
-    async setStudentStatusOptions() {
-      await ApiService.apiAxios
-        .get("/api/v1/student/studentstatus")
-        .then((response) => {
-          try {
-            this.studentStatusOptions = sharedMethods.applyDisplayOrder(
-              response.data
-            );
-          } catch (error) {
-            console.log(error);
-          }
-        });
+    async setConfig(config) {
+      this.config = config;
     },
-    async setUndoCompletionReasons() {
-      await ApiService.apiAxios
-        .get("/api/v1/studentgraduation/undocompletion/undocompletionreason")
-        .then((response) => {
-          try {
-            this.ungradReasons = sharedMethods.applyDisplayOrder(response.data);
-          } catch (error) {
-            console.log(error);
-          }
-        });
+    async getProgramOptionCodes(getNewData = true) {
+      if (getNewData || !sharedMethods.dataArrayExists(this.programOptions)) {
+        let response = await ProgramManagementService.getGraduationPrograms();
+        await this.setProgramOptions(response.data);
+      }
     },
-    async setBatchJobTypes() {
-      await ApiService.apiAxios
-        .get("/api/v1/batch/batchjobtype")
-        .then((response) => {
-          try {
-            this.batchTypeCodes = sharedMethods.applyDisplayOrder(
-              response.data
-            );
-          } catch (error) {
-            console.log(error);
-          }
-        });
+    async setProgramOptions(programCodes) {
+      // Filter our NOPROG - No Program Specified from API response until business determines how it should be handled
+      let filteredProgramCodes = programCodes.filter(
+        (programCode) => programCode.programCode !== "NOPROG"
+      );
+      this.programOptions =
+        sharedMethods.applyDisplayOrder(filteredProgramCodes);
     },
-    async setTranscriptTypes() {
-      await GraduationReportService.getTranscriptTypes().then((response) => {
-        try {
-          this.transcriptTypes = sharedMethods.applyDisplayOrder(response.data);
-        } catch (error) {
-          if (error.response.statusText) {
-            console.log("ERROR " + error.response.statusText, "danger");
-          } else {
-            console.log("ERROR " + "error with webservice", "danger");
-          }
-        }
+    async getStudentStatusOptionCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.studentStatusOptions)
+      ) {
+        let response = await StudentService.getStudentStatusCodes();
+        await this.setStudentStatusOptions(response.data);
+      }
+    },
+    async setStudentStatusOptions(studentStatusCodes) {
+      this.studentStatusOptions =
+        sharedMethods.applyDisplayOrder(studentStatusCodes);
+    },
+    async getUndoCompletionReasonCodes(getNewData = true) {
+      if (getNewData || !sharedMethods.applyDisplayOrder(this.ungradReasons)) {
+        let response = await StudentGraduationService.getUngradReasons();
+        await this.setUndoCompletionReasons(response.data);
+      }
+    },
+    async setUndoCompletionReasons(ungradReasonCodes) {
+      this.ungradReasons = sharedMethods.applyDisplayOrder(ungradReasonCodes);
+    },
+    async getBatchJobTypeCodes(getNewData = true) {
+      if (getNewData || !sharedMethods.dataArrayExists(this.batchTypeCodes)) {
+        let response = await BatchProcessingService.getBatchJobTypes();
+        await this.setBatchJobTypes(response.data);
+      }
+    },
+    async setBatchJobTypes(batchJobTypeCodes) {
+      this.batchTypeCodes = sharedMethods.applyDisplayOrder(batchJobTypeCodes);
+    },
+    async getTranscriptTypeCodes(getNewData = true) {
+      if (getNewData || !sharedMethods.dataArrayExists(this.transcriptTypes)) {
+        let response = await GraduationReportService.getTranscriptTypes();
+        await this.setTranscriptTypes(response.data);
+      }
+    },
+    async setTranscriptTypes(transcriptTypeCodes) {
+      this.transcriptTypes =
+        sharedMethods.applyDisplayOrder(transcriptTypeCodes);
+    },
+    async getCertificateTypeCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.certificationTypes)
+      ) {
+        let response = await GraduationReportService.getCertificateTypes();
+        await this.setCertificateTypes(response.data);
+      }
+    },
+    async setCertificateTypes(certificateTypeCodes) {
+      this.certificationTypes =
+        sharedMethods.applyDisplayOrder(certificateTypeCodes);
+    },
+    // GET DATA FROM INSTITUTE
+    async getSchools(getNewData = true) {
+      if (getNewData || !sharedMethods.dataArrayExists(this.schoolsList)) {
+        let response = await InstituteService.getSchoolsList();
+        await this.setSchoolsList(response.data);
+        //await this.setSchoolsMap(response.data);
+      }
+    },
+    async setSchoolsList(schools) {
+      this.schoolsList =
+        sharedMethods.sortSchoolListByTranscriptsAndMincode(schools);
+    },
+    async setSchoolsMap(schools) {
+      this.schoolsMap = new Map();
+      schools.forEach((element) => {
+        this.schoolsMap.set(element.schoolId, { ...element });
       });
     },
-    async setCertificateTypes() {
-      await GraduationReportService.getCertificateTypes().then((response) => {
-        try {
-          this.certificationTypes = sharedMethods.applyDisplayOrder(
-            response.data
-          );
-        } catch (error) {
-          if (error.response.statusText) {
-            this.snackbarStore.showSnackbar(
-              "ERROR " + error.response.statusText,
-              "danger",
-              10000
-            );
-          } else {
-            this.snackbarStore.showSnackbar(
-              "ERROR " + "error with web service",
-              "danger",
-              10000
-            );
-          }
-        }
-      });
+    async getDistricts(getNewData = true) {
+      if (getNewData || !sharedMethods.dataArrayExists(this.districtsList)) {
+        let response = await InstituteService.getDistrictsList();
+        await this.setDistrictsList(response.data);
+      }
     },
-    // SET DATA FROM INSTITUTE
-    async setSchoolsList() {
-      await InstituteService.getSchoolsList().then((response) => {
-        try {
-          this.schoolsList =
-            sharedMethods.sortSchoolListByTranscriptsAndMincode(response.data);
-        } catch (error) {
-          console.error(error);
-        }
-      });
+    async setDistrictsList(districts) {
+      this.districtsList =
+        sharedMethods.sortDistrictListByActiveAndDistrictNumber(districts);
     },
-    async setDistrictsList() {
-      await InstituteService.getDistrictsList().then((response) => {
-        try {
-          this.districtsList =
-            sharedMethods.sortDistrictListByActiveAndDistrictNumber(
-              response.data
-            );
-        } catch (error) {
-          console.error(error);
-        }
-      });
+    async getInstituteCategoryCodes(getNewData = true) {
+      console.log("WHY");
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.instituteCategoryCodes)
+      ) {
+        let response = await InstituteService.getSchoolCategoryCodes();
+        await this.setInstituteCategoryCodes(response.data);
+      }
     },
-    async setInstituteCategoryCodes() {
-      await InstituteService.getSchoolCategoryCodes().then((response) => {
-        try {
-          this.instituteCategoryCodes = sharedMethods.applyDisplayOrder(
-            response.data
-          );
-        } catch (error) {
-          console.error(error);
-        }
-      });
+    async setInstituteCategoryCodes(categoryCodes) {
+      this.instituteCategoryCodes =
+        sharedMethods.applyDisplayOrder(categoryCodes);
     },
-    async setInstituteFacilityCodes() {
-      await InstituteService.getFacilityCodes().then((response) => {
-        try {
-          this.instituteFacilityCodes = sharedMethods.applyDisplayOrder(
-            response.data
-          );
-        } catch (error) {
-          console.error(error);
-        }
-      });
+    async getInstituteFacilityCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.instituteFacilityCodes)
+      ) {
+        let response = await InstituteService.getFacilityCodes();
+        await this.setInstituteFacilityCodes(response.data);
+      }
     },
-    async setInstituteGradeCodes() {
-      await InstituteService.getGradeCodes().then((response) => {
-        try {
-          this.instituteGradeCodes = sharedMethods.applyDisplayOrder(
-            response.data
-          );
-        } catch (error) {
-          console.error(error);
-        }
-      });
+    async setInstituteFacilityCodes(facilityCodes) {
+      this.instituteCategoryCodes =
+        sharedMethods.applyDisplayOrder(facilityCodes);
+    },
+    async getInstituteGradeCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.instituteGradeCodes)
+      ) {
+        let response = await InstituteService.getGradeCodes();
+        await this.setInstituteGradeCodes(response.data);
+      }
+    },
+    async setInstituteGradeCodes(gradeCodes) {
+      this.instituteGradeCodes = sharedMethods.applyDisplayOrder(gradeCodes);
     },
   },
 });
