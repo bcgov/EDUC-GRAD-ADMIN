@@ -8,9 +8,12 @@ import ProgramManagementService from "@/services/ProgramManagementService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 
+import { useSnackbarStore } from "../../store/modules/snackbar";
+
 import sharedMethods from "@/sharedMethods.js";
 export const useAppStore = defineStore("app", {
   state: () => ({
+    snackbarStore: useSnackbarStore(),
     pageTitle: "GRAD",
     programOptions: [],
     studentStatusOptions: [],
@@ -93,23 +96,33 @@ export const useAppStore = defineStore("app", {
   },
   actions: {
     async setApplicationVariables() {
-      if (localStorage.getItem("jwtToken")) {
-        // GET & SET CONFIG
-        await this.getConfig();
-        // GET & SET GRAD CODES
-        await this.getProgramOptionCodes();
-        await this.getStudentStatusOptionCodes();
-        await this.getUndoCompletionReasonCodes();
-        await this.getBatchJobTypeCodes();
-        await this.getTranscriptTypeCodes();
-        await this.getCertificateTypeCodes();
-        // GET & SET INSTITUTE SCHOOL AND DISTRICT LISTS
-        await this.getSchools();
-        await this.getDistricts();
-        // GET & SET INSTITUTE CODES
-        await this.getInstituteCategoryCodes();
-        await this.getInstituteFacilityCodes();
-        await this.getInstituteGradeCodes();
+      try {
+        if (localStorage.getItem("jwtToken")) {
+          // GET & SET CONFIG
+          await this.getConfig();
+          // GET & SET GRAD CODES
+          await this.getProgramOptionCodes();
+          await this.getStudentStatusOptionCodes();
+          await this.getUndoCompletionReasonCodes();
+          await this.getBatchJobTypeCodes();
+          await this.getTranscriptTypeCodes();
+          await this.getCertificateTypeCodes();
+          // GET & SET INSTITUTE SCHOOL AND DISTRICT LISTS
+          await this.getSchools();
+          await this.getDistricts();
+          // GET & SET INSTITUTE CODES
+          await this.getInstituteCategoryCodes();
+          await this.getInstituteFacilityCodes();
+          await this.getInstituteGradeCodes();
+        }
+      } catch (e) {
+        if (e.response.status) {
+          this.snackbarStore.showSnackbar(
+            "There was an error: " + e.response.status,
+            "error",
+            5000
+          );
+        }
       }
     },
     async getConfig() {
