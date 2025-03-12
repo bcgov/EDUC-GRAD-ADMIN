@@ -1,0 +1,14 @@
+{
+  "Programs/programs.cy.ts": 19,
+  "assessments/assessments.cy.ts": 14,
+  "batchProcessing/batchTables.cy.ts": 47,
+  "batchProcessing/graduationAlgorithm.cy.ts": 0,
+  "batchProcessing/transcriptVerificationReport.cy.ts": 0,
+  "batchProcessing/batchRequestValidations.cy.ts": 110,
+  "codes/codes.cy.ts": 24,
+  "courses/courseSearch.cy.ts": 31,
+  "psi/psi.cy.ts": 17,
+  "reports/reports.cy.ts": 20,
+  "studentSearch/studentSearch.cy.ts": 82,
+  "studentSearch/studentGradStatus.cy.ts": 88
+}
