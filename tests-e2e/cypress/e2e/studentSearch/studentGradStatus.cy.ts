@@ -37,49 +37,49 @@ function updateGradStatus() {
   cy.wait(3000)
 }
 
-function resetToOriginalState(test_student) {
-  // Undo completion if student has school at grad id but should not have graduated for testing purpose
-  // Update Grad Status if student does not have school at grad id but should have graduated 
-  const schoolAtGraduationText = studentSearchSelectors.table + ' ' + studentSearchSelectors.schoolAtGraduationText + ' div'
-  cy.doesExist(schoolAtGraduationText).then(exist => {
-    if (exist) {
-      if (!test_student.isCompleted) undoCompletion()
-    } else {
-      if (test_student.isCompleted) updateGradStatus()
-    }
-  })
+// function resetToOriginalState(test_student) {
+//   // Undo completion if student has school at grad id but should not have graduated for testing purpose
+//   // Update Grad Status if student does not have school at grad id but should have graduated 
+//   const schoolAtGraduationText = studentSearchSelectors.table + ' ' + studentSearchSelectors.schoolAtGraduationText + ' div'
+//   cy.doesExist(schoolAtGraduationText).then(exist => {
+//     if (exist) {
+//       if (!test_student.isCompleted) undoCompletion()
+//     } else {
+//       if (test_student.isCompleted) updateGradStatus()
+//     }
+//   })
 
-  // Edit Grad status back to normal even if data is same as original data
-  cy.get(studentSearchSelectors.editBtn).click()
-  cy.wait(1000)
-  // Reset to original data
-  // if student hasn't completed program, it is not disabled
-  if (!test_student.isCompleted) {
-    cy.selectDropdown(studentSearchSelectors.program, test_student.og_program)
-  }
-  // if student is in SCPP, it is not disabled
-  if (test_student.og_program == 'SCPP') {
-    cy.selectDropdown(studentSearchSelectors.programCompletionDate, test_student.og_completion_date)
-  }
-  cy.selectDropdown(studentSearchSelectors.status, test_student.og_status)
-  cy.selectDropdown(studentSearchSelectors.grade, test_student.og_grade)
-  cy.selectAutoselect(studentSearchSelectors.schoolOfRecord, test_student.og_school)
+//   // Edit Grad status back to normal even if data is same as original data
+//   cy.get(studentSearchSelectors.editBtn).click()
+//   cy.wait(1000)
+//   // Reset to original data
+//   // if student hasn't completed program, it is not disabled
+//   if (!test_student.isCompleted) {
+//     cy.selectDropdown(studentSearchSelectors.program, test_student.og_program)
+//   }
+//   // if student is in SCPP, it is not disabled
+//   if (test_student.og_program == 'SCPP') {
+//     cy.selectDropdown(studentSearchSelectors.programCompletionDate, test_student.og_completion_date)
+//   }
+//   cy.selectDropdown(studentSearchSelectors.status, test_student.og_status)
+//   cy.selectDropdown(studentSearchSelectors.grade, test_student.og_grade)
+//   cy.selectAutoselect(studentSearchSelectors.schoolOfRecord, test_student.og_school)
 
-  // if student is taking 1950 program, adult start date will change
-  if (test_student.og_program == '1950') {
-    cy.get(studentSearchSelectors.adultStartDate).type(test_student.og_adult_start_date)
-  }
-  cy.get(studentSearchSelectors.saveStatusBtn).click({force: true})
-  cy.wait(1000)
+//   // if student is taking 1950 program, adult start date will change
+//   if (test_student.og_program == '1950') {
+//     cy.get(studentSearchSelectors.adultStartDate).type(test_student.og_adult_start_date)
+//   }
+//   cy.get(studentSearchSelectors.saveStatusBtn).click({force: true})
+//   cy.wait(1000)
 
-  // Set flags to original data
-  cy.get(studentSearchSelectors.editBtn).click()
-  cy.wait(1000)
-  cy.get(studentSearchSelectors.recalcGrad).click({force: true})
-  cy.selectDropdown(studentSearchSelectors.recalcGrad, test_student.og_recalc_grad, true)
-  cy.selectDropdown(studentSearchSelectors.recalcProjected, test_student.og_recalc_proj, true)
-  cy.get(studentSearchSelectors.saveStatusBtn).click({force: true})
-}
+//   // Set flags to original data
+//   cy.get(studentSearchSelectors.editBtn).click()
+//   cy.wait(1000)
+//   cy.get(studentSearchSelectors.recalcGrad).click({force: true})
+//   cy.selectDropdown(studentSearchSelectors.recalcGrad, test_student.og_recalc_grad, true)
+//   cy.selectDropdown(studentSearchSelectors.recalcProjected, test_student.og_recalc_proj, true)
+//   cy.get(studentSearchSelectors.saveStatusBtn).click({force: true})
+// }
 
 
 describe('Student Grad Status', () => {
@@ -144,10 +144,6 @@ describe('Student Grad Status', () => {
     cy.get(studentSearchSelectors.searchByPEN).type(ungraduated_student.PEN)
     cy.get(studentSearchSelectors.searchSubmit).click()
     cy.wait(5000) // Need to wait so that fields load up in Edit window
-
-    // const reset = true // TODO: This is for faster development. Remove this.
-    // if (reset)
-    //   resetToOriginalState(ungraduated_student)
 
     // Make sure data is in testable state
     const gradStatusTable = () => cy.get(studentSearchSelectors.table)

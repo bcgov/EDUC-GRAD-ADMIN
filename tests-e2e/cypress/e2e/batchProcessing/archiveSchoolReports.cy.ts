@@ -29,17 +29,15 @@ describe('Archive School Reports', () => {
     // Setup interception for getting job exec id
     cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/report/school/archive`).as('batchRun')
     cy.get(batchProcessingSelectors.overlayWindow).contains('Submit').click()
-    cy.wait('@batchRun').then(({response}) => {
-      cy.wrap(response.body).as('batchRunStatus')
-    })
 
     // Watch Batch result through API
-    cy.get('@batchRunStatus').then(data => {
-      const batchId = data.batchId
-      cy.callBatchJobTillComplete(batchId, Date.now(), 10000)
+    cy.wait('@batchRun').then(({ response }) => {
+      const batchId = response?.body?.batchId;
+      cy.callBatchJobTillComplete(batchId, Date.now(), 10000);
+
       // Batch job is completed -> Go to report to make sure last update date is updated to latest
       // It look like it is not always updated
-    })
+    });
   })
 
   it('Archives GRADREG', () => {
@@ -56,17 +54,15 @@ describe('Archive School Reports', () => {
     // Setup interception for getting job exec id
     cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/report/school/archive`).as('batchRun')
     cy.get(batchProcessingSelectors.overlayWindow).contains('Submit').click()
-    cy.wait('@batchRun').then(({response}) => {
-      cy.wrap(response.body).as('batchRunStatus')
-    })
 
     // Watch Batch result through API
-    cy.get('@batchRunStatus').then(data => {
-      const batchId = data.batchId
-      cy.callBatchJobTillComplete(batchId, Date.now(), 10000)
+    cy.wait('@batchRun').then(({ response }) => {
+      const batchId = response?.body?.batchId;
+      cy.callBatchJobTillComplete(batchId, Date.now(), 10000);
+
       // Batch job is completed -> Go to report to make sure last update date is updated to latest
       // It look like it is not always updated
-    })
+    });
   })
 
   it('Archives NONGRADREG', () => {
@@ -83,16 +79,14 @@ describe('Archive School Reports', () => {
     // Setup interception for getting job exec id
     cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/report/school/archive`).as('batchRun')
     cy.get(batchProcessingSelectors.overlayWindow).contains('Submit').click()
-    cy.wait('@batchRun').then(({response}) => {
-      cy.wrap(response.body).as('batchRunStatus')
-    })
 
     // Watch Batch result through API
-    cy.get('@batchRunStatus').then(data => {
-      const batchId = data.batchId
-      cy.callBatchJobTillComplete(batchId, Date.now(), 10000)
+    cy.wait('@batchRun').then(({ response }) => {
+      const batchId = response?.body?.batchId;
+      cy.callBatchJobTillComplete(batchId, Date.now(), 10000);
+
       // Batch job is completed -> Go to report to make sure last update date is updated to latest
       // It look like it is not always updated
-    })
+    });
   })
 })

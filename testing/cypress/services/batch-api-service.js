@@ -6,7 +6,7 @@ class BatchAPIService {
     this.baseUrl = config.env.api_url.batchAPIURL
   }
 
- async getBatchSummary(options) {
+  async getBatchSummary(options) {
     try {
       const url = `${this.baseUrl}/api/v1/batch/dashboard/summary?pageNumber=${options.pageNumber}&pageSize=${options.pageSize}`
       const data = await this.restUtils.getData(url)

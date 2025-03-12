@@ -22,7 +22,7 @@
 import selectors from "../../support/selectors";
 const codesSelectors = selectors.codes
 
-function checkCredentialTableForData(credentialType) {
+function checkCredentialTableForData(credentialType: string) {
   cy.get(codesSelectors.credentialsBtn).click()
   cy.get(selectors.selections).contains(credentialType).click({force: true})
   cy.shouldHaveData(codesSelectors.codesView)

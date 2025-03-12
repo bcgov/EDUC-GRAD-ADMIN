@@ -56,13 +56,11 @@ describe('Graduation Algorithm', () => {
       // Setup interception for getting job exec id
       cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/specialrun`).as('batchRun')
       cy.get(batchProcessingSelectors.overlayWindow).contains('Submit').click()
-      cy.wait('@batchRun').then(({response}) => {
-        cy.wrap(response.body).as('batchRunStatus')
-      })
 
       // Watch Batch result through API
-      cy.get('@batchRunStatus').then(data => {
-        const batchId = data.batchId
+      cy.wait('@batchRun').then(({response}) => {
+        const batchId = response?.body?.batchId
+
         cy.callBatchJobTillComplete(batchId, Date.now(), 10000)
         // Batch job is completed -> call studentHistory API to make sure student is updated
         cy.task('getBatchHistoryResultById', {batchJobResultId: batchId}).then((data) => {
@@ -119,13 +117,10 @@ describe('Graduation Algorithm', () => {
       // Setup interception for getting job exec id
       cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/specialrun`).as('batchRun')
       cy.get(batchProcessingSelectors.overlayWindow).contains('Submit').click()
-      cy.wait('@batchRun').then(({response}) => {
-        cy.wrap(response.body).as('batchRunStatus')
-      })
-      
+    
       // Watch Batch result through API
-      cy.get('@batchRunStatus').then(data => {
-        const batchId = data.batchId
+      cy.wait('@batchRun').then(({response}) => {
+        const batchId = response?.body?.batchId
         cy.callBatchJobTillComplete(batchId, Date.now(), 5000)
         // Batch job is completed -> call studentHistory API to make sure student is updated
         cy.task('getBatchHistoryResultById', {batchJobResultId: batchId}).then((data) => {
@@ -185,13 +180,10 @@ describe('Graduation Algorithm', () => {
       // Setup interception for getting job exec id
       cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/specialrun`).as('batchRun')
       cy.get(batchProcessingSelectors.overlayWindow).contains('Submit').click()
-      cy.wait('@batchRun').then(({response}) => {
-        cy.wrap(response.body).as('batchRunStatus')
-      })
-      
+
       // Watch Batch result through API
-      cy.get('@batchRunStatus').then(data => {
-        const batchId = data.batchId
+      cy.wait('@batchRun').then(({response}) => {
+        const batchId = response?.body?.batchId
         cy.callBatchJobTillComplete(batchId, Date.now(), 20000, 4000)
         // Batch job is completed -> call studentHistory API to make sure student is updated
         cy.task('getBatchHistoryResultById', {batchJobResultId: batchId}).then((data) => {

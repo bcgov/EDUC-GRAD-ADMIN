@@ -8,7 +8,7 @@
 import selectors from "../../support/selectors";
 const psiSelectors = selectors.psi;
 
-function searchRowNumAndReset(expectedRowNum) {
+function searchRowNumAndReset(expectedRowNum: number) {
   cy.get(psiSelectors.psiReqForm).contains('Search').click()
   cy.shouldHaveData(psiSelectors.psiView, expectedRowNum)
   cy.get(psiSelectors.psiReqForm).contains('Reset').click()
@@ -16,7 +16,7 @@ function searchRowNumAndReset(expectedRowNum) {
 
 describe('PSI', () => {
   const test_psi = {
-    psiCode: 271, 
+    psiCode: '271', 
     psiName: 'Camosun College', 
     cslCode: 'AJAA', 
     active: 'Y', 

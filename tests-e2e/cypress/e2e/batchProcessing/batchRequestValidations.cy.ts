@@ -13,7 +13,7 @@ import selectors from "../../support/selectors";
 const batchProcessingSelectors = selectors.batchProcessing
 
 // Only works if there is one visible v-select
-function selelctStudentGroup(pen) {
+function selelctStudentGroup(pen: string) {
   cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).click({force: true})
   cy.get(selectors.selections).contains('Student').click()
   cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.numberInput).type(pen)
@@ -21,14 +21,14 @@ function selelctStudentGroup(pen) {
 }
 
 // Only works if there is one visible v-select
-function selectSchoolGroup(school) {
+function selectSchoolGroup(school: string) {
   cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).click({force: true})
   cy.get(selectors.selections).contains('School').click({force: true})
   cy.selectAutoselect(batchProcessingSelectors.autocomplete, school)
   cy.get(batchProcessingSelectors.overlayWindow).contains('Add School').click({force: true})
 }
 
-function openBatchRequestByLabel(label, exactMatch = false) {
+function openBatchRequestByLabel(label: string, exactMatch: boolean = false) {
   if (exactMatch) {
     cy.contains(new RegExp(`^${label}$`)).next().find('button').click()
   } else {
@@ -37,7 +37,7 @@ function openBatchRequestByLabel(label, exactMatch = false) {
   cy.wait(500)
 }
 
-function checkSelectedIcon(isChecked) {
+function checkSelectedIcon(isChecked: boolean) {
   if (isChecked) {
     cy.get(batchProcessingSelectors.selectedIcon).should('have.class', 'mdi-check')
     cy.get(batchProcessingSelectors.selectedIcon).should('not.have.class', 'mdi-close-circle')
@@ -375,6 +375,12 @@ describe('Batch Request Validations', () => {
       ARC_STUDENTS: 'Archive Student Batch Process',
     }
 
+    interface addStudentTestCase {
+      PEN: string;
+      run: "" | keyof typeof runTypelabelMapping;
+      message: string;
+    }
+
     beforeEach(() => {
       cy.login()
       cy.visit('/')
@@ -385,8 +391,8 @@ describe('Batch Request Validations', () => {
     })
 
     it('Tests validatoin for Adding Student', () => {
-      const testCases = Cypress.env('add_student_testcases')
-      testCases.forEach(testCase => {
+      const testCases : addStudentTestCase[] = Cypress.env('add_student_testcases')
+      testCases.forEach((testCase: addStudentTestCase) => {
         // Open batch request based on label mapped from a given run type
         if (testCase.run && runTypelabelMapping[testCase.run]) {
           const label = runTypelabelMapping[testCase.run]

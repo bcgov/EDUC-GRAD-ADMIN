@@ -1,21 +1,31 @@
-const RestUtils = require('../support/rest-utils')
+import { RestUtils } from "../helpers/rest-utils"
 
-class BatchAPIService {
-  constructor(config) {
-    this.restUtils = new RestUtils(config)
-    this.baseUrl = config.env.api_url.batchAPIURL
+export interface BatchSummaryOptions {
+  pageNumber: number;
+  pageSize: number;
+}
+
+export interface BatchSummaryPayload extends paginationApiEntity {
+  batchJobList: BatchJob[];
+}
+
+export class BatchAPIService {
+  restUtils: RestUtils;
+  baseUrl: string;
+
+  constructor(config: Cypress.PluginConfigOptions) {
+    this.restUtils = new RestUtils(config);
+    this.baseUrl = config.env.api_url.batchAPIURL;
   }
 
- async getBatchSummary(options) {
+  async getBatchSummary(pageNumber: number, pageSize: number): Promise<BatchSummaryPayload> {
     try {
-      const url = `${this.baseUrl}/api/v1/batch/dashboard/summary?pageNumber=${options.pageNumber}&pageSize=${options.pageSize}`
-      const data = await this.restUtils.getData(url)
+      const url = `${this.baseUrl}/api/v1/batch/dashboard/summary?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+      const data = await this.restUtils.getData<BatchSummaryPayload>(url);
       
-      return data
+      return data;
     } catch (e) {
-      throw e
+      throw e;
     }
   }
 }
-
-module.exports = BatchAPIService

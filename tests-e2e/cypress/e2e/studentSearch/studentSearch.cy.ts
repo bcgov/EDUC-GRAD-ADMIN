@@ -7,7 +7,7 @@
 import selectors from "../../support/selectors"
 const studentSearchSelectors = selectors.studentSearch
 
-function checkItemsInWindowTable(windowSelector) {
+function checkItemsInWindowTable(windowSelector: string) {
   const selector = windowSelector + " " + studentSearchSelectors.noRow
   cy.wait(500)
   cy.doesExist(selector).then((exist) => {
@@ -19,16 +19,16 @@ function checkItemsInWindowTable(windowSelector) {
   })
 }
 
-function undoCompletion() {
-  cy.get(studentSearchSelectors.transcriptTVRBtn).click()
-  cy.get(selectors.selections).contains('Undo Completion').click({force: true})
-  cy.wait(1000)
-  cy.get(studentSearchSelectors.undoCompletionReasonInput).click({force: true})
-  cy.get(selectors.selections).contains('Other').click({force: true})
-  cy.get(studentSearchSelectors.undoCompletionReasonTextarea).type('Cypress testing')
-  cy.get(studentSearchSelectors.undoCompletionConfirmCheckbox).click()
-  cy.get(studentSearchSelectors.undoCompletionBtn).click()
-}
+// function undoCompletion() {
+//   cy.get(studentSearchSelectors.transcriptTVRBtn).click()
+//   cy.get(selectors.selections).contains('Undo Completion').click({force: true})
+//   cy.wait(1000)
+//   cy.get(studentSearchSelectors.undoCompletionReasonInput).click({force: true})
+//   cy.get(selectors.selections).contains('Other').click({force: true})
+//   cy.get(studentSearchSelectors.undoCompletionReasonTextarea).type('Cypress testing')
+//   cy.get(studentSearchSelectors.undoCompletionConfirmCheckbox).click()
+//   cy.get(studentSearchSelectors.undoCompletionBtn).click()
+// }
 
 describe('Student Search', () => {
   const test_student = Cypress.env('test_students').ungraduated_student
@@ -122,29 +122,16 @@ describe('Student Search', () => {
      * Adds and removes optinal program and note to ensure their functionality.
      * 
      * ## Steps:
-     * 1. Set up test student ready for test
-     *    - Undo completion if testing student is graduated since optional program cannot be removed if the student is graduated
-     *    - Remove optional program if testing student has one for the sake of testing
-     * 2. Add optional program (French Immersion) to ensure a warning is appropriate
-     * 3. Make sure an added optional program is displayed on the table
-     * 4. Click delete button for optional program to ensure a warning is appropriate
-     * 5. Delete optional program and make sure there is no longer optional prograim in the table
-     * 6. Navigate to Notes
-     * 7. Type text to note and add to make sure it is saved properly
-     * 8. Edit note by clearing text and typing another text
-     * 9. Delete note to make sure note is no longer displayed
+     * 1. Add optional program (French Immersion) to ensure a warning is appropriate
+     * 2. Make sure an added optional program is displayed on the table
+     * 3. Click delete button for optional program to ensure a warning is appropriate
+     * 4. Delete optional program and make sure there is no longer optional prograim in the table
+     * 5. Navigate to Notes
+     * 6. Type text to note and add to make sure it is saved properly
+     * 7. Edit note by clearing text and typing another text
+     * 8. Delete note to make sure note is no longer displayed
      */
-    it('Adds and removes optional program and note', () => {
-      // Undo completion if the student is graduated
-      // const schoolAtGraduationText = studentSearchSelectors.table + " " + studentSearchSelectors.schoolAtGraduationText
-      // cy.doesExist(schoolAtGraduationText).then(exist => {
-      //   if (exist) {
-      //     undoCompletion()
-      //   } else {
-      //     cy.log("Student is not graduated")
-      //   }
-      // })
-        
+    it('Adds and removes optional program and note', () => {        
       // Optional Program
       const optionalCourseToAdd = 'French Immersion'
       cy.get(studentSearchSelectors.optionalBtn).click()

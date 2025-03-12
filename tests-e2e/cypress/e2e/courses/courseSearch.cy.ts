@@ -16,19 +16,19 @@
 import selectors from "../../support/selectors";
 const coursesSelectors = selectors.courses
 
-function typeInputFieldFoundByLabel(label, content) {
+function typeInputFieldFoundByLabel(label: string, content: string) {
   cy.get(coursesSelectors.advancedSearchForm).contains(label).next().type(content)
 }
 
 describe('Courses', () => {
   const test_course =  {
-    courseCode: "SS",
-    gradeLevel: 10,
-    courseTitle: "SOCIAL STUDIES 10",
-    language: "EN",
+    courseCode: 'SS',
+    gradeLevel: '10',
+    courseTitle: 'SOCIAL STUDIES 10',
+    language: 'EN',
     courseNum: 3,
     requirementNum: 7,
-    ruleNum: 704
+    ruleNum: '704'
   }
   
   const invalidMessage = {

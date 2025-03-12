@@ -16,7 +16,7 @@ const batchProcessingSelectors = selectors.batchProcessing
 // Test case varies if the result table have data in it
 // If the run has status "COMPLETED" and "Actual" affected students are more than 0, there is data
 // Otherwise, there is no data
-function checkResultTable(rowIndex) {
+function checkResultTable(rowIndex: number) {
   // Check if there is data to display in batch result table by seeting status and actual result
   const rows = () => cy.get(batchProcessingSelectors.batchProcessingView).find(selectors.rows)
   const columns = () => rows().eq(rowIndex).children()

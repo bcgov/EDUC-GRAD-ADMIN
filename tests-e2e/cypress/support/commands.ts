@@ -70,33 +70,33 @@ function selectAutoselect(selector: string, text: string) {
 	selectDropdown(selector, text)
 }
 
-// function callBatchJobTillComplete(jobId: string, startTime: number, timeout: number, interval: number = 2000) {
-//   const currentTime = Date.now()
+function callBatchJobTillComplete(jobId: number, startTime: number, timeout: number, interval: number = 2000) {
+  const currentTime = Date.now()
 
-//   if (currentTime - startTime >= timeout) {
-//     throw new Error('Timeout: Job was not completed within a given time')
-//   }
+  if (currentTime - startTime >= timeout) {
+    throw new Error('Timeout: Job was not completed within a given time')
+  }
 
-//   cy.wait(interval)
-//   cy.task('getBatchSummary', {pageNumber: 0, pageSize: 10}).then((data) => {
-//     const batchJob = data.batchJobList.find(batchJob => batchJob.jobExecutionId == jobId)
+  cy.wait(interval)
+  cy.task('getBatchSummary', {pageNumber: 0, pageSize: 10}).then((data) => {
+    const batchJob = data.batchJobList.find(batchJob => batchJob.jobExecutionId == jobId)
 
-//     // If job is completed, stop recalling
-//     if (!!batchJob && batchJob.status == 'COMPLETED') {
-//       cy.log(`Batch Job ID ${jobId} - COMPLETED`)
-//     } else {
-//     // Otherwise keep calling
-// 			callBatchJobTillComplete(jobId, startTime, timeout, interval)
-//     }
-//   })
-// }
+    // If job is completed, stop recalling
+    if (!!batchJob && batchJob.status == 'COMPLETED') {
+      cy.log(`Batch Job ID ${jobId} - COMPLETED`)
+    } else {
+    // Otherwise keep calling
+			callBatchJobTillComplete(jobId, startTime, timeout, interval)
+    }
+  })
+}
 
 Cypress.Commands.add('login', login)
 Cypress.Commands.add('doesExist', doesExist)
 Cypress.Commands.add('shouldHaveData', shouldHaveData)
 Cypress.Commands.add('selectDropdown', selectDropdown)
 Cypress.Commands.add('selectAutoselect', selectAutoselect)
-// Cypress.Commands.add('callBatchJobTillComplete', callBatchJobTillComplete)
+Cypress.Commands.add('callBatchJobTillComplete', callBatchJobTillComplete)
 
 Cypress.on('uncaught:exception', (err, runnable) => {
 	return false

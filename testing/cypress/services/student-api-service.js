@@ -6,7 +6,7 @@ class StudentAPIService {
     this.baseUrl = config.env.api_url.studentAPIURL
   }
 
- async getBatchHistoryResultById(options) {
+  async getBatchHistoryResultById(options) {
     try {
       const url = `${this.baseUrl}/api/v1/student/studentHistory/batchid/${options.batchJobResultId}?pageNumber=0&pageSize=10`
       const data = await this.restUtils.getData(url)
