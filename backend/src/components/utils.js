@@ -84,7 +84,7 @@ async function deleteData(token, url, correlationID) {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
-        username: username || 'n/a'
+        username: username || 'N/A'
       },
     };
 
@@ -183,7 +183,7 @@ async function getData(token, url, correlationID) {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
-        username: username || 'n/a'
+        username: username || 'N/A'
       },
     };
     // log.info('get Data Url', url);
@@ -208,7 +208,7 @@ async function getDataWithParams(token, url, params, correlationID) {
     params.headers = {
       Authorization: `Bearer ${token}`,
       correlationID: correlationID || uuidv4(),
-      username: username || 'n/a'
+      username: username || 'N/A'
     };
 
     log.info("get Data Url", url);
@@ -267,7 +267,7 @@ async function postData(token, url, data, correlationID) {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
-        username: username || 'n/a'
+        username: username || 'N/A'
       },
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
@@ -312,7 +312,7 @@ async function putData(token, data, url, correlationID) {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
-        username: username || 'n/a'
+        username: username || 'N/A'
       },
     };
 
