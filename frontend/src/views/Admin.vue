@@ -26,7 +26,8 @@
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import InstituteAlerts from "@/components/Admin/InstituteAlerts.vue";
 import { useAccessStore } from "@/store/modules/access";
-import { mapState } from "pinia";
+import { useAppStore } from "@/store/modules/app";
+import { mapState, mapActions } from "pinia";
 
 export default {
   name: "admin",
@@ -36,11 +37,28 @@ export default {
       tab: null,
     };
   },
+  async beforeMount() {
+    try {
+      await this.getSchools(false);
+      await this.getDistricts(false);
+    } catch (e) {
+      if (e.response.status) {
+        this.snackbarStore.showSnackbar(
+          "There was an error: " + e.response.status,
+          "error",
+          5000
+        );
+      }
+    }
+  },
   components: {
     InstituteAlerts: InstituteAlerts,
   },
   computed: {
     ...mapState(useAccessStore, ["hasPermissions"]),
+  },
+  methods: {
+    ...mapActions(useAppStore, ["getSchools", "getDistricts"]),
   },
 };
 </script>

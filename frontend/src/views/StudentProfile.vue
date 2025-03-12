@@ -34,11 +34,14 @@
                 :disabled="studentGradStatus.studentStatus === 'MER'"
                 v-on:click="projectedGradStatusWithFinalAndReg"
                 >Update TVR</v-list-item
-              > 
+              >
               <v-list-item
                 :disabled="
                   studentGradStatus.studentStatus === 'MER' ||
-                  isProgramComplete(studentGradStatus.programCompletionDate, studentGradStatus.program)
+                  isProgramComplete(
+                    studentGradStatus.programCompletionDate,
+                    studentGradStatus.program
+                  )
                 "
                 v-on:click="graduateStudent"
                 >Update Grad Status</v-list-item
@@ -162,7 +165,10 @@
                     </v-progress-circular>
                     <StudentCourses></StudentCourses
                   ></v-window-item>
-                  <v-window-item value="Assessments" data-cy="assessments-window-item">
+                  <v-window-item
+                    value="Assessments"
+                    data-cy="assessments-window-item"
+                  >
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -180,7 +186,10 @@
                     </v-progress-circular>
                     <StudentExams />
                   </v-window-item>
-                  <v-window-item value="Optional" data-cy="optional-window-item">
+                  <v-window-item
+                    value="Optional"
+                    data-cy="optional-window-item"
+                  >
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -209,7 +218,10 @@
                     </v-progress-circular>
                     <StudentNotes></StudentNotes>
                   </v-window-item>
-                  <v-window-item value="Undo Completion Reasons" data-cy="undo-window-item">
+                  <v-window-item
+                    value="Undo Completion Reasons"
+                    data-cy="undo-window-item"
+                  >
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -570,6 +582,7 @@
 import AssessmentService from "@/services/AssessmentService.js";
 import CourseService from "@/services/CourseService.js";
 import StudentService from "@/services/StudentService.js";
+import StudentGraduationService from "@/services/StudentGraduationService.js";
 import GraduationService from "@/services/GraduationService.js";
 import GRADRequirementDetails from "@/components/StudentProfile/GRADRequirementDetails.vue";
 import StudentInformation from "@/components/StudentProfile/StudentInformation.vue";
@@ -647,6 +660,24 @@ export default {
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
   },
+  async beforeMount() {
+    // load store with items used in this view
+    try {
+      await this.getSchools(false);
+      await this.getDistricts(false);
+      await this.getProgramOptions(false);
+      await this.getUngradReasons(false);
+      await this.getInstituteCategoryCodes(false);
+    } catch (e) {
+      if (e.response.status) {
+        this.snackbarStore.showSnackbar(
+          "There was an error: " + e.response.status,
+          "error",
+          5000
+        );
+      }
+    }
+  },
   components: {
     StudentInformation: StudentInformation,
     StudentUndoCompletionReasons: StudentUndoCompletionReasons,
@@ -678,9 +709,6 @@ export default {
         description: null,
         confirm: false,
       },
-      // studentUngradReasonSelected: "",
-      // studentUngradReasonDescription: "",
-      // confirmStudentUndoCompletion: false,
       selectedSubTab: "gradStatus",
       selectedTab: 0,
       projectedGradStatus: [],
@@ -816,6 +844,13 @@ export default {
       "setStudentPen",
       "setStudentId",
     ]),
+    ...mapActions(useAppStore, [
+      "getSchools",
+      "getDistricts",
+      "getProgramOptions",
+      "getUngradReasons",
+      "getInstituteCategoryCodes",
+    ]),
     submitStudentUndoCompletion() {
       this.ungraduateStudent();
       this.closeStudentUndoCompletionDialog();
@@ -837,7 +872,7 @@ export default {
       }
       StudentService.ungradStudent(this.studentId, ungradCode, ungradDesc)
         .then(() => {
-          StudentService.getStudentUngradReasons(this.studentId)
+          StudentGraduationService.getStudentUngradReasons(this.studentId)
             .then((response) => {
               this.setStudentUngradReasons(response.data);
             })
@@ -1173,7 +1208,7 @@ export default {
         });
     },
     loadStudentUngradReasons(studentIdFromURL) {
-      StudentService.getStudentUngradReasons(studentIdFromURL)
+      StudentGraduationService.getStudentUngradReasons(studentIdFromURL)
         .then((response) => {
           this.setStudentUngradReasons(response.data);
         })
@@ -1188,7 +1223,7 @@ export default {
         });
     },
     isProgramComplete(date, program) {
-      return isProgramComplete(date, program)
+      return isProgramComplete(date, program);
     },
   },
 };

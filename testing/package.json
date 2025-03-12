@@ -2,9 +2,15 @@
   "scripts": {
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "e2e:chrome": "cypress run --browser chrome"
+    "cy:run:chrome": "cypress run --browser chrome",
+    "doc": "jsdoc --verbose -d docs -c jsdoc.json"
   },
   "devDependencies": {
-    "cypress": "^13.17.0"
+    "cypress": "^14.0.2",
+    "docdash": "^2.0.2",
+    "jsdoc": "^4.0.4"
+  },
+  "dependencies": {
+    "axios": "^1.7.9"
   }
 }
