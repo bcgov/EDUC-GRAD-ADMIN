@@ -65,6 +65,7 @@ export default {
 		firstExpandArrow: '.v-table__wrapper .v-data-table__tr:nth-child(1) > td:nth-child(1) > td > button:visible',
 		secondRowJsonData: '.v-table__wrapper tr:nth-child(2) > td > div > pre:visible',
 
+		searchErrorMsg: '.studentlist .text-error > .v-alert__content:visible',
 		advancedSearchBtn: 'button[value="advance"]',
 		legalSurnameInput: 'input#legal-surname-input',
 		legalGivennameInput: 'input#legal-given-input',

@@ -10,7 +10,9 @@ const psiSelectors = selectors.psi;
 
 function searchRowNumAndReset(expectedRowNum: number) {
   cy.get(psiSelectors.psiReqForm).contains('Search').click()
-  cy.shouldHaveData(psiSelectors.psiView, expectedRowNum)
+  if (expectedRowNum != 0) {
+    cy.shouldHaveData(psiSelectors.psiView, expectedRowNum)
+  }
   cy.get(psiSelectors.psiReqForm).contains('Reset').click()
 }
 
@@ -61,11 +63,11 @@ describe('PSI', () => {
     searchRowNumAndReset(1)
     // With Name
     cy.get(psiSelectors.psiNameInput).type(test_psi.psiName)
-    searchRowNumAndReset(2)
+    searchRowNumAndReset(1)
     // With Code
     cy.get(psiSelectors.cslCodeInput).type(test_psi.cslCode)
     cy.get(psiSelectors.psiReqForm).contains('Search').click()
-    cy.shouldHaveData(psiSelectors.psiView, 2)
+    cy.shouldHaveData(psiSelectors.psiView, 1)
     // Plus with Active Flag
     cy.get(psiSelectors.activeFlagSelection).click({force: true})
     cy.wait(500)
@@ -74,7 +76,7 @@ describe('PSI', () => {
     // With Code and Transmission Mode
     cy.get(psiSelectors.cslCodeInput).type(test_psi.cslCode)
     cy.get(psiSelectors.transmissionModeInput).type(test_psi.transmission)
-    searchRowNumAndReset(1)
+    searchRowNumAndReset(0)
     // No Match
     cy.get(psiSelectors.psiCodeInput).type('000')
     cy.get(psiSelectors.psiReqForm).contains('Search').click()

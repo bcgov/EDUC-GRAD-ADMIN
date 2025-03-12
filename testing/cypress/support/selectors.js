@@ -86,7 +86,7 @@ export default {
 		editTextarea: '.v-list-item textarea',
 		saveNoteBtn: '.v-list-item button.bg-error',
 		deleteNoteBtn: 'i.mdi-delete',
-		errorMsg: '.studentlist .text-error > .v-alert__content:visible',
+		searchErrorMsg: '.studentlist .text-error > .v-alert__content:visible',
 
 		transcriptTVRBtn: 'button#actions',
 		undoCompletionReasonInput: '.v-overlay-container .v-card-text input[type="text"]',

@@ -275,23 +275,23 @@ describe('Student Search', () => {
       // No result
       cy.get(studentSearchSelectors.searchByPEN).type('121212121')
       cy.get(studentSearchSelectors.searchSubmit).click()
-      cy.get(studentSearchSelectors.errorMsg).should('have.text', invalidMessage.noStudentPEN)
+      cy.get(studentSearchSelectors.searchErrorMsg).should('have.text', invalidMessage.noStudentPEN)
       // Result not on GRAD
       cy.get(studentSearchSelectors.searchByPEN).clear().type(Cypress.env('pen_without_record'))
       cy.get(studentSearchSelectors.searchSubmit).click()
-      cy.get(studentSearchSelectors.errorMsg).should('contain.text', invalidMessage.recordNotOnGrad)
+      cy.get(studentSearchSelectors.searchErrorMsg).should('contain.text', invalidMessage.recordNotOnGrad)
 
       // No result
       cy.get(studentSearchSelectors.advancedSearchBtn).click()
       cy.get(studentSearchSelectors.legalSurnameInput).type('ZZZ')
       cy.get(studentSearchSelectors.advSearchSubmit).click()
-      cy.get(studentSearchSelectors.errorMsg).should('have.text', invalidMessage.noStudentAdvanced)
+      cy.get(studentSearchSelectors.searchErrorMsg).should('have.text', invalidMessage.noStudentAdvanced)
       // Too many result
       cy.get(studentSearchSelectors.advSearchReset).click()
       cy.get(studentSearchSelectors.genderSelection).click({force: true})
       cy.get(selectors.selections).contains('Male').click({force: true})
       cy.get(studentSearchSelectors.advSearchSubmit).click()
-      cy.get(studentSearchSelectors.errorMsg, {timeout: 20000}).should('have.text', invalidMessage.tooManyReponseAdvanced)
+      cy.get(studentSearchSelectors.searchErrorMsg, {timeout: 20000}).should('have.text', invalidMessage.tooManyReponseAdvanced)
     })
   })
 })

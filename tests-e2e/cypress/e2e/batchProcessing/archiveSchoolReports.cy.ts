@@ -2,7 +2,7 @@ import selectors from "../../support/selectors";
 const batchProcessingSelectors = selectors.batchProcessing
 
 describe('Archive School Reports', () => {
-  const batch_test_student = Cypress.env('test_students').graduated_student
+  const batch_test_student = Cypress.env('test_student').batch_test_student
 
   beforeEach(() => {
     cy.login()

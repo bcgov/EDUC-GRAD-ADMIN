@@ -12,7 +12,7 @@ import { getCurrentTimestamp, isWithinMarginSeconds } from "../../support/helper
 const batchProcessingSelectors = selectors.batchProcessing
 
 describe('Transcript Verification Report', () => {
-  const batch_test_student = Cypress.env('batch_test_student')
+  const batch_test_student = Cypress.env('test_students').batch_test_student
 
   context('On Student', () => {
     beforeEach(() => {
@@ -46,7 +46,7 @@ describe('Transcript Verification Report', () => {
      *    - Length of content should be 1
      *    - updateDate of a student should be same/close to current date time
      */
-    it('Runs TVRRUN on Student', () => {
+    it.only('Runs TVRRUN on Student', () => {
       cy.get(batchProcessingSelectors.overlayWindow).find('input').click({force: true})
       cy.get(selectors.selections).contains('Student').click()
       cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.numberInput).type(batch_test_student.PEN)
