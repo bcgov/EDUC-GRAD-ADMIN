@@ -26,7 +26,8 @@ async function getBackendServiceToken() {
 function getUsernameFromToken(token) {
   try {
       const decoded = jsonwebtoken.decode(token); // Use decode if you don't need verification
-      return decoded?.name || null;
+      return decoded?.idir_username || null;
+      
   } catch (error) {
       console.error('Invalid token:', error);
       return null;
