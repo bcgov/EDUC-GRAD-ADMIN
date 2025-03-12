@@ -104,10 +104,7 @@
               downloadFile(
                 item.report,
                 'application/pdf',
-                'school-report_' +
-                  item.reportTypeCode +
-                  '_' +
-                  item.schoolOfRecord
+                'school-report_' + item.reportTypeCode + '_' + item.mincode
               )
             "
             href="#"

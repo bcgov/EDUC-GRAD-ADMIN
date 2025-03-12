@@ -483,7 +483,9 @@
                       {{ label.label }}
                     </template>
                   </v-autocomplete> -->
-                  <p v-if="editedGradStatus?.schoolAtGradId">
+                  <p
+                    data-cy="school-at-graduation-text" 
+                    v-if="editedGradStatus?.schoolAtGradId">
                     {{
                       getSchoolById(editedGradStatus?.schoolAtGradId)?.mincode
                     }}

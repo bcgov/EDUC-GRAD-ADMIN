@@ -265,6 +265,7 @@ export default {
     ...mapState(useBatchRequestFormStore, [
       "getBatchRequest",
       "getBatchRunTime",
+      "getBatchRequestCrontime"
     ]),
   },
   methods: {

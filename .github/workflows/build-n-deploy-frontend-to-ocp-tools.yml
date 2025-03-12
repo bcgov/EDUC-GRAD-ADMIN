@@ -1,4 +1,5 @@
-name: Build & Deploy Frontend-TOOLS
+name: ZZ-Build & Deploy Frontend-TOOLS
+# Archiving this workflow file as it is no longer in use.
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.

@@ -226,4 +226,7 @@ export default {
   getSchoolById(schools, schoolId) {
     return schools.find((school) => school.schoolId === schoolId) || null;
   },
+  dataArrayExists(array) {
+    return !!array && array.length > 0;
+  },
 };
