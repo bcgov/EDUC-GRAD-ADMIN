@@ -5,7 +5,14 @@ export interface BatchHistoryResultOption {
 }
 
 export interface BatchHistoryResultPayload extends paginationApiEntity {
-  content: StudentApiEntity[];
+  content: StudentHistoryApiEntity[];
+  empty: boolean;
+  first: boolean;
+  last: boolean;
+}
+
+export interface FilteredStudentHistoryPayload extends paginationApiEntity {
+  content: StudentHistoryApiEntity[],
   empty: boolean;
   first: boolean;
   last: boolean;

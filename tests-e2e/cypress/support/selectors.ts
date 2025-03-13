@@ -12,6 +12,7 @@ export default {
 	},
 
 	studentSearch: {
+		navBtn: 'a[href="/"]',
 		title: '.studentlist > h1',
 		searchByPEN: 'input#search-by-pen',
 		searchSubmit: 'button#search-submit',

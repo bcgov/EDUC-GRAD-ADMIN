@@ -10,6 +10,7 @@
 import selectors from "../../support/selectors"
 import { getCurrentTimestamp, isWithinMarginSeconds } from "../../support/helperMethods"
 const batchProcessingSelectors = selectors.batchProcessing
+const studentSearchSelectors = selectors.studentSearch
 
 describe('Graduation Algorithm', () => {
   const batch_test_student = Cypress.env('test_students').batch_test_student
@@ -43,6 +44,7 @@ describe('Graduation Algorithm', () => {
      * 7. Call batch summary endpoint repeatedly until it's completed
      *    - If it's not completed within set timeout, test fails
      * 8. Call batch history for the batch id to ensure data is valid
+     *    - activityCode is REGALG
      *    - Length of content should be 1
      *    - updateDate of a student should be same/close to current date time
      */
@@ -65,13 +67,16 @@ describe('Graduation Algorithm', () => {
         // Batch job is completed -> call studentHistory API to make sure student is updated
         cy.task('getBatchHistoryResultById', {batchJobResultId: batchId}).then((data) => {
           const content = data.content
+          expect(content).to.have.length(1)
+          const batchResultData = content[0]
+          // Make sure updateDate is properly updated
           const endTime = getCurrentTimestamp()
-          if (content && content.length) {
-            expect(content).to.have.length(1)
-            // Make sure updateDate is properly updated
-            expect(isWithinMarginSeconds(content[0].updateDate, endTime)).to.be.true
-          }
+          expect(isWithinMarginSeconds(batchResultData.updateDate, endTime)).to.be.true
+          // Check activity code
+          expect(batchResultData).to.have.property('activityCode', 'GRADALG')
         })
+
+        // 
       })
     })
   })
@@ -105,6 +110,7 @@ describe('Graduation Algorithm', () => {
      * 7. Call batch summary endpoint repeatedly until it's completed
      *    - If it's not completed within set timeout, test fails
      * 8. Call batch history for the batch id to ensure data is valid
+     *    - activityCode is REGALG
      *    - updateDate of each student should be same/close to current date time
      */
     it('Runs REGALG on School', () => {
@@ -130,6 +136,7 @@ describe('Graduation Algorithm', () => {
             // Make sure updateDate is properly updated
             content.forEach(item => {
               expect(isWithinMarginSeconds(item.updateDate, endTime)).to.be.true
+              expect(item).to.have.property('activityCode', 'GRADALG')
             })
           }
         })
@@ -166,6 +173,7 @@ describe('Graduation Algorithm', () => {
      * 7. Call batch summary endpoint repeatedly until it's completed
      *    - If it's not completed within set timeout, test fails
      * 8. Call batch history for the batch id to ensure data is valid
+     *    - activityCode is REGALG
      *    - updateDate of each student should be same/close to current date time
      */
     it('Runs REGALG on District', () => {
@@ -193,6 +201,7 @@ describe('Graduation Algorithm', () => {
             // Make sure updateDate is properly updated
             content.forEach(item => {
               expect(isWithinMarginSeconds(item.updateDate, endTime)).to.be.true
+              expect(item).to.have.property('activityCode', 'GRADALG')
             })
           }
         })
