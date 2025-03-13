@@ -1,5 +1,3 @@
-import { BatchHistoryResultPayload } from "../services/student-api-service"
-
 describe('API Test', () => {
 
   it('View batch result json', () => {
@@ -9,9 +7,13 @@ describe('API Test', () => {
       console.log(data)
       const content = data.content
       expect(content).to.have.length(1)
-      content.forEach(item => {
-        expect(item).to.have.property('activityCode', 'GRADALG')
+      const batchResultData = content[0]
+      expect(batchResultData).to.have.property('activityCode', 'GRADALG')
+      
+      cy.task('getTranscript', batchResultData.studentID).then((data) => {
+        console.log(data)
       })
+      
     })
   })
 })

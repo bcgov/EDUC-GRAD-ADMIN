@@ -1,4 +1,5 @@
 import { BatchSummaryOptions, BatchSummaryPayload } from "../services/batch-api-service";
+import { CertificatePayload, TranscriptPayload, TVRPayload } from "../services/graduation-report-api-service";
 import { BatchHistoryResultOption, BatchHistoryResultPayload } from "../services/student-api-service";
 
 export {}; // This file needs to be a module
@@ -21,6 +22,21 @@ declare global {
       task<T = BatchSummaryOptions, S = BatchSummaryPayload> (
         event: 'getBatchSummary',
         arg: T
+      ): Chainable<S>;
+
+      task<S = TranscriptPayload> (
+        event: 'getTranscript',
+        studentId: string
+      ): Chainable<S>;
+
+      task<S = CertificatePayload> (
+        event: 'getCertificate',
+        studentId: string
+      ): Chainable<S>;
+
+      task<S = TVRPayload> (
+        event: 'getTranscriptVerificationReport',
+        studentId: string
       ): Chainable<S>;
     }
   }

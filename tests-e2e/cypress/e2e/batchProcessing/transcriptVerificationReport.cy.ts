@@ -13,6 +13,7 @@ const batchProcessingSelectors = selectors.batchProcessing
 
 describe('Transcript Verification Report', () => {
   const batch_test_student = Cypress.env('test_students').batch_test_student
+  const activityCode = 'GRADPROJECTED'
 
   context('On Student', () => {
     beforeEach(() => {
@@ -43,10 +44,12 @@ describe('Transcript Verification Report', () => {
      * 7. Call batch summary endpoint repeatedly until it's completed
      *    - If it's not completed within set timeout, test fails
      * 8. Call batch history for the batch id to ensure data is valid
+     *    - actitityCode should be GRADPROJECTED
      *    - Length of content should be 1
      *    - updateDate of a student should be same/close to current date time
+     * 9. Call graduation report API for checking updateDate for TVR is updated
      */
-    it.only('Runs TVRRUN on Student', () => {
+    it('Runs TVRRUN on Student', () => {
       cy.get(batchProcessingSelectors.overlayWindow).find('input').click({force: true})
       cy.get(selectors.selections).contains('Student').click()
       cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.numberInput).type(batch_test_student.PEN)
@@ -64,12 +67,17 @@ describe('Transcript Verification Report', () => {
         // Batch job is completed -> call studentHistory API to make sure student is updated
         cy.task('getBatchHistoryResultById', {batchJobResultId: batchId}).then((data) => {
           const content = data.content
+          expect(content).to.have.length(1)
+          const batchResultData = content[0]
+          // Make sure updateDate is properly updated
           const endTime = getCurrentTimestamp()
-          if (content && content.length) {
-            expect(content).to.have.length(1)
-            // Make sure updateDate is properly updated
-            expect(isWithinMarginSeconds(content[0].updateDate, endTime)).to.be.true
-          }
+          expect(isWithinMarginSeconds(batchResultData.updateDate, endTime)).to.be.true
+          // Check activity code
+          expect(batchResultData).to.have.property('activityCode', activityCode)
+          // Make sure transcript's updateDate is updated
+          cy.task('getTranscriptVerificationReport', batchResultData.studentID).then((data) => {
+            expect(isWithinMarginSeconds(data.updateDate, endTime)).to.be.true
+          })
         })
       })
     })

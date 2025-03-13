@@ -14,6 +14,7 @@ const studentSearchSelectors = selectors.studentSearch
 
 describe('Graduation Algorithm', () => {
   const batch_test_student = Cypress.env('test_students').batch_test_student
+  const activityCode = 'GRADALG'
 
   context('On Student', () => {
     beforeEach(() => {
@@ -44,9 +45,10 @@ describe('Graduation Algorithm', () => {
      * 7. Call batch summary endpoint repeatedly until it's completed
      *    - If it's not completed within set timeout, test fails
      * 8. Call batch history for the batch id to ensure data is valid
-     *    - activityCode is REGALG
+     *    - activityCode should be REGALG
      *    - Length of content should be 1
      *    - updateDate of a student should be same/close to current date time
+     * 9. Call graduation report API for checking updateDate for transcript is updated
      */
     it.only('Runs on REGALG Student', () => {
       cy.get(batchProcessingSelectors.overlayWindow).find('input').click({force: true})
@@ -73,10 +75,12 @@ describe('Graduation Algorithm', () => {
           const endTime = getCurrentTimestamp()
           expect(isWithinMarginSeconds(batchResultData.updateDate, endTime)).to.be.true
           // Check activity code
-          expect(batchResultData).to.have.property('activityCode', 'GRADALG')
+          expect(batchResultData).to.have.property('activityCode', activityCode)
+          // Make sure transcript's updateDate is updated
+          cy.task('getTranscript', batchResultData.studentID).then((data) => {
+            expect(isWithinMarginSeconds(data.updateDate, endTime)).to.be.true
+          })
         })
-
-        // 
       })
     })
   })
@@ -136,7 +140,7 @@ describe('Graduation Algorithm', () => {
             // Make sure updateDate is properly updated
             content.forEach(item => {
               expect(isWithinMarginSeconds(item.updateDate, endTime)).to.be.true
-              expect(item).to.have.property('activityCode', 'GRADALG')
+              expect(item).to.have.property('activityCode', activityCode)
             })
           }
         })
@@ -201,7 +205,7 @@ describe('Graduation Algorithm', () => {
             // Make sure updateDate is properly updated
             content.forEach(item => {
               expect(isWithinMarginSeconds(item.updateDate, endTime)).to.be.true
-              expect(item).to.have.property('activityCode', 'GRADALG')
+              expect(item).to.have.property('activityCode', activityCode)
             })
           }
         })

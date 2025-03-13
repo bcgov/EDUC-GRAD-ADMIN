@@ -1,6 +1,7 @@
 import { defineConfig } from "cypress";
 import { BatchHistoryResultOption, BatchHistoryResultPayload, StudentAPIService } from "./cypress/services/student-api-service";
 import { BatchAPIService, BatchSummaryOptions, BatchSummaryPayload } from "./cypress/services/batch-api-service";
+import { CertificatePayload, GraduationReportAPIService, TranscriptPayload, TVRPayload } from "./cypress/services/graduation-report-api-service";
 
 export default defineConfig({
   chromeWebSecurity: false,
@@ -8,6 +9,7 @@ export default defineConfig({
   screenshotOnRunFailure: false,
   defaultCommandTimeout: 10000,
   numTestsKeptInMemory: 0,
+  watchForFileChanges: false,
   retries: {
     runMode: 1,
     openMode: 0
@@ -23,7 +25,16 @@ export default defineConfig({
         },
         async getBatchSummary(options: BatchSummaryOptions): Promise<BatchSummaryPayload> {
           return await new BatchAPIService(config).getBatchSummary(options.pageNumber, options.pageSize);
-        }
+        },
+        async getTranscript(studentId: string): Promise<TranscriptPayload> {
+          return await new GraduationReportAPIService(config).getTranscript(studentId)
+        },
+        async getCertificate(studentId: string): Promise<CertificatePayload> {
+          return await new GraduationReportAPIService(config).getCertificate(studentId)
+        },
+        async getTranscriptVerificationReport(studentId: string): Promise<TVRPayload> {
+          return await new GraduationReportAPIService(config).getTranscriptVerificationReport(studentId)
+        },
       })
     },
   },
