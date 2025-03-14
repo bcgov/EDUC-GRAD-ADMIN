@@ -35,7 +35,7 @@ export default {
 		warningMsg: 'div.bg-warning',
 		snackBar: '.v-overlay .v-snackbar__content',
 
-		table: '.graduation-status > .v-card > .v-card-text > .v-table > .v-table__wrapper > table',
+		table: '.graduation-status > .v-card > .v-card-text > .v-table > .v-table__wrapper > table:visible',
 		programText: 'tbody > tr:nth-child(1) > td:nth-child(2)',
 		programCompletionDateText: 'tbody > tr:nth-child(2) > td:nth-child(2)',
 		statusText: 'tbody > tr:nth-child(3) > td:nth-child(2)',

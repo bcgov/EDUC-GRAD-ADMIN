@@ -49,7 +49,7 @@ describe('Transcript Verification Report', () => {
      *    - updateDate of a student should be same/close to current date time
      * 9. Call graduation report API for checking updateDate for TVR is updated
      */
-    it('Runs TVRRUN on Student', () => {
+    it('Runs TVRRUN on a student', () => {
       cy.get(batchProcessingSelectors.overlayWindow).find('input').click({force: true})
       cy.get(selectors.selections).contains('Student').click()
       cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.numberInput).type(batch_test_student.PEN)

@@ -8,6 +8,7 @@
  * @see {@link https://eccbc.atlassian.net/wiki/spaces/MODVMSTRAX/pages/13766627/View+Modify+Student+Grad+Status}
  */
 
+import { update } from "cypress/types/lodash"
 import selectors from "../../support/selectors"
 const studentSearchSelectors = selectors.studentSearch
 
@@ -34,53 +35,8 @@ function undoCompletion() {
 function updateGradStatus() {
   cy.get(studentSearchSelectors.transcriptTVRBtn).click()
   cy.get(selectors.selections).contains('Update Grad Status').click({force: true})
-  cy.wait(3000)
+  cy.wait(5000)
 }
-
-// function resetToOriginalState(test_student) {
-//   // Undo completion if student has school at grad id but should not have graduated for testing purpose
-//   // Update Grad Status if student does not have school at grad id but should have graduated 
-//   const schoolAtGraduationText = studentSearchSelectors.table + ' ' + studentSearchSelectors.schoolAtGraduationText + ' div'
-//   cy.doesExist(schoolAtGraduationText).then(exist => {
-//     if (exist) {
-//       if (!test_student.isCompleted) undoCompletion()
-//     } else {
-//       if (test_student.isCompleted) updateGradStatus()
-//     }
-//   })
-
-//   // Edit Grad status back to normal even if data is same as original data
-//   cy.get(studentSearchSelectors.editBtn).click()
-//   cy.wait(1000)
-//   // Reset to original data
-//   // if student hasn't completed program, it is not disabled
-//   if (!test_student.isCompleted) {
-//     cy.selectDropdown(studentSearchSelectors.program, test_student.og_program)
-//   }
-//   // if student is in SCPP, it is not disabled
-//   if (test_student.og_program == 'SCPP') {
-//     cy.selectDropdown(studentSearchSelectors.programCompletionDate, test_student.og_completion_date)
-//   }
-//   cy.selectDropdown(studentSearchSelectors.status, test_student.og_status)
-//   cy.selectDropdown(studentSearchSelectors.grade, test_student.og_grade)
-//   cy.selectAutoselect(studentSearchSelectors.schoolOfRecord, test_student.og_school)
-
-//   // if student is taking 1950 program, adult start date will change
-//   if (test_student.og_program == '1950') {
-//     cy.get(studentSearchSelectors.adultStartDate).type(test_student.og_adult_start_date)
-//   }
-//   cy.get(studentSearchSelectors.saveStatusBtn).click({force: true})
-//   cy.wait(1000)
-
-//   // Set flags to original data
-//   cy.get(studentSearchSelectors.editBtn).click()
-//   cy.wait(1000)
-//   cy.get(studentSearchSelectors.recalcGrad).click({force: true})
-//   cy.selectDropdown(studentSearchSelectors.recalcGrad, test_student.og_recalc_grad, true)
-//   cy.selectDropdown(studentSearchSelectors.recalcProjected, test_student.og_recalc_proj, true)
-//   cy.get(studentSearchSelectors.saveStatusBtn).click({force: true})
-// }
-
 
 describe('Student Grad Status', () => {
 
@@ -233,10 +189,11 @@ describe('Student Grad Status', () => {
    * 
    * @description
    * Ensure additional data for a graduated student is displayed or changes of interactability of certain fields for a graduated student 
-   * compared to a non-graduated student.
+   * compared to a non-graduated student. Also it ensures undo completion and update grade status works.
    * 
    * ## Steps:
    * 1. Make sure data is ready to be tested
+   *    - Student should be grauated. If not, update grad status
    * 2. Make sure honour standing flag is correct
    *    - If GPA > 3 then True else False value
    * 3. Check data in cards in student profile
@@ -251,19 +208,28 @@ describe('Student Grad Status', () => {
    *    - Program is non-modifiable if a student has a Program Completion Date
    * 7. Make sure school at graduation is not empty
    *    - School At Graduation is set to same school as School Of Graduation in default
+   * 8. Undo completion to make sure the following fields to be empty
+   *    - School At Graduation
+   *    - Program Completion Date
+   * 9. Run Update Grad Status to make sure the data is back to normal state
    */
   it('Edits grad status for a graduated student on non-SCCP Program', () => {
+    
     const graduated_student = Cypress.env('test_students').graduated_student
     cy.get(studentSearchSelectors.searchByPEN).type(graduated_student.PEN)
     cy.get(studentSearchSelectors.searchSubmit).click()
     cy.wait(5000) // Need to wait so that fields load up in Edit window
-
-    // Should be a graduated non sccp program student
+    
     const gradStatusTable = () => cy.get(studentSearchSelectors.table)
-    gradStatusTable().get(studentSearchSelectors.programText).should('not.contain.text', 'SCCP')
-    gradStatusTable().get(studentSearchSelectors.schoolAtGraduationText).should('exist')
-    gradStatusTable().get(studentSearchSelectors.programCompletionDateText).should('exist')
-    gradStatusTable().get(studentSearchSelectors.statusText).should('contain.text', graduated_student.og_status)
+    // If student is not graduated, run update grad status
+    gradStatusTable().find(studentSearchSelectors.programCompletionDateText).invoke('text').then(text => {
+      if (!text) updateGradStatus()
+    })  
+    // Should be a graduated non sccp program student
+    gradStatusTable().find(studentSearchSelectors.programText).should('not.contain.text', 'SCCP')
+    gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('not.be.empty')
+    gradStatusTable().find(studentSearchSelectors.programCompletionDateText).should('not.be.empty')
+    gradStatusTable().find(studentSearchSelectors.statusText).should('contain.text', graduated_student.og_status)
 
     // Honours standing flag is set to 'Y' if GPA is more thean 3
     cy.get(studentSearchSelectors.gpaText).invoke('text').then(gpa => {
@@ -292,22 +258,39 @@ describe('Student Grad Status', () => {
     cy.get(studentSearchSelectors.schoolAtGraduation).should('not.be.empty')
                                                      .and('contain.text', graduated_student.og_school)
     cy.get(studentSearchSelectors.schoolOfRecordAutoselectText).should('contain.text', graduated_student.og_school)
+    cy.get(studentSearchSelectors.editForm).contains('Cancel').click({force: true})
+
+    // Test undo completion and update grad status
+    undoCompletion()
+    gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('be.empty')
+    gradStatusTable().find(studentSearchSelectors.programCompletionDateText).should('be.empty')
+    updateGradStatus()
+    gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('not.be.empty')
+    gradStatusTable().find(studentSearchSelectors.programCompletionDateText).should('not.be.empty')
   })
 
   /**
    * @name editNongraduatedSCCPStudent
    * 
    * @description
-   * Ensure SCCP specific rules apply to the student. This test is also supposed to make sure graduation
-   * logic for a SCCP student works  properly; however, those tests are now disabled due to the restriction of data modification with testing.
+   * Ensure SCCP specific rules apply to the student. This test also makes sure graduation
+   * logic for a SCCP student works  properly.
    * 
    * ## Steps:
    * 1. Make sure data is ready to be tested
+   *    - Student should not be graduated. If so, undo completion
    * 2. Make sure program completion date is modifiable
    *    - Non-modifiable excep for students on SCCP
    * 3. Check SCCP Rules for program completion date
    *    - Program completion date cannot be before the program effective date
    *    - Program completion date can be in the future
+   * 4. Run update grad status for future date and past date
+   *    - If program completion date is in the future, student is not graduated
+   *    - If program completion date is in the past, student is graduated
+   * 5. Check no completion reason and student certificate to verify
+   * 6. Make sure program completion date is no longer modifiable
+   *    - If program completion date is not blank, User cannot modify the program completion date.
+   * 7. Undo completion
    */
   it('Edits grad status for an non-graduated student on SCCP program', () => {
     const sccp_student = Cypress.env('test_students').sccp_student
@@ -315,10 +298,13 @@ describe('Student Grad Status', () => {
     cy.get(studentSearchSelectors.searchSubmit).click()
     cy.wait(5000) // Need to wait so that fields load up in Edit window
     
-    // Should be an ungraduated sccp student
     const gradStatusTable = () => cy.get(studentSearchSelectors.table)
-    gradStatusTable().get(studentSearchSelectors.programText).should('contain.text', 'SCCP')
-    gradStatusTable().get(studentSearchSelectors.schoolAtGraduationText).should('be.empty')
+    gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).invoke('text').then(text => {
+      if (text) undoCompletion()
+    })
+    // Should be an ungraduated sccp student
+    gradStatusTable().find(studentSearchSelectors.programText).should('contain.text', 'SCCP')
+    gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('be.empty')
 
     // Edit
     cy.get(studentSearchSelectors.editBtn).click()
@@ -332,28 +318,31 @@ describe('Student Grad Status', () => {
     cy.get(studentSearchSelectors.editForm).should('contain.text', messages.completionDatePriorSCCPWarning)
     // Program completion date can be in the future
     cy.get(studentSearchSelectors.programCompletionDate).clear().type(getNextMonthYYYYMM())
+    cy.get(studentSearchSelectors.editForm).contains('Cancel').click({force: true})
 
-    // // SCCP students are graduated if their program completion date is less than the current date
-    // // Make sure this student is not graduated
-    // updateGradStatus()
-    // gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('be.empty')
-    // cy.get(studentSearchSelectors.noCompletionCard).should('contain.text', messages.noCompletionFuture)
-    // cy.get(studentSearchSelectors.certificateDogwoodsCard).find(studentSearchSelectors.pdfLink).should('not.exist')
-    // // Change completion date to past date
-    // cy.get(studentSearchSelectors.editBtn).click()
-    // cy.wait(1000)
-    // cy.get(studentSearchSelectors.programCompletionDate).clear().type('201010')
-    // cy.get(studentSearchSelectors.saveStatusBtn).click()
-    // cy.wait(1000)
-    // // Make sure this student is graduated
-    // updateGradStatus()
-    // gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('contain.text', sccp_student.og_school)
+    // SCCP students are graduated if their program completion date is less than the current date
+    // Make sure this student is not graduated
+    updateGradStatus()
+    gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('be.empty')
+    cy.get(studentSearchSelectors.noCompletionCard).should('contain.text', messages.noCompletionFuture)
+    cy.get(studentSearchSelectors.certificateDogwoodsCard).find(studentSearchSelectors.pdfLink).should('not.exist')
+    // Change completion date to past date
+    cy.get(studentSearchSelectors.editBtn).click()
+    cy.wait(1000)
+    cy.get(studentSearchSelectors.programCompletionDate).clear().type('201010')
+    cy.get(studentSearchSelectors.saveStatusBtn).click()
+    cy.wait(1000)
+    // Make sure this student is graduated
+    updateGradStatus()
+    gradStatusTable().find(studentSearchSelectors.schoolAtGraduationText).should('contain.text', sccp_student.og_school)
+    // Graduated SCCP student
+    cy.get(studentSearchSelectors.certificateDogwoodsCard).find(studentSearchSelectors.pdfLink).should('contain.text', 'Evergreen')
+    // If program completion date is not blank, User cannot modify the program completion date. 
+    cy.get(studentSearchSelectors.editBtn).click()
+    cy.get(studentSearchSelectors.programCompletionDate).should('be.disabled')
+    cy.get(studentSearchSelectors.editForm).contains('Cancel').click({force: true})
 
-    // // Graduated SCCP student
-    // cy.get(studentSearchSelectors.certificateDogwoodsCard).find(studentSearchSelectors.pdfLink).should('contain.text', 'Evergreen')
-    // // If program completion date is not blank, User cannot modify the program completion date. 
-    // cy.get(studentSearchSelectors.editBtn).click()
-    // cy.get(studentSearchSelectors.programCompletionDate).should('be.disabled')
+    undoCompletion()
   })
 
   /**
@@ -377,7 +366,7 @@ describe('Student Grad Status', () => {
     
     // Should be a merged student
     const gradStatusTable = () => cy.get(studentSearchSelectors.table)
-    gradStatusTable().get(studentSearchSelectors.statusText).should('contain.text', 'Merged')
+    gradStatusTable().find(studentSearchSelectors.statusText).should('contain.text', 'Merged')
 
     // Edit
     cy.get(studentSearchSelectors.editBtn).click()

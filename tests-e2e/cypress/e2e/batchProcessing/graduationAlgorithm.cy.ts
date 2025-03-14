@@ -50,8 +50,8 @@ describe('Graduation Algorithm', () => {
      *    - updateDate of a student should be same/close to current date time
      * 9. Call graduation report API for checking updateDate for transcript is updated
      */
-    it.only('Runs on REGALG Student', () => {
-      cy.get(batchProcessingSelectors.overlayWindow).find('input').click({force: true})
+    it.only('Runs REGALG on a student', () => {
+      cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).click({force: true})
       cy.get(selectors.selections).contains('Student').click()
       cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.numberInput).type(batch_test_student.PEN)
       cy.get(batchProcessingSelectors.overlayWindow).contains('Add Student').click({force: true})
@@ -117,8 +117,8 @@ describe('Graduation Algorithm', () => {
      *    - activityCode is REGALG
      *    - updateDate of each student should be same/close to current date time
      */
-    it('Runs REGALG on School', () => {
-      cy.get(batchProcessingSelectors.overlayWindow).find('input').click({force: true})
+    it('Runs REGALG on a school', () => {
+      cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).click({force: true})
       cy.get(selectors.selections).contains('School').click()
       cy.wait(500)
       cy.selectAutoselect(batchProcessingSelectors.autocomplete, batch_test_student.og_school)
@@ -180,8 +180,8 @@ describe('Graduation Algorithm', () => {
      *    - activityCode is REGALG
      *    - updateDate of each student should be same/close to current date time
      */
-    it('Runs REGALG on District', () => {
-      cy.get(batchProcessingSelectors.overlayWindow).find('input').click({force: true})
+    it('Runs REGALG on a district', () => {
+      cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).click({force: true})
       cy.get(selectors.selections).contains('School Category').click()
       cy.wait(500)
       cy.get(batchProcessingSelectors.innerCard).contains('label', 'School Category').next().click({force: true})
