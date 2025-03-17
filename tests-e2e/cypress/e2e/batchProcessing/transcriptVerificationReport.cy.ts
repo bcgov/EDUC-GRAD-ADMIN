@@ -8,7 +8,7 @@
  */
 
 import selectors from "../../support/selectors"
-import { getCurrentTimestamp, isWithinMarginSeconds } from "../../support/helperMethods"
+import { formatTime, getCurrentTimestamp, isWithinMarginSeconds } from "../../support/helperMethods"
 const batchProcessingSelectors = selectors.batchProcessing
 
 describe('Transcript Verification Report', () => {
@@ -50,7 +50,7 @@ describe('Transcript Verification Report', () => {
      * 9. Call graduation report API for checking updateDate for TVR is updated
      */
     it('Runs TVRRUN on a student', () => {
-      cy.get(batchProcessingSelectors.overlayWindow).find('input').click({force: true})
+      cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).click({force: true})
       cy.get(selectors.selections).contains('Student').click()
       cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.numberInput).type(batch_test_student.PEN)
       cy.get(batchProcessingSelectors.overlayWindow).contains('Add Student').click({force: true})
@@ -71,12 +71,12 @@ describe('Transcript Verification Report', () => {
           const batchResultData = content[0]
           // Make sure updateDate is properly updated
           const endTime = getCurrentTimestamp()
-          expect(isWithinMarginSeconds(batchResultData.updateDate, endTime)).to.be.true
+          expect(isWithinMarginSeconds(formatTime(batchResultData.updateDate), endTime)).to.be.true
           // Check activity code
           expect(batchResultData).to.have.property('activityCode', activityCode)
           // Make sure transcript's updateDate is updated
           cy.task('getTranscriptVerificationReport', batchResultData.studentID).then((data) => {
-            expect(isWithinMarginSeconds(data.updateDate, endTime)).to.be.true
+            expect(isWithinMarginSeconds(formatTime(data[0].updateDate), endTime)).to.be.true
           })
         })
       })

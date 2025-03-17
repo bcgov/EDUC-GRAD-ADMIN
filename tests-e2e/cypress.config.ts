@@ -26,13 +26,13 @@ export default defineConfig({
         async getBatchSummary(options: BatchSummaryOptions): Promise<BatchSummaryPayload> {
           return await new BatchAPIService(config).getBatchSummary(options.pageNumber, options.pageSize);
         },
-        async getTranscript(studentId: string): Promise<TranscriptPayload> {
+        async getTranscript(studentId: string): Promise<TranscriptPayload[]> {
           return await new GraduationReportAPIService(config).getTranscript(studentId)
         },
-        async getCertificate(studentId: string): Promise<CertificatePayload> {
+        async getCertificate(studentId: string): Promise<CertificatePayload[]> {
           return await new GraduationReportAPIService(config).getCertificate(studentId)
         },
-        async getTranscriptVerificationReport(studentId: string): Promise<TVRPayload> {
+        async getTranscriptVerificationReport(studentId: string): Promise<TVRPayload[]> {
           return await new GraduationReportAPIService(config).getTranscriptVerificationReport(studentId)
         },
       })

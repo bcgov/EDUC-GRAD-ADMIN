@@ -27,17 +27,17 @@ declare global {
       task<S = TranscriptPayload> (
         event: 'getTranscript',
         studentId: string
-      ): Chainable<S>;
+      ): Chainable<S[]>;
 
       task<S = CertificatePayload> (
         event: 'getCertificate',
         studentId: string
-      ): Chainable<S>;
+      ): Chainable<S[]>;
 
       task<S = TVRPayload> (
         event: 'getTranscriptVerificationReport',
         studentId: string
-      ): Chainable<S>;
+      ): Chainable<S[]>;
     }
   }
 }

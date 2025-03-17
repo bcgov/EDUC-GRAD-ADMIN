@@ -14,3 +14,13 @@ export function getCurrentTimestamp() {
   
   return localTime;
 }
+
+export function formatTime(value: string) {
+  if (value) {
+    return new Date(value).toLocaleString("en-CA", {
+      hourCycle: "h23",
+    });
+  } else {
+    return "";
+  }
+}

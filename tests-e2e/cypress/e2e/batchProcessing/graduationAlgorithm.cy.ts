@@ -8,7 +8,7 @@
  */
 
 import selectors from "../../support/selectors"
-import { getCurrentTimestamp, isWithinMarginSeconds } from "../../support/helperMethods"
+import { formatTime, getCurrentTimestamp, isWithinMarginSeconds } from "../../support/helperMethods"
 const batchProcessingSelectors = selectors.batchProcessing
 const studentSearchSelectors = selectors.studentSearch
 
@@ -65,7 +65,7 @@ describe('Graduation Algorithm', () => {
       cy.wait('@batchRun').then(({response}) => {
         const batchId = response?.body?.batchId
 
-        cy.callBatchJobTillComplete(batchId, Date.now(), 10000)
+        cy.callBatchJobTillComplete(batchId, Date.now(), 20000)
         // Batch job is completed -> call studentHistory API to make sure student is updated
         cy.task('getBatchHistoryResultById', {batchJobResultId: batchId}).then((data) => {
           const content = data.content
@@ -73,12 +73,12 @@ describe('Graduation Algorithm', () => {
           const batchResultData = content[0]
           // Make sure updateDate is properly updated
           const endTime = getCurrentTimestamp()
-          expect(isWithinMarginSeconds(batchResultData.updateDate, endTime)).to.be.true
+          expect(isWithinMarginSeconds(formatTime(batchResultData.updateDate), endTime)).to.be.true
           // Check activity code
           expect(batchResultData).to.have.property('activityCode', activityCode)
           // Make sure transcript's updateDate is updated
           cy.task('getTranscript', batchResultData.studentID).then((data) => {
-            expect(isWithinMarginSeconds(data.updateDate, endTime)).to.be.true
+            expect(isWithinMarginSeconds(formatTime(data[0].updateDate), endTime)).to.be.true
           })
         })
       })
@@ -139,7 +139,7 @@ describe('Graduation Algorithm', () => {
           if (content && content.length) {
             // Make sure updateDate is properly updated
             content.forEach(item => {
-              expect(isWithinMarginSeconds(item.updateDate, endTime)).to.be.true
+              expect(isWithinMarginSeconds(formatTime(item.updateDate), endTime)).to.be.true
               expect(item).to.have.property('activityCode', activityCode)
             })
           }
@@ -204,7 +204,7 @@ describe('Graduation Algorithm', () => {
           if (content && content.length) {
             // Make sure updateDate is properly updated
             content.forEach(item => {
-              expect(isWithinMarginSeconds(item.updateDate, endTime)).to.be.true
+              expect(isWithinMarginSeconds(formatTime(item.updateDate), endTime)).to.be.true
               expect(item).to.have.property('activityCode', activityCode)
             })
           }

@@ -33,10 +33,10 @@ export class GraduationReportAPIService {
     this.baseUrl = config.env.api_url.graduationReportAPIURL
   }
 
-  async getTranscript(studentId: string): Promise<TranscriptPayload> {
+  async getTranscript(studentId: string): Promise<TranscriptPayload[]> {
     try {
       const url = `${this.baseUrl}/api/v1/graduationreports/studenttranscript/${studentId}`;
-      const data = await this.restUtils.getData<TranscriptPayload>(url);
+      const data = await this.restUtils.getData<TranscriptPayload[]>(url);
       
       return data;
     } catch (e) {
@@ -44,10 +44,10 @@ export class GraduationReportAPIService {
     }
   }
 
-  async getCertificate(studentId: string): Promise<CertificatePayload> {
+  async getCertificate(studentId: string): Promise<CertificatePayload[]> {
     try {
-      const url = `${this.baseUrl}/api/v1/graduationreports/studentcertificate/${studentId};`
-      const data = await this.restUtils.getData<CertificatePayload>(url);
+      const url = `${this.baseUrl}/api/v1/graduationreports/studentcertificate/${studentId}`;
+      const data = await this.restUtils.getData<CertificatePayload[]>(url);
       
       return data;
     } catch (e) {
@@ -55,10 +55,10 @@ export class GraduationReportAPIService {
     }
   }
 
-  async getTranscriptVerificationReport(studentId: string): Promise<TVRPayload> {
+  async getTranscriptVerificationReport(studentId: string): Promise<TVRPayload[]> {
     try {
-      const url = `${this.baseUrl}/api/v1/graduationreports/studentreport/${studentId};`
-      const data = await this.restUtils.getData<TVRPayload>(url);
+      const url = `${this.baseUrl}/api/v1/graduationreports/studentreport/${studentId}`;
+      const data = await this.restUtils.getData<TVRPayload[]>(url);
       
       return data;
     } catch (e) {
