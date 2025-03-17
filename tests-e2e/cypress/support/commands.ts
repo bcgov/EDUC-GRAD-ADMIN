@@ -97,6 +97,7 @@ Cypress.Commands.add('shouldHaveData', shouldHaveData)
 Cypress.Commands.add('selectDropdown', selectDropdown)
 Cypress.Commands.add('selectAutoselect', selectAutoselect)
 Cypress.Commands.add('callBatchJobTillComplete', callBatchJobTillComplete)
+require('cypress-delete-downloads-folder').addCustomCommand()
 
 Cypress.on('uncaught:exception', (err, runnable) => {
 	return false

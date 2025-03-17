@@ -2,6 +2,9 @@ import { defineConfig } from "cypress";
 import { BatchHistoryResultOption, BatchHistoryResultPayload, StudentAPIService } from "./cypress/services/student-api-service";
 import { BatchAPIService, BatchSummaryOptions, BatchSummaryPayload } from "./cypress/services/batch-api-service";
 import { CertificatePayload, GraduationReportAPIService, TranscriptPayload, TVRPayload } from "./cypress/services/graduation-report-api-service";
+import { DistributionAPIService } from "./cypress/services/distribution-api-service";
+const Admzip = require('adm-zip');
+const { removeDirectory } = require('cypress-delete-downloads-folder');
 
 export default defineConfig({
   chromeWebSecurity: false,
@@ -27,14 +30,33 @@ export default defineConfig({
           return await new BatchAPIService(config).getBatchSummary(options.pageNumber, options.pageSize);
         },
         async getTranscript(studentId: string): Promise<TranscriptPayload[]> {
-          return await new GraduationReportAPIService(config).getTranscript(studentId)
+          return await new GraduationReportAPIService(config).getTranscript(studentId);
         },
         async getCertificate(studentId: string): Promise<CertificatePayload[]> {
-          return await new GraduationReportAPIService(config).getCertificate(studentId)
+          return await new GraduationReportAPIService(config).getCertificate(studentId);
         },
         async getTranscriptVerificationReport(studentId: string): Promise<TVRPayload[]> {
-          return await new GraduationReportAPIService(config).getTranscriptVerificationReport(studentId)
+          return await new GraduationReportAPIService(config).getTranscriptVerificationReport(studentId);
         },
+        async downloadBatchReport(batchId: string): Promise<string> {
+          return await new DistributionAPIService(config).downloadBatchReport(batchId);
+        },
+        checkPDFInZip(zipPath: string): string {
+          try {
+            const zip = new Admzip(zipPath)
+            const zipEntries = zip.getEntries();
+
+            // Find the first PDF in the ZIP
+            const pdfEntry = zipEntries.find((entry: any) => entry.entryName.endsWith(".pdf"));
+            if (!pdfEntry) return "No PDF found";
+
+            const pdfContent = pdfEntry.getData(); // Get PDF file buffer
+            return pdfContent.length > 0 ? "PDF is not empty" : "PDF is empty";
+          } catch (err: any) {
+            return `Error: ${err.message}`;
+          }
+        },
+        removeDirectory,
       })
     },
   },

@@ -38,6 +38,16 @@ declare global {
         event: 'getTranscriptVerificationReport',
         studentId: string
       ): Chainable<S[]>;
+
+      task(
+        event: 'downloadBatchReport',
+        batchId: string
+      ): Chainable<string>;
+
+      task(
+        event: 'checkPDFInZip',
+        zipPath: string
+      ): Chainable<string>;
     }
   }
 }
