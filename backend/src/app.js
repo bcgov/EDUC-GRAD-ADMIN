@@ -27,7 +27,6 @@ const promMid = require("express-prometheus-middleware");
 
 function addVersionToReq(req, res, next) {
   const { version } = req.params;
-  console.log(version)
   // Check if the version is supported
   const supportedVersions = ["v1", "v2"];
   if (!supportedVersions.includes(version)) {

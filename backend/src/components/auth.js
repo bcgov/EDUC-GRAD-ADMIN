@@ -199,9 +199,6 @@ const auth = {
           },
         }
       );
-
-      log.verbose("getServiceAccountToken Res", safeStringify(response.data));
-
       let result = {};
       result.accessToken = response.data.access_token;
       return result.accessToken;
