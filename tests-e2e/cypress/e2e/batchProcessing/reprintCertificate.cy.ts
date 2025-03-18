@@ -81,12 +81,9 @@ describe('Reprint Certificate without principal signature', () => {
         const content = data.content
         expect(content).to.have.length(1)
         const batchResultData = content[0]
-        // Make sure updateDate is properly updated
         const endTime = getCurrentTimestamp()
         expect(isWithinMarginSeconds(formatTime(batchResultData.updateDate), endTime)).to.be.true
-        // Check activity code
         expect(batchResultData).to.have.property('activityCode', activityCode)
-        // Make sure transcript's updateDate is updated
         cy.task('getCertificate', batchResultData.studentID).then((data) => {
           expect(isWithinMarginSeconds(formatTime(data[0].updateDate), endTime)).to.be.true
         })
