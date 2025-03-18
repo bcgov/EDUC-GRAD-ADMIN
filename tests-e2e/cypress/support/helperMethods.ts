@@ -3,8 +3,10 @@
 export function isWithinMarginSeconds(timeA: string, timeB: string, marginSeconds: number = 10) : boolean {
   const referenceTime = new Date(timeA).getTime()
   const givenTime = new Date(timeB).getTime()
-
-  return Math.abs(referenceTime - givenTime) <= marginSeconds * 1000
+  const difference = Math.abs(referenceTime - givenTime)
+  
+  console.log(difference)
+  return difference <= marginSeconds * 1000
 }
 
 export function getCurrentTimestamp() {
