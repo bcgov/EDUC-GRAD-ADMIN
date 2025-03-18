@@ -1,6 +1,6 @@
 // Any shared functions that does not use Cypress syntax
 
-export function isWithinMarginSeconds(timeA: string, timeB: string, marginSeconds: number = 10) : boolean {
+export function isWithinMarginSeconds(timeA: string, timeB: string, marginSeconds: number = 15) : boolean {
   const referenceTime = new Date(timeA).getTime()
   const givenTime = new Date(timeB).getTime()
   

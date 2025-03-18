@@ -8,10 +8,12 @@
 
 import selectors from "../../support/selectors";
 import { formatTime, getCurrentTimestamp, isWithinMarginSeconds, base64ToFileTypeAndDownload } from "../../support/helperMethods"
+const { deleteDownloadsFolderBeforeAll } = require('cypress-delete-downloads-folder');
 const batchProcessingSelectors = selectors.batchProcessing
 
-
 describe('Reprint Certificate without principal signature', () => {
+  deleteDownloadsFolderBeforeAll()
+
   const batch_test_student = Cypress.env('test_students').graduated_student
   const activityCode = 'USERDISTRC'
 
@@ -53,10 +55,9 @@ describe('Reprint Certificate without principal signature', () => {
    *    - credentialType should be RC
    *    - it should include a student's PEN in payload
    */
-  it.only('Runs RC on a student', () => {
+  it('Runs RC on a student', () => {
     cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).click({force: true})
     cy.get(selectors.selections).contains('Student').click()
-    cy.wait(500)
     cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.numberInput).type(batch_test_student.PEN)
     cy.get(batchProcessingSelectors.overlayWindow).contains('Add Student').click({force: true})
     cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})

@@ -10,7 +10,6 @@
 import selectors from "../../support/selectors"
 import { formatTime, getCurrentTimestamp, isWithinMarginSeconds } from "../../support/helperMethods"
 const batchProcessingSelectors = selectors.batchProcessing
-const studentSearchSelectors = selectors.studentSearch
 
 describe('Graduation Algorithm', () => {
   const batch_test_student = Cypress.env('test_students').batch_test_student

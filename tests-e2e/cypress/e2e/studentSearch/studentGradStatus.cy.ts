@@ -8,7 +8,6 @@
  * @see {@link https://eccbc.atlassian.net/wiki/spaces/MODVMSTRAX/pages/13766627/View+Modify+Student+Grad+Status}
  */
 
-import { update } from "cypress/types/lodash"
 import selectors from "../../support/selectors"
 const studentSearchSelectors = selectors.studentSearch
 
