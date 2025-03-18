@@ -1,3 +1,11 @@
+/**
+ * @module ReprintCertificate
+ * 
+ * @description
+ * Run "Reprint certificate - no principal signature block" in Batch Processing.  This spec tests graduation algorithm by calling API directly
+ * instead of naviagting thruogh UI to speed up the testing, as well as making sure endpoints work.
+ */
+
 import selectors from "../../support/selectors";
 import { formatTime, getCurrentTimestamp, isWithinMarginSeconds, base64ToFileTypeAndDownload } from "../../support/helperMethods"
 const batchProcessingSelectors = selectors.batchProcessing
@@ -18,6 +26,33 @@ describe('Reprint Certificate without principal signature', () => {
     cy.wait(500)
   })
 
+  /**
+   * @name runsOnStudent
+   * 
+   * @description
+   * Run Reprint Certificate for a single student to make sure student's da ta is properly updated.
+   * 
+   * ## Steps: 
+   * 1. Open Reprint Certificate modal on Batch Processing
+   * 2. Select Student as a group
+   * 3. Enter PEN
+   * 4. Click Add Student and Next
+   * 5. Select Download option and Next
+   * 6. Set up network interception for userrequestdistrun to get a batch id from response
+   * 7. Click Submit
+   *    - This will call userrequestdistrun and Cypress obtains a batch id out of the response
+   * 8. Call batch summary endpoint repeatedly until it's completed
+   *    - If it's not completed within set timeout, test fails
+   * 9. Call batch history for the batch id to ensure data is valid
+   *    - activityCode should be USERDISTRC
+   *    - Length of content should be 1
+   *    - updateDate of a student should be same/close to current date time
+   * 10. Call graduaiton report API for checking updateDate for certificate is updated
+   * 11. Call distribution API to download generated report and make sure the file is not empty
+   * 12. Call batch API for getting job parameters to make sure it's valid
+   *    - credentialType should be RC
+   *    - it should include a student's PEN in payload
+   */
   it.only('Runs RC on a student', () => {
     cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).click({force: true})
     cy.get(selectors.selections).contains('Student').click()
