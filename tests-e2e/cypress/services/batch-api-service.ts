@@ -9,6 +9,10 @@ export interface BatchSummaryPayload extends paginationApiEntity {
   batchJobList: BatchJob[];
 }
 
+export interface BatchPayload extends paginationApiEntity {
+  content: BatchJobv2[];
+}
+
 export class BatchAPIService {
   restUtils: RestUtils;
   baseUrl: string;
@@ -27,5 +31,30 @@ export class BatchAPIService {
     } catch (e) {
       throw e;
     }
+  }
+
+  async getBatchById(batchId: string): Promise<BatchPayload> {
+    let searchParams = [{
+      condition: null,
+      searchCriteriaList: [
+        { "key": "jobExecutionId",
+          "operation": "eq",
+          "value": parseInt(batchId),
+          "valueType": "INTEGER",
+          "condition": null
+        }
+      ]
+    }]
+
+    try {
+      const encodedSearchParams = encodeURIComponent(JSON.stringify(searchParams));
+      const url = `${this.baseUrl}/api/v2/batch/dashboard?pageNumber=0&pageSize=10&searchParams=${encodedSearchParams}`;
+      const data = await this.restUtils.getData<BatchPayload>(url);
+      
+      return data;
+    } catch (e) {
+      throw e;
+    }
+    
   }
 }

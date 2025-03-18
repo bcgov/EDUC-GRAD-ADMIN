@@ -1,6 +1,6 @@
 import { defineConfig } from "cypress";
 import { BatchHistoryResultOption, BatchHistoryResultPayload, StudentAPIService } from "./cypress/services/student-api-service";
-import { BatchAPIService, BatchSummaryOptions, BatchSummaryPayload } from "./cypress/services/batch-api-service";
+import { BatchAPIService, BatchPayload, BatchSummaryOptions, BatchSummaryPayload } from "./cypress/services/batch-api-service";
 import { CertificatePayload, GraduationReportAPIService, TranscriptPayload, TVRPayload } from "./cypress/services/graduation-report-api-service";
 import { DistributionAPIService } from "./cypress/services/distribution-api-service";
 const Admzip = require('adm-zip');
@@ -28,6 +28,9 @@ export default defineConfig({
         },
         async getBatchSummary(options: BatchSummaryOptions): Promise<BatchSummaryPayload> {
           return await new BatchAPIService(config).getBatchSummary(options.pageNumber, options.pageSize);
+        },
+        async getBatchById(batchId: string): Promise<BatchPayload> {
+          return await new BatchAPIService(config).getBatchById(batchId);
         },
         async getTranscript(studentId: string): Promise<TranscriptPayload[]> {
           return await new GraduationReportAPIService(config).getTranscript(studentId);

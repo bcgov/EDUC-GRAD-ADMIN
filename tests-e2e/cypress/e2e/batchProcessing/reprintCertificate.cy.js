@@ -48,11 +48,10 @@ describe('Reprint Certificate without principal signature', () => {
         // Check activity code
         expect(batchResultData).to.have.property('activityCode', activityCode)
         // Make sure transcript's updateDate is updated
-        cy.task('getTranscript', batchResultData.studentID).then((data) => {
+        cy.task('getCertificate', batchResultData.studentID).then((data) => {
           expect(isWithinMarginSeconds(formatTime(data[0].updateDate), endTime)).to.be.true
         })
       })
     })
   })
-
 })

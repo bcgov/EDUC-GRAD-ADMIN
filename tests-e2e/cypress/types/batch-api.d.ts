@@ -10,3 +10,18 @@ declare interface BatchJob {
   status: string;
   version: number;
 }
+
+declare interface BatchJobv2 extends BaseApiEntity {
+  actualStudentProcesssed: number;
+  endTime: string;
+  expectedStudentsProcessed: number;
+  failedStudentsProcessed: number;
+  id: string;
+  jobExecutionId: number;
+  jobParameters: string;
+  jobType: string;
+  localDownload: boolean;
+  startTime: string;
+  status: string;
+  triggerBy: string;
+} 
