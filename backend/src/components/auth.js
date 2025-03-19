@@ -199,8 +199,11 @@ const auth = {
           },
         }
       );
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> bbb28e16d5298a2500a1457acbe911ce5aa0d1c1
       let result = {};
       result.accessToken = response.data.access_token;
       return result.accessToken;

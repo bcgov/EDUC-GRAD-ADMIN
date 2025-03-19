@@ -70,6 +70,7 @@ import { useAuthStore } from "../store/modules/auth";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import StudentService from "@/services/StudentService.js";
+import StudentGraduationService from "@/services/StudentGraduationService.js";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 
@@ -359,7 +360,7 @@ export default {
         });
     },
     getUngradReasons() {
-      StudentService.getUngradReasons()
+      StudentGraduationService.getUngradReasons()
         .then((response) => {
           this.ungradReasons = response.data;
         })

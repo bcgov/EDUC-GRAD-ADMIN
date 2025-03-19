@@ -341,7 +341,7 @@ export default {
       "getDistrictById",
       "getDistrictByDistrictNumber",
       "getBatchSchoolCategoryCodes",
-      "getInstituteCategoryCodes",
+      "schoolCategoryCodes",
     ]),
     ...mapState(useBatchRequestFormStore, [
       "getDistricts",
