@@ -1,18 +1,5 @@
 <template>
   <v-container>
-    <!-- <v-overlay
-      v-model="isBatchJobsLoading"
-      class="align-center justify-center"
-      contained
-    >
-      <v-progress-circular
-        v-if="isBatchJobsLoading"
-        indeterminate
-        color="primary"
-        size="64"
-      >
-      </v-progress-circular>
-    </v-overlay> -->
     <v-row>
       <!-- First Column (col-5 for medium screens, col-12 for small screens) -->
       <v-col :cols="12" :md="isBatchShowing || isErrorShowing ? 7 : 12">
@@ -498,12 +485,6 @@ export default {
     getTimeDifference(startTime, endTime) {
       return sharedMethods.getTimeDifference(startTime, endTime);
     },
-    // getAdminDashboardData() {
-    //   this.adminDashboardLoading = true;
-    //   this.setBatchJobs();
-    //   this.adminDashboardLoading = false;
-    //   window.scrollTo(0, 0);
-    // },
   },
 };
 </script>
