@@ -62,19 +62,17 @@ describe('Transcript Verification Report', () => {
 
       // Watch Batch result through API
       cy.wait('@batchRun').then(({response}) => {
-        const batchId = response?.body?.batchId;
+        const batchId: string = response?.body?.batchId;
         cy.callBatchJobTillComplete(batchId, Date.now(), 10000)
         // Batch job is completed -> call studentHistory API to make sure student is updated
         cy.task('getBatchHistoryResultById', {batchJobResultId: batchId}).then((data) => {
           const content = data.content
           expect(content).to.have.length(1)
           const batchResultData = content[0]
-          // Make sure updateDate is properly updated
           const endTime = getCurrentTimestamp()
           expect(isWithinMarginSeconds(formatTime(batchResultData.updateDate), endTime)).to.be.true
           // Check activity code
           expect(batchResultData).to.have.property('activityCode', activityCode)
-          // Make sure transcript's updateDate is updated
           cy.task('getTranscriptVerificationReport', batchResultData.studentID).then((data) => {
             expect(isWithinMarginSeconds(formatTime(data[0].updateDate), endTime)).to.be.true
           })

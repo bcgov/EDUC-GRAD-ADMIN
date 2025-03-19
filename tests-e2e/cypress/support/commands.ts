@@ -70,7 +70,7 @@ function selectAutoselect(selector: string, text: string) {
 	selectDropdown(selector, text)
 }
 
-function callBatchJobTillComplete(jobId: number, startTime: number, timeout: number, interval: number = 2000) {
+function callBatchJobTillComplete(jobId: string, startTime: number, timeout: number, interval: number = 2000) {
   const currentTime = Date.now()
 
   if (currentTime - startTime >= timeout) {
@@ -79,7 +79,7 @@ function callBatchJobTillComplete(jobId: number, startTime: number, timeout: num
 
   cy.wait(interval)
   cy.task('getBatchSummary', {pageNumber: 0, pageSize: 10}).then((data) => {
-    const batchJob = data.batchJobList.find(batchJob => batchJob.jobExecutionId == jobId)
+    const batchJob = data.batchJobList.find(batchJob => batchJob.jobExecutionId == parseInt(jobId))
 
     // If job is completed, stop recalling
     if (!!batchJob && batchJob.status == 'COMPLETED') {

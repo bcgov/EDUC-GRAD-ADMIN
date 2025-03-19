@@ -12,7 +12,7 @@ declare global {
       shouldHaveData(selector: string, expectedRowNum?: number): Chainable<void>;
       selectDropdown(selector: string, text: string, forceFlag?: boolean): Chainable<void>;
       selectAutoselect(selector: string, text: string): Chainable<void>;
-      callBatchJobTillComplete(jobId: number, startTime: number, timeout: number, interval?: number): Chainable<void>
+      callBatchJobTillComplete(jobId: string, startTime: number, timeout: number, interval?: number): Chainable<void>
 
       task<T = BatchHistoryResultOption, S = BatchHistoryResultPayload> (
         event: 'getBatchHistoryResultById',

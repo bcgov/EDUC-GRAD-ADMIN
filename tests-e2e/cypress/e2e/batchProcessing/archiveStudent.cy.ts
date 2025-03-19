@@ -75,7 +75,7 @@ describe('Archive Student Batch Process', () => {
 
     // Watch Batch result through API
     cy.wait('@batchRun').then(({response}) => {
-      const batchId = response?.body?.batchId
+      const batchId: string = response?.body?.batchId
 
       cy.callBatchJobTillComplete(batchId, Date.now(), 20000)
       // Batch job is completed -> call studentHistory API to make sure student is updated

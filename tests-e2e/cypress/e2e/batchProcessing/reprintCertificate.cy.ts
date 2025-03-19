@@ -73,7 +73,7 @@ describe('Reprint Certificate without principal signature', () => {
 
     // Watch Batch result through API
     cy.wait('@batchRun').then(({response}) => {
-      const batchId = response?.body?.batchId
+      const batchId: string = response?.body?.batchId
       cy.callBatchJobTillComplete(batchId, Date.now(), 20000)
 
       // Batch job is completed -> call studentHistory API to make sure student is updated
@@ -90,7 +90,7 @@ describe('Reprint Certificate without principal signature', () => {
       })
 
       // Batch job is completed -> download file to make sure file is not empty
-      cy.task('downloadBatchReport', batchId).then(data => {
+      cy.task('downloadBatchReport', batchId).then((data) => {
         base64ToFileTypeAndDownload(data, "application/zip", batchId)
         const zipFilePath =  `cypress/downloads/${batchId}.zip`;
         cy.readFile(zipFilePath, 'base64', {timeout: 10000})
@@ -101,7 +101,7 @@ describe('Reprint Certificate without principal signature', () => {
       })
   
       // Batch job is completed -> check jobParameters
-      cy.task('getBatchById', batchId).then(data => {
+      cy.task('getBatchById', batchId).then((data) => {
         const jobParameters = JSON.parse(data.content[0].jobParameters)
         cy.wrap(jobParameters).should('have.a.property', 'credentialType', 'RC')
         cy.wrap(jobParameters).its('payload.pens')
