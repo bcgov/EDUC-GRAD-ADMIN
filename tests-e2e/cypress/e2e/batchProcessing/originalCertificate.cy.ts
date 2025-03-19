@@ -1,9 +1,10 @@
 /**
- * @module ReprintCertificate
+ * @module OriginalCertificate
  * 
  * @description
- * Run "Reprint certificate - no principal signature block" in Batch Processing.  This spec tests RC by calling API directly
+ * Run "Original certificate - with principal signature block" in Batch Processing.  This spec tests OC by calling API directly
  * instead of naviagting thruogh UI to speed up the testing, as well as making sure endpoints work.
+ * The difference between "Reprint certificate" is that OC always updates distribution dates
  */
 
 import selectors from "../../support/selectors";
@@ -11,11 +12,11 @@ import { formatTime, getCurrentTimestamp, isWithinMarginSeconds, base64ToFileTyp
 const { deleteDownloadsFolderBeforeAll } = require('cypress-delete-downloads-folder');
 const batchProcessingSelectors = selectors.batchProcessing
 
-describe('Reprint Certificate without principal signature', () => {
+describe('Original Certificate with principal signature', () => {
   deleteDownloadsFolderBeforeAll()
 
   const batch_test_student = Cypress.env('test_students').graduated_student
-  const activityCode = 'USERDISTRC'
+  const activityCode = 'USERDISTOC'
 
   beforeEach(() => {
     cy.login()
@@ -24,7 +25,7 @@ describe('Reprint Certificate without principal signature', () => {
     // Go to Batch Processing => New Batch Request
     cy.get(batchProcessingSelectors.navBtn).click()
     cy.get(batchProcessingSelectors.newRequestBtn).click()
-    cy.contains('Reprint certificate').next().find('button').click()
+    cy.contains('Original certificate').next().find('button').click()
     cy.wait(500)
   })
 
@@ -32,10 +33,10 @@ describe('Reprint Certificate without principal signature', () => {
    * @name runsOnStudent
    * 
    * @description
-   * Run Reprint Certificate for a single student to make sure student's da ta is properly updated.
+   * Run Original Certificate for a single student to make sure student's da ta is properly updated.
    * 
    * ## Steps: 
-   * 1. Open Reprint Certificate modal on Batch Processing
+   * 1. Open Original Certificate modal on Batch Processing
    * 2. Select Student as a group
    * 3. Enter PEN
    * 4. Click Add Student and Next
@@ -46,16 +47,16 @@ describe('Reprint Certificate without principal signature', () => {
    * 8. Call batch summary endpoint repeatedly until it's completed
    *    - If it's not completed within set timeout, test fails
    * 9. Call batch history for the batch id to ensure data is valid
-   *    - activityCode should be USERDISTRC
+   *    - activityCode should be USERDISTOC
    *    - Length of content should be 1
    *    - updateDate of a student should be same/close to current date time
    * 10. Call graduaiton report API for checking updateDate for certificate is updated
    * 11. Call distribution API to download generated report and make sure the file is not empty
    * 12. Call batch API for getting job parameters to make sure it's valid
-   *    - credentialType should be RC
+   *    - credentialType should be OC
    *    - it should include a student's PEN in payload
    */
-  it('Runs RC on a student', () => {
+  it('Runs OC on a student', () => {
     cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).click({force: true})
     cy.get(selectors.selections).contains('Student').click()
     cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.numberInput).type(batch_test_student.PEN)
@@ -67,7 +68,7 @@ describe('Reprint Certificate without principal signature', () => {
     cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
 
     // Setup interception for getting job exec id
-    cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/userrequestdisrun/RC`).as('batchRun')
+    cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/userrequestdisrun/OC`).as('batchRun')
     cy.get(batchProcessingSelectors.overlayWindow).contains('button', 'Download').click({force: true})
     
 
@@ -103,7 +104,7 @@ describe('Reprint Certificate without principal signature', () => {
       // Batch job is completed -> check jobParameters
       cy.task('getBatchById', batchId).then((data) => {
         const jobParameters = JSON.parse(data.content[0].jobParameters)
-        cy.wrap(jobParameters).should('have.a.property', 'credentialType', 'RC')
+        cy.wrap(jobParameters).should('have.a.property', 'credentialType', 'OC')
         cy.wrap(jobParameters).its('payload.pens')
           .should('have.length', 1)
           .and('include', batch_test_student.PEN)
