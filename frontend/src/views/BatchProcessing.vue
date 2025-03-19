@@ -13,7 +13,7 @@
             activeTab = 'batchRuns';
           "
           class="text-none"
-          >Batch Runs ({{ batchRuns.length }})</v-tab
+          >Batch Runs</v-tab
         >
         <v-tab
           @click="
@@ -322,7 +322,6 @@ export default {
     ...mapState(useBatchProcessingStore, {
       scheduledJobs: "getScheduledBatchJobs",
       getActiveTab: "getActiveTab",
-      batchRuns: "getBatchRuns",
     }),
     ...mapState(useAuthStore, {
       userFullName: "userFullName",
@@ -395,7 +394,6 @@ export default {
       adminSelectedErrorId: "",
       errorOn: false,
       displayMessage: null,
-      adminDashboardLoading: false,
       dashboardData: "",
 
       isErrorShowing: false,
