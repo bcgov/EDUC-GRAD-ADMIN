@@ -32,7 +32,7 @@ describe('Reprint Certificate without principal signature', () => {
    * @name runsOnStudent
    * 
    * @description
-   * Run Reprint Certificate for a single student to make sure student's da ta is properly updated.
+   * Run Reprint Certificate for a single student to make sure student's data is properly updated.
    * 
    * ## Steps: 
    * 1. Open Reprint Certificate modal on Batch Processing
