@@ -1,10 +1,9 @@
 /**
- * @module OriginalCertificate
+ * @module Transcirpt
  * 
  * @description
- * Run "Original certificate - with principal signature block" in Batch Processing.  This spec tests OC by calling API directly
+ * Run "Transcript" in Batch Processing.  This spec tests OT by calling API directly
  * instead of naviagting thruogh UI to speed up the testing, as well as making sure endpoints work.
- * The difference between "Reprint certificate" is that OC always updates distribution dates
  */
 
 import selectors from "../../support/selectors";
@@ -12,20 +11,20 @@ import { formatTime, getCurrentTimestamp, isWithinMarginSeconds, base64ToFileTyp
 const { deleteDownloadsFolderBeforeAll } = require('cypress-delete-downloads-folder');
 const batchProcessingSelectors = selectors.batchProcessing
 
-describe('Original Certificate with principal signature', () => {
+describe('Transcript run', () => {
   deleteDownloadsFolderBeforeAll()
 
-  const batch_test_student = Cypress.env('test_students').graduated_student
-  const activityCode = 'USERDISTOC'
+  const batch_test_student = Cypress.env('test_students').batch_test_student
+  const activityCode = 'USERDISTOT'
 
-  beforeEach(() => {
+  beforeEach(() =>{
     cy.login()
     cy.visit('/')
-    
+
     // Go to Batch Processing => New Batch Request
     cy.get(batchProcessingSelectors.navBtn).click()
     cy.get(batchProcessingSelectors.newRequestBtn).click()
-    cy.contains('Original certificate').next().find('button').click()
+    cy.contains(new RegExp(`^Transcript$`)).next().find('button').click() // Use regex to look for exact match
     cy.wait(500)
   })
 
@@ -33,10 +32,10 @@ describe('Original Certificate with principal signature', () => {
    * @name runsOnStudent
    * 
    * @description
-   * Run Original Certificate for a single student to make sure student's da ta is properly updated.
+   * Run Transcript (OT) for a single student to make sure student's data is properly updated.
    * 
    * ## Steps: 
-   * 1. Open Original Certificate modal on Batch Processing
+   * 1. Open Transcript modal on Batch Processing
    * 2. Select Student as a group
    * 3. Enter PEN
    * 4. Click Add Student and Next
@@ -47,18 +46,16 @@ describe('Original Certificate with principal signature', () => {
    * 8. Call batch summary endpoint repeatedly until it's completed
    *    - If it's not completed within set timeout, test fails
    * 9. Call batch history for the batch id to ensure data is valid
-   *    - activityCode should be USERDISTOC
+   *    - activityCode should be USERDISTOT
    *    - Length of content should be 1
    *    - updateDate of a student should be same/close to current date time
-   * 10. Call graduaiton report API for checking
-   *    - updateDate in the certificate is updated
-   *    - distributionDate in the transcript is updated
+   * 10. Call graduaiton report API for checking distributionDate for transcript is updated
    * 11. Call distribution API to download generated report and make sure the file is not empty
    * 12. Call batch API for getting job parameters to make sure it's valid
-   *    - credentialType should be OC
+   *    - credentialType should be OT
    *    - it should include a student's PEN in payload
    */
-  it('Runs OC on a student', () => {
+  it('Runs OT on a student', () => {
     cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).click({force: true})
     cy.get(selectors.selections).contains('Student').click()
     cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.numberInput).type(batch_test_student.PEN)
@@ -70,7 +67,7 @@ describe('Original Certificate with principal signature', () => {
     cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
 
     // Setup interception for getting job exec id
-    cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/userrequestdisrun/OC`).as('batchRun')
+    cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/userrequestdisrun/OT`).as('batchRun')
     cy.get(batchProcessingSelectors.overlayWindow).contains('button', 'Download').click({force: true})
     
     // Watch Batch result through API
@@ -86,9 +83,6 @@ describe('Original Certificate with principal signature', () => {
         const endTime = getCurrentTimestamp()
         expect(isWithinMarginSeconds(formatTime(batchResultData.updateDate), endTime)).to.be.true
         expect(batchResultData).to.have.property('activityCode', activityCode)
-        cy.task('getCertificate', batchResultData.studentID).then((data) => {
-          expect(isWithinMarginSeconds(formatTime(data[0].updateDate), endTime)).to.be.true
-        })
 
         cy.task('getTranscript', batchResultData.studentID).then((data) => {
           expect(isWithinMarginSeconds(formatTime(data[0].distributionDate), endTime)).to.be.true
@@ -109,7 +103,7 @@ describe('Original Certificate with principal signature', () => {
       // Batch job is completed -> check jobParameters
       cy.task('getBatchById', batchId).then((data) => {
         const jobParameters = JSON.parse(data.content[0].jobParameters)
-        cy.wrap(jobParameters).should('have.a.property', 'credentialType', 'OC')
+        cy.wrap(jobParameters).should('have.a.property', 'credentialType', 'OT')
         cy.wrap(jobParameters).its('payload.pens')
           .should('have.length', 1)
           .and('include', batch_test_student.PEN)

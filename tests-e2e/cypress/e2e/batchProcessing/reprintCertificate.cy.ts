@@ -92,7 +92,7 @@ describe('Reprint Certificate without principal signature', () => {
       // Batch job is completed -> download file to make sure file is not empty
       cy.task('downloadBatchReport', batchId).then((data) => {
         base64ToFileTypeAndDownload(data, "application/zip", batchId)
-        cy.wait(1000)
+        cy.wait(2000)
         const zipFilePath =  `cypress/downloads/${batchId}.zip`;
         cy.readFile(zipFilePath, 'base64', {timeout: 10000})
         cy.task('checkPDFInZip', zipFilePath).then((result) => {
