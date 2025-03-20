@@ -5,6 +5,7 @@
   "batchRequests/archiveStudent.cy.ts": 0,
   "batchRequests/transcript.cy.ts": 0,
   "batchRequests/originalCertificate.cy.ts": 0,
+  "batchRequests/deleteTVR.cy.ts": 0,
   
   "batchProcessing/batchRequestValidations.cy.ts": 110,
   "batchProcessing/batchTables.cy.ts": 47,
