@@ -1,11 +1,13 @@
 {
-  "batchProcessing/batchTables.cy.ts": 47,
-  "batchProcessing/graduationAlgorithm.cy.ts": 0,
-  "batchProcessing/transcriptVerificationReport.cy.ts": 0,
+  "batchRequests/graduationAlgorithm.cy.ts": 0,
+  "batchRequests/transcriptVerificationReport.cy.ts": 0,
+  "batchRequests/reprintCertificate.cy.ts": 0,
+  "batchRequests/archiveStudent.cy.ts": 0,
+  "batchRequests/transcript.cy.ts": 0,
+  "batchRequests/originalCertificate.cy.ts": 0,
+  
   "batchProcessing/batchRequestValidations.cy.ts": 110,
-  "batchProcessing/reprintCertificate.cy.ts": 0,
-  "batchProcessing/archiveStudent.cy.ts": 0,
-
+  "batchProcessing/batchTables.cy.ts": 47,
   "Programs/programs.cy.ts": 19,
   "assessments/assessments.cy.ts": 14,
   "codes/codes.cy.ts": 24,
