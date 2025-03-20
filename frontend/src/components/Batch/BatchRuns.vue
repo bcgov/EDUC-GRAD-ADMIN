@@ -1,29 +1,19 @@
 <template>
   <v-container>
-    <v-overlay
-      v-model="isBatchJobsLoading"
-      class="align-center justify-center"
-      contained
-    >
-      <v-progress-circular
-        v-if="isBatchJobsLoading"
-        indeterminate
-        color="primary"
-        size="64"
-      >
-      </v-progress-circular>
-    </v-overlay>
     <v-row>
       <!-- First Column (col-5 for medium screens, col-12 for small screens) -->
       <v-col :cols="12" :md="isBatchShowing || isErrorShowing ? 7 : 12">
-        <v-data-table
+        <v-data-table-server
           title="Job/Runs"
+          v-model:items-per-page="itemsPerPage"
+          :items-per-page-options="itemsPerPageOptions"
+          :headers="batchRunHeaders"
           :items="batchRuns"
-          :headers="batchRunsFields"
-          id="id"
-          :showFilter="false"
-          pagination="true"
-          class="mt-5"
+          :items-length="totalElements"
+          :loading="isBatchJobsLoading"
+          :page="currentPage"
+          item-value="id"
+          @update:options="updateBatchDashboard"
         >
           <template v-slot:item.data-table-expand="{ item }"> </template>
           <template v-slot:item.jobDownload="{ item }">
@@ -46,8 +36,18 @@
               <v-icon>mdi-download</v-icon>
             </v-btn>
           </template>
-          <template v-slot:item.updateDate="{ item }">
-            {{ item.updateDate.replace("T", ", ") }}
+          <template v-slot:item.startTime="{ item }">
+            {{ $filters.formatTime(item.startTime) }}
+          </template>
+          <template v-slot:item.endTime="{ item }">
+            {{ $filters.formatTime(item.endTime) }}
+          </template>
+          <template v-slot:item.duration="{ item }">
+            {{
+              !!item.startTime && !!item.endTime
+                ? getTimeDifference(item.startTime, item.endTime)
+                : "-"
+            }}
           </template>
           <template v-slot:item.jobExecutionId="{ item }">
             <v-menu location="end" :width="item.jobParameters ? 600 : 350">
@@ -151,7 +151,7 @@
                   v-if="item.jobParameters"
                   style="height: 200px; overflow-y: scroll"
                 >
-                      {{ JSON.stringify(item.jobParameters, null, "\t") }}
+                {{ item.jobParameters }}
                     </pre
                 >
               </v-card>
@@ -176,7 +176,7 @@
               </div>
             </div>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-col>
 
       <v-col cols="12" md="5" v-if="isBatchShowing">
@@ -249,85 +249,86 @@ export default {
       adminDashboardLoading: false,
       adminSelectedErrorId: null,
       adminSelectedBatchId: null,
+      itemsPerPageOptions: [
+        { title: "10", value: 10 },
+        { title: "25", value: 25 },
+        { title: "50", value: 50 },
+        { title: "100", value: 100 },
+      ],
       snackbarStore: useSnackbarStore(),
       appStore: useAppStore(),
-      batchRunsFields: [
+      batchRunHeaders: [
         {
           key: "jobDownload",
           title: "",
-          sortable: true,
           class: "text-left p-0 m-0",
-          editable: true,
+          sortable: false,
         },
         {
           key: "jobExecutionId",
-          title: "Job Execution ID",
-          sortable: true,
+          title: "Batch ID",
           class: "text-left",
-          editable: true,
+          sortable: false,
         },
         {
           key: "jobType",
-          title: "Batch Job Type Code",
-          sortable: true,
+          title: "Type",
           class: "text-left",
-          editable: true,
+          sortable: false,
         },
         {
           key: "triggerBy",
-          title: "Batch Job Trigger",
-          sortable: true,
+          title: "Trigger",
           class: "text-left",
-          editable: true,
+          sortable: false,
         },
         {
           key: "updateUser",
           title: "Run By",
-          sortable: true,
           class: "text-left",
-          editable: true,
+          sortable: false,
         },
         {
-          key: "updateDate",
-          title: "Update date",
-          sortable: true,
+          key: "startTime",
+          title: "Start Time",
           class: "text-left",
-          editable: true,
-          sortDirection: "desc",
-          formatter: (value) => {
-            let newValue = new Date(value);
-            value = newValue.toLocaleString("en-CA", { hourCycle: "h23" });
-            return value;
-          },
+          sortable: false,
+        },
+        {
+          key: "endTime",
+          title: "End Time",
+          class: "text-left",
+          sortable: false,
+        },
+        {
+          key: "duration",
+          title: "Duration",
+          class: "text-left",
+          sortable: false,
         },
         {
           key: "status",
           title: "Status",
-          sortable: true,
           class: "text-left",
-          editable: true,
+          sortable: false,
         },
-
         {
           key: "expectedStudentsProcessed",
           title: "Expected",
-          sortable: true,
           class: "text-left",
-          editable: true,
+          sortable: false,
         },
         {
           key: "actualStudentsProcessed",
           title: "Actual",
-          sortable: true,
           class: "text-left",
-          editable: true,
+          sortable: false,
         },
         {
           key: "failedStudentsProcessed",
           title: "Error",
-          sortable: true,
           class: "text-center",
-          editable: true,
+          sortable: false,
         },
       ],
     };
@@ -336,6 +337,9 @@ export default {
   computed: {
     ...mapState(useBatchProcessingStore, {
       batchRuns: "getBatchRuns",
+      totalElements: "getBatchRunsTotalElements",
+      itemsPerPage: "getBatchRunsItemsPerPage",
+      currentPage: "getBatchRunsCurrentPage",
       isBatchJobsLoading: "getIsGettingBatchJobsLoading",
     }),
     ...mapState(useAppStore, {
@@ -344,7 +348,17 @@ export default {
     }),
   },
   methods: {
-    ...mapActions(useBatchProcessingStore, ["setBatchJobs"]),
+    ...mapActions(useBatchProcessingStore, [
+      "setBatchJobs",
+      "setBatchJobsCurrentPage",
+    ]),
+    getBatchDashboard() {
+      this.setBatchJobs();
+    },
+    updateBatchDashboard({ page }) {
+      this.setBatchJobsCurrentPage(page);
+      this.getBatchDashboard();
+    },
     showBatchPayload(id) {
       const batchRun = this.batchRuns.find(
         (batch) => batch.jobExecutionId === id
@@ -468,11 +482,8 @@ export default {
         this.getAdminDashboardData();
       });
     },
-    getAdminDashboardData() {
-      this.adminDashboardLoading = true;
-      this.setBatchJobs();
-      this.adminDashboardLoading = false;
-      window.scrollTo(0, 0);
+    getTimeDifference(startTime, endTime) {
+      return sharedMethods.getTimeDifference(startTime, endTime);
     },
   },
 };
