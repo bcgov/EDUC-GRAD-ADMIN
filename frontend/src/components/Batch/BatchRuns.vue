@@ -344,7 +344,7 @@ export default {
     }),
     ...mapState(useAppStore, {
       getSchoolMincodeById: "getSchoolMincodeById",
-      getDistrictCodeById: "getDistrictCodeById",
+      getDistrictNumberById: "getDistrictNumberById",
     }),
   },
   methods: {
@@ -381,7 +381,7 @@ export default {
           batchRun.jobParameters.payload.districtIds =
             batchRun.jobParameters.payload.districtIds.map((districtId) =>
               districtId && districtId.length == 36
-                ? this.getDistrictCodeById(districtId)
+                ? this.getDistrictNumberById(districtId)
                 : districtId
             );
         }
