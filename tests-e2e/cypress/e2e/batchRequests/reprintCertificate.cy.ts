@@ -67,7 +67,7 @@ describe('Reprint Certificate without principal signature', () => {
     cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
 
     // Setup interception for getting job exec id
-    cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/userrequestdisrun/RC`).as('batchRun')
+    cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/userrequestblankdisrun/OC`).as('batchRun')
     cy.get(batchProcessingSelectors.overlayWindow).contains('button', 'Download').click({force: true})
     
 
