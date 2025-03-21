@@ -249,6 +249,7 @@ export default {
       adminDashboardLoading: false,
       adminSelectedErrorId: null,
       adminSelectedBatchId: null,
+      itemsPerPage: 10,
       itemsPerPageOptions: [
         { title: "10", value: 10 },
         { title: "25", value: 25 },
@@ -338,7 +339,6 @@ export default {
     ...mapState(useBatchProcessingStore, {
       batchRuns: "getBatchRuns",
       totalElements: "getBatchRunsTotalElements",
-      itemsPerPage: "getBatchRunsItemsPerPage",
       currentPage: "getBatchRunsCurrentPage",
       isBatchJobsLoading: "getIsGettingBatchJobsLoading",
     }),
@@ -351,11 +351,13 @@ export default {
     ...mapActions(useBatchProcessingStore, [
       "setBatchJobs",
       "setBatchJobsCurrentPage",
+      "setBatchJobsItemsPerPage",
     ]),
     getBatchDashboard() {
       this.setBatchJobs();
     },
-    updateBatchDashboard({ page }) {
+    updateBatchDashboard({ page, itemsPerPage }) {
+      this.setBatchJobsItemsPerPage(itemsPerPage);
       this.setBatchJobsCurrentPage(page);
       this.getBatchDashboard();
     },

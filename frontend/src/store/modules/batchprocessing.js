@@ -119,6 +119,9 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
     setBatchJobsCurrentPage(page) {
       this.batchRuns.currentPage = page;
     },
+    setBatchJobsItemsPerPage(itemsPerPage) {
+      this.batchRuns.itemsPerPage = itemsPerPage;
+    },
     async removeScheduledJobs(payload) {
       const response = await BatchProcessingService.removeScheduledJobs(
         payload
