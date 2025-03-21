@@ -3,7 +3,7 @@ import { base64ToFileTypeAndDownload } from "../../support/helperMethods"
 const { deleteDownloadsFolderBeforeAll } = require('cypress-delete-downloads-folder');
 const batchProcessingSelectors = selectors.batchProcessing
 
-describe('Blannk certificate print', () => {
+describe('Blannk transcript print', () => {
   deleteDownloadsFolderBeforeAll()
 
   const batch_test_student = Cypress.env('test_students').batch_test_student
@@ -15,14 +15,16 @@ describe('Blannk certificate print', () => {
     // Go to Batch Processing => New Batch Request
     cy.get(batchProcessingSelectors.navBtn).click()
     cy.get(batchProcessingSelectors.newRequestBtn).click()
-    cy.contains('Blank certificate print').next().find('button').click()
+    cy.contains('Blank transcript print').next().find('button').click()
     cy.wait(500)
   })
 
-  it('Runs Blank Certificate on a school', () => {
-    cy.get('input[value="E"]').click() // Click just on a Dogwood (Public) for now
+  it('Runs Blank Transcript on a school', () => {
+    cy.get('input[value="BC2018-PUB"]').click() // Click just on a Dogwood (Public) for now
     cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
     cy.wait(500)
+    cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).click({force: true})
+    cy.get(selectors.selections).contains('School').click({force: true})
     cy.selectAutoselect(batchProcessingSelectors.autocomplete, batch_test_student.og_school)
     cy.get(batchProcessingSelectors.overlayWindow).contains('Add School').click({force: true})
     cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
@@ -32,7 +34,7 @@ describe('Blannk certificate print', () => {
     cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
     
     // Setup interception for getting job exec id
-    cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/userrequestblankdisrun/OC`).as('batchRun')
+    cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/userrequestblankdisrun/OT`).as('batchRun')
     cy.get(batchProcessingSelectors.overlayWindow).contains('button', 'Download').click({force: true})
 
     // Watch Batch result through API
@@ -54,7 +56,7 @@ describe('Blannk certificate print', () => {
       // Batch job is completed -> check jobParameters
       cy.task('getBatchById', batchId).then((data) => {
         const jobParameters = JSON.parse(data.content[0].jobParameters)
-        cy.wrap(jobParameters).should('have.a.property', 'credentialType', 'OC')
+        cy.wrap(jobParameters).should('have.a.property', 'credentialType', 'OT')
         cy.wrap(jobParameters).its('payload.schoolIds')
           .should('have.length', 1)
           //.and('include', '00505108') This does not work for some reason

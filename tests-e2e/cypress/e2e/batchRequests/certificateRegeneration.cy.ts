@@ -7,8 +7,7 @@
  */
 
 import selectors from "../../support/selectors";
-import { formatTime, getCurrentTimestamp, isWithinMarginSeconds, base64ToFileTypeAndDownload } from "../../support/helperMethods"
-const { deleteDownloadsFolderBeforeAll } = require('cypress-delete-downloads-folder');
+import { formatTime, getCurrentTimestamp, isWithinMarginSeconds } from "../../support/helperMethods"
 const batchProcessingSelectors = selectors.batchProcessing
 
 describe('User Request Certificate Regeneration', () => {
