@@ -67,7 +67,7 @@ describe('Reprint Certificate without principal signature', () => {
     cy.get(batchProcessingSelectors.overlayWindow).contains('Next').click({force: true})
 
     // Setup interception for getting job exec id
-    cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/userrequestblankdisrun/OC`).as('batchRun')
+    cy.intercept('POST',  `${Cypress.config('baseUrl')}/api/v1/batch/userrequestdisrun/RC`).as('batchRun')
     cy.get(batchProcessingSelectors.overlayWindow).contains('button', 'Download').click({force: true})
 
     // Watch Batch result through API
@@ -88,24 +88,25 @@ describe('Reprint Certificate without principal signature', () => {
         })
       })
 
-      // Batch job is completed -> download file to make sure file is not empty
-      cy.task('downloadBatchReport', batchId).then((data) => {
-        base64ToFileTypeAndDownload(data, "application/zip", batchId)
-        cy.wait(2000)
-        const zipFilePath =  `cypress/downloads/${batchId}.zip`;
-        cy.readFile(zipFilePath, 'base64', {timeout: 10000})
-        cy.task('checkPDFInZip', zipFilePath).then((result) => {
-          expect(result).to.equal('PDF is not empty')
-        })
-      })
-  
+      
       // Batch job is completed -> check jobParameters
       cy.task('getBatchById', batchId).then((data) => {
         const jobParameters = JSON.parse(data.content[0].jobParameters)
         cy.wrap(jobParameters).should('have.a.property', 'credentialType', 'RC')
         cy.wrap(jobParameters).its('payload.pens')
-          .should('have.length', 1)
-          .and('include', batch_test_student.PEN)
+        .should('have.length', 1)
+        .and('include', batch_test_student.PEN)
+      })
+      
+      cy.wait(2000)
+      // Batch job is completed -> download file to make sure file is not empty
+      cy.task('downloadBatchReport', batchId).then((data) => {
+        base64ToFileTypeAndDownload(data, "application/zip", batchId)
+        const zipFilePath =  `cypress/downloads/${batchId}.zip`;
+        cy.readFile(zipFilePath, 'base64', {timeout: 10000})
+        cy.task('checkPDFInZip', zipFilePath).then((result) => {
+          expect(result).to.equal('PDF is not empty')
+        })
       })
     })
   })

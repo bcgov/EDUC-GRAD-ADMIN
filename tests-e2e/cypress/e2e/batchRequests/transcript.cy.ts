@@ -89,24 +89,24 @@ describe('Transcript run', () => {
         })
       })
 
-      // Batch job is completed -> download file to make sure file is not empty
-      cy.task('downloadBatchReport', batchId).then((data) => {
-        base64ToFileTypeAndDownload(data, "application/zip", batchId)
-        cy.wait(2000)
-        const zipFilePath =  `cypress/downloads/${batchId}.zip`;
-        cy.readFile(zipFilePath, 'base64', {timeout: 10000})
-        cy.task('checkPDFInZip', zipFilePath).then((result) => {
-          expect(result).to.equal('PDF is not empty')
-        })
-      })
-  
       // Batch job is completed -> check jobParameters
       cy.task('getBatchById', batchId).then((data) => {
         const jobParameters = JSON.parse(data.content[0].jobParameters)
         cy.wrap(jobParameters).should('have.a.property', 'credentialType', 'OT')
         cy.wrap(jobParameters).its('payload.pens')
-          .should('have.length', 1)
-          .and('include', batch_test_student.PEN)
+        .should('have.length', 1)
+        .and('include', batch_test_student.PEN)
+      })
+
+      cy.wait(2000)
+      // Batch job is completed -> download file to make sure file is not empty
+      cy.task('downloadBatchReport', batchId).then((data) => {
+        base64ToFileTypeAndDownload(data, "application/zip", batchId)
+        const zipFilePath =  `cypress/downloads/${batchId}.zip`;
+        cy.readFile(zipFilePath, 'base64', {timeout: 10000})
+        cy.task('checkPDFInZip', zipFilePath).then((result) => {
+          expect(result).to.equal('PDF is not empty')
+        })
       })
     })
   })
