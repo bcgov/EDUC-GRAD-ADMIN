@@ -1,3 +1,11 @@
+/**
+ * @module SchoolReportRegeneration
+ * 
+ * @description
+ * Run "User Request School Report Regeneration" in Batch Processing.  This spec tests School report regen by calling API directly
+ * instead of naviagting thruogh UI to speed up the testing, as well as making sure endpoints work.
+ */
+
 import { formatTime, getCurrentTimestamp, isWithinMarginSeconds } from "tests-e2e/cypress/support/helperMethods";
 import selectors from "../../support/selectors";
 const batchProcessingSelectors = selectors.batchProcessing
@@ -16,6 +24,28 @@ describe('User Request School Report Regeneration', () => {
     cy.wait(500)
   })
 
+  /**
+   * @name runsOnProjectedNonGraduates
+   * 
+   * @description
+   * Run User Request School Report on Projected Non-graduates student to make sure the NONGRADPRJ report is
+   * properly updated.
+   * 
+   * ## Steps:
+   * 1. Open User Request School Report modal on Batch Processing
+   * 2. Select Projected Non-graduates as a report type
+   * 3. Add a school and Next
+   * 4. Set up network interception for school-report to get a batch id from response
+   * 5. Click Submit 
+   *    - This will call school-report run and Cypress obtains a batch id out of the response
+   * 6. Call batch summary endpoint repeatedly until it's completed
+   *    - If it's not completed within set timeout, test fails
+   * 7. Call graduation report API by school GUID to get school reports and make sure data is valid
+   *    - School should have a NONGRADPRJ report
+   *    - NONGRADPRJ report's updateDate should be same/close to current date time
+   * 8. Call batch API for getting job parameters to make sure it is valid
+   *    - reportType should be NONGRADPRJ
+   */
   it('Runs User Request School Report on Projected Non-graduates', () => {
     cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).first().click({force: true})
     cy.get(selectors.selections).contains('Projected Non-Graduates').click({force: true})
