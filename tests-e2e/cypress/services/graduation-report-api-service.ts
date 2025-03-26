@@ -24,6 +24,16 @@ export interface TVRPayload extends BaseReportPayload {
   reportUpdateDate: string;
 }
 
+export interface SchoolReport extends BaseApiEntity {
+  id: string;
+  report: string;
+  reportTypeCode: string;
+  reportTypeLabel: string;
+  schoolOfRecordId: string;
+  schoolName: string;
+  schoolCategory: string;
+}
+
 export class GraduationReportAPIService {
   restUtils: RestUtils;
   baseUrl: string;
@@ -60,6 +70,17 @@ export class GraduationReportAPIService {
       const url = `${this.baseUrl}/api/v1/graduationreports/studentreport/${studentId}`;
       const data = await this.restUtils.getData<TVRPayload[]>(url);
       
+      return data;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async getSchoolReportById(schoolOfRecordId: string): Promise<SchoolReport[]> {
+    try {
+      const url = `${this.baseUrl}/api/v2/graduationreports/schoolreports/search?schoolOfRecordId=${schoolOfRecordId}`;
+      const data = await this.restUtils.getData<SchoolReport[]>(url);
+
       return data;
     } catch (e) {
       throw e;

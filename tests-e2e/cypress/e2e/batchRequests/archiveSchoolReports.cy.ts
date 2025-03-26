@@ -15,6 +15,11 @@ describe('Archive School Reports', () => {
     cy.wait(500)
   })
 
+  after(() => {
+    cy.login()
+    cy.visit('/')
+  })
+
   it.only('Archives NONGRADPRJ', () => { 
     cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).first().click({force: true})
     cy.get(selectors.selections).contains('NONGRADPRJ').click({force: true})

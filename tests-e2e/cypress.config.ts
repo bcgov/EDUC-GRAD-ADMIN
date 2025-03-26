@@ -1,7 +1,7 @@
 import { defineConfig } from "cypress";
 import { BatchHistoryResultOption, BatchHistoryResultPayload, StudentAPIService } from "./cypress/services/student-api-service";
 import { BatchAPIService, BatchPayload, BatchSummaryOptions, BatchSummaryPayload } from "./cypress/services/batch-api-service";
-import { CertificatePayload, GraduationReportAPIService, TranscriptPayload, TVRPayload } from "./cypress/services/graduation-report-api-service";
+import { CertificatePayload, GraduationReportAPIService, SchoolReport, TranscriptPayload, TVRPayload } from "./cypress/services/graduation-report-api-service";
 import { DistributionAPIService } from "./cypress/services/distribution-api-service";
 const Admzip = require('adm-zip');
 const { removeDirectory } = require('cypress-delete-downloads-folder');
@@ -40,6 +40,9 @@ export default defineConfig({
         },
         async getTranscriptVerificationReport(studentId: string): Promise<TVRPayload[]> {
           return await new GraduationReportAPIService(config).getTranscriptVerificationReport(studentId);
+        },
+        async getSchoolReportById(schoolOfRecordId: string): Promise<SchoolReport[]> {
+          return await new GraduationReportAPIService(config).getSchoolReportById(schoolOfRecordId);
         },
         async downloadBatchReport(batchId: string): Promise<string> {
           return await new DistributionAPIService(config).downloadBatchReport(batchId);
