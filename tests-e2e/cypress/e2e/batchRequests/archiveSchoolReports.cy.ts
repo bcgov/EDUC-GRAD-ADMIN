@@ -61,7 +61,7 @@ describe('Archive School Reports', () => {
    *    - NONGRADPRJ type should no longer exist
    *    - NONGRADPRJARC type should exist and updateDate is updated
    */
-  it.only('Archives NONGRADPRJ', () => { 
+  it('Archives NONGRADPRJ', () => { 
     cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).first().click({force: true})
     cy.get(selectors.selections).contains('NONGRADPRJ').click({force: true})
     cy.get(batchProcessingSelectors.overlayWindow).find(batchProcessingSelectors.selectInput).last().click({force: true})

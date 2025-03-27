@@ -7,16 +7,11 @@ describe('API Test', () => {
 
   it('View batch result json', () => {
     //const batchJobResultId = "119524"
-    const batchJobResultId = "120290" 
+    const batchJobResultId = "120992" 
 
-    // cy.task('getBatchHistoryResultById', {batchJobResultId: batchJobResultId}).then((data) => {
-    //   console.log("DATA: ", data)
-    //   const content = data.content
-    //   const batchResultData = content[0]
-    //   cy.task('getCertificate', batchResultData.studentID).then((data) => {
-    //     console.log(isWithinMarginSeconds(formatTime(data[0].updateDate), "2025-03-18T10:37:19"))
-    //   })
-    // })
+    cy.task('getBatchHistoryResultById', {batchJobResultId: batchJobResultId}).then((data) => {
+      console.log("DATA: ", data)
+    })
 
     // cy.task('downloadBatchReport', batchJobResultId).then(data => {
     //   base64ToFileTypeAndDownload(data, "application/zip", batchJobResultId)
@@ -36,8 +31,8 @@ describe('API Test', () => {
     //     .should('have.length', 1)
     // })
 
-    cy.task('getSchoolReportById', "0a61245b-9525-10d1-8195-3f1b2b820004").then(data => {
-      console.log(data)
-    })
+    // cy.task('getSchoolReportById', "0a61245b-9525-10d1-8195-3f1b2b820004").then(data => {
+    //   console.log(data)
+    // })
   })
 })
