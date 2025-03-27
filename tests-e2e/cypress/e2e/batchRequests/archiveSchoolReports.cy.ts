@@ -92,6 +92,6 @@ describe('Archive School Reports', () => {
         const endTime = getCurrentTimestamp()
         expect(isWithinMarginSeconds(formatTime(nongradArcReport?.updateDate!), endTime)).to.be.true
       })
-    });
+    })
   })
 })
