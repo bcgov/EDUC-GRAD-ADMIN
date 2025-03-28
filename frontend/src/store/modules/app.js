@@ -56,6 +56,13 @@ export const useAppStore = defineStore("app", {
           (district) => districtId === district.districtId
         );
     },
+    getDistrictNumberById: (state) => {
+      return (districtId) => {
+        return state.districtsList.find(
+          (district) => districtId === district.districtId
+        )?.districtNumber;
+      };
+    },
     getDistrictByDistrictNumber: (state) => {
       return (districtNumber) =>
         state.districtsList.find(

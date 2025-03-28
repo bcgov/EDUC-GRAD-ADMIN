@@ -137,7 +137,8 @@ auth
           scope: discovery.scopes_supported,
           kc_idp_hint: config.get("server:idirIDPHint"),
         },
-        (_issuer, _sub, profile, accessToken, refreshToken, done) => {
+        (_issuer, _sub, profile, accessToken, refreshToken, params, done) => {
+          const idToken = params.id_token;
           if (
             typeof accessToken === "undefined" ||
             accessToken === null ||
@@ -151,6 +152,7 @@ auth
           profile.jwtFrontend = auth.generateUiToken();
           profile.jwt = accessToken;
           profile.refreshToken = refreshToken;
+          profile.idToken = idToken;
           return done(null, profile);
         }
       )
