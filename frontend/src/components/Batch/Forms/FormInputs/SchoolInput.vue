@@ -1,8 +1,8 @@
 <template>
-  <v-container>
+  <v-container :class="{ 'pt-0': !!$slots.inputWarning }">
     <v-row>
       <v-col>
-        <v-alert v-if="$slots.inputWarning" type="info" class="pb-2">
+        <v-alert v-if="$slots.inputWarning" type="info" class=" mb-5 pb-0">
           <slot name="inputWarning"></slot>
         </v-alert>
 
