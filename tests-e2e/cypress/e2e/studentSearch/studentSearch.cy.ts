@@ -1,7 +1,9 @@
 /**
  * @module StudentSearch
  * 
- * @description hello
+ * @description
+ * Validating both PEN and advanced student search's functionality. 
+ * Also validates data is properly loaded on student grad status page.
  */
 
 import selectors from "../../support/selectors"

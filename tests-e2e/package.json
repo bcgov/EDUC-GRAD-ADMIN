@@ -13,6 +13,7 @@
     "axios": "^1.7.9",
     "cypress": "^14.1.0",
     "cypress-delete-downloads-folder": "^0.0.6",
+    "docdash": "^2.0.2",
     "eslint": "^9.22.0",
     "jsdoc": "^4.0.4",
     "typescript": "^5.8.2"
