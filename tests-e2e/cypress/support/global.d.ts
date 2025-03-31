@@ -1,4 +1,4 @@
-import { BatchPayload, BatchSummaryOptions, BatchSummaryPayload } from "../services/batch-api-service";
+import { BatchPayload, BatchSummaryOptions } from "../services/batch-api-service";
 import { CertificatePayload, SchoolReport, TranscriptPayload, TVRPayload } from "../services/graduation-report-api-service";
 import { BatchHistoryResultOption, BatchHistoryResultPayload } from "../services/student-api-service";
 
@@ -16,11 +16,6 @@ declare global {
 
       task<T = BatchHistoryResultOption, S = BatchHistoryResultPayload> (
         event: 'getBatchHistoryResultById',
-        arg: T
-      ): Chainable<S>;
-
-      task<T = BatchSummaryOptions, S = BatchSummaryPayload> (
-        event: 'getBatchSummary',
         arg: T
       ): Chainable<S>;
 

@@ -78,17 +78,17 @@ function callBatchJobTillComplete(jobId: string, startTime: number, timeout: num
   }
 
   cy.wait(interval)
-  cy.task('getBatchSummary', {pageNumber: 0, pageSize: 10}).then((data) => {
-    const batchJob = data.batchJobList.find(batchJob => batchJob.jobExecutionId == parseInt(jobId))
+	cy.task('getBatchById', jobId).then(data => {
+		const batchJob = data.content[0]
 
-    // If job is completed, stop recalling
-    if (!!batchJob && batchJob.status == 'COMPLETED') {
-      cy.log(`Batch Job ID ${jobId} - COMPLETED`)
-    } else {
-    // Otherwise keep calling
+		// If job is completed, stop recalling
+		if (!!batchJob && batchJob.status == 'COMPLETED') {
+			cy.log(`Batch Job ID ${jobId} - COMPLETED`)
+		} else {
+		// Otherwise keep calling
 			callBatchJobTillComplete(jobId, startTime, timeout, interval)
-    }
-  })
+		}
+	})
 }
 
 Cypress.Commands.add('login', login)

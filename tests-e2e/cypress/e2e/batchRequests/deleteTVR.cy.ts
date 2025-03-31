@@ -87,7 +87,7 @@ describe('Delete Student TVR Process', () => {
         const endTime = getCurrentTimestamp()
         expect(isWithinMarginSeconds(formatTime(batchResultData.updateDate), endTime)).to.be.true
         expect(batchResultData).to.have.property('activityCode', activityCode)
-        cy.task('getTranscriptVerificationReport', batchResultData.studentID).  then((data) => {
+        cy.task('getTranscriptVerificationReport', batchResultData.studentID).then((data) => {
           expect(data).to.be.empty
         })
       })

@@ -19,7 +19,8 @@
  * 
  * Currently, this spec file is only making sure there is at least one row in each table.
  */
-import selectors from "../../support/selectors";
+
+import selectors from "../../support/selectors"
 const codesSelectors = selectors.codes
 
 function checkCredentialTableForData(credentialType: string) {

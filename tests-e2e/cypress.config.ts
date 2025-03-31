@@ -18,16 +18,13 @@ export default defineConfig({
     openMode: 0
   },
   e2e: {
-    baseUrl: 'https://dev.grad.gov.bc.ca',
+    baseUrl: 'https://dev.grad.gov.bc.ca/',
     experimentalRunAllSpecs: true,
     excludeSpecPattern: ['cypress/e2e/schools/schoolSearch.cy.ts'],
     setupNodeEvents(on, config) {
       on('task', {
         async getBatchHistoryResultById(options: BatchHistoryResultOption): Promise<BatchHistoryResultPayload> {
           return await new StudentAPIService(config).getBatchHistoryResultById(options.batchJobResultId);
-        },
-        async getBatchSummary(options: BatchSummaryOptions): Promise<BatchSummaryPayload> {
-          return await new BatchAPIService(config).getBatchSummary(options.pageNumber, options.pageSize);
         },
         async getBatchById(batchId: string): Promise<BatchPayload> {
           return await new BatchAPIService(config).getBatchById(batchId);

@@ -5,12 +5,8 @@ export interface BatchSummaryOptions {
   pageSize: number;
 }
 
-export interface BatchSummaryPayload extends paginationApiEntity {
-  batchJobList: BatchJob[];
-}
-
 export interface BatchPayload extends paginationApiEntity {
-  content: BatchJobv2[];
+  content: BatchJob[];
 }
 
 export class BatchAPIService {
@@ -20,17 +16,6 @@ export class BatchAPIService {
   constructor(config: Cypress.PluginConfigOptions) {
     this.restUtils = new RestUtils(config);
     this.baseUrl = config.env.api_url.batchAPIURL;
-  }
-
-  async getBatchSummary(pageNumber: number, pageSize: number): Promise<BatchSummaryPayload> {
-    try {
-      const url = `${this.baseUrl}/api/v1/batch/dashboard/summary?pageNumber=${pageNumber}&pageSize=${pageSize}`;
-      const data = await this.restUtils.getData<BatchSummaryPayload>(url);
-      
-      return data;
-    } catch (e) {
-      throw e;
-    }
   }
 
   async getBatchById(batchId: string): Promise<BatchPayload> {
