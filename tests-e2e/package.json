@@ -2,6 +2,7 @@
   "scripts": {
     "cy:open": "cypress open",
     "cy:run": "cypress run",
+    "cy:batch": "npx cypress run --spec 'cypress/e2e/batchRequests/*.cy.ts,cypress/e2e/batchProcessing/*.cy.ts'",
     "cy:run:chrome": "cypress run --browser chrome",
     "doc": "jsdoc --verbose -d docs -c jsdoc.json"
   },
