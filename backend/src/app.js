@@ -162,7 +162,7 @@ auth
       callbackURL: config.get('server:frontend') + '/api/auth/callback_idir_silent',
       scope: 'openid profile',
       kc_idp_hint: config.get('server:idirIDPHint')
-    }, (_issuer, profile, _context, idToken, accessToken, refreshToken, done) => {
+    }, (_issuer, _sub, profile, accessToken, refreshToken, done) => {
       if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
           (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
         return done('No access token', null);
@@ -171,7 +171,6 @@ auth
       //set access and refresh tokens
       profile.jwtFrontend = auth.generateUiToken();
       profile.jwt = accessToken;
-      profile.idToken = idToken;
       profile.refreshToken = refreshToken;
       return done(null, profile);
     }));

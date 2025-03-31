@@ -261,11 +261,11 @@ router.get('/silent_idir_login', async function (req, res, next) {
 router.get('/callback_idir_silent',
   passport.authenticate('oidcIDIRSilent', { failureRedirect: 'error', scope: 'openid profile'}),
   async (req, res) => {
-    if(!req.session?.passport?.user?.username){
+    const idir_guid = req.session?.passport?.user?._json?.idir_guid;
+    if(!idir_guid){
       await res.redirect(config.get('server:frontend') + '/unauthorized');
       return;
     }
-    let idir_guid = req.session.passport.user.username;
     const client = redis.getRedisClient();
     let studentDetails = await client.get(idir_guid + '::studentDetails');
     let studentID = await client.get(idir_guid + '::studentID');
@@ -274,7 +274,7 @@ router.get('/callback_idir_silent',
     await client.del(idir_guid + '::studentID');
 
     if (studentDetails) {
-      res.redirect(config.get('server:frontend') + '/api/v1/student/stdid/' + studentID);
+      res.redirect(config.get('server:frontend') + '/student-profile/' + studentID);
     } else {
       res.status(401).json(UnauthorizedRsp);
     }
