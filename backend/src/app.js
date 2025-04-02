@@ -24,7 +24,6 @@ const apiRouter = express.Router();
 const authRouter = require("./routes/auth");
 const promMid = require("express-prometheus-middleware");
 
-
 function addVersionToReq(req, res, next) {
   const { version } = req.params;
   // Check if the version is supported
@@ -52,6 +51,7 @@ const graduationRouter = require("./routes/graduation-router");
 const reportsRouter = require("./routes/reports-router");
 const commonRouter = require("./routes/common-router");
 const instituteRouter = require("./routes/institute-router");
+const coregRouter = require("./routes/coreg-router");
 const configRouter = require("./routes/config-router");
 
 //initialize app
@@ -198,16 +198,25 @@ apiRouter.use("/:version/batch", addVersionToReq, batchRouter);
 apiRouter.use("/:version/distribute", addVersionToReq, distributionRouter);
 apiRouter.use("/:version/program", addVersionToReq, programsRouter);
 apiRouter.use("/:version/course", addVersionToReq, coursesRouter);
-apiRouter.use("/:version/studentgraduation", addVersionToReq, studentGraduationRouter);
+apiRouter.use(
+  "/:version/studentgraduation",
+  addVersionToReq,
+  studentGraduationRouter
+);
 apiRouter.use("/:version/assessment", addVersionToReq, assessmentsRouter);
 apiRouter.use("/:version/trax", addVersionToReq, TRAXRouter);
 apiRouter.use("/:version/student", addVersionToReq, studentRouter);
-apiRouter.use("/:version/graduationreports", addVersionToReq, graduationReportsRouter);
+apiRouter.use(
+  "/:version/graduationreports",
+  addVersionToReq,
+  graduationReportsRouter
+);
 apiRouter.use("/:version/graduate", addVersionToReq, graduationRouter);
 apiRouter.use("/:version/reports", addVersionToReq, reportsRouter);
 apiRouter.use("/:version/version", addVersionToReq, commonRouter);
 apiRouter.use("/:version/institute", addVersionToReq, instituteRouter);
-apiRouter.use("/:version/config",  addVersionToReq, configRouter);
+apiRouter.use("/:version/coreg", addVersionToReq, coregRouter);
+apiRouter.use("/:version/config", addVersionToReq, configRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
