@@ -54,6 +54,7 @@ nconf.defaults({
     reportAPIURL: process.env.GRAD_REPORT_API_URL,
     distributionAPIURL: process.env.DISTRIBUTION_API_URL,
     instituteAPIURL: process.env.INSTITUTE_API_URL,
+    coregAPIURL: process.env.COREG_API_URL,
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,
@@ -75,7 +76,7 @@ nconf.defaults({
     password: process.env.REDIS_PASSWORD,
   },
   frontendConfig: {
-    studentAdminURL: process.env.STUDENT_ADMIN_URL
+    studentAdminURL: process.env.STUDENT_ADMIN_URL,
   },
 });
 module.exports = nconf;
