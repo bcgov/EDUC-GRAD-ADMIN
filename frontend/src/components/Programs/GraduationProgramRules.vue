@@ -242,20 +242,20 @@ export default {
           editable: false,
         },
         {
-          key: "courseName",
+          key: "courseTitle",
           title: "Course Title",
           sortable: true,
           editable: false,
         },
         {
           key: "startDate",
-          title: "TRAX Start Date",
+          title: "Start Date",
           sortable: true,
           editable: false,
         },
         {
-          key: "endDate",
-          title: "TRAX End Date",
+          key: "completionDate",
+          title: "Completion Date",
           sortable: true,
           editable: false,
         },
@@ -305,7 +305,13 @@ export default {
     getCourseRules(ruleNum) {
       this.loadingRuleMatch = true;
       CourseService.getRuleCourseRequirements(ruleNum).then((response) => {
-        this.ruleMatchList = response.data;
+        this.ruleMatchList = response.data.map((item) => {
+          const externalCode = item.externalCode || "";
+          return {
+            courseCode: externalCode.substring(0, 5),
+            courseLevel: externalCode.slice(-3),
+          };
+        });
         this.loadingRuleMatch = false;
         if (!this.ruleMatchList.length) {
           this.ruleMatchList = [];
