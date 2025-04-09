@@ -7,10 +7,16 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
   state: () => ({
     snackbarStore: useSnackbarStore(),
     scheduledBatchJobs: [],
-    batchRuns: [],
+    batchRuns: {
+      data: [],
+      totalElements: null,
+      params: {},
+      currentPage: 1,
+      itemsPerPage: 10,
+      loading: false,
+    },
     batchRoutines: [],
     activeTab: "batchRuns",
-    gettingBatchJobs: false,
     gettingScheduledBatchJobs: false,
     gettingBatchRoutines: false,
     //delete below
@@ -46,7 +52,10 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
     async updateDashboards() {
       this.gettingScheduledBatchJobs = true;
       this.gettingBatchRoutines = true;
-      this.gettingBatchJobs = true;
+      this.batchRuns.loading = true;
+
+      //set batch runs table back to first page
+      this.batchRuns.currentPage = 1;
       await this.setBatchJobs();
       const batchRunScheduledRuns =
         await BatchProcessingService.getScheduledBatchJobs();
@@ -71,19 +80,28 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
       this.gettingScheduledBatchJobs = false;
     },
     async setBatchJobs() {
-      BatchProcessingService.getDashboardInfo()
+      this.batchRuns.loading = true;
+      let params = {
+        pageNumber: this.batchRuns.currentPage - 1,
+        pageSize: this.batchRuns.itemsPerPage,
+        sort: {
+          createDate: "DEC",
+        },
+      };
+
+      BatchProcessingService.getDashboardInfo(params)
         .then((response) => {
-          let batchRunData = response.data.batchInfoList;
-          //parameters
+          let batchRunData = response.data.content;
+
+          // parse jobParameters into valid JSON
           for (const batch of batchRunData) {
             batch.jobParameters = JSON.parse(batch.jobParameters);
           }
-          // Set the batchRuns property
-          this.batchRuns = batchRunData;
-          this.gettingBatchJobs = false;
+          // set batchRuns and totalElements
+          this.batchRuns.data = batchRunData;
+          this.batchRuns.totalElements = response.data.totalElements;
         })
         .catch((error) => {
-          this.gettingBatchJobs = false;
           if (error.response && error.response.status) {
             this.snackbarStore.showSnackbar(
               "ERROR " + error.response.statusText,
@@ -92,7 +110,17 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
               "ERROR" + error.response.status
             );
           }
+        })
+        .finally(() => {
+          // always set loading to false when call completes
+          this.batchRuns.loading = false;
         });
+    },
+    setBatchJobsCurrentPage(page) {
+      this.batchRuns.currentPage = page;
+    },
+    setBatchJobsItemsPerPage(itemsPerPage) {
+      this.batchRuns.itemsPerPage = itemsPerPage;
     },
     async removeScheduledJobs(payload) {
       const response = await BatchProcessingService.removeScheduledJobs(
@@ -145,12 +173,18 @@ export const useBatchProcessingStore = defineStore("batchProcessing", {
     getActiveTab: (state) => {
       return state.activeTab;
     },
+    // scheduled batch jobs getters
     getScheduledBatchRuns: (state) => state.scheduledBatchJobs,
-    getBatchRuns: (state) => state.batchRuns,
-    getBatchRoutines: (state) => state.batchRoutines,
     getIsGettingScheduledBatchJobsLoading: (state) =>
       state.gettingScheduledBatchJobs,
+    // batch runs getters
+    getBatchRuns: (state) => state.batchRuns.data,
+    getBatchRunsTotalElements: (state) => state.batchRuns.totalElements,
+    getBatchRunsItemsPerPage: (state) => state.batchRuns.itemsPerPage,
+    getBatchRunsCurrentPage: (state) => state.batchRuns.currentPage,
+    getIsGettingBatchJobsLoading: (state) => state.batchRuns.loading,
+    // batch routines getters
+    getBatchRoutines: (state) => state.batchRoutines,
     getIsGettingBatchRoutinesLoading: (state) => state.gettingBatchRoutines,
-    getIsGettingBatchJobsLoading: (state) => state.gettingBatchJobs,
   },
 });

@@ -226,4 +226,17 @@ export default {
   getSchoolById(schools, schoolId) {
     return schools.find((school) => school.schoolId === schoolId) || null;
   },
+  dataArrayExists(array) {
+    return !!array && array.length > 0;
+  },
+  getTimeDifference(startTime, endTime) {
+    let startDateTime = new Date(startTime);
+    let endDateTime = new Date(endTime);
+
+    let difference = new Date(0);
+    difference.setSeconds(
+      (endDateTime.getTime() - startDateTime.getTime()) / 1000
+    );
+    return difference.toISOString().slice(11, 19);
+  },
 };

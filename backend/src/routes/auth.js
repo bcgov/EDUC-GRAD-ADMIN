@@ -247,6 +247,7 @@ router.get('/silent_idir_login', async function (req, res, next) {
     if (!validate(studentID)) {
       res.status(401).json('Invalid Student ID.');
     }
+    
     const redis_key_prefix = idir_guid.toLowerCase();
 
     await client.set(redis_key_prefix + '::studentDetails', true, 'EX', 1800);

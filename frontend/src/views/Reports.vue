@@ -27,20 +27,42 @@
 </template>
 
 <script>
+import DistrictReports from "../components/SchoolReports/DistrictReports.vue";
+import SchoolReports from "../components/SchoolReports/SchoolReports.vue";
 
-import DistrictReports from '../components/SchoolReports/DistrictReports.vue';
-import SchoolReports from '../components/SchoolReports/SchoolReports.vue';
+import { useSnackbarStore } from "@/store/modules/snackbar";
+
+import { useAppStore } from "@/store/modules/app";
+import { mapActions } from "pinia";
 
 export default {
   name: "Reports",
   components: {
     SchoolReports: SchoolReports,
-    DistrictReports: DistrictReports
+    DistrictReports: DistrictReports,
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       tab: null,
     };
+  },
+  async beforeMount() {
+    try {
+      await this.getSchools(false);
+      await this.getDistricts(false);
+    } catch (e) {
+      if (e.response.status) {
+        this.snackbarStore.showSnackbar(
+          "There was an error: " + e.response.status,
+          "error",
+          5000
+        );
+      }
+    }
+  },
+  methods: {
+    ...mapActions(useAppStore, ["getSchools", "getDistricts"]),
   },
 };
 </script>

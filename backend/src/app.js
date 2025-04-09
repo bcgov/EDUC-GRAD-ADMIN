@@ -27,7 +27,6 @@ const promMid = require("express-prometheus-middleware");
 
 function addVersionToReq(req, res, next) {
   const { version } = req.params;
-  console.log(version)
   // Check if the version is supported
   const supportedVersions = ["v1", "v2"];
   if (!supportedVersions.includes(version)) {
@@ -134,7 +133,8 @@ auth
           scope: discovery.scopes_supported,
           kc_idp_hint: config.get("server:idirIDPHint"),
         },
-        (_issuer, _sub, profile, accessToken, refreshToken, done) => {
+        (_issuer, _sub, profile, accessToken, refreshToken, params, done) => {
+          const idToken = params.id_token;
           if (
             typeof accessToken === "undefined" ||
             accessToken === null ||
@@ -148,6 +148,7 @@ auth
           profile.jwtFrontend = auth.generateUiToken();
           profile.jwt = accessToken;
           profile.refreshToken = refreshToken;
+          profile.idToken = idToken;
           return done(null, profile);
         }
       )

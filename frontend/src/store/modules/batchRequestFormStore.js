@@ -25,7 +25,7 @@ export const useBatchRequestFormStore = defineStore("batchRequestFormStore", {
     gradDateFrom: null,
     gradDateTo: null,
     psiYear:  getCurrentPSIYear(),
-    psiTransmissionMode:null,     
+    psiTransmissionMode: "PAPER",     
     blankCertificateDetails:[],
     blankTranscriptDetails:[],
     credential:null,

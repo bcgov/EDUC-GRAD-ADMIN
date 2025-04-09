@@ -13,7 +13,7 @@
             activeTab = 'batchRuns';
           "
           class="text-none"
-          >Batch Runs ({{ batchRuns.length }})</v-tab
+          >Batch Runs</v-tab
         >
         <v-tab
           @click="
@@ -275,6 +275,7 @@ import { useSnackbarStore } from "@/store/modules/snackbar";
 import sharedMethods from "../sharedMethods";
 
 import { useAccessStore } from "../store/modules/access";
+import { useAppStore } from "../store/modules/app";
 import { useBatchProcessingStore } from "../store/modules/batchprocessing";
 import { useAuthStore } from "../store/modules/auth";
 import { mapState, mapActions } from "pinia";
@@ -294,6 +295,24 @@ export default {
       batchProcessingStore,
     };
   },
+  async beforeMount() {
+    try {
+      await this.getSchools(false);
+      await this.getDistricts(false);
+      await this.getProgramOptionCodes(false);
+      await this.getBatchJobTypeCodes(false);
+      await this.getTranscriptTypeCodes(false);
+      await this.getCertificateTypeCodes(false);
+    } catch (e) {
+      if (e.response.status) {
+        this.snackbarStore.showSnackbar(
+          "There was an error: " + e.response.status,
+          "error",
+          5000
+        );
+      }
+    }
+  },
   computed: {
     ...mapState(useAccessStore, [
       "allowUpdateGradStatus",
@@ -303,7 +322,6 @@ export default {
     ...mapState(useBatchProcessingStore, {
       scheduledJobs: "getScheduledBatchJobs",
       getActiveTab: "getActiveTab",
-      batchRuns: "getBatchRuns",
     }),
     ...mapState(useAuthStore, {
       userFullName: "userFullName",
@@ -376,7 +394,6 @@ export default {
       adminSelectedErrorId: "",
       errorOn: false,
       displayMessage: null,
-      adminDashboardLoading: false,
       dashboardData: "",
 
       isErrorShowing: false,
@@ -482,6 +499,15 @@ export default {
       "setGroup",
     ]),
     ...mapActions(useAuthStore, ["getJwtToken"]),
+    ...mapActions(useAppStore, [
+      "getSchools",
+      "getDistricts",
+      "getProgramOptionCodes",
+      "getStudentStatusOptionCodes",
+      "getBatchJobTypeCodes",
+      "getTranscriptTypeCodes",
+      "getCertificateTypeCodes",
+    ]),
 
     downloadDISTRUNUSER(bid, transmissionMode = null) {
       DistributionService.downloadDISTRUNUSER(bid, transmissionMode).then(
