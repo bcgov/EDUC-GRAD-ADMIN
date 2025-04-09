@@ -247,8 +247,11 @@ router.get('/silent_idir_login', async function (req, res, next) {
     if (!validate(studentID)) {
       res.status(401).json('Invalid Student ID.');
     }
-    await client.set(idir_guid + '::studentDetails', true, 'EX', 1800);
-    await client.set(idir_guid + '::studentID', studentID, 'EX', 1800);
+    
+    const redis_key_prefix = idir_guid.toLowerCase();
+
+    await client.set(redis_key_prefix + '::studentDetails', true, 'EX', 1800);
+    await client.set(redis_key_prefix + '::studentID', studentID, 'EX', 1800);
   }
   else{
     res.status(401).json(UnauthorizedRsp);
@@ -267,11 +270,13 @@ router.get('/callback_idir_silent',
       return;
     }
     const client = redis.getRedisClient();
-    let studentDetails = await client.get(idir_guid + '::studentDetails');
-    let studentID = await client.get(idir_guid + '::studentID');
+    const redis_key_prefix = idir_guid.toLowerCase();
 
-    await client.del(idir_guid + '::studentDetails');
-    await client.del(idir_guid + '::studentID');
+    let studentDetails = await client.get(redis_key_prefix + '::studentDetails');
+    let studentID = await client.get(redis_key_prefix + '::studentID');
+
+    await client.del(redis_key_prefix + '::studentDetails');
+    await client.del(redis_key_prefix + '::studentID');
 
     if (studentDetails) {
       res.redirect(config.get('server:frontend') + '/student-profile/' + studentID);
