@@ -8,8 +8,14 @@ const roles = require("../components/roles");
 const jsonwebtoken = require("jsonwebtoken");
 const log = require("../components/logger");
 const HttpStatus = require("http-status-codes");
+const redis = require('../util/redis/redis-client');
 const { v4: uuidv4 } = require("uuid");
+const { v4: validate } = require("uuid");
 const { body, validationResult } = require("express-validator");
+const UnauthorizedRsp = {
+  error: 'Unauthorized',
+  error_description: 'Not logged in'
+};
 
 const isValidStaffUserWithRoles = auth.isValidUserWithRoles(
   "GRAD_INFO_OFFICER",
@@ -224,6 +230,58 @@ router.get(
       return res.status(HttpStatus.OK).json(req.session.cookie.maxAge);
     } else {
       return res.sendStatus(HttpStatus.UNAUTHORIZED);
+    }
+  }
+);
+
+router.get('/silent_idir_login', async function (req, res, next) {
+  const client = redis.getRedisClient();
+
+  if(!req.query.idir_guid){
+    res.status(401).json(UnauthorizedRsp);
+  }
+  let idir_guid = req.query.idir_guid;
+  console.log('idir_guid', idir_guid);
+  if(req.query.studentDetails && req.query.studentID){
+    let studentID = req.query.studentID;
+    if (!validate(studentID)) {
+      res.status(401).json('Invalid Student ID.');
+    }
+    
+    const redis_key_prefix = idir_guid.toLowerCase();
+
+    await client.set(redis_key_prefix + '::studentDetails', true, 'EX', 1800);
+    await client.set(redis_key_prefix + '::studentID', studentID, 'EX', 1800);
+  }
+  else{
+    res.status(401).json(UnauthorizedRsp);
+  }
+
+  const authenticator = passport.authenticate('oidcIDIRSilent', { failureRedirect: 'error', scope: 'openid profile' });
+  authenticator(req, res, next);
+});
+
+router.get('/callback_idir_silent',
+  passport.authenticate('oidcIDIRSilent', { failureRedirect: 'error', scope: 'openid profile'}),
+  async (req, res) => {
+    const idir_guid = req.session?.passport?.user?._json?.idir_guid;
+    if(!idir_guid){
+      await res.redirect(config.get('server:frontend') + '/unauthorized');
+      return;
+    }
+    const client = redis.getRedisClient();
+    const redis_key_prefix = idir_guid.toLowerCase();
+
+    let studentDetails = await client.get(redis_key_prefix + '::studentDetails');
+    let studentID = await client.get(redis_key_prefix + '::studentID');
+
+    await client.del(redis_key_prefix + '::studentDetails');
+    await client.del(redis_key_prefix + '::studentID');
+
+    if (studentDetails) {
+      res.redirect(config.get('server:frontend') + '/student-profile/' + studentID);
+    } else {
+      res.status(401).json(UnauthorizedRsp);
     }
   }
 );

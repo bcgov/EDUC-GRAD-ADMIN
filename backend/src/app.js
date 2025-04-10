@@ -27,7 +27,6 @@ const promMid = require("express-prometheus-middleware");
 
 function addVersionToReq(req, res, next) {
   const { version } = req.params;
-  console.log(version)
   // Check if the version is supported
   const supportedVersions = ["v1", "v2"];
   if (!supportedVersions.includes(version)) {
@@ -134,7 +133,8 @@ auth
           scope: discovery.scopes_supported,
           kc_idp_hint: config.get("server:idirIDPHint"),
         },
-        (_issuer, _sub, profile, accessToken, refreshToken, done) => {
+        (_issuer, _sub, profile, accessToken, refreshToken, params, done) => {
+          const idToken = params.id_token;
           if (
             typeof accessToken === "undefined" ||
             accessToken === null ||
@@ -148,10 +148,33 @@ auth
           profile.jwtFrontend = auth.generateUiToken();
           profile.jwt = accessToken;
           profile.refreshToken = refreshToken;
+          profile.idToken = idToken;
           return done(null, profile);
         }
       )
     );
+    passport.use('oidcIDIRSilent', new OidcStrategy({
+      issuer: discovery.issuer,
+      authorizationURL: discovery.authorization_endpoint,
+      tokenURL: discovery.token_endpoint,
+      userInfoURL: discovery['userinfo_endpoint'],
+      clientID: config.get('oidc:clientId'),
+      clientSecret: config.get('oidc:clientSecret'),
+      callbackURL: config.get('server:frontend') + '/api/auth/callback_idir_silent',
+      scope: 'openid profile',
+      kc_idp_hint: config.get('server:idirIDPHint')
+    }, (_issuer, _sub, profile, accessToken, refreshToken, done) => {
+      if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
+          (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
+        return done('No access token', null);
+      }
+      //Generate token for frontend validation
+      //set access and refresh tokens
+      profile.jwtFrontend = auth.generateUiToken();
+      profile.jwt = accessToken;
+      profile.refreshToken = refreshToken;
+      return done(null, profile);
+    }));
     //JWT strategy is used for authorization
     passport.use(
       "jwt",

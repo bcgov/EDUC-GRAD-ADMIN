@@ -66,23 +66,17 @@ export default {
   deleteStudentNotes(noteID) {
     return ApiService.apiAxios.delete("/api/v1/student/studentnotes/" + noteID);
   },
-  getStudentUngradReasons(id) {
-    return ApiService.apiAxios.get(
-      "/api/v1/studentgraduation/undocompletion/studentundocompletionreason/studentid/" +
-        id
-    );
-  },
-  getUngradReasons() {
-    return ApiService.apiAxios.get(
-      "/api/v1/studentgraduation/undocompletion/undocompletionreason"
-    );
-  },
   getStudentHistory(id) {
     return ApiService.apiAxios.get("/api/v1/student/studentHistory/" + id);
   },
   getBatchHistory(id, itemsPerPage, page) {
     return ApiService.apiAxios.get(
-      "/api/v1/student/studentHistory/batchid/" + id + "?pageNumber=" + page + "&pageSize=" + itemsPerPage 
+      "/api/v1/student/studentHistory/batchid/" +
+        id +
+        "?pageNumber=" +
+        page +
+        "&pageSize=" +
+        itemsPerPage
     );
   },
   getStudentOptionalProgramHistory(id) {
