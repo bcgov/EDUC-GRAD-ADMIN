@@ -4,6 +4,7 @@
       <v-col sm="2">Transmission Mode</v-col>
       <v-col>
         <v-select
+          class="mt-1"
           v-model="transmissionMode"
           label="Select a Transmission Mode"
           :items="[{ title: 'Paper', value: 'PAPER' }, 'FTP']"
