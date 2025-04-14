@@ -120,7 +120,7 @@
                         variant="outlined"
                         v-model="group"
                         :items="groupItems"
-                        label="Select group"
+                        label="Select a group"
                         hide-details
                       ></v-select>
                     </v-col>
@@ -204,16 +204,19 @@
                     step == 0 ||
                     (step == 1 &&
                       getCredential !== 'Blank certificate print' &&
-                      getCredential !== 'Blank transcript print')
-                  "
-                  variant="outlined"
-                  >Back</v-btn
-                >
+                      getCredential !== 'Blank transcript print')"
+                  variant="outlined">
+                  Back
+                </v-btn>
                 <v-spacer />
                 <!-- Right Action Button -->
-                <v-btn v-if="step < 3" @click="step++" color="bcGovBlue"
-                  >Next</v-btn
-                >
+                <v-btn
+                  v-if="step < 3" 
+                  @click="step++" 
+                  :disabled="step!==0 && v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid" 
+                  color="bcGovBlue">
+                  Next
+                </v-btn>
                 <v-btn
                   v-else-if="getBatchRequest.localDownload == 'Y'"
                   color="error"
@@ -222,8 +225,7 @@
                   density="default"
                   :loading="batchLoading"
                   :disabled="v$.$invalid || batchLoading"
-                  @click="submit"
-                >
+                  @click="submit">
                   Download
                 </v-btn>
                 <v-btn
@@ -234,9 +236,9 @@
                   density="default"
                   @click="submit"
                   :loading="batchLoading"
-                  :disabled="v$.$invalid || batchLoading"
-                  >Submit</v-btn
-                >
+                  :disabled="v$.$invalid || batchLoading">
+                  Submit
+                </v-btn>
               </div>
             </template>
           </v-stepper>
