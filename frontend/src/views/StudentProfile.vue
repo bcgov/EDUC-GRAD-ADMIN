@@ -1075,7 +1075,7 @@ export default {
       this.loadGraduationStatus(studentIdFromURL);
       this.loadStudentOptionalPrograms(studentIdFromURL);
       this.loadCareerPrograms(studentIdFromURL);
-      this.loadStudentCourseAchievements();
+      this.loadStudentCourseAchievements(studentIdFromURL);
       this.loadStudentExamDetails();
       this.loadStudentNotes(studentIdFromURL);
       this.loadStudentReportsAndCertificates();
@@ -1162,8 +1162,8 @@ export default {
           }
         });
     },
-    loadStudentCourseAchievements() {
-      CourseService.getStudentCourseAchievements(this.pen)
+    loadStudentCourseAchievements(studentIdFromURL) {
+      CourseService.getStudentCoursesByStudentId(studentIdFromURL)
         .then((response) => {
           this.setStudentCourses(response.data);
         })
@@ -1176,6 +1176,19 @@ export default {
             );
           }
         });
+      // CourseService.getStudentCourseAchievements(this.pen)
+      //   .then((response) => {
+      //     this.setStudentCourses(response.data);
+      //   })
+      //   .catch((error) => {
+      //     if (error.response.status) {
+      //       this.snackbarStore.showSnackbar(
+      //         "There was an error: " + error.response.status,
+      //         "error",
+      //         5000
+      //       );
+      //     }
+      //   });
     },
     loadStudentExamDetails() {
       CourseService.getStudentExamDetails(this.pen)

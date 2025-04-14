@@ -7,6 +7,9 @@ export default {
   getCourses(courseCode) {
     return ApiService.apiAxios.get("/api/v1/course/" + courseCode);
   },
+  getCoursesByCourseId(courseId) {
+    return ApiService.apiAxios.get("/api/v2/course/" + courseId);
+  },
   getAllCourses() {
     return ApiService.apiAxios.get("/api/v1/course/");
   },
@@ -37,6 +40,11 @@ export default {
   getStudentCourseAchievements(pen) {
     return ApiService.apiAxios.get(
       "/api/v1/course/studentcourse/pen/" + pen + "?sortForUI=true"
+    );
+  },
+  getStudentCoursesByStudentId(studentId) {
+    return ApiService.apiAxios.get(
+      "/api/v2/course/studentcourse/studentid/" + studentId
     );
   },
   getStudentExamDetails(pen) {
