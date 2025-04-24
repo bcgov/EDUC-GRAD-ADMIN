@@ -249,13 +249,13 @@ export default {
         },
         {
           key: "startDate",
-          title: "TRAX Start Date",
+          title: "Start Date",
           sortable: true,
           editable: false,
         },
         {
           key: "endDate",
-          title: "TRAX End Date",
+          title: "Completion Date",
           sortable: true,
           editable: false,
         },
