@@ -213,7 +213,7 @@
                 <v-btn
                   v-if="step < 3" 
                   @click="step++" 
-                  :disabled="step!==0 && v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid" 
+                  :disabled="step!==0 && v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid || step === 0 && v$.getBatchRequest.credentialTypeSelected.$invalid" 
                   color="bcGovBlue">
                   Next
                 </v-btn>
