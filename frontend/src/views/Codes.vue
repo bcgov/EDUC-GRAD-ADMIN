@@ -44,6 +44,9 @@
         <v-tab to="/codes/report-types" class="text-none" size="large"
           >Report Types</v-tab
         >
+        <v-tab to="/codes/student-grade-codes" class="text-none" size="large"
+          >Student Grade Codes</v-tab
+        >
         <v-tab to="/codes/student-status-codes" class="text-none" size="large"
           >Student Status Codes</v-tab
         >
