@@ -28,6 +28,7 @@ export const useAppStore = defineStore("app", {
     instituteCategoryCodes: [],
     instituteFacilityCodes: [],
     instituteGradeCodes: [],
+    studentGradeCodes: [],
     config: null,
   }),
   getters: {
@@ -110,10 +111,10 @@ export const useAppStore = defineStore("app", {
           (facilityCode) => code === facilityCode.facilityTypeCode
         );
     },
-    getGradeCodes: (state) => state.instituteGradeCodes,
+    getGradeCodes: (state) => state.studentGradeCodes,
     getGradeCode: (state) => {
       return (code) =>
-        state.instituteGradeCodes.find(
+        state.studentGradeCodes.find(
           (gradeCode) => code === gradeCode.schoolGradeCode
         );
     },
@@ -133,13 +134,14 @@ export const useAppStore = defineStore("app", {
           await this.getBatchJobTypeCodes();
           await this.getTranscriptTypeCodes();
           await this.getCertificateTypeCodes();
+          await this.getStudentGradeCodes();
           // GET & SET INSTITUTE SCHOOL AND DISTRICT LISTS
           await this.getSchools();
           await this.getDistricts();
           // GET & SET INSTITUTE CODES
           await this.getInstituteCategoryCodes();
           await this.getInstituteFacilityCodes();
-          await this.getInstituteGradeCodes();
+          await this.getInstituteGradeCodes();        
         }
       } catch (e) {
         if (e.response.status) {
@@ -290,6 +292,18 @@ export const useAppStore = defineStore("app", {
     },
     async setInstituteGradeCodes(gradeCodes) {
       this.instituteGradeCodes = sharedMethods.applyDisplayOrder(gradeCodes);
+    },
+    async getStudentGradeCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.studentGradeCodes)
+      ) {
+        let response = await StudentService.getStudentGradeCodes();
+        await this.setStudentGradeCodes(response.data);
+      }
+    },
+    async setStudentGradeCodes(gradeCodes) {
+      this.studentGradeCodes = sharedMethods.applyDisplayOrder(gradeCodes);
     },
   },
 });
