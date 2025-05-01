@@ -55,6 +55,9 @@ export default {
   getStudentStatusCodes() {
     return ApiService.apiAxios.get("/api/v1/student/studentstatus");
   },
+  getStudentGradeCodes() {
+    return ApiService.apiAxios.get("/api/v1/student/grade-codes");
+  },
   getStudentNotes(id) {
     return ApiService.apiAxios.get(
       "/api/v1/student/studentnotes/studentid/" + id

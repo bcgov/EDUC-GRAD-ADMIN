@@ -169,7 +169,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAccessStore, {
+    ...(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
     }),
     editableFields() {
