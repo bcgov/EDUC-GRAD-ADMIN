@@ -27,7 +27,6 @@ export const useAppStore = defineStore("app", {
     instituteAddressTypeCodes: [],
     instituteCategoryCodes: [],
     instituteFacilityCodes: [],
-    instituteGradeCodes: [],
     studentGradeCodes: [],
     config: null,
   }),
@@ -140,8 +139,7 @@ export const useAppStore = defineStore("app", {
           await this.getDistricts();
           // GET & SET INSTITUTE CODES
           await this.getInstituteCategoryCodes();
-          await this.getInstituteFacilityCodes();
-          await this.getInstituteGradeCodes();        
+          await this.getInstituteFacilityCodes();     
         }
       } catch (e) {
         if (e.response.status) {
@@ -280,18 +278,6 @@ export const useAppStore = defineStore("app", {
     async setInstituteFacilityCodes(facilityCodes) {
       this.instituteFacilityCodes =
         sharedMethods.applyDisplayOrder(facilityCodes);
-    },
-    async getInstituteGradeCodes(getNewData = true) {
-      if (
-        getNewData ||
-        !sharedMethods.dataArrayExists(this.instituteGradeCodes)
-      ) {
-        let response = await InstituteService.getGradeCodes();
-        await this.setInstituteGradeCodes(response.data);
-      }
-    },
-    async setInstituteGradeCodes(gradeCodes) {
-      this.instituteGradeCodes = sharedMethods.applyDisplayOrder(gradeCodes);
     },
     async getStudentGradeCodes(getNewData = true) {
       if (
