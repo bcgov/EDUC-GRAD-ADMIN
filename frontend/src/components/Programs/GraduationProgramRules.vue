@@ -254,7 +254,7 @@ export default {
           editable: false,
         },
         {
-          key: "endDate",
+          key: "completionEndDate",
           title: "Completion Date",
           sortable: true,
           editable: false,
