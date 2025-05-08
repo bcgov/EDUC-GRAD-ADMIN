@@ -568,6 +568,7 @@
                         .$message
                     }}
                   </div>
+                  <div class="bg-warning" v-if="!!editedGradStatus.adultStartDate">Eligible post-start-date courses must be one month after this date</div>
                   <v-text-field
                     data-cy="adult-start-date-textfield"
                     :disabled="editedGradStatus.program != '1950'"
