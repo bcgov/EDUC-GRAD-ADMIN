@@ -289,7 +289,7 @@ export const useAppStore = defineStore("app", {
       }
     },
     async setStudentGradeCodes(gradeCodes) {
-      this.studentGradeCodes = sharedMethods.applyDisplayOrder(gradeCodes);
+      this.studentGradeCodes = sharedMethods.filterActiveObjects(sharedMethods.applyDisplayOrder(gradeCodes));
     },
   },
 });
