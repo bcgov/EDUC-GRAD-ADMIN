@@ -275,17 +275,28 @@
                         .ifProgramIsNot1950studentGradeCannotBeADorAN.$message
                     }}
                   </div>
+                  <!-- Warning If the “Expected” flag is not equal to “Y”, Warning: this is not a usual grade for GRAD. -->
+                  <div
+                    class="bg-warning"
+                    v-if="
+                      v$.editedGradStatus.ifNotAUsualGradeWarning.$invalid ==
+                      true
+                    "
+                  >
+                    {{ v$.editedGradStatus.ifNotAUsualGradeWarning.$message }}
+                  </div>
                   <v-select
                     data-cy="student-grade-select"
                     v-model="editedGradStatus.studentGrade"
-                    :items="gradeOptions"
-                    item-title="text"
-                    item-value="value"
+                    :items="getGradeCodes"
+                    :item-title="formatGradeOption"
+                    item-value="studentGradeCode"
                     label="Select"
                     variant="outlined"
                     density="compact"
                     class="mt-4"
-                  ></v-select>
+                  >
+                  </v-select>
                 </td>
               </tr>
               <!-- Student grade End-->
@@ -484,8 +495,9 @@
                     </template>
                   </v-autocomplete> -->
                   <p
-                    data-cy="school-at-graduation-text" 
-                    v-if="editedGradStatus?.schoolAtGradId">
+                    data-cy="school-at-graduation-text"
+                    v-if="editedGradStatus?.schoolAtGradId"
+                  >
                     {{
                       getSchoolById(editedGradStatus?.schoolAtGradId)?.mincode
                     }}
@@ -707,6 +719,7 @@ export default {
       getSchoolsList: "getSchoolsList",
       getSchoolMincodeById: "getSchoolMincodeById",
       getSchoolById: "getSchoolById",
+      getGradeCodes: "getGradeCodes",
     }),
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
@@ -802,17 +815,6 @@ export default {
       disableProgramInput: false,
       disableConsumerEdReqMet: false,
       disableSchoolOfRecord: false,
-      gradeOptions: [
-        { text: "08", value: "8" },
-        { text: "09", value: "9" },
-        { text: "10", value: "10" },
-        { text: "11", value: "11" },
-        { text: "12", value: "12" },
-        { text: "HS - Homeschool", value: "HS" },
-        { text: "OT - Other", value: "OT" },
-        { text: "AD - Adult expected to graduate", value: "AD" },
-        { text: "AN - Adult not expected to graduate", value: "AN" },
-      ],
       recalcFlags: [
         { text: "Y", value: "Y" },
         { text: "null", value: null },
@@ -842,6 +844,12 @@ export default {
             return (
               this.editedGradStatus?.program === this.studentGradStatus?.program
             );
+          }
+        ),
+        ifNotAUsualGradeWarning: helpers.withMessage(
+          "Warning, this is not a usual grade for GRAD.",
+          (value) => {
+            return this.isGradeExpected(this.editedGradStatus?.studentGrade);
           }
         ),
         ifClosedProgramWarning: helpers.withMessage(
@@ -1096,6 +1104,9 @@ export default {
       "loadStudentHistory",
       "loadStudentOptionalProgramHistory",
     ]),
+    formatGradeOption(item) {
+      return `${item.studentGradeCode} - ${item.label}`;
+    },
     schoolTitle(item) {
       // Customize this method to return the desired format
       if (item) {
@@ -1366,6 +1377,12 @@ export default {
 
       // Check if the openedDate is in the past and closedDate is null
       return openedDate < currentDate && closedDate === null;
+    },
+    isGradeExpected(grade) {
+      const foundGrade = this.getGradeCodes.find(
+        (obj) => obj.studentGradeCode === grade
+      );
+      return foundGrade?.expected === "Y";
     },
   },
 };

@@ -44,9 +44,29 @@
         <v-tab to="/codes/report-types" class="text-none" size="large"
           >Report Types</v-tab
         >
-        <v-tab to="/codes/student-status-codes" class="text-none" size="large"
-          >Student Status Codes</v-tab
-        >
+        <v-tab class="text-none" size="large">
+          <v-menu offset-y>
+            <template v-slot:activator="{ props }">
+              <v-btn
+                text
+                v-bind="props"
+                variant="text"
+                class="text-none"
+                size="large"
+                append-icon="mdi-menu-down"
+                >Student Codes</v-btn
+              >
+            </template>
+            <v-list>
+              <v-list-item to="/codes/student-grade-codes"
+                >Student Grade Codes</v-list-item
+              >
+              <v-list-item to="/codes/student-status-codes"
+                >Student Status Codes</v-list-item
+              >
+            </v-list>
+          </v-menu>
+        </v-tab>
         <v-tab to="/codes/ungrad-reasons" class="text-none" size="large"
           >Undo Completion Reason Codes</v-tab
         >
