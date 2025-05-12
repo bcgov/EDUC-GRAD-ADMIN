@@ -1,0 +1,45 @@
+{
+  "scripts": {
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "cy:run:chrome": "cypress run --browser chrome",
+    "doc": "jsdoc --verbose -d docs -c jsdoc.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "@typescript-eslint/parser": "^8.26.1",
+    "adm-zip": "^0.5.16",
+    "axios": "^1.7.9",
+    "cypress": "^14.1.0",
+    "cypress-delete-downloads-folder": "^0.0.6",
+    "eslint": "^9.22.0",
+    "jsdoc": "^4.0.4",
+    "typescript": "^5.8.2"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "root": true,
+    "rules": {
+      "indent": [
+        "error",
+        2
+      ],
+      "quotes": [
+        "error",
+        "single"
+      ],
+      "semi": [
+        "error",
+        "always"
+      ]
+    }
+  }
+}
