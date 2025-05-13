@@ -23,7 +23,7 @@ nconf.overrides({
 });
 
 nconf.defaults({
-  environment: env,
+  environment: process.env.NODE_ENV,
   logoutEndpoint:
     process.env.SOAM_URL + "/auth/realms/master/protocol/openid-connect/logout",
   siteMinder_logout_endpoint: process.env.SITEMINDER_LOGOUT_ENDPOINT,
@@ -73,9 +73,6 @@ nconf.defaults({
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
     password: process.env.REDIS_PASSWORD,
-  },
-  frontendConfig: {
-    studentAdminURL: process.env.STUDENT_ADMIN_URL
   },
 });
 module.exports = nconf;
