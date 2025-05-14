@@ -10,28 +10,58 @@
           </v-progress-circular>
           <v-menu offset-y>
             <template v-slot:activator="{ props }">
-              <v-btn text v-bind="props" :disabled="tabLoading || !hasGradStatus" id="actions" right
-                class="float-right admin-actions text-none" prepend-icon="mdi-school" append-icon="mdi-menu-down"
-                color="primary">
-                Transcripts & TVRs</v-btn>
+              <v-btn
+                text
+                v-bind="props"
+                :disabled="tabLoading || !hasGradStatus"
+                id="actions"
+                right
+                class="float-right admin-actions text-none"
+                prepend-icon="mdi-school"
+                append-icon="mdi-menu-down"
+                color="primary"
+              >
+                Transcripts & TVRs</v-btn
+              >
             </template>
             <v-list>
-              <v-list-item :disabled="studentGradStatus.studentStatus === 'MER'"
-                v-on:click="projectedGradStatusWithFinalMarks">Preview Final Marks</v-list-item>
-              <v-list-item :disabled="studentGradStatus.studentStatus === 'MER'"
-                v-on:click="projectedGradStatusWithFinalAndReg">Update TVR</v-list-item>
-              <v-list-item :disabled="studentGradStatus.studentStatus === 'MER' ||
-                isProgramComplete(
-                  studentGradStatus.programCompletionDate,
-                  studentGradStatus.program
-                )
-                " v-on:click="graduateStudent">Update Grad Status</v-list-item>
-              <v-list-item :disabled="studentGradStatus.studentStatus === 'MER' ||
-                !studentGradStatus.programCompletionDate
-                " v-on:click="updateStudentReports">Update Transcript</v-list-item>
-              <v-list-item :disabled="studentGradStatus.studentStatus === 'MER' ||
-                !studentGradStatus.programCompletionDate
-                " v-on:click="showUndoCompletionDialog = true">Undo Completion</v-list-item>
+              <v-list-item
+                :disabled="studentGradStatus.studentStatus === 'MER'"
+                v-on:click="projectedGradStatusWithFinalMarks"
+                >Preview Final Marks</v-list-item
+              >
+              <v-list-item
+                :disabled="studentGradStatus.studentStatus === 'MER'"
+                v-on:click="projectedGradStatusWithFinalAndReg"
+                >Update TVR</v-list-item
+              >
+              <v-list-item
+                :disabled="
+                  studentGradStatus.studentStatus === 'MER' ||
+                  isProgramComplete(
+                    studentGradStatus.programCompletionDate,
+                    studentGradStatus.program
+                  )
+                "
+                v-on:click="graduateStudent"
+                >Update Grad Status</v-list-item
+              >
+              <v-list-item
+                :disabled="
+                  studentGradStatus.studentStatus === 'MER' ||
+                  !studentGradStatus.programCompletionDate
+                "
+                v-on:click="updateStudentReports"
+                >Update Transcript</v-list-item
+              >
+              <v-list-item
+                :disabled="
+                  studentGradStatus.studentStatus === 'MER' ||
+                  !studentGradStatus.programCompletionDate
+                "
+                v-on:click="showUndoCompletionDialog = true"
+                >Undo Completion</v-list-item
+              >
             </v-list>
           </v-menu>
         </div>
@@ -45,32 +75,65 @@
             <v-window-item value="gradStatusTab">
               <v-tabs v-model="selectedTab" bg-color="bcGovLightGrey">
                 <v-tab value="GRAD" class="text-none">GRAD</v-tab>
-                <v-tab value="Courses" class="text-none">Courses ({{ courses.length }})</v-tab>
-                <v-tab value="CourseCrud" class="text-none">Course CRUD <p
-                    class="text-caption font-weight-bold text-bcGovGold">BETA</p></v-tab>
-                <v-tab value="Assessments" class="text-none">Assessments ({{ assessments.length }})</v-tab>
-                <v-tab value="Exams" class="text-none">Exams Details ({{ exams.length }})</v-tab>
-                <v-tab value="Optional" class="text-none">Optional Programs ({{ optionalPrograms.length }})</v-tab>
+                <v-tab value="Courses" class="text-none"
+                  >Courses ({{ courses.length }})</v-tab
+                >
+                <v-tab
+                  value="CourseCrud"
+                  class="text-none"
+                  v-if="environment != 'prod'"
+                  >Course CRUD
+                  <p class="text-caption font-weight-bold text-bcGovGold">
+                    BETA
+                  </p></v-tab
+                >
+                <v-tab value="Assessments" class="text-none"
+                  >Assessments ({{ assessments.length }})</v-tab
+                >
+                <v-tab value="Exams" class="text-none"
+                  >Exams Details ({{ exams.length }})</v-tab
+                >
+                <v-tab value="Optional" class="text-none"
+                  >Optional Programs ({{ optionalPrograms.length }})</v-tab
+                >
                 <v-tab value="Audit" class="text-none">Audit History</v-tab>
-                <v-tab value="Notes" class="text-none">Notes ({{ studentNotes.length }})
+                <v-tab value="Notes" class="text-none"
+                  >Notes ({{ studentNotes.length }})
                 </v-tab>
-                <v-tab value="Undo Completion Reasons" class="text-none">Undo Completion Reasons ({{
-                  studentUngradReasons.length
-                }})</v-tab>
+                <v-tab value="Undo Completion Reasons" class="text-none"
+                  >Undo Completion Reasons ({{
+                    studentUngradReasons.length
+                  }})</v-tab
+                >
               </v-tabs>
               <v-card-text>
                 <v-window v-model="selectedTab">
                   <v-window-item value="GRAD" data-cy="grad-window-item">
                     <v-tabs v-model="selectedSubTab" color="primary">
-                      <v-tab value="gradStatusTab" class="text-none"><v-chip class="text-none" color="primary" :variant="selectedSubTab == 'gradStatusTab'
-                          ? 'flat'
-                          : 'outlined'
-                        ">GRAD Status</v-chip></v-tab>
-                      <v-tab value="requirementDetailsTab" class="text-none"><v-chip class="text-none" color="primary"
-                          :variant="selectedSubTab == 'requirementDetailsTab'
+                      <v-tab value="gradStatusTab" class="text-none"
+                        ><v-chip
+                          class="text-none"
+                          color="primary"
+                          :variant="
+                            selectedSubTab == 'gradStatusTab'
                               ? 'flat'
                               : 'outlined'
-                            ">Requirement Details</v-chip></v-tab>
+                          "
+                          >GRAD Status</v-chip
+                        ></v-tab
+                      >
+                      <v-tab value="requirementDetailsTab" class="text-none"
+                        ><v-chip
+                          class="text-none"
+                          color="primary"
+                          :variant="
+                            selectedSubTab == 'requirementDetailsTab'
+                              ? 'flat'
+                              : 'outlined'
+                          "
+                          >Requirement Details</v-chip
+                        ></v-tab
+                      >
                     </v-tabs>
 
                     <div class="last-updated-date">
@@ -94,49 +157,94 @@
                     </v-window>
 
                     <div id="RequirementDetails">
-                      <v-progress-circular v-if="tabLoading" indeterminate color="green">
+                      <v-progress-circular
+                        v-if="tabLoading"
+                        indeterminate
+                        color="green"
+                      >
                       </v-progress-circular>
                     </div>
                   </v-window-item>
                   <v-window-item value="Courses" data-cy="courses-window-item">
-                    <v-progress-circular v-if="tabLoading" indeterminate color="green">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
                     </v-progress-circular>
                     <StudentCourses></StudentCourses>
                   </v-window-item>
                   <!--TODO: add condition to display this tab for onn PROD envs ONLY until Student Course CRUD goes live -->
                   <v-window-item value="CourseCrud">
-                    <v-progress-circular v-if="tabLoading" indeterminate color="green"></v-progress-circular>
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    ></v-progress-circular>
                     <StudentCourses_BETA />
                   </v-window-item>
-                  <v-window-item value="Assessments" data-cy="assessments-window-item">
-                    <v-progress-circular v-if="tabLoading" indeterminate color="green">
+                  <v-window-item
+                    value="Assessments"
+                    data-cy="assessments-window-item"
+                  >
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
                     </v-progress-circular>
                     <StudentAssessments />
                   </v-window-item>
                   <v-window-item value="Exams" data-cy="exams-window-item">
-                    <v-progress-circular v-if="tabLoading" indeterminate color="green">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
                     </v-progress-circular>
                     <StudentExams />
                   </v-window-item>
-                  <v-window-item value="Optional" data-cy="optional-window-item">
-                    <v-progress-circular v-if="tabLoading" indeterminate color="green">
+                  <v-window-item
+                    value="Optional"
+                    data-cy="optional-window-item"
+                  >
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
                     </v-progress-circular>
                     <StudentOptionalPrograms></StudentOptionalPrograms>
                   </v-window-item>
                   <v-window-item value="Audit" data-cy="audit-window-item">
-                    <v-progress-circular v-if="tabLoading" indeterminate color="green">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
                     </v-progress-circular>
                     <div>
                       <StudentAuditHistory v-if="auditTab == 'studentAudit'" />
                     </div>
                   </v-window-item>
                   <v-window-item value="Notes">
-                    <v-progress-circular v-if="tabLoading" indeterminate color="green">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
                     </v-progress-circular>
                     <StudentNotes></StudentNotes>
                   </v-window-item>
-                  <v-window-item value="Undo Completion Reasons" data-cy="undo-window-item">
-                    <v-progress-circular v-if="tabLoading" indeterminate color="green">
+                  <v-window-item
+                    value="Undo Completion Reasons"
+                    data-cy="undo-window-item"
+                  >
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    >
                     </v-progress-circular>
 
                     <StudentUndoCompletionReasons></StudentUndoCompletionReasons>
@@ -149,13 +257,21 @@
       </div>
     </div>
     <!-- projectedGradStatusWithFinalMarksDialog Modal -->
-    <v-dialog v-model="projectedGradStatusWithFinalMarksDialog" max-width="1200px">
+    <v-dialog
+      v-model="projectedGradStatusWithFinalMarksDialog"
+      max-width="1200px"
+    >
       <v-card>
         <v-card-title class="text-h5">
           Projected Grad Status with Final Marks
         </v-card-title>
         <v-card-text>
-          <v-alert v-if="projectedGradStatus && projectedGradStatus?.gradStatus" type="info" dense outlined>
+          <v-alert
+            v-if="projectedGradStatus && projectedGradStatus?.gradStatus"
+            type="info"
+            dense
+            outlined
+          >
             {{ projectedGradStatus?.gradMessage }}
           </v-alert>
           <v-row v-if="projectedGradStatus && projectedGradStatus?.gradStatus">
@@ -163,8 +279,12 @@
               <v-card>
                 <v-card-title>Requirements met</v-card-title>
                 <v-card-text v-if="projectedGradStatus?.requirementsMet">
-                  <v-data-table dense :items="projectedGradStatus?.requirementsMet" :headers="requirementsMetFields"
-                    class="elevation-1" />
+                  <v-data-table
+                    dense
+                    :items="projectedGradStatus?.requirementsMet"
+                    :headers="requirementsMetFields"
+                    class="elevation-1"
+                  />
                 </v-card-text>
               </v-card>
             </v-col>
@@ -172,8 +292,12 @@
               <v-card>
                 <v-card-title>Noncompletion reasons</v-card-title>
                 <v-card-text v-if="projectedGradStatus?.nonGradReasons">
-                  <v-data-table dense :items="projectedGradStatus?.nonGradReasons" :headers="noncompletionReasonsFields"
-                    class="elevation-1" />
+                  <v-data-table
+                    dense
+                    :items="projectedGradStatus?.nonGradReasons"
+                    :headers="noncompletionReasonsFields"
+                    class="elevation-1"
+                  />
                 </v-card-text>
                 <v-card-text v-else>
                   All program requirements have been met
@@ -183,7 +307,10 @@
           </v-row>
 
           <div v-if="projectedOptionalGradStatus">
-            <div v-for="optionalProgram in projectedOptionalGradStatus" :key="optionalProgram?.optionalProgramCode">
+            <div
+              v-for="optionalProgram in projectedOptionalGradStatus"
+              :key="optionalProgram?.optionalProgramCode"
+            >
               <h3 class="optionalProgramName">
                 {{ optionalProgram?.optionalProgramName }}
               </h3>
@@ -191,33 +318,48 @@
                 <v-col cols="6">
                   <v-card>
                     <v-card-title>Requirements met</v-card-title>
-                    <v-card-text v-if="
-                      optionalProgram?.studentOptionalProgramData
-                        ?.optionalRequirementsMet
-                    ">
-                      <v-data-table dense :items="optionalProgram?.studentOptionalProgramData
+                    <v-card-text
+                      v-if="
+                        optionalProgram?.studentOptionalProgramData
                           ?.optionalRequirementsMet
-                        " :headers="[
+                      "
+                    >
+                      <v-data-table
+                        dense
+                        :items="
+                          optionalProgram?.studentOptionalProgramData
+                            ?.optionalRequirementsMet
+                        "
+                        :headers="[
                           { text: 'Rule', value: 'rule', class: 'px-0 py-2' },
                           {
                             text: 'Description',
                             value: 'description',
                             class: 'px-0 py-2',
                           },
-                        ]" class="elevation-1" />
+                        ]"
+                        class="elevation-1"
+                      />
                     </v-card-text>
                   </v-card>
                 </v-col>
                 <v-col cols="6">
                   <v-card>
                     <v-card-title>Requirements not met</v-card-title>
-                    <v-card-text v-if="
-                      optionalProgram?.studentOptionalProgramData
-                        ?.optionalNonGradReasons
-                    ">
-                      <v-data-table dense :items="optionalProgram?.studentOptionalProgramData
+                    <v-card-text
+                      v-if="
+                        optionalProgram?.studentOptionalProgramData
                           ?.optionalNonGradReasons
-                        " class="elevation-1" />
+                      "
+                    >
+                      <v-data-table
+                        dense
+                        :items="
+                          optionalProgram?.studentOptionalProgramData
+                            ?.optionalNonGradReasons
+                        "
+                        class="elevation-1"
+                      />
                     </v-card-text>
                     <v-card-text v-else>
                       All requirements have been met
@@ -247,29 +389,45 @@
             {{ projectedGradStatusWithRegistrations?.gradMessage }}
           </v-alert>
 
-          <v-row v-if="
-            projectedGradStatusWithRegistrations &&
-            projectedGradStatusWithRegistrations?.gradStatus
-          ">
+          <v-row
+            v-if="
+              projectedGradStatusWithRegistrations &&
+              projectedGradStatusWithRegistrations?.gradStatus
+            "
+          >
             <v-col cols="6">
               <v-card>
                 <v-card-title>Requirements met</v-card-title>
-                <v-card-text v-if="projectedGradStatusWithRegistrations?.requirementsMet">
-                  <v-data-table dense :items="projectedGradStatusWithRegistrations?.requirementsMet
-                    " :headers="requirementsMetFields" class="elevation-1">
+                <v-card-text
+                  v-if="projectedGradStatusWithRegistrations?.requirementsMet"
+                >
+                  <v-data-table
+                    dense
+                    :items="
+                      projectedGradStatusWithRegistrations?.requirementsMet
+                    "
+                    :headers="requirementsMetFields"
+                    class="elevation-1"
+                  >
                     <template v-slot:item.rule="{ item }">
-                      <div :style="item?.projected
-                          ? 'background-color: #eaf2fa; width: 100%'
-                          : ''
-                        ">
+                      <div
+                        :style="
+                          item?.projected
+                            ? 'background-color: #eaf2fa; width: 100%'
+                            : ''
+                        "
+                      >
                         {{ item?.rule }}
                       </div>
                     </template>
                     <template v-slot:item.description="{ item }">
-                      <div :style="item?.projected
-                          ? 'background-color: #eaf2fa; width: 100%'
-                          : ''
-                        ">
+                      <div
+                        :style="
+                          item?.projected
+                            ? 'background-color: #eaf2fa; width: 100%'
+                            : ''
+                        "
+                      >
                         {{ item?.description }} (Projected)
                       </div>
                     </template>
@@ -280,9 +438,17 @@
             <v-col cols="6">
               <v-card>
                 <v-card-title>Noncompletion reasons</v-card-title>
-                <v-card-text v-if="projectedGradStatusWithRegistrations?.nonGradReasons">
-                  <v-data-table dense :items="projectedGradStatusWithRegistrations?.nonGradReasons
-                    " :headers="noncompletionReasonsFields" class="elevation-1" />
+                <v-card-text
+                  v-if="projectedGradStatusWithRegistrations?.nonGradReasons"
+                >
+                  <v-data-table
+                    dense
+                    :items="
+                      projectedGradStatusWithRegistrations?.nonGradReasons
+                    "
+                    :headers="noncompletionReasonsFields"
+                    class="elevation-1"
+                  />
                 </v-card-text>
                 <v-card-text v-else>
                   All program requirements have been met
@@ -292,7 +458,10 @@
           </v-row>
 
           <div v-if="projectedOptionalGradStatus">
-            <div v-for="optionalProgram in projectedOptionalGradStatus" :key="optionalProgram?.optionalProgramCode">
+            <div
+              v-for="optionalProgram in projectedOptionalGradStatus"
+              :key="optionalProgram?.optionalProgramCode"
+            >
               <h3 class="optionalProgramName">
                 {{ optionalProgram?.optionalProgramName }}
               </h3>
@@ -300,35 +469,52 @@
                 <v-col cols="6">
                   <v-card>
                     <v-card-title>Requirements met</v-card-title>
-                    <v-card-text v-if="
-                      optionalProgram?.studentOptionalProgramData
-                        ?.optionalRequirementsMet
-                    ">
-                      <v-data-table dense :items="optionalProgram?.studentOptionalProgramData
+                    <v-card-text
+                      v-if="
+                        optionalProgram?.studentOptionalProgramData
                           ?.optionalRequirementsMet
-                        " :headers="[
+                      "
+                    >
+                      <v-data-table
+                        dense
+                        :items="
+                          optionalProgram?.studentOptionalProgramData
+                            ?.optionalRequirementsMet
+                        "
+                        :headers="[
                           { text: 'Rule', value: 'rule', class: 'px-0 py-2' },
                           {
                             text: 'Description',
                             value: 'description',
                             class: 'px-0 py-2',
                           },
-                        ]" class="elevation-1" />
+                        ]"
+                        class="elevation-1"
+                      />
                     </v-card-text>
                   </v-card>
                 </v-col>
                 <v-col cols="6">
                   <v-card>
                     <v-card-title>Requirements not met</v-card-title>
-                    <v-card-text v-if="
-                      optionalProgram?.studentOptionalProgramData
-                        ?.optionalNonGradReasons
-                    ">
-                      <v-data-table dense :items="optionalProgram.studentOptionalProgramData
-                          .optionalNonGradReasons
-                        " class="elevation-1" />
+                    <v-card-text
+                      v-if="
+                        optionalProgram?.studentOptionalProgramData
+                          ?.optionalNonGradReasons
+                      "
+                    >
+                      <v-data-table
+                        dense
+                        :items="
+                          optionalProgram.studentOptionalProgramData
+                            .optionalNonGradReasons
+                        "
+                        class="elevation-1"
+                      />
                     </v-card-text>
-                    <v-card-text v-else>All requirements have been met</v-card-text>
+                    <v-card-text v-else
+                      >All requirements have been met</v-card-text
+                    >
                   </v-card>
                 </v-col>
               </v-row>
@@ -348,11 +534,21 @@
         <v-card-title class="text-h5">Undo Completion</v-card-title>
         <v-card-text>
           <p>Undo Completion Reason</p>
-          <v-select v-model="studentUngradReasonForm.selected" :items="ungradReasons" item-title="label"
-            item-value="code" label="Select an Undo Completion Reason"></v-select>
+          <v-select
+            v-model="studentUngradReasonForm.selected"
+            :items="ungradReasons"
+            item-title="label"
+            item-value="code"
+            label="Select an Undo Completion Reason"
+          ></v-select>
 
           <div class="mt-2 mb-4" v-if="studentUngradReasonForm.selected">
-            <v-alert type="info" variant="tonal" border="start" v-if="ungradReasons.length > 0">
+            <v-alert
+              type="info"
+              variant="tonal"
+              border="start"
+              v-if="ungradReasons.length > 0"
+            >
               {{
                 ungradReasons.find(
                   (element) => element.code === studentUngradReasonForm.selected
@@ -362,22 +558,36 @@
           </div>
 
           <div v-if="studentUngradReasonForm.selected === 'OTH'" class="mt-3">
-            <v-textarea v-model="studentUngradReasonForm.description"
+            <v-textarea
+              v-model="studentUngradReasonForm.description"
               label="Reason for running undo completion on this student..."
-              :rules="[(v) => !!v || 'Description is required']"></v-textarea>
+              :rules="[(v) => !!v || 'Description is required']"
+            ></v-textarea>
           </div>
 
-          <v-checkbox v-if="studentUngradReasonForm.selected" v-model="studentUngradReasonForm.confirm"
-            label="I confirm that I am authorized to undo completion for this student"></v-checkbox>
+          <v-checkbox
+            v-if="studentUngradReasonForm.selected"
+            v-model="studentUngradReasonForm.confirm"
+            label="I confirm that I am authorized to undo completion for this student"
+          ></v-checkbox>
         </v-card-text>
 
         <v-card-actions class="mx-4 mb-4">
-          <v-btn color="bcGovBlue" variant="outlined" @click="closeStudentUndoCompletionDialog">
+          <v-btn
+            color="bcGovBlue"
+            variant="outlined"
+            @click="closeStudentUndoCompletionDialog"
+          >
             Cancel
           </v-btn>
           <v-spacer />
-          <v-btn class="text-none" color="error" variant="flat" :disabled="v$.studentUngradReasonForm.$invalid"
-            @click="submitStudentUndoCompletion">
+          <v-btn
+            class="text-none"
+            color="error"
+            variant="flat"
+            :disabled="v$.studentUngradReasonForm.$invalid"
+            @click="submitStudentUndoCompletion"
+          >
             Undo Completion
           </v-btn>
         </v-card-actions>
@@ -580,6 +790,7 @@ export default {
     }),
     ...mapState(useAppStore, {
       ungradReasons: "ungradReasons",
+      environment: "getEnvironment",
     }),
     ...mapState(useStudentStore, {
       profile: "getStudentProfile",
