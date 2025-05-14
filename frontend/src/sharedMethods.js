@@ -178,6 +178,18 @@ export default {
       return "Invalid"; //return Invalid in case of bad data to sort at bottom of list
     }
   },
+  filterActiveObjects(Objects) {
+    const now = new Date();
+    return Objects.filter(obj => {
+        const effectiveDate = new Date(obj.effectiveDate);
+        const expiryDate = obj.expiryDate ? new Date(obj.expiryDate) : null;
+
+        const isEffective = effectiveDate <= now;
+        const isNotExpired = !expiryDate || expiryDate > now;
+
+        return isEffective && isNotExpired;
+    });
+  },
   sortSchoolList(schoolsList) {
     if (!schoolsList) return [];
     return [...schoolsList].sort((a, b) => {
