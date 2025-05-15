@@ -1,0 +1,10 @@
+/* Avoid duplicate description, type signatures */
+.tag-description, span.signature, span.type-signature {
+  display: none !important;
+}
+
+/* Avoid extra space for markdown list especially if list goes more than 10 items */
+ol > li > p {
+  line-height: 0% !important;
+}
+
