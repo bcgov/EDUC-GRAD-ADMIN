@@ -1,6 +1,14 @@
 <template>
   <div>
     <v-card>
+      <v-alert type="info" variant="tonal" border="start" class="mt-6 mb-0 ml-1 py-3 width-fit-content">
+        Disclaimer for business regarding key info like how courses will not be kept in sync but there will be an
+        ongoing data migration here
+      </v-alert>
+      <v-alert color="debug" variant="tonal" icon="mdi-progress-wrench" border="start"
+        class="mt-6 mb-0 ml-1 py-3 width-fit-content">
+        Dev notes? Make this conditionally render using env if we don't want to just rely on comments?
+      </v-alert>
       <v-card-text>
         <v-alert v-if="!courses" class="container">
           This student does not have any courses.
@@ -13,13 +21,14 @@
             </template>
             <v-card title="Delete Selected Courses">
               TODO: multi-delete using checkboxes on data table
+              <pre>{{ selected }}</pre>
             </v-card>
           </v-dialog>
           <v-spacer />
           <StudentCoursesForm />
         </v-row>
-        <v-data-table v-if="courses" :items="courses" :headers="fields" :items-per-page="'-1'" showFilter="true"
-          title="studentCourse" show-select>
+        <v-data-table v-if="courses" v-model="selected" :items="courses" :headers="fields" :items-per-page="'-1'"
+          showFilter="true" title="studentCourse" show-select>
           <template v-slot:item.data-table-expand="{
             item,
             internalItem,
@@ -340,6 +349,7 @@ export default {
           keys: ["courseCode"],
         },
       },
+      selected: [],
       editDialog: {},
       deleteDialog: {},
       multiDeleteDialog: false,
@@ -360,43 +370,6 @@ export default {
     closeDeleteModal(modalKey) {
       this.deleteDialog[modalKey] = false;
     },
-    checkForPendingUpdates() {
-      if (this.hasGradStatus) {
-        for (let i = 0; i < this.courses.length; i++) {
-          this.courses[i].gradReqMet = this.getProgramCode(this.courses[i]);
-        }
-        //check for deleted courses
-        for (let i = 0; i < this.gradStatusCourses.length; i++) {
-          let courseDeleted = true;
-          for (let j = 0; j < this.courses.length; j++) {
-            if (
-              this.courses[j].courseCode +
-              this.courses[j].courseLevel +
-              this.courses[j].sessionDate +
-              this.courses[j].pen ==
-              this.gradStatusCourses[i].courseCode +
-              this.gradStatusCourses[i].courseLevel +
-              this.gradStatusCourses[i].sessionDate +
-              this.gradStatusCourses[i].pen
-            ) {
-              courseDeleted = false;
-              break;
-            }
-          }
-          if (courseDeleted) {
-            this.gradStatusPendingUpdates.push(
-              this.gradStatusCourses[i].courseName + "REMOVED"
-            );
-          }
-        }
-
-        if (this.gradStatusPendingUpdates.length) {
-          this.setHasGradStatusPendingUpdates(true);
-        } else {
-          this.setHasGradStatusPendingUpdates(false);
-        }
-      }
-    },
     compareCourses(course1, course2) {
       this.fields.forEach(function (field) {
         if (course1[field] != course2[field]) {
@@ -404,38 +377,6 @@ export default {
         }
       });
       return true;
-    },
-    getProgramCode(course) {
-      var result = this.gradStatusCourses.filter(function (gradStatusCourse) {
-        return (
-          gradStatusCourse.pen +
-          gradStatusCourse.courseCode +
-          gradStatusCourse.courseLevel +
-          gradStatusCourse.sessionDate ==
-          course.pen +
-          course.courseCode +
-          course.courseLevel +
-          course.sessionDate
-        );
-      });
-      if (!result.length) {
-        this.gradStatusPendingUpdates.push(course.courseName + " ADDED");
-        return "TBD - New Course Added";
-      } else if (result[0].gradReqMet) {
-        if (!this.compareCourses(result[0], course)) {
-          //Course has been monified and not updated in the Grad Status Course List
-
-          this.gradStatusPendingUpdates.push(course.courseName + "UPDATED");
-          return "TBD - Modified";
-        } else {
-          return result[0].gradReqMet;
-        }
-      } else {
-        return "---";
-      }
-    },
-    createRef(pen, code, level, sessionDate) {
-      return pen.trim() + code.trim() + level.trim() + sessionDate.trim();
     },
   },
 };

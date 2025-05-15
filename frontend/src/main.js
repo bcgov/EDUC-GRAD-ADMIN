@@ -35,7 +35,7 @@ const bcGovTheme = {
     info: "#003366",
     success: "#2E8540",
     warning: "#926700",
-    debug: "#C582FF",
+    debug: "#8522a2",
   },
   //override vue variables below; each variable appears in the DOM and can be accessed via CSS with '--v-' prepended,
   // so btn-size will become --v-btn-size in the DOM and CSS
