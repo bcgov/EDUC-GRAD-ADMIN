@@ -135,7 +135,7 @@
     </v-app-bar>
 
     <!-- Other Components Here -->
-    <EnvironmentBanner />
+    <EnvironmentBanner :environment="environment" />
   </div>
 </template>
 
@@ -145,6 +145,7 @@ import { loadStudent } from "../../utils/common.js"; // Import your loadStudent 
 import { useSnackbarStore } from "@/store/modules/snackbar"; // Import your snackbar store
 import { useStudentStore } from "@/store/modules/student"; // Import your student store
 import { useAccessStore } from "@/store/modules/access";
+import { useAppStore } from "@/store/modules/app";
 import { mapState } from "pinia"; // Import mapState from Pinia
 import CommonService from "@/services/CommonService.js";
 import EnvironmentBanner from "@/components/Header/EnvironmentBanner.vue";
@@ -183,10 +184,13 @@ export default {
           route: "/batch-processing",
         },
       ],
-      version: "",
     };
   },
   computed: {
+    ...mapState(useAppStore, {
+      version: "getVersion",
+      environment: "getEnvironment",
+    }),
     ...mapState(useStudentStore, {
       profile: "getStudentProfile",
     }),
@@ -211,8 +215,6 @@ export default {
   },
   async created() {
     this.loadStudent = loadStudent; // Assign loadStudent to this context
-    const versionResponse = await CommonService.getVersion();
-    this.version = versionResponse.data;
   },
   methods: {
     updateDimensions() {

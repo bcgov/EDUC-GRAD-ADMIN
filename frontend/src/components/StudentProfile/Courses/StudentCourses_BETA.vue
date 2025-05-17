@@ -5,50 +5,44 @@
         <v-alert v-if="!courses" class="container">
           This student does not have any courses.
         </v-alert>
-        <v-data-table
-          v-if="courses"
-          :items="courses"
-          :headers="fields"
-          :items-per-page="'-1'"
-          showFilter="true"
-          title="studentCourse"
-        >
-          <template
-            v-slot:item.data-table-expand="{
-              item,
-              internalItem,
-              toggleExpand,
-              isExpanded,
-            }"
-          >
+        <v-row no-gutters>
+          <v-dialog v-model="multiDeleteDialog" max-width="500px">
+            <template v-slot:activator="{ props }">
+              <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" v-bind="props" color="error" class="text-none"
+                prepend-icon="mdi-delete-forever">Delete Selected Courses</v-btn>
+            </template>
+            <v-card title="Delete Selected Courses">
+              TODO: multi-delete using checkboxes on data table
+            </v-card>
+          </v-dialog>
+          <v-spacer />
+          <StudentCoursesForm />
+        </v-row>
+        <v-data-table v-if="courses" :items="courses" :headers="fields" :items-per-page="'-1'" showFilter="true"
+          title="studentCourse" show-select>
+          <template v-slot:item.data-table-expand="{
+            item,
+            internalItem,
+            toggleExpand,
+            isExpanded,
+          }">
             <td v-if="item.hasRelatedCourse == 'Y'">
-              <v-btn
-                variant="text"
-                density="comfortable"
-                @click="toggleExpand(internalItem)"
-                class="v-data-table__expand-icon"
-                :class="{ 'v-data-table__expand-icon--active': isExpanded }"
-                :icon="
-                  isExpanded(internalItem)
-                    ? 'mdi-chevron-down'
-                    : 'mdi-chevron-right'
-                "
-              >
+              <v-btn variant="text" density="comfortable" @click="toggleExpand(internalItem)"
+                class="v-data-table__expand-icon" :class="{ 'v-data-table__expand-icon--active': isExpanded }" :icon="isExpanded(internalItem)
+                  ? 'mdi-chevron-down'
+                  : 'mdi-chevron-right'
+                  ">
               </v-btn>
             </td>
           </template>
+          <!-- GRAD2-2811 will use this slot when we get new endpoints  -->
           <template v-slot:item.courseName="{ item }">
             <v-dialog max-width="500">
               <template v-slot:activator="{ props: activatorProps }">
                 <v-dialog max-width="500">
                   <template v-slot:activator="{ props: activatorProps }">
-                    <v-btn
-                      v-bind="activatorProps"
-                      color="surface-variant"
-                      :text="item.courseName"
-                      variant="plain"
-                      class="m-1 p-1 text-left v-btn-link"
-                    ></v-btn>
+                    <v-btn v-bind="activatorProps" color="surface-variant" :text="item.courseName" variant="plain"
+                      class="m-1 p-1 text-left v-btn-link"></v-btn>
                   </template>
 
                   <template v-slot:default="{ isActive }">
@@ -109,10 +103,7 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-                        <v-btn
-                          text="Close"
-                          @click="isActive.value = false"
-                        ></v-btn>
+                        <v-btn text="Close" @click="isActive.value = false"></v-btn>
                       </v-card-actions>
                     </v-card>
                   </template>
@@ -176,6 +167,41 @@
               </td>
             </tr>
           </template>
+
+          <template v-slot:item.edit="{ item }">
+            <!-- TODO: Change this to use courseID when we get new endpoints -->
+            <v-dialog v-model="editDialog[item.courseCode + item.courseLevel + item.sessionDate]">
+              <template v-slot:activator="{ props }">
+                <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" v-bind="props" color="success" icon="mdi-pencil"
+                  density="compact" variant="text" />
+              </template>
+              <v-card max-width="500px" class="mx-auto">
+                <template v-slot:title>
+                  Edit Student Course <strong>{{ item.courseCode }} {{ item.courseLevel }} - {{ item.sessionDate
+                  }}</strong>
+                </template>
+                TODO: Implement edit for single course using the repeatable add student course form component
+                <v-card-actions>
+                  <v-btn color="error" variant="outlined" class="text-none" density="default"
+                    @click="closeEditModal(item.courseCode + item.courseLevel + item.sessionDate)">Cancel</v-btn>
+                  <v-spacer />
+                  <v-btn color="error" variant="flat" class="text-none" density="default"
+                    @click="saveStudentCourse(item.courseCode + item.courseLevel + item.sessionDate)">Save Student
+                    Course</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </template>
+
+          <template v-slot:item.delete="{ item }">
+            <!-- TODO: Change this to use courseID when we get new endpoints -->
+            <v-dialog v-model="deleteDialog[item.courseCode + item.courseLevel + item.sessionDate]">
+              <template v-slot:activator="{ props }">
+                <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" v-bind="props" color="error"
+                  icon="mdi-delete-forever" density="compact" variant="text" />
+              </template>
+            </v-dialog>
+          </template>
         </v-data-table>
       </v-card-text>
     </v-card>
@@ -183,11 +209,15 @@
 </template>
 
 <script>
-import { useStudentStore } from "../../store/modules/student";
+import { useStudentStore } from "@/store/modules/student";
+import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
+import StudentCoursesForm from "@/components/StudentProfile/Courses/StudentCoursesForm.vue"
 export default {
-  name: "StudentCourses",
-  components: {},
+  name: "StudentCourses_BETA",
+  components: {
+    StudentCoursesForm: StudentCoursesForm
+  },
   computed: {
     ...mapState(useStudentStore, {
       courses: "getStudentCourses",
@@ -196,6 +226,7 @@ export default {
       hasGradStatus: "studentHasGradStatus",
       hasGradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
     }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
   },
   data: function () {
     return {
@@ -277,6 +308,22 @@ export default {
           sortable: true,
           class: "text-left",
         },
+        {
+          key: "edit",
+          title: "Edit",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
+        },
+        {
+          key: "delete",
+          title: "Delete",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
+        },
       ],
       gradStatusPendingUpdates: [],
       show: false,
@@ -293,6 +340,9 @@ export default {
           keys: ["courseCode"],
         },
       },
+      editDialog: {},
+      deleteDialog: {},
+      multiDeleteDialog: false,
     };
   },
   methods: {
@@ -300,23 +350,16 @@ export default {
       "setHasGradStatusPendingUpdates",
       "setHasGradStatusPendingUpdates",
     ]),
-    openModal(courseCode) {
-      // Set the data property to true to show the modal
-      this.modalState = true;
-      // You can do something with courseCode if needed
+    closeEditModal(modalKey) {
+      this.editDialog[modalKey] = false;
     },
-    closeModal() {
-      // Set the data property to false to close the modal
-      this.modalState = false;
+    saveStudentCourse(modalKey) {
+      console.log('TODO: Submit edits for student course')
+      this.closeEditModal(modalKey)
     },
-    // toggle(id) {
-    //   const index = this.opened.indexOf(id);
-    //   if (index > -1) {
-    //     this.opened.splice(index, 1);
-    //   } else {
-    //     this.opened.push(id);
-    //   }
-    // },
+    closeDeleteModal(modalKey) {
+      this.deleteDialog[modalKey] = false;
+    },
     checkForPendingUpdates() {
       if (this.hasGradStatus) {
         for (let i = 0; i < this.courses.length; i++) {
@@ -328,13 +371,13 @@ export default {
           for (let j = 0; j < this.courses.length; j++) {
             if (
               this.courses[j].courseCode +
-                this.courses[j].courseLevel +
-                this.courses[j].sessionDate +
-                this.courses[j].pen ==
+              this.courses[j].courseLevel +
+              this.courses[j].sessionDate +
+              this.courses[j].pen ==
               this.gradStatusCourses[i].courseCode +
-                this.gradStatusCourses[i].courseLevel +
-                this.gradStatusCourses[i].sessionDate +
-                this.gradStatusCourses[i].pen
+              this.gradStatusCourses[i].courseLevel +
+              this.gradStatusCourses[i].sessionDate +
+              this.gradStatusCourses[i].pen
             ) {
               courseDeleted = false;
               break;
@@ -366,13 +409,13 @@ export default {
       var result = this.gradStatusCourses.filter(function (gradStatusCourse) {
         return (
           gradStatusCourse.pen +
-            gradStatusCourse.courseCode +
-            gradStatusCourse.courseLevel +
-            gradStatusCourse.sessionDate ==
+          gradStatusCourse.courseCode +
+          gradStatusCourse.courseLevel +
+          gradStatusCourse.sessionDate ==
           course.pen +
-            course.courseCode +
-            course.courseLevel +
-            course.sessionDate
+          course.courseCode +
+          course.courseLevel +
+          course.sessionDate
         );
       });
       if (!result.length) {
@@ -420,7 +463,7 @@ export default {
   min-width: fit-content;
 }
 
-.popover-body > div > div:nth-child(2) {
+.popover-body>div>div:nth-child(2) {
   text-align: right;
 }
 </style>

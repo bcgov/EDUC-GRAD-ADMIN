@@ -19,11 +19,6 @@ SOAM_KC=soam-$ENV.apps.silver.devops.gov.bc.ca
 SOAM_KC_LOAD_USER_ADMIN=$(oc -n $COMMON_NAMESPACE-$ENV -o json get secret sso-admin-${ENV} | sed -n 's/.*"username": "\(.*\)"/\1/p' | base64 --decode)
 SOAM_KC_LOAD_USER_PASS=$(oc -n $COMMON_NAMESPACE-$ENV -o json get secret sso-admin-${ENV} | sed -n 's/.*"password": "\(.*\)",/\1/p' | base64 --decode)
 
-nodeEnv="openshift"
-if [ "$ENV" = "dev" ]
-then
-  nodeEnv="local"
-fi
 siteMinderLogoutUrl=""
 if [ "$ENV" != "prod" ]
 then
@@ -66,7 +61,7 @@ rm tempPenBackendkey.pub
 #### backend configmap
 echo Creating config map "$APP_NAME"-backend-config-map
 oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
-  --from-literal=NODE_ENV=$nodeEnv \
+  --from-literal=NODE_ENV="$ENV" \
   --from-literal=LOG_LEVEL=info \
   --from-literal=SERVER_FRONTEND="https://$BASE_URL" \
   --from-literal=SOAM_PUBLIC_KEY="$formattedPublicKey" \

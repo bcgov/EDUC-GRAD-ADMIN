@@ -78,6 +78,15 @@
                 <v-tab value="Courses" class="text-none"
                   >Courses ({{ courses.length }})</v-tab
                 >
+                <v-tab
+                  value="CourseCrud"
+                  class="text-none"
+                  v-if="environment != 'prod'"
+                  >Course CRUD
+                  <p class="text-caption font-weight-bold text-bcGovGold">
+                    BETA
+                  </p></v-tab
+                >
                 <v-tab value="Assessments" class="text-none"
                   >Assessments ({{ assessments.length }})</v-tab
                 >
@@ -163,8 +172,17 @@
                       color="green"
                     >
                     </v-progress-circular>
-                    <StudentCourses></StudentCourses
-                  ></v-window-item>
+                    <StudentCourses></StudentCourses>
+                  </v-window-item>
+                  <!--TODO: add condition to display this tab for onn PROD envs ONLY until Student Course CRUD goes live -->
+                  <v-window-item value="CourseCrud">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    ></v-progress-circular>
+                    <StudentCourses_BETA />
+                  </v-window-item>
                   <v-window-item
                     value="Assessments"
                     data-cy="assessments-window-item"
@@ -175,8 +193,8 @@
                       color="green"
                     >
                     </v-progress-circular>
-                    <StudentAssessments
-                  /></v-window-item>
+                    <StudentAssessments />
+                  </v-window-item>
                   <v-window-item value="Exams" data-cy="exams-window-item">
                     <v-progress-circular
                       v-if="tabLoading"
@@ -196,8 +214,8 @@
                       color="green"
                     >
                     </v-progress-circular>
-                    <StudentOptionalPrograms></StudentOptionalPrograms
-                  ></v-window-item>
+                    <StudentOptionalPrograms></StudentOptionalPrograms>
+                  </v-window-item>
                   <v-window-item value="Audit" data-cy="audit-window-item">
                     <v-progress-circular
                       v-if="tabLoading"
@@ -586,11 +604,12 @@ import StudentGraduationService from "@/services/StudentGraduationService.js";
 import GraduationService from "@/services/GraduationService.js";
 import GRADRequirementDetails from "@/components/StudentProfile/GRADRequirementDetails.vue";
 import StudentInformation from "@/components/StudentProfile/StudentInformation.vue";
-import StudentCourses from "@/components/StudentProfile/StudentCourses.vue";
+import StudentCourses from "@/components/StudentProfile/Courses/StudentCourses.vue";
+import StudentCourses_BETA from "@/components/StudentProfile/Courses/StudentCourses_BETA.vue";
 import StudentAssessments from "@/components/StudentProfile/StudentAssessments.vue";
 import StudentExams from "@/components/StudentProfile/StudentExams.vue";
 import StudentGraduationStatus from "@/components/StudentProfile/StudentGraduationStatus.vue";
-import StudentOptionalPrograms from "@/components/StudentProfile/StudentOptionalPrograms.vue";
+import StudentOptionalPrograms from "@/components/StudentProfile/OptionalPrograms/StudentOptionalPrograms.vue";
 import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/StudentAuditHistory.vue";
 import StudentUndoCompletionReasons from "@/components/StudentProfile/StudentUndoCompletionReasons.vue";
 import StudentNotes from "@/components/StudentProfile/AuditHistory/StudentNotes.vue";
@@ -682,6 +701,7 @@ export default {
     StudentInformation: StudentInformation,
     StudentUndoCompletionReasons: StudentUndoCompletionReasons,
     StudentCourses: StudentCourses,
+    StudentCourses_BETA: StudentCourses_BETA,
     GRADRequirementDetails: GRADRequirementDetails,
     StudentAssessments: StudentAssessments,
     StudentExams: StudentExams,
@@ -770,6 +790,7 @@ export default {
     }),
     ...mapState(useAppStore, {
       ungradReasons: "ungradReasons",
+      environment: "getEnvironment",
     }),
     ...mapState(useStudentStore, {
       profile: "getStudentProfile",
@@ -1233,32 +1254,39 @@ export default {
 .admin-actions {
   top: 50px;
 }
+
 .last-updated-date {
   position: absolute;
   top: -1px;
   right: 0;
 }
+
 .student-profile {
   padding-left: 25px;
   padding-right: 25px;
 }
+
 .grad-actions {
   position: absolute;
   right: 0;
   top: -100px;
 }
+
 .profile-info {
   font-size: 29px;
 }
+
 .profile-info button {
   font-size: 29px;
   box-shadow: none !important;
   padding: 0px;
   color: #313132;
 }
+
 .profile-info button.btn.btn-link:focus {
   border: none !important;
 }
+
 .close-record {
   float: right;
   text-align: center;
@@ -1288,10 +1316,12 @@ header.card-header button {
 .no-underline {
   text-decoration: none;
 }
+
 .profile-name-data {
   word-break: break-all;
   max-width: 400px;
 }
+
 .profile-name label {
   font-size: 11px;
   float: left;
@@ -1302,6 +1332,7 @@ header.card-header button {
   color: #036;
   border-bottom: 1px dotted #ccc;
 }
+
 .profile-name td {
   padding: 0px 10px;
 }
@@ -1311,14 +1342,17 @@ header.card-header button {
   right: 0;
   top: 0;
 }
+
 .link-active {
   text-decoration: none;
   border-bottom: 3px solid black;
 }
+
 .record-timestamp {
   position: absolute;
   right: 50px;
 }
+
 .optionalProgramName {
   margin-top: 1rem;
 }
