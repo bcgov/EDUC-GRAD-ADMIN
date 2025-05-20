@@ -1,16 +1,27 @@
 <template>
   <div>
     <v-card>
-      <v-alert type="info" variant="tonal" border="start" class="mt-6 mb-0 ml-1 py-3 width-fit-content">
-        Disclaimer for business regarding key info like how courses will not be kept in sync but there will be an
-        ongoing data migration here
+      <v-alert
+        type="info"
+        variant="tonal"
+        border="start"
+        class="mt-6 mb-0 ml-1 py-3 width-fit-content"
+      >
+        Until student course CRUD is live, student courses will not be kept in
+        sync via ongoing updates. Instead there will be a gradual data
+        migration.
       </v-alert>
-      <v-alert color="debug" variant="tonal" icon="mdi-progress-wrench" border="start"
-        class="mt-6 mb-0 ml-1 py-3 width-fit-content">
-        <p>
-          Currently still using v1 endpoints since we are working ahead of backend changes. Table below should use the
-          newly added endpoints in the student API
-        </p>
+      <v-alert
+        color="debug"
+        variant="tonal"
+        icon="mdi-progress-wrench"
+        border="start"
+        class="mt-6 mb-0 ml-1 py-3 width-fit-content"
+      >
+        Data shown is using old course API endpoints since we are working ahead
+        of backend changes. Table below should use the newly added endpoints in
+        the student API
+        <br />
       </v-alert>
       <v-card-text>
         <v-alert v-if="!courses" class="container">
@@ -19,8 +30,14 @@
         <v-row no-gutters>
           <v-dialog v-model="multiDeleteDialog" max-width="500px">
             <template v-slot:activator="{ props }">
-              <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" v-bind="props" color="error" class="text-none"
-                prepend-icon="mdi-delete-forever">Delete Selected Courses</v-btn>
+              <v-btn
+                v-if="hasPermissions('STUDENT', 'courseUpdate')"
+                v-bind="props"
+                color="error"
+                class="text-none"
+                prepend-icon="mdi-delete-forever"
+                >Delete Selected Courses</v-btn
+              >
             </template>
             <v-card title="Delete Selected Courses">
               TODO: multi-delete using checkboxes on data table
@@ -30,20 +47,37 @@
           <v-spacer />
           <StudentCoursesForm />
         </v-row>
-        <v-data-table v-if="courses" v-model="selected" :items="courses" :headers="fields" :items-per-page="'-1'"
-          showFilter="true" title="studentCourse" show-select>
-          <template v-slot:item.data-table-expand="{
-            item,
-            internalItem,
-            toggleExpand,
-            isExpanded,
-          }">
+        <v-data-table
+          v-if="courses"
+          v-model="selected"
+          :items="courses"
+          :headers="fields"
+          :items-per-page="'-1'"
+          showFilter="true"
+          title="studentCourse"
+          show-select
+        >
+          <template
+            v-slot:item.data-table-expand="{
+              item,
+              internalItem,
+              toggleExpand,
+              isExpanded,
+            }"
+          >
             <td v-if="item.hasRelatedCourse == 'Y'">
-              <v-btn variant="text" density="comfortable" @click="toggleExpand(internalItem)"
-                class="v-data-table__expand-icon" :class="{ 'v-data-table__expand-icon--active': isExpanded }" :icon="isExpanded(internalItem)
-                  ? 'mdi-chevron-down'
-                  : 'mdi-chevron-right'
-                  ">
+              <v-btn
+                variant="text"
+                density="comfortable"
+                @click="toggleExpand(internalItem)"
+                class="v-data-table__expand-icon"
+                :class="{ 'v-data-table__expand-icon--active': isExpanded }"
+                :icon="
+                  isExpanded(internalItem)
+                    ? 'mdi-chevron-down'
+                    : 'mdi-chevron-right'
+                "
+              >
               </v-btn>
             </td>
           </template>
@@ -53,8 +87,13 @@
               <template v-slot:activator="{ props: activatorProps }">
                 <v-dialog max-width="500">
                   <template v-slot:activator="{ props: activatorProps }">
-                    <v-btn v-bind="activatorProps" color="surface-variant" :text="item.courseName" variant="plain"
-                      class="m-1 p-1 text-left v-btn-link"></v-btn>
+                    <v-btn
+                      v-bind="activatorProps"
+                      color="surface-variant"
+                      :text="item.courseName"
+                      variant="plain"
+                      class="m-1 p-1 text-left v-btn-link"
+                    ></v-btn>
                   </template>
 
                   <template v-slot:default="{ isActive }">
@@ -115,7 +154,10 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-                        <v-btn text="Close" @click="isActive.value = false"></v-btn>
+                        <v-btn
+                          text="Close"
+                          @click="isActive.value = false"
+                        ></v-btn>
                       </v-card-actions>
                     </v-card>
                   </template>
@@ -182,24 +224,59 @@
 
           <template v-slot:item.edit="{ item }">
             <!-- TODO: Change this to use courseID when we get new endpoints -->
-            <v-dialog v-model="editDialog[item.courseCode + item.courseLevel + item.sessionDate]">
+            <v-dialog
+              v-model="
+                editDialog[
+                  item.courseCode + item.courseLevel + item.sessionDate
+                ]
+              "
+            >
               <template v-slot:activator="{ props }">
-                <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" v-bind="props" color="success" icon="mdi-pencil"
-                  density="compact" variant="text" />
+                <v-btn
+                  v-if="hasPermissions('STUDENT', 'courseUpdate')"
+                  v-bind="props"
+                  color="success"
+                  icon="mdi-pencil"
+                  density="compact"
+                  variant="text"
+                />
               </template>
               <v-card max-width="500px" class="mx-auto">
                 <template v-slot:title>
-                  Edit Student Course <strong>{{ item.courseCode }} {{ item.courseLevel }} - {{ item.sessionDate
-                  }}</strong>
+                  Edit Student Course
+                  <strong
+                    >{{ item.courseCode }} {{ item.courseLevel }} -
+                    {{ item.sessionDate }}</strong
+                  >
                 </template>
-                TODO: Implement edit for single course using the repeatable add student course form component
+                TODO: Implement edit for single course using the repeatable add
+                student course form component
                 <v-card-actions>
-                  <v-btn color="error" variant="outlined" class="text-none" density="default"
-                    @click="closeEditModal(item.courseCode + item.courseLevel + item.sessionDate)">Cancel</v-btn>
+                  <v-btn
+                    color="error"
+                    variant="outlined"
+                    class="text-none"
+                    density="default"
+                    @click="
+                      closeEditModal(
+                        item.courseCode + item.courseLevel + item.sessionDate
+                      )
+                    "
+                    >Cancel</v-btn
+                  >
                   <v-spacer />
-                  <v-btn color="error" variant="flat" class="text-none" density="default"
-                    @click="saveStudentCourse(item.courseCode + item.courseLevel + item.sessionDate)">Save Student
-                    Course</v-btn>
+                  <v-btn
+                    color="error"
+                    variant="flat"
+                    class="text-none"
+                    density="default"
+                    @click="
+                      saveStudentCourse(
+                        item.courseCode + item.courseLevel + item.sessionDate
+                      )
+                    "
+                    >Save Student Course</v-btn
+                  >
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -207,10 +284,22 @@
 
           <template v-slot:item.delete="{ item }">
             <!-- TODO: Change this to use courseID when we get new endpoints -->
-            <v-dialog v-model="deleteDialog[item.courseCode + item.courseLevel + item.sessionDate]">
+            <v-dialog
+              v-model="
+                deleteDialog[
+                  item.courseCode + item.courseLevel + item.sessionDate
+                ]
+              "
+            >
               <template v-slot:activator="{ props }">
-                <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" v-bind="props" color="error"
-                  icon="mdi-delete-forever" density="compact" variant="text" />
+                <v-btn
+                  v-if="hasPermissions('STUDENT', 'courseUpdate')"
+                  v-bind="props"
+                  color="error"
+                  icon="mdi-delete-forever"
+                  density="compact"
+                  variant="text"
+                />
               </template>
             </v-dialog>
           </template>
@@ -224,11 +313,11 @@
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
-import StudentCoursesForm from "@/components/StudentProfile/Forms/StudentCoursesForm.vue"
+import StudentCoursesForm from "@/components/StudentProfile/Forms/StudentCoursesForm.vue";
 export default {
   name: "StudentCourses_BETA",
   components: {
-    StudentCoursesForm: StudentCoursesForm
+    StudentCoursesForm: StudentCoursesForm,
   },
   computed: {
     ...mapState(useStudentStore, {
@@ -367,8 +456,8 @@ export default {
       this.editDialog[modalKey] = false;
     },
     saveStudentCourse(modalKey) {
-      console.log('TODO: Submit edits for student course')
-      this.closeEditModal(modalKey)
+      console.log("TODO: Submit edits for student course");
+      this.closeEditModal(modalKey);
     },
     closeDeleteModal(modalKey) {
       this.deleteDialog[modalKey] = false;
@@ -407,7 +496,7 @@ export default {
   min-width: fit-content;
 }
 
-.popover-body>div>div:nth-child(2) {
+.popover-body > div > div:nth-child(2) {
   text-align: right;
 }
 </style>
