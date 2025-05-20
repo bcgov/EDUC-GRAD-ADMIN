@@ -5,7 +5,13 @@
         class="text-none" @click="openCreateStudentCoursesDialog()" text="Add Student Courses" />
     </template>
 
-    <v-card title="Add Student Courses">
+    <v-card>
+      <v-title><v-row no-gutters>
+          <div class="v-card-title">Add Student Courses</div> <v-spacer /> <v-btn icon="mdi-close" density="compact"
+            rounded="sm" />
+
+        </v-row>
+      </v-title>
       <v-stepper alt-labels show-actions v-model=step>
         <template v-slot:default>
           <v-stepper-header>

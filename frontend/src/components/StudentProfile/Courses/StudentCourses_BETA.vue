@@ -7,7 +7,10 @@
       </v-alert>
       <v-alert color="debug" variant="tonal" icon="mdi-progress-wrench" border="start"
         class="mt-6 mb-0 ml-1 py-3 width-fit-content">
-        Dev notes? Make this conditionally render using env if we don't want to just rely on comments?
+        <p>
+          Currently still using v1 endpoints since we are working ahead of backend changes. Table below should use the
+          newly added endpoints in the student API
+        </p>
       </v-alert>
       <v-card-text>
         <v-alert v-if="!courses" class="container">
@@ -221,7 +224,7 @@
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
-import StudentCoursesForm from "@/components/StudentProfile/Courses/StudentCoursesForm.vue"
+import StudentCoursesForm from "@/components/StudentProfile/Forms/StudentCoursesForm.vue"
 export default {
   name: "StudentCourses_BETA",
   components: {
