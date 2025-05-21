@@ -2,7 +2,6 @@
   <div>
     <v-app-bar color="bcGovBlue" dark class="bc-header">
       <a class="navbar-brand ml-6" href="/">
-        {{ environment }}
         <img
           class="img-fluid d-md-block"
           src="../../assets/images/bcid-logo-rev-en.svg"
