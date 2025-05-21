@@ -3,7 +3,6 @@ const nconf = require("nconf");
 const dotenv = require("dotenv");
 const path = require("path");
 dotenv.config();
-
 const env = process.env.NODE_ENV || "local";
 
 nconf
@@ -23,7 +22,7 @@ nconf.overrides({
 });
 
 nconf.defaults({
-  environment: process.env.NODE_ENV,
+  environment: env,
   logoutEndpoint:
     process.env.SOAM_URL + "/auth/realms/master/protocol/openid-connect/logout",
   siteMinder_logout_endpoint: process.env.SITEMINDER_LOGOUT_ENDPOINT,
