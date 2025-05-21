@@ -155,7 +155,6 @@ export const useAppStore = defineStore("app", {
     },
     async getConfig() {
       let response = await CommonService.getConfig();
-      console.log(response.data)
       await this.setConfig(response.data);
     },
     async setConfig(config) {

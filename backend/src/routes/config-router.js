@@ -20,7 +20,7 @@ const axios = require("axios")
         const response = await axios.get(fileUrl, { responseType: 'json' });
         const environmentVersions = response.data.version;
         
-        const environment = config.get('server:environment');
+        const environment = config.get('environment');
         if (environment === 'dev' || environment === 'local') {
           version = environmentVersions.dev;
         } else if (environment === 'test') {
@@ -36,7 +36,7 @@ const axios = require("axios")
   
       const configMap = {
         STUDENT_ADMIN_URL: frontendConfig.studentAdminURL,
-        ENVIRONMENT: config.get('server:environment'),
+        ENVIRONMENT: config.get('environment'),
         VERSION: version
     
       };
