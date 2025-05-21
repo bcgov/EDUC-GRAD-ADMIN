@@ -3,7 +3,6 @@ const nconf = require("nconf");
 const dotenv = require("dotenv");
 const path = require("path");
 dotenv.config();
-
 const env = process.env.NODE_ENV || "local";
 
 nconf

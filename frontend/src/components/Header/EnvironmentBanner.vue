@@ -28,14 +28,14 @@
 <script>
 export default {
   name: "EnvironmentBanner",
+  props: {
+    environment: {
+      type: String, // No validation
+      default: "dev", // fallback if not provided
+    },
+  },
   data() {
     return {
-      environment: "",
-      environments: {
-        local: "localhost",
-        dev: "dev.grad.gov.bc.ca",
-        test: "test.grad.gov.bc.ca",
-      },
       host: "",
     };
   },
@@ -43,17 +43,12 @@ export default {
     getEnv() {
       //simple solution to display banner to UI that indicates what environment the user is in;
       //currently determined via browser URL since this is a simple visual aid for devs and testers
-      this.host = location.host;
-
-      if (
-        this.host.includes(this.environments.local) ||
-        this.host.includes("127.0.0.1")
-      ) {
+      if (this.environment == "local") {
         this.environment = "local";
-      } else if (this.host.includes(this.environments.dev)) {
-        this.environment = "dev";
-      } else if (this.host.includes(this.environments.test)) {
-        this.environment = "test";
+      } else if (this.environment == "dev") {
+        this.environment == "dev";
+      } else if (this.environment == "test") {
+        this.environment == "test";
       }
     },
   },
