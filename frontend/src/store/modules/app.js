@@ -31,6 +31,8 @@ export const useAppStore = defineStore("app", {
     config: null,
   }),
   getters: {
+    getEnvironment: (state) => state?.config?.ENVIRONMENT?state.config.ENVIRONMENT:"", 
+    getVersion: (state) => state?.config?.VERSION?state.config.VERSION:"",
     getProgramOptions: (state) => state.programOptions,
     getStudentStatusOptions: (state) => state.studentStatusOptions,
     getUngradReasons: (state) => state.ungradReasons,
@@ -153,6 +155,7 @@ export const useAppStore = defineStore("app", {
     },
     async getConfig() {
       let response = await CommonService.getConfig();
+      console.log(response.data)
       await this.setConfig(response.data);
     },
     async setConfig(config) {

@@ -1,28 +1,28 @@
 <!-- CreateOptionalProgramDialog.vue -->
 <template>
-  <v-dialog
-    v-model="dialog"
-    @click:outside="closeCreateOptionalProgramDialog"
-    max-width="500px"
-  >
+  <v-dialog v-model="dialog" @click:outside="closeCreateOptionalProgramDialog" max-width="500px">
     <template v-slot:activator="{ props }">
-      <v-btn v-if="hasPermissions('STUDENT', 'optionalProgramUpdate')" color="primary" variant="flat" prepend-icon="mdi-plus" class="float-right text-none mt-n12 mb-8" @click="openCreateOptionalProgramDialog()" text="Add Optional Program">
+      <v-btn v-if="hasPermissions('STUDENT', 'optionalProgramUpdate')" color="bcGovBlue" variant="flat"
+        prepend-icon="mdi-plus" class="float-right text-none mt-n12 mb-8" @click="openCreateOptionalProgramDialog()"
+        text="Add Optional Program">
       </v-btn>
     </template>
 
     <v-stepper alt-labels show-actions v-model="step">
       <template v-slot:default>
         <v-stepper-header>
-          <v-stepper-item :rules="[ ()=> !v$.form.$invalid]" title="Select Optional Programs" value="1"></v-stepper-item>
-          <v-stepper-item  title="Confirmation" value="2"></v-stepper-item>
+          <v-stepper-item :rules="[() => !v$.form.$invalid]" title="Select Optional Programs"
+            value="1"></v-stepper-item>
+          <v-stepper-item title="Confirmation" value="2"></v-stepper-item>
 
-          
+
         </v-stepper-header>
 
         <v-stepper-window>
-          <v-stepper-window-item  value="1">
+          <v-stepper-window-item value="1">
             <v-form @submit.prevent="submitForm">
-              <v-alert v-if="v$.ifStudentStatusMerged.$invalid" type="error" variant="tonal" border="start" class="mb-4">
+              <v-alert v-if="v$.ifStudentStatusMerged.$invalid" type="error" variant="tonal" border="start"
+                class="mb-4">
                 <p><strong>ERROR</strong></p>
                 <p>{{ v$.ifStudentStatusMerged.$message }}</p>
               </v-alert>
@@ -30,46 +30,35 @@
                 <p><strong>ERROR</strong></p>
                 <p>{{ v$.ifProgramComplete.$message }}</p>
               </v-alert>
-              <v-alert v-if="v$.ifStudentStatusDeceased.$invalid" type="warning" variant="tonal" border="start" class="mb-4">
+              <v-alert v-if="v$.ifStudentStatusDeceased.$invalid" type="warning" variant="tonal" border="start"
+                class="mb-4">
                 <p><strong>WARNING</strong></p>
                 <p>{{ v$.ifStudentStatusDeceased.$message }}</p>
               </v-alert>
-              <v-alert v-if="v$.ifStudentStatusArchived.$invalid" type="warning" variant="tonal" border="start" class="mb-4">
+              <v-alert v-if="v$.ifStudentStatusArchived.$invalid" type="warning" variant="tonal" border="start"
+                class="mb-4">
                 <p><strong>WARNING</strong></p>
                 <p>{{ v$.ifStudentStatusArchived.$message }}</p>
               </v-alert>
-              <v-alert v-if="v$.ifStudentStatusTerminated.$invalid" type="warning" variant="tonal" border="start" class="mb-4">
+              <v-alert v-if="v$.ifStudentStatusTerminated.$invalid" type="warning" variant="tonal" border="start"
+                class="mb-4">
                 <p><strong>WARNING</strong></p>
                 <p>{{ v$.ifStudentStatusTerminated.$message }}</p>
               </v-alert>
               <!-- Program Name Input -->
-              <v-autocomplete
-                v-model="form.selectedOptionalProgram"
-                :items="activeOptionalPrograms"
+              <v-autocomplete v-model="form.selectedOptionalProgram" :items="activeOptionalPrograms"
                 :item-title="optionalProgramTitle"
                 :disabled="v$.ifProgramComplete.$invalid || v$.ifStudentStatusMerged.$invalid"
-                item-value="optionalProgramID"
-                label="Choose an Optional Program to add"
-                required
-                @keyup.enter="submitForm"
-              >
+                item-value="optionalProgramID" label="Choose an Optional Program to add" required
+                @keyup.enter="submitForm">
               </v-autocomplete>
-              <v-autocomplete
-                multiple
-                clearable
-                chips
-                v-if="isCareerProgram(form.selectedOptionalProgram)"
-                v-model="form.selectedCareerPrograms"
-                :items="activeCareerPrograms"
-                :item-title="careerProgramTitle"
-                item-value="code"
-                label="Choose an Optional Program to add"
-                required
-                @keyup.enter="submitForm"
-              ></v-autocomplete>
+              <v-autocomplete multiple clearable chips v-if="isCareerProgram(form.selectedOptionalProgram)"
+                v-model="form.selectedCareerPrograms" :items="activeCareerPrograms" :item-title="careerProgramTitle"
+                item-value="code" label="Choose an Optional Program to add" required
+                @keyup.enter="submitForm"></v-autocomplete>
             </v-form>
           </v-stepper-window-item>
-    
+
           <v-stepper-window-item value="2">
             <slot name="text">
               <v-alert type="info" variant="tonal" border="start" class="pb-0">
@@ -78,19 +67,15 @@
                     form.selectedCareerPrograms?.length === 1 ? "" : "s"
                   }}
                   for this student:
-                  
-                  <ul v-if="isCareerProgram(form.selectedOptionalProgram)">
-                    <li
-                    v-for="item in form.selectedCareerPrograms"
-                    :key="item"
-                    class="my-1"
-                    >
+
+                <ul v-if="isCareerProgram(form.selectedOptionalProgram)">
+                  <li v-for="item in form.selectedCareerPrograms" :key="item" class="my-1">
                     {{ item }} - {{ getCareerProgramByCode(item).name }}
                   </li>
                 </ul>
-              </p>
-              <p v-else>
-                You are about to add the
+                </p>
+                <p v-else>
+                  You are about to add the
                   <strong>
                     {{
                       getOptionalProgramByID(form.selectedOptionalProgram)
@@ -102,24 +87,25 @@
                     }})
                   </strong>
                   Optional Program for this student.
-              </p>
+                </p>
               </v-alert>
             </slot>
           </v-stepper-window-item>
         </v-stepper-window>
-        
-        </template>
-        <template v-slot:actions>
-          <div class="row mx-6 mb-6">
-            <!-- Left Action Button -->
-            <v-btn v-if="step == 0" @click="closeCreateOptionalProgramDialog()" color="error" variant="outlined">Cancel</v-btn>
-            <v-btn v-else @click="step--" color="bcGovBlue" variant="outlined">Back</v-btn>
-            <v-spacer />
-            <!-- Right Action Button -->
-            <v-btn v-if="step < 1" @click="step++" color="bcGovBlue" :disabled="v$.form.$invalid">Next</v-btn>
-            <v-btn v-else @click="submitForm()" color="error">Add Optional Program</v-btn>
-          </div>
-        </template>
+
+      </template>
+      <template v-slot:actions>
+        <div class="row mx-6 mb-6">
+          <!-- Left Action Button -->
+          <v-btn v-if="step == 0" @click="closeCreateOptionalProgramDialog()" color="error"
+            variant="outlined">Cancel</v-btn>
+          <v-btn v-else @click="step--" color="bcGovBlue" variant="outlined">Back</v-btn>
+          <v-spacer />
+          <!-- Right Action Button -->
+          <v-btn v-if="step < 1" @click="step++" color="bcGovBlue" :disabled="v$.form.$invalid">Next</v-btn>
+          <v-btn v-else @click="submitForm()" color="error">Add Optional Program</v-btn>
+        </div>
+      </template>
     </v-stepper>
 
   </v-dialog>
@@ -162,9 +148,11 @@ export default {
     return {
       form: {
         selectedOptionalProgram: { required },
-        selectedCareerPrograms: { required: requiredIf(function(){
-          return !!this.form.selectedOptionalProgram && this.getOptionalProgramByID(this.form.selectedOptionalProgram)?.optProgramCode == 'CP'
-        })},
+        selectedCareerPrograms: {
+          required: requiredIf(function () {
+            return !!this.form.selectedOptionalProgram && this.getOptionalProgramByID(this.form.selectedOptionalProgram)?.optProgramCode == 'CP'
+          })
+        },
       },
       ifStudentStatusMerged: helpers.withMessage('This student is showing as merged. Student GRAD Optional Program data cannot be updated for students with a status of "MER" merged.', (value) => {
         console.log(this.studentGradStatus.studentStatus)
@@ -215,7 +203,7 @@ export default {
               return !this.studentOptionalPrograms.some(
                 (studentOptionalProgram) =>
                   studentOptionalProgram.optionalProgramID ==
-                    activeOptionalProgram.optionalProgramID &&
+                  activeOptionalProgram.optionalProgramID &&
                   studentOptionalProgram.optionalProgramCode !== "CP"
               );
             } else {
@@ -322,7 +310,7 @@ export default {
       this.form.selectedOptionalProgram = null;
     },
     submitForm() {
-      if(this.isCareerProgram(this.form.selectedOptionalProgram)) {
+      if (this.isCareerProgram(this.form.selectedOptionalProgram)) {
         this.addStudentCareerPrograms(this.form.selectedCareerPrograms)
       } else {
         this.addStudentOptionalProgram(
