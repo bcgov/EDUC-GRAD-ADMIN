@@ -63,7 +63,7 @@
             </v-card-text>
 
             <v-card-actions>
-              <v-btn :href="login" v-if="tokenExpired">Login</v-btn>
+              <v-btn @click="login" v-if="tokenExpired">Login</v-btn>
               <v-btn @click="resumeSession" v-else>Yes</v-btn>
               <v-btn @click="logout">Logout</v-btn>
             </v-card-actions>
