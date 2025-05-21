@@ -11,7 +11,7 @@ const Redis = {
     const IOREDIS = require('ioredis');
     const config = require('../../config');
     const log = require('../../components/logger');
-    if('dev' === config.get('environment')){
+    if('dev' === config.get('environment') || 'local' === config.get('environment')){
       redisClient = new IOREDIS({
         host: config.get('redis:host'),
         port: config.get('redis:port'),
