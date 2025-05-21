@@ -117,7 +117,7 @@ export default {
       snackbarStore: useSnackbarStore(),
       url: null,
       file: [],
-      tab: 1,
+      tab: 0,
       snackbarVisible: false,
       snackbarMessage: "",
       certificateTypes: [],
