@@ -16,19 +16,19 @@ export default {
     );
   },
   createStudentCourses(studentID, json) {
-    return ApiService.apiAxios.put(
+    return ApiService.apiAxios.post(
       `/api/v1/student/courses/${studentID}`,
       json
     );
   },
   deleteStudentCourses(studentID, json) {
-    return ApiService.apiAxios.put(
+    return ApiService.apiAxios.delete(
       `/api/v1/student/courses/${studentID}`,
       json
     );
   },
   getStudentCourseHistory(studentID) {
-    return ApiService.apiAxios.put(
+    return ApiService.apiAxios.get(
       `/api/v1/student/courses/${studentID}/history`
     );
   },
