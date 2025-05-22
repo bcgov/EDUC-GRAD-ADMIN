@@ -2,7 +2,7 @@
   <div class="student-profile">
     <!-- Studnet Demo. -->
     <div class="row m-0 py-3">
-      <StudentInformation></StudentInformation>
+      <StudentInformation />
 
       <div class="col-12 px-3">
         <div class="float-right grad-actions" v-if="allowRunGradAlgorithm">
@@ -75,11 +75,11 @@
             <v-window-item value="gradStatusTab">
               <v-tabs v-model="selectedTab" bg-color="bcGovLightGrey">
                 <v-tab value="GRAD" class="text-none">GRAD</v-tab>
-                <v-tab value="Courses" class="text-none"
+                <v-tab value="CoursesLegacy" class="text-none"
                   >Courses ({{ courses.length }})</v-tab
                 >
                 <v-tab
-                  value="CourseCrud"
+                  value="Courses"
                   class="text-none"
                   v-if="environment != 'prod'"
                   >Course CRUD
@@ -165,7 +165,10 @@
                       </v-progress-circular>
                     </div>
                   </v-window-item>
-                  <v-window-item value="Courses" data-cy="courses-window-item">
+                  <v-window-item
+                    value="CoursesLegacy"
+                    data-cy="courses-window-item"
+                  >
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -175,7 +178,7 @@
                     <StudentCourses></StudentCourses>
                   </v-window-item>
                   <!--TODO: add condition to display this tab for onn PROD envs ONLY until Student Course CRUD goes live -->
-                  <v-window-item value="CourseCrud">
+                  <v-window-item value="Courses">
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
@@ -653,12 +656,12 @@ export default {
       },
     };
   },
-  created() {
-    StudentService.getStudentPen(this.$route.params.studentId)
+  async created() {
+    const studentIdFromURL = this.$route.params.studentId;
+    StudentService.getStudentPen(studentIdFromURL)
       .then((response) => {
         this.pen = response.data.pen;
         this.setStudentPen(this.pen);
-        const studentIdFromURL = this.$route.params.studentId;
         this.setStudentId(studentIdFromURL);
         this.loadStudent(studentIdFromURL);
       })
@@ -671,6 +674,7 @@ export default {
           );
         }
       });
+    await this.getStudentCourses(studentIdFromURL);
     this.window.width = window.innerWidth;
     this.window.height = window.innerHeight;
     if (this.window.width < 768) {
@@ -688,7 +692,7 @@ export default {
       await this.getUngradReasons(false);
       await this.getInstituteCategoryCodes(false);
     } catch (e) {
-      if (e.response.status) {
+      if (e.response?.status) {
         this.snackbarStore.showSnackbar(
           "There was an error: " + e.response.status,
           "error",
@@ -730,7 +734,7 @@ export default {
         confirm: false,
       },
       selectedSubTab: "gradStatus",
-      selectedTab: 0,
+      selectedTab: "GRAD",
       projectedGradStatus: [],
       projectedGradStatusWithRegistrations: [],
       tabLoading: false,
@@ -794,10 +798,9 @@ export default {
     }),
     ...mapState(useStudentStore, {
       profile: "getStudentProfile",
-      courses: "getStudentCourses",
+      courses: "getStudentCoursesLegacy",
       assessments: "getStudentAssessments",
       exams: "getStudentExams",
-      studentHasCourses: "studentHasCourses",
       gradInfo: "getStudentGraduationCreationAndUpdate",
       hasGradStatus: "studentHasGradStatus",
       studentGradStatus: "getStudentGradStatus",
@@ -854,6 +857,7 @@ export default {
       "setStudentProfile",
       "setStudentAssessments",
       "setStudentGradStatusOptionalPrograms",
+      "setStudentCoursesLegacy",
       "setStudentCourses",
       "setStudentExams",
       "setStudentNotes",
@@ -864,6 +868,7 @@ export default {
       "setStudentOptionalProgramsAuditHistory",
       "setStudentPen",
       "setStudentId",
+      "getStudentCourses",
     ]),
     ...mapActions(useAppStore, [
       "getSchools",
@@ -958,7 +963,7 @@ export default {
       this.tabLoading = false;
     },
     graduateStudent() {
-      this.selectedTab = 0;
+      this.selectedTab = "GRAD";
       this.tabLoading = true;
       GraduationService.graduateStudent(this.studentId)
         .then(() => {
@@ -977,7 +982,7 @@ export default {
     },
     updateStudentReports() {
       this.disableScreen = true;
-      this.selectedTab = 0;
+      this.selectedTab = "GRAD";
       this.tabLoading = true;
       GraduationService.updateStudentReports(this.studentId)
         .then(() => {
@@ -1186,7 +1191,7 @@ export default {
     loadStudentCourseAchievements() {
       CourseService.getStudentCourseAchievements(this.pen)
         .then((response) => {
-          this.setStudentCourses(response.data);
+          this.setStudentCoursesLegacy(response.data);
         })
         .catch((error) => {
           if (error.response.status) {
