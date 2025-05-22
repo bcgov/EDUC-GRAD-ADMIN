@@ -145,4 +145,8 @@ export default {
   getStudentHistoryActivityCode() {
     return ApiService.apiAxios.get("/api/v1/student/historyactivity");
   },
+  // STUDENT GRADE CODE
+  getStudentGradeCodes() {
+    return ApiService.apiAxios.get("/api/v1/student/grade-codes");
+  },
 };
