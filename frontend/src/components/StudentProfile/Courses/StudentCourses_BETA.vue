@@ -321,7 +321,7 @@ export default {
   },
   computed: {
     ...mapState(useStudentStore, {
-      courses: "getStudentCourses",
+      courses: "studentCourses",
       gradStatusCourses: "gradStatusCourses",
       studentGradStatus: "getStudentGradStatus",
       hasGradStatus: "studentHasGradStatus",
