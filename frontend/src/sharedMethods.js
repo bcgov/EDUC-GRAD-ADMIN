@@ -178,6 +178,27 @@ export default {
       return "Invalid"; //return Invalid in case of bad data to sort at bottom of list
     }
   },
+  getOpenStatus(openedDateString, closedDateString) {
+    const openedDate = new Date(openedDateString);
+    const closedDate = !!closedDateString ? new Date(closedDateString) : null;
+    const currentDate = new Date();
+
+    if (openedDate <= currentDate && !closedDate) {
+      return "Open";
+    } else if (
+      openedDate <= currentDate &&
+      closedDate &&
+      currentDate < closedDate
+    ) {
+      return "Closing";
+    } else if (currentDate < openedDate) {
+      return "Opening";
+    } else if (closedDate && closedDate < currentDate) {
+      return "Closed";
+    } else {
+      return "Invalid"; //return Invalid in case of bad data to sort at bottom of list
+    }
+  },  
   filterActiveObjects(Objects) {
     const now = new Date();
     return Objects.filter(obj => {

@@ -1,32 +1,86 @@
 <template>
   <div>
     <h3 class="ml-2 mt-5">Course Restrictions</h3>
-    <DisplayTable
+    <CreateCourseRestriction></CreateCourseRestriction>
+    <v-data-table
       title="Course restrictions"
-      v-bind:items="courseRestrictions"
-      v-bind:fields="courseRestrictionFields"
+      :items="courseRestrictions"
+      :headers="courseRestrictionFields"
       id="courseRestrictionId"
       :showFilter="true"
       pagination="true"
     >
-    </DisplayTable>
+      <template v-slot:item.edit="{ item }">
+        <v-dialog v-model="editDialog[item.courseRestrictionId]">
+          <template v-slot:activator="{ props }">
+            <v-btn
+              v-if="hasPermissions('STUDENT', 'courseUpdate')"
+              v-bind="props"
+              color="success"
+              icon="mdi-pencil"
+              density="compact"
+              variant="text"
+            />
+          </template>
+
+          <v-card max-width="500px" class="mx-auto">
+            <template v-slot:title>
+              Edit Student Course
+              <strong>{{ item.mainCourse }} {{ item.mainCourseLevel }}</strong>
+            </template>
+
+            <v-card-actions>
+              <v-btn
+                color="error"
+                variant="outlined"
+                @click="closeEditModal(item.courseRestrictionId)"
+              >
+                Cancel
+              </v-btn>
+              <v-spacer />
+              <v-btn
+                color="error"
+                variant="flat"
+                @click="saveStudentCourse(item.courseRestrictionId)"
+              >
+                Save Student Course
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </template>
+    </v-data-table>
   </div>
 </template>
+
 <script>
+import CreateCourseRestriction from "@/components/Courses/Forms/CreateCourseRestriction.vue";
+import { useAccessStore } from "@/store/modules/access";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import CourseService from "@/services/CourseService.js";
-import DisplayTable from "@/components/DisplayTable.vue";
+import OpenStatusBadge from "@/components/Common/OpenStatusBadge.vue";
+
+import { mapState } from "pinia";
 
 export default {
   name: "CourseRestrictions",
-  components: {
-    DisplayTable: DisplayTable,
-  },
   created() {
     this.getAllCourseRestrictions();
   },
+  components: {
+    OpenStatusBadge,
+    CreateCourseRestriction,
+  },
   data() {
     return {
+      formRef: null,
+      formValid: true,
+      mainCourseCode: "",
+      mainCourseLevel: "",
+      mainCourseInfo: "",
+      dialog: false,
+      editDialog: {},
+      step: 1,
       snackbarStore: useSnackbarStore(),
       courseRestrictions: [],
       courseRestrictionFields: [
@@ -66,23 +120,29 @@ export default {
           sortable: true,
           class: "text-left",
         },
+        { key: "edit", title: "Edit", sortable: true, class: "text-left" },
       ],
     };
   },
+  computed: {
+    ...mapState(useAccessStore, ["hasPermissions"]),
+  },
+
   methods: {
     getAllCourseRestrictions() {
       CourseService.getCourseRestrictions()
         .then((response) => {
           this.courseRestrictions = response.data;
         })
-        // eslint-disable-next-line no-unused-vars
         .catch((error) => {
           this.snackbarStore.showSnackbar(error.message, "error", 5000);
-          // eslint-disable-next-line
-          console.log("There was an error:" + error);
+          console.error("Error loading restrictions:", error);
         });
     },
   },
 };
 </script>
-<style scoped></style>
+
+<style scoped>
+/* Optional styling */
+</style>
