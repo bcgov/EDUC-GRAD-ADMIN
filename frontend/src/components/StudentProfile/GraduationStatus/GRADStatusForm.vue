@@ -557,7 +557,20 @@
               <!-- Adult start date -->
               <tr>
                 <td>
-                  <strong>Adult start date: (YYYY-MM-DD)</strong><br />
+                  <strong>Adult start date: (YYYY-MM-DD)</strong
+                  >&nbsp;<v-tooltip max-width="500"
+                    >Eligible post-start-date courses must be one month after
+                    this date
+                    <template v-slot:activator="{ props }"
+                      ><v-icon
+                        v-bind="props"
+                        color="bcGovBlue"
+                        x-small
+                        size="18"
+                        >mdi-information</v-icon
+                      ></template
+                    ></v-tooltip
+                  ><br />
                   <!-- Warning if adult start date contains non-numeric values -->
                   <div
                     class="bg-error"
@@ -580,8 +593,6 @@
                         .$message
                     }}
                   </div>
-                  <!-- IMPROVEMENT: can we restructure how we're using vuelidate so this can be shown with the $dirty prop? -->
-                  <div class="bg-warning" v-if="!!editedGradStatus.adultStartDate">Eligible post-start-date courses must be one month after this date</div>
                   <v-text-field
                     data-cy="adult-start-date-textfield"
                     :disabled="editedGradStatus.program != '1950'"
