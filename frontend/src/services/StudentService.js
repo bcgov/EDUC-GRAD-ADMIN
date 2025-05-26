@@ -21,10 +21,11 @@ export default {
       json
     );
   },
-  deleteStudentCourses(studentID, json) {
+  deleteStudentCourses(studentID, courses) {
+ console.log(courses)
     return ApiService.apiAxios.delete(
       `/api/v1/student/courses/${studentID}`,
-      json
+      {data: courses}
     );
   },
   getStudentCourseHistory(studentID) {

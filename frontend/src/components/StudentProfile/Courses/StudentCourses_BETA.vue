@@ -32,6 +32,7 @@
             <template v-slot:activator="{ props }">
               <v-btn
                 v-if="hasPermissions('STUDENT', 'courseUpdate')"
+                :disabled="selected.length == 0"
                 v-bind="props"
                 color="error"
                 class="text-none"
@@ -45,6 +46,7 @@
             </v-card>
           </v-dialog>
           <v-spacer />
+
           <StudentCoursesForm />
         </v-row>
         <v-data-table
@@ -223,7 +225,6 @@
           </template>
 
           <template v-slot:item.edit="{ item }">
-            <!-- TODO: Change this to use courseID when we get new endpoints -->
             <v-dialog
               v-model="
                 editDialog[
@@ -283,25 +284,7 @@
           </template>
 
           <template v-slot:item.delete="{ item }">
-            <!-- TODO: Change this to use courseID when we get new endpoints -->
-            <v-dialog
-              v-model="
-                deleteDialog[
-                  item.courseCode + item.courseLevel + item.sessionDate
-                ]
-              "
-            >
-              <template v-slot:activator="{ props }">
-                <v-btn
-                  v-if="hasPermissions('STUDENT', 'courseUpdate')"
-                  v-bind="props"
-                  color="error"
-                  icon="mdi-delete-forever"
-                  density="compact"
-                  variant="text"
-                />
-              </template>
-            </v-dialog>
+            <StudentCoursesDeleteForm :item-id="item.id" />
           </template>
         </v-data-table>
       </v-card-text>
@@ -313,11 +296,13 @@
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
+import StudentCoursesDeleteForm from "@/components/StudentProfile/Forms/StudentCoursesDeleteForm.vue";
 import StudentCoursesForm from "@/components/StudentProfile/Forms/StudentCoursesForm.vue";
 export default {
   name: "StudentCourses_BETA",
   components: {
     StudentCoursesForm: StudentCoursesForm,
+    StudentCoursesDeleteForm: StudentCoursesDeleteForm,
   },
   computed: {
     ...mapState(useStudentStore, {
@@ -340,6 +325,12 @@ export default {
           class: "text-left",
         },
         {
+          key: "id",
+          title: "ID",
+          sortable: true,
+          sortDirection: "desc",
+        },
+        {
           key: "courseCode",
           title: "Code",
           sortable: true,
@@ -352,7 +343,7 @@ export default {
           class: "text-left",
         },
         {
-          key: "sessionDate",
+          key: "courseSession",
           title: "Session",
           sortable: true,
           sortDirection: "desc",
@@ -450,7 +441,7 @@ export default {
   methods: {
     ...mapActions(useStudentStore, [
       "setHasGradStatusPendingUpdates",
-      "setHasGradStatusPendingUpdates",
+      "deleteStudentCourses",
     ]),
     closeEditModal(modalKey) {
       this.editDialog[modalKey] = false;

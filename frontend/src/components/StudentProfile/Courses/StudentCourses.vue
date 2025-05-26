@@ -296,10 +296,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(useStudentStore, [
-      "setHasGradStatusPendingUpdates",
-      "setHasGradStatusPendingUpdates",
-    ]),
+    ...mapActions(useStudentStore, ["setHasGradStatusPendingUpdates"]),
     openModal(courseCode) {
       // Set the data property to true to show the modal
       this.modalState = true;
