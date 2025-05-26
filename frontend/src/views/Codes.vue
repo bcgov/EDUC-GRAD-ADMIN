@@ -6,7 +6,7 @@
         <v-tab to="/codes/career-programs" class="text-none" size="large"
           >Career Program Codes</v-tab
         >
-        <v-tab class="text-none" size="large">
+        <v-tab class="text-none" size="large" value="student-credentials">
           <v-menu offset-y>
             <template v-slot:activator="{ props }">
               <v-btn
@@ -20,22 +20,34 @@
               >
             </template>
             <v-list>
-              <v-list-item to="/codes/certificates-types"
+              <v-list-item
+                to="/codes/certificates-types"
+                @click="tab = 'student-credentials'"
                 >Certificate Types</v-list-item
               >
-              <v-list-item to="/codes/transcript-types"
+              <v-list-item
+                to="/codes/transcript-types"
+                @click="tab = 'student-credentials'"
                 >Transcript Types</v-list-item
               >
-              <v-list-item to="/codes/program-certificate-transcript"
+              <v-list-item
+                to="/codes/program-certificate-transcript"
+                @click="tab = 'student-credentials'"
                 >Program Certificate Transcript</v-list-item
               >
-              <v-list-item to="/codes/digital-signatures"
+              <v-list-item
+                to="/codes/digital-signatures"
+                @click="tab = 'student-credentials'"
                 >Digital Signature</v-list-item
               >
-              <v-list-item to="/codes/signature-blocks"
+              <v-list-item
+                to="/codes/signature-blocks"
+                @click="tab = 'student-credentials'"
                 >Signature Block</v-list-item
               >
-              <v-list-item to="/codes/document-status-codes"
+              <v-list-item
+                to="/codes/document-status-codes"
+                @click="tab = 'student-credentials'"
                 >Document Status Codes</v-list-item
               >
             </v-list>
@@ -44,9 +56,33 @@
         <v-tab to="/codes/report-types" class="text-none" size="large"
           >Report Types</v-tab
         >
-        <v-tab to="/codes/student-status-codes" class="text-none" size="large"
-          >Student Status Codes</v-tab
-        >
+        <v-tab class="text-none" size="large" value="student-grades">
+          <v-menu offset-y>
+            <template v-slot:activator="{ props }">
+              <v-btn
+                text
+                v-bind="props"
+                variant="text"
+                class="text-none"
+                size="large"
+                append-icon="mdi-menu-down"
+                >Student Codes</v-btn
+              >
+            </template>
+            <v-list>
+              <v-list-item
+                @click="tab = 'student-grades'"
+                to="/codes/student-grade-codes"
+                >Student Grade Codes</v-list-item
+              >
+              <v-list-item
+                to="/codes/student-status-codes"
+                @click="tab = 'student-grades'"
+                >Student Status Codes</v-list-item
+              >
+            </v-list>
+          </v-menu>
+        </v-tab>
         <v-tab to="/codes/ungrad-reasons" class="text-none" size="large"
           >Undo Completion Reason Codes</v-tab
         >
@@ -81,7 +117,7 @@ export default {
       snackbarStore: useSnackbarStore(),
       url: null,
       file: [],
-      tab: 1,
+      tab: 0,
       snackbarVisible: false,
       snackbarMessage: "",
       certificateTypes: [],

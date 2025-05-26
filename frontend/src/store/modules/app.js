@@ -27,10 +27,12 @@ export const useAppStore = defineStore("app", {
     instituteAddressTypeCodes: [],
     instituteCategoryCodes: [],
     instituteFacilityCodes: [],
-    instituteGradeCodes: [],
+    studentGradeCodes: [],
     config: null,
   }),
   getters: {
+    getEnvironment: (state) => state?.config?.ENVIRONMENT?state.config.ENVIRONMENT:"", 
+    getVersion: (state) => state?.config?.VERSION?state.config.VERSION:"",
     getProgramOptions: (state) => state.programOptions,
     getStudentStatusOptions: (state) => state.studentStatusOptions,
     getUngradReasons: (state) => state.ungradReasons,
@@ -110,10 +112,10 @@ export const useAppStore = defineStore("app", {
           (facilityCode) => code === facilityCode.facilityTypeCode
         );
     },
-    getGradeCodes: (state) => state.instituteGradeCodes,
+    getGradeCodes: (state) => state.studentGradeCodes,
     getGradeCode: (state) => {
       return (code) =>
-        state.instituteGradeCodes.find(
+        state.studentGradeCodes.find(
           (gradeCode) => code === gradeCode.schoolGradeCode
         );
     },
@@ -133,13 +135,13 @@ export const useAppStore = defineStore("app", {
           await this.getBatchJobTypeCodes();
           await this.getTranscriptTypeCodes();
           await this.getCertificateTypeCodes();
+          await this.getStudentGradeCodes();
           // GET & SET INSTITUTE SCHOOL AND DISTRICT LISTS
           await this.getSchools();
           await this.getDistricts();
           // GET & SET INSTITUTE CODES
           await this.getInstituteCategoryCodes();
-          await this.getInstituteFacilityCodes();
-          await this.getInstituteGradeCodes();
+          await this.getInstituteFacilityCodes();     
         }
       } catch (e) {
         if (e.response.status) {
@@ -279,17 +281,17 @@ export const useAppStore = defineStore("app", {
       this.instituteFacilityCodes =
         sharedMethods.applyDisplayOrder(facilityCodes);
     },
-    async getInstituteGradeCodes(getNewData = true) {
+    async getStudentGradeCodes(getNewData = true) {
       if (
         getNewData ||
-        !sharedMethods.dataArrayExists(this.instituteGradeCodes)
+        !sharedMethods.dataArrayExists(this.studentGradeCodes)
       ) {
-        let response = await InstituteService.getGradeCodes();
-        await this.setInstituteGradeCodes(response.data);
+        let response = await StudentService.getStudentGradeCodes();
+        await this.setStudentGradeCodes(response.data);
       }
     },
-    async setInstituteGradeCodes(gradeCodes) {
-      this.instituteGradeCodes = sharedMethods.applyDisplayOrder(gradeCodes);
+    async setStudentGradeCodes(gradeCodes) {
+      this.studentGradeCodes = sharedMethods.filterActiveObjects(sharedMethods.applyDisplayOrder(gradeCodes));
     },
   },
 });
