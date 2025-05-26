@@ -79,6 +79,7 @@
 </template>
 
 <script>
+import StudentService from "@/services/StudentService.js";
 import { useAccessStore } from "@/store/modules/access";
 import { mapState } from "pinia";
 
@@ -103,7 +104,7 @@ export default {
     clearForm() {
       console.log("TODO: Implement clearForm(0)");
     },
-    submitForm() {
+    async submitForm() {
       console.log("TODO: Implement form submission");
     },
     // helpers for button states
