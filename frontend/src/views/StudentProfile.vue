@@ -175,7 +175,7 @@
                       color="green"
                     >
                     </v-progress-circular>
-                    <StudentCourses></StudentCourses>
+                    <StudentCoursesLegacy />
                   </v-window-item>
                   <!--TODO: add condition to display this tab for onn PROD envs ONLY until Student Course CRUD goes live -->
                   <v-window-item value="Courses">
@@ -184,7 +184,7 @@
                       indeterminate
                       color="green"
                     ></v-progress-circular>
-                    <StudentCourses_BETA />
+                    <StudentCourses />
                   </v-window-item>
                   <v-window-item
                     value="Assessments"
@@ -607,8 +607,8 @@ import StudentGraduationService from "@/services/StudentGraduationService.js";
 import GraduationService from "@/services/GraduationService.js";
 import GRADRequirementDetails from "@/components/StudentProfile/GRADRequirementDetails.vue";
 import StudentInformation from "@/components/StudentProfile/StudentInformation.vue";
+import StudentCoursesLegacy from "@/components/StudentProfile/Courses/StudentCoursesLegacy.vue";
 import StudentCourses from "@/components/StudentProfile/Courses/StudentCourses.vue";
-import StudentCourses_BETA from "@/components/StudentProfile/Courses/StudentCourses_BETA.vue";
 import StudentAssessments from "@/components/StudentProfile/StudentAssessments.vue";
 import StudentExams from "@/components/StudentProfile/StudentExams.vue";
 import StudentGraduationStatus from "@/components/StudentProfile/StudentGraduationStatus.vue";
@@ -704,8 +704,8 @@ export default {
   components: {
     StudentInformation: StudentInformation,
     StudentUndoCompletionReasons: StudentUndoCompletionReasons,
+    StudentCoursesLegacy: StudentCoursesLegacy,
     StudentCourses: StudentCourses,
-    StudentCourses_BETA: StudentCourses_BETA,
     GRADRequirementDetails: GRADRequirementDetails,
     StudentAssessments: StudentAssessments,
     StudentExams: StudentExams,

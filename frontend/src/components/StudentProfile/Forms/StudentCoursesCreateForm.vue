@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" max-width="500px">
+  <v-dialog v-model="dialog" persistent max-width="750">
     <template v-slot:activator="{ props }">
       <v-btn
         v-if="hasPermissions('STUDENT', 'courseUpdate')"
@@ -15,26 +15,58 @@
       <v-card-title
         ><v-row no-gutters>
           <div class="v-card-title">Add Student Courses</div>
-          <v-spacer /> <v-btn icon="mdi-close" density="compact" rounded="sm" />
+          <v-spacer />
+          <v-btn
+            icon="mdi-close"
+            density="compact"
+            rounded="sm"
+            variant="outlined"
+            color="error"
+            class="mt-2"
+            @click="closeCreateStudentCourseDialog"
+          />
         </v-row>
       </v-card-title>
       <v-stepper alt-labels show-actions v-model="step">
         <template v-slot:default>
           <v-stepper-header>
-            <v-stepper-item title="Select Courses" value="1"></v-stepper-item>
-            <v-stepper-item title="Enter Details" value="2"></v-stepper-item>
-            <v-stepper-item title="Confirmation" value="3"></v-stepper-item>
+            <v-stepper-item title="Select Courses" value="0"></v-stepper-item>
+            <v-stepper-item title="Enter Details" value="1"></v-stepper-item>
+            <v-stepper-item title="Confirmation" value="2"></v-stepper-item>
           </v-stepper-header>
-
           <v-stepper-window>
-            <v-stepper-window-item value="1">
-              TODO: Add fields to get course list and table to manage built list
-              (similar to batch processing add student, school, district, etc.)
+            <v-stepper-window-item value="0">
+              <strong>Add Student Courses</strong>
+              <v-row no-gutters class="mt-2">
+                <v-text-field
+                  v-model="courseAdd.code"
+                  label="Course Code"
+                  variant="outlined"
+                  density="compact"
+                ></v-text-field>
+                <v-text-field
+                  v-model="courseAdd.level"
+                  label="Course Level"
+                  variant="outlined"
+                  density="compact"
+                ></v-text-field>
+                <v-text-field
+                  v-model="courseAdd.sessionDate"
+                  label="Course Session"
+                  variant="outlined"
+                  density="compact"
+                  size="small"
+                ></v-text-field>
+                <v-btn variant="flat" color="bcGovBlue" class="text-none"
+                  >Add Course</v-btn
+                >
+              </v-row>
+              <v-data-table></v-data-table>
             </v-stepper-window-item>
-            <v-stepper-window-item value="2">
+            <v-stepper-window-item value="1">
               TODO: Add repeating form for each course
             </v-stepper-window-item>
-            <v-stepper-window-item value="3">
+            <v-stepper-window-item value="2">
               TODO: Add confirmation and error vs success response
             </v-stepper-window-item>
           </v-stepper-window>
@@ -84,10 +116,16 @@ import { useAccessStore } from "@/store/modules/access";
 import { mapState } from "pinia";
 
 export default {
+  name: "StudentCoursesCreateForm",
   data() {
     return {
       dialog: false,
       step: 0,
+      courseAdd: {
+        code: null,
+        level: null,
+        sessionDate: null,
+      },
     };
   },
   computed: {
@@ -95,10 +133,11 @@ export default {
   },
   methods: {
     openCreateStudentCoursesDialog() {
-      (this.step = 0), this.clearForm();
+      this.step = 0;
       this.dialog = true;
     },
     closeCreateStudentCourseDialog() {
+      this.clearForm();
       this.dialog = false;
     },
     clearForm() {
