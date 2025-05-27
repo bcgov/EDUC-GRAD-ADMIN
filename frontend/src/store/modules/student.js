@@ -567,6 +567,12 @@ export const useStudentStore = defineStore("student", {
     },
   },
   getters: {
+    isCourseUsedForGraduation: (state) => (courseId) => {
+      return state.student.courses.find(course => course.id === courseId)?.usedForGrad || false;
+    },
+    hasAssociatedExam: (state) => (courseId) => {
+      return state.student.courses.find(course => course.id === courseId)?.hasExam || false;
+    },
     getEditedGradStatus() {
       return this.editedGradStatus;
     },

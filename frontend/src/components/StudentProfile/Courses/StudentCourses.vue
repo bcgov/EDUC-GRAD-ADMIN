@@ -29,27 +29,12 @@
           This student does not have any courses.
         </v-alert>
         <v-row no-gutters>
-          <v-dialog v-model="multiDeleteDialog" max-width="500px">
-            <template v-slot:activator="{ props }">
-              <v-btn
-                v-if="hasPermissions('STUDENT', 'courseUpdate')"
-                :disabled="selected.length == 0"
-                v-bind="props"
-                color="error"
-                class="text-none"
-                prepend-icon="mdi-delete-forever"
-                >Delete Selected Courses</v-btn
-              >
-            </template>
-            <v-card title="Delete Selected Courses">
-              TODO: multi-delete using checkboxes on data table
-              <pre>{{ selected }}</pre>
-            </v-card>
-          </v-dialog>
+          <StudentCoursesDeleteForm courseBatchDelete :courseIds="selected">
+          </StudentCoursesDeleteForm>
           <v-spacer />
-
           <StudentCoursesCreateForm />
         </v-row>
+
         <v-data-table
           v-if="courses"
           v-model="selected"
@@ -283,9 +268,9 @@
               </v-card>
             </v-dialog>
           </template>
-
           <template v-slot:item.delete="{ item }">
-            <StudentCoursesDeleteForm :item-id="item.id" />
+            <StudentCoursesDeleteForm :courseIds="[item.id]">
+            </StudentCoursesDeleteForm>
           </template>
         </v-data-table>
       </v-card-text>
@@ -452,9 +437,6 @@ export default {
     saveStudentCourse(modalKey) {
       console.log("TODO: Submit edits for student course");
       this.closeEditModal(modalKey);
-    },
-    closeDeleteModal(modalKey) {
-      this.deleteDialog[modalKey] = false;
     },
     compareCourses(course1, course2) {
       this.fields.forEach(function (field) {

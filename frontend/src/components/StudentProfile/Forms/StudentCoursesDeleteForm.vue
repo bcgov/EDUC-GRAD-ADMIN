@@ -2,23 +2,69 @@
   <div>
     <v-dialog v-model="dialog" max-width="500px">
       <template v-slot:activator="{ props }">
-        <v-btn
-          v-if="hasPermissions('STUDENT', 'courseUpdate')"
-          v-bind="props"
-          color="error"
-          icon="mdi-delete-forever"
-          density="compact"
-          variant="text"
-        />
+        <!-- Let parent override with their own button via activator slot -->
+        <slot name="activator" v-bind="props">
+          <!-- Default internal buttons if no external activator slot is provided -->
+          <v-btn
+            v-if="
+              hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete
+            "
+            v-bind="props"
+            :disabled="courseIds.length === 0"
+            color="error"
+            class="text-none"
+            prepend-icon="mdi-delete-forever"
+          >
+            Delete Selected Courses
+          </v-btn>
+
+          <v-btn
+            v-else-if="hasPermissions('STUDENT', 'courseUpdate')"
+            v-bind="props"
+            color="error"
+            icon="mdi-delete-forever"
+            density="compact"
+            variant="text"
+          />
+        </slot>
       </template>
 
       <v-card>
-        <template v-slot:title>Delete Student Course</template>
+        <template v-slot:title>
+          Delete Student Course<span v-if="courseIds.length > 1">s</span>
+        </template>
 
         <v-card-text>
-          Are you sure you want to delete course ID
-          <strong>{{ itemId }}</strong
+          <v-alert
+            v-if="anyUsedForGraduation"
+            type="info"
+            variant="tonal"
+            border="start"
+            class="mt-6 mb-0 ml-1 py-3 width-fit-content"
+          >
+            One or more of these courses have been used to meet a graduation
+            requirement.
+          </v-alert>
+
+          <v-alert
+            v-if="anyHasExamRecord"
+            type="info"
+            variant="tonal"
+            border="start"
+            class="mt-6 mb-0 ml-1 py-3 width-fit-content"
+          >
+            One or more of these courses have an associated exam record.
+          </v-alert>
+
+          Are you sure you want to delete the following course ID<span
+            v-if="courseIds.length > 1"
+            >s</span
           >?
+          <ul class="pl-4">
+            <li v-for="id in courseIds" :key="id">
+              <strong>{{ id }}</strong>
+            </li>
+          </ul>
         </v-card-text>
 
         <v-card-actions>
@@ -39,7 +85,7 @@
             density="default"
             @click="confirmDelete"
           >
-            Delete Course
+            Delete Course<span v-if="courseIds.length > 1">s</span>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -48,15 +94,19 @@
 </template>
 
 <script>
-import { ref } from "vue";
-import { useStudentStore } from "@/store/modules/student"; // adjust path as needed
+import { ref, computed } from "vue";
+import { useStudentStore } from "@/store/modules/student";
 
 export default {
   name: "StudentCoursesDeleteForm",
   props: {
-    itemId: {
-      type: [String, Number],
+    courseIds: {
+      type: Array,
       required: true,
+    },
+    courseBatchDelete: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props) {
@@ -69,25 +119,32 @@ export default {
 
     const confirmDelete = async () => {
       try {
-        await studentStore.deleteStudentCourses([props.itemId]);
+        await studentStore.deleteStudentCourses(props.courseIds);
         close();
-        // Optional: trigger toast/snackbar
       } catch (error) {
-        console.error("Failed to delete student course:", error);
-        // Optional: show error snackbar/toast
+        console.error("Failed to delete student courses:", error);
       }
     };
 
     const hasPermissions = (module, permission) => {
-      // Replace with real permission check
-      return true;
+      return true; // Replace with actual logic
     };
+
+    const anyUsedForGraduation = computed(() =>
+      props.courseIds.some((id) => studentStore.isCourseUsedForGraduation?.(id))
+    );
+
+    const anyHasExamRecord = computed(() =>
+      props.courseIds.some((id) => studentStore.hasAssociatedExam?.(id))
+    );
 
     return {
       dialog,
       close,
       confirmDelete,
       hasPermissions,
+      anyUsedForGraduation,
+      anyHasExamRecord,
     };
   },
 };
