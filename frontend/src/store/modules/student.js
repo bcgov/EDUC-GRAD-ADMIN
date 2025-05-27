@@ -63,8 +63,8 @@ export const useStudentStore = defineStore("student", {
       recalculateGradStatus: "",
       recalculateProjectedGrad: "",
     },
-    // formattedGradStatusCourses: [],
-    // formattedGradStatusAssessments: [],
+    coursesCreate: null,
+    courseUpdate: null, // Might want to initialize fields similar to editedGradStatus
   }),
   actions: {
     formatAssessmentItemsList(items) {
@@ -556,16 +556,15 @@ export const useStudentStore = defineStore("student", {
     async setStudentCourses(payload) {
       this.student.courses = payload;
     },
-    async deleteStudentCourses(courses ) {
+    async deleteStudentCourses(courses) {
       try {
         await StudentService.deleteStudentCourses(this.id, courses);
-        this.getStudentCourses(this.id)
+        this.getStudentCourses(this.id);
       } catch (error) {
         console.error("Error deleting student courses:", error);
         throw error;
       }
-    }
-
+    },
   },
   getters: {
     getEditedGradStatus() {
