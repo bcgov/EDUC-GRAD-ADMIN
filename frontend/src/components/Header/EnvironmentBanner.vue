@@ -39,6 +39,22 @@ export default {
       host: "",
     };
   },
+  methods: {
+    getEnv() {
+      //simple solution to display banner to UI that indicates what environment the user is in;
+      //currently determined via browser URL since this is a simple visual aid for devs and testers
+      if (this.environment == "local") {
+        this.environment = "local";
+      } else if (this.environment == "dev") {
+        this.environment == "dev";
+      } else if (this.environment == "test") {
+        this.environment == "test";
+      }
+    },
+  },
+  mounted() {
+    this.getEnv();
+  },
 };
 </script>
 

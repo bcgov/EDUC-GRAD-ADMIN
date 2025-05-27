@@ -190,7 +190,7 @@ export default {
   components: {},
   computed: {
     ...mapState(useStudentStore, {
-      courses: "getStudentCoursesLegacy",
+      courses: "getStudentCourses",
       gradStatusCourses: "gradStatusCourses",
       studentGradStatus: "getStudentGradStatus",
       hasGradStatus: "studentHasGradStatus",
@@ -296,7 +296,10 @@ export default {
     };
   },
   methods: {
-    ...mapActions(useStudentStore, ["setHasGradStatusPendingUpdates"]),
+    ...mapActions(useStudentStore, [
+      "setHasGradStatusPendingUpdates",
+      "setHasGradStatusPendingUpdates",
+    ]),
     openModal(courseCode) {
       // Set the data property to true to show the modal
       this.modalState = true;

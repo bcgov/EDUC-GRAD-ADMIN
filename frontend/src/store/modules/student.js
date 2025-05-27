@@ -22,8 +22,7 @@ export const useStudentStore = defineStore("student", {
     quickSearchId: "",
     student: {
       profile: {},
-      courses: [], // do we want to create a coursesMap ?
-      coursesLegacy: [],
+      courses: [],
       assessments: [],
       exams: [],
       notes: [],
@@ -31,6 +30,7 @@ export const useStudentStore = defineStore("student", {
       optionalPrograms: [],
       hasExams: false,
       hasAssessments: false,
+      hasCourses: false,
       hasGradStatus: false,
       hasgradStatusPendingUpdates: false,
       hasNotes: false,
@@ -63,8 +63,8 @@ export const useStudentStore = defineStore("student", {
       recalculateGradStatus: "",
       recalculateProjectedGrad: "",
     },
-    // formattedGradStatusCourses: [],
-    // formattedGradStatusAssessments: [],
+    formattedGradStatusCourses: [],
+    formattedGradStatusAssessments: [],
   }),
   actions: {
     formatAssessmentItemsList(items) {
@@ -340,13 +340,14 @@ export const useStudentStore = defineStore("student", {
       this.student.profile = {};
       this.student.notes = [];
       this.student.id = [];
-      this.student.coursesLegacy = [];
+      this.student.courses = [];
       this.student.assessments = [];
       this.student.exams = [];
       this.student.gradStatus = "not loaded";
       this.student.optionalPrograms = [];
       this.student.hasExams = false;
       this.student.hasAssessments = false;
+      this.student.hasCourses = false;
       this.student.hasNotes = false;
       this.student.hasGradStatus = false;
       this.student.hasgradStatusPendingUpdates = false;
@@ -424,8 +425,11 @@ export const useStudentStore = defineStore("student", {
     setStudentProfile(payload) {
       this.student.profile = payload[0];
     },
-    setStudentCoursesLegacy(payload) {
-      this.student.coursesLegacy = payload;
+    setStudentCourses(payload) {
+      this.student.courses = payload;
+      if (this.student.courses.length) {
+        this.student.hasCourses = true;
+      }
     },
     setStudentAssessments(payload) {
       this.student.assessments = payload;
@@ -472,11 +476,10 @@ export const useStudentStore = defineStore("student", {
     setFormattedGradStatusAssessments(item) {
       this.formattedGradStatusAssessments = item;
     },
-    // setFormattedGradStatusCourses(item) {
-    //   this.formattedGradStatusCourses = item;
-    // },
-
-    /** STUDENT OPTIONAL PROGRAM CRUD */
+    setFormattedGradStatusCourses(item) {
+      this.formattedGradStatusCourses = item;
+    },
+    //Optional Program CRUD
     addStudentOptionalProgram(optionalProgramId) {
       try {
         let response = StudentService.createStudentOptionalProgram(
@@ -547,25 +550,6 @@ export const useStudentStore = defineStore("student", {
         console.error("Error deleting student career program: ", error);
       }
     },
-
-    /** STUDENT COURSE CRUD */
-    async getStudentCourses(studentId) {
-      let response = await StudentService.getStudentCourses(studentId);
-      await this.setStudentCourses(response.data);
-    },
-    async setStudentCourses(payload) {
-      this.student.courses = payload;
-    },
-    async deleteStudentCourses(courses ) {
-      try {
-        await StudentService.deleteStudentCourses(this.id, courses);
-        this.getStudentCourses(this.id)
-      } catch (error) {
-        console.error("Error deleting student courses:", error);
-        throw error;
-      }
-    }
-
   },
   getters: {
     getEditedGradStatus() {
@@ -629,14 +613,14 @@ export const useStudentStore = defineStore("student", {
     getStudentOptionalPrograms() {
       return this.student.optionalPrograms;
     },
-    getStudentCoursesLegacy() {
+    getStudentCourses() {
       if (
-        !Array.isArray(this.student.coursesLegacy) ||
-        this.student.coursesLegacy.length === 0
+        !Array.isArray(this.student.courses) ||
+        this.student.courses.length === 0
       ) {
         return [];
       }
-      return this.student.coursesLegacy.map((course) => ({
+      return this.student.courses.map((course) => ({
         ...course,
         id: `${course.courseCode}_${course.courseLevel}_${course.sessionDate}`,
       }));
@@ -666,6 +650,9 @@ export const useStudentStore = defineStore("student", {
     },
     getStudentProgram() {
       return this.student.gradStatus.program;
+    },
+    studentHasCourses() {
+      return this.student.hasCourses;
     },
     studentHasExams() {
       return this.student.hasExams;
@@ -741,20 +728,6 @@ export const useStudentStore = defineStore("student", {
     },
     getFormattedGradStatusAssessments() {
       return this.formatAssessmentItemsList(this.gradStatusAssessments);
-    },
-
-    /** NEW GETTERS BELOW
-     * getters above should be renamed to drop the 'get' portion and sorted by type below
-     * (student courses, student exams, student grad status, etc.), so getStudentCourses should
-     * become studentCourses. We can reserve the 'getXFunctionName' format for API calls and move the
-     * calls to the student store to align with our pattern in our app store and other ministry Vue apps.
-     *
-     * We're already dropping the 'get' when we use ...mapState() to map the properties to a computed
-     * variable, so it makes to rename our getters in the store too since the get is already implied by being
-     * in the getter section */
-
-    studentCourses() {
-      return this.student.courses;
     },
   },
 });
