@@ -1,7 +1,6 @@
 <template>
   <div>
     <v-card>
-      <!-- Info Alerts -->
       <v-alert
         type="info"
         variant="tonal"
@@ -13,27 +12,27 @@
         migration.
       </v-alert>
       <v-alert
+        v-if="environment == 'local' || environment == 'dev'"
         color="debug"
         variant="tonal"
         icon="mdi-progress-wrench"
         border="start"
         class="mt-6 mb-0 ml-1 py-3 width-fit-content"
       >
-        Data shown is using old course API endpoints since we are working ahead
-        of backend changes. Table below should use the newly added endpoints in
-        the student API.
+        Data shown is using new endpoint in student API. Waiting on backend to
+        send us course code and level so we don't need to translate each row
+        item based on student course GUID
+        <br />
       </v-alert>
-
       <v-card-text>
         <v-alert v-if="!courses" class="container">
           This student does not have any courses.
         </v-alert>
-
         <v-row no-gutters>
           <StudentCoursesDeleteForm courseBatchDelete :courseIds="selected">
           </StudentCoursesDeleteForm>
           <v-spacer />
-          <StudentCoursesForm />
+          <StudentCoursesCreateForm />
         </v-row>
 
         <v-data-table
@@ -42,6 +41,8 @@
           :items="courses"
           :headers="fields"
           :items-per-page="'-1'"
+          showFilter="true"
+          title="studentCourse"
           show-select
         >
           <template
@@ -64,45 +65,101 @@
                     ? 'mdi-chevron-down'
                     : 'mdi-chevron-right'
                 "
-              />
+              >
+              </v-btn>
             </td>
           </template>
-
+          <!-- GRAD2-2811 will use this slot when we get new endpoints  -->
           <template v-slot:item.courseName="{ item }">
             <v-dialog max-width="500">
-              <template #activator="{ props: activatorProps }">
-                <v-btn
-                  v-bind="activatorProps"
-                  color="surface-variant"
-                  :text="item.courseName"
-                  variant="plain"
-                  class="m-1 p-1 text-left v-btn-link"
-                />
+              <template v-slot:activator="{ props: activatorProps }">
+                <v-dialog max-width="500">
+                  <template v-slot:activator="{ props: activatorProps }">
+                    <v-btn
+                      v-bind="activatorProps"
+                      color="surface-variant"
+                      :text="item.courseName"
+                      variant="plain"
+                      class="m-1 p-1 text-left v-btn-link"
+                    ></v-btn>
+                  </template>
+
+                  <template v-slot:default="{ isActive }">
+                    <v-card :title="item.courseName">
+                      <v-card-text>
+                        <div class="row py-1">
+                          <div class="col">
+                            <strong>Instruction Language:</strong>
+                          </div>
+                          <div class="col">
+                            {{ item.courseDetails.language }}
+                          </div>
+                        </div>
+                        <div class="row py-1">
+                          <div class="col"><strong>Start Date:</strong></div>
+                          <div class="col">
+                            {{
+                              $filters.formatSimpleDate(
+                                item.courseDetails.startDate
+                              )
+                            }}
+                          </div>
+                        </div>
+                        <div class="row py-1">
+                          <div class="col"><strong>End Date:</strong></div>
+                          <div class="col">
+                            {{
+                              $filters.formatSimpleDate(
+                                item.courseDetails.endDate
+                              )
+                            }}
+                          </div>
+                        </div>
+                        <div class="row py-1">
+                          <div class="col"><strong>Credits:</strong></div>
+                          <div class="col">
+                            {{ item.courseDetails.numCredits }}
+                          </div>
+                        </div>
+                        <div class="row py-1">
+                          <div class="col">
+                            <strong>Work Experience:</strong>
+                          </div>
+                          <div class="col">
+                            {{ item.courseDetails.workExpFlag }}
+                          </div>
+                        </div>
+                        <div class="row py-1">
+                          <div class="col">
+                            <strong>Generic Course Type:</strong>
+                          </div>
+                          <div class="col">
+                            {{ item.courseDetails.genericCourseType }}
+                          </div>
+                        </div>
+                      </v-card-text>
+
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn
+                          text="Close"
+                          @click="isActive.value = false"
+                        ></v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </template>
+                </v-dialog>
               </template>
 
-              <template #default="{ isActive }">
-                <v-card :title="item.courseName">
-                  <v-card-text>
-                    <div
-                      class="row py-1"
-                      v-for="(label, key) in courseDetailsMap"
-                      :key="key"
-                    >
-                      <div class="col">
-                        <strong>{{ label }}:</strong>
-                      </div>
-                      <div class="col">
-                        {{
-                          key.includes("Date")
-                            ? $filters.formatSimpleDate(item.courseDetails[key])
-                            : item.courseDetails[key]
-                        }}
-                      </div>
-                    </div>
-                  </v-card-text>
+              <template v-slot:default="{ isActive }">
+                <v-card title="Dialog">
+                  <v-card-text> </v-card-text>
+
                   <v-card-actions>
-                    <v-spacer />
-                    <v-btn text="Close" @click="isActive.value = false" />
+                    <v-spacer></v-spacer>
+
+                    <v-btn text="Close" @click="isActive.value = false"></v-btn>
                   </v-card-actions>
                 </v-card>
               </template>
@@ -113,12 +170,40 @@
             <tr>
               <td :colspan="columns.length">
                 <ul v-if="item.hasRelatedCourse">
-                  <li
-                    v-for="(label, key) in expandedDetailsMap"
-                    :key="key"
-                    v-if="item[key]"
-                  >
-                    <strong>{{ label }}:</strong> {{ item[key] }}
+                  <li v-if="item.customizedCourseName">
+                    <strong>Customized Course Title:</strong>
+                    {{ item.customizedCourseName }}
+                  </li>
+                  <li v-if="item.relatedCourse">
+                    <strong>Related Course:</strong>
+                    {{ item.relatedCourse }}
+                  </li>
+                  <li v-if="item.relatedLevel">
+                    <strong>Related Course Level:</strong>
+                    {{ item.relatedLevel }}
+                  </li>
+                  <li v-if="item.relatedCourseName">
+                    <strong>Related Course Name:</strong>
+                    {{ item.relatedCourseName }}
+                  </li>
+                  <li v-if="item.alternateCourseName">
+                    <strong>Alternate Course Name:</strong>
+                    {{ item.alternateCourseName }}
+                  </li>
+                  <li v-if="item.bestSchoolPercent">
+                    <strong>Best School Percent:</strong>
+                    {{ item.bestSchoolPercent }}
+                  </li>
+                  <li v-if="item.bestExamPercent">
+                    <strong>Best Exam Percent:</strong>
+                    {{ item.bestExamPercent }}
+                  </li>
+                  <li v-if="item.metLitNumRequirement">
+                    <strong>Assessment Equivalent:</strong>
+                    {{ item.metLitNumRequirement }}
+                  </li>
+                  <li v-if="item.specialCase">
+                    <strong>Special Case:</strong> {{ item.specialCase }}
                   </li>
                 </ul>
               </td>
@@ -133,7 +218,7 @@
                 ]
               "
             >
-              <template #activator="{ props }">
+              <template v-slot:activator="{ props }">
                 <v-btn
                   v-if="hasPermissions('STUDENT', 'courseUpdate')"
                   v-bind="props"
@@ -144,7 +229,7 @@
                 />
               </template>
               <v-card max-width="500px" class="mx-auto">
-                <template #title>
+                <template v-slot:title>
                   Edit Student Course
                   <strong
                     >{{ item.courseCode }} {{ item.courseLevel }} -
@@ -183,7 +268,6 @@
               </v-card>
             </v-dialog>
           </template>
-
           <template v-slot:item.delete="{ item }">
             <StudentCoursesDeleteForm :courseIds="[item.id]">
             </StudentCoursesDeleteForm>
@@ -196,16 +280,16 @@
 
 <script>
 import { useStudentStore } from "@/store/modules/student";
+import { useAppStore } from "@/store/modules/app";
 import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
 import StudentCoursesDeleteForm from "@/components/StudentProfile/Forms/StudentCoursesDeleteForm.vue";
-import StudentCoursesForm from "@/components/StudentProfile/Forms/StudentCoursesForm.vue";
-
+import StudentCoursesCreateForm from "@/components/StudentProfile/Forms/StudentCoursesCreateForm.vue";
 export default {
-  name: "StudentCourses_BETA",
+  name: "StudentCourses",
   components: {
-    StudentCoursesForm,
-    StudentCoursesDeleteForm,
+    StudentCoursesCreateForm: StudentCoursesCreateForm,
+    StudentCoursesDeleteForm: StudentCoursesDeleteForm,
   },
   computed: {
     ...mapState(useStudentStore, {
@@ -216,67 +300,130 @@ export default {
       hasGradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
-    courseDetailsMap() {
-      return {
-        language: "Instruction Language",
-        startDate: "Start Date",
-        endDate: "End Date",
-        numCredits: "Credits",
-        workExpFlag: "Work Experience",
-        genericCourseType: "Generic Course Type",
-      };
-    },
-    expandedDetailsMap() {
-      return {
-        customizedCourseName: "Customized Course Title",
-        relatedCourse: "Related Course",
-        relatedLevel: "Related Course Level",
-        relatedCourseName: "Related Course Name",
-        alternateCourseName: "Alternate Course Name",
-        bestSchoolPercent: "Best School Percent",
-        bestExamPercent: "Best Exam Percent",
-        metLitNumRequirement: "Assessment Equivalent",
-        specialCase: "Special Case",
-      };
-    },
+    ...mapState(useAppStore, { environment: "getEnvironment" }),
   },
-  watch: {
-    courses() {
-      //reset selected when course list is refreshed
-      this.selected = [];
-    },
-  },
-  data() {
+  data: function () {
     return {
-      selected: [],
-      editDialog: {},
+      toFilterItem: ["courseCode", "courseLevel", "sessionDate", "courseName"],
       fields: [
-        { key: "data-table-expand", title: "", sortable: false },
-        { key: "id", title: "ID", sortable: true },
-        { key: "courseCode", title: "Code", sortable: true },
-        { key: "courseLevel", title: "Level", sortable: true },
-        { key: "courseSession", title: "Session", sortable: true },
+        {
+          key: "data-table-expand",
+          title: "",
+          sortable: true,
+          class: "text-left",
+        },
+        {
+          key: "id",
+          title: "ID",
+          sortable: true,
+          sortDirection: "desc",
+        },
+        {
+          key: "courseCode",
+          title: "Code",
+          sortable: true,
+          sortDirection: "desc",
+        },
+        {
+          key: "courseLevel",
+          title: "Level",
+          sortable: true,
+          class: "text-left",
+        },
+        {
+          key: "courseSession",
+          title: "Session",
+          sortable: true,
+          sortDirection: "desc",
+        },
         {
           key: "interimPercent",
           title: "%",
           sortable: true,
+          sortDirection: "desc",
           class: "text-md-right",
         },
-        { key: "interimLetterGrade", title: "LG", sortable: true },
+        {
+          key: "interimLetterGrade",
+          title: "LG",
+          sortable: true,
+          sortDirection: "desc",
+          class: "text-md-left",
+        },
         {
           key: "completedCoursePercentage",
           title: "%",
+          class: "text-md-right ",
           sortable: true,
-          class: "text-md-right",
+          sortDirection: "desc",
         },
-        { key: "completedCourseLetterGrade", title: "LG", sortable: true },
-        { key: "equivOrChallenge", title: "Ch", sortable: true },
-        { key: "credits", title: "Credits", sortable: true },
-        { key: "fineArtsAppliedSkills", title: "As", sortable: true },
-        { key: "courseName", title: "Course Title", sortable: true },
-        { key: "edit", title: "Edit" },
-        { key: "delete", title: "Delete" },
+        {
+          key: "completedCourseLetterGrade",
+          title: "LG",
+          class: "text-md-left",
+          sortable: true,
+          sortDirection: "desc",
+        },
+        {
+          key: "equivOrChallenge",
+          title: "Ch",
+          sortable: true,
+          sortDirection: "desc",
+        },
+        {
+          key: "credits",
+          title: "Credits",
+          sortable: true,
+          class: "text-center",
+        },
+        {
+          key: "fineArtsAppliedSkills",
+          title: "As",
+          sortable: true,
+          class: "text-left",
+        },
+        {
+          key: "courseName",
+          title: "Course Title",
+          sortable: true,
+          class: "text-left",
+        },
+        {
+          key: "edit",
+          title: "Edit",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
+        },
+        {
+          key: "delete",
+          title: "Delete",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
+        },
       ],
+      gradStatusPendingUpdates: [],
+      show: false,
+      opened: [],
+      message: "",
+      achievements: [],
+      InputCourse: "",
+      student: [],
+      InputPen: "",
+      modalState: false,
+      filters: {
+        name: {
+          value: "",
+          keys: ["courseCode"],
+        },
+      },
+      selected: [],
+      editDialog: {},
+      deleteDialog: {},
+      multiDeleteDialog: false,
     };
   },
   methods: {
@@ -291,16 +438,41 @@ export default {
       console.log("TODO: Submit edits for student course");
       this.closeEditModal(modalKey);
     },
+    compareCourses(course1, course2) {
+      this.fields.forEach(function (field) {
+        if (course1[field] != course2[field]) {
+          return false;
+        }
+      });
+      return true;
+    },
   },
 };
 </script>
 
-<style scoped>
-.width-fit-content {
-  width: fit-content;
+<style>
+.table th,
+.table td {
+  border-top: none !important;
 }
-.v-btn-link {
-  text-transform: none;
-  justify-content: flex-start;
+
+.table th svg {
+  display: none !important;
+}
+
+.highlight {
+  background: aliceblue !important;
+}
+
+.top-row {
+  border-bottom-style: hidden;
+}
+
+.popover-body div {
+  min-width: fit-content;
+}
+
+.popover-body > div > div:nth-child(2) {
+  text-align: right;
 }
 </style>

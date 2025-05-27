@@ -1,17 +1,49 @@
 <template>
   <div>
     <v-card>
+      <v-alert
+        type="info"
+        variant="tonal"
+        border="start"
+        class="mt-6 mb-0 ml-1 py-3 width-fit-content"
+      >
+        Until student course CRUD is live, student courses will not be kept in
+        sync via ongoing updates. Instead there will be a gradual data
+        migration.
+      </v-alert>
+      <v-alert
+        v-if="environment == 'local' || environment == 'dev'"
+        color="debug"
+        variant="tonal"
+        icon="mdi-progress-wrench"
+        border="start"
+        class="mt-6 mb-0 ml-1 py-3 width-fit-content"
+      >
+        Data shown is using new endpoint in student API. Waiting on backend to
+        send us course code and level so we don't need to translate each row
+        item based on student course GUID
+        <br />
+      </v-alert>
       <v-card-text>
         <v-alert v-if="!courses" class="container">
           This student does not have any courses.
         </v-alert>
+        <v-row no-gutters>
+          <StudentCoursesDeleteForm courseBatchDelete :courseIds="selected">
+          </StudentCoursesDeleteForm>
+          <v-spacer />
+          <StudentCoursesCreateForm />
+        </v-row>
+
         <v-data-table
           v-if="courses"
+          v-model="selected"
           :items="courses"
           :headers="fields"
           :items-per-page="'-1'"
           showFilter="true"
           title="studentCourse"
+          show-select
         >
           <template
             v-slot:item.data-table-expand="{
@@ -37,6 +69,7 @@
               </v-btn>
             </td>
           </template>
+          <!-- GRAD2-2811 will use this slot when we get new endpoints  -->
           <template v-slot:item.courseName="{ item }">
             <v-dialog max-width="500">
               <template v-slot:activator="{ props: activatorProps }">
@@ -176,6 +209,69 @@
               </td>
             </tr>
           </template>
+
+          <template v-slot:item.edit="{ item }">
+            <v-dialog
+              v-model="
+                editDialog[
+                  item.courseCode + item.courseLevel + item.sessionDate
+                ]
+              "
+            >
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  v-if="hasPermissions('STUDENT', 'courseUpdate')"
+                  v-bind="props"
+                  color="success"
+                  icon="mdi-pencil"
+                  density="compact"
+                  variant="text"
+                />
+              </template>
+              <v-card max-width="500px" class="mx-auto">
+                <template v-slot:title>
+                  Edit Student Course
+                  <strong
+                    >{{ item.courseCode }} {{ item.courseLevel }} -
+                    {{ item.sessionDate }}</strong
+                  >
+                </template>
+                TODO: Implement edit for single course using the repeatable add
+                student course form component
+                <v-card-actions>
+                  <v-btn
+                    color="error"
+                    variant="outlined"
+                    class="text-none"
+                    density="default"
+                    @click="
+                      closeEditModal(
+                        item.courseCode + item.courseLevel + item.sessionDate
+                      )
+                    "
+                    >Cancel</v-btn
+                  >
+                  <v-spacer />
+                  <v-btn
+                    color="error"
+                    variant="flat"
+                    class="text-none"
+                    density="default"
+                    @click="
+                      saveStudentCourse(
+                        item.courseCode + item.courseLevel + item.sessionDate
+                      )
+                    "
+                    >Save Student Course</v-btn
+                  >
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </template>
+          <template v-slot:item.delete="{ item }">
+            <StudentCoursesDeleteForm :courseIds="[item.id]">
+            </StudentCoursesDeleteForm>
+          </template>
         </v-data-table>
       </v-card-text>
     </v-card>
@@ -184,18 +280,27 @@
 
 <script>
 import { useStudentStore } from "@/store/modules/student";
+import { useAppStore } from "@/store/modules/app";
+import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
+import StudentCoursesDeleteForm from "@/components/StudentProfile/Forms/StudentCoursesDeleteForm.vue";
+import StudentCoursesCreateForm from "@/components/StudentProfile/Forms/StudentCoursesCreateForm.vue";
 export default {
   name: "StudentCourses",
-  components: {},
+  components: {
+    StudentCoursesCreateForm: StudentCoursesCreateForm,
+    StudentCoursesDeleteForm: StudentCoursesDeleteForm,
+  },
   computed: {
     ...mapState(useStudentStore, {
-      courses: "getStudentCoursesLegacy",
+      courses: "studentCourses",
       gradStatusCourses: "gradStatusCourses",
       studentGradStatus: "getStudentGradStatus",
       hasGradStatus: "studentHasGradStatus",
       hasGradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
     }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
+    ...mapState(useAppStore, { environment: "getEnvironment" }),
   },
   data: function () {
     return {
@@ -206,6 +311,12 @@ export default {
           title: "",
           sortable: true,
           class: "text-left",
+        },
+        {
+          key: "id",
+          title: "ID",
+          sortable: true,
+          sortDirection: "desc",
         },
         {
           key: "courseCode",
@@ -220,7 +331,7 @@ export default {
           class: "text-left",
         },
         {
-          key: "sessionDate",
+          key: "courseSession",
           title: "Session",
           sortable: true,
           sortDirection: "desc",
@@ -277,6 +388,22 @@ export default {
           sortable: true,
           class: "text-left",
         },
+        {
+          key: "edit",
+          title: "Edit",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
+        },
+        {
+          key: "delete",
+          title: "Delete",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
+        },
       ],
       gradStatusPendingUpdates: [],
       show: false,
@@ -293,63 +420,23 @@ export default {
           keys: ["courseCode"],
         },
       },
+      selected: [],
+      editDialog: {},
+      deleteDialog: {},
+      multiDeleteDialog: false,
     };
   },
   methods: {
-    ...mapActions(useStudentStore, ["setHasGradStatusPendingUpdates"]),
-    openModal(courseCode) {
-      // Set the data property to true to show the modal
-      this.modalState = true;
-      // You can do something with courseCode if needed
+    ...mapActions(useStudentStore, [
+      "setHasGradStatusPendingUpdates",
+      "deleteStudentCourses",
+    ]),
+    closeEditModal(modalKey) {
+      this.editDialog[modalKey] = false;
     },
-    closeModal() {
-      // Set the data property to false to close the modal
-      this.modalState = false;
-    },
-    // toggle(id) {
-    //   const index = this.opened.indexOf(id);
-    //   if (index > -1) {
-    //     this.opened.splice(index, 1);
-    //   } else {
-    //     this.opened.push(id);
-    //   }
-    // },
-    checkForPendingUpdates() {
-      if (this.hasGradStatus) {
-        for (let i = 0; i < this.courses.length; i++) {
-          this.courses[i].gradReqMet = this.getProgramCode(this.courses[i]);
-        }
-        //check for deleted courses
-        for (let i = 0; i < this.gradStatusCourses.length; i++) {
-          let courseDeleted = true;
-          for (let j = 0; j < this.courses.length; j++) {
-            if (
-              this.courses[j].courseCode +
-                this.courses[j].courseLevel +
-                this.courses[j].sessionDate +
-                this.courses[j].pen ==
-              this.gradStatusCourses[i].courseCode +
-                this.gradStatusCourses[i].courseLevel +
-                this.gradStatusCourses[i].sessionDate +
-                this.gradStatusCourses[i].pen
-            ) {
-              courseDeleted = false;
-              break;
-            }
-          }
-          if (courseDeleted) {
-            this.gradStatusPendingUpdates.push(
-              this.gradStatusCourses[i].courseName + "REMOVED"
-            );
-          }
-        }
-
-        if (this.gradStatusPendingUpdates.length) {
-          this.setHasGradStatusPendingUpdates(true);
-        } else {
-          this.setHasGradStatusPendingUpdates(false);
-        }
-      }
+    saveStudentCourse(modalKey) {
+      console.log("TODO: Submit edits for student course");
+      this.closeEditModal(modalKey);
     },
     compareCourses(course1, course2) {
       this.fields.forEach(function (field) {
@@ -358,38 +445,6 @@ export default {
         }
       });
       return true;
-    },
-    getProgramCode(course) {
-      var result = this.gradStatusCourses.filter(function (gradStatusCourse) {
-        return (
-          gradStatusCourse.pen +
-            gradStatusCourse.courseCode +
-            gradStatusCourse.courseLevel +
-            gradStatusCourse.sessionDate ==
-          course.pen +
-            course.courseCode +
-            course.courseLevel +
-            course.sessionDate
-        );
-      });
-      if (!result.length) {
-        this.gradStatusPendingUpdates.push(course.courseName + " ADDED");
-        return "TBD - New Course Added";
-      } else if (result[0].gradReqMet) {
-        if (!this.compareCourses(result[0], course)) {
-          //Course has been monified and not updated in the Grad Status Course List
-
-          this.gradStatusPendingUpdates.push(course.courseName + "UPDATED");
-          return "TBD - Modified";
-        } else {
-          return result[0].gradReqMet;
-        }
-      } else {
-        return "---";
-      }
-    },
-    createRef(pen, code, level, sessionDate) {
-      return pen.trim() + code.trim() + level.trim() + sessionDate.trim();
     },
   },
 };
