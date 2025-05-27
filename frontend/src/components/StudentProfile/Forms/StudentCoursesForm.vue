@@ -104,9 +104,7 @@ export default {
     clearForm() {
       console.log("TODO: Implement clearForm(0)");
     },
-    async submitForm() {
-      console.log("TODO: Implement form submission");
-    },
+    async submitForm() {},
     // helpers for button states
     disableBackButton() {
       //TODO: add logic to disable back button AFTER user submits courses to API
