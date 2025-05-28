@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="dialog" max-width="500px">
+    <v-dialog v-model="dialog" persistent max-width="500px">
       <template v-slot:activator="{ props }">
         <!-- Let parent override with their own button via activator slot -->
         <slot name="activator" v-bind="props">
@@ -10,7 +10,7 @@
               hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete
             "
             v-bind="props"
-            :disabled="courseIds.length === 0"
+            :disabled="selectedCoursesToDelete.length === 0"
             color="error"
             class="text-none"
             prepend-icon="mdi-delete-forever"
@@ -31,7 +31,19 @@
 
       <v-card>
         <template v-slot:title>
-          Delete Student Course<span v-if="courseIds.length > 1">s</span>
+          <v-row no-gutters>
+            <div class="v-card-title">Delete Student Course</div>
+            <v-spacer />
+            <v-btn
+              icon="mdi-close"
+              density="compact"
+              rounded="sm"
+              variant="outlined"
+              color="error"
+              class="mt-2"
+              @click="close"
+            />
+          </v-row>
         </template>
 
         <v-card-text>
@@ -56,15 +68,24 @@
             One or more of these courses have an associated exam record.
           </v-alert>
 
-          Are you sure you want to delete the following course ID<span
-            v-if="courseIds.length > 1"
-            >s</span
-          >?
-          <ul class="pl-4">
-            <li v-for="id in courseIds" :key="id">
-              <strong>{{ id }}</strong>
-            </li>
-          </ul>
+          <v-alert
+            v-if="selectedCoursesToDelete.length > 0"
+            type="warning"
+            border="left"
+            prominent
+            class="pl-4"
+          >
+            You are about to remove the following courses from student:
+            {{ studentId }}
+            <ul>
+              <li v-for="course in selectedCoursesToDelete" :key="course.id">
+                <strong
+                  >{{ course.courseID }} {{ course.courseName }}
+                  {{ course.courseLevel }} {{ course.courseSession }}</strong
+                >
+              </li>
+            </ul>
+          </v-alert>
         </v-card-text>
 
         <v-card-actions>
@@ -85,7 +106,7 @@
             density="default"
             @click="confirmDelete"
           >
-            Delete Course<span v-if="courseIds.length > 1">s</span>
+            Delete Course<span v-if="selectedCoursesToDelete.length > 1"></span>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -100,7 +121,7 @@ import { useStudentStore } from "@/store/modules/student";
 export default {
   name: "StudentCoursesDeleteForm",
   props: {
-    courseIds: {
+    selectedCoursesToDelete: {
       type: Array,
       required: true,
     },
@@ -119,7 +140,7 @@ export default {
 
     const confirmDelete = async () => {
       try {
-        await studentStore.deleteStudentCourses(props.courseIds);
+        await studentStore.deleteStudentCourses(props.selectedCoursesToDelete);
         close();
       } catch (error) {
         console.error("Failed to delete student courses:", error);
@@ -131,11 +152,15 @@ export default {
     };
 
     const anyUsedForGraduation = computed(() =>
-      props.courseIds.some((id) => studentStore.isCourseUsedForGraduation?.(id))
+      props.selectedCoursesToDelete.some((id) =>
+        studentStore.isCourseUsedForGraduation?.(id)
+      )
     );
 
     const anyHasExamRecord = computed(() =>
-      props.courseIds.some((id) => studentStore.hasAssociatedExam?.(id))
+      props.selectedCoursesToDelete.some((id) =>
+        studentStore.hasAssociatedExam?.(id)
+      )
     );
 
     return {
