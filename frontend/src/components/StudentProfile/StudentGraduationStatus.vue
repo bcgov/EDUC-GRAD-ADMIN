@@ -62,7 +62,7 @@ export default {
       hasGradStatus: "studentHasGradStatus",
       studentGradRequirementCourses: "gradStatusCourses",
       studentPen: "getStudentPen",
-      optionalPrograms: "getStudentOptionalPrograms",
+      optionalPrograms: "studentOptionalPrograms",
       studentId: "getStudentId",
       certificates: "getStudentCertificates",
       reports: "getStudentReports",
