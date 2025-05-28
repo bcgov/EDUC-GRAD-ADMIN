@@ -808,7 +808,7 @@ export default {
       studentPen: "getStudentPen",
       studentInfo: "getStudentProfile",
       studentNotes: "getStudentNotes",
-      optionalPrograms: "getStudentOptionalPrograms",
+      optionalPrograms: "studentOptionalPrograms",
       studentUngradReasons: "getStudentUngradReasons",
       gradCourses: "gradStatusCourses",
       studentHistory: "getStudentAuditHistory",

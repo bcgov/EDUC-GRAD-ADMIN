@@ -22,11 +22,10 @@ export default {
     );
   },
   deleteStudentCourses(studentID, courses) {
- console.log(courses)
-    return ApiService.apiAxios.delete(
-      `/api/v1/student/courses/${studentID}`,
-      {data: courses}
-    );
+    console.log(courses);
+    return ApiService.apiAxios.delete(`/api/v1/student/courses/${studentID}`, {
+      data: courses,
+    });
   },
   getStudentCourseHistory(studentID) {
     return ApiService.apiAxios.get(
@@ -34,6 +33,11 @@ export default {
     );
   },
   // OPTIONAL STUDENT GRADUATION STATUS
+  getStudentCareerPrograms(id) {
+    return ApiService.apiAxios.get(
+      "/api/v1/student/studentcareerprogram/studentid/" + id
+    );
+  },
   createStudentCareerPrograms(studentId, json) {
     return ApiService.apiAxios.post(
       "/api/v1/student/" + studentId + "/careerPrograms",
@@ -136,12 +140,7 @@ export default {
   getStudentByID(studentID) {
     return ApiService.apiAxios.get("/api/v1/student/stdid/" + studentID);
   }, // duplicate - CLEAN UP
-  // CAREER PROGRAMS
-  getStudentCareerPrograms(id) {
-    return ApiService.apiAxios.get(
-      "/api/v1/student/studentcareerprogram/studentid/" + id
-    );
-  },
+
   // HISTORY ACTIVITY (code)
   getStudentHistoryActivityCode() {
     return ApiService.apiAxios.get("/api/v1/student/historyactivity");

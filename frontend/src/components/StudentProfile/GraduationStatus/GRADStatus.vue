@@ -172,7 +172,7 @@ export default {
   },
   computed: {
     ...mapState(useStudentStore, {
-      optionalPrograms: "getStudentOptionalPrograms",
+      optionalPrograms: "studentOptionalPrograms",
       studentId: "getStudentId",
       studentGradStatus: "getStudentGradStatus",
     }),
