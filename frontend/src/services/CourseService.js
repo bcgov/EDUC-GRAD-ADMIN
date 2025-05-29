@@ -16,6 +16,9 @@ export default {
   getCourseRestrictions() {
     return ApiService.apiAxios.get("/api/v1/course/restriction");
   },
+   getCourseExaminableCourses() {
+    return ApiService.apiAxios.get("/api/v1/course/examinablecourses");
+  },
   getCourseRestriction(mainCourseLevel, mainCourseCode) {
     return ApiService.apiAxios.get(
       "/api/v1/course/courserestrictionsearch?mainCourseLevel=" +
