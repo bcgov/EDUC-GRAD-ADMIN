@@ -213,62 +213,8 @@
           </template>
 
           <template v-slot:item.edit="{ item }">
-            <v-dialog
-              v-model="
-                editDialog[
-                  item.courseCode + item.courseLevel + item.sessionDate
-                ]
-              "
-            >
-              <template v-slot:activator="{ props }">
-                <v-btn
-                  v-if="hasPermissions('STUDENT', 'courseUpdate')"
-                  v-bind="props"
-                  color="success"
-                  icon="mdi-pencil"
-                  density="compact"
-                  variant="text"
-                />
-              </template>
-              <v-card max-width="500px" class="mx-auto">
-                <template v-slot:title>
-                  Edit Student Course
-                  <strong
-                    >{{ item.courseCode }} {{ item.courseLevel }} -
-                    {{ item.sessionDate }}</strong
-                  >
-                </template>
-                TODO: Implement edit for single course using the repeatable add
-                student course form component
-                <v-card-actions>
-                  <v-btn
-                    color="error"
-                    variant="outlined"
-                    class="text-none"
-                    density="default"
-                    @click="
-                      closeEditModal(
-                        item.courseCode + item.courseLevel + item.sessionDate
-                      )
-                    "
-                    >Cancel</v-btn
-                  >
-                  <v-spacer />
-                  <v-btn
-                    color="error"
-                    variant="flat"
-                    class="text-none"
-                    density="default"
-                    @click="
-                      saveStudentCourse(
-                        item.courseCode + item.courseLevel + item.sessionDate
-                      )
-                    "
-                    >Save Student Course</v-btn
-                  >
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+            <StudentCoursesUpdateForm :selectedCoursesToUpdate="[item]">
+            </StudentCoursesUpdateForm>
           </template>
           <template v-slot:item.delete="{ item }">
             <StudentCoursesDeleteForm :selectedCoursesToDelete="[item]">
@@ -287,11 +233,13 @@ import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
 import StudentCoursesDeleteForm from "@/components/StudentProfile/Forms/StudentCoursesDeleteForm.vue";
 import StudentCoursesCreateForm from "@/components/StudentProfile/Forms/StudentCoursesCreateForm.vue";
+import StudentCoursesUpdateForm from "@/components/StudentProfile/Forms/StudentCoursesUpdateForm.vue";
 export default {
   name: "StudentCourses",
   components: {
     StudentCoursesCreateForm: StudentCoursesCreateForm,
     StudentCoursesDeleteForm: StudentCoursesDeleteForm,
+    StudentCoursesUpdateForm: StudentCoursesUpdateForm,
   },
   computed: {
     ...mapState(useStudentStore, {
@@ -306,7 +254,12 @@ export default {
   },
   data: function () {
     return {
-      toFilterItem: ["courseCode", "courseLevel", "sessionDate", "courseName"],
+      toFilterItem: [
+        "courseCode",
+        "courseLevel",
+        "courseSession",
+        "courseName",
+      ],
       fields: [
         {
           key: "data-table-expand",

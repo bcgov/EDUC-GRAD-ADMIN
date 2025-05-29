@@ -63,8 +63,12 @@ export const useStudentStore = defineStore("student", {
       recalculateGradStatus: "",
       recalculateProjectedGrad: "",
     },
-    coursesToCreate: null,
-    courseToUpdate: null, // Might want to initialize fields similar to editedGradStatus
+    create:{
+      courses:[]
+    },
+    update:{
+      courses:[]
+    }
   }),
   actions: {
     formatAssessmentItemsList(items) {
@@ -549,6 +553,7 @@ export const useStudentStore = defineStore("student", {
     async setStudentCourses(payload) {
       this.student.courses = payload;
     },
+
     // create student courses and form helpers
     async createStudentCourses(courses) {
       try {
@@ -557,9 +562,14 @@ export const useStudentStore = defineStore("student", {
         console.error("Error adding student courses: ", error);
       }
     },
-    addCourseObjectToPayload(course) {},
-    // edit student courses and form helpers
-
+    addCoursesToCreate(course) {
+      this.create.courses.push(course)
+    },
+    removeCoursesToCreate(courseCode) {
+      this.coursesToCreate = this.coursesToCreate.filter(
+        (course) => course.code !== courseCode
+      );
+    },
     // delete student courses
     async deleteStudentCourses(courses) {
       try {
