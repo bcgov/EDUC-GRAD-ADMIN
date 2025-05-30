@@ -1,7 +1,6 @@
 <template>
-  <v-row no-gutters class="mb-4" align="center">
+  <v-row no-gutters class="mb-4" align="top">
     <!-- Disabled identifying fields -->
-    {{ course }}
     <v-col cols="12">
       <v-col cols="2" v-if="update">
         <v-text-field
@@ -36,7 +35,7 @@
         />
       </v-col>
     </v-col>
-    <v-col col="2">
+    <v-col cols="2" class="d-flex flex-column justify-start">
       {{ course.courseName }} {{ course.courseCode }} {{ course.courseLevel }}
       {{ course.sessionDate }}
     </v-col>
@@ -147,40 +146,29 @@
         </v-col>
       </v-row>
       <v-row v-if="course?.genericCourseType == 'I'">
-        <v-col cols="12"></v-col>
         <strong>Select Related Course</strong>
-
         <v-col cols="12">
           <v-text-field
             v-model="course.customizedCourseTitle"
             label="Customized Course Title"
             variant="outlined"
             density="compact"
+            hide-details
           />
         </v-col>
-        <v-col cols="3">
-          <v-text-field
-            v-model="course.customCourseCode"
-            label="Course Code"
-            variant="outlined"
-            density="compact"
-        /></v-col>
-        <v-col cols="3">
-          <v-text-field
-            v-model="course.customCourseLevel"
-            label="Course Level"
-            variant="outlined"
-            density="compact"
-        /></v-col>
-        <v-col cols="3"> <v-btn>Add Course</v-btn></v-col>
+        <v-col cols="12">
+          <CourseInput v-model:courseID="course.relatedCourseId"></CourseInput>
+        </v-col>
       </v-row>
     </v-col>
   </v-row>
 </template>
 
 <script>
+import CourseInput from "@/components/StudentProfile/Forms/FormInputs/CourseInput.vue";
 export default {
   name: "CourseDetailsInput",
+  components: { CourseInput },
   props: {
     course: {
       type: Object,

@@ -12,6 +12,7 @@
     </template>
 
     <v-card>
+      {{ coursesToCreate }}
       <v-card-title>
         <v-row no-gutters>
           <div class="v-card-title">Add Student Courses</div>
@@ -54,7 +55,7 @@
                   density="compact"
                 />
                 <v-text-field
-                  v-model="courseAdd.sessionDate"
+                  v-model="courseAdd.courseSession"
                   label="Course Session"
                   variant="outlined"
                   density="compact"
@@ -74,7 +75,13 @@
                 item-value="id"
                 class="mt-4"
                 hide-default-footer
-              />
+              >
+                <template #item.remove="{ item }">
+                  <v-btn @click="removeCourseFromCreate(item.courseID)">
+                    Remove
+                  </v-btn>
+                </template>
+              </v-data-table>
             </v-stepper-window-item>
 
             <!-- Step 2 -->
@@ -83,28 +90,33 @@
                 No courses added yet.
               </div>
               <div v-else>
-                <CourseDetailsInput
+                <template
                   v-for="(course, index) in coursesToCreate"
                   :key="course.courseID || index"
-                  :course="course"
-                  create
-                />
+                >
+                  <CourseDetailsInput :course="course" create />
+                  <v-divider
+                    v-if="index < coursesToCreate.length - 1"
+                    class="my-4"
+                    color="grey-darken-3"
+                  />
+                </template>
               </div>
             </v-stepper-window-item>
 
             <!-- Step 3 -->
             <v-stepper-window-item value="2">
-              <div v-if="coursesToCreate.length === 0">
-                No courses added yet.
-              </div>
-              <div v-else>
-                <v-data-table
-                  :items="coursesToCreate"
-                  item-value="id"
-                  class="mt-4"
-                  hide-default-footer
-                />
-              </div>
+              <pre>{{
+                JSON.stringify(createStudentResultsMessages, null, 2)
+              }}</pre>
+              <v-data-table
+                v-if="coursesToCreate"
+                :headers="tableHeaders"
+                :items="coursesToCreate"
+                item-value="courseID"
+                class="elevation-1"
+              >
+              </v-data-table>
             </v-stepper-window-item>
           </v-stepper-window>
         </template>
@@ -160,6 +172,7 @@
 <script>
 import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
 import CourseService from "@/services/CourseService.js";
+import { toRaw } from "vue";
 import { useAccessStore } from "@/store/modules/access";
 import { useStudentStore } from "@/store/modules/student";
 import { mapState, mapActions } from "pinia";
@@ -171,17 +184,20 @@ export default {
   },
   data() {
     return {
+      createStudentResultsMessages: [],
       dialog: false,
       step: 0,
+
       courseAdd: {
         code: null,
         level: null,
-        sessionDate: null,
+        courseSession: null,
       },
       headers: [
         { title: "Course Name", key: "courseName" },
         { title: "Course Level", key: "courseLevel" },
-        { title: "Course Session", key: "sessionDate" },
+        { title: "Course Session", key: "courseSession" },
+        { title: "Remove", key: "remove" },
       ],
     };
   },
@@ -192,7 +208,12 @@ export default {
     }),
   },
   methods: {
-    ...mapActions(useStudentStore, ["addCoursesToCreate"]),
+    ...mapActions(useStudentStore, [
+      "addCoursesToCreate",
+      "removeCourseFromCreate",
+      "clearCoursesToCreate",
+      "createStudentCourses",
+    ]),
 
     openCreateStudentCoursesDialog() {
       this.step = 0;
@@ -200,14 +221,12 @@ export default {
     },
 
     closeCreateStudentCourseDialog() {
-      this.clearForm();
       this.dialog = false;
     },
-
     async addCourse() {
-      const { code, level, sessionDate } = this.courseAdd;
+      const { code, level, courseSession } = this.courseAdd;
 
-      if (!code || !level || !sessionDate) {
+      if (!code || !level || !courseSession) {
         this.$toast?.error?.("Please fill out all course fields.");
         return;
       }
@@ -228,7 +247,7 @@ export default {
             courseID,
             courseCode,
             courseLevel,
-            sessionDate,
+            courseSession,
             courseName,
             genericCourseType,
           });
@@ -242,11 +261,20 @@ export default {
     },
 
     clearForm() {
-      this.courseAdd = { code: null, level: null, sessionDate: null };
+      this.courseAdd = { code: null, level: null, courseSession: null };
     },
 
     async submitForm() {
-      this.$toast?.success?.("Student courses submitted (stub).");
+      const createStudentCoursesRequestBody = toRaw(this.coursesToCreate);
+
+      // Call API and get response
+      const response = await this.createStudentCourses(
+        createStudentCoursesRequestBody
+      );
+
+      this.createStudentResultsMessages = response; // still store full response if needed
+      console.log(this.createStudentResultsMessages);
+      this.clearCoursesToCreate(); // optional depending on if you still need to show messages
     },
 
     disableBackButton() {

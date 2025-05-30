@@ -557,18 +557,25 @@ export const useStudentStore = defineStore("student", {
     // create student courses and form helpers
     async createStudentCourses(courses) {
       try {
-        await StudentService.createStudentCourses(this.id, courses);
+        const response = await StudentService.createStudentCourses(this.id, courses);
+        console.log("response")
+        console.log(response)
+        return response.data;
       } catch (error) {
         console.error("Error adding student courses: ", error);
+        return error;
       }
     },
     addCoursesToCreate(course) {
       this.create.courses.push(course)
     },
-    removeCoursesToCreate(courseCode) {
-      this.coursesToCreate = this.coursesToCreate.filter(
-        (course) => course.code !== courseCode
+    removeCourseFromCreate(courseID) {
+      this.create.courses = this.create.courses.filter(
+        (course) => course.courseID !== courseID
       );
+    },
+    clearCoursesToCreate(course) {
+      this.create.courses = [];
     },
     // delete student courses
     async deleteStudentCourses(courses) {
