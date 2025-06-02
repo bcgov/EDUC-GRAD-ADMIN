@@ -49,6 +49,7 @@
               item-value="districtNumber"
             ></v-autocomplete>
             <v-checkbox
+              :disabled="!schoolCategory"
               v-model="selectAllDistricts"
               @change="selectAllDistrictsCheckbox($event)"
               label="Select all districts"
