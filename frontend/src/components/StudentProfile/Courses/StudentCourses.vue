@@ -69,101 +69,20 @@
               </v-btn>
             </td>
           </template>
+
+          <template v-slot:item.courseCode="{ item }">
+            {{ item.courseDetails.courseCode }}
+          </template>
+          <template v-slot:item.courseLevel="{ item }">
+            {{ item.courseDetails.courseLevel }}
+          </template>
+          <template v-slot:item.courseSession="{ item }">
+            {{ $filters.formatYYYYMMStringDate(item.courseSession) }}
+          </template>
           <!-- GRAD2-2811 will use this slot when we get new endpoints  -->
           <template v-slot:item.courseName="{ item }">
-            <v-dialog max-width="500">
-              <template v-slot:activator="{ props: activatorProps }">
-                <v-dialog max-width="500">
-                  <template v-slot:activator="{ props: activatorProps }">
-                    <v-btn
-                      v-bind="activatorProps"
-                      color="surface-variant"
-                      :text="item.courseName"
-                      variant="plain"
-                      class="m-1 p-1 text-left v-btn-link"
-                    ></v-btn>
-                  </template>
-
-                  <template v-slot:default="{ isActive }">
-                    <v-card :title="item.courseName">
-                      <v-card-text>
-                        <div class="row py-1">
-                          <div class="col">
-                            <strong>Instruction Language:</strong>
-                          </div>
-                          <div class="col">
-                            {{ item.courseDetails.language }}
-                          </div>
-                        </div>
-                        <div class="row py-1">
-                          <div class="col"><strong>Start Date:</strong></div>
-                          <div class="col">
-                            {{
-                              $filters.formatSimpleDate(
-                                item.courseDetails.startDate
-                              )
-                            }}
-                          </div>
-                        </div>
-                        <div class="row py-1">
-                          <div class="col"><strong>End Date:</strong></div>
-                          <div class="col">
-                            {{
-                              $filters.formatSimpleDate(
-                                item.courseDetails.endDate
-                              )
-                            }}
-                          </div>
-                        </div>
-                        <div class="row py-1">
-                          <div class="col"><strong>Credits:</strong></div>
-                          <div class="col">
-                            {{ item.courseDetails.numCredits }}
-                          </div>
-                        </div>
-                        <div class="row py-1">
-                          <div class="col">
-                            <strong>Work Experience:</strong>
-                          </div>
-                          <div class="col">
-                            {{ item.courseDetails.workExpFlag }}
-                          </div>
-                        </div>
-                        <div class="row py-1">
-                          <div class="col">
-                            <strong>Generic Course Type:</strong>
-                          </div>
-                          <div class="col">
-                            {{ item.courseDetails.genericCourseType }}
-                          </div>
-                        </div>
-                      </v-card-text>
-
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-
-                        <v-btn
-                          text="Close"
-                          @click="isActive.value = false"
-                        ></v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </template>
-                </v-dialog>
-              </template>
-
-              <template v-slot:default="{ isActive }">
-                <v-card title="Dialog">
-                  <v-card-text> </v-card-text>
-
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-
-                    <v-btn text="Close" @click="isActive.value = false"></v-btn>
-                  </v-card-actions>
-                </v-card>
-              </template>
-            </v-dialog>
+            <!-- {{ item.courseDetails.courseName }} -->
+            <CourseDetails :course="item.courseDetails" />
           </template>
 
           <template v-slot:expanded-row="{ columns, item }">
@@ -283,6 +202,7 @@ import { useStudentStore } from "@/store/modules/student";
 import { useAppStore } from "@/store/modules/app";
 import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
+import CourseDetails from "@/components/Common/CourseDetails.vue";
 import StudentCoursesDeleteForm from "@/components/StudentProfile/Forms/StudentCoursesDeleteForm.vue";
 import StudentCoursesCreateForm from "@/components/StudentProfile/Forms/StudentCoursesCreateForm.vue";
 export default {
@@ -290,6 +210,7 @@ export default {
   components: {
     StudentCoursesCreateForm: StudentCoursesCreateForm,
     StudentCoursesDeleteForm: StudentCoursesDeleteForm,
+    CourseDetails: CourseDetails,
   },
   computed: {
     ...mapState(useStudentStore, {
@@ -312,12 +233,12 @@ export default {
           sortable: true,
           class: "text-left",
         },
-        {
-          key: "id",
-          title: "ID",
-          sortable: true,
-          sortDirection: "desc",
-        },
+        // {
+        //   key: "id",
+        //   title: "ID",
+        //   sortable: true,
+        //   sortDirection: "desc",
+        // },
         {
           key: "courseCode",
           title: "Code",
@@ -338,35 +259,35 @@ export default {
         },
         {
           key: "interimPercent",
-          title: "%",
+          title: "Interim %",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-right",
         },
         {
           key: "interimLetterGrade",
-          title: "LG",
+          title: "Interim LG",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-left",
         },
         {
-          key: "completedCoursePercentage",
-          title: "%",
+          key: "finalPercent",
+          title: "Final %",
           class: "text-md-right ",
           sortable: true,
           sortDirection: "desc",
         },
         {
-          key: "completedCourseLetterGrade",
-          title: "LG",
+          key: "finalLetterGrade",
+          title: "Final LG",
           class: "text-md-left",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "equivOrChallenge",
-          title: "Ch",
+          title: "Eq/Ch",
           sortable: true,
           sortDirection: "desc",
         },
@@ -378,7 +299,7 @@ export default {
         },
         {
           key: "fineArtsAppliedSkills",
-          title: "As",
+          title: "Fa/As",
           sortable: true,
           class: "text-left",
         },

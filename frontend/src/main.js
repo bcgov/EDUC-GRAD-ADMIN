@@ -97,6 +97,10 @@ app.config.globalProperties.$filters = {
       return "";
     }
   },
+  //format dates with YYYYMM to YYYY-MM
+  formatYYYYMMStringDate(value) {
+    return value.replace(/^(\d{4})(\d{2})$/, "$1-$2");
+  },
   //Format nulls to n/a
   formatNullsToNA(value) {
     if (!value) {
