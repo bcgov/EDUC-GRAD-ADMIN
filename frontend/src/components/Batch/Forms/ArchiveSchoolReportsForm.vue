@@ -28,10 +28,10 @@
               <v-stepper-header>
                 <v-stepper-item
                   :rules="[
-                      () =>
-                        !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid &&
-                        !v$.getBatchRequest.reportTypeRequired.$invalid
-                    ]"
+                    () =>
+                      !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid &&
+                      !v$.getBatchRequest.reportTypeRequired.$invalid,
+                  ]"
                   complete
                   editable
                   title="Group"
@@ -42,9 +42,10 @@
 
                 <v-stepper-item
                   :rules="[
-                    () => 
-                      !v$.getBatchRequest.batchRunTimeSet.$invalid && 
-                      !v$.selectedConfirmations.allConfirmationsSelected.$invalid
+                    () =>
+                      !v$.getBatchRequest.batchRunTimeSet.$invalid &&
+                      !v$.selectedConfirmations.allConfirmationsSelected
+                        .$invalid,
                   ]"
                   complete
                   editable
@@ -94,7 +95,7 @@
                     </v-col>
                   </v-row>
                   <v-row v-if="group == 'School'">
-                    <SchoolInput>
+                    <SchoolInput disableSelectStudents>
                       <template #inputWarning>
                         <p>
                           This will archive current school reports, which will
@@ -200,12 +201,14 @@
                 <v-spacer />
                 <!-- Right Action Button -->
                 <v-btn
-                  v-if="step < 1" 
-                  @click="step++" 
+                  v-if="step < 1"
+                  @click="step++"
                   :disabled="
-                    v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid || 
-                    v$.getBatchRequest.reportTypeRequired.$invalid" 
-                  color="bcGovBlue">
+                    v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid ||
+                    v$.getBatchRequest.reportTypeRequired.$invalid
+                  "
+                  color="bcGovBlue"
+                >
                   Next
                 </v-btn>
                 <v-btn
