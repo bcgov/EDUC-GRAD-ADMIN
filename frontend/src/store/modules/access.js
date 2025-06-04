@@ -10,6 +10,12 @@ export const useAccessStore = defineStore("access", {
   }),
   getters: {
     getRoles: (state) => state.roles,
+    allowAdoptStudent: (state) => {
+      return (
+        state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR) ||
+        state.roles.includes(Roles.GRAD_INFO_OFFICER)
+      );
+    },
 
     allowUpdateGradStatus: (state) => {
       return (
