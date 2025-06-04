@@ -140,7 +140,8 @@ export default {
 
     const confirmDelete = async () => {
       try {
-        await studentStore.deleteStudentCourses(props.selectedCoursesToDelete);
+        const request = props.selectedCoursesToDelete.map((item) => item.id);
+        await studentStore.deleteStudentCourses(request);
         close();
       } catch (error) {
         console.error("Failed to delete student courses:", error);
