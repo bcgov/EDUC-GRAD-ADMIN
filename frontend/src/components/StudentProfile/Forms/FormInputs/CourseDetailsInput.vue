@@ -156,7 +156,7 @@
           />
         </v-col>
       </v-row>
-      {{course}}
+
       <v-row no-gutters v-if="course?.courseCode == 'IDS'">
         <v-col cols="12">
           <strong>Select Related Course</strong>
