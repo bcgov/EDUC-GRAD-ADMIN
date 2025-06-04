@@ -159,7 +159,6 @@
 
       <v-row no-gutters v-if="course?.courseCode == 'IDS'">
         <v-col cols="12">
-          {{course}}
           <strong>Select Related Course</strong>
           <CourseInput v-model:courseFoundID="course.relatedCourseId"></CourseInput>
 
@@ -170,7 +169,9 @@
 </template>
 
 <script>
+import { mapState} from "pinia";
 import CourseInput from "@/components/Common/CourseInput.vue";
+import { useAppStore } from "@/store/modules/app"
 export default {
   name: "CourseDetailsInput",
   components: { CourseInput },
@@ -189,10 +190,11 @@ export default {
     },
   },
   computed: {
-    letterGrades() {
-      // These will eventually be loaded from a code table
-      return ["A", "B", "C+", "C", "C-", "F", "P", "I"];
-    },
+    ...mapState(useAppStore, {
+      letterGrades: (state) =>
+        state.letterGradeCodes.map((letterGrade) => letterGrade.grade),
+    }),
+
     credits() {
       // These will also eventually come from a code table
       return [2, 3, 4];

@@ -400,10 +400,10 @@ export default {
           });
           this.clearForm();
         } else {
-          this.$toast?.error?.("Course not found.");
+          //ADD VALIDATION("Course not found.");
         }
       } catch (error) {
-        this.$toast?.error?.("Error fetching course data.");
+        //ADD VALIDATION ("Error fetching course data.");
       }
     },
 

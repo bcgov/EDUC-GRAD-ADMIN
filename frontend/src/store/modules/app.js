@@ -136,12 +136,14 @@ export const useAppStore = defineStore("app", {
           await this.getTranscriptTypeCodes();
           await this.getCertificateTypeCodes();
           await this.getStudentGradeCodes();
+          await this.getLetterGradeCodes();
           // GET & SET INSTITUTE SCHOOL AND DISTRICT LISTS
           await this.getSchools();
           await this.getDistricts();
           // GET & SET INSTITUTE CODES
           await this.getInstituteCategoryCodes();
           await this.getInstituteFacilityCodes();     
+          
         }
       } catch (e) {
         if (e.response.status) {
@@ -292,6 +294,15 @@ export const useAppStore = defineStore("app", {
     },
     async setStudentGradeCodes(gradeCodes) {
       this.studentGradeCodes = sharedMethods.filterActiveObjects(sharedMethods.applyDisplayOrder(gradeCodes));
+    },
+    async setLetterGrades(letterGrades) {
+      this.letterGradeCodes = letterGrades;
+    },
+    async getLetterGradeCodes(getNewData = true) {
+      if (getNewData || !sharedMethods.dataArrayExists(this.letterGradeCodes)) {
+        let response = await ProgramManagementService.getLetterGrades();
+        await this.setLetterGrades(response.data);
+      }
     },
   },
 });
