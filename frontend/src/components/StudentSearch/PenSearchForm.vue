@@ -45,26 +45,13 @@
       :text="searchMessage"
     >
       <br />
-      <v-dialog max-width="500" v-if="allowAdoptStudent">
-        <template v-slot:activator="{ props: activatorProps }">
-          <v-btn
-            v-if="showMore"
-            v-bind="activatorProps"
-            color="error"
-            text="More"
-            variant="flat"
-          ></v-btn>
-        </template>
-
-        <template v-slot:default="{ isActive }">
-          <v-card title="More">
-            <v-card-text>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            </v-card-text>
-          </v-card>
-        </template>
-      </v-dialog>
+      <StudentDetailsDialog
+        v-if="allowAdoptStudent"
+        title="PEN Demographics - Adopt Student"
+        :student="studentData"
+        :more="showMore"
+      >
+      </StudentDetailsDialog>
     </v-alert>
   </div>
 </template>
@@ -76,6 +63,7 @@ import { useStudentStore } from "@/store/modules/student";
 import StudentService from "@/services/StudentService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useAccessStore } from "../../store/modules/access.js";
+import StudentDetailsDialog from "../Common/StudentDetailsDialog.vue";
 
 export default {
   name: "penSearchForm",
@@ -86,6 +74,7 @@ export default {
   },
   data() {
     return {
+      studentData: {},
       snackbarStore: useSnackbarStore(),
       isEnvLocalHost: isEnvLocalHost(),
       penInput: "",
@@ -95,7 +84,9 @@ export default {
     };
   },
   created() {},
-  components: {},
+  components: {
+    StudentDetailsDialog: StudentDetailsDialog,
+  },
   computed: {
     ...mapState(useAccessStore, {
       allowAdoptStudent: "allowAdoptStudent",
@@ -142,10 +133,10 @@ export default {
         StudentService.getStudentByPen(this.penInput)
           .then((response) => {
             if (response.data.length != 0) {
-              var studentData = response.data[0];
-              console.log(studentData);
-              if (!this.isStudentInGrad(studentData)) {
-                this.checkStudentStatus(studentData);
+              this.studentData = response.data[0];
+              console.log(this.studentData);
+              if (!this.isStudentInGrad(this.studentData)) {
+                this.checkStudentStatus(this.studentData);
               } else {
                 this.studentHasProgram = true;
                 this.selectStudent(response.data);
@@ -178,8 +169,8 @@ export default {
       });
     },
 
-    checkStudentStatus: function (studentData) {
-      const { legalLastName, statusCode } = studentData;
+    checkStudentStatus: function (data) {
+      const { legalLastName, statusCode } = data;
 
       const baseMessage = `Student ${legalLastName} has a PEN but does not have a GRAD system record.`;
       this.searchLoading = false;
