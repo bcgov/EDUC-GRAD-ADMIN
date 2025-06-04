@@ -1,5 +1,5 @@
 <template>
-  <v-row no-gutters class="mb-4" align="top">
+  <v-row no-gutters class="mb-4">
     <!-- Disabled identifying fields -->
     <v-col cols="12">
       <v-col cols="2" v-if="update">
@@ -41,7 +41,7 @@
     </v-col>
     <v-col cols="10">
       <v-row>
-        <v-col v-if="edit">
+        <v-col v-if="update">
           <v-text-field
             :model-value="course.courseID"
             label="Course ID"
@@ -49,7 +49,7 @@
             density="compact"
           />
         </v-col>
-        <v-col v-if="edit">
+        <v-col v-if="update">
           <v-text-field
             :model-value="course.code"
             label="Course Code"
@@ -57,7 +57,7 @@
             density="compact"
           />
         </v-col>
-        <v-col v-if="edit">
+        <v-col v-if="update">
           <v-text-field
             :model-value="course.level"
             label="Course Level"
@@ -65,7 +65,7 @@
             density="compact"
           />
         </v-col>
-        <v-col v-if="edit">
+        <v-col v-if="update">
           <v-text-field
             :model-value="course.sessionDate"
             label="Session Date"
@@ -145,8 +145,7 @@
           />
         </v-col>
       </v-row>
-      <v-row v-if="course?.genericCourseType == 'I'">
-        <strong>Select Related Course</strong>
+      <v-row v-if="course?.genericCourseType=='G'">
         <v-col cols="12">
           <v-text-field
             v-model="course.customizedCourseTitle"
@@ -156,8 +155,13 @@
             hide-details
           />
         </v-col>
+      </v-row>
+      {{course}}
+      <v-row no-gutters v-if="course?.courseCode == 'IDS'">
         <v-col cols="12">
-          <CourseInput v-model:courseID="course.relatedCourseId"></CourseInput>
+          <strong>Select Related Course</strong>
+          <CourseInput v-model:courseFound="course.relatedCourseId"></CourseInput>
+
         </v-col>
       </v-row>
     </v-col>

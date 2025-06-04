@@ -1,5 +1,5 @@
 <template>
-  <v-card flat class="pa-2">
+  <v-card flat class="p-0 m-0">
     <v-row>
       <v-col>
         <v-text-field
@@ -7,6 +7,7 @@
           label="Course Code"
           @input="onInput"
           :disabled="loading"
+          hide-details
         />
       </v-col>
       <v-col>
@@ -15,6 +16,7 @@
           label="Course Level"
           @input="onInput"
           :disabled="loading"
+          hide-details
         />
       </v-col>
     </v-row>
@@ -40,38 +42,16 @@
           </div>
         </v-expansion-panel-title>
         <v-expansion-panel-text>
-          <v-row>
-            <v-col cols="6"
-              ><strong>Course Code:</strong> {{ localCourse.courseCode }}</v-col
-            >
-            <v-col cols="6"
-              ><strong>Course Level:</strong>
-              {{ localCourse.courseLevel }}</v-col
-            >
-            <v-col cols="6"
-              ><strong>Language:</strong>
-              {{ localCourse.language || "N/A" }}</v-col
-            >
-            <v-col cols="6"
-              ><strong>Generic Type:</strong>
-              {{ localCourse.genericCourseType || "N/A" }}</v-col
-            >
-            <v-col cols="6"
-              ><strong>Start Date:</strong> {{ localCourse.startDate }}</v-col
-            >
-            <v-col cols="6"
-              ><strong>End Date:</strong> {{ localCourse.endDate }}</v-col
-            >
-            <v-col cols="6"
-              ><strong>Completion End Date:</strong>
-              {{ localCourse.completionEndDate || "N/A" }}</v-col
-            >
-            <v-col cols="6"
-              ><strong>Credits:</strong> {{ localCourse.numCredits }}</v-col
-            >
-            <v-col cols="12"
-              ><strong>Course ID:</strong> {{ localCourse.courseID }}</v-col
-            >
+          <v-row no-gutters>
+            <v-col cols="6"><strong>Course Code:</strong> {{ localCourse.courseCode }}</v-col>
+            <v-col cols="6"><strong>Course Level:</strong> {{ localCourse.courseLevel }}</v-col>
+            <v-col cols="6"><strong>Language:</strong> {{ localCourse.language || "N/A" }}</v-col>
+            <v-col cols="6"><strong>Generic Type:</strong> {{ localCourse.genericCourseType || "N/A" }}</v-col>
+            <v-col cols="6"><strong>Start Date:</strong> {{ localCourse.startDate }}</v-col>
+            <v-col cols="6"><strong>End Date:</strong> {{ localCourse.endDate }}</v-col>
+            <v-col cols="6"><strong>Completion End Date:</strong> {{ localCourse.completionEndDate || "N/A" }}</v-col>
+            <v-col cols="6"><strong>Credits:</strong> {{ localCourse.numCredits }}</v-col>
+            <v-col cols="12"><strong>Course ID:</strong> {{ localCourse.courseID }}</v-col>
           </v-row>
         </v-expansion-panel-text>
       </v-expansion-panel>
@@ -90,17 +70,22 @@ import CourseService from "@/services/CourseService";
 import OpenStatusBadge from "@/components/Common/OpenStatusBadge.vue";
 
 export default {
-  name: "CourseLookup",
+  name: "CourseInput",
   components: { OpenStatusBadge },
   props: {
-    course: {
+    courseFound: {
       type: Object,
-      required: true,
+      default: () => ({}),
+    },
+    courseFoundID: {
+      type: [String, Number],
+      default: '',
     },
   },
   data() {
     return {
       localCourse: {
+        courseID: '',
         courseCode: "",
         courseLevel: "",
         courseName: "",
@@ -113,24 +98,70 @@ export default {
     };
   },
   watch: {
-    course: {
+    courseFound: {
       immediate: true,
-      handler(newVal) {
-        Object.assign(this.localCourse, newVal);
+      handler(newCourse) {
+        if (newCourse && newCourse.courseID) {
+          this.localCourse = { ...newCourse };
+          this.notFound = false;
+        }
+      },
+    },
+    courseFoundID: {
+      immediate: true,
+      handler(newID) {
+        // Only fetch if different from current localCourse.courseID
+        if (newID && newID !== this.localCourse.courseID) {
+          this.fetchCourseByID(newID);
+        } else if (!newID) {
+          // Clear localCourse if courseID cleared
+          this.localCourse = {
+            courseID: '',
+            courseCode: "",
+            courseLevel: "",
+            courseName: "",
+            startDate: "",
+            endDate: "",
+          };
+          this.notFound = false;
+        }
       },
     },
   },
   methods: {
+    async fetchCourseByID(id) {
+      this.loading = true;
+      try {
+        const { data } = await CourseService.getCourseByID(id);
+        if (data?.courseName) {
+          this.localCourse = { ...data };
+          this.notFound = false;
+          this.$emit("update:courseFound", data);
+          this.$emit("update:courseFoundID", data.courseID);
+        } else {
+          this.notFound = true;
+          this.localCourse = { courseID: id };
+          this.$emit("update:courseFound", {});
+          this.$emit("update:courseFoundID", "");
+        }
+      } catch (e) {
+        this.notFound = true;
+        this.localCourse = { courseID: id };
+        this.$emit("update:courseFound", {});
+        this.$emit("update:courseFoundID", "");
+      } finally {
+        this.loading = false;
+      }
+    },
     async fetchCourse() {
       const { courseCode, courseLevel } = this.localCourse;
 
-      // Clear if inputs are empty
       if (!courseCode || !courseLevel) {
         this.localCourse = { courseCode, courseLevel };
         this.notFound = false;
         this.loading = false;
-        this.$emit("update:course", {});
-        this.$emit("update:courseID", "");
+        this.$emit("update:courseFound", {});
+        this.$emit("update:courseFoundID", "");
         return;
       }
 
@@ -143,19 +174,19 @@ export default {
         if (data?.courseName) {
           this.localCourse = { ...data };
           this.notFound = false;
-          this.$emit("update:course", data);
-          this.$emit("update:courseID", data.courseID);
+          this.$emit("update:courseFound", data);
+          this.$emit("update:courseFoundID", data.courseID);
         } else {
           this.notFound = true;
           this.localCourse = { courseCode, courseLevel };
-          this.$emit("update:course", {});
-          this.$emit("update:courseID", "");
+          this.$emit("update:courseFound", {});
+          this.$emit("update:courseFoundID", "");
         }
       } catch (e) {
         this.notFound = true;
         this.localCourse = { courseCode, courseLevel };
-        this.$emit("update:course", {});
-        this.$emit("update:courseID", "");
+        this.$emit("update:courseFound", {});
+        this.$emit("update:courseFoundID", "");
       } finally {
         this.loading = false;
       }

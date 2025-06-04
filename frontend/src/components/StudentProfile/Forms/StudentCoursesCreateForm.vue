@@ -11,7 +11,7 @@
       />
     </template>
 
-    <v-card>
+    <v-card style="max-height: 100%; overflow-y: auto;">
       <v-card-title>
         <v-row no-gutters>
           <div class="v-card-title">Add Student Courses</div>
@@ -46,6 +46,7 @@
           <v-stepper-window>
             <!-- Step 1 -->
             <v-stepper-window-item value="0">
+              
               <strong>Add Student Courses</strong>
               <v-row no-gutters class="mt-2">
                 <v-text-field
@@ -100,6 +101,7 @@
                 No courses added yet.
               </div>
               <div v-else>
+                <div style="overflow-y: auto; max-height: 70vh; padding: 0 16px;">
                 <template
                   v-for="(course, index) in coursesToCreate"
                   :key="course.courseID || index"
@@ -111,6 +113,7 @@
                     color="grey-darken-3"
                   />
                 </template>
+                </div>
               </div>
             </v-stepper-window-item>
 
@@ -124,6 +127,7 @@
                   <v-expansion-panel-title
                     class="d-flex align-center justify-space-between"
                   >
+                 
                     <div class="d-flex align-center flex-grow-1">
                       <v-icon
                         :color="
@@ -225,12 +229,18 @@
                   >:
                 </div>
                 <ul class="pl-4">
+                  
                   <li v-for="course in coursesToCreate" :key="course.courseID">
+          
                     <strong
                       >{{ course.courseCode }} {{ course.courseLevel }} –
-                      {{ course.courseSession }}
+                      {{ course.courseSession }} 
                     </strong>
                     {{ course.courseName }}
+                    <ul v-if="course.customizedCourseName">
+                      <li> {{course.customizedCourseName}}</li>
+                    </ul>
+                  
                   </li>
                 </ul>
               </v-alert>
@@ -350,10 +360,12 @@ export default {
       this.step = 0;
       this.dialog = true;
       this.createStudentResultsMessages = [];
+      this.clearCoursesToCreate();
       this.clearForm();
     },
 
     closeCreateStudentCourseDialog() {
+      this.clearCoursesToCreate();
       this.dialog = false;
     },
     async addCourse() {

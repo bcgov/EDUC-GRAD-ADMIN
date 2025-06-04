@@ -55,7 +55,7 @@
               isExpanded,
             }"
           >
-            <td v-if="item.hasRelatedCourse == 'Y'">
+            <td v-if="hasCourseInfo(item)">
               <v-btn
                 variant="text"
                 density="comfortable"
@@ -89,44 +89,36 @@
 
           <template v-slot:expanded-row="{ columns, item }">
             <tr>
-              <td :colspan="columns.length">
-                <ul v-if="item.hasRelatedCourse">
-                  <li v-if="item.customizedCourseName">
-                    <strong>Customized Course Title:</strong>
-                    {{ item.customizedCourseName }}
-                  </li>
-                  <li v-if="item.relatedCourse">
+              <td>
+
+              </td>
+              <td></td>
+              <td :colspan="columns.length - 2">
+                <div v-if="hasCourseInfo(item)"> <!-- Vuetify padding class -->
+                  <!-- Customized Course Name -->
+                  <div v-if="item.customizedCourseName">
+                    <strong>Customized Course:</strong> {{ item.customizedCourseName }}
+                  </div>
+          
+                  <!-- Related Course Details -->
+                  <div v-if="item.relatedCourseDetails">
                     <strong>Related Course:</strong>
-                    {{ item.relatedCourse }}
-                  </li>
-                  <li v-if="item.relatedLevel">
-                    <strong>Related Course Level:</strong>
-                    {{ item.relatedLevel }}
-                  </li>
-                  <li v-if="item.relatedCourseName">
-                    <strong>Related Course Name:</strong>
-                    {{ item.relatedCourseName }}
-                  </li>
-                  <li v-if="item.alternateCourseName">
-                    <strong>Alternate Course Name:</strong>
-                    {{ item.alternateCourseName }}
-                  </li>
-                  <li v-if="item.bestSchoolPercent">
-                    <strong>Best School Percent:</strong>
-                    {{ item.bestSchoolPercent }}
-                  </li>
-                  <li v-if="item.bestExamPercent">
-                    <strong>Best Exam Percent:</strong>
-                    {{ item.bestExamPercent }}
-                  </li>
-                  <li v-if="item.metLitNumRequirement">
-                    <strong>Assessment Equivalent:</strong>
-                    {{ item.metLitNumRequirement }}
-                  </li>
-                  <li v-if="item.specialCase">
-                    <strong>Special Case:</strong> {{ item.specialCase }}
-                  </li>
-                </ul>
+                    {{ item.relatedCourseDetails.courseCode }}
+                    {{ item.relatedCourseDetails.courseLevel }} –
+                    {{ item.relatedCourseDetails.courseName }}
+                  </div>
+          
+                  <!-- Course Exam Details -->
+                  <div v-if="item.courseExam">
+                    <strong>Course Exam:</strong>
+                    <ul class="pl-4">
+                      <li>School %: {{ item.courseExam.schoolPercentage }}%</li>
+                      <li>Best School %: {{ item.courseExam.bestSchoolPercentage }}%</li>
+                      <li>Best Exam %: {{ item.courseExam.bestExamPercentage }}%</li>
+                      <li>Special Case: {{ item.courseExam.specialCase }}</li>
+                    </ul>
+                  </div>
+                </div>
               </td>
             </tr>
           </template>
@@ -307,6 +299,13 @@ export default {
       "setHasGradStatusPendingUpdates",
       "deleteStudentCourses",
     ]),
+    hasCourseInfo(item) {
+      return !!(
+        item.courseExam ||
+        item.relatedCourseDetails ||
+        item.customizedCourseName
+      );
+    },
     closeEditModal(modalKey) {
       this.editDialog[modalKey] = false;
     },
