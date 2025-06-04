@@ -29,19 +29,21 @@
           This student does not have any courses.
         </v-alert>
         <v-row no-gutters>
-          <StudentCoursesDeleteForm courseBatchDelete :courseIds="selected">
+          <StudentCoursesDeleteForm
+            courseBatchDelete
+            :selectedCoursesToDelete="selected"
+          >
           </StudentCoursesDeleteForm>
           <v-spacer />
           <StudentCoursesCreateForm />
         </v-row>
-
         <v-data-table
           v-if="courses"
           v-model="selected"
           :items="courses"
           :headers="fields"
+          :item-value="(item) => item"
           :items-per-page="'-1'"
-          showFilter="true"
           title="studentCourse"
           show-select
         >
@@ -188,7 +190,7 @@
             </v-dialog>
           </template>
           <template v-slot:item.delete="{ item }">
-            <StudentCoursesDeleteForm :courseIds="[item.id]">
+            <StudentCoursesDeleteForm :selectedCoursesToDelete="[item]">
             </StudentCoursesDeleteForm>
           </template>
         </v-data-table>

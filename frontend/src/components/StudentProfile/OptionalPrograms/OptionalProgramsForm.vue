@@ -174,8 +174,8 @@ export default {
   },
   computed: {
     ...mapState(useStudentStore, {
-      studentOptionalPrograms: "getStudentOptionalPrograms",
-      studentCareerPrograms: "getStudentCareerPrograms",
+      studentOptionalPrograms: "studentOptionalPrograms",
+      studentCareerPrograms: "studentCareerPrograms",
       studentGradStatus: "getStudentGradStatus",
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
