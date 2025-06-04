@@ -55,6 +55,8 @@
                   variant="outlined"
                   density="compact"
                   class="pr-1"
+                  persistent-placeholder
+                  persistent-hint
                 />
                 <v-text-field
                   v-model="courseAdd.level"
@@ -62,6 +64,8 @@
                   variant="outlined"
                   density="compact"
                   class="pr-1"
+                  persistent-placeholder
+                  persistent-hint
                 />
                 <v-text-field
                   v-model="courseAdd.courseSession"
@@ -69,6 +73,8 @@
                   variant="outlined"
                   density="compact"
                   class="pr-1"
+                  persistent-placeholder
+                  persistent-hint
                 />
                 <v-btn
                   variant="flat"
@@ -400,10 +406,10 @@ export default {
           });
           this.clearForm();
         } else {
-          this.$toast?.error?.("Course not found.");
+          //ADD VALIDATION("Course not found.");
         }
       } catch (error) {
-        this.$toast?.error?.("Error fetching course data.");
+        //ADD VALIDATION ("Error fetching course data.");
       }
     },
 
