@@ -8,6 +8,9 @@
           label="Course ID"
           variant="outlined"
           density="compact"
+          class="my-2"
+          persistent-placeholder
+          persistent-hint
         />
       </v-col>
       <v-col cols="2" v-if="update">
@@ -16,6 +19,9 @@
           label="Course Code"
           variant="outlined"
           density="compact"
+          class="my-2"
+          persistent-placeholder
+          persistent-hint
         />
       </v-col>
       <v-col cols="2" v-if="update">
@@ -24,6 +30,9 @@
           label="Course Level"
           variant="outlined"
           density="compact"
+          class="my-2"
+          persistent-placeholder
+          persistent-hint
         />
       </v-col>
       <v-col cols="2" v-if="update">
@@ -32,6 +41,9 @@
           label="Session Date"
           variant="outlined"
           density="compact"
+          class="my-2"
+          persistent-placeholder
+          persistent-hint
         />
       </v-col>
     </v-col>
@@ -47,6 +59,9 @@
             label="Course ID"
             variant="outlined"
             density="compact"
+            class="my-2"
+            persistent-placeholder
+            persistent-hint
           />
         </v-col>
         <v-col v-if="update">
@@ -55,6 +70,9 @@
             label="Course Code"
             variant="outlined"
             density="compact"
+            class="my-2"
+            persistent-placeholder
+            persistent-hint
           />
         </v-col>
         <v-col v-if="update">
@@ -63,6 +81,9 @@
             label="Course Level"
             variant="outlined"
             density="compact"
+            class="my-2"
+            persistent-placeholder
+            persistent-hint
           />
         </v-col>
         <v-col v-if="update">
@@ -71,6 +92,9 @@
             label="Session Date"
             variant="outlined"
             density="compact"
+            class="my-2"
+            persistent-placeholder
+            persistent-hint
           />
         </v-col>
 
@@ -82,6 +106,9 @@
             label="Interim %"
             variant="outlined"
             density="compact"
+            class="my-2"
+            persistent-placeholder
+            persistent-hint
           />
         </v-col>
 
@@ -92,6 +119,9 @@
             label="Interim LG"
             variant="outlined"
             density="compact"
+            class="my-2"
+            persistent-placeholder
+            persistent-hint
           />
         </v-col>
 
@@ -102,6 +132,9 @@
             label="Final %"
             variant="outlined"
             density="compact"
+            class="my-2"
+            persistent-placeholder
+            persistent-hint
           />
         </v-col>
 
@@ -112,6 +145,9 @@
             label="Final LG"
             variant="outlined"
             density="compact"
+            class="my-2"
+            persistent-placeholder
+            persistent-hint
           />
         </v-col>
 
@@ -122,6 +158,9 @@
             label="Credits"
             variant="outlined"
             density="compact"
+            class="my-2"
+            persistent-placeholder
+            persistent-hint
           />
         </v-col>
 
@@ -132,6 +171,9 @@
             label="FA/AS"
             variant="outlined"
             density="compact"
+            class="my-2"
+            persistent-placeholder
+            persistent-hint
           />
         </v-col>
 
@@ -142,6 +184,9 @@
             label="Eq / Ch"
             variant="outlined"
             density="compact"
+            class="my-2"
+            persistent-placeholder
+            persistent-hint
           />
         </v-col>
       </v-row>
@@ -152,7 +197,11 @@
             label="Customized Course Title"
             variant="outlined"
             density="compact"
+            class="my-2"
             hide-details
+            persistent-placeholder
+            persistent-hint
+
           />
         </v-col>
       </v-row>

@@ -7,7 +7,12 @@
           label="Course Code"
           @input="onInput"
           :disabled="loading"
+          variant="outlined"
+          density="compact"
+          class="my-2"
           hide-details
+          persistent-placeholder
+          persistent-hint
         />
       </v-col>
       <v-col>
@@ -16,7 +21,12 @@
           label="Course Level"
           @input="onInput"
           :disabled="loading"
+          variant="outlined"
+          density="compact"
+          class="my-2"
           hide-details
+          persistent-placeholder
+          persistent-hint
         />
       </v-col>
     </v-row>
