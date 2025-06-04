@@ -558,7 +558,7 @@ export const useStudentStore = defineStore("student", {
     async createStudentCourses(courses) {
       try {
         const response = await StudentService.createStudentCourses(this.id, courses);
-        this.getStudentCourses(this.getStudentId())
+        this.getStudentCourses(this.id)
         return response.data;
       } catch (error) {
         console.error("Error adding student courses: ", error);

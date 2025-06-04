@@ -127,7 +127,6 @@
                   <v-expansion-panel-title
                     class="d-flex align-center justify-space-between"
                   >
-                 
                     <div class="d-flex align-center flex-grow-1">
                       <v-icon
                         :color="
@@ -240,7 +239,6 @@
                     <ul v-if="course.customizedCourseName">
                       <li> {{course.customizedCourseName}}</li>
                     </ul>
-                  
                   </li>
                 </ul>
               </v-alert>
@@ -417,7 +415,6 @@ export default {
         courseStartDate: null,
         courseEndDate: null,
       };
-      this.validationStep = false;
     },
 
     async submitForm() {
