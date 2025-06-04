@@ -159,8 +159,9 @@
 
       <v-row no-gutters v-if="course?.courseCode == 'IDS'">
         <v-col cols="12">
+          {{course}}
           <strong>Select Related Course</strong>
-          <CourseInput v-model:courseFound="course.relatedCourseId"></CourseInput>
+          <CourseInput v-model:courseFoundID="course.relatedCourseId"></CourseInput>
 
         </v-col>
       </v-row>
@@ -169,7 +170,7 @@
 </template>
 
 <script>
-import CourseInput from "@/components/StudentProfile/Forms/FormInputs/CourseInput.vue";
+import CourseInput from "@/components/Common/CourseInput.vue";
 export default {
   name: "CourseDetailsInput",
   components: { CourseInput },
