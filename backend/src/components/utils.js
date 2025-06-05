@@ -79,7 +79,7 @@ function getAccessToken(req) {
   return user && user.jwt;
 }
 
-async function deleteData(token, url, correlationID) {
+async function deleteData(token, url, data=null,  correlationID) {
   try {
     const username = getUsernameFromToken(token)
     const delConfig = {
@@ -88,6 +88,7 @@ async function deleteData(token, url, correlationID) {
         correlationID: correlationID || uuidv4(),
         "User-Name": username || 'N/A'
       },
+       ...(data && { data })
     };
 
     log.info("delete Data Url", url);

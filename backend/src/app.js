@@ -50,7 +50,6 @@ const batchRouter = require("./routes/batch-router");
 const distributionRouter = require("./routes/distribution-router");
 const graduationRouter = require("./routes/graduation-router");
 const reportsRouter = require("./routes/reports-router");
-const commonRouter = require("./routes/common-router");
 const instituteRouter = require("./routes/institute-router");
 const configRouter = require("./routes/config-router");
 
@@ -227,7 +226,6 @@ apiRouter.use("/:version/student", addVersionToReq, studentRouter);
 apiRouter.use("/:version/graduationreports", addVersionToReq, graduationReportsRouter);
 apiRouter.use("/:version/graduate", addVersionToReq, graduationRouter);
 apiRouter.use("/:version/reports", addVersionToReq, reportsRouter);
-apiRouter.use("/:version/version", addVersionToReq, commonRouter);
 apiRouter.use("/:version/institute", addVersionToReq, instituteRouter);
 apiRouter.use("/:version/config",  addVersionToReq, configRouter);
 

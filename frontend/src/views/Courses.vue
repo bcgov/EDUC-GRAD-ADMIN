@@ -10,6 +10,9 @@
           <v-tab value="courseRequirementsTab" class="text-none" size="large"
             >Course Requirements</v-tab
           >
+          <v-tab value="examinableCoursesTab" class="text-none" size="large"
+            >Examinable Courses</v-tab
+          >
           <v-tab value="fineArtsAppliedSkillsTab" class="text-none" size="large"
             >Fine Arts Applied Skills</v-tab
           >
@@ -40,6 +43,9 @@
             <v-window-item value="courseRequirementsTab">
               <CourseRequirementsSearch />
             </v-window-item>
+            <v-window-item value="examinableCoursesTab">
+              <ExaminableCourses />
+            </v-window-item>
             <v-window-item value="fineArtsAppliedSkillsTab">
               <FineArtsAppliedSkillsCodes
             /></v-window-item>
@@ -64,6 +70,7 @@ import CourseRequirementsSearch from "@/components/Courses/CourseRequirementsSea
 import FineArtsAppliedSkillsCodes from "@/components/Courses/FineArtsAppliedSkillsCodes.vue";
 import ExamSpecialCaseCodes from "@/components/Courses/ExamSpecialCaseCodes.vue";
 import EquivalentOrChallengeCodes from "@/components/Courses/EquivalentOrChallengeCodes.vue";
+import ExaminableCourses from "@/components/Courses/ExaminableCourses.vue";
 export default {
   name: "courses",
   components: {
@@ -73,6 +80,7 @@ export default {
     FineArtsAppliedSkillsCodes: FineArtsAppliedSkillsCodes,
     ExamSpecialCaseCodes: ExamSpecialCaseCodes,
     EquivalentOrChallengeCodes: EquivalentOrChallengeCodes,
+    ExaminableCourses: ExaminableCourses,
   },
   created() {},
   data() {

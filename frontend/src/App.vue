@@ -63,7 +63,7 @@
             </v-card-text>
 
             <v-card-actions>
-              <v-btn :href="authRoutes.LOGIN" v-if="tokenExpired">Login</v-btn>
+              <v-btn @click="login" v-if="tokenExpired">Login</v-btn>
               <v-btn @click="resumeSession" v-else>Yes</v-btn>
               <v-btn @click="logout">Logout</v-btn>
             </v-card-actions>
@@ -175,9 +175,10 @@ export default {
       this.setJwtToken(updatedJwtToken.jwtFrontend);
       this.tokenExpiring = false; // Hide the overlay dialog
     },
-    login() {
+    async login() {
       // Use Vue Router to navigate to the login route
-      this.$router.push(this.authRoutes.LOGIN);
+      await this.logout();
+      window.location.href = this.authRoutes.LOGIN;
     },
   },
 };

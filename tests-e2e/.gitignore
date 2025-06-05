@@ -1,0 +1,9 @@
+**/local.json
+cypress.env.json
+.env
+node_modules/
+docs/
+
+cypress/screenshots
+cypress/downloads
+cypress/e2e/APITest.cy.ts

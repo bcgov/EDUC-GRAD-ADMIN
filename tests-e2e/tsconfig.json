@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+      "baseUrl": "../",
+      "target": "es6",
+      "lib": ["es6", "dom"],
+      "types": ["cypress", "node"],
+      "allowJs": true,
+      "noImplicitAny": true,
+      "strict": true,
+      "module": "commonjs",
+      "allowSyntheticDefaultImports": true
+  },
+  "include": ["./cypress/**/*.ts", "**/*.d.ts", "./cypress.config.ts"],
+  "exclude": [],
+  "noEmit": true
+}

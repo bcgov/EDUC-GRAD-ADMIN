@@ -2,7 +2,7 @@
   <div class="student-profile">
     <!-- Studnet Demo. -->
     <div class="row m-0 py-3">
-      <StudentInformation></StudentInformation>
+      <StudentInformation />
 
       <div class="col-12 px-3">
         <div class="float-right grad-actions" v-if="allowRunGradAlgorithm">
@@ -75,8 +75,17 @@
             <v-window-item value="gradStatusTab">
               <v-tabs v-model="selectedTab" bg-color="bcGovLightGrey">
                 <v-tab value="GRAD" class="text-none">GRAD</v-tab>
-                <v-tab value="Courses" class="text-none"
+                <v-tab value="CoursesLegacy" class="text-none"
                   >Courses ({{ courses.length }})</v-tab
+                >
+                <v-tab
+                  value="Courses"
+                  class="text-none"
+                  v-if="environment != 'prod'"
+                  >Course CRUD
+                  <p class="text-caption font-weight-bold text-bcGovGold">
+                    BETA
+                  </p></v-tab
                 >
                 <v-tab value="Assessments" class="text-none"
                   >Assessments ({{ assessments.length }})</v-tab
@@ -156,15 +165,27 @@
                       </v-progress-circular>
                     </div>
                   </v-window-item>
-                  <v-window-item value="Courses" data-cy="courses-window-item">
+                  <v-window-item
+                    value="CoursesLegacy"
+                    data-cy="courses-window-item"
+                  >
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
                       color="green"
                     >
                     </v-progress-circular>
-                    <StudentCourses></StudentCourses
-                  ></v-window-item>
+                    <StudentCourses></StudentCourses>
+                  </v-window-item>
+                  <!--TODO: add condition to display this tab for onn PROD envs ONLY until Student Course CRUD goes live -->
+                  <v-window-item value="Courses">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    ></v-progress-circular>
+                    <StudentCourses_BETA />
+                  </v-window-item>
                   <v-window-item
                     value="Assessments"
                     data-cy="assessments-window-item"
@@ -175,8 +196,8 @@
                       color="green"
                     >
                     </v-progress-circular>
-                    <StudentAssessments
-                  /></v-window-item>
+                    <StudentAssessments />
+                  </v-window-item>
                   <v-window-item value="Exams" data-cy="exams-window-item">
                     <v-progress-circular
                       v-if="tabLoading"
@@ -196,8 +217,8 @@
                       color="green"
                     >
                     </v-progress-circular>
-                    <StudentOptionalPrograms></StudentOptionalPrograms
-                  ></v-window-item>
+                    <StudentOptionalPrograms></StudentOptionalPrograms>
+                  </v-window-item>
                   <v-window-item value="Audit" data-cy="audit-window-item">
                     <v-progress-circular
                       v-if="tabLoading"
@@ -586,11 +607,12 @@ import StudentGraduationService from "@/services/StudentGraduationService.js";
 import GraduationService from "@/services/GraduationService.js";
 import GRADRequirementDetails from "@/components/StudentProfile/GRADRequirementDetails.vue";
 import StudentInformation from "@/components/StudentProfile/StudentInformation.vue";
-import StudentCourses from "@/components/StudentProfile/StudentCourses.vue";
+import StudentCourses from "@/components/StudentProfile/Courses/StudentCourses.vue";
+import StudentCourses_BETA from "@/components/StudentProfile/Courses/StudentCourses_BETA.vue";
 import StudentAssessments from "@/components/StudentProfile/StudentAssessments.vue";
 import StudentExams from "@/components/StudentProfile/StudentExams.vue";
 import StudentGraduationStatus from "@/components/StudentProfile/StudentGraduationStatus.vue";
-import StudentOptionalPrograms from "@/components/StudentProfile/StudentOptionalPrograms.vue";
+import StudentOptionalPrograms from "@/components/StudentProfile/OptionalPrograms/StudentOptionalPrograms.vue";
 import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/StudentAuditHistory.vue";
 import StudentUndoCompletionReasons from "@/components/StudentProfile/StudentUndoCompletionReasons.vue";
 import StudentNotes from "@/components/StudentProfile/AuditHistory/StudentNotes.vue";
@@ -634,12 +656,12 @@ export default {
       },
     };
   },
-  created() {
-    StudentService.getStudentPen(this.$route.params.studentId)
+  async created() {
+    const studentIdFromURL = this.$route.params.studentId;
+    StudentService.getStudentPen(studentIdFromURL)
       .then((response) => {
         this.pen = response.data.pen;
         this.setStudentPen(this.pen);
-        const studentIdFromURL = this.$route.params.studentId;
         this.setStudentId(studentIdFromURL);
         this.loadStudent(studentIdFromURL);
       })
@@ -652,6 +674,7 @@ export default {
           );
         }
       });
+    await this.getStudentCourses(studentIdFromURL);
     this.window.width = window.innerWidth;
     this.window.height = window.innerHeight;
     if (this.window.width < 768) {
@@ -669,7 +692,7 @@ export default {
       await this.getUngradReasons(false);
       await this.getInstituteCategoryCodes(false);
     } catch (e) {
-      if (e.response.status) {
+      if (e.response?.status) {
         this.snackbarStore.showSnackbar(
           "There was an error: " + e.response.status,
           "error",
@@ -682,6 +705,7 @@ export default {
     StudentInformation: StudentInformation,
     StudentUndoCompletionReasons: StudentUndoCompletionReasons,
     StudentCourses: StudentCourses,
+    StudentCourses_BETA: StudentCourses_BETA,
     GRADRequirementDetails: GRADRequirementDetails,
     StudentAssessments: StudentAssessments,
     StudentExams: StudentExams,
@@ -710,7 +734,7 @@ export default {
         confirm: false,
       },
       selectedSubTab: "gradStatus",
-      selectedTab: 0,
+      selectedTab: "GRAD",
       projectedGradStatus: [],
       projectedGradStatusWithRegistrations: [],
       tabLoading: false,
@@ -770,13 +794,13 @@ export default {
     }),
     ...mapState(useAppStore, {
       ungradReasons: "ungradReasons",
+      environment: "getEnvironment",
     }),
     ...mapState(useStudentStore, {
       profile: "getStudentProfile",
-      courses: "getStudentCourses",
+      courses: "getStudentCoursesLegacy",
       assessments: "getStudentAssessments",
       exams: "getStudentExams",
-      studentHasCourses: "studentHasCourses",
       gradInfo: "getStudentGraduationCreationAndUpdate",
       hasGradStatus: "studentHasGradStatus",
       studentGradStatus: "getStudentGradStatus",
@@ -833,6 +857,7 @@ export default {
       "setStudentProfile",
       "setStudentAssessments",
       "setStudentGradStatusOptionalPrograms",
+      "setStudentCoursesLegacy",
       "setStudentCourses",
       "setStudentExams",
       "setStudentNotes",
@@ -843,6 +868,7 @@ export default {
       "setStudentOptionalProgramsAuditHistory",
       "setStudentPen",
       "setStudentId",
+      "getStudentCourses",
     ]),
     ...mapActions(useAppStore, [
       "getSchools",
@@ -937,7 +963,7 @@ export default {
       this.tabLoading = false;
     },
     graduateStudent() {
-      this.selectedTab = 0;
+      this.selectedTab = "GRAD";
       this.tabLoading = true;
       GraduationService.graduateStudent(this.studentId)
         .then(() => {
@@ -956,7 +982,7 @@ export default {
     },
     updateStudentReports() {
       this.disableScreen = true;
-      this.selectedTab = 0;
+      this.selectedTab = "GRAD";
       this.tabLoading = true;
       GraduationService.updateStudentReports(this.studentId)
         .then(() => {
@@ -1083,32 +1109,36 @@ export default {
       this.loadStudentHistory(studentIdFromURL);
       this.loadStudentOptionalProgramHistory(studentIdFromURL);
       this.tabLoading = false;
-    }, //loadStudent
+    },
+
     loadStudentProfile() {
       StudentService.getStudentByPen(this.pen)
         .then((response) => {
           let data = response.data;
-          //get true PEN for MER students
-          //TODO SF: change length check to valid PEN check? Or do we want a valid GUID check utility?
+          // Check for trueStudentID
           if (data[0].trueStudentID && data[0].trueStudentID.length > 9) {
+            // Fetch the true student data first
             StudentService.getStudentByID(data[0].trueStudentID)
               .then((response) => {
                 data[0].trueStudentID = response.data.pen;
+                this.setStudentProfile(data);
               })
               .catch((error) => {
-                if (error.response.status) {
+                if (error.response?.status) {
                   this.snackbarStore.showSnackbar(
                     "There was an error: " + error.response.status,
                     "error",
                     5000
                   );
                 }
+                this.setStudentProfile(data);
               });
+          } else {
+            this.setStudentProfile(data);
           }
-          this.setStudentProfile(data);
         })
         .catch((error) => {
-          if (error.response.status) {
+          if (error.response?.status) {
             this.snackbarStore.showSnackbar(
               "There was an error: " + error.response.status,
               "error",
@@ -1117,6 +1147,7 @@ export default {
           }
         });
     },
+
     loadAssessments() {
       AssessmentService.getStudentAssessment(this.pen)
         .then((response) => {
@@ -1165,7 +1196,7 @@ export default {
     loadStudentCourseAchievements() {
       CourseService.getStudentCourseAchievements(this.pen)
         .then((response) => {
-          this.setStudentCourses(response.data);
+          this.setStudentCoursesLegacy(response.data);
         })
         .catch((error) => {
           if (error.response.status) {
@@ -1233,32 +1264,39 @@ export default {
 .admin-actions {
   top: 50px;
 }
+
 .last-updated-date {
   position: absolute;
   top: -1px;
   right: 0;
 }
+
 .student-profile {
   padding-left: 25px;
   padding-right: 25px;
 }
+
 .grad-actions {
   position: absolute;
   right: 0;
   top: -100px;
 }
+
 .profile-info {
   font-size: 29px;
 }
+
 .profile-info button {
   font-size: 29px;
   box-shadow: none !important;
   padding: 0px;
   color: #313132;
 }
+
 .profile-info button.btn.btn-link:focus {
   border: none !important;
 }
+
 .close-record {
   float: right;
   text-align: center;
@@ -1288,10 +1326,12 @@ header.card-header button {
 .no-underline {
   text-decoration: none;
 }
+
 .profile-name-data {
   word-break: break-all;
   max-width: 400px;
 }
+
 .profile-name label {
   font-size: 11px;
   float: left;
@@ -1302,6 +1342,7 @@ header.card-header button {
   color: #036;
   border-bottom: 1px dotted #ccc;
 }
+
 .profile-name td {
   padding: 0px 10px;
 }
@@ -1311,14 +1352,17 @@ header.card-header button {
   right: 0;
   top: 0;
 }
+
 .link-active {
   text-decoration: none;
   border-bottom: 3px solid black;
 }
+
 .record-timestamp {
   position: absolute;
   right: 50px;
 }
+
 .optionalProgramName {
   margin-top: 1rem;
 }

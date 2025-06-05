@@ -1,0 +1,41 @@
+{
+  "tags": {
+    "allowUnknownTags": true,
+    "disctionaries": ["jsdoc", "closure"]
+  },
+  "source": {
+    "include": ["cypress/e2e"],
+    "includePattern": ".+\\.ts$",
+    "excludePattern": "node_modules"
+  },
+  "opts": {
+    "template": "node_modules/docdash",
+    "destination": "./docs",
+    "recurse": true,
+    "readme": "README.md"
+  },
+  "plugins": ["plugins/markdown", "customDoc/custom-tags.js"],
+  "markdown": {
+    "parser": "gfm",
+    "hardwrap": true,
+    "idInHeadings": true
+  },
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false,
+    "default": {
+        "outputSourceFiles": true,
+        "includeDate": false,
+        "useLongnameInNav": true,
+        "staticFiles": {
+          "include": ["customDoc/custom.css"]
+        },
+        "layoutFile": "customDoc/custom-layout.tmpl"
+    }
+  },
+  "docdash": {
+    "sort": true,
+    "search": true,
+    "collapse": false
+  }
+}

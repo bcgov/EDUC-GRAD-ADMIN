@@ -4,6 +4,7 @@ const router = express.Router();
 const config = require("../config/index");
 const auth = require("../components/auth");
 const roles = require("../components/roles");
+const log = require("../components/logger");
 const {
   errorResponse,
   getData,
@@ -40,8 +41,8 @@ router.delete(
   isValidUiTokenWithStaffRoles,
   deleteStudentAPI
 );
-
 async function getStudentAPI(req, res) {
+ 
   const token = auth.getBackendToken(req);
   const version = req.version;
 
@@ -82,15 +83,17 @@ async function postStudentAPI(req, res) {
   }
 }
 async function deleteStudentAPI(req, res) {
+  console.log("Incoming DELETE request payload:", req.body);
   const token = auth.getBackendToken(req);
   const version = req.version;
   try {
     const url = `${config.get("server:studentAPIURL")}/api/${version}/student${
       req.url
     }`;
-    const data = await deleteData(token, url, req.session?.correlationID);
+    const data = await deleteData(token, url, req.body, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
+    console.log("Err")
     return errorResponse(res);
   }
 }
