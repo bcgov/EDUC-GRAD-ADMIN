@@ -246,7 +246,7 @@ export default {
 
     credits() {
       // These will also eventually come from a code table
-      return [2, 3, 4];
+      return [0,1,2, 3, 4];
     },
   },
 };
