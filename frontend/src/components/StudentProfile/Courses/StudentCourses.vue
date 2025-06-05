@@ -103,9 +103,8 @@
                   <!-- Related Course Details -->
                   <div v-if="item.relatedCourseDetails">
                     <strong>Related Course:</strong>
-                    {{ item.relatedCourseDetails.courseCode }}
-                    {{ item.relatedCourseDetails.courseLevel }} –
-                    {{ item.relatedCourseDetails.courseName }}
+                    <CourseDetails :course="item.relatedCourseDetails" />
+                   
                   </div>
           
                   <!-- Course Exam Details -->
