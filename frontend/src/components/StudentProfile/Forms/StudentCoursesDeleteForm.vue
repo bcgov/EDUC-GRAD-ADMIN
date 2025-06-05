@@ -1,7 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="dialog" persistent max-width="500px">
- 
+    <v-dialog v-model="dialog" persistent max-width="600px">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
           <v-btn
@@ -29,7 +28,9 @@
       <v-card>
         <template v-slot:title>
           <v-row no-gutters>
-            <div class="v-card-title">Delete Student Course</div>  USED {{anyUsedForGraduation}}
+            <div class="v-card-title">
+              Delete Student Course
+            </div>
             <v-spacer />
             <v-btn
               icon="mdi-close"
@@ -44,50 +45,38 @@
         </template>
 
         <v-card-text>
-          <pre>{{selectedCoursesToDelete}}</pre>
-          <pre>{{requirementsMet}}</pre>
+          <v-alert
+          v-if="selectedCoursesWithWarnings.length > 0"
+          type="warning"
+          border="start"
+          prominent
+          class="pl-4"
+          elevation="2"
+          variant="tonal"
+        >
+          You are about to remove the following courses from student:
+          {{ studentPen }}
+          <ul>
+            <li v-for="course in selectedCoursesWithWarnings" :key="course.id">
+              <strong>
+                {{ course.courseDetails.courseName }}
+                {{ course.courseLevel }}
+                {{ course.courseSession }}
+              </strong>
+              <ul style="padding-left: 1.5em;">
+                <li
+                  v-for="(issue, i) in course.validationIssues"
+                  :key="i"
+                >
+                  <div class="d-flex flex-column align-start">
           
-
-          <v-alert
-            v-if="anyUsedForGraduation"
-            type="info"
-            variant="tonal"
-            border="start"
-            class="mt-6 mb-0 ml-1 py-3 width-fit-content"
-          >
-            One or more of these courses have been used to meet a graduation
-            requirement.
-          </v-alert>
-
-          <v-alert
-            v-if="anyHasExamRecord"
-            type="info"
-            variant="tonal"
-            border="start"
-            class="mt-6 mb-0 ml-1 py-3 width-fit-content"
-          >
-            One or more of these courses have an associated exam record.
-          </v-alert>
-
-          <v-alert
-            v-if="selectedCoursesToDelete.length > 0"
-            type="warning"
-            border="left"
-            prominent
-            class="pl-4"
-          >
-            You are about to remove the following courses from student:
-            {{ studentPen }}
-            <ul>
-              <li v-for="course in selectedCoursesToDelete" :key="course.id">
-                <strong>
-                  {{ course.courseDetails.courseName }}
-                  {{ course.courseLevel }}
-                  {{ course.courseSession }}
-                </strong>
-              </li>
-            </ul>
-          </v-alert>
+                    {{ issue.message }}
+                  </div>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </v-alert>
         </v-card-text>
 
         <v-card-actions>
@@ -108,7 +97,7 @@
             density="default"
             @click="confirmDelete"
           >
-            Delete Course<span v-if="selectedCoursesToDelete.length > 1"></span>
+            Delete Course<span v-if="selectedCoursesToDelete.length > 1">s</span>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -144,22 +133,52 @@ export default {
     studentStore() {
       return useStudentStore();
     },
-    studentPen(){
-      return this.studentStore.pen
+    studentPen() {
+      return this.studentStore.pen;
     },
-    anyUsedForGraduation() {
-      return this.selectedCoursesToDelete.some((course) =>
-        this.studentStore.isCourseUsedForGraduation(course.id)
-      );
+    
+    requirementsMet() {
+      return this.studentStore.student.gradStatus.studentGradData;
     },
-    anyHasExamRecord() {
-      return this.selectedCoursesToDelete.some((course) =>
-        this.studentStore.hasAssociatedExam?.(course.id)
-      );
+    selectedCoursesWithWarnings() {
+      return this.selectedCoursesToDelete.map((course) => {
+        const match = this.studentStore.student.gradStatus.studentGradData.studentCourses.studentCourseList.find(
+          (c) =>
+            c.courseCode === course.courseDetails.courseCode &&
+            c.courseLevel === course.courseDetails.courseLevel &&
+            c.courseSession === course.courseDetails.courseSession
+        );
+
+        const isUsedForGrad = match?.used || false;
+        const hasExam =
+  match?.bestExamPercent !== null ||
+  (match?.specialCase && match.specialCase !== 'N') ||
+  (match?.completedCoursePercentage !== null && match.completedCoursePercentage !== 0);
+
+        return {
+          ...course,
+          validationIssues: [
+            ...(course.validationIssues || []),
+            ...(isUsedForGrad
+              ? [
+                  {
+                    type: "warning",
+                    message: "This course is used to meet graduation requirements.",
+                  },
+                ]
+              : []),
+            ...(hasExam
+              ? [
+                  {
+                    type: "info",
+                    message: "This course has an associated exam record.",
+                  },
+                ]
+              : []),
+          ],
+        };
+      });
     },
-    requirementsMet(){
-      return this.studentStore.student.gradStatus.studentGradData.studentCourses.studentCourseList
-    }
   },
   methods: {
     close() {
@@ -175,7 +194,7 @@ export default {
       }
     },
     hasPermissions(module, permission) {
-      return true; // Replace with actual permission logic
+      return true; // Replace with real permission check
     },
   },
 };
