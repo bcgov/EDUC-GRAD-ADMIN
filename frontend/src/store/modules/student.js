@@ -588,10 +588,11 @@ export const useStudentStore = defineStore("student", {
     },
   },
   getters: {
-    isCourseUsedForGraduation: (state) => (courseId) => {
+    isCourseUsedForGraduation: (state) => (course) => {
+      
       return (
-        state.student.courses.find((course) => course.id === courseId)
-          ?.usedForGrad || false
+        state.student.gradStatus.studentGradData.studentCourses.studentCourseList.find((course) => course.id === courseId)
+          ?.used || false
       );
     },
     hasAssociatedExam: (state) => (courseId) => {
@@ -739,9 +740,6 @@ export const useStudentStore = defineStore("student", {
     isAdmin() {
       return this.roles == "administrator";
     },
-    // isAuthenticated() {
-    //   return this.roles == "authenticated";
-    // },
     getPermissions() {
       return this.permissions;
     },
