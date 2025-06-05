@@ -46,8 +46,7 @@
     >
       <br />
       <StudentDetailsDialog
-        v-if="allowAdoptStudent"
-        title="PEN Demographics - Adopt Student"
+        v-if="hasPermissions('STUDENT', 'adoptPENStudent')"
         :student="studentData"
         :more="showMore"
       >
@@ -88,9 +87,7 @@ export default {
     StudentDetailsDialog: StudentDetailsDialog,
   },
   computed: {
-    ...mapState(useAccessStore, {
-      allowAdoptStudent: "allowAdoptStudent",
-    }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
   },
   methods: {
     ...mapActions(useStudentStore, ["unsetStudent"]),

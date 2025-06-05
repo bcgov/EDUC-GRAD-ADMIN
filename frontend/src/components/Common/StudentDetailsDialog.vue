@@ -1,16 +1,30 @@
 <template>
   <div v-if="student">
-    <span
-      variant="text"
+    <v-btn
+      variant="plain"
+      color="error"
       v-ripple
       @click="studentDialog = !studentDialog"
-      class="span-btn text-left px-0 d-block"
+      class="v-btn-link text-left px-0 d-block"
       v-if="more"
     >
       more
-    </span>
+    </v-btn>
     <v-dialog v-model="studentDialog" max-width="600px">
-      <v-card :title="title">
+      <v-card>
+        <v-card-title
+          ><v-row no-gutters>
+            <div class="mt-2 ml-2">PEN Demographics - Adopt Student</div>
+            <v-spacer />
+            <v-btn
+              icon="mdi-close"
+              density="compact"
+              rounded="sm"
+              @click="studentDialog = !studentDialog"
+              class="mt-2"
+            />
+          </v-row>
+        </v-card-title>
         <v-card-text>
           <div class="my-1"><strong>PEN: </strong>{{ student.pen }}</div>
           <div class="my-1">
@@ -35,8 +49,8 @@
             <strong>Deceased Date: </strong>{{ student.deceasedDate }}
           </div>
           <div class="my-1">
-            <strong>Mincode: </strong>{{ student.mincode }} <br />
-            {{ getSchoolNameByMincode(student.mincode).displayName }}
+            <strong>Mincode: </strong>{{ student.mincode }} -
+            {{ schoolByMincode(student.mincode).displayName }}
           </div>
           <div class="my-1">
             <strong>Local ID: </strong>{{ student.trueStudentID }}
@@ -72,7 +86,7 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, {
-      getSchoolNameByMincode: "getSchoolNameByMincode",
+      schoolByMincode: "schoolByMincode",
     }),
   },
   methods: {},
@@ -84,11 +98,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.span-btn {
-  font-size: 0.875rem;
-}
-.span-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-</style>
+<style scoped></style>
