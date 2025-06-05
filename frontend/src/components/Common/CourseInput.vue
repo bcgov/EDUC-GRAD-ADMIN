@@ -206,7 +206,7 @@ export default {
     },
   },
   created() {
-    this.debouncedLookup = debounce(this.fetchCourse, 400);
+    this.debouncedLookup = debounce(this.fetchCourse, 1000);
   },
 };
 </script>

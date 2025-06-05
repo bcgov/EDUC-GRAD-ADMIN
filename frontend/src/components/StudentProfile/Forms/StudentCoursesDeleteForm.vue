@@ -1,14 +1,11 @@
 <template>
   <div>
     <v-dialog v-model="dialog" persistent max-width="500px">
+ 
       <template v-slot:activator="{ props }">
-        <!-- Let parent override with their own button via activator slot -->
         <slot name="activator" v-bind="props">
-          <!-- Default internal buttons if no external activator slot is provided -->
           <v-btn
-            v-if="
-              hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete
-            "
+            v-if="hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete"
             v-bind="props"
             :disabled="selectedCoursesToDelete.length === 0"
             color="error"
@@ -32,7 +29,7 @@
       <v-card>
         <template v-slot:title>
           <v-row no-gutters>
-            <div class="v-card-title">Delete Student Course</div>
+            <div class="v-card-title">Delete Student Course</div>  USED {{anyUsedForGraduation}}
             <v-spacer />
             <v-btn
               icon="mdi-close"
@@ -47,6 +44,10 @@
         </template>
 
         <v-card-text>
+          <pre>{{selectedCoursesToDelete}}</pre>
+          <pre>{{requirementsMet}}</pre>
+          
+
           <v-alert
             v-if="anyUsedForGraduation"
             type="info"
@@ -76,13 +77,14 @@
             class="pl-4"
           >
             You are about to remove the following courses from student:
-            {{ studentId }}
+            {{ studentPen }}
             <ul>
               <li v-for="course in selectedCoursesToDelete" :key="course.id">
-                <strong
-                  >{{ course.courseID }} {{ course.courseName }}
-                  {{ course.courseLevel }} {{ course.courseSession }}</strong
-                >
+                <strong>
+                  {{ course.courseDetails.courseName }}
+                  {{ course.courseLevel }}
+                  {{ course.courseSession }}
+                </strong>
               </li>
             </ul>
           </v-alert>
@@ -115,7 +117,6 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
 import { useStudentStore } from "@/store/modules/student";
 
 export default {
@@ -129,49 +130,53 @@ export default {
       type: Boolean,
       default: false,
     },
+    studentId: {
+      type: [String, Number],
+      default: null,
+    },
   },
-  setup(props) {
-    const dialog = ref(false);
-    const studentStore = useStudentStore();
-
-    const close = () => {
-      dialog.value = false;
+  data() {
+    return {
+      dialog: false,
     };
-
-    const confirmDelete = async () => {
+  },
+  computed: {
+    studentStore() {
+      return useStudentStore();
+    },
+    studentPen(){
+      return this.studentStore.pen
+    },
+    anyUsedForGraduation() {
+      return this.selectedCoursesToDelete.some((course) =>
+        this.studentStore.isCourseUsedForGraduation(course.id)
+      );
+    },
+    anyHasExamRecord() {
+      return this.selectedCoursesToDelete.some((course) =>
+        this.studentStore.hasAssociatedExam?.(course.id)
+      );
+    },
+    requirementsMet(){
+      return this.studentStore.student.gradStatus.studentGradData.studentCourses.studentCourseList
+    }
+  },
+  methods: {
+    close() {
+      this.dialog = false;
+    },
+    async confirmDelete() {
       try {
-        const request = props.selectedCoursesToDelete.map((item) => item.id);
-        await studentStore.deleteStudentCourses(request);
-        close();
+        const request = this.selectedCoursesToDelete.map((item) => item.id);
+        await this.studentStore.deleteStudentCourses(request);
+        this.close();
       } catch (error) {
         console.error("Failed to delete student courses:", error);
       }
-    };
-
-    const hasPermissions = (module, permission) => {
-      return true; // Replace with actual logic
-    };
-
-    const anyUsedForGraduation = computed(() =>
-      props.selectedCoursesToDelete.some((id) =>
-        studentStore.isCourseUsedForGraduation?.(id)
-      )
-    );
-
-    const anyHasExamRecord = computed(() =>
-      props.selectedCoursesToDelete.some((id) =>
-        studentStore.hasAssociatedExam?.(id)
-      )
-    );
-
-    return {
-      dialog,
-      close,
-      confirmDelete,
-      hasPermissions,
-      anyUsedForGraduation,
-      anyHasExamRecord,
-    };
+    },
+    hasPermissions(module, permission) {
+      return true; // Replace with actual permission logic
+    },
   },
 };
 </script>

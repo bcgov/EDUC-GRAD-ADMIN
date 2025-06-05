@@ -589,8 +589,10 @@ export const useStudentStore = defineStore("student", {
   },
   getters: {
     isCourseUsedForGraduation: (state) => (courseId) => {
+      console.log(courseId)
+      console.log(state.student.gradStatus.studentGradData.requirementsMet)
       return (
-        state.student.courses.find((course) => course.id === courseId)
+        state.student.gradStatus.studentGradData.requirementsMet.find((course) => course.id === courseId)
           ?.usedForGrad || false
       );
     },
