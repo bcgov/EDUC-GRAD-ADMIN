@@ -39,7 +39,7 @@ export default {
       "/api/v1/course/studentcourse/pen/" + pen + "?sortForUI=true"
     );
   },
-  getStudentExamDetails(pen) {
+  getStudentExamDetailsLegacy(pen) {
     return ApiService.apiAxios.get(
       "/api/v1/course/studentexam/pen/" + pen + "?sortForUI=true"
     );

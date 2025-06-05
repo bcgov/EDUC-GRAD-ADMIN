@@ -23,13 +23,12 @@ export const useStudentStore = defineStore("student", {
     student: {
       profile: {},
       courses: [], // do we want to create a coursesMap ?
-      coursesLegacy: [],
       assessments: [],
-      exams: [],
+      coursesLegacy: [],
+      examsLegacy: [],
       notes: [],
       gradStatus: "not loaded",
       optionalPrograms: [],
-      hasExams: false,
       hasAssessments: false,
       hasGradStatus: false,
       hasgradStatusPendingUpdates: false,
@@ -341,11 +340,11 @@ export const useStudentStore = defineStore("student", {
       this.student.notes = [];
       this.student.id = [];
       this.student.coursesLegacy = [];
+      this.student.courses = [];
       this.student.assessments = [];
-      this.student.exams = [];
+      this.student.examsLegacy = [];
       this.student.gradStatus = "not loaded";
       this.student.optionalPrograms = [];
-      this.student.hasExams = false;
       this.student.hasAssessments = false;
       this.student.hasNotes = false;
       this.student.hasGradStatus = false;
@@ -433,11 +432,8 @@ export const useStudentStore = defineStore("student", {
         this.student.hasAssessments = true;
       }
     },
-    setStudentExams(payload) {
-      this.student.exams = payload;
-      if (this.student.exams.length) {
-        this.student.hasExams = true;
-      }
+    setStudentExamsLegacy(payload) {
+      this.student.examsLegacy = payload;
     },
     // isProxy, toRaw { ...payload }
     setStudentGradStatus(payload) {
@@ -568,10 +564,16 @@ export const useStudentStore = defineStore("student", {
   },
   getters: {
     isCourseUsedForGraduation: (state) => (courseId) => {
-      return state.student.courses.find(course => course.id === courseId)?.usedForGrad || false;
+      return (
+        state.student.courses.find((course) => course.id === courseId)
+          ?.usedForGrad || false
+      );
     },
     hasAssociatedExam: (state) => (courseId) => {
-      return state.student.courses.find(course => course.id === courseId)?.hasExam || false;
+      return (
+        state.student.courses.find((course) => course.id === courseId)
+          ?.hasExam || false
+      );
     },
     getEditedGradStatus() {
       return this.editedGradStatus;
@@ -646,11 +648,11 @@ export const useStudentStore = defineStore("student", {
         id: `${course.courseCode}_${course.courseLevel}_${course.sessionDate}`,
       }));
     },
-    getStudentExams() {
-      if (!this.student.exams || this.student.exams.length === 0) {
+    getStudentExamsLegacy() {
+      if (!this.student.examsLegacy || this.student.examsLegacy.length === 0) {
         return [];
       } else {
-        return this.student.exams;
+        return this.student.examsLegacy;
       }
     },
     getStudentAssessments() {
@@ -671,9 +673,6 @@ export const useStudentStore = defineStore("student", {
     },
     getStudentProgram() {
       return this.student.gradStatus.program;
-    },
-    studentHasExams() {
-      return this.student.hasExams;
     },
     studentHasAssessments() {
       return this.student.hasAssessments;
@@ -760,6 +759,9 @@ export const useStudentStore = defineStore("student", {
 
     studentCourses() {
       return this.student.courses;
+    },
+    studentExamCourses() {
+      return this.student.courses.filter((course) => !!course.courseExam);
     },
   },
 });
