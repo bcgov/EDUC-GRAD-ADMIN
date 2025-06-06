@@ -4,7 +4,7 @@
       variant="plain"
       color="error"
       v-ripple
-      @click="studentDialog = !studentDialog"
+      @click="studentDialog = !studentDialog && (showHideAdopt = true)"
       class="v-btn-link text-left px-0 d-block"
       v-if="more"
     >
@@ -66,6 +66,44 @@
             <strong>Status Code: </strong>{{ student.statusCode }}
           </div>
         </v-card-text>
+        <v-card-actions
+          class="sticky-form-actions"
+          v-if="hasPermissions('STUDENT', 'adoptPENStudent')"
+        >
+          <v-btn
+            color="error"
+            variant="outlined"
+            @click="studentDialog = !studentDialog"
+          >
+            Cancel
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            v-if="showHideAdopt"
+            id="save-status-btn"
+            color="primary"
+            variant="flat"
+            @click="showHideAdopt = !showHideAdopt"
+          >
+            Adopt PEN Student
+          </v-btn>
+          <v-btn
+            v-if="!showHideAdopt"
+            id="save-status-btn"
+            color="error"
+            variant="flat"
+            @click="adoptStudent(this.student)"
+          >
+            Confirm Adopt PEN Student
+            <v-progress-circular
+              v-if="adoptLoading"
+              indeterminate
+              color="error"
+              size="20"
+            >
+            </v-progress-circular>
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </div>
@@ -74,7 +112,9 @@
 <script>
 import { mapState } from "pinia";
 import { useAppStore } from "@/store/modules/app";
-
+import { useAccessStore } from "@/store/modules/access";
+import StudentService from "@/services/StudentService.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   props: {
     student: Object,
@@ -84,16 +124,40 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      showHideAdopt: true,
+      studentDialog: false,
+      snackbarStore: useSnackbarStore(),
+      adoptLoading: false,
+    };
+  },
   computed: {
     ...mapState(useAppStore, {
       schoolByMincode: "schoolByMincode",
     }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
   },
-  methods: {},
-  data() {
-    return {
-      studentDialog: false,
-    };
+  methods: {
+    async adoptStudent(studentData) {
+      try {
+        this.adoptLoading = true;
+
+        const response = await StudentService.adoptPENStudent(studentData);
+        console.log("Adopted Student Response:", response);
+
+        const studentID = response?.data?.studentID;
+        if (studentID) {
+          this.$router.push({ path: `/student-profile/${studentID}` });
+        }
+
+        this.studentDialog = false;
+      } catch (error) {
+        this.$snackbarStore.error(error);
+      } finally {
+        this.adoptLoading = false;
+      }
+    },
   },
 };
 </script>
