@@ -190,10 +190,10 @@
           />
         </v-col>
       </v-row>
-      <v-row v-if="course?.genericCourseType=='G'">
+      <v-row v-if="course?.genericCourseType == 'G'">
         <v-col cols="12">
           <v-text-field
-            v-model="course.customizedCourseTitle"
+            v-model="course.customizedCourseName"
             label="Customized Course Title"
             variant="outlined"
             density="compact"
@@ -201,7 +201,6 @@
             hide-details
             persistent-placeholder
             persistent-hint
-
           />
         </v-col>
       </v-row>
@@ -209,8 +208,9 @@
       <v-row no-gutters v-if="course?.courseCode == 'IDS'">
         <v-col cols="12">
           <strong>Select Related Course</strong>
-          <CourseInput v-model:courseFoundID="course.relatedCourseId"></CourseInput>
-
+          <CourseInput
+            v-model:courseFoundID="course.relatedCourseId"
+          ></CourseInput>
         </v-col>
       </v-row>
     </v-col>
@@ -218,9 +218,9 @@
 </template>
 
 <script>
-import { mapState} from "pinia";
+import { mapState } from "pinia";
 import CourseInput from "@/components/Common/CourseInput.vue";
-import { useAppStore } from "@/store/modules/app"
+import { useAppStore } from "@/store/modules/app";
 export default {
   name: "CourseDetailsInput",
   components: { CourseInput },
@@ -246,7 +246,7 @@ export default {
 
     credits() {
       // These will also eventually come from a code table
-      return [0,1,2, 3, 4];
+      return [0, 1, 2, 3, 4];
     },
   },
 };
