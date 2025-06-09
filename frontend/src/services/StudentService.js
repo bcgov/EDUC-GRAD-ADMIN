@@ -22,7 +22,6 @@ export default {
     );
   },
   deleteStudentCourses(studentID, courses) {
-    console.log(courses);
     return ApiService.apiAxios.delete(`/api/v1/student/courses/${studentID}`, {
       data: courses,
     });
