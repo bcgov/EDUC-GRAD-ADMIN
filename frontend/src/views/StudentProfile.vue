@@ -90,14 +90,7 @@
                 <v-tab value="ExamsLegacy" class="text-none"
                   >Exams Details ({{ examsLegacy.length }})</v-tab
                 >
-                <v-tab
-                  value="Exams"
-                  class="text-none"
-                  v-if="
-                    environment === 'local' ||
-                    environment === 'dev' ||
-                    environment === 'test'
-                  "
+                <v-tab value="Exams" class="text-none" v-if="enableCRUD()"
                   >Exam CRUD
                   <p class="text-caption font-weight-bold text-bcGovGold">
                     BETA
