@@ -42,6 +42,7 @@ export const useStudentStore = defineStore("student", {
       careerPrograms: [],
       auditHistory: [],
       auditHistoryOptionalPrograms: [],
+      auditHistoryCourses: [],
     },
     editedGradStatus: {
       programCompletionDate: "",
@@ -292,6 +293,23 @@ export const useStudentStore = defineStore("student", {
           }
         });
     },
+    loadStudentCourseHistory(studentId) {
+      StudentService.getStudentCourseHistory(studentId)
+          .then((response) => {
+            this.setStudentCourseAuditHistory(response.data);
+          })
+          .catch((error) => {
+            if (error?.response?.status) {
+              this.snackbarStore.showSnackbar(
+                  "ERROR " + error?.response?.statusText,
+                  "error",
+                  10000,
+                  "There was an error with the Student Service (getting the Student Course History): " +
+                  error?.response?.status
+              );
+            }
+          });
+    },
     unsetStudent() {
       this.student.profile = {};
       this.student.notes = [];
@@ -344,6 +362,9 @@ export const useStudentStore = defineStore("student", {
     },
     setStudentOptionalProgramsAuditHistory(payload) {
       this.student.auditHistoryOptionalPrograms = payload;
+    },
+    setStudentCourseAuditHistory(payload) {
+      this.student.auditHistoryCourses = payload;
     },
     setStudentCareerPrograms(payload) {
       this.student.careerPrograms = payload;
@@ -609,6 +630,9 @@ export const useStudentStore = defineStore("student", {
     },
     getStudentOptionalProgramAuditHistory() {
       return this.student.auditHistoryOptionalPrograms;
+    },
+    getStudentCourseAuditHistory() {
+      return this.student.auditHistoryCourses;
     },
     getAdvancedSearchProps() {
       return this.advancedSearchProps;
