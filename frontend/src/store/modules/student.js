@@ -23,13 +23,12 @@ export const useStudentStore = defineStore("student", {
     student: {
       profile: {},
       courses: [], // do we want to create a coursesMap ?
-      coursesLegacy: [],
       assessments: [],
-      exams: [],
+      coursesLegacy: [],
+      examsLegacy: [],
       notes: [],
       gradStatus: "not loaded",
       optionalPrograms: [],
-      hasExams: false,
       hasAssessments: false,
       hasGradStatus: false,
       hasgradStatusPendingUpdates: false,
@@ -63,12 +62,12 @@ export const useStudentStore = defineStore("student", {
       recalculateGradStatus: "",
       recalculateProjectedGrad: "",
     },
-    create:{
-      courses:[]
+    create: {
+      courses: [],
     },
-    update:{
-      courses:[]
-    }
+    update: {
+      courses: [],
+    },
   }),
   actions: {
     formatAssessmentItemsList(items) {
@@ -297,11 +296,11 @@ export const useStudentStore = defineStore("student", {
       this.student.notes = [];
       this.student.id = [];
       this.student.coursesLegacy = [];
+      this.student.courses = [];
       this.student.assessments = [];
-      this.student.exams = [];
+      this.student.examsLegacy = [];
       this.student.gradStatus = "not loaded";
       this.student.optionalPrograms = [];
-      this.student.hasExams = false;
       this.student.hasAssessments = false;
       this.student.hasNotes = false;
       this.student.hasGradStatus = false;
@@ -389,11 +388,8 @@ export const useStudentStore = defineStore("student", {
         this.student.hasAssessments = true;
       }
     },
-    setStudentExams(payload) {
-      this.student.exams = payload;
-      if (this.student.exams.length) {
-        this.student.hasExams = true;
-      }
+    setStudentExamsLegacy(payload) {
+      this.student.examsLegacy = payload;
     },
     // isProxy, toRaw { ...payload }
     setStudentGradStatus(payload) {
@@ -557,8 +553,11 @@ export const useStudentStore = defineStore("student", {
     // create student courses and form helpers
     async createStudentCourses(courses) {
       try {
-        const response = await StudentService.createStudentCourses(this.id, courses);
-        this.getStudentCourses(this.id)
+        const response = await StudentService.createStudentCourses(
+          this.id,
+          courses
+        );
+        this.getStudentCourses(this.id);
         return response.data;
       } catch (error) {
         console.error("Error adding student courses: ", error);
@@ -566,7 +565,7 @@ export const useStudentStore = defineStore("student", {
       }
     },
     addCoursesToCreate(course) {
-      this.create.courses.push(course)
+      this.create.courses.push(course);
     },
     removeCourseFromCreate(courseID) {
       this.create.courses = this.create.courses.filter(
@@ -589,10 +588,10 @@ export const useStudentStore = defineStore("student", {
   },
   getters: {
     isCourseUsedForGraduation: (state) => (course) => {
-      
       return (
-        state.student.gradStatus.studentGradData.studentCourses.studentCourseList.find((course) => course.id === courseId)
-          ?.used || false
+        state.student.gradStatus.studentGradData.studentCourses.studentCourseList.find(
+          (course) => course.id === courseId
+        )?.used || false
       );
     },
     hasAssociatedExam: (state) => (courseId) => {
@@ -674,11 +673,11 @@ export const useStudentStore = defineStore("student", {
         id: `${course.courseCode}_${course.courseLevel}_${course.sessionDate}`,
       }));
     },
-    getStudentExams() {
-      if (!this.student.exams || this.student.exams.length === 0) {
+    getStudentExamsLegacy() {
+      if (!this.student.examsLegacy || this.student.examsLegacy.length === 0) {
         return [];
       } else {
-        return this.student.exams;
+        return this.student.examsLegacy;
       }
     },
     getStudentAssessments() {
@@ -699,9 +698,6 @@ export const useStudentStore = defineStore("student", {
     },
     getStudentProgram() {
       return this.student.gradStatus.program;
-    },
-    studentHasExams() {
-      return this.student.hasExams;
     },
     studentHasAssessments() {
       return this.student.hasAssessments;
@@ -785,6 +781,9 @@ export const useStudentStore = defineStore("student", {
 
     studentCourses() {
       return this.student.courses;
+    },
+    studentExamCourses() {
+      return this.student.courses.filter((course) => !!course.courseExam);
     },
     studentCoursesToCreate: (state) => state.coursesToCreate,
     studentCourseToCreateById: (state) => {

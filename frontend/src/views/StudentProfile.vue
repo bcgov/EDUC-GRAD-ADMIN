@@ -87,8 +87,14 @@
                 <v-tab value="Assessments" class="text-none"
                   >Assessments ({{ assessments.length }})</v-tab
                 >
-                <v-tab value="Exams" class="text-none"
-                  >Exams Details ({{ exams.length }})</v-tab
+                <v-tab value="ExamsLegacy" class="text-none"
+                  >Exams Details ({{ examsLegacy.length }})</v-tab
+                >
+                <v-tab value="Exams" class="text-none" v-if="enableCRUD()"
+                  >Exam CRUD
+                  <p class="text-caption font-weight-bold text-bcGovGold">
+                    BETA
+                  </p></v-tab
                 >
                 <v-tab value="Optional" class="text-none"
                   >Optional Programs ({{ optionalPrograms.length }})</v-tab
@@ -195,13 +201,24 @@
                     </v-progress-circular>
                     <StudentAssessments />
                   </v-window-item>
-                  <v-window-item value="Exams" data-cy="exams-window-item">
+                  <v-window-item
+                    value="ExamsLegacy"
+                    data-cy="exams-window-item"
+                  >
                     <v-progress-circular
                       v-if="tabLoading"
                       indeterminate
                       color="green"
                     >
                     </v-progress-circular>
+                    <StudentExamsLegacy />
+                  </v-window-item>
+                  <v-window-item value="Exams">
+                    <v-progress-circular
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
+                    />
                     <StudentExams />
                   </v-window-item>
                   <v-window-item
@@ -602,12 +619,15 @@ import CourseService from "@/services/CourseService.js";
 import StudentService from "@/services/StudentService.js";
 import StudentGraduationService from "@/services/StudentGraduationService.js";
 import GraduationService from "@/services/GraduationService.js";
+
+// import components
 import GRADRequirementDetails from "@/components/StudentProfile/GRADRequirementDetails.vue";
 import StudentInformation from "@/components/StudentProfile/StudentInformation.vue";
 import StudentCoursesLegacy from "@/components/StudentProfile/Courses/StudentCoursesLegacy.vue";
+import StudentExamsLegacy from "@/components/StudentProfile/Exams/StudentExamsLegacy.vue";
 import StudentCourses from "@/components/StudentProfile/Courses/StudentCourses.vue";
+import StudentExams from "@/components/StudentProfile/Exams/StudentExams.vue";
 import StudentAssessments from "@/components/StudentProfile/StudentAssessments.vue";
-import StudentExams from "@/components/StudentProfile/StudentExams.vue";
 import StudentGraduationStatus from "@/components/StudentProfile/StudentGraduationStatus.vue";
 import StudentOptionalPrograms from "@/components/StudentProfile/OptionalPrograms/StudentOptionalPrograms.vue";
 import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/StudentAuditHistory.vue";
@@ -702,10 +722,11 @@ export default {
     StudentInformation: StudentInformation,
     StudentUndoCompletionReasons: StudentUndoCompletionReasons,
     StudentCoursesLegacy: StudentCoursesLegacy,
+    StudentExamsLegacy: StudentExamsLegacy,
     StudentCourses: StudentCourses,
-    GRADRequirementDetails: GRADRequirementDetails,
-    StudentAssessments: StudentAssessments,
     StudentExams: StudentExams,
+    StudentAssessments: StudentAssessments,
+    GRADRequirementDetails: GRADRequirementDetails,
     StudentGraduationStatus: StudentGraduationStatus,
     StudentOptionalPrograms: StudentOptionalPrograms,
     StudentAuditHistory: StudentAuditHistory,
@@ -797,7 +818,7 @@ export default {
       profile: "getStudentProfile",
       courses: "getStudentCoursesLegacy",
       assessments: "getStudentAssessments",
-      exams: "getStudentExams",
+      examsLegacy: "getStudentExamsLegacy",
       gradInfo: "getStudentGraduationCreationAndUpdate",
       hasGradStatus: "studentHasGradStatus",
       studentGradStatus: "getStudentGradStatus",
@@ -856,7 +877,7 @@ export default {
       "setStudentGradStatusOptionalPrograms",
       "setStudentCoursesLegacy",
       "setStudentCourses",
-      "setStudentExams",
+      "setStudentExamsLegacy",
       "setStudentNotes",
       "setStudentUngradReasons",
       "setStudentAuditHistory",
@@ -1206,9 +1227,9 @@ export default {
         });
     },
     loadStudentExamDetails() {
-      CourseService.getStudentExamDetails(this.pen)
+      CourseService.getStudentExamDetailsLegacy(this.pen)
         .then((response) => {
-          this.setStudentExams(response.data);
+          this.setStudentExamsLegacy(response.data);
         })
         .catch((error) => {
           if (error.response.status) {

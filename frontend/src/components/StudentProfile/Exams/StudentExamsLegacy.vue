@@ -16,15 +16,15 @@
 </template>
 
 <script>
-import { useStudentStore } from "../../store/modules/student";
+import { useStudentStore } from "@/store/modules/student";
 import { mapState } from "pinia";
 import DisplayTable from "@/components/DisplayTable.vue";
 export default {
-  name: "StudentExams",
+  name: "StudentExamsLegacy",
   props: {},
   computed: {
     ...mapState(useStudentStore, {
-      studentExams: "getStudentExams",
+      studentExams: "getStudentExamsLegacy",
     }),
   },
   components: {
