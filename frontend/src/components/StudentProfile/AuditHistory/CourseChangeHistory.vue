@@ -2,7 +2,7 @@
   <v-data-table
       :sortBy="sortBy"
       :items="courseHistory"
-      :headers="courseFields"
+      :headers="courseHeaders"
       :items-per-page="'-1'"
       item-value="id"
   >
@@ -29,7 +29,7 @@
     </template>
     <template v-slot:expanded-row="{ item }">
       <tr>
-        <td :colspan="courseFields.length">
+        <td :colspan="courseHeaders.length">
           <v-row dense>
             <v-col
                 v-for="field in courseExamFields"
@@ -95,7 +95,7 @@ export default {
   data: function () {
     return {
       courseChangeHistory: [],
-      courseFields: [
+      courseHeaders: [
         { key: "data-table-expand", title: "" },
         { key: "updateDate", title: "Date", width: "115px" },
         { key: "activityCode", title: "Change" },
@@ -110,7 +110,7 @@ export default {
         { key: "credits", title: "Credits" },
         { key: "equivOrChallenge", title: "EC", description: "Equivalent or Challenge" },
         { key: "fineArtsAppliedSkills", title: "AS", description: "Fine Arts or Applied Skills" },
-        { key: "customizedCourseName", title: "Course Title" },
+        { key: "customizedCourseName", title: "Custom Course Title" },
         {
           key: "relatedCourseDetails.courseCode",
           title: "Related Course",
