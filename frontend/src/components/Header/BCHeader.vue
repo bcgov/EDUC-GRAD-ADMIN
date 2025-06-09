@@ -190,7 +190,7 @@ export default {
   computed: {
     ...mapState(useAppStore, {
       version: "getVersion",
-      environment: "getEnvironment",
+      environment: "appEnvironment",
     }),
     ...mapState(useStudentStore, {
       profile: "getStudentProfile",

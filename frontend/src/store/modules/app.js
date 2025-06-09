@@ -31,8 +31,9 @@ export const useAppStore = defineStore("app", {
     config: null,
   }),
   getters: {
-    getEnvironment: (state) => state?.config?.ENVIRONMENT?state.config.ENVIRONMENT:"", 
-    getVersion: (state) => state?.config?.VERSION?state.config.VERSION:"",
+    appEnvironment: (state) =>
+      state?.config?.ENVIRONMENT ? state.config.ENVIRONMENT : "",
+    getVersion: (state) => (state?.config?.VERSION ? state.config.VERSION : ""),
     getProgramOptions: (state) => state.programOptions,
     getStudentStatusOptions: (state) => state.studentStatusOptions,
     getUngradReasons: (state) => state.ungradReasons,
@@ -121,6 +122,11 @@ export const useAppStore = defineStore("app", {
     },
     getTranscriptTypes: (state) => state.transcriptTypes,
     getCertificateTypes: (state) => state.certificationTypes,
+    enableCRUD: (state) => {
+      // defaults to local, dev, and test but can be overridden as needed for reuse
+      return (enabledEnvironments = ["local", "dev", "test"]) =>
+        enabledEnvironments.includes(state.config?.ENVIRONMENT);
+    },
   },
   actions: {
     async setApplicationVariables() {
@@ -142,8 +148,7 @@ export const useAppStore = defineStore("app", {
           await this.getDistricts();
           // GET & SET INSTITUTE CODES
           await this.getInstituteCategoryCodes();
-          await this.getInstituteFacilityCodes();     
-          
+          await this.getInstituteFacilityCodes();
         }
       } catch (e) {
         if (e.response.status) {
@@ -293,7 +298,9 @@ export const useAppStore = defineStore("app", {
       }
     },
     async setStudentGradeCodes(gradeCodes) {
-      this.studentGradeCodes = sharedMethods.filterActiveObjects(sharedMethods.applyDisplayOrder(gradeCodes));
+      this.studentGradeCodes = sharedMethods.filterActiveObjects(
+        sharedMethods.applyDisplayOrder(gradeCodes)
+      );
     },
     async setLetterGrades(letterGrades) {
       this.letterGradeCodes = letterGrades;
