@@ -1,16 +1,12 @@
 <template>
   <div>
-    <v-dialog v-model="dialog" max-width="500px">
+    <v-dialog v-model="dialog" persistent max-width="600px">
       <template v-slot:activator="{ props }">
-        <!-- Let parent override with their own button via activator slot -->
         <slot name="activator" v-bind="props">
-          <!-- Default internal buttons if no external activator slot is provided -->
           <v-btn
-            v-if="
-              hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete
-            "
+            v-if="hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete"
             v-bind="props"
-            :disabled="courseIds.length === 0"
+            :disabled="selectedCoursesToDelete.length === 0"
             color="error"
             class="text-none"
             prepend-icon="mdi-delete-forever"
@@ -31,40 +27,56 @@
 
       <v-card>
         <template v-slot:title>
-          Delete Student Course<span v-if="courseIds.length > 1">s</span>
+          <v-row no-gutters>
+            <div class="v-card-title">
+              Delete Student Course
+            </div>
+            <v-spacer />
+            <v-btn
+              icon="mdi-close"
+              density="compact"
+              rounded="sm"
+              variant="outlined"
+              color="error"
+              class="mt-2"
+              @click="close"
+            />
+          </v-row>
         </template>
 
         <v-card-text>
           <v-alert
-            v-if="anyUsedForGraduation"
-            type="info"
-            variant="tonal"
-            border="start"
-            class="mt-6 mb-0 ml-1 py-3 width-fit-content"
-          >
-            One or more of these courses have been used to meet a graduation
-            requirement.
-          </v-alert>
-
-          <v-alert
-            v-if="anyHasExamRecord"
-            type="info"
-            variant="tonal"
-            border="start"
-            class="mt-6 mb-0 ml-1 py-3 width-fit-content"
-          >
-            One or more of these courses have an associated exam record.
-          </v-alert>
-
-          Are you sure you want to delete the following course ID<span
-            v-if="courseIds.length > 1"
-            >s</span
-          >?
-          <ul class="pl-4">
-            <li v-for="id in courseIds" :key="id">
-              <strong>{{ id }}</strong>
+          v-if="selectedCoursesWithWarnings.length > 0"
+          type="warning"
+          border="start"
+          prominent
+          class="pl-4"
+          elevation="2"
+          variant="tonal"
+        >
+          You are about to remove the following courses from student:
+          {{ studentPen }}
+          <ul>
+            <li v-for="course in selectedCoursesWithWarnings" :key="course.id">
+              <strong>
+                {{ course.courseDetails.courseName }}
+                {{ course.courseLevel }}
+                {{ course.courseSession }}
+              </strong>
+              <ul style="padding-left: 1.5em;">
+                <li
+                  v-for="(issue, i) in course.validationIssues"
+                  :key="i"
+                >
+                  <div class="d-flex flex-column align-start">
+          
+                    {{ issue.message }}
+                  </div>
+                </li>
+              </ul>
             </li>
           </ul>
+        </v-alert>
         </v-card-text>
 
         <v-card-actions>
@@ -85,7 +97,7 @@
             density="default"
             @click="confirmDelete"
           >
-            Delete Course<span v-if="courseIds.length > 1">s</span>
+            Delete Course<span v-if="selectedCoursesToDelete.length > 1">s</span>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -94,13 +106,12 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
 import { useStudentStore } from "@/store/modules/student";
 
 export default {
   name: "StudentCoursesDeleteForm",
   props: {
-    courseIds: {
+    selectedCoursesToDelete: {
       type: Array,
       required: true,
     },
@@ -108,44 +119,83 @@ export default {
       type: Boolean,
       default: false,
     },
+    studentId: {
+      type: [String, Number],
+      default: null,
+    },
   },
-  setup(props) {
-    const dialog = ref(false);
-    const studentStore = useStudentStore();
-
-    const close = () => {
-      dialog.value = false;
+  data() {
+    return {
+      dialog: false,
     };
+  },
+  computed: {
+    studentStore() {
+      return useStudentStore();
+    },
+    studentPen() {
+      return this.studentStore.pen;
+    },
+    
+    requirementsMet() {
+      return this.studentStore.student.gradStatus.studentGradData;
+    },
+    selectedCoursesWithWarnings() {
+      return this.selectedCoursesToDelete.map((course) => {
+        const match = this.studentStore.student.gradStatus.studentGradData.studentCourses.studentCourseList.find(
+          (c) =>
+            c.courseCode === course.courseDetails.courseCode &&
+            c.courseLevel === course.courseDetails.courseLevel &&
+            c.courseSession === course.courseDetails.courseSession
+        );
 
-    const confirmDelete = async () => {
+        const isUsedForGrad = match?.used || false;
+        const hasExam =
+  match?.bestExamPercent !== null ||
+  (match?.specialCase && match.specialCase !== 'N') ||
+  (match?.completedCoursePercentage !== null && match.completedCoursePercentage !== 0);
+
+        return {
+          ...course,
+          validationIssues: [
+            ...(course.validationIssues || []),
+            ...(isUsedForGrad
+              ? [
+                  {
+                    type: "warning",
+                    message: "This course is used to meet graduation requirements.",
+                  },
+                ]
+              : []),
+            ...(hasExam
+              ? [
+                  {
+                    type: "info",
+                    message: "This course has an associated exam record.",
+                  },
+                ]
+              : []),
+          ],
+        };
+      });
+    },
+  },
+  methods: {
+    close() {
+      this.dialog = false;
+    },
+    async confirmDelete() {
       try {
-        await studentStore.deleteStudentCourses(props.courseIds);
-        close();
+        const request = this.selectedCoursesToDelete.map((item) => item.id);
+        await this.studentStore.deleteStudentCourses(request);
+        this.close();
       } catch (error) {
         console.error("Failed to delete student courses:", error);
       }
-    };
-
-    const hasPermissions = (module, permission) => {
-      return true; // Replace with actual logic
-    };
-
-    const anyUsedForGraduation = computed(() =>
-      props.courseIds.some((id) => studentStore.isCourseUsedForGraduation?.(id))
-    );
-
-    const anyHasExamRecord = computed(() =>
-      props.courseIds.some((id) => studentStore.hasAssociatedExam?.(id))
-    );
-
-    return {
-      dialog,
-      close,
-      confirmDelete,
-      hasPermissions,
-      anyUsedForGraduation,
-      anyHasExamRecord,
-    };
+    },
+    hasPermissions(module, permission) {
+      return true; // Replace with real permission check
+    },
   },
 };
 </script>

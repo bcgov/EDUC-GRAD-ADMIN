@@ -118,7 +118,7 @@ export default {
       reports: "getStudentReports",
       xmlReports: "getStudentXmlReports",
       studentGradStatus: "getStudentGradStatus",
-      optionalPrograms: "getStudentOptionalPrograms",
+      optionalPrograms: "studentOptionalPrograms",
     }),
     ...mapState(useAppStore, {
       getSchoolById: "getSchoolById",

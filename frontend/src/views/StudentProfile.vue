@@ -78,10 +78,7 @@
                 <v-tab value="CoursesLegacy" class="text-none"
                   >Courses ({{ courses.length }})</v-tab
                 >
-                <v-tab
-                  value="Courses"
-                  class="text-none"
-                  v-if="environment != 'prod'"
+                <v-tab value="Courses" class="text-none" v-if="enableCRUD()"
                   >Course CRUD
                   <p class="text-caption font-weight-bold text-bcGovGold">
                     BETA
@@ -822,7 +819,7 @@ export default {
     }),
     ...mapState(useAppStore, {
       ungradReasons: "ungradReasons",
-      environment: "getEnvironment",
+      enableCRUD: "enableCRUD",
     }),
     ...mapState(useStudentStore, {
       profile: "getStudentProfile",
@@ -836,7 +833,7 @@ export default {
       studentPen: "getStudentPen",
       studentInfo: "getStudentProfile",
       studentNotes: "getStudentNotes",
-      optionalPrograms: "getStudentOptionalPrograms",
+      optionalPrograms: "studentOptionalPrograms",
       studentUngradReasons: "getStudentUngradReasons",
       gradCourses: "gradStatusCourses",
       studentHistory: "getStudentAuditHistory",
@@ -1137,32 +1134,36 @@ export default {
       this.loadStudentHistory(studentIdFromURL);
       this.loadStudentOptionalProgramHistory(studentIdFromURL);
       this.tabLoading = false;
-    }, //loadStudent
+    },
+
     loadStudentProfile() {
       StudentService.getStudentByPen(this.pen)
         .then((response) => {
           let data = response.data;
-          //get true PEN for MER students
-          //TODO SF: change length check to valid PEN check? Or do we want a valid GUID check utility?
+          // Check for trueStudentID
           if (data[0].trueStudentID && data[0].trueStudentID.length > 9) {
+            // Fetch the true student data first
             StudentService.getStudentByID(data[0].trueStudentID)
               .then((response) => {
                 data[0].trueStudentID = response.data.pen;
+                this.setStudentProfile(data);
               })
               .catch((error) => {
-                if (error.response.status) {
+                if (error.response?.status) {
                   this.snackbarStore.showSnackbar(
                     "There was an error: " + error.response.status,
                     "error",
                     5000
                   );
                 }
+                this.setStudentProfile(data);
               });
+          } else {
+            this.setStudentProfile(data);
           }
-          this.setStudentProfile(data);
         })
         .catch((error) => {
-          if (error.response.status) {
+          if (error.response?.status) {
             this.snackbarStore.showSnackbar(
               "There was an error: " + error.response.status,
               "error",
@@ -1171,6 +1172,7 @@ export default {
           }
         });
     },
+
     loadAssessments() {
       AssessmentService.getStudentAssessment(this.pen)
         .then((response) => {

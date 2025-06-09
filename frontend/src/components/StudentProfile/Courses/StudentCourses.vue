@@ -29,19 +29,21 @@
           This student does not have any courses.
         </v-alert>
         <v-row no-gutters>
-          <StudentCoursesDeleteForm courseBatchDelete :courseIds="selected">
+          <StudentCoursesDeleteForm
+            courseBatchDelete
+            :selectedCoursesToDelete="selected"
+          >
           </StudentCoursesDeleteForm>
           <v-spacer />
           <StudentCoursesCreateForm />
         </v-row>
-
         <v-data-table
           v-if="courses"
           v-model="selected"
           :items="courses"
           :headers="fields"
+          :item-value="(item) => item"
           :items-per-page="'-1'"
-          showFilter="true"
           title="studentCourse"
           show-select
         >
@@ -53,7 +55,7 @@
               isExpanded,
             }"
           >
-            <td v-if="item.hasRelatedCourse == 'Y'">
+            <td v-if="hasCourseInfo(item)">
               <v-btn
                 variant="text"
                 density="comfortable"
@@ -87,108 +89,49 @@
 
           <template v-slot:expanded-row="{ columns, item }">
             <tr>
-              <td :colspan="columns.length">
-                <ul v-if="item.hasRelatedCourse">
-                  <li v-if="item.customizedCourseName">
-                    <strong>Customized Course Title:</strong>
+              <td></td>
+              <td></td>
+              <td :colspan="columns.length - 2">
+                <div v-if="hasCourseInfo(item)">
+                  <!-- Vuetify padding class -->
+                  <!-- Customized Course Name -->
+                  <div v-if="item.customizedCourseName">
+                    <strong>Customized Course:</strong>
                     {{ item.customizedCourseName }}
-                  </li>
-                  <li v-if="item.relatedCourse">
+                  </div>
+
+                  <!-- Related Course Details -->
+                  <div v-if="item.relatedCourseDetails">
                     <strong>Related Course:</strong>
-                    {{ item.relatedCourse }}
-                  </li>
-                  <li v-if="item.relatedLevel">
-                    <strong>Related Course Level:</strong>
-                    {{ item.relatedLevel }}
-                  </li>
-                  <li v-if="item.relatedCourseName">
-                    <strong>Related Course Name:</strong>
-                    {{ item.relatedCourseName }}
-                  </li>
-                  <li v-if="item.alternateCourseName">
-                    <strong>Alternate Course Name:</strong>
-                    {{ item.alternateCourseName }}
-                  </li>
-                  <li v-if="item.bestSchoolPercent">
-                    <strong>Best School Percent:</strong>
-                    {{ item.bestSchoolPercent }}
-                  </li>
-                  <li v-if="item.bestExamPercent">
-                    <strong>Best Exam Percent:</strong>
-                    {{ item.bestExamPercent }}
-                  </li>
-                  <li v-if="item.metLitNumRequirement">
-                    <strong>Assessment Equivalent:</strong>
-                    {{ item.metLitNumRequirement }}
-                  </li>
-                  <li v-if="item.specialCase">
-                    <strong>Special Case:</strong> {{ item.specialCase }}
-                  </li>
-                </ul>
+                    <CourseDetails :course="item.relatedCourseDetails" />
+                  </div>
+
+                  <!-- Course Exam Details -->
+                  <div v-if="item.courseExam">
+                    <strong>Course Exam:</strong>
+                    <ul class="pl-4">
+                      <li>School %: {{ item.courseExam.schoolPercentage }}%</li>
+                      <li>
+                        Best School %:
+                        {{ item.courseExam.bestSchoolPercentage }}%
+                      </li>
+                      <li>
+                        Best Exam %: {{ item.courseExam.bestExamPercentage }}%
+                      </li>
+                      <li>Special Case: {{ item.courseExam.specialCase }}</li>
+                    </ul>
+                  </div>
+                </div>
               </td>
             </tr>
           </template>
 
           <template v-slot:item.edit="{ item }">
-            <v-dialog
-              v-model="
-                editDialog[
-                  item.courseCode + item.courseLevel + item.sessionDate
-                ]
-              "
-            >
-              <template v-slot:activator="{ props }">
-                <v-btn
-                  v-if="hasPermissions('STUDENT', 'courseUpdate')"
-                  v-bind="props"
-                  color="success"
-                  icon="mdi-pencil"
-                  density="compact"
-                  variant="text"
-                />
-              </template>
-              <v-card max-width="500px" class="mx-auto">
-                <template v-slot:title>
-                  Edit Student Course
-                  <strong
-                    >{{ item.courseCode }} {{ item.courseLevel }} -
-                    {{ item.sessionDate }}</strong
-                  >
-                </template>
-                TODO: Implement edit for single course using the repeatable add
-                student course form component
-                <v-card-actions>
-                  <v-btn
-                    color="error"
-                    variant="outlined"
-                    class="text-none"
-                    density="default"
-                    @click="
-                      closeEditModal(
-                        item.courseCode + item.courseLevel + item.sessionDate
-                      )
-                    "
-                    >Cancel</v-btn
-                  >
-                  <v-spacer />
-                  <v-btn
-                    color="error"
-                    variant="flat"
-                    class="text-none"
-                    density="default"
-                    @click="
-                      saveStudentCourse(
-                        item.courseCode + item.courseLevel + item.sessionDate
-                      )
-                    "
-                    >Save Student Course</v-btn
-                  >
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+            <StudentCoursesUpdateForm :selectedCoursesToUpdate="[item]">
+            </StudentCoursesUpdateForm>
           </template>
           <template v-slot:item.delete="{ item }">
-            <StudentCoursesDeleteForm :courseIds="[item.id]">
+            <StudentCoursesDeleteForm :selectedCoursesToDelete="[item]">
             </StudentCoursesDeleteForm>
           </template>
         </v-data-table>
@@ -205,11 +148,13 @@ import { mapState, mapActions } from "pinia";
 import CourseDetails from "@/components/Common/CourseDetails.vue";
 import StudentCoursesDeleteForm from "@/components/StudentProfile/Forms/StudentCoursesDeleteForm.vue";
 import StudentCoursesCreateForm from "@/components/StudentProfile/Forms/StudentCoursesCreateForm.vue";
+import StudentCoursesUpdateForm from "@/components/StudentProfile/Forms/StudentCoursesUpdateForm.vue";
 export default {
   name: "StudentCourses",
   components: {
     StudentCoursesCreateForm: StudentCoursesCreateForm,
     StudentCoursesDeleteForm: StudentCoursesDeleteForm,
+    StudentCoursesUpdateForm: StudentCoursesUpdateForm,
     CourseDetails: CourseDetails,
   },
   computed: {
@@ -221,11 +166,16 @@ export default {
       hasGradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
-    ...mapState(useAppStore, { environment: "getEnvironment" }),
+    ...mapState(useAppStore, { environment: "appEnvironment" }),
   },
   data: function () {
     return {
-      toFilterItem: ["courseCode", "courseLevel", "sessionDate", "courseName"],
+      toFilterItem: [
+        "courseCode",
+        "courseLevel",
+        "courseSession",
+        "courseName",
+      ],
       fields: [
         {
           key: "data-table-expand",
@@ -352,6 +302,13 @@ export default {
       "setHasGradStatusPendingUpdates",
       "deleteStudentCourses",
     ]),
+    hasCourseInfo(item) {
+      return !!(
+        item.courseExam ||
+        item.relatedCourseDetails ||
+        item.customizedCourseName
+      );
+    },
     closeEditModal(modalKey) {
       this.editDialog[modalKey] = false;
     },
