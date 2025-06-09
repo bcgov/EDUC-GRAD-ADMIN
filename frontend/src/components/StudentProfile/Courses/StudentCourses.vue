@@ -89,31 +89,35 @@
 
           <template v-slot:expanded-row="{ columns, item }">
             <tr>
-              <td>
-
-              </td>
+              <td></td>
               <td></td>
               <td :colspan="columns.length - 2">
-                <div v-if="hasCourseInfo(item)"> <!-- Vuetify padding class -->
+                <div v-if="hasCourseInfo(item)">
+                  <!-- Vuetify padding class -->
                   <!-- Customized Course Name -->
                   <div v-if="item.customizedCourseName">
-                    <strong>Customized Course:</strong> {{ item.customizedCourseName }}
+                    <strong>Customized Course:</strong>
+                    {{ item.customizedCourseName }}
                   </div>
-          
+
                   <!-- Related Course Details -->
                   <div v-if="item.relatedCourseDetails">
                     <strong>Related Course:</strong>
                     <CourseDetails :course="item.relatedCourseDetails" />
-                   
                   </div>
-          
+
                   <!-- Course Exam Details -->
                   <div v-if="item.courseExam">
                     <strong>Course Exam:</strong>
                     <ul class="pl-4">
                       <li>School %: {{ item.courseExam.schoolPercentage }}%</li>
-                      <li>Best School %: {{ item.courseExam.bestSchoolPercentage }}%</li>
-                      <li>Best Exam %: {{ item.courseExam.bestExamPercentage }}%</li>
+                      <li>
+                        Best School %:
+                        {{ item.courseExam.bestSchoolPercentage }}%
+                      </li>
+                      <li>
+                        Best Exam %: {{ item.courseExam.bestExamPercentage }}%
+                      </li>
                       <li>Special Case: {{ item.courseExam.specialCase }}</li>
                     </ul>
                   </div>
@@ -162,7 +166,7 @@ export default {
       hasGradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
-    ...mapState(useAppStore, { environment: "getEnvironment" }),
+    ...mapState(useAppStore, { environment: "appEnvironment" }),
   },
   data: function () {
     return {

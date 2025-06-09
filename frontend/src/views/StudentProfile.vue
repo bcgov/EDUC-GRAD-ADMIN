@@ -78,10 +78,7 @@
                 <v-tab value="CoursesLegacy" class="text-none"
                   >Courses ({{ courses.length }})</v-tab
                 >
-                <v-tab
-                  value="Courses"
-                  class="text-none"
-                  v-if="environment != 'prod'"
+                <v-tab value="Courses" class="text-none" v-if="enableCRUD()"
                   >Course CRUD
                   <p class="text-caption font-weight-bold text-bcGovGold">
                     BETA
@@ -794,7 +791,7 @@ export default {
     }),
     ...mapState(useAppStore, {
       ungradReasons: "ungradReasons",
-      environment: "getEnvironment",
+      enableCRUD: "enableCRUD",
     }),
     ...mapState(useStudentStore, {
       profile: "getStudentProfile",
