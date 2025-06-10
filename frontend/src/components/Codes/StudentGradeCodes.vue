@@ -11,10 +11,10 @@
       showFilter="true"
     >
       <template v-slot:item.effectiveDate="{ item }">
-        {{ $filters.formatYYYYMMDate(item.effectiveDate) }}
+        {{ $filters.formatSimpleDate(item.effectiveDate) }}
       </template>
       <template v-slot:item.expiryDate="{ item }">
-        {{ $filters.formatYYYYMMDate(item.expiryDate) }}
+        {{ $filters.formatSimpleDate(item.expiryDate) }}
       </template>
     </DisplayTable>
   </div>
@@ -25,6 +25,7 @@ import DisplayTable from "@/components/DisplayTable.vue";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { mapState, mapActions } from "pinia";
 import { useAppStore } from "@/store/modules/app";
+
 export default {
   name: "GradeCodes",
   components: {
