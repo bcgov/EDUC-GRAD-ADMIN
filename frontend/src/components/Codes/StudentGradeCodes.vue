@@ -11,10 +11,10 @@
       showFilter="true"
     >
       <template v-slot:item.effectiveDate="{ item }">
-        {{ $filters.formatYYYYMMDate(item.effectiveDate) }}
+        {{ $filters.dateFormatYYYYMMDD(item.effectiveDate) }}
       </template>
       <template v-slot:item.expiryDate="{ item }">
-        {{ $filters.formatYYYYMMDate(item.expiryDate) }}
+        {{ $filters.dateFormatYYYYMMDD(item.expiryDate) }}
       </template>
     </DisplayTable>
   </div>
