@@ -52,7 +52,7 @@
       {{ course.sessionDate }}
     </v-col>
     <v-col cols="10">
-      <v-row>
+      <v-row no-gutters class="my-2">
         <v-col v-if="update">
           <v-text-field
             :model-value="course.courseID"
@@ -106,59 +106,64 @@
             label="Interim %"
             variant="outlined"
             density="compact"
-            class="my-2"
+            class="px-1"
+            clearable
             persistent-placeholder
             persistent-hint
           />
         </v-col>
 
-        <v-col cols="2">
+        <v-col>
           <v-select
             v-model="course.interimLetterGrade"
             :items="letterGrades"
             label="Interim LG"
             variant="outlined"
             density="compact"
-            class="my-2"
+            class="pr-1"
+            clearable
             persistent-placeholder
             persistent-hint
           />
         </v-col>
 
-        <v-col cols="2">
+        <v-col>
           <v-text-field
             v-model="course.finalPercent"
             type="number"
             label="Final %"
             variant="outlined"
             density="compact"
-            class="my-2"
+            class="pr-1"
+            clearable
             persistent-placeholder
             persistent-hint
           />
         </v-col>
 
-        <v-col cols="2">
+        <v-col>
           <v-select
             v-model="course.finalLetterGrade"
             :items="letterGrades"
             label="Final LG"
             variant="outlined"
             density="compact"
-            class="my-2"
+            class="pr-1"
+            clearable
             persistent-placeholder
             persistent-hint
           />
         </v-col>
 
-        <v-col cols="2">
+        <v-col>
           <v-select
             v-model="course.credits"
             :items="credits"
             label="Credits"
             variant="outlined"
             density="compact"
-            class="my-2"
+            class="pr-1"
+            clearable
             persistent-placeholder
             persistent-hint
           />
@@ -171,7 +176,8 @@
             label="FA/AS"
             variant="outlined"
             density="compact"
-            class="my-2"
+            class="pr-1"
+            clearable
             persistent-placeholder
             persistent-hint
           />
@@ -184,7 +190,8 @@
             label="Eq / Ch"
             variant="outlined"
             density="compact"
-            class="my-2"
+            class="pr-1"
+            clearable
             persistent-placeholder
             persistent-hint
           />
@@ -197,7 +204,8 @@
             label="Customized Course Title"
             variant="outlined"
             density="compact"
-            class="my-2"
+            class="pr-1"
+            clearable
             hide-details
             persistent-placeholder
             persistent-hint
@@ -219,8 +227,12 @@
 
 <script>
 import { mapState } from "pinia";
-import CourseInput from "@/components/Common/CourseInput.vue";
 import { useAppStore } from "@/store/modules/app";
+
+import CourseInput from "@/components/Common/CourseInput.vue";
+
+import sharedMethods from "@/sharedMethods";
+
 export default {
   name: "CourseDetailsInput",
   components: { CourseInput },
