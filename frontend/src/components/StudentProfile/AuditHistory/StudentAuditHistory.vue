@@ -19,6 +19,15 @@
           >Optional Program Change History</v-chip
         ></v-tab
       >
+      <v-tab value="courseChangeHistory" v-if="enableCRUD()">
+        <v-chip
+          class="text-none"
+          color="primary"
+          :variant="selectedTab === 'courseChangeHistory' ? 'flat' : 'outlined'"
+        >
+          Course Change History
+        </v-chip>
+      </v-tab>
     </v-tabs>
     <v-card-text class="px-0">
       <v-window v-model="selectedTab">
@@ -258,20 +267,25 @@
             </template>
           </v-data-table>
         </v-window-item>
+        <v-window-item value="courseChangeHistory">
+          <CourseChangeHistory />
+        </v-window-item>
       </v-window>
     </v-card-text>
   </v-card>
 </template>
 
 <script>
-import { useStudentStore } from "../../../store/modules/student";
+import { useStudentStore } from "@/store/modules/student";
 import { mapState } from "pinia";
 import DisplayTable from "@/components/DisplayTable.vue";
-import { useAppStore } from "../../../store/modules/app";
+import { useAppStore } from "@/store/modules/app";
+import CourseChangeHistory from "@/components/StudentProfile/AuditHistory/CourseChangeHistory.vue";
 
 export default {
   name: "StudentAuditHistory",
   components: {
+    CourseChangeHistory,
     DisplayTable: DisplayTable,
   },
   props: {},
@@ -284,6 +298,7 @@ export default {
     }),
     ...mapState(useAppStore, {
       getSchoolById: "getSchoolById",
+      enableCRUD: "enableCRUD",
     }),
     studentHistoryWithPrevData() {
       this.studentHistory.sort(
