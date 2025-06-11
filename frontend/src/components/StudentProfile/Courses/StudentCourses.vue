@@ -19,9 +19,9 @@
         border="start"
         class="mt-6 mb-0 ml-1 py-3 width-fit-content"
       >
-        Data shown is using new endpoint in student API. Waiting on backend to
-        send us course code and level so we don't need to translate each row
-        item based on student course GUID
+        Data shown is using new endpoint in student API. We can add courses with
+        no UI validations (backend API does validate), delete courses
+        w/validations
         <br />
       </v-alert>
       <v-card-text>
@@ -72,18 +72,10 @@
             </td>
           </template>
 
-          <template v-slot:item.courseCode="{ item }">
-            {{ item.courseDetails.courseCode }}
-          </template>
-          <template v-slot:item.courseLevel="{ item }">
-            {{ item.courseDetails.courseLevel }}
-          </template>
           <template v-slot:item.courseSession="{ item }">
             {{ $filters.formatYYYYMMStringDate(item.courseSession) }}
           </template>
-          <!-- GRAD2-2811 will use this slot when we get new endpoints  -->
-          <template v-slot:item.courseName="{ item }">
-            <!-- {{ item.courseDetails.courseName }} -->
+          <template v-slot:item.courseDetails.courseName="{ item }">
             <CourseDetails :course="item.courseDetails" />
           </template>
 
@@ -93,7 +85,6 @@
               <td></td>
               <td :colspan="columns.length - 2">
                 <div v-if="hasCourseInfo(item)">
-                  <!-- Vuetify padding class -->
                   <!-- Customized Course Name -->
                   <div v-if="item.customizedCourseName">
                     <strong>Customized Course:</strong>
@@ -190,13 +181,13 @@ export default {
         //   sortDirection: "desc",
         // },
         {
-          key: "courseCode",
+          key: "courseDetails.courseCode",
           title: "Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
-          key: "courseLevel",
+          key: "courseDetails.courseLevel",
           title: "Level",
           sortable: true,
           class: "text-left",
@@ -254,7 +245,7 @@ export default {
           class: "text-left",
         },
         {
-          key: "courseName",
+          key: "courseDetails.courseName",
           title: "Course Title",
           sortable: true,
           class: "text-left",

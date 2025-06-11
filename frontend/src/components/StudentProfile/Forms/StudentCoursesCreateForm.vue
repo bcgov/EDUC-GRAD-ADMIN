@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="1024">
+  <v-dialog v-model="dialog" persistent max-width="1260">
     <template v-slot:activator="{ props }">
       <v-btn
         v-if="hasPermissions('STUDENT', 'courseUpdate')"
@@ -11,7 +11,7 @@
       />
     </template>
 
-    <v-card style="max-height: 100%; overflow-y: auto;">
+    <v-card style="max-height: 100%; overflow-y: auto">
       <v-card-title>
         <v-row no-gutters>
           <div class="v-card-title">Add Student Courses</div>
@@ -46,7 +46,6 @@
           <v-stepper-window>
             <!-- Step 1 -->
             <v-stepper-window-item value="0">
-              
               <strong>Add Student Courses</strong>
               <v-row no-gutters class="mt-2">
                 <v-text-field
@@ -55,6 +54,7 @@
                   variant="outlined"
                   density="compact"
                   class="pr-1"
+                  :error="!!courseValidationMessage"
                   persistent-placeholder
                   persistent-hint
                 />
@@ -64,15 +64,18 @@
                   variant="outlined"
                   density="compact"
                   class="pr-1"
+                  :error="!!courseValidationMessage"
                   persistent-placeholder
                   persistent-hint
                 />
+                <!-- DEBOUNCE HERE AND THEN SET VALUE WITH HYPHEN STRIPPED OUT-->
                 <v-text-field
                   v-model="courseAdd.courseSession"
                   label="Session Date"
                   variant="outlined"
                   density="compact"
                   class="pr-1"
+                  :error="!!courseValidationMessage"
                   persistent-placeholder
                   persistent-hint
                 />
@@ -84,6 +87,15 @@
                   >Add Course</v-btn
                 >
               </v-row>
+              <!-- TODO- change this to match the text for validations in the validation ticket -->
+              <v-alert
+                v-if="courseValidationMessage"
+                type="error"
+                variant="tonal"
+                border="start"
+                class="width-fit-content"
+                >{{ courseValidationMessage }}</v-alert
+              >
 
               <v-data-table
                 v-if="coursesToCreate.length"
@@ -93,6 +105,9 @@
                 class="mt-4"
                 hide-default-footer
               >
+                <template v-slot:item.courseSession="{ item }">
+                  {{ $filters.formatYYYYMMStringDate(item.courseSession) }}
+                </template>
                 <template #item.remove="{ item }">
                   <v-btn @click="removeCourseFromCreate(item.courseID)">
                     Remove
@@ -103,22 +118,38 @@
 
             <!-- Step 2 -->
             <v-stepper-window-item value="1">
+              <v-alert
+                type="info"
+                variant="tonal"
+                border="start"
+                class="mt-0 mb-4 ml-1 py-3 width-fit-content"
+              >
+                Form inputs do not have validations applied at this stage to
+                allow for testing of backend validations.<br />
+                With this in mind we've set the inputs to be clearable via the
+                (X) button so you can clear inputs as needed in the meantime.
+                When we implement validations the clearable icon will be removed
+                since it won't be needed (ie. unable to set interim % for
+                session dates in the past)
+              </v-alert>
               <div v-if="coursesToCreate.length === 0">
                 No courses added yet.
               </div>
               <div v-else>
-                <div style="overflow-y: auto; max-height: 70vh; padding: 0 16px;">
-                <template
-                  v-for="(course, index) in coursesToCreate"
-                  :key="course.courseID || index"
+                <div
+                  style="overflow-y: auto; max-height: 70vh; padding: 0 16px"
                 >
-                  <CourseDetailsInput :course="course" create />
-                  <v-divider
-                    v-if="index < coursesToCreate.length - 1"
-                    class="my-4"
-                    color="grey-darken-3"
-                  />
-                </template>
+                  <template
+                    v-for="(course, index) in coursesToCreate"
+                    :key="course.courseID || index"
+                  >
+                    <CourseDetailsInput :course="course" create />
+                    <v-divider
+                      v-if="index < coursesToCreate.length - 1"
+                      class="my-4"
+                      color="grey-darken-3"
+                    />
+                  </template>
                 </div>
               </div>
             </v-stepper-window-item>
@@ -234,16 +265,14 @@
                   >:
                 </div>
                 <ul class="pl-4">
-                  
                   <li v-for="course in coursesToCreate" :key="course.courseID">
-          
                     <strong
                       >{{ course.courseCode }} {{ course.courseLevel }} –
-                      {{ course.courseSession }} 
+                      {{ course.courseSession }}
                     </strong>
                     {{ course.courseName }}
                     <ul v-if="course.customizedCourseName">
-                      <li> {{course.customizedCourseName}}</li>
+                      <li>{{ course.customizedCourseName }}</li>
                     </ul>
                   </li>
                 </ul>
@@ -334,6 +363,8 @@ export default {
         level: null,
         courseSession: null,
       },
+      courseValidationMessage: null,
+      formattedCourseSession: null, // Find a better way to handle this? Masked values were removed in later versions of vuetify
       headers: [
         { title: "Code", key: "courseCode" },
         { title: "level", key: "courseLevel" },
@@ -373,9 +404,22 @@ export default {
       this.dialog = false;
     },
     async addCourse() {
-      const { code, level, courseSession } = this.courseAdd;
+      this.courseValidationMessage = null; // reset validation message
+
+      // TODO - uncomment this when we complete the validations and input handling
+      //const { code, level, courseSession } = this.courseAdd;
+
+      // TODO - improve the handling of course code | level | session date with validation ticket
+      // removes hyphen before adding to store
+      const courseSession = this.courseAdd.courseSession.replace(
+        /[&\/\\#,+()$~%.'":*?<>{}-]/g,
+        ""
+      );
+      const code = this.courseAdd.code.toUpperCase();
+      const level = this.courseAdd.level.toUpperCase();
 
       if (!code || !level || !courseSession) {
+        // TODO change this to a validation message in next ticket
         this.$toast?.error?.("Please fill out all course fields.");
         return;
       }
@@ -410,6 +454,7 @@ export default {
         }
       } catch (error) {
         //ADD VALIDATION ("Error fetching course data.");
+        this.courseValidationMessage = "Course not Found"; //need this here because course not found is a 404 error; TODO expand on this via error code
       }
     },
 
