@@ -1,0 +1,214 @@
+name: Build & Deploy Frontend to OpenShift Dev and Test
+
+env:
+  OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
+  OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_REGISTRY_USER: ${{ github.actor }}
+  IMAGE_REGISTRY_PASSWORD: ${{ github.token }}
+  DOCKER_ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca/docker-remote
+  ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca
+  APP_NAME: "educ-grad-admin"
+  APP_NAME_FRONTEND: "educ-grad-admin-frontend"
+  TAG: "latest"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'frontend/**'
+
+jobs:
+  build:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-dev
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.DOCKER_ARTIFACTORY_REPO }}
+          username: ${{ secrets.DOCKER_ARTIFACTORY_USERNAME }}
+          password: ${{ secrets.DOCKER_ARTIFACTORY_ACCESS_TOKEN }}
+
+      # https://github.com/redhat-actions/buildah-build#readme
+      - name: Build frontend from Dockerfile
+        id: build-image-frontend
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.APP_NAME_FRONTEND }}
+          tags: ${{ env.TAG }}
+          dockerfiles: |
+            ./backend/Dockerfile
+          context: ./backend
+
+        # https://github.com/redhat-actions/push-to-registry#readme
+      - name: Push frontend to registry
+        id: push-image-frontend
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image-frontend.outputs.image }}
+          tags: ${{ steps.build-image-frontend.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ env.IMAGE_REGISTRY_USER }}
+          password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
+
+      - name: Install oc
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: 4
+
+      - name: Tag latest image
+        run: |
+          set -eux
+          # Login to OpenShift and select project
+          oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
+          oc project ${{ env.OPENSHIFT_NAMESPACE }}
+
+          # Create the image stream if it doesn't exist
+          oc create imagestream ${{ env.APP_NAME }}-frontend 2> /dev/null || true && echo "Frontend image stream in place"
+          oc tag ${{ steps.push-image-frontend.outputs.registry-path }} ${{ env.APP_NAME }}-frontend:${{ env.TAG }}
+
+  deploy-to-dev:
+    runs-on: ubuntu-latest
+    needs: build
+    environment: dev
+    env:
+      OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-dev
+      HOST_ROUTE: "educ-grad-admin-${{ secrets.UI_NAMESPACE }}-dev.apps.silver.devops.gov.bc.ca"
+      TARGET_ENV: "dev"
+      MIN_CPU: "60m"
+      MAX_CPU: "120m"
+      MIN_MEM: "250Mi"
+      MAX_MEM: "400Mi"
+      MIN_REPLICAS: "1"
+      MAX_REPLICAS: "2"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Install oc
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: 4
+
+      - name: Deploy
+        run: |
+          set -eux
+          # Login to OpenShift and select project
+          oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
+          oc project ${{ env.OPENSHIFT_NAMESPACE }}
+          
+          # Cancel any rollouts in progress
+          oc rollout cancel deployment/${{ env.APP_NAME_FRONTEND }} 2> /dev/null \
+          || true && echo "No rollout in progress"
+
+          # Process template
+          oc process -f tools/openshift/frontend-dc.yaml \
+          -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
+          -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
+          -p APP_NAME=${{ env.APP_NAME }} \
+          -p TAG=${{ env.TAG }} \
+          -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
+          -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
+          -p MIN_CPU=${{ env.MIN_CPU }} \
+          -p MAX_CPU=${{ env.MAX_CPU }} \
+          -p BASE_URL=${{ env.TARGET_ENV }}.grad.gov.bc.ca \
+          -p ENVIRONMENT=${{ env.TARGET_ENV }} \
+          -p CERTIFICATE="${{ secrets.CERTIFICATE }}" \
+          -p CA_CERT="${{ secrets.CA_CERT }}" \
+          -p PRIVATE_KEY="${{ secrets.PRIVATE_KEY }}" \
+          -p MIN_MEM=${{ env.MIN_MEM }} \
+          -p MAX_MEM=${{ env.MAX_MEM }} \
+          | oc apply -n ${{ env.OPENSHIFT_NAMESPACE }} -f -
+          
+          # Start rollout (if necessary) and follow it
+          oc rollout restart deployment/${{ env.APP_NAME_FRONTEND }} 
+
+          # Get status, returns 0 if rollout is successful
+          oc rollout status deployment/${{ env.APP_NAME_FRONTEND }}
+
+  deploy-to-test:
+    runs-on: ubuntu-latest
+    needs: build
+    environment: test
+    env:
+      OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-test
+      HOST_ROUTE: "educ-grad-admin-${{ secrets.UI_NAMESPACE }}-test.apps.silver.devops.gov.bc.ca"
+      TARGET_ENV: "test"
+      MIN_CPU: "50m"
+      MAX_CPU: "100m"
+      MIN_MEM: "200Mi"
+      MAX_MEM: "250Mi"
+      MIN_REPLICAS: "3"
+      MAX_REPLICAS: "5"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Install oc
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: 4
+      - name: Deploy
+        run: |
+          set -eux
+          # Login to OpenShift and select project
+          oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
+          oc project ${{ env.OPENSHIFT_NAMESPACE }}
+          
+          # Cancel any rollouts in progress
+          oc rollout cancel deployment/${{ env.APP_NAME_FRONTEND }} 2> /dev/null \
+          || true && echo "No rollout in progress"
+
+          echo "Tagging the image"
+          oc tag ${{ secrets.UI_NAMESPACE }}-dev/${{ env.APP_NAME }}-frontend:${{ env.TAG }} ${{ secrets.UI_NAMESPACE }}-test/${{ env.APP_NAME }}-frontend:${{ env.TAG }}
+          
+          # Process template
+          oc process -f tools/openshift/frontend-dc.yaml \
+          -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
+          -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
+          -p APP_NAME=${{ env.APP_NAME }} \
+          -p TAG=latest \
+          -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
+          -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
+          -p MIN_CPU=${{ env.MIN_CPU }} \
+          -p MAX_CPU=${{ env.MAX_CPU }} \
+          -p BASE_URL=${{ env.TARGET_ENV }}.grad.gov.bc.ca \
+          -p ENVIRONMENT=${{ env.TARGET_ENV }} \
+          -p CERTIFICATE="${{ secrets.CERTIFICATE }}" \
+          -p CA_CERT="${{ secrets.CA_CERT }}" \
+          -p PRIVATE_KEY="${{ secrets.PRIVATE_KEY }}" \
+          -p MIN_MEM=${{ env.MIN_MEM }} \
+          -p MAX_MEM=${{ env.MAX_MEM }} \
+          | oc apply -n ${{ env.OPENSHIFT_NAMESPACE }} -f -
+          
+          # Start rollout (if necessary) and follow it
+          oc rollout restart deployment/${{ env.APP_NAME_FRONTEND }} 
+
+          # Get status, returns 0 if rollout is successful
+          oc rollout status deployment/${{ env.APP_NAME_FRONTEND }}
+
+  zap-scan:
+    name: Zap Scan
+    needs: deploy-to-dev
+    runs-on: ubuntu-latest
+    env:
+      OPENSHIFT_NAMESPACE: ${{ vars.UI_NAMESPACE }}-dev
+    steps:
+      - name: Zap Scan
+        uses: zaproxy/action-full-scan@v0.12.0
+        with:
+          target: 'https://educ-grad-admin-${{ env.OPENSHIFT_NAMESPACE }}.apps.silver.devops.gov.bc.ca'
