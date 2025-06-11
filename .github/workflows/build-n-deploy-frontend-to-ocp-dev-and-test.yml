@@ -48,8 +48,8 @@ jobs:
           image: ${{ env.APP_NAME_FRONTEND }}
           tags: ${{ env.TAG }}
           dockerfiles: |
-            ./backend/Dockerfile
-          context: ./backend
+            ./frontend/Dockerfile
+          context: ./frontend
 
         # https://github.com/redhat-actions/push-to-registry#readme
       - name: Push frontend to registry
