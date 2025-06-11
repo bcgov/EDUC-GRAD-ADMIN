@@ -48,8 +48,11 @@
       </v-col>
     </v-col>
     <v-col cols="2" class="d-flex flex-column justify-start">
-      {{ course.courseName }} {{ course.courseCode }} {{ course.courseLevel }}
-      {{ course.sessionDate }}
+      <strong
+        >{{ course.courseName }} {{ course.courseCode }}
+        {{ course.courseLevel }}
+      </strong>
+      {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
     </v-col>
     <v-col cols="10">
       <v-row no-gutters class="my-2">
