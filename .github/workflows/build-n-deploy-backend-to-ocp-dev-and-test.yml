@@ -92,6 +92,10 @@ jobs:
       MIN_REPLICAS: "1"
       MAX_REPLICAS: "2"
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
@@ -163,6 +167,10 @@ jobs:
       MIN_REPLICAS: "3"
       MAX_REPLICAS: "5"
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
         with:
