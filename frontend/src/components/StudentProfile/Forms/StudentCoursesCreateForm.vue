@@ -261,7 +261,7 @@
               >
                 <div class="mb-2">
                   You are about to add the following courses to student
-                  <strong>{{ studentPen }}</strong
+                  <strong>{{ studentPenAndName }}</strong
                   >:
                 </div>
                 <ul class="pl-4">
@@ -380,7 +380,7 @@ export default {
     ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useStudentStore, {
       coursesToCreate: (state) => state.create.courses,
-      studentPen: "getStudentPen",
+      studentPenAndName: "formattedStudentName",
     }),
   },
   methods: {
