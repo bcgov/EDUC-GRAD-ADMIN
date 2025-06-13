@@ -294,20 +294,20 @@ export const useStudentStore = defineStore("student", {
     },
     loadStudentCourseHistory(studentId) {
       StudentService.getStudentCourseHistory(studentId)
-          .then((response) => {
-            this.setStudentCourseAuditHistory(response.data);
-          })
-          .catch((error) => {
-            if (error?.response?.status) {
-              this.snackbarStore.showSnackbar(
-                  "ERROR " + error?.response?.statusText,
-                  "error",
-                  10000,
-                  "There was an error with the Student Service (getting the Student Course History): " +
-                  error?.response?.status
-              );
-            }
-          });
+        .then((response) => {
+          this.setStudentCourseAuditHistory(response.data);
+        })
+        .catch((error) => {
+          if (error?.response?.status) {
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error?.response?.statusText,
+              "error",
+              10000,
+              "There was an error with the Student Service (getting the Student Course History): " +
+                error?.response?.status
+            );
+          }
+        });
     },
     unsetStudent() {
       this.student.profile = {};
@@ -803,6 +803,22 @@ export const useStudentStore = defineStore("student", {
      * variable, so it makes to rename our getters in the store too since the get is already implied by being
      * in the getter section */
 
+    formattedStudentName(showPEN = true, showMiddle = true) {
+      let profile = this.student?.profile;
+      if (profile) {
+        let formattedName = `${profile.legalLastName}, ${profile.legalFirstName}`;
+        if (showPEN) {
+          formattedName = `${profile.pen} - ` + formattedName;
+        }
+        if (showMiddle && profile.legalMiddleNames) {
+          formattedName = formattedName + ` ${profile.legalMiddleNames}`;
+        }
+        return formattedName;
+      } else {
+        //return "error occurred getting student name, refresh or try again later";
+        return "";
+      }
+    },
     studentCourses() {
       return this.student.courses;
     },
