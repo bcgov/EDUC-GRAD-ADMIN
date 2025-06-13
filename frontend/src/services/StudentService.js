@@ -148,4 +148,11 @@ export default {
   getStudentGradeCodes() {
     return ApiService.apiAxios.get("/api/v1/student/grade-codes");
   },
+//ADOPT PEN STUDENT
+  adoptPENStudent(studnetData) {
+    return ApiService.apiAxios.post(
+      "/api/v1/student/adopt",
+      studnetData
+    );
+  },
 };

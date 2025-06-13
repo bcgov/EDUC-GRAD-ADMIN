@@ -207,6 +207,24 @@ const router = createRouter({
       component: BackendSessionExpired,
     },
     {
+      path: "/student-admin/:student",
+      name: "StudentAdmin",
+      beforeEnter: (to, from, next) => {
+        const authStore = useAuthStore();
+        const appStore = useAppStore(); 
+        const studentId = to.params['student'];        
+        if(appStore.config && appStore.config?.STUDENT_ADMIN_URL) {
+          // Open the route in a new tab
+          window.open(appStore.config.STUDENT_ADMIN_URL+"/api/auth/silent_idir_login?studentDetails=true&idir_guid="+authStore.userInfo.userGuid.toLowerCase()+"&studentID="+studentId, '_blank');
+        }
+        // Prevent normal navigation since we've opened the link in a new tab 
+        next(false);        
+      },      
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
       path: "/schools",
       name: "Schools",
       beforeEnter: (to, from, next) => {
