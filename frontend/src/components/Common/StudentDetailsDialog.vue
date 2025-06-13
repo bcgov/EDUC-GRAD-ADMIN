@@ -65,6 +65,9 @@
           <div class="my-1">
             <strong>Status Code: </strong>{{ student.statusCode }}
           </div>
+          <div class="my-1">
+            <v-btn @click="openStudentAdmin" class="text">Student Admin</v-btn>
+          </div>
         </v-card-text>
         <v-card-actions
           class="sticky-form-actions"
@@ -157,6 +160,19 @@ export default {
       } finally {
         this.adoptLoading = false;
       }
+    },
+
+    openStudentAdmin() {
+      const studentID = this.student?.studentID;
+      if (!studentID) {
+        this.snackbarStore.error("Student ID is missing.");
+        return;
+      }
+
+      this.$router.push({
+        name: "StudentAdmin",
+        params: { student: studentID },
+      });
     },
   },
 };
