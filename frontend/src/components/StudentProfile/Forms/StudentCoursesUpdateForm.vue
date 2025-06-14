@@ -68,6 +68,8 @@
 
 <script>
 import { ref, computed } from "vue";
+import useVuelidate from '@vuelidate/core';
+import { required, helpers } from '@vuelidate/validators';
 import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
 import { useStudentStore } from "@/store/modules/student";
 
@@ -106,6 +108,7 @@ export default {
       close,
       confirmUpdate,
       hasPermissions,
+      v$: useVuelidate(),
     };
   },
 };

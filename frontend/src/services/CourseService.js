@@ -10,6 +10,9 @@ export default {
   getCourseByCodeAndLevel(courseCode, courseLevel){
     return ApiService.apiAxios.get("/api/v2/course/" + courseCode + "/level/" + courseLevel );
   },
+  getCourseByCode(courseCode){
+    return ApiService.apiAxios.get("/api/v1/course/" + courseCode );
+  },  
   getAllCourses() {
     return ApiService.apiAxios.get("/api/v1/course/");
   },
