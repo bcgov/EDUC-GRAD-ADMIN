@@ -1,9 +1,11 @@
 <template>
-  <div>
-    <v-row v-if="isCourseRestrictionEditable()">
+  <div>   
+    <v-row>
       <h3 class="ml-4 mt-5">Course Restrictions</h3>
-      <v-spacer />
-      <CourseRestrictionsCreateForm />
+      <v-spacer />   
+      <span v-if="enableCRUD()">   
+        <CourseRestrictionsCreateForm  />
+      </span>
     </v-row>
     <v-spacer />
     <v-row no-gutters>
@@ -40,7 +42,7 @@
         <template v-slot:item.restrictionEndDate="{ item }">
         {{ $filters.formatYYYYMMDate(item.restrictionEndDate) }}
         </template>
-        <template v-slot:item.edit="{ item }" v-if="isCourseRestrictionEditable()">
+        <template v-slot:item.edit="{ item }" v-if="enableCRUD()">
           <CourseRestrictionsUpdateForm :selectedCourseRestrictionToUpdate="item">
           </CourseRestrictionsUpdateForm>
         </template>
@@ -110,7 +112,7 @@ export default {
           sortable: true,
           class: "text-left",
         },
-        ...(this.isCourseRestrictionEditable()
+        ...(this.enableCRUD()
     ? [
         {
           key: "edit",
@@ -132,18 +134,15 @@ export default {
     ...mapActions(useCourseStore, [
       "getCourseRestrictions",
     ]),
-    ...mapState(useAppStore, {
-      environment: "getEnvironment",
-    }),
+    ...mapActions(useAppStore, [
+      "enableCRUD",
+    ]),
     onSearchInput(value) {
       this.search = value?.replace("-","/");
     },
     clearSearchInput() {
       this.search = '';
       this.rawSearchInput= ''; 
-    },
-    isCourseRestrictionEditable() {
-      return this.environment !== "prod";
     }
   },
 };
