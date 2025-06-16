@@ -10,7 +10,6 @@
           variant="outlined"
           density="compact"
           class="my-2"
-          hide-details
           persistent-placeholder
           persistent-hint
           :rules="[v => !!v || 'Course Code is required']"  
@@ -25,7 +24,6 @@
           variant="outlined"
           density="compact"
           class="my-2"
-          hide-details
           persistent-placeholder
           persistent-hint
           :rules="[v => !!v || 'Course Level is required']"  
