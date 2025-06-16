@@ -75,6 +75,7 @@ app.config.globalProperties.$filters = {
   formatTime(value) {
     if (value) {
       return new Date(value).toLocaleString("en-CA", {
+        timeZone: "UTC", 
         hourCycle: "h23",
       });
     } else {
