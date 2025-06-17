@@ -31,7 +31,8 @@
             <strong>Course Level: </strong> {{ course.courseLevel }} <br />
             <strong>Instruction Language: </strong> {{ course.language }} <br />
             <strong>Start Date: </strong> {{ course.startDate }} <br />
-            <strong>Completion Date: </strong> {{ course.completionDate }}
+            <strong>Completion End Date: </strong>
+            {{ course.completionEndDate }}
             <br />
             <strong>Credits: </strong> {{ course.numCredits }} <br />
             <strong>Generic Course Type: </strong>
