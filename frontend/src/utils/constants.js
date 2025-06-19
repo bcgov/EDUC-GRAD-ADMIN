@@ -109,6 +109,11 @@ export const RolePermissions = Object.freeze({
       allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
   },
+  COURSE: {
+    restrictionUpdate: {
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
+    }
+  },
 });
 
 //role access

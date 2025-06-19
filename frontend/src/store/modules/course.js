@@ -2,54 +2,37 @@ import { defineStore } from "pinia";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import CourseService from "@/services/CourseService.js";
 
+const initialState = () => ({
+    courseRestrictions: [],
+    courseRestrictionToSave: {
+        courseRestrictionId: "", //Will be set during UPDATE
+        mainCourse: {},
+        restrictedCourse: {},
+        restrictionStartDate: "",
+        restrictionEndDate: "",
+        hasValidationError: true,
+    }
+});
 export const useCourseStore = defineStore("course", {
     namespaced: true,
-    snackbarStore: useSnackbarStore(),
-    state: () => ({
-        courseRestrictions: [],
-        courseRestriction: {
-            courseRestrictionId: "",
-            mainCourse: "",
-            mainCourseLevel: "",
-            restrictedCourse: "",
-            restrictedCourseLevel: "",
-            restrictionStartDate: "",
-            restrictionEndDate: ""
-        },
-        courseRestrictionToSave: {
-            courseRestrictionId: "", //Will be set ONLY when updating
-            mainCourse: {},
-            restrictedCourse: {},
-            restrictionStartDate: "",
-            restrictionEndDate: "",
-            hasValidationError: true,
-        },
+    snackbarStore: useSnackbarStore(),    
+    state: () => ({       
+        courseRestrictions : initialState().courseRestrictions,
+        courseRestrictionToSave : initialState().courseRestrictionToSave       
     }),
+    getters: {
+        getCourseRestrictions: (state) => state.courseRestrictions,
+    },
     actions: {
         clearCourseRestriction() {
-            this.courseRestriction = {
-                courseRestrictionId: "",
-                mainCourse: "",
-                mainCourseLevel: "",
-                restrictedCourse: "",
-                restrictedCourseLevel: "",
-                restrictionStartDate: "",
-                restrictionEndDate: ""
-            };
-            this.courseRestrictionToSave = {
-                courseRestrictionId: "", //Will be set ONLY when updating
-                mainCourse: {},
-                restrictedCourse: {},
-                restrictionStartDate: "",
-                restrictionEndDate: "",
-                hasValidationError: true,
-        };
+            this.$patch(state => {
+                state.courseRestrictionToSave = { ...initialState().courseRestrictionToSave };
+            });
         },
         // Save course restriction
-        async createCourseRestriction(courseRestrictionToSave) {
+        async createCourseRestriction(courseRestriction) {
             try {
-                this.populateCourseRestriction(courseRestrictionToSave)
-                const response = await CourseService.createCourseRestriction(this.courseRestriction);
+                const response = await CourseService.createCourseRestriction(this.toCourseRestrictionPayload(courseRestriction));
                 return response.data;
             } catch (error) {
                 console.error("Error saving course restriction: ", error);
@@ -57,10 +40,9 @@ export const useCourseStore = defineStore("course", {
             }
         },
         // Save course restriction
-        async updateCourseRestriction(courseRestrictionToSave) {
+        async updateCourseRestriction(courseRestriction) {
             try {
-                this.populateCourseRestriction(courseRestrictionToSave)
-                const response = await CourseService.updateCourseRestriction(courseRestrictionToSave.courseRestrictionId, this.courseRestriction);
+                const response = await CourseService.updateCourseRestriction(courseRestriction.courseRestrictionId, this.toCourseRestrictionPayload(courseRestriction));
                 return response.data;
             } catch (error) {
                 console.error("Error saving course restriction: ", error);
@@ -68,7 +50,7 @@ export const useCourseStore = defineStore("course", {
             }
         },
         // Get course restrictions
-        async getCourseRestrictions() {
+        async loadCourseRestrictions() {
             try {
                 const response = await CourseService.getCourseRestrictions();
                 this.courseRestrictions = response.data;
@@ -79,13 +61,15 @@ export const useCourseStore = defineStore("course", {
                 return error;
             }
         },
-        populateCourseRestriction(courseRestrictionValue) {
-            this.courseRestriction.mainCourse = courseRestrictionValue.mainCourse?.courseCode;
-            this.courseRestriction.mainCourseLevel = courseRestrictionValue.mainCourse?.courseLevel;
-            this.courseRestriction.restrictedCourse = courseRestrictionValue.restrictedCourse?.courseCode;
-            this.courseRestriction.restrictedCourseLevel = courseRestrictionValue.restrictedCourse?.courseLevel;
-            this.courseRestriction.restrictionStartDate = courseRestrictionValue.restrictionStartDate;
-            this.courseRestriction.restrictionEndDate = courseRestrictionValue.restrictionEndDate;
-        }
+        toCourseRestrictionPayload(courseRestriction) {
+            return {
+                mainCourse: courseRestriction.mainCourse?.courseCode,
+                mainCourseLevel: courseRestriction.mainCourse?.courseLevel,
+                restrictedCourse: courseRestriction.restrictedCourse?.courseCode,
+                restrictedCourseLevel: courseRestriction.restrictedCourse?.courseLevel,
+                restrictionStartDate: courseRestriction.restrictionStartDate,
+                restrictionEndDate: courseRestriction.restrictionEndDate
+            }
+        },
     },
 })

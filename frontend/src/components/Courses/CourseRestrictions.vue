@@ -65,12 +65,11 @@ export default {
   },
   computed: {
     ...mapState(useCourseStore, {
-      snackbarStore: (state) => state.snackbarStore,
-      courseRestrictions: (state) => state.courseRestrictions,
+      courseRestrictions: "getCourseRestrictions",
     }),
   },
   created() {
-    this.getCourseRestrictions();
+    this.loadCourseRestrictions();
   },
   data() {
     return {
@@ -132,7 +131,7 @@ export default {
   },
   methods: {
     ...mapActions(useCourseStore, [
-      "getCourseRestrictions",
+      "loadCourseRestrictions",
     ]),
     ...mapActions(useAppStore, [
       "enableCRUD",

@@ -1,9 +1,10 @@
 <template>
-  <div>
+  <div>    
     <v-dialog v-model="dialog" persistent max-width="1024">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-          <v-btn v-bind="props" color="success" icon="mdi-pencil" density="compact" variant="text" />
+          <v-btn v-bind="props" color="success" icon="mdi-pencil" density="compact" variant="text" 
+          @click="openUpdateCoursRestrictionsDialog()" :disabled="!hasPermissions('COURSE', 'restrictionUpdate')"/>
         </slot>
       </template>
 
@@ -36,7 +37,7 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import CourseRestrictionsDetailsInput from "@/components/Courses/Forms/FormInputs/CourseRestrictionsDetailsInput.vue";
 import { useAccessStore } from "@/store/modules/access";
 import { useCourseStore } from "@/store/modules/course.js";
@@ -53,75 +54,56 @@ export default {
   },
   setup(props) {
     const dialog = ref(false);
-    const courseStore = useCourseStore();
-    const hasPermissions = (module, permission) => {
-      return true; // Replace with actual permission check
-    };
-
     return {
       dialog,
-      hasPermissions,
     };
   },
   data() {
     return {
-      selectedCourseRestriction: {
-        mainCourse: {},
-        restrictedCourse: {},
-        restrictionStartDate: "",
-        restrictionEndDate: "",
-      },
     };
-  },
-  watch: {
-    selectedCourseRestrictionToUpdate: {
-      immediate: true,
-      handler(newVal) {
-        this.updateSelectedCourseRestriction(newVal);
-      },
-    },
   },
   computed: {
     ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useCourseStore, {
-      courseRestrictionToSave: (state) => state.courseRestrictionToSave,
-      courseRestriction: (state) => state.courseRestriction,
+      selectedCourseRestriction: (state) => state.courseRestrictionToSave,
     })
   },
   methods: {
     ...mapActions(useCourseStore, [
       "clearCourseRestriction",
       "updateCourseRestriction",
-      "getCourseRestrictions"
+      "loadCourseRestrictions"
     ]),
+    openUpdateCoursRestrictionsDialog() {
+      this.dialog = true;
+      this.updateSelectedCourseRestriction(this.selectedCourseRestrictionToUpdate);
+    },
     async submitForm() {
       this.updateCourseRestrictionMessages = [];
       const updateCourseRestrictionRequestBody = toRaw(this.selectedCourseRestriction);
       try {
         // Call API and get response
         await this.updateCourseRestriction(updateCourseRestrictionRequestBody).then((response) => {
-          this.createCourseRestrictionResponse = response;
-          if (this.createCourseRestrictionResponse.hasPersisted) {
-            this.getCourseRestrictions();
+          if (response?.hasPersisted) {
+              this.loadCourseRestrictions();
           }
         });
       } catch (error) {
-        console.error("Error creating course restriction form:", error);
+        console.error("Error updating course restriction form:", error);
       }
       this.close();
     },
     close() {
       this.dialog = false;
       this.clearCourseRestriction();
-      this.updateSelectedCourseRestriction(this.selectedCourseRestrictionToUpdate);
     },
     updateSelectedCourseRestriction(courseRestrictionToUpdate) {
-      this.selectedCourseRestriction.courseRestrictionId = courseRestrictionToUpdate.courseRestrictionId,
+        this.selectedCourseRestriction.courseRestrictionId = courseRestrictionToUpdate.courseRestrictionId,
         this.selectedCourseRestriction.restrictionStartDate = courseRestrictionToUpdate.restrictionStartDate ? courseRestrictionToUpdate.restrictionStartDate.replace("/", "-") : null,
         this.selectedCourseRestriction.restrictionEndDate = courseRestrictionToUpdate.restrictionEndDate ? courseRestrictionToUpdate.restrictionEndDate.replace("/", "-") : null,
         this.selectedCourseRestriction.mainCourse = { "courseCode": courseRestrictionToUpdate.mainCourse, "courseLevel": courseRestrictionToUpdate.mainCourseLevel, "courseID": courseRestrictionToUpdate.mainCourseID },
         this.selectedCourseRestriction.restrictedCourse = { "courseCode": courseRestrictionToUpdate.restrictedCourse, "courseLevel": courseRestrictionToUpdate.restrictedCourseLevel, "courseID": courseRestrictionToUpdate.restrictedCourseID };
-    },
+      },
   },
 };
 </script>

@@ -3,7 +3,7 @@
     <template v-slot:activator="{ props }">
       <div class="pr-14">
         <v-btn class="text-none mt-4" color="bcGovBlue" prepend-icon="mdi-plus"
-          @click="openCreateCoursRestrictionsDialog()" text="Add Course Restriction" />
+          @click="openCreateCoursRestrictionsDialog()" text="Add Course Restriction" :disabled="!hasPermissions('COURSE', 'restrictionUpdate')"/>
       </div>
     </template>
       
@@ -183,7 +183,7 @@ export default {
     ...mapActions(useCourseStore, [
       "clearCourseRestriction",
       "createCourseRestriction",
-      "getCourseRestrictions",
+      "loadCourseRestrictions",
     ]),
     getDefaultCourseRestrictionResponse() {
       return {
@@ -219,7 +219,7 @@ export default {
           this.createCourseRestrictionResponse = response;
           this.validationStep = true;
           if (this.createCourseRestrictionResponse.hasPersisted) {
-            this.getCourseRestrictions();
+            this.loadCourseRestrictions();
             this.clearForm();
           }
         });
