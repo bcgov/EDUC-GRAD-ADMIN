@@ -41,6 +41,7 @@ import { ref } from "vue";
 import CourseRestrictionsDetailsInput from "@/components/Courses/Forms/FormInputs/CourseRestrictionsDetailsInput.vue";
 import { useAccessStore } from "@/store/modules/access";
 import { useCourseStore } from "@/store/modules/course.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import { mapState, mapActions } from "pinia";
 import { toRaw } from "vue";
 export default {
@@ -60,6 +61,7 @@ export default {
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
     };
   },
   computed: {
@@ -86,10 +88,14 @@ export default {
         await this.updateCourseRestriction(updateCourseRestrictionRequestBody).then((response) => {
           if (response?.hasPersisted) {
               this.loadCourseRestrictions();
+              this.snackbarStore.showSnackbar("Course Restriction Saved", "success", 5000);
+          } else {
+              this.snackbarStore.showSnackbar("Failed to save Course Restriction", "error", 10000);
           }
         });
       } catch (error) {
         console.error("Error updating course restriction form:", error);
+        this.snackbarStore.showSnackbar("An error occurred", "danger", 10000);        
       }
       this.close();
     },
@@ -103,7 +109,7 @@ export default {
         this.selectedCourseRestriction.restrictionEndDate = courseRestrictionToUpdate.restrictionEndDate ? courseRestrictionToUpdate.restrictionEndDate.replace("/", "-") : null,
         this.selectedCourseRestriction.mainCourse = { "courseCode": courseRestrictionToUpdate.mainCourse, "courseLevel": courseRestrictionToUpdate.mainCourseLevel, "courseID": courseRestrictionToUpdate.mainCourseID },
         this.selectedCourseRestriction.restrictedCourse = { "courseCode": courseRestrictionToUpdate.restrictedCourse, "courseLevel": courseRestrictionToUpdate.restrictedCourseLevel, "courseID": courseRestrictionToUpdate.restrictedCourseID };
-      },
+      },    
   },
 };
 </script>

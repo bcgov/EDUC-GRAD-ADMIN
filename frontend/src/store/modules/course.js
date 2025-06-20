@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { useSnackbarStore } from "@/store/modules/snackbar";
+import { useSnackbarStore } from "../../store/modules/snackbar";
 import CourseService from "@/services/CourseService.js";
 
 const initialState = () => ({
@@ -15,7 +15,6 @@ const initialState = () => ({
 });
 export const useCourseStore = defineStore("course", {
     namespaced: true,
-    snackbarStore: useSnackbarStore(),    
     state: () => ({       
         courseRestrictions : initialState().courseRestrictions,
         courseRestrictionToSave : initialState().courseRestrictionToSave       
@@ -35,7 +34,7 @@ export const useCourseStore = defineStore("course", {
                 const response = await CourseService.createCourseRestriction(this.toCourseRestrictionPayload(courseRestriction));
                 return response.data;
             } catch (error) {
-                console.error("Error saving course restriction: ", error);
+                console.error("Error creating course restriction: ", error);
                 return error;
             }
         },
@@ -45,7 +44,7 @@ export const useCourseStore = defineStore("course", {
                 const response = await CourseService.updateCourseRestriction(courseRestriction.courseRestrictionId, this.toCourseRestrictionPayload(courseRestriction));
                 return response.data;
             } catch (error) {
-                console.error("Error saving course restriction: ", error);
+                console.error("Error updating course restriction: ", error);
                 return error;
             }
         },
@@ -57,7 +56,7 @@ export const useCourseStore = defineStore("course", {
                 return response.data;
             } catch (error) {
                 console.error("Error fetching course restrictions: ", error);
-                this.snackbarStore.showError("Failed to fetch course restrictions.");
+                useSnackbarStore().showError("Failed to fetch course restrictions.");
                 return error;
             }
         },
