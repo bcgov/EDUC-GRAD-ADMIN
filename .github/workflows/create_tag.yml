@@ -37,6 +37,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
 
       - name: Create tag
         uses: actions/github-script@v6
