@@ -3,7 +3,7 @@
     <v-btn
       v-if="hasPermissions('STUDENT', 'updateGradStatus')"
       @click="editGradStatus"
-      :disabled="allSet"
+      :disabled="allSet || mergedStudent"
     >
       Edit
       <v-progress-circular v-if="searchLoading" indeterminate color="green">
@@ -15,11 +15,7 @@
           <!-- Alerts -->
           <div class="alerts">
             <!-- Info callout in edit form when student status is MER/Merged -->
-            <div
-              v-if="
-                studentGradStatus && studentGradStatus.studentStatus == 'MER'
-              "
-            >
+            <div v-if="mergedStudent">
               <v-alert
                 type="info"
                 variant="tonal"
@@ -484,8 +480,9 @@
                     </template>
                   </v-autocomplete> -->
                   <p
-                    data-cy="school-at-graduation-text" 
-                    v-if="editedGradStatus?.schoolAtGradId">
+                    data-cy="school-at-graduation-text"
+                    v-if="editedGradStatus?.schoolAtGradId"
+                  >
                     {{
                       getSchoolById(editedGradStatus?.schoolAtGradId)?.mincode
                     }}
