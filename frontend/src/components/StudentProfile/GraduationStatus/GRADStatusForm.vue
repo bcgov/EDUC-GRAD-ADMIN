@@ -3,7 +3,7 @@
     <v-btn
       v-if="hasPermissions('STUDENT', 'updateGradStatus')"
       @click="editGradStatus"
-      :disabled="allSet || mergedStudent"
+      :disabled="!schoolsLoaded || mergedStudent"
     >
       Edit
       <v-progress-circular v-if="searchLoading" indeterminate color="green">
@@ -740,21 +740,16 @@ export default {
     recalculateProjectedGradFlag() {
       return this.studentGradStatus?.recalculateProjectedGrad;
     },
-    allSet() {
+    schoolsLoaded() {
       if (this.getSchoolsList?.length == 0) {
-        return true;
+        return false;
       } else {
         this.searchLoading = false;
-        return false;
+        return true;
       }
     },
     mergedStudent() {
-      if (this.studentGradStatus?.studentStatus === "MER") {
-        return true;
-      } else {
-        this.searchLoading = false;
-        return false;
-      }
+      return this.studentGradStatus?.studentStatus === "MER";
     },
   },
   data() {
