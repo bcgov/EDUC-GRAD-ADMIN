@@ -68,7 +68,7 @@
                       @click="addCourse">
                       Get Course
                     </v-btn>
-                    <v-btn variant="flat" color="bcGovBlue" class="text-none" @click="closeCourseInput">Cancel</v-btn>
+                    <v-btn color="error" variant="outlined" class="text-none ml-1" @click="closeCourseInput">Cancel</v-btn>
                   </v-col>
 
                 </v-row>
@@ -144,103 +144,69 @@
                     </v-expansion-panel-title>
 
                     <v-expansion-panel-text>
-                    <div v-if="course.validationIssues.length">
-                      <v-alert
-                        v-for="(issue, i) in course.validationIssues"
-                        :key="i"
-                        :type="
-                          issue.validationIssueSeverityCode === 'ERROR'
+                      <div v-if="course.validationIssues.length">
+                        <v-alert v-for="(issue, i) in course.validationIssues" :key="i" :type="issue.validationIssueSeverityCode === 'ERROR'
                             ? 'error'
                             : 'warning'
-                        "
-                        dense
-                        outlined
-                        class="mb-2"
-                      >
-                        {{ issue.validationIssueMessage }}
-                      </v-alert>
-                    </div>
-                    <div v-else>
-                      <v-alert type="success" dense outlined>
-                        No validation issues.
-                      </v-alert>
-                    </div>
-                    <pre>{{ course.originalCourse }}</pre>
-                  </v-expansion-panel-text>
-                </v-expansion-panel>
-              </v-expansion-panels>
+                          " dense outlined class="mb-2">
+                          {{ issue.validationIssueMessage }}
+                        </v-alert>
+                      </div>
+                      <div v-else>
+                        <v-alert type="success" dense outlined>
+                          No validation issues.
+                        </v-alert>
+                      </div>
+                      <pre>{{ course.originalCourse }}</pre>
+                    </v-expansion-panel-text>
+                  </v-expansion-panel>
+                </v-expansion-panels>
 
-                <v-alert
-                v-if="coursesToCreate.length > 0"
-                type="info"
-                class="mb-4"
-                border="start"
-                elevation="2"
-                variant="tonal"
-              >
-                <div class="mb-2">
-                  You are about to add the following courses to student
-                  <strong>{{ studentPenAndName }}</strong
-                  >:
-                </div>
-                <v-row
-                  no-gutters
-                  v-for="course in coursesToCreate"
-                  :key="course.courseID + course.sessionDate"
-                  class="mb-2"
-                >
-                  <v-col cols="12"
-                    ><strong
-                      >{{ course.courseCode }} {{ course.courseLevel }} -
-                      {{
-                        $filters.formatYYYYMMStringDate(course.courseSession)
-                      }}</strong
-                    >
-                  </v-col>
-                  <v-col cols="12" class="ml-3">
-                    {{ course.courseName }}
-                  </v-col>
-                  <v-col class="ml-3"
-                    ><strong>Interim</strong>&nbsp;
-                    <span v-if="course.interimPercent"
-                      >{{ course.interimPercent }}%
-                      {{ course.interimLetterGrade }}</span
-                    >
-                    <span v-else> <i>null</i> </span>
-                  </v-col>
-                  <v-col
-                    ><strong>Final</strong>&nbsp;
-                    <span v-if="course.finalPercent">
-                      {{ course.finalPercent }}%
-                      {{ course.finalLetterGrade }}</span
-                    ><span v-else><i>null</i></span></v-col
-                  >
-                  <!-- I don't think credits can have a null value? - Samara -->
-                  <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
-                  <v-col
-                    ><strong>FA/AS</strong>&nbsp;
-                    <span v-if="course.fineArtsAppliedSkills">
-                      {{ course.fineArtsAppliedSkills }}
-                    </span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col
-                    ><strong>Eq/Ch</strong>&nbsp;
-                    <span v-if="course.equivalencyOrChallenge">
-                      {{ course.equivalencyOrChallenge }}
-                    </span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    class="ml-3"
-                    v-if="course.customizedCourseName"
-                    ><strong>Custom Course Title</strong>
-                    {{ course.customizedCourseName }}</v-col
-                  >
-                </v-row>
-              </v-alert>
-            </v-stepper-window-item>
+                <v-alert v-if="coursesToCreate.length > 0" type="info" class="mb-4" border="start" elevation="2"
+                  variant="tonal">
+                  <div class="mb-2">
+                    You are about to add the following courses to student
+                    <strong>{{ studentPenAndName }}</strong>:
+                  </div>
+                  <v-row no-gutters v-for="course in coursesToCreate" :key="course.courseID + course.sessionDate"
+                    class="mb-2">
+                    <v-col cols="12"><strong>{{ course.courseCode }} {{ course.courseLevel }} -
+                        {{
+                          $filters.formatYYYYMMStringDate(course.courseSession)
+                        }}</strong>
+                    </v-col>
+                    <v-col cols="12" class="ml-3">
+                      {{ course.courseName }}
+                    </v-col>
+                    <v-col class="ml-3"><strong>Interim</strong>&nbsp;
+                      <span v-if="course.interimPercent">{{ course.interimPercent }}%
+                        {{ course.interimLetterGrade }}</span>
+                      <span v-else> <i>null</i> </span>
+                    </v-col>
+                    <v-col><strong>Final</strong>&nbsp;
+                      <span v-if="course.finalPercent">
+                        {{ course.finalPercent }}%
+                        {{ course.finalLetterGrade }}</span><span v-else><i>null</i></span></v-col>
+                    <!-- I don't think credits can have a null value? - Samara -->
+                    <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
+                    <v-col><strong>FA/AS</strong>&nbsp;
+                      <span v-if="course.fineArtsAppliedSkills">
+                        {{ course.fineArtsAppliedSkills }}
+                      </span>
+                      <span v-else><i>null</i></span>
+                    </v-col>
+                    <v-col><strong>Eq/Ch</strong>&nbsp;
+                      <span v-if="course.equivalencyOrChallenge">
+                        {{ course.equivalencyOrChallenge }}
+                      </span>
+                      <span v-else><i>null</i></span>
+                    </v-col>
+                    <v-col cols="12" class="ml-3" v-if="course.customizedCourseName"><strong>Custom Course
+                        Title</strong>
+                      {{ course.customizedCourseName }}</v-col>
+                  </v-row>
+                </v-alert>
+              </v-stepper-window-item>
             </div>
           </v-stepper-window>
         </template>
@@ -488,7 +454,7 @@ export default {
         this.courseValidationMessage = "Invalid Course code/level - course code/level does not exist in the ministry course registry"; //need this here because course not found is a 404 error; TODO expand on this via error code
       }
     },
-    closeCourseInput(){
+    closeCourseInput() {
       this.clearForm();
       this.showCourseInputs = false;
     },
@@ -500,7 +466,7 @@ export default {
         courseStartDate: null,
         courseEndDate: null,
       };
-      
+
     },
 
     async submitForm() {
