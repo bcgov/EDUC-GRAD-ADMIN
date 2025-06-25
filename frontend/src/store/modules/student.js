@@ -23,13 +23,12 @@ export const useStudentStore = defineStore("student", {
     student: {
       profile: {},
       courses: [], // do we want to create a coursesMap ?
-      coursesLegacy: [],
       assessments: [],
-      exams: [],
+      coursesLegacy: [],
+      examsLegacy: [],
       notes: [],
       gradStatus: "not loaded",
       optionalPrograms: [],
-      hasExams: false,
       hasAssessments: false,
       hasGradStatus: false,
       hasgradStatusPendingUpdates: false,
@@ -42,6 +41,7 @@ export const useStudentStore = defineStore("student", {
       careerPrograms: [],
       auditHistory: [],
       auditHistoryOptionalPrograms: [],
+      auditHistoryCourses: [],
     },
     editedGradStatus: {
       programCompletionDate: "",
@@ -63,8 +63,12 @@ export const useStudentStore = defineStore("student", {
       recalculateGradStatus: "",
       recalculateProjectedGrad: "",
     },
-    // formattedGradStatusCourses: [],
-    // formattedGradStatusAssessments: [],
+    create: {
+      courses: [],
+    },
+    update: {
+      courses: [],
+    },
   }),
   actions: {
     formatAssessmentItemsList(items) {
@@ -240,54 +244,6 @@ export const useStudentStore = defineStore("student", {
           );
         });
     },
-    loadStudentOptionalPrograms(studentId) {
-      StudentService.getGraduationStatusOptionalPrograms(studentId)
-        .then((response) => {
-          this.setStudentGradStatusOptionalPrograms(response.data);
-        })
-        .catch((error) => {
-          if (error?.response?.status) {
-            // this.$bvToast.toast("ERROR " + error.response.statusText, {
-            //   title:
-            //     "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
-            //     error.response.status,
-            //   variant: "danger",
-            //   noAutoHide: true,
-            // });
-            this.snackbarStore.showSnackbar(
-              "ERROR " + error?.response?.statusText,
-              "error",
-              10000,
-              "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
-                error?.response?.status
-            );
-          }
-        });
-    },
-    loadStudentCareerPrograms(studentId) {
-      StudentService.getStudentCareerPrograms(studentId)
-        .then((response) => {
-          this.setStudentCareerPrograms(response.data);
-        })
-        .catch((error) => {
-          if (error?.response?.status) {
-            // this.$bvToast.toast("ERROR " + error.response.statusText, {
-            //   title:
-            //     "There was an error with the Student Service (getting the student's Career Programs): " +
-            //     error.response.status,
-            //   variant: "danger",
-            //   noAutoHide: true,
-            // });
-            this.snackbarStore.showSnackbar(
-              "ERROR " + error?.response?.statusText,
-              "error",
-              10000,
-              "There was an error with the Student Service (getting the student's Career Programs): " +
-                error?.response?.status
-            );
-          }
-        });
-    },
     loadStudentHistory(studentId) {
       StudentService.getStudentHistory(studentId)
         .then((response) => {
@@ -336,16 +292,33 @@ export const useStudentStore = defineStore("student", {
           }
         });
     },
+    loadStudentCourseHistory(studentId) {
+      StudentService.getStudentCourseHistory(studentId)
+        .then((response) => {
+          this.setStudentCourseAuditHistory(response.data);
+        })
+        .catch((error) => {
+          if (error?.response?.status) {
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error?.response?.statusText,
+              "error",
+              10000,
+              "There was an error with the Student Service (getting the Student Course History): " +
+                error?.response?.status
+            );
+          }
+        });
+    },
     unsetStudent() {
       this.student.profile = {};
       this.student.notes = [];
       this.student.id = [];
       this.student.coursesLegacy = [];
+      this.student.courses = [];
       this.student.assessments = [];
-      this.student.exams = [];
+      this.student.examsLegacy = [];
       this.student.gradStatus = "not loaded";
       this.student.optionalPrograms = [];
-      this.student.hasExams = false;
       this.student.hasAssessments = false;
       this.student.hasNotes = false;
       this.student.hasGradStatus = false;
@@ -388,6 +361,9 @@ export const useStudentStore = defineStore("student", {
     },
     setStudentOptionalProgramsAuditHistory(payload) {
       this.student.auditHistoryOptionalPrograms = payload;
+    },
+    setStudentCourseAuditHistory(payload) {
+      this.student.auditHistoryCourses = payload;
     },
     setStudentCareerPrograms(payload) {
       this.student.careerPrograms = payload;
@@ -433,11 +409,8 @@ export const useStudentStore = defineStore("student", {
         this.student.hasAssessments = true;
       }
     },
-    setStudentExams(payload) {
-      this.student.exams = payload;
-      if (this.student.exams.length) {
-        this.student.hasExams = true;
-      }
+    setStudentExamsLegacy(payload) {
+      this.student.examsLegacy = payload;
     },
     // isProxy, toRaw { ...payload }
     setStudentGradStatus(payload) {
@@ -476,7 +449,43 @@ export const useStudentStore = defineStore("student", {
     //   this.formattedGradStatusCourses = item;
     // },
 
-    /** STUDENT OPTIONAL PROGRAM CRUD */
+    /*****************************
+     * STUDENT OPTIONAL PROGRAMS
+     *****************************/
+    loadStudentOptionalPrograms(studentId) {
+      StudentService.getGraduationStatusOptionalPrograms(studentId)
+        .then((response) => {
+          this.setStudentGradStatusOptionalPrograms(response.data);
+        })
+        .catch((error) => {
+          if (error?.response?.status) {
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error?.response?.statusText,
+              "error",
+              10000,
+              "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
+                error?.response?.status
+            );
+          }
+        });
+    },
+    loadStudentCareerPrograms(studentId) {
+      StudentService.getStudentCareerPrograms(studentId)
+        .then((response) => {
+          this.setStudentCareerPrograms(response.data);
+        })
+        .catch((error) => {
+          if (error?.response?.status) {
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error?.response?.statusText,
+              "error",
+              10000,
+              "There was an error with the Student Service (getting the student's Career Programs): " +
+                error?.response?.status
+            );
+          }
+        });
+    },
     addStudentOptionalProgram(optionalProgramId) {
       try {
         let response = StudentService.createStudentOptionalProgram(
@@ -548,7 +557,12 @@ export const useStudentStore = defineStore("student", {
       }
     },
 
-    /** STUDENT COURSE CRUD */
+    /************************
+     * STUDENT COURSES
+     * legacy course functions above should be removed when CRUD goes live
+     ***********************/
+
+    // get and set data in store
     async getStudentCourses(studentId) {
       let response = await StudentService.getStudentCourses(studentId);
       await this.setStudentCourses(response.data);
@@ -556,18 +570,57 @@ export const useStudentStore = defineStore("student", {
     async setStudentCourses(payload) {
       this.student.courses = payload;
     },
-    async deleteStudentCourses(courses ) {
+
+    // create student courses and form helpers
+    async createStudentCourses(courses) {
+      try {
+        const response = await StudentService.createStudentCourses(
+          this.id,
+          courses
+        );
+        this.getStudentCourses(this.id);
+        return response.data;
+      } catch (error) {
+        console.error("Error adding student courses: ", error);
+        return error;
+      }
+    },
+    addCoursesToCreate(course) {
+      this.create.courses.push(course);
+    },
+    removeCourseFromCreate(courseID) {
+      this.create.courses = this.create.courses.filter(
+        (course) => course.courseID !== courseID
+      );
+    },
+    clearCoursesToCreate(course) {
+      this.create.courses = [];
+    },
+    // delete student courses
+    async deleteStudentCourses(courses) {
       try {
         await StudentService.deleteStudentCourses(this.id, courses);
-        this.getStudentCourses(this.id)
+        this.getStudentCourses(this.id);
       } catch (error) {
         console.error("Error deleting student courses:", error);
         throw error;
       }
-    }
-
+    },
   },
   getters: {
+    isCourseUsedForGraduation: (state) => (course) => {
+      return (
+        state.student.gradStatus.studentGradData.studentCourses.studentCourseList.find(
+          (course) => course.id === courseId
+        )?.used || false
+      );
+    },
+    hasAssociatedExam: (state) => (courseId) => {
+      return (
+        state.student.courses.find((course) => course.id === courseId)
+          ?.hasExam || false
+      );
+    },
     getEditedGradStatus() {
       return this.editedGradStatus;
     },
@@ -576,6 +629,9 @@ export const useStudentStore = defineStore("student", {
     },
     getStudentOptionalProgramAuditHistory() {
       return this.student.auditHistoryOptionalPrograms;
+    },
+    getStudentCourseAuditHistory() {
+      return this.student.auditHistoryCourses;
     },
     getAdvancedSearchProps() {
       return this.advancedSearchProps;
@@ -626,7 +682,7 @@ export const useStudentStore = defineStore("student", {
     getStudentGradStatus() {
       return this.student.gradStatus;
     },
-    getStudentOptionalPrograms() {
+    studentOptionalPrograms() {
       return this.student.optionalPrograms;
     },
     getStudentCoursesLegacy() {
@@ -641,11 +697,11 @@ export const useStudentStore = defineStore("student", {
         id: `${course.courseCode}_${course.courseLevel}_${course.sessionDate}`,
       }));
     },
-    getStudentExams() {
-      if (!this.student.exams || this.student.exams.length === 0) {
+    getStudentExamsLegacy() {
+      if (!this.student.examsLegacy || this.student.examsLegacy.length === 0) {
         return [];
       } else {
-        return this.student.exams;
+        return this.student.examsLegacy;
       }
     },
     getStudentAssessments() {
@@ -666,9 +722,6 @@ export const useStudentStore = defineStore("student", {
     },
     getStudentProgram() {
       return this.student.gradStatus.program;
-    },
-    studentHasExams() {
-      return this.student.hasExams;
     },
     studentHasAssessments() {
       return this.student.hasAssessments;
@@ -707,9 +760,6 @@ export const useStudentStore = defineStore("student", {
     isAdmin() {
       return this.roles == "administrator";
     },
-    // isAuthenticated() {
-    //   return this.roles == "authenticated";
-    // },
     getPermissions() {
       return this.permissions;
     },
@@ -733,7 +783,7 @@ export const useStudentStore = defineStore("student", {
         return {};
       }
     },
-    getStudentCareerPrograms() {
+    studentCareerPrograms() {
       return this.student.careerPrograms;
     },
     getFormattedGradStatusCourses() {
@@ -753,8 +803,35 @@ export const useStudentStore = defineStore("student", {
      * variable, so it makes to rename our getters in the store too since the get is already implied by being
      * in the getter section */
 
+    formattedStudentName(showPEN = true, showMiddle = true) {
+      let profile = this.student?.profile;
+      if (profile) {
+        let formattedName = `${profile.legalLastName}, ${profile.legalFirstName}`;
+        if (showPEN) {
+          formattedName = `${profile.pen} - ` + formattedName;
+        }
+        if (showMiddle && profile.legalMiddleNames) {
+          formattedName = formattedName + ` ${profile.legalMiddleNames}`;
+        }
+        return formattedName;
+      } else {
+        //return "error occurred getting student name, refresh or try again later";
+        return "";
+      }
+    },
     studentCourses() {
       return this.student.courses;
+    },
+    studentExamCourses() {
+      return this.student.courses.filter((course) => !!course.courseExam);
+    },
+    studentCoursesToCreate: (state) => state.coursesToCreate,
+    studentCourseToCreateById: (state) => {
+      return (courseId, sessionDate) =>
+        state.coursesToCreate.find(
+          (course) =>
+            courseId === course.courseId && sessionDate == course.sessionDate
+        );
     },
   },
 });

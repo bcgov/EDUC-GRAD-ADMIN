@@ -83,9 +83,9 @@ jobs:
           -p CA_CERT="${{ secrets.CA_CERT }}" \
           -p PRIVATE_KEY="${{ secrets.PRIVATE_KEY }}" \
           | oc apply -n ${{ env.OPENSHIFT_NAMESPACE }} -f -
-          
+
           # update configmap
-          curl -s https://raw.githubusercontent.com/bcgov/${{ env.APP_NAME }}/refs/heads/main/tools/openshift/update-configmap-backend.sh | bash /dev/stdin \
+          bash tools/openshift/update-configmap-backend.sh \
           ${{ env.TARGET_ENV }} \
           ${{ env.APP_NAME }} \
           ${{ env.OPENSHIFT_NAMESPACE }} \
@@ -98,7 +98,7 @@ jobs:
           ${{ secrets.GRAD_BUSINESS_NAMESPACE }} \
           ${{ secrets.SOAM_SERVICE_CLIENT_SECRET }} \
           ${{ secrets.STUDENT_ADMIN_NAMESPACE }}
-          
+
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.APP_NAME_BACKEND }} 
 

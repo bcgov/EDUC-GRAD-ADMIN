@@ -1,17 +1,51 @@
 <template>
   <div>
     <v-card>
+      <v-alert
+        type="info"
+        variant="tonal"
+        border="start"
+        class="mt-6 mb-0 ml-1 py-3 width-fit-content"
+      >
+        Until student course CRUD is live, student courses will not be kept in
+        sync via ongoing updates. Instead there will be a gradual data
+        migration.
+      </v-alert>
+      <v-alert
+        v-if="environment == 'local' || environment == 'dev'"
+        color="debug"
+        variant="tonal"
+        icon="mdi-progress-wrench"
+        border="start"
+        class="mt-6 mb-0 ml-1 py-3 width-fit-content"
+      >
+        Data shown is using new endpoint in student API. We can add courses with
+        no UI validations (backend API does validate), delete courses
+        w/validations
+        <br />
+      </v-alert>
       <v-card-text>
         <v-alert v-if="!courses" class="container">
           This student does not have any courses.
         </v-alert>
+        <v-row no-gutters>
+          <StudentCoursesDeleteForm
+            courseBatchDelete
+            :selectedCoursesToDelete="selected"
+          >
+          </StudentCoursesDeleteForm>
+          <v-spacer />
+          <StudentCoursesCreateForm />
+        </v-row>
         <v-data-table
           v-if="courses"
+          v-model="selected"
           :items="courses"
           :headers="fields"
+          :item-value="(item) => item"
           :items-per-page="'-1'"
-          showFilter="true"
           title="studentCourse"
+          show-select
         >
           <template
             v-slot:item.data-table-expand="{
@@ -21,7 +55,7 @@
               isExpanded,
             }"
           >
-            <td v-if="item.hasRelatedCourse == 'Y'">
+            <td v-if="hasCourseInfo(item)">
               <v-btn
                 variant="text"
                 density="comfortable"
@@ -37,144 +71,59 @@
               </v-btn>
             </td>
           </template>
-          <template v-slot:item.courseName="{ item }">
-            <v-dialog max-width="500">
-              <template v-slot:activator="{ props: activatorProps }">
-                <v-dialog max-width="500">
-                  <template v-slot:activator="{ props: activatorProps }">
-                    <v-btn
-                      v-bind="activatorProps"
-                      color="surface-variant"
-                      :text="item.courseName"
-                      variant="plain"
-                      class="m-1 p-1 text-left v-btn-link"
-                    ></v-btn>
-                  </template>
 
-                  <template v-slot:default="{ isActive }">
-                    <v-card :title="item.courseName">
-                      <v-card-text>
-                        <div class="row py-1">
-                          <div class="col">
-                            <strong>Instruction Language:</strong>
-                          </div>
-                          <div class="col">
-                            {{ item.courseDetails.language }}
-                          </div>
-                        </div>
-                        <div class="row py-1">
-                          <div class="col"><strong>Start Date:</strong></div>
-                          <div class="col">
-                            {{
-                              $filters.formatSimpleDate(
-                                item.courseDetails.startDate
-                              )
-                            }}
-                          </div>
-                        </div>
-                        <div class="row py-1">
-                          <div class="col"><strong>End Date:</strong></div>
-                          <div class="col">
-                            {{
-                              $filters.formatSimpleDate(
-                                item.courseDetails.endDate
-                              )
-                            }}
-                          </div>
-                        </div>
-                        <div class="row py-1">
-                          <div class="col"><strong>Credits:</strong></div>
-                          <div class="col">
-                            {{ item.courseDetails.numCredits }}
-                          </div>
-                        </div>
-                        <div class="row py-1">
-                          <div class="col">
-                            <strong>Work Experience:</strong>
-                          </div>
-                          <div class="col">
-                            {{ item.courseDetails.workExpFlag }}
-                          </div>
-                        </div>
-                        <div class="row py-1">
-                          <div class="col">
-                            <strong>Generic Course Type:</strong>
-                          </div>
-                          <div class="col">
-                            {{ item.courseDetails.genericCourseType }}
-                          </div>
-                        </div>
-                      </v-card-text>
-
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-
-                        <v-btn
-                          text="Close"
-                          @click="isActive.value = false"
-                        ></v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </template>
-                </v-dialog>
-              </template>
-
-              <template v-slot:default="{ isActive }">
-                <v-card title="Dialog">
-                  <v-card-text> </v-card-text>
-
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-
-                    <v-btn text="Close" @click="isActive.value = false"></v-btn>
-                  </v-card-actions>
-                </v-card>
-              </template>
-            </v-dialog>
+          <template v-slot:item.courseSession="{ item }">
+            {{ $filters.formatYYYYMMStringDate(item.courseSession) }}
+          </template>
+          <template v-slot:item.courseDetails.courseName="{ item }">
+            <CourseDetails :course="item.courseDetails" />
           </template>
 
           <template v-slot:expanded-row="{ columns, item }">
             <tr>
-              <td :colspan="columns.length">
-                <ul v-if="item.hasRelatedCourse">
-                  <li v-if="item.customizedCourseName">
-                    <strong>Customized Course Title:</strong>
+              <td></td>
+              <td></td>
+              <td :colspan="columns.length - 2">
+                <div v-if="hasCourseInfo(item)">
+                  <!-- Customized Course Name -->
+                  <div v-if="item.customizedCourseName">
+                    <strong>Customized Course:</strong>
                     {{ item.customizedCourseName }}
-                  </li>
-                  <li v-if="item.relatedCourse">
+                  </div>
+
+                  <!-- Related Course Details -->
+                  <div v-if="item.relatedCourseDetails">
                     <strong>Related Course:</strong>
-                    {{ item.relatedCourse }}
-                  </li>
-                  <li v-if="item.relatedLevel">
-                    <strong>Related Course Level:</strong>
-                    {{ item.relatedLevel }}
-                  </li>
-                  <li v-if="item.relatedCourseName">
-                    <strong>Related Course Name:</strong>
-                    {{ item.relatedCourseName }}
-                  </li>
-                  <li v-if="item.alternateCourseName">
-                    <strong>Alternate Course Name:</strong>
-                    {{ item.alternateCourseName }}
-                  </li>
-                  <li v-if="item.bestSchoolPercent">
-                    <strong>Best School Percent:</strong>
-                    {{ item.bestSchoolPercent }}
-                  </li>
-                  <li v-if="item.bestExamPercent">
-                    <strong>Best Exam Percent:</strong>
-                    {{ item.bestExamPercent }}
-                  </li>
-                  <li v-if="item.metLitNumRequirement">
-                    <strong>Assessment Equivalent:</strong>
-                    {{ item.metLitNumRequirement }}
-                  </li>
-                  <li v-if="item.specialCase">
-                    <strong>Special Case:</strong> {{ item.specialCase }}
-                  </li>
-                </ul>
+                    <CourseDetails :course="item.relatedCourseDetails" />
+                  </div>
+
+                  <!-- Course Exam Details -->
+                  <div v-if="item.courseExam">
+                    <strong>Course Exam:</strong>
+                    <ul class="pl-4">
+                      <li>School %: {{ item.courseExam.schoolPercentage }}%</li>
+                      <li>
+                        Best School %:
+                        {{ item.courseExam.bestSchoolPercentage }}%
+                      </li>
+                      <li>
+                        Best Exam %: {{ item.courseExam.bestExamPercentage }}%
+                      </li>
+                      <li>Special Case: {{ item.courseExam.specialCase }}</li>
+                    </ul>
+                  </div>
+                </div>
               </td>
             </tr>
+          </template>
+
+          <template v-slot:item.edit="{ item }">
+            <StudentCoursesUpdateForm :selectedCoursesToUpdate="[item]">
+            </StudentCoursesUpdateForm>
+          </template>
+          <template v-slot:item.delete="{ item }">
+            <StudentCoursesDeleteForm :selectedCoursesToDelete="[item]">
+            </StudentCoursesDeleteForm>
           </template>
         </v-data-table>
       </v-card-text>
@@ -184,22 +133,40 @@
 
 <script>
 import { useStudentStore } from "@/store/modules/student";
+import { useAppStore } from "@/store/modules/app";
+import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
+import CourseDetails from "@/components/Common/CourseDetails.vue";
+import StudentCoursesDeleteForm from "@/components/StudentProfile/Forms/StudentCoursesDeleteForm.vue";
+import StudentCoursesCreateForm from "@/components/StudentProfile/Forms/StudentCoursesCreateForm.vue";
+import StudentCoursesUpdateForm from "@/components/StudentProfile/Forms/StudentCoursesUpdateForm.vue";
 export default {
   name: "StudentCourses",
-  components: {},
+  components: {
+    StudentCoursesCreateForm: StudentCoursesCreateForm,
+    StudentCoursesDeleteForm: StudentCoursesDeleteForm,
+    StudentCoursesUpdateForm: StudentCoursesUpdateForm,
+    CourseDetails: CourseDetails,
+  },
   computed: {
     ...mapState(useStudentStore, {
-      courses: "getStudentCoursesLegacy",
+      courses: "studentCourses",
       gradStatusCourses: "gradStatusCourses",
       studentGradStatus: "getStudentGradStatus",
       hasGradStatus: "studentHasGradStatus",
       hasGradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
     }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
+    ...mapState(useAppStore, { environment: "appEnvironment" }),
   },
   data: function () {
     return {
-      toFilterItem: ["courseCode", "courseLevel", "sessionDate", "courseName"],
+      toFilterItem: [
+        "courseCode",
+        "courseLevel",
+        "courseSession",
+        "courseName",
+      ],
       fields: [
         {
           key: "data-table-expand",
@@ -207,55 +174,61 @@ export default {
           sortable: true,
           class: "text-left",
         },
+        // {
+        //   key: "id",
+        //   title: "ID",
+        //   sortable: true,
+        //   sortDirection: "desc",
+        // },
         {
-          key: "courseCode",
+          key: "courseDetails.courseCode",
           title: "Code",
           sortable: true,
           sortDirection: "desc",
         },
         {
-          key: "courseLevel",
+          key: "courseDetails.courseLevel",
           title: "Level",
           sortable: true,
           class: "text-left",
         },
         {
-          key: "sessionDate",
+          key: "courseSession",
           title: "Session",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "interimPercent",
-          title: "%",
+          title: "Interim %",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-right",
         },
         {
           key: "interimLetterGrade",
-          title: "LG",
+          title: "Interim LG",
           sortable: true,
           sortDirection: "desc",
           class: "text-md-left",
         },
         {
-          key: "completedCoursePercentage",
-          title: "%",
+          key: "finalPercent",
+          title: "Final %",
           class: "text-md-right ",
           sortable: true,
           sortDirection: "desc",
         },
         {
-          key: "completedCourseLetterGrade",
-          title: "LG",
+          key: "finalLetterGrade",
+          title: "Final LG",
           class: "text-md-left",
           sortable: true,
           sortDirection: "desc",
         },
         {
           key: "equivOrChallenge",
-          title: "Ch",
+          title: "Eq/Ch",
           sortable: true,
           sortDirection: "desc",
         },
@@ -267,15 +240,31 @@ export default {
         },
         {
           key: "fineArtsAppliedSkills",
-          title: "As",
+          title: "Fa/As",
           sortable: true,
           class: "text-left",
         },
         {
-          key: "courseName",
+          key: "courseDetails.courseName",
           title: "Course Title",
           sortable: true,
           class: "text-left",
+        },
+        {
+          key: "edit",
+          title: "Edit",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
+        },
+        {
+          key: "delete",
+          title: "Delete",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
         },
       ],
       gradStatusPendingUpdates: [],
@@ -293,63 +282,30 @@ export default {
           keys: ["courseCode"],
         },
       },
+      selected: [],
+      editDialog: {},
+      deleteDialog: {},
+      multiDeleteDialog: false,
     };
   },
   methods: {
-    ...mapActions(useStudentStore, ["setHasGradStatusPendingUpdates"]),
-    openModal(courseCode) {
-      // Set the data property to true to show the modal
-      this.modalState = true;
-      // You can do something with courseCode if needed
+    ...mapActions(useStudentStore, [
+      "setHasGradStatusPendingUpdates",
+      "deleteStudentCourses",
+    ]),
+    hasCourseInfo(item) {
+      return !!(
+        item.courseExam ||
+        item.relatedCourseDetails ||
+        item.customizedCourseName
+      );
     },
-    closeModal() {
-      // Set the data property to false to close the modal
-      this.modalState = false;
+    closeEditModal(modalKey) {
+      this.editDialog[modalKey] = false;
     },
-    // toggle(id) {
-    //   const index = this.opened.indexOf(id);
-    //   if (index > -1) {
-    //     this.opened.splice(index, 1);
-    //   } else {
-    //     this.opened.push(id);
-    //   }
-    // },
-    checkForPendingUpdates() {
-      if (this.hasGradStatus) {
-        for (let i = 0; i < this.courses.length; i++) {
-          this.courses[i].gradReqMet = this.getProgramCode(this.courses[i]);
-        }
-        //check for deleted courses
-        for (let i = 0; i < this.gradStatusCourses.length; i++) {
-          let courseDeleted = true;
-          for (let j = 0; j < this.courses.length; j++) {
-            if (
-              this.courses[j].courseCode +
-                this.courses[j].courseLevel +
-                this.courses[j].sessionDate +
-                this.courses[j].pen ==
-              this.gradStatusCourses[i].courseCode +
-                this.gradStatusCourses[i].courseLevel +
-                this.gradStatusCourses[i].sessionDate +
-                this.gradStatusCourses[i].pen
-            ) {
-              courseDeleted = false;
-              break;
-            }
-          }
-          if (courseDeleted) {
-            this.gradStatusPendingUpdates.push(
-              this.gradStatusCourses[i].courseName + "REMOVED"
-            );
-          }
-        }
-
-        if (this.gradStatusPendingUpdates.length) {
-          this.setHasGradStatusPendingUpdates(true);
-        } else {
-          this.setHasGradStatusPendingUpdates(false);
-        }
-      }
+    saveStudentCourse(modalKey) {
+      console.log("TODO: Submit edits for student course");
+      this.closeEditModal(modalKey);
     },
     compareCourses(course1, course2) {
       this.fields.forEach(function (field) {
@@ -358,38 +314,6 @@ export default {
         }
       });
       return true;
-    },
-    getProgramCode(course) {
-      var result = this.gradStatusCourses.filter(function (gradStatusCourse) {
-        return (
-          gradStatusCourse.pen +
-            gradStatusCourse.courseCode +
-            gradStatusCourse.courseLevel +
-            gradStatusCourse.sessionDate ==
-          course.pen +
-            course.courseCode +
-            course.courseLevel +
-            course.sessionDate
-        );
-      });
-      if (!result.length) {
-        this.gradStatusPendingUpdates.push(course.courseName + " ADDED");
-        return "TBD - New Course Added";
-      } else if (result[0].gradReqMet) {
-        if (!this.compareCourses(result[0], course)) {
-          //Course has been monified and not updated in the Grad Status Course List
-
-          this.gradStatusPendingUpdates.push(course.courseName + "UPDATED");
-          return "TBD - Modified";
-        } else {
-          return result[0].gradReqMet;
-        }
-      } else {
-        return "---";
-      }
-    },
-    createRef(pen, code, level, sessionDate) {
-      return pen.trim() + code.trim() + level.trim() + sessionDate.trim();
     },
   },
 };

@@ -21,7 +21,10 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
 );
 
 //Program Routes
-router.get("/*", getInstituteAPI);
+router.get("/*",
+    passport.authenticate("jwt", { session: false }, undefined),
+    isValidUiTokenWithStaffRoles,
+    getInstituteAPI);
 
 async function getInstituteAPI(req, res) {
   const version = req.version;
