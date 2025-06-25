@@ -49,13 +49,14 @@
     </v-col>
     <v-col cols="2" class="d-flex flex-column justify-start">
       <strong
-        >{{ course.courseName }} {{ course.courseCode }}
-        {{ course.courseLevel }}
+        >{{ course.courseCode }} {{ course.courseLevel }} {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
-      {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
+      {{ course.courseName }}
+      
     </v-col>
     <v-col cols="10">
       <v-row no-gutters class="my-2">
+        
         <v-col v-if="update">
           <v-text-field
             :model-value="course.courseID"
@@ -115,7 +116,6 @@
             :disabled="course.courseSession < 199409"
             persistent-hint
             :error="v$.course.interimPercent.$invalid && v$.course.interimPercent.$dirty"
-            :error-messages="v$.course.interimPercent.$errors.map(e => e.$message)"
             @blur="v$.course.interimPercent.$touch"
           />
         </v-col>
@@ -146,6 +146,8 @@
              :disabled="course.courseSession < 199409"
             persistent-placeholder
             persistent-hint
+            :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty"
+            @blur="v$.course.finalPercent.$touch"
           />
         </v-col>
 
@@ -160,13 +162,15 @@
             clearable
             persistent-placeholder
             persistent-hint
+            :error="v$.course.finalLetterGrade.$invalid && v$.course.finalLetterGrade.$dirty"
+            @blur="v$.course.finalLetterGrade.$touch"
           />
         </v-col>
 
         <v-col>
           <v-select
             v-model="course.credits"
-            :items="credits"
+            :items="creditsAvailableForCourseSession"
             label="Credits"
             variant="outlined"
             density="compact"
@@ -178,17 +182,20 @@
         </v-col>
 
         <v-col>
-          <v-select
-            v-model="course.fineArtsAppliedSkills"
-            :items="['FA', 'AS', 'None']"
-            label="FA/AS"
-            variant="outlined"
-            density="compact"
-            class="pr-1"
-            clearable
-            persistent-placeholder
-            persistent-hint
-          />
+        <v-select
+          v-model="course.fineArtsAppliedSkills"
+          :items="fineArtsAppliedSkillsOptions"
+          item-title="text"
+          item-value="value"
+          label="FA/AS"
+          variant="outlined"
+          density="compact"
+          class="pr-1"
+          clearable
+          :disabled="isBAAorLocallyDeveloped"
+          persistent-placeholder
+          persistent-hint
+        />
         </v-col>
 
         <v-col>
@@ -221,6 +228,21 @@
         </v-col>
       </v-row>
 
+      <v-row v-if="v$.$errors.length" class="my-2">
+        <v-col cols="12">
+          <v-row
+            v-for="(error, index) in v$.$errors"
+            :key="index"
+            class="align-center"
+          >
+            <v-col class="p-0 m-0 text-red-darken-4">
+              <v-icon color="red-darken-2">mdi-alert-circle</v-icon>
+              {{ error.$message }}
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+
       <v-row no-gutters v-if="course?.courseCode == 'IDS'">
         <v-col cols="12">
           <strong>Select Related Course</strong>
@@ -248,6 +270,9 @@ export default {
     return {
       v$: useVuelidate(),
     };
+  },
+  mounted() {
+    this.v$.$touch(); // <-- triggers validation on load
   },
   components: { CourseInput },
   props: {
@@ -287,33 +312,52 @@ export default {
           ),
         },
         finalPercent: {
+  
           isValidPercent: helpers.withMessage(
             'Final % must be a valid number between 0 and 100',
             (value) => {
-              if (value === '' || value === null || value === undefined) return true;
+              if (value === '' || value === null || value === undefined) return true; // allow empty if needed
+
               const strVal = String(value).trim();
+
+              // Reject if contains any minus sign or invalid characters:
               if (strVal.includes('-')) return false;
+
+              // Regex: only digits and optional decimal point
               if (!/^\d*\.?\d+$/.test(strVal)) return false;
+
               const numberValue = Number(strVal);
               return numberValue >= 0 && numberValue <= 100;
             }
           ),
         },
         interimLetterGrade: {
-          isLetterGrade: helpers.withMessage(
-            'Invalid letter grade',
-            (value) => {
-              return (
-                value === '' ||
-                value === null ||
-                value === undefined ||
-                /^[A-F][+-]?$/.test(value)
-              );
-            }
-          ),
+          
         },
         finalLetterGrade: {
-          isLetterGrade: helpers.withMessage(
+          requiredIfSessionDatePassed: helpers.withMessage(
+            'Course session is in the past. Enter a final letter grade.',
+            function (value, vm) {
+              const finalLG = value;
+              if (finalLG !== null && finalLG !== '' && finalLG !== undefined) {
+                return true; // valid if already has a final letter grade
+              }
+
+              const sessionDateStr = vm.course.sessionDate;
+              if (!sessionDateStr || sessionDateStr.length !== 6) return true;
+
+              const year = sessionDateStr.slice(0, 4);
+              const month = sessionDateStr.slice(4, 6);
+              const sessionDate = new Date(`${year}-${month}-01`);
+              const currentDate = new Date();
+
+              if (sessionDate < currentDate) {
+                return !!value; // enforce required if course is in the past
+              }
+              return true; // still valid if session is in future
+            }
+          ),
+          isValidLetterGrade: helpers.withMessage(
             'Invalid letter grade',
             (value) => {
               return (
@@ -338,14 +382,7 @@ export default {
             }
           ),
         },
-        fineArtsAppliedSkills: {
-          isFAASValue: helpers.withMessage(
-            'Must be FA, AS, or None',
-            (value) => {
-              return ['FA', 'AS', 'None', '', null, undefined].includes(value);
-            }
-          ),
-        },
+       
         equivalencyOrChallenge: {
           isEqChValue: helpers.withMessage(
             'Must be Equivalency, Challenge, or None',
@@ -379,9 +416,55 @@ export default {
       },
     }
   },
+  watch: {
+
+    'course.interimPercent'(newVal) {
+      if(newVal && newVal != 0){
+        this.course.interimLetterGrade = this.filteredInterimLetterGrades[0] ?? '';
+      }else{
+        this.course.interimLetterGrade = ""
+      }
+    },
+    'course.finalPercent'(newVal) {
+      if(newVal && newVal != 0){
+        this.course.finalLetterGrade = this.filteredFinalLetterGrades[0] ?? '';
+      }else{
+        this.course.finalLetterGrade = ""
+      }
+    },
+  },
   computed: {
     ...mapState(useAppStore, {
       allLetterGrades: (state) => state.letterGradeCodes,
+      fineArtsAndAppliedSkillsOptions(){
+          if(this.course.courseType == "Board Authority Authorized"){
+          return [
+            { value: 'B', text: 'Both Fine Arts and Applied Skills' }
+          ]
+          }
+      },
+      isBAAorLocallyDeveloped() {
+        return !(
+          this.course.courseType === 'Board Authority Authorized' ||
+          this.course.courseType === 'Locally Developed'
+        );
+      },
+      creditsAvailableForCourseSession() {
+        if (!this.course.courseSession|| !Array.isArray(this.course.courseAllowableCredits)) return [];
+
+        // Convert sessionDate "YYYYMM" to a JS Date like "YYYY-MM-01"
+        const sessionYear = this.course.courseSession.slice(0, 4);
+        const sessionMonth = this.course.courseSession.slice(4, 6);
+        const sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
+
+        return this.course.courseAllowableCredits
+          .filter(credit => {
+            const start = new Date(credit.startDate);
+            const end = new Date(credit.endDate);
+            return sessionDate >= start && sessionDate <= end;
+          })
+          .map(credit => credit.value);
+      }
     }),
 
     filteredInterimLetterGrades() {
@@ -394,13 +477,13 @@ export default {
   },
   methods: {
     getGradesForPercent(percent) {
-
       if(this.course.courseSession < 199409){
         return this.allLetterGrades.map((grade) => grade.grade);
       }
 
       const numPercent = Number(percent);
-      if (isNaN(numPercent)) return [];
+      if (!percent || isNaN(numPercent)) return this.allLetterGrades.map((grade) => grade.grade);
+      
 
       return this.allLetterGrades
         .filter((grade) => {

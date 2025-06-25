@@ -1,190 +1,101 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="1260" >
+  <v-dialog v-model="dialog" persistent max-width="1260">
     <template v-slot:activator="{ props }">
-      <v-btn
-        v-if="hasPermissions('STUDENT', 'courseUpdate')"
-        color="bcGovBlue"
-        prepend-icon="mdi-plus"
-        class="text-none"
-        @click="openCreateStudentCoursesDialog"
-        text="Add Student Courses"
-      />
+      <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" color="bcGovBlue" prepend-icon="mdi-plus"
+        class="text-none" @click="openCreateStudentCoursesDialog" text="Add Student Courses" />
     </template>
 
-    <v-card style="max-height: 100%; overflow-y: auto">
-      
+    <v-card style="max-height: 100%; overflow-y: auto" class="p-1">
+
       <v-card-title>
         <v-row no-gutters>
           <div class="v-card-title">Add Student Courses</div>
           <v-spacer />
-          <v-btn
-            icon="mdi-close"
-            density="compact"
-            rounded="sm"
-            variant="outlined"
-            color="error"
-            class="mt-2"
-            @click="closeCreateStudentCourseDialog"
-          />
+          <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
+            @click="closeCreateStudentCourseDialog" />
         </v-row>
       </v-card-title>
 
       <v-stepper alt-labels show-actions v-model="step">
         <template v-slot:default>
           <v-stepper-header>
-            <v-stepper-item title="Select Courses" value="0">
-              <template #icon> 1 </template></v-stepper-item
-            >
-            <v-stepper-item
-              title="Enter Details"
-              value="1"
-              :rules="[() => !v$.$invalid]"
-            >
+            <v-stepper-item title="Enter Courses" value="0" :rules="[() => !v$.$invalid]">
               <template #icon>
-                2
+                1
               </template>
             </v-stepper-item>
 
-            <v-stepper-item title="Confirmation" value="2">
-              <template #icon> 3 </template></v-stepper-item
-            >
+            <v-stepper-item title="Confirmation" value="1">
+              <template #icon> 2 </template></v-stepper-item>
           </v-stepper-header>
+
 
           <v-stepper-window>
             <div style="max-height: 60vh; overflow-y: auto; padding-right: 8px;">
+
               <!-- Step 1 -->
               <v-stepper-window-item value="0">
-                <strong>Add Student Courses</strong>
-                <v-row no-gutters class="mt-2">
-                  <v-text-field
-                    v-model="courseAdd.code"
-                    label="Course Code"
-                    variant="outlined"
-                    density="compact"
-                    class="pr-1"
-                    :error="!!courseValidationMessage"
-                    persistent-placeholder
-                    persistent-hint
-                  />
-                  <v-text-field
-                    v-model="courseAdd.level"
-                    label="Course Level"
-                    variant="outlined"
-                    density="compact"
-                    class="pr-1"
-                    :error="!!courseValidationMessage"
-                    persistent-placeholder
-                    persistent-hint
-                  />
-                  <!-- DEBOUNCE HERE AND THEN SET VALUE WITH HYPHEN STRIPPED OUT-->
-                  <v-text-field
-                    v-model="courseAdd.courseSession"
-                    label="Session Date"
-                    variant="outlined"
-                    density="compact"
-                    class="pr-1"
-                    :error="!!courseValidationMessage"
-                    persistent-placeholder
-                    persistent-hint
-                  />
-                  <v-btn
-                    variant="flat"
-                    color="bcGovBlue"
-                    class="text-none"
-                    @click="addCourse"
-                    >Add Course</v-btn
-                  >
-                </v-row>
                 <!-- TODO- change this to match the text for validations in the validation ticket -->
-                <v-alert
-                  v-if="courseValidationMessage"
-                  type="error"
-                  variant="tonal"
-                  border="start"
-                  class="width-fit-content"
-                  >{{ courseValidationMessage }}</v-alert
-                >
-                
-                <v-data-table
-                  v-if="coursesToCreate.length"
-                  :items="coursesToCreate"
-                  :headers="headers"
-                  item-value="id"
-                  class="mt-4"
-                  hide-default-footer
-                >
-                  <template v-slot:item.courseSession="{ item }">
-                    {{ $filters.formatYYYYMMStringDate(item.courseSession) }}
-                  </template>
-                  <template #item.remove="{ item }">
-                    <v-btn @click="removeCourseFromCreate(item.courseID)">
-                      Remove
+                <div v-if="coursesToCreate.length > 0">
+                  <div style="overflow-y: auto; max-height: 70vh; padding: 0 16px">
+                    <template v-for="(course, index) in coursesToCreate" :key="course.courseID || index">
+                      <CourseDetailsInput :course="course" create />
+                      <v-divider v-if="index < coursesToCreate.length - 1" class="my-4" color="grey-darken-3" />
+
+                    </template>
+                  </div>
+
+                  <!-- <pre>{{v$}}</pre> -->
+                </div>
+                <v-divider></v-divider>
+                {{ showCourseInput }}
+                <v-row v-if="!showCourseInputs">
+                  <v-col>Select Course</v-col>
+                  <v-col>
+                    <v-text-field v-model="courseAdd.code" label="Course Code" variant="outlined" density="compact"
+                      class="pr-1" :error="!!courseValidationMessage" persistent-placeholder persistent-hint />
+                  </v-col>
+                  <v-col>
+                    <v-text-field v-model="courseAdd.level" label="Course Level" variant="outlined" density="compact"
+                      class="pr-1" :error="!!courseValidationMessage" persistent-placeholder persistent-hint />
+                  </v-col>
+                  <v-col>
+                    <v-text-field v-model="courseAdd.courseSession" label="Session Date (YYYYMM)" variant="outlined"
+                      density="compact" class="pr-1" :error="v$.courseAdd.courseSession.$error"
+                      :error-messages="v$.courseAdd.courseSession.$errors.map(e => e.$message)"
+                      @blur="v$.courseAdd.courseSession.$touch()" persistent-placeholder persistent-hint />
+                  </v-col>
+                  <v-col>
+                    <v-btn :disabled="v$?.courseAdd?.$invalid" variant="flat" color="bcGovBlue" class="text-none"
+                      @click="addCourse">
+                      Get Course
                     </v-btn>
-                  </template>
-                </v-data-table>
+                    <v-btn variant="flat" color="bcGovBlue" class="text-none" @click="cancelCourseInput">Cancel</v-btn>
+                  </v-col>
+
+                </v-row>
+                <v-row> <v-alert v-if="courseValidationMessage" type="error" variant="tonal" border="start"
+                    class="width-fit-content">{{ courseValidationMessage }}</v-alert></v-row>
+                <v-row justify="center">
+                  <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none" v-if="showCourseInputs"
+                    @click="showCourseInputs = !showCourseInputs">
+                    + Enter Course
+                  </v-btn>
+                </v-row>
               </v-stepper-window-item>
 
               <!-- Step 2 -->
               <v-stepper-window-item value="1">
-                <v-alert
-                  type="info"
-                  variant="tonal"
-                  border="start"
-                  class="mt-0 mb-4 ml-1 py-3 width-fit-content"
-                >
-                  Form inputs do not have validations applied at this stage to
-                  allow for testing of backend validations.<br />
-                  With this in mind we've set the inputs to be clearable via the
-                  (X) button so you can clear inputs as needed in the meantime.
-                  When we implement validations the clearable icon will be removed
-                  since it won't be needed (ie. unable to set interim % for
-                  session dates in the past)
-                </v-alert>
-              
-                <div v-if="coursesToCreate.length === 0">
-                  No courses added yet.
-                </div>
-                <div v-else>
-                  <div
-                    style="overflow-y: auto; max-height: 70vh; padding: 0 16px"
-                  >
-                    <template
-                      v-for="(course, index) in coursesToCreate"
-                      :key="course.courseID || index"
-                    >
-                      <CourseDetailsInput :course="course" create />
-                      <v-divider
-                        v-if="index < coursesToCreate.length - 1"
-                        class="my-4"
-                        color="grey-darken-3"
-                      />
-                    </template>
-                  </div>
-                  <pre>{{v$}}</pre>
-                </div>
-              </v-stepper-window-item>
-
-              <!-- Step 3 -->
-              <v-stepper-window-item value="2">
                 <v-expansion-panels multiple>
-                  <v-expansion-panel
-                    v-for="(course, index) in createStudentResultsMessages"
-                    :key="index"
-                  >
-                    <v-expansion-panel-title
-                      class="d-flex align-center justify-space-between"
-                    >
+                  <v-expansion-panel v-for="(course, index) in createStudentResultsMessages" :key="index">
+                    <v-expansion-panel-title class="d-flex align-center justify-space-between">
                       <div class="d-flex align-center flex-grow-1">
-                        <v-icon
-                          :color="
-                            course.validationIssues.some(
-                              (i) => i.validationIssueSeverityCode === 'ERROR'
-                            )
-                              ? 'error'
-                              : 'success'
-                          "
-                          class="mr-2"
-                        >
+                        <v-icon :color="course.validationIssues.some(
+                          (i) => i.validationIssueSeverityCode === 'ERROR'
+                        )
+                          ? 'error'
+                          : 'success'
+                          " class="mr-2">
                           {{
                             course.validationIssues.some(
                               (i) => i.validationIssueSeverityCode === "ERROR"
@@ -236,18 +147,10 @@
 
                     <v-expansion-panel-text>
                       <div v-if="course.validationIssues.length">
-                        <v-alert
-                          v-for="(issue, i) in course.validationIssues"
-                          :key="i"
-                          :type="
-                            issue.validationIssueSeverityCode === 'ERROR'
-                              ? 'error'
-                              : 'warning'
-                          "
-                          dense
-                          outlined
-                          class="mb-2"
-                        >
+                        <v-alert v-for="(issue, i) in course.validationIssues" :key="i" :type="issue.validationIssueSeverityCode === 'ERROR'
+                          ? 'error'
+                          : 'warning'
+                          " dense outlined class="mb-2">
                           {{ issue.validationIssueMessage }}
                         </v-alert>
                       </div>
@@ -261,23 +164,15 @@
                   </v-expansion-panel>
                 </v-expansion-panels>
 
-                <v-alert
-                  v-if="coursesToCreate.length > 0"
-                  type="info"
-                  class="mb-4"
-                  border="start"
-                  elevation="2"
-                  variant="tonal"
-                >
+                <v-alert v-if="coursesToCreate.length > 0" type="info" class="mb-4" border="start" elevation="2"
+                  variant="tonal">
                   <div class="mb-2">
                     You are about to add the following courses to student
-                    <strong>{{ studentPen }}</strong
-                    >:
+                    <strong>{{ studentPen }}</strong>:
                   </div>
                   <ul class="pl-4">
                     <li v-for="course in coursesToCreate" :key="course.courseID">
-                      <strong
-                        >{{ course.courseCode }} {{ course.courseLevel }} –
+                      <strong>{{ course.courseCode }} {{ course.courseLevel }} –
                         {{ course.courseSession }}
                       </strong>
                       {{ course.courseName }}
@@ -288,60 +183,34 @@
                   </ul>
                 </v-alert>
               </v-stepper-window-item>
-              </div>
+            </div>
           </v-stepper-window>
         </template>
       </v-stepper>
 
       <!-- Actions -->
       <v-card-actions>
-        <v-btn
-          v-if="step === 0"
-          @click="closeCreateStudentCourseDialog"
-          color="error"
-          variant="outlined"
-          class="text-none"
-        >
+        <v-btn v-if="step === 0" @click="closeCreateStudentCourseDialog" color="error" variant="outlined"
+          class="text-none">
           Cancel
         </v-btn>
 
-        <v-btn
-          v-else
-          @click="step--"
-          color="bcGovBlue"
-          variant="outlined"
-          :disabled="step == 0 || validationStep"
-        >
+        <v-btn v-else @click="step--" color="bcGovBlue" variant="outlined" :disabled="step == 0 || validationStep">
           Back
         </v-btn>
 
         <v-spacer />
 
-        <v-btn
-          v-if="step < 2"
-          @click="step++"
-          color="bcGovBlue"
-          variant="outlined"
-        >
+        <v-btn v-if="step < 1" @click="step++" color="bcGovBlue" variant="outlined">
           Next
         </v-btn>
 
-        <v-btn
-          v-else-if="step == 2 && !validationStep"
-          @click="submitForm"
-          color="error"
-          variant="flat"
-          class="text-none"
-        >
+        <v-btn v-else-if="step == 1 && !validationStep" @click="submitForm" color="error" variant="flat"
+          class="text-none">
           Add Student Courses
         </v-btn>
-        <v-btn
-          v-else-if="step == 2 && validationStep"
-          @click="closeCreateStudentCourseDialog"
-          color="error"
-          variant="flat"
-          class="text-none"
-        >
+        <v-btn v-else-if="step == 1 && validationStep" @click="closeCreateStudentCourseDialog" color="error"
+          variant="flat" class="text-none">
           Close
         </v-btn>
       </v-card-actions>
@@ -369,8 +238,36 @@ export default {
   components: {
     CourseDetailsInput,
   },
+  validations() {
+    return {
+      courseAdd: {
+        code: { required },
+        level: { required },
+        courseSession: {
+          required,
+          validCourseSession: helpers.withMessage(
+            'Course session must be in YYYYMM format with a valid month (01–12)',
+            (value) => {
+              if (!value) return false
+              const stringValue = String(value)
+
+              // Must be exactly 6 numeric characters
+              if (!/^\d{6}$/.test(stringValue)) return false
+
+              const year = parseInt(stringValue.slice(0, 4), 10)
+              const month = parseInt(stringValue.slice(4, 6), 10)
+
+              // Check month range
+              return month >= 1 && month <= 12
+            }
+          )
+        }
+      }
+    }
+  },
   data() {
     return {
+      showCourseInputs: true,
       createStudentResultsMessages: [],
       dialog: false,
       step: 0,
@@ -399,6 +296,7 @@ export default {
     ...mapState(useStudentStore, {
       coursesToCreate: (state) => state.create.courses,
       studentPen: "getStudentPen",
+      studentCourses: "studentCourses"
     }),
   },
   methods: {
@@ -443,39 +341,107 @@ export default {
       }
 
       try {
-        const response = await CourseService.getCourseByCodeAndLevel(
-          code,
-          level
-        );
-        const courseID = response?.data?.courseID;
-        const courseName = response?.data?.courseName;
-        const courseCode = response?.data?.courseCode;
-        const courseLevel = response?.data?.courseLevel;
-        const startDate = response?.data?.startDate;
-        const endDate = response?.data?.endDate;
-        const genericCourseType = response?.data?.genericCourseType;
+        const response = await CourseService.getCourseByCodeAndLevel(code, level);
+        const courseData = response?.data;
+        //test data until api is updated
+        const courseType = "Board Authority Authorized"
+        const courseAllowableCredits = [
+          { value: 1, startDate: "1995-10-10", endDate: "2026-10-10" },
+          { value: 2, startDate: "2020-10-10", endDate: "2029-10-10" },
+        ];
 
-        if (courseID) {
+
+
+
+        if (courseData?.courseID) {
+          // Clear previous validation message
+          this.courseValidationMessage = null;
+
+          // 1. Check for duplicate
+          const isDuplicate = this.studentCourses.some(course =>
+            course.courseID === courseData.courseID &&
+            course.courseSession === this.courseAdd.courseSession
+          );
+
+          if (isDuplicate) {
+            this.courseValidationMessage = `${this.courseAdd.code} ${this.courseAdd.level} ${this.courseAdd.courseSession} is a duplicate course.`;
+            this.clearForm();
+            return;
+          }
+
+          // 2. Parse session date safely
+          const sessionDateStr = String(this.courseAdd.courseSession); // e.g. "199801"
+          console.log(sessionDateStr)
+          const year = sessionDateStr.slice(0, 4);
+          const month = sessionDateStr.slice(4, 6);
+          const day = '01';
+          console.log(year)
+          console.log(month)
+          console.log(day)
+
+          // Construct date string YYYY-MM-DD
+          const sessionDateISO = `${year}-${month}-${day}`;
+          const sessionDate = new Date(sessionDateISO);
+
+          // Validate year range
+          const currentYear = new Date().getFullYear();
+          if (isNaN(year) || year <= 1984 || year >= currentYear) {
+            this.courseValidationMessage = `Session year must be greater than 1984 and less than ${currentYear}.`;
+            return;
+          }
+          if (isNaN(sessionDate)) {
+            this.courseValidationMessage = 'Session date is invalid.';
+            return;
+          }
+
+          // Parse course start/end dates
+          const startDate = new Date(courseData.startDate);
+          const endDate = courseData.endDate ? new Date(courseData.endDate) : null;
+
+          if (isNaN(startDate)) {
+            this.courseValidationMessage = 'Course start date is invalid.';
+            return;
+          }
+          if (endDate && isNaN(endDate)) {
+            this.courseValidationMessage = 'Course completion date is invalid.';
+            return;
+          }
+
+          // 3. Date range validations
+          if (sessionDate < startDate) {
+            this.courseValidationMessage = 'Course session is before the course start date';
+            return;
+          }
+
+          if (endDate && sessionDate > endDate) {
+            this.courseValidationMessage = 'Course session is after the course completion date';
+            return;
+          }
+
+          // 4. Passed all validations — add course
           this.addCoursesToCreate({
-            courseID,
-            courseCode,
-            courseLevel,
-            courseSession,
-            courseName,
-            startDate,
-            endDate,
-            genericCourseType,
+            ...courseData,
+            courseSession: this.courseAdd.courseSession,
+            courseType,
+            courseAllowableCredits
           });
+
           this.clearForm();
+          this.showCourseInputs = false;
+          this.courseValidationMessage = null;
         } else {
-          //ADD VALIDATION("Course not found.");
+          this.courseValidationMessage = 'Course not found.';
         }
+
       } catch (error) {
         //ADD VALIDATION ("Error fetching course data.");
-        this.courseValidationMessage = "Course not Found"; //need this here because course not found is a 404 error; TODO expand on this via error code
+        this.courseValidationMessage = "Invalid Course code/level - course code/level does not exist in the ministry course registry"; //need this here because course not found is a 404 error; TODO expand on this via error code
       }
     },
-
+    cancelCourseInput(){
+      this.clearForm();
+      this.showCourseInputs = false;
+    },
     clearForm() {
       this.courseAdd = {
         code: null,
@@ -484,6 +450,7 @@ export default {
         courseStartDate: null,
         courseEndDate: null,
       };
+      
     },
 
     async submitForm() {

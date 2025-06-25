@@ -174,12 +174,6 @@ export default {
           sortable: true,
           class: "text-left",
         },
-        // {
-        //   key: "id",
-        //   title: "ID",
-        //   sortable: true,
-        //   sortDirection: "desc",
-        // },
         {
           key: "courseDetails.courseCode",
           title: "Code",
