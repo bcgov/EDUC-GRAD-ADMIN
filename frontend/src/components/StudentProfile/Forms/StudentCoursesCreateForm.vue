@@ -5,15 +5,15 @@
         class="text-none" @click="openCreateStudentCoursesDialog" text="Add Student Courses" />
     </template>
 
-    <v-card style="max-height: 100%; overflow-y: auto" class="p-1">
+    <v-card style="max-height: 100%;"">
 
       <v-card-title>
         <v-row no-gutters>
-          <div class="v-card-title">Add Student Courses</div>
-          <v-spacer />
-          <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
-            @click="closeCreateStudentCourseDialog" />
-        </v-row>
+          <div class=" v-card-title">Add Student Courses</div>
+      <v-spacer />
+      <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
+        @click="closeCreateStudentCourseDialog" />
+      </v-row>
       </v-card-title>
 
       <v-stepper alt-labels show-actions v-model="step">
@@ -31,46 +31,60 @@
 
 
           <v-stepper-window>
-            <div style="max-height: 60vh; overflow-y: auto; padding-right: 8px;">
+            <div style="max-height: 60vh; overflow-y: auto;">
 
               <!-- Step 1 -->
               <v-stepper-window-item value="0">
                 <!-- TODO- change this to match the text for validations in the validation ticket -->
                 <div v-if="coursesToCreate.length > 0">
-                  <div style="overflow-y: auto; max-height: 70vh; padding: 0 16px">
+                  <div style="max-height: 90vh; padding: 0 16px">
                     <template v-for="(course, index) in coursesToCreate" :key="course.courseID || index">
-                      <CourseDetailsInput :course="course" create />
+
+                      <CourseDetailsInput :course="course" create>
+                        <template #remove-button>
+                          <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none"
+                            style="min-width: auto; width: 80px"
+                            @click="removeCourseFromCreate(course.courseID)">Remove</v-btn>
+                        </template>
+                      </CourseDetailsInput>
                       <v-divider v-if="index < coursesToCreate.length - 1" class="my-4" color="grey-darken-3" />
 
                     </template>
                   </div>
                 </div>
                 <v-divider></v-divider>
-                {{ showCourseInput }}
-                <v-row v-if="showCourseInputs">
-                  <v-col>Select Course</v-col>
-                  <v-col>
-                    <v-text-field v-model="courseAdd.code" label="Course Code" variant="outlined" density="compact"
-                      class="pr-1" :error="!!courseValidationMessage" persistent-placeholder persistent-hint />
+                <v-row v-if="showCourseInputs" no-gutters>
+                  <v-col class="pr-1">
+                    Select Course
                   </v-col>
-                  <v-col>
-                    <v-text-field v-model="courseAdd.level" label="Course Level" variant="outlined" density="compact"
-                      class="pr-1" :error="!!courseValidationMessage" persistent-placeholder persistent-hint />
+
+                  <v-col class="pr-1">
+                    <v-text-field v-model="courseAdd.code" label="Course Code" :error="!!courseValidationMessage"
+                      variant="outlined" density="compact" clearable persistent-placeholder persistent-hint />
                   </v-col>
-                  <v-col>
-                    <v-text-field v-model="courseAdd.courseSession" label="Session Date (YYYYMM)" variant="outlined"
-                      density="compact" class="pr-1" :error="v$.courseAdd.courseSession.$error"
+
+                  <v-col class="pr-1">
+                    <v-text-field v-model="courseAdd.level" label="Course Level" :error="!!courseValidationMessage"
+                      variant="outlined" density="compact" clearable persistent-placeholder persistent-hint />
+                  </v-col>
+
+                  <v-col class="pr-1">
+                    <v-text-field v-model="courseAdd.courseSession" label="Session Date (YYYYMM)"
+                      :error="v$.courseAdd.courseSession.$error"
                       :error-messages="v$.courseAdd.courseSession.$errors.map(e => e.$message)"
-                      @blur="v$.courseAdd.courseSession.$touch()" persistent-placeholder persistent-hint />
+                      @blur="v$.courseAdd.courseSession.$touch()" variant="outlined" density="compact" clearable
+                      persistent-placeholder persistent-hint />
                   </v-col>
+
                   <v-col>
-                    <v-btn :disabled="v$?.courseAdd?.$invalid" variant="flat" color="bcGovBlue" class="text-none"
+                    <v-btn :disabled="v$?.courseAdd?.$invalid" variant="flat" color="bcGovBlue" class="text-none mr-1"
                       @click="addCourse">
                       Get Course
                     </v-btn>
-                    <v-btn color="error" variant="outlined" class="text-none ml-1" @click="closeCourseInput">Cancel</v-btn>
+                    <v-btn color="error" variant="outlined" class="text-none" @click="closeCourseInput">
+                      Cancel
+                    </v-btn>
                   </v-col>
-
                 </v-row>
                 <v-row> <v-alert v-if="courseValidationMessage" type="error" variant="tonal" border="start"
                     class="width-fit-content">{{ courseValidationMessage }}</v-alert></v-row>
@@ -146,8 +160,8 @@
                     <v-expansion-panel-text>
                       <div v-if="course.validationIssues.length">
                         <v-alert v-for="(issue, i) in course.validationIssues" :key="i" :type="issue.validationIssueSeverityCode === 'ERROR'
-                            ? 'error'
-                            : 'warning'
+                          ? 'error'
+                          : 'warning'
                           " dense outlined class="mb-2">
                           {{ issue.validationIssueMessage }}
                         </v-alert>
