@@ -8,7 +8,7 @@ export default {
     return ApiService.apiAxios.get("/api/v1/course/" + courseCode);
   },
   getCourseByCodeAndLevel(courseCode, courseLevel){
-    return ApiService.apiAxios.get("/api/v2/course/" + courseCode + "/level/" + courseLevel );
+    return ApiService.apiAxios.get(`/api/v2/course?courseCode=${courseCode}&courseLevel=${courseLevel}`);
   },
   getAllCourses() {
     return ApiService.apiAxios.get("/api/v1/course/");
