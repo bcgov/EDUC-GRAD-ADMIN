@@ -4,13 +4,16 @@
       variant="plain"
       color="error"
       v-ripple
-      @click="studentDialog = !studentDialog && (showHideAdopt = true)"
+      @click="
+        studentStore.studentDialog =
+          !studentStore.studentDialog && (showAdopt = true)
+      "
       class="v-btn-link text-left px-0 d-block"
       v-if="more"
     >
       more
     </v-btn>
-    <v-dialog v-model="studentDialog" max-width="600px">
+    <v-dialog v-model="studentStore.studentDialog" max-width="600px">
       <v-card>
         <v-card-title
           ><v-row no-gutters>
@@ -20,7 +23,7 @@
               icon="mdi-close"
               density="compact"
               rounded="sm"
-              @click="studentDialog = !studentDialog"
+              @click="studentStore.studentDialog = !studentStore.studentDialog"
               class="mt-2"
             />
           </v-row>
@@ -76,22 +79,22 @@
           <v-btn
             color="error"
             variant="outlined"
-            @click="studentDialog = !studentDialog"
+            @click="studentStore.studentDialog = !studentStore.studentDialog"
           >
             Cancel
           </v-btn>
           <v-spacer />
           <v-btn
-            v-if="showHideAdopt"
+            v-if="showAdopt"
             id="save-status-btn"
             color="primary"
             variant="flat"
-            @click="showHideAdopt = !showHideAdopt"
+            @click="showAdopt = !showAdopt"
           >
             Adopt PEN Student
           </v-btn>
           <v-btn
-            v-if="!showHideAdopt"
+            v-if="!showAdopt"
             id="save-status-btn"
             color="error"
             variant="flat"
@@ -113,10 +116,10 @@
 </template>
 
 <script>
-import { mapState } from "pinia";
+import { mapState, mapActions, storeToRefs } from "pinia";
 import { useAppStore } from "@/store/modules/app";
+import { useStudentStore } from "../../store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
-import StudentService from "@/services/StudentService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   props: {
@@ -129,10 +132,9 @@ export default {
   },
   data() {
     return {
-      showHideAdopt: true,
-      studentDialog: false,
+      showAdopt: true,
+      studentStore: useStudentStore(),
       snackbarStore: useSnackbarStore(),
-      adoptLoading: false,
     };
   },
   computed: {
@@ -140,27 +142,14 @@ export default {
       schoolByMincode: "schoolByMincode",
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
+    ...mapState(useStudentStore, {
+      adoptLoading: "adoptLoading",
+    }),
   },
   methods: {
-    async adoptStudent(studentData) {
-      try {
-        this.adoptLoading = true;
-
-        const response = await StudentService.adoptPENStudent(studentData);
-        console.log("Adopted Student Response:", response);
-
-        const studentID = response?.data?.studentID;
-        if (studentID) {
-          this.$router.push({ path: `/student-profile/${studentID}` });
-        }
-
-        this.studentDialog = false;
-      } catch (error) {
-        this.$snackbarStore.error(error);
-      } finally {
-        this.adoptLoading = false;
-      }
-    },
+    ...mapActions(useStudentStore, {
+      adoptStudent: "adoptStudent",
+    }),
 
     openStudentAdmin() {
       const studentID = this.student?.studentID;
