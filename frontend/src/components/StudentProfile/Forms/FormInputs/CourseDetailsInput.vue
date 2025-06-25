@@ -49,10 +49,10 @@
     </v-col>
     <v-col cols="2" class="d-flex flex-column justify-start">
       <strong
-        >{{ course.courseCode }} {{ course.courseLevel }} {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
+        >{{ course.courseCode }} {{ course.courseLevel }} -
+        {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
       {{ course.courseName }}
-      
     </v-col>
     <v-col cols="10">
       <v-row no-gutters class="my-2">

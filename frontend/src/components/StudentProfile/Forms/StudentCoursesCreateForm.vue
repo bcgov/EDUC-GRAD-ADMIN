@@ -44,12 +44,10 @@
 
                     </template>
                   </div>
-
-                  <!-- <pre>{{v$}}</pre> -->
                 </div>
                 <v-divider></v-divider>
                 {{ showCourseInput }}
-                <v-row v-if="!showCourseInputs">
+                <v-row v-if="showCourseInputs">
                   <v-col>Select Course</v-col>
                   <v-col>
                     <v-text-field v-model="courseAdd.code" label="Course Code" variant="outlined" density="compact"
@@ -70,14 +68,14 @@
                       @click="addCourse">
                       Get Course
                     </v-btn>
-                    <v-btn variant="flat" color="bcGovBlue" class="text-none" @click="cancelCourseInput">Cancel</v-btn>
+                    <v-btn variant="flat" color="bcGovBlue" class="text-none" @click="closeCourseInput">Cancel</v-btn>
                   </v-col>
 
                 </v-row>
                 <v-row> <v-alert v-if="courseValidationMessage" type="error" variant="tonal" border="start"
                     class="width-fit-content">{{ courseValidationMessage }}</v-alert></v-row>
                 <v-row justify="center">
-                  <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none" v-if="showCourseInputs"
+                  <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none" v-if="!showCourseInputs"
                     @click="showCourseInputs = !showCourseInputs">
                     + Enter Course
                   </v-btn>
@@ -146,43 +144,103 @@
                     </v-expansion-panel-title>
 
                     <v-expansion-panel-text>
-                      <div v-if="course.validationIssues.length">
-                        <v-alert v-for="(issue, i) in course.validationIssues" :key="i" :type="issue.validationIssueSeverityCode === 'ERROR'
-                          ? 'error'
-                          : 'warning'
-                          " dense outlined class="mb-2">
-                          {{ issue.validationIssueMessage }}
-                        </v-alert>
-                      </div>
-                      <div v-else>
-                        <v-alert type="success" dense outlined>
-                          No validation issues.
-                        </v-alert>
-                      </div>
-                      <pre>{{ course.originalCourse }}</pre>
-                    </v-expansion-panel-text>
-                  </v-expansion-panel>
-                </v-expansion-panels>
+                    <div v-if="course.validationIssues.length">
+                      <v-alert
+                        v-for="(issue, i) in course.validationIssues"
+                        :key="i"
+                        :type="
+                          issue.validationIssueSeverityCode === 'ERROR'
+                            ? 'error'
+                            : 'warning'
+                        "
+                        dense
+                        outlined
+                        class="mb-2"
+                      >
+                        {{ issue.validationIssueMessage }}
+                      </v-alert>
+                    </div>
+                    <div v-else>
+                      <v-alert type="success" dense outlined>
+                        No validation issues.
+                      </v-alert>
+                    </div>
+                    <pre>{{ course.originalCourse }}</pre>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
+              </v-expansion-panels>
 
-                <v-alert v-if="coursesToCreate.length > 0" type="info" class="mb-4" border="start" elevation="2"
-                  variant="tonal">
-                  <div class="mb-2">
-                    You are about to add the following courses to student
-                    <strong>{{ studentPen }}</strong>:
-                  </div>
-                  <ul class="pl-4">
-                    <li v-for="course in coursesToCreate" :key="course.courseID">
-                      <strong>{{ course.courseCode }} {{ course.courseLevel }} –
-                        {{ course.courseSession }}
-                      </strong>
-                      {{ course.courseName }}
-                      <ul v-if="course.customizedCourseName">
-                        <li>{{ course.customizedCourseName }}</li>
-                      </ul>
-                    </li>
-                  </ul>
-                </v-alert>
-              </v-stepper-window-item>
+                <v-alert
+                v-if="coursesToCreate.length > 0"
+                type="info"
+                class="mb-4"
+                border="start"
+                elevation="2"
+                variant="tonal"
+              >
+                <div class="mb-2">
+                  You are about to add the following courses to student
+                  <strong>{{ studentPenAndName }}</strong
+                  >:
+                </div>
+                <v-row
+                  no-gutters
+                  v-for="course in coursesToCreate"
+                  :key="course.courseID + course.sessionDate"
+                  class="mb-2"
+                >
+                  <v-col cols="12"
+                    ><strong
+                      >{{ course.courseCode }} {{ course.courseLevel }} -
+                      {{
+                        $filters.formatYYYYMMStringDate(course.courseSession)
+                      }}</strong
+                    >
+                  </v-col>
+                  <v-col cols="12" class="ml-3">
+                    {{ course.courseName }}
+                  </v-col>
+                  <v-col class="ml-3"
+                    ><strong>Interim</strong>&nbsp;
+                    <span v-if="course.interimPercent"
+                      >{{ course.interimPercent }}%
+                      {{ course.interimLetterGrade }}</span
+                    >
+                    <span v-else> <i>null</i> </span>
+                  </v-col>
+                  <v-col
+                    ><strong>Final</strong>&nbsp;
+                    <span v-if="course.finalPercent">
+                      {{ course.finalPercent }}%
+                      {{ course.finalLetterGrade }}</span
+                    ><span v-else><i>null</i></span></v-col
+                  >
+                  <!-- I don't think credits can have a null value? - Samara -->
+                  <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
+                  <v-col
+                    ><strong>FA/AS</strong>&nbsp;
+                    <span v-if="course.fineArtsAppliedSkills">
+                      {{ course.fineArtsAppliedSkills }}
+                    </span>
+                    <span v-else><i>null</i></span>
+                  </v-col>
+                  <v-col
+                    ><strong>Eq/Ch</strong>&nbsp;
+                    <span v-if="course.equivalencyOrChallenge">
+                      {{ course.equivalencyOrChallenge }}
+                    </span>
+                    <span v-else><i>null</i></span>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    class="ml-3"
+                    v-if="course.customizedCourseName"
+                    ><strong>Custom Course Title</strong>
+                    {{ course.customizedCourseName }}</v-col
+                  >
+                </v-row>
+              </v-alert>
+            </v-stepper-window-item>
             </div>
           </v-stepper-window>
         </template>
@@ -296,7 +354,8 @@ export default {
     ...mapState(useStudentStore, {
       coursesToCreate: (state) => state.create.courses,
       studentPen: "getStudentPen",
-      studentCourses: "studentCourses"
+      studentCourses: "studentCourses",
+      studentPenAndName: "formattedStudentName",
     }),
   },
   methods: {
@@ -349,10 +408,6 @@ export default {
           { value: 1, startDate: "1995-10-10", endDate: "2026-10-10" },
           { value: 2, startDate: "2020-10-10", endDate: "2029-10-10" },
         ];
-
-
-
-
         if (courseData?.courseID) {
           // Clear previous validation message
           this.courseValidationMessage = null;
@@ -371,13 +426,9 @@ export default {
 
           // 2. Parse session date safely
           const sessionDateStr = String(this.courseAdd.courseSession); // e.g. "199801"
-          console.log(sessionDateStr)
           const year = sessionDateStr.slice(0, 4);
           const month = sessionDateStr.slice(4, 6);
           const day = '01';
-          console.log(year)
-          console.log(month)
-          console.log(day)
 
           // Construct date string YYYY-MM-DD
           const sessionDateISO = `${year}-${month}-${day}`;
@@ -426,8 +477,7 @@ export default {
             courseAllowableCredits
           });
 
-          this.clearForm();
-          this.showCourseInputs = false;
+          this.closeCourseInput();
           this.courseValidationMessage = null;
         } else {
           this.courseValidationMessage = 'Course not found.';
@@ -438,7 +488,7 @@ export default {
         this.courseValidationMessage = "Invalid Course code/level - course code/level does not exist in the ministry course registry"; //need this here because course not found is a 404 error; TODO expand on this via error code
       }
     },
-    cancelCourseInput(){
+    closeCourseInput(){
       this.clearForm();
       this.showCourseInputs = false;
     },
