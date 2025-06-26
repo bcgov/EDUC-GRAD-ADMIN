@@ -8,105 +8,124 @@
       </v-btn>
     </template>
 
-    <v-stepper alt-labels show-actions v-model="step">
-      <template v-slot:default>
-        <v-stepper-header>
-          <v-stepper-item :rules="[() => !v$.form.$invalid]" title="Select Optional Programs"
-            value="1"></v-stepper-item>
-          <v-stepper-item title="Confirmation" value="2"></v-stepper-item>
-
-
-        </v-stepper-header>
-
-        <v-stepper-window>
-          <v-stepper-window-item value="1">
-            <v-form @submit.prevent="submitForm">
-              <v-alert v-if="v$.ifStudentStatusMerged.$invalid" type="error" variant="tonal" border="start"
-                class="mb-4">
-                <p><strong>ERROR</strong></p>
-                <p>{{ v$.ifStudentStatusMerged.$message }}</p>
-              </v-alert>
-              <v-alert v-if="v$.ifProgramComplete.$invalid" type="error" variant="tonal" border="start" class="mb-4">
-                <p><strong>ERROR</strong></p>
-                <p>{{ v$.ifProgramComplete.$message }}</p>
-              </v-alert>
-              <v-alert v-if="v$.ifStudentStatusDeceased.$invalid" type="warning" variant="tonal" border="start"
-                class="mb-4">
-                <p><strong>WARNING</strong></p>
-                <p>{{ v$.ifStudentStatusDeceased.$message }}</p>
-              </v-alert>
-              <v-alert v-if="v$.ifStudentStatusArchived.$invalid" type="warning" variant="tonal" border="start"
-                class="mb-4">
-                <p><strong>WARNING</strong></p>
-                <p>{{ v$.ifStudentStatusArchived.$message }}</p>
-              </v-alert>
-              <v-alert v-if="v$.ifStudentStatusTerminated.$invalid" type="warning" variant="tonal" border="start"
-                class="mb-4">
-                <p><strong>WARNING</strong></p>
-                <p>{{ v$.ifStudentStatusTerminated.$message }}</p>
-              </v-alert>
-              <!-- Program Name Input -->
-              <v-autocomplete v-model="form.selectedOptionalProgram" :items="activeOptionalPrograms"
-                :item-title="optionalProgramTitle"
-                :disabled="v$.ifProgramComplete.$invalid || v$.ifStudentStatusMerged.$invalid"
-                item-value="optionalProgramID" label="Choose an Optional Program to add" required
-                @keyup.enter="submitForm">
-              </v-autocomplete>
-              <v-autocomplete multiple clearable chips v-if="isCareerProgram(form.selectedOptionalProgram)"
-                v-model="form.selectedCareerPrograms" :items="activeCareerPrograms" :item-title="careerProgramTitle"
-                item-value="code" label="Choose an Optional Program to add" required
-                @keyup.enter="submitForm"></v-autocomplete>
-            </v-form>
-          </v-stepper-window-item>
-
-          <v-stepper-window-item value="2">
-            <slot name="text">
-              <v-alert type="info" variant="tonal" border="start" class="pb-0">
-                <p v-if="isCareerProgram(form.selectedOptionalProgram)">
-                  You are about to add the following Career Program{{
-                    form.selectedCareerPrograms?.length === 1 ? "" : "s"
-                  }}
-                  for this student:
-
-                <ul v-if="isCareerProgram(form.selectedOptionalProgram)">
-                  <li v-for="item in form.selectedCareerPrograms" :key="item" class="my-1">
-                    {{ item }} - {{ getCareerProgramByCode(item).name }}
-                  </li>
-                </ul>
-                </p>
-                <p v-else>
-                  You are about to add the
-                  <strong>
-                    {{
-                      getOptionalProgramByID(form.selectedOptionalProgram)
-                        ?.optionalProgramName
+    <v-card>
+      <v-card-title><v-row no-gutters>
+        <div class="v-card-title">Add Student Optional Programs</div>
+        <v-spacer />
+        <v-btn
+            icon="mdi-close"
+            density="compact"
+            rounded="sm"
+            variant="outlined"
+            color="error"
+            class="mt-2"
+            @click="closeCreateOptionalProgramDialog"
+          />
+      </v-row>
+      <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
+    </v-card-title>
+      <v-stepper alt-labels show-actions v-model="step">
+        <template v-slot:default>
+          <v-stepper-header>
+            <v-stepper-item :rules="[() => !v$.form.$invalid]" title="Select Optional Programs"
+              value="1"></v-stepper-item>
+            <v-stepper-item title="Confirmation" value="2"></v-stepper-item>
+  
+  
+          </v-stepper-header>
+  
+          <v-stepper-window>
+            <v-stepper-window-item value="1">
+              <v-form @submit.prevent="submitForm">
+                <v-alert v-if="v$.ifStudentStatusMerged.$invalid" type="error" variant="tonal" border="start"
+                  class="mb-4">
+                  <p><strong>ERROR</strong></p>
+                  <p>{{ v$.ifStudentStatusMerged.$message }}</p>
+                </v-alert>
+                <v-alert v-if="v$.ifProgramComplete.$invalid" type="error" variant="tonal" border="start" class="mb-4">
+                  <p><strong>ERROR</strong></p>
+                  <p>{{ v$.ifProgramComplete.$message }}</p>
+                </v-alert>
+                <v-alert v-if="v$.ifStudentStatusDeceased.$invalid" type="warning" variant="tonal" border="start"
+                  class="mb-4">
+                  <p><strong>WARNING</strong></p>
+                  <p>{{ v$.ifStudentStatusDeceased.$message }}</p>
+                </v-alert>
+                <v-alert v-if="v$.ifStudentStatusArchived.$invalid" type="warning" variant="tonal" border="start"
+                  class="mb-4">
+                  <p><strong>WARNING</strong></p>
+                  <p>{{ v$.ifStudentStatusArchived.$message }}</p>
+                </v-alert>
+                <v-alert v-if="v$.ifStudentStatusTerminated.$invalid" type="warning" variant="tonal" border="start"
+                  class="mb-4">
+                  <p><strong>WARNING</strong></p>
+                  <p>{{ v$.ifStudentStatusTerminated.$message }}</p>
+                </v-alert>
+                <!-- Program Name Input -->
+                <v-autocomplete v-model="form.selectedOptionalProgram" :items="activeOptionalPrograms"
+                  :item-title="optionalProgramTitle"
+                  :disabled="v$.ifProgramComplete.$invalid || v$.ifStudentStatusMerged.$invalid"
+                  item-value="optionalProgramID" label="Choose an Optional Program to add" required
+                  @keyup.enter="submitForm">
+                </v-autocomplete>
+                <v-autocomplete multiple clearable chips v-if="isCareerProgram(form.selectedOptionalProgram)"
+                  v-model="form.selectedCareerPrograms" :items="activeCareerPrograms" :item-title="careerProgramTitle"
+                  item-value="code" label="Choose an Optional Program to add" required
+                  @keyup.enter="submitForm"></v-autocomplete>
+              </v-form>
+            </v-stepper-window-item>
+  
+            <v-stepper-window-item value="2">
+              <slot name="text">
+                <v-alert type="info" variant="tonal" border="start" class="pb-0">
+                  <p v-if="isCareerProgram(form.selectedOptionalProgram)">
+                    You are about to add the following Career Program{{
+                      form.selectedCareerPrograms?.length === 1 ? "" : "s"
                     }}
-                    ({{
-                      getOptionalProgramByID(form.selectedOptionalProgram)
-                        ?.optProgramCode
-                    }})
-                  </strong>
-                  Optional Program for this student.
-                </p>
-              </v-alert>
-            </slot>
-          </v-stepper-window-item>
-        </v-stepper-window>
+                    for this student:
+  
+                  <ul v-if="isCareerProgram(form.selectedOptionalProgram)">
+                    <li v-for="item in form.selectedCareerPrograms" :key="item" class="my-1">
+                      {{ item }} - {{ getCareerProgramByCode(item).name }}
+                    </li>
+                  </ul>
+                  </p>
+                  <p v-else>
+                    You are about to add the
+                    <strong>
+                      {{
+                        getOptionalProgramByID(form.selectedOptionalProgram)
+                          ?.optionalProgramName
+                      }}
+                      ({{
+                        getOptionalProgramByID(form.selectedOptionalProgram)
+                          ?.optProgramCode
+                      }})
+                    </strong>
+                    Optional Program for this student.
+                  </p>
+                </v-alert>
+              </slot>
+            </v-stepper-window-item>
+          </v-stepper-window>
+  
+        </template>
+        <template v-slot:actions>
+          <div class="row mx-6 mb-6">
+            <!-- Left Action Button -->
+            <v-btn v-if="step == 0" @click="closeCreateOptionalProgramDialog()" color="error"
+              variant="outlined">Cancel</v-btn>
+            <v-btn v-else @click="step--" color="bcGovBlue" variant="outlined">Back</v-btn>
+            <v-spacer />
+            <!-- Right Action Button -->
+            <v-btn v-if="step < 1" @click="step++" color="bcGovBlue" :disabled="v$.form.$invalid">Next</v-btn>
+            <v-btn v-else @click="submitForm()" color="error">Add Optional Program</v-btn>
+          </div>
+        </template>
+      </v-stepper>
 
-      </template>
-      <template v-slot:actions>
-        <div class="row mx-6 mb-6">
-          <!-- Left Action Button -->
-          <v-btn v-if="step == 0" @click="closeCreateOptionalProgramDialog()" color="error"
-            variant="outlined">Cancel</v-btn>
-          <v-btn v-else @click="step--" color="bcGovBlue" variant="outlined">Back</v-btn>
-          <v-spacer />
-          <!-- Right Action Button -->
-          <v-btn v-if="step < 1" @click="step++" color="bcGovBlue" :disabled="v$.form.$invalid">Next</v-btn>
-          <v-btn v-else @click="submitForm()" color="error">Add Optional Program</v-btn>
-        </div>
-      </template>
-    </v-stepper>
+    </v-card>
+
 
   </v-dialog>
 </template>
@@ -177,6 +196,7 @@ export default {
       studentOptionalPrograms: "studentOptionalPrograms",
       studentCareerPrograms: "studentCareerPrograms",
       studentGradStatus: "getStudentGradStatus",
+      studentPenAndName: "formattedStudentName",
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
     optionalProgramChange() {
