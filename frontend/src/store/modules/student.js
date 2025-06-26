@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import router from "@/router";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import StudentService from "@/services/StudentService.js";
@@ -20,6 +21,8 @@ export const useStudentStore = defineStore("student", {
     username: "",
     pageTitle: null,
     quickSearchId: "",
+    adoptLoading: false,
+    studentDialog: false,
     student: {
       profile: {},
       courses: [], // do we want to create a coursesMap ?
@@ -71,6 +74,22 @@ export const useStudentStore = defineStore("student", {
     },
   }),
   actions: {
+    async adoptStudent(studentData) {
+      try {
+        this.adoptLoading = true;
+        const response = await StudentService.adoptPENStudent(studentData);
+
+        const studentID = response?.data?.studentID;
+        if (studentID) {
+          router.push({ path: `/student-profile/${studentID}` });
+        }
+        this.studentDialog = false;
+      } catch (error) {
+        this.$snackbarStore.error(error);
+      } finally {
+        this.adoptLoading = false;
+      }
+    },
     formatAssessmentItemsList(items) {
       return items.map((item) => {
         if (!item.used) {
