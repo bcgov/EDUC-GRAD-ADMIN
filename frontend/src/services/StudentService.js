@@ -117,8 +117,4 @@ export default {
   adoptPENStudent(studentData) {
     return ApiService.apiAxios.post(`/api/student/adopt`, studentData);
   },
-  //ADOPT PEN STUDENT
-  adoptPENStudent(studentData) {
-    return ApiService.apiAxios.post("/api/v1/student/adopt", studentData);
-  },
 };
