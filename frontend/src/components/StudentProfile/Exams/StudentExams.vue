@@ -53,20 +53,6 @@
                 }}% {{ item.equivOrChallenge }}</v-col
               >
             </v-row>
-            <!-- <ul>
-              <li>
-                <strong>Course Title: </strong
-                >{{ item.courseDetails?.courseName }}
-              </li>
-              <li><strong>Interim %: </strong>{{ item.interimPercent }}</li>
-              <li>
-                <strong>Interim LG: </strong>{{ item.interimLetterGrade }}
-              </li>
-              <li>
-                <strong>Equivalency or Challenge: </strong
-                >{{ item.equivOrChallenge }}
-              </li>
-            </ul> -->
           </td>
         </tr>
       </template>
