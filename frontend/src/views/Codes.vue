@@ -105,7 +105,7 @@ import { mapState } from "pinia";
 import { useAuthStore } from "../store/modules/auth";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import GraduationReportService from "@/services/GraduationReportService.js";
-import StudentService from "@/services/StudentService.js";
+import CodesService from "@/services/CodesService.js";
 import StudentGraduationService from "@/services/StudentGraduationService.js";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
@@ -373,7 +373,7 @@ export default {
         });
     },
     getStudentStatusCodes() {
-      StudentService.getStudentStatusCodes()
+      CodesService.getStudentStatusCodes()
         .then((response) => {
           this.studentStatusCodes = response.data;
         })
