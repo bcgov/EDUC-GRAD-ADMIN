@@ -305,7 +305,6 @@ async function getStudentGradStatus(req, res) {
     const url = `${config.get(
       "server:studentAPIURL"
     )}/api/v1/student/studentid/${req.params?.studentID}`;
-    console.log(url);
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
