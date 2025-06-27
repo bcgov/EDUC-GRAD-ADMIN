@@ -90,7 +90,7 @@ export default {
       }
     },
     findStudentByStudentIdSample: function (studentId) {
-      StudentService.getStudentPen(studentId)
+      StudentService.getStudentByID(studentId)
         .then((response) => {
           this.penInput = response.data.pen;
           this.findStudentByPen();

@@ -22,7 +22,7 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
-import StudentService from "@/services/StudentService.js";
+import CodesService from "@/services/CodesService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "StatusCodes",
@@ -30,7 +30,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    StudentService.getStudentStatusCodes()
+    CodesService.getStudentStatusCodes()
       .then((response) => {
         this.studentStatusCodes = response.data;
       })

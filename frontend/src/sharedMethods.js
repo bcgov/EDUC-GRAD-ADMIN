@@ -107,7 +107,7 @@ export default {
       });
   },
   getStudentPen: function (studentID) {
-    StudentService.getStudentPen(studentID)
+    StudentService.getStudentByID(studentID)
       .then((response) => {
         return response.data.pen;
       })
@@ -180,14 +180,14 @@ export default {
   },
   filterActiveObjects(Objects) {
     const now = new Date();
-    return Objects.filter(obj => {
-        const effectiveDate = new Date(obj.effectiveDate);
-        const expiryDate = obj.expiryDate ? new Date(obj.expiryDate) : null;
+    return Objects.filter((obj) => {
+      const effectiveDate = new Date(obj.effectiveDate);
+      const expiryDate = obj.expiryDate ? new Date(obj.expiryDate) : null;
 
-        const isEffective = effectiveDate <= now;
-        const isNotExpired = !expiryDate || expiryDate > now;
+      const isEffective = effectiveDate <= now;
+      const isNotExpired = !expiryDate || expiryDate > now;
 
-        return isEffective && isNotExpired;
+      return isEffective && isNotExpired;
     });
   },
   sortSchoolList(schoolsList) {

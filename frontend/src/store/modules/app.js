@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 
 import CommonService from "@/services/CommonService.js";
 import InstituteService from "@/services/InstituteService.js";
-import StudentService from "@/services/StudentService.js";
+import CodesService from "@/services/CodesService.js";
 import StudentGraduationService from "@/services/StudentGraduationService.js";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
@@ -186,7 +186,7 @@ export const useAppStore = defineStore("app", {
         getNewData ||
         !sharedMethods.dataArrayExists(this.studentStatusOptions)
       ) {
-        let response = await StudentService.getStudentStatusCodes();
+        let response = await CodesService.getStudentStatusCodes();
         await this.setStudentStatusOptions(response.data);
       }
     },
@@ -293,7 +293,7 @@ export const useAppStore = defineStore("app", {
         getNewData ||
         !sharedMethods.dataArrayExists(this.studentGradeCodes)
       ) {
-        let response = await StudentService.getStudentGradeCodes();
+        let response = await CodesService.getStudentGradeCodes();
         await this.setStudentGradeCodes(response.data);
       }
     },
