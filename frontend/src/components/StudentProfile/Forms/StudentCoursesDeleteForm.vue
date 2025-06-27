@@ -4,7 +4,9 @@
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
           <v-btn
-            v-if="hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete"
+            v-if="
+              hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete
+            "
             v-bind="props"
             :disabled="selectedCoursesToDelete.length === 0"
             color="error"
@@ -26,11 +28,9 @@
       </template>
 
       <v-card>
-        <template v-slot:title>
+        <v-card-title>
           <v-row no-gutters>
-            <div class="v-card-title">
-              Delete Student Course
-            </div>
+            <div class="v-card-title">Delete Student Course</div>
             <v-spacer />
             <v-btn
               icon="mdi-close"
@@ -42,41 +42,43 @@
               @click="close"
             />
           </v-row>
-        </template>
+          <v-card-subtitle>{{
+            studentStore.formattedStudentName
+          }}</v-card-subtitle>
+        </v-card-title>
 
         <v-card-text>
           <v-alert
-          v-if="selectedCoursesWithWarnings.length > 0"
-          type="warning"
-          border="start"
-          prominent
-          class="pl-4"
-          elevation="2"
-          variant="tonal"
-        >
-          You are about to remove the following courses from student:
-          {{ studentPen }}
-          <ul>
-            <li v-for="course in selectedCoursesWithWarnings" :key="course.id">
-              <strong>
-                {{ course.courseDetails.courseName }}
-                {{ course.courseLevel }}
-                {{ course.courseSession }}
-              </strong>
-              <ul style="padding-left: 1.5em;">
-                <li
-                  v-for="(issue, i) in course.validationIssues"
-                  :key="i"
-                >
-                  <div class="d-flex flex-column align-start">
-          
-                    {{ issue.message }}
-                  </div>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </v-alert>
+            v-if="selectedCoursesWithWarnings.length > 0"
+            type="info"
+            border="start"
+            prominent
+            class="pl-4"
+            elevation="2"
+            variant="tonal"
+          >
+            You are about to remove the following courses:
+            {{ studentPen }}
+            <ul>
+              <li
+                v-for="course in selectedCoursesWithWarnings"
+                :key="course.id"
+              >
+                <strong>
+                  {{ course.courseDetails.courseName }}
+                  {{ course.courseLevel }}
+                  {{ course.courseSession }}
+                </strong>
+                <ul style="padding-left: 1.5em">
+                  <li v-for="(issue, i) in course.validationIssues" :key="i">
+                    <div class="d-flex flex-column align-start">
+                      {{ issue.message }}
+                    </div>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </v-alert>
         </v-card-text>
 
         <v-card-actions>
@@ -97,7 +99,9 @@
             density="default"
             @click="confirmDelete"
           >
-            Delete Course<span v-if="selectedCoursesToDelete.length > 1">s</span>
+            Delete Course<span v-if="selectedCoursesToDelete.length > 1"
+              >s</span
+            >
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -136,24 +140,26 @@ export default {
     studentPen() {
       return this.studentStore.pen;
     },
-    
+
     requirementsMet() {
       return this.studentStore.student.gradStatus.studentGradData;
     },
     selectedCoursesWithWarnings() {
       return this.selectedCoursesToDelete.map((course) => {
-        const match = this.studentStore.student.gradStatus.studentGradData.studentCourses.studentCourseList.find(
-          (c) =>
-            c.courseCode === course.courseDetails.courseCode &&
-            c.courseLevel === course.courseDetails.courseLevel &&
-            c.courseSession === course.courseDetails.courseSession
-        );
+        const match =
+          this.studentStore.student.gradStatus.studentGradData.studentCourses.studentCourseList.find(
+            (c) =>
+              c.courseCode === course.courseDetails.courseCode &&
+              c.courseLevel === course.courseDetails.courseLevel &&
+              c.courseSession === course.courseDetails.courseSession
+          );
 
         const isUsedForGrad = match?.used || false;
         const hasExam =
-  match?.bestExamPercent !== null ||
-  (match?.specialCase && match.specialCase !== 'N') ||
-  (match?.completedCoursePercentage !== null && match.completedCoursePercentage !== 0);
+          match?.bestExamPercent !== null ||
+          (match?.specialCase && match.specialCase !== "N") ||
+          (match?.completedCoursePercentage !== null &&
+            match.completedCoursePercentage !== 0);
 
         return {
           ...course,
@@ -163,7 +169,8 @@ export default {
               ? [
                   {
                     type: "warning",
-                    message: "This course is used to meet graduation requirements.",
+                    message:
+                      "This course is used to meet graduation requirements.",
                   },
                 ]
               : []),

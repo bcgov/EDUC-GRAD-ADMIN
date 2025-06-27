@@ -1,34 +1,79 @@
 <template>
-  <div>
-    <h3 class="ml-2 mt-5">Course Restrictions</h3>
-    <DisplayTable
-      title="Course restrictions"
-      v-bind:items="courseRestrictions"
-      v-bind:fields="courseRestrictionFields"
-      id="courseRestrictionId"
-      :showFilter="true"
-      pagination="true"
-    >
-    </DisplayTable>
+  <div>   
+    <v-row>
+      <h3 class="ml-4 mt-5">Course Restrictions</h3>
+      <v-spacer />   
+      <span v-if="enableCRUD()">   
+        <CourseRestrictionsCreateForm  />
+      </span>
+    </v-row>
+    <v-spacer />
+    <v-row no-gutters>
+        <v-row id="filter" class="mt-4 ">
+        <v-col lg="8" class="px-0 float-left"></v-col>
+        <v-col sm="12" lg="4" class="my-1 pr-3 table-filter p-0">
+          <v-row>
+            <v-col cols="12">
+              <v-form>
+                <v-text-field
+                  v-model="rawSearchInput"
+                  @update:modelValue="onSearchInput"
+                  label="Filter"
+                  variant="outlined"
+                  density="comfortable"
+                  debounce="500"
+                  placeholder=""
+                  append-icon="mdi-close"
+                  @click:append="clearSearchInput"
+                  class="mt-2"
+                ></v-text-field>
+              </v-form>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+
+      <v-data-table v-if="courseRestrictions.length > 0" v-model="selected" :items="courseRestrictions"
+        :headers="courseRestrictionFields" :item-value="(item) => item" :items-per-page="defaultItemsPerPage"
+        title="courseRestriction" :search="search">
+        <template v-slot:item.restrictionStartDate="{ item }">
+        {{ $filters.formatYYYYMMDate(item.restrictionStartDate) }}
+        </template>
+        <template v-slot:item.restrictionEndDate="{ item }">
+        {{ $filters.formatYYYYMMDate(item.restrictionEndDate) }}
+        </template>
+        <template v-slot:item.edit="{ item }" v-if="enableCRUD()">
+          <CourseRestrictionsUpdateForm :selectedCourseRestrictionToUpdate="item">
+          </CourseRestrictionsUpdateForm>
+        </template>
+
+      </v-data-table>
+    </v-row>
   </div>
 </template>
 <script>
-import { useSnackbarStore } from "@/store/modules/snackbar";
-import CourseService from "@/services/CourseService.js";
-import DisplayTable from "@/components/DisplayTable.vue";
-
+import { useAppStore } from "@/store/modules/app";
+import { useCourseStore } from "@/store/modules/course.js";
+import { mapState, mapActions } from "pinia";
+import CourseRestrictionsCreateForm from "@/components/Courses/Forms/CourseRestrictionsCreateForm.vue";
+import CourseRestrictionsUpdateForm from "@/components/Courses/Forms/CourseRestrictionsUpdateForm.vue";
 export default {
   name: "CourseRestrictions",
   components: {
-    DisplayTable: DisplayTable,
+    CourseRestrictionsCreateForm: CourseRestrictionsCreateForm,
+    CourseRestrictionsUpdateForm: CourseRestrictionsUpdateForm
+  },
+  computed: {
+    ...mapState(useCourseStore, {
+      courseRestrictions: "getCourseRestrictions",
+    }),
   },
   created() {
-    this.getAllCourseRestrictions();
+    this.loadCourseRestrictions();
   },
   data() {
     return {
-      snackbarStore: useSnackbarStore(),
-      courseRestrictions: [],
+      defaultItemsPerPage: 20,
       courseRestrictionFields: [
         {
           key: "mainCourse",
@@ -66,22 +111,38 @@ export default {
           sortable: true,
           class: "text-left",
         },
+        ...(this.enableCRUD()
+    ? [
+        {
+          key: "edit",
+          title: "Edit",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
+        },
+      ]
+    : []),    
       ],
+      rawSearchInput: '', 
+      search: '',
+      selected: []
     };
   },
   methods: {
-    getAllCourseRestrictions() {
-      CourseService.getCourseRestrictions()
-        .then((response) => {
-          this.courseRestrictions = response.data;
-        })
-        // eslint-disable-next-line no-unused-vars
-        .catch((error) => {
-          this.snackbarStore.showSnackbar(error.message, "error", 5000);
-          // eslint-disable-next-line
-          console.log("There was an error:" + error);
-        });
+    ...mapActions(useCourseStore, [
+      "loadCourseRestrictions",
+    ]),
+    ...mapActions(useAppStore, [
+      "enableCRUD",
+    ]),
+    onSearchInput(value) {
+      this.search = value?.replace("-","/");
     },
+    clearSearchInput() {
+      this.search = '';
+      this.rawSearchInput= ''; 
+    }
   },
 };
 </script>

@@ -8,7 +8,7 @@ export default {
     return ApiService.apiAxios.get("/api/v1/course/" + courseCode);
   },
   getCourseByCodeAndLevel(courseCode, courseLevel){
-    return ApiService.apiAxios.get("/api/v2/course/" + courseCode + "/level/" + courseLevel );
+    return ApiService.apiAxios.get(`/api/v2/course?courseCode=${courseCode}&courseLevel=${courseLevel}`);
   },
   getAllCourses() {
     return ApiService.apiAxios.get("/api/v1/course/");
@@ -30,6 +30,18 @@ export default {
         mainCourseCode
     );
   },
+  createCourseRestriction(json) {
+      return ApiService.apiAxios.post(
+        `/api/v2/course/save-course-restriction`,
+        json
+      );
+  },
+  updateCourseRestriction(restrictionId, json) {
+      return ApiService.apiAxios.put(
+        `/api/v2/course/save-course-restriction/` + restrictionId,
+        json
+      );
+  },  
   getRuleCourseRequirements(rule) {
     return ApiService.apiAxios.get(
       "/api/v1/course/requirement/rule?rule=" + rule + "&pageNo=0&pageSize=2000"

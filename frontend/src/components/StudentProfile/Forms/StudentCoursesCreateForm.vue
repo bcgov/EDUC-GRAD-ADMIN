@@ -26,6 +26,7 @@
             @click="closeCreateStudentCourseDialog"
           />
         </v-row>
+        <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
       </v-card-title>
 
       <v-stepper alt-labels show-actions v-model="step">
@@ -260,9 +261,7 @@
                 variant="tonal"
               >
                 <div class="mb-2">
-                  You are about to add the following courses to student
-                  <strong>{{ studentPenAndName }}</strong
-                  >:
+                  You are about to add the following courses:
                 </div>
                 <v-row
                   no-gutters

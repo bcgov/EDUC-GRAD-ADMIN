@@ -21,6 +21,9 @@ export const Routes = Object.freeze(object);
 // });
 export const RolePermissions = Object.freeze({
   STUDENT: {
+    adoptPENStudent: {
+      allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"],
+    },
     updateGradStatus: {
       allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"],
     },
@@ -108,6 +111,11 @@ export const RolePermissions = Object.freeze({
     toggleBatchRoutines: {
       allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
+  },
+  COURSE: {
+    restrictionUpdate: {
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
+    }
   },
 });
 

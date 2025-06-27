@@ -42,6 +42,10 @@ export const useAppStore = defineStore("app", {
       return (schoolId) =>
         state.schoolsList.find((school) => schoolId === school.schoolId);
     },
+    schoolByMincode: (state) => {
+      return (mincode) =>
+        state.schoolsList.find((school) => mincode === school.mincode);
+    },     
     getSchoolMincodeById: (state) => {
       return (schoolId) => {
         if (schoolId === "00000000-0000-0000-0000-000000000000") {

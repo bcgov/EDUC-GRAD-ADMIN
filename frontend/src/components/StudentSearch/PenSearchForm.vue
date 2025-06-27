@@ -43,16 +43,26 @@
       border="start"
       class="mt-4 mb-0 py-3 width-fit-content"
       :text="searchMessage"
-    ></v-alert>
+    >
+      <br />
+      <StudentDetailsDialog
+        v-if="hasPermissions('STUDENT', 'adoptPENStudent')"
+        :student="studentData"
+        :more="showMore"
+      >
+      </StudentDetailsDialog>
+    </v-alert>
   </div>
 </template>
 <script>
-import { mapActions } from "pinia";
+import { mapState, mapActions } from "pinia";
 import { useVuelidate } from "@vuelidate/core";
 import { isEnvLocalHost } from "../../utils/common.js";
 import { useStudentStore } from "@/store/modules/student";
 import StudentService from "@/services/StudentService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import { useAccessStore } from "../../store/modules/access.js";
+import StudentDetailsDialog from "../Common/StudentDetailsDialog.vue";
 
 export default {
   name: "penSearchForm",
@@ -63,16 +73,22 @@ export default {
   },
   data() {
     return {
+      studentData: {},
       snackbarStore: useSnackbarStore(),
       isEnvLocalHost: isEnvLocalHost(),
       penInput: "",
       searchLoading: false,
-      searchMessage: "", //TODO?
+      searchMessage: "",
+      showMore: false,
     };
   },
   created() {},
-  components: {},
-  computed: {},
+  components: {
+    StudentDetailsDialog: StudentDetailsDialog,
+  },
+  computed: {
+    ...mapState(useAccessStore, ["hasPermissions"]),
+  },
   methods: {
     ...mapActions(useStudentStore, ["unsetStudent"]),
     closeRecord: function () {
@@ -98,7 +114,7 @@ export default {
         .catch((error) => {
           if (error.response.status) {
             this.snackbarStore.showSnackbar(
-              "There was an error: " + error.response.status,
+              "There was an error: " + error?.response?.status,
               "error",
               5000
             );
@@ -114,14 +130,9 @@ export default {
         StudentService.getStudentByPen(this.penInput)
           .then((response) => {
             if (response.data.length != 0) {
-              var studentLastName = response.data[0].legalLastName;
-              if (response.data[0].program == null || "") {
-                this.studentHasProgram = false;
-                this.searchMessage =
-                  "Student " +
-                  studentLastName +
-                  " has a PEN but does not have a GRAD system record. Use TRAX to conduct a PEN student inquiry.";
-                this.searchLoading = false;
+              this.studentData = response.data[0];
+              if (!this.isStudentInGrad(this.studentData)) {
+                this.checkStudentStatus(this.studentData);
               } else {
                 this.studentHasProgram = true;
                 this.selectStudent(response.data);
@@ -138,7 +149,7 @@ export default {
             this.searchLoading = false;
             this.searchMessage = "";
             this.snackbarStore.showSnackbar(
-              "There was an error: " + err.response.status,
+              "There was an error: " + err?.response?.status,
               "error",
               5000
             );
@@ -152,6 +163,28 @@ export default {
       this.$router.push({
         path: `/student-profile/${this.selectedId}`,
       });
+    },
+
+    checkStudentStatus: function (data) {
+      const { legalLastName, statusCode } = data;
+
+      const baseMessage = `Student ${legalLastName} has a PEN but does not have a GRAD system record.`;
+      this.searchLoading = false;
+
+      if (statusCode === "M") {
+        this.searchMessage = `${baseMessage} This student's PEN status is showing as Merged.`;
+        this.showMore = false;
+      } else if (statusCode === "A" || statusCode === "D") {
+        this.searchMessage = baseMessage;
+        this.showMore = true;
+      } else {
+        this.searchMessage = baseMessage;
+        this.showMore = false;
+      }
+    },
+
+    isStudentInGrad: function (student) {
+      return !!(student.program && student.program.length);
     },
   },
 };
