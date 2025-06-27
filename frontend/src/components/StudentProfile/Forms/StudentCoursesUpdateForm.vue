@@ -15,7 +15,7 @@
       </template>
 
       <v-card>
-        <template v-slot:title>
+        <v-card-title>
           <v-row no-gutters>
             <div class="v-card-title">Edit Student Courses</div>
             <v-spacer />
@@ -29,7 +29,8 @@
               @click="close"
             />
           </v-row>
-        </template>
+          <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
+        </v-card-title>
 
         <v-card-text>
           <CourseDetailsInput
@@ -70,6 +71,7 @@
 import { ref, computed } from "vue";
 import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
 import { useStudentStore } from "@/store/modules/student";
+import { mapState } from "pinia";
 
 export default {
   name: "StudentCoursesUpdateForm",
@@ -79,6 +81,11 @@ export default {
       type: Array,
       required: true,
     },
+  },
+  computed: {
+    ...mapState(useStudentStore, {
+      studentPenAndName: "formattedStudentName",
+    }),
   },
   setup(props) {
     const dialog = ref(false);

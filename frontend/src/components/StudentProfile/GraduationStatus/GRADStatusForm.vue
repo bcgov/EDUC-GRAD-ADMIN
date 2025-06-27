@@ -10,7 +10,23 @@
       </v-progress-circular>
     </v-btn>
     <v-dialog v-model="dialog" width="auto">
-      <v-card no-body title="GRAD Status">
+      <v-card no-body>
+        <v-card-title>
+          <v-row no-gutters>
+            <div class="v-card-title">Edit Student GRAD Status</div>
+            <v-spacer />
+            <v-btn
+              icon="mdi-close"
+              density="compact"
+              rounded="sm"
+              variant="outlined"
+              color="error"
+              class="mt-2"
+              @click="cancelGradStatus"
+            />
+          </v-row>
+          <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
+        </v-card-title>
         <v-card-text class="p-3">
           <!-- Alerts -->
           <div class="alerts">
@@ -721,6 +737,7 @@ export default {
       studentId: "getStudentId",
       studentGradStatus: "getStudentGradStatus",
       editedGradStatus: "getEditedGradStatus",
+      studentPenAndName: "formattedStudentName",
     }),
     ...mapState(useAppStore, {
       programOptions: "getProgramOptions",
