@@ -186,8 +186,9 @@
                   <v-tooltip max-width="500">
                     {{ item.description }}
                     <template v-slot:activator="{ props }">
+                      
                       <v-icon v-bind="props" color="bcGovBlue" small size="18"
-                        >mdi-information</v-icon
+                        >mdi-information-outline</v-icon
                       >
                     </template>
                   </v-tooltip>

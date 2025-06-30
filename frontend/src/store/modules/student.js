@@ -263,7 +263,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the Student History): " +
-                error?.response?.status
+              error?.response?.status
             );
           }
         });
@@ -287,7 +287,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the Student Optional Program History): " +
-                error?.response?.status
+              error?.response?.status
             );
           }
         });
@@ -304,7 +304,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the Student Course History): " +
-                error?.response?.status
+              error?.response?.status
             );
           }
         });
@@ -464,7 +464,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
-                error?.response?.status
+              error?.response?.status
             );
           }
         });
@@ -481,7 +481,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the student's Career Programs): " +
-                error?.response?.status
+              error?.response?.status
             );
           }
         });
