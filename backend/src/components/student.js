@@ -54,7 +54,7 @@ async function postStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/${
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${
       req.params?.studentID
     }`;
     const data = await postData(

@@ -229,7 +229,7 @@ apiRouter.use("/auth", authRouter);
 apiRouter.use("/:version/batch", addVersionToReq, batchRouter);
 apiRouter.use("/:version/distribute", addVersionToReq, distributionRouter);
 apiRouter.use("/:version/program", addVersionToReq, programsRouter);
-apiRouter.use("/:version/course", addVersionToReq, coursesRouter);
+apiRouter.use("/course", coursesRouter);
 apiRouter.use(
   "/:version/studentgraduation",
   addVersionToReq,
