@@ -24,7 +24,7 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
-import CourseService from "@/services/CourseService";
+import CodesService from "@/services/CodesService";
 
 // import shared functions & validations
 import { applyDisplayOrder } from "@/utils/common.js";
@@ -35,7 +35,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    CourseService.getFineArtsAppliedSkillsTypes()
+    CodesService.getFineArtsAppliedSkillsTypes()
       .then((response) => {
         this.fineArtsAppliedSkillsTypes = response.data;
       })
