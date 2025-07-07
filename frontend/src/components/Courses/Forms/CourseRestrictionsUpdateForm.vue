@@ -88,14 +88,14 @@ export default {
         await this.updateCourseRestriction(updateCourseRestrictionRequestBody).then((response) => {
           if (response?.hasPersisted) {
               this.loadCourseRestrictions();
-              this.snackbarStore.showSnackbar("Course Restriction Saved", "success", 5000);
+              this.snackbarStore.showSnackbar("Course Restriction Updated", "success", 10000);
           } else {
-              this.snackbarStore.showSnackbar("Failed to save Course Restriction", "error", 10000);
+              this.snackbarStore.showSnackbar("Failed to update Course Restriction", "error", 10000);
           }
         });
       } catch (error) {
         console.error("Error updating course restriction form:", error);
-        this.snackbarStore.showSnackbar("An error occurred", "danger", 10000);        
+        this.snackbarStore.showSnackbar("Failed to update Course Restriction", "error", 10000);        
       }
       this.close();
     },
