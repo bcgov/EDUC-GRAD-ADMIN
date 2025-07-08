@@ -1,14 +1,11 @@
-const { TokenExpiredError } = require("jsonwebtoken");
 const {
   errorResponse,
   getData,
   postData,
   putData,
-  deleteData,
   formatQueryParamString,
 } = require("./utils");
 const config = require("../config/index");
-const log = require("./logger");
 const auth = require("./auth");
 
 async function getCourseByCodeAndLevel(req, res) {
@@ -134,7 +131,7 @@ async function putCourseRestriction(req, res) {
     const data = await putData(
       token,
       req.body,
-      url,      
+      url,
       req.session?.correlationID
     );
     return res.status(200).json(data);
