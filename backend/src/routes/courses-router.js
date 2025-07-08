@@ -17,6 +17,8 @@ const {
   getStudentCoursesLegacy,
   getStudentExamDetailsLegacy,
 } = require("../components/course");
+const validate = require('../components/validator');
+const {createCourseRestrictionSchema, updateCourseRestrictionSchema} = require('../components/validations/course');
 
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
@@ -59,6 +61,7 @@ router.post(
   "/courseRestriction",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
+  validate(createCourseRestrictionSchema),
   postCourseRestriction
 );
 
@@ -66,6 +69,7 @@ router.put(
   "/courseRestriction/:restrictionID",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
+  validate(updateCourseRestrictionSchema),
   putCourseRestriction
 );
 

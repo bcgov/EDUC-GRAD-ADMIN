@@ -192,9 +192,9 @@ export default {
         }
         if (errorMessage == null && (mainCourseCompletionDate && restrictionEndDate > mainCourseCompletionDate) || (restrictedCourseCompletionDate && restrictionEndDate > restrictedCourseCompletionDate)) {
           errorMessage = "Restriction Start Date is later than the latest completion date of the two courses";
-        }
-        this.courseRestriction.hasValidationError = !this.validateCourseRestriction() || !!errorMessage;
+        }       
       }
+       this.courseRestriction.hasValidationError = !this.validateCourseRestriction() || !!errorMessage;
       return {
         $valid: !errorMessage,
         $message: errorMessage
