@@ -322,7 +322,7 @@ async function postStudentGradStatus(req, res) {
   try {
     const url = `${config.get(
       "server:studentAPIURL"
-    )}/api/v1/student/studentid/${req.params?.studentID}`;
+    )}/api/v1/student/gradstudent/studentid/${req.params?.studentID}`;
     const data = await postData(
       token,
       url,
