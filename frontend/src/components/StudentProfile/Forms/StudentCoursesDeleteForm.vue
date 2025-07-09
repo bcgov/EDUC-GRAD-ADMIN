@@ -42,6 +42,9 @@
               @click="close"
             />
           </v-row>
+          <v-card-subtitle>{{
+            studentStore.formattedStudentName
+          }}</v-card-subtitle>
         </v-card-title>
 
         <v-card-text>
@@ -54,8 +57,9 @@
             variant="tonal"
           >
             <div class="mb-2">
-              You are about to remove the following courses to student
-              <strong>{{ studentStore.formattedStudentName }}</strong>
+              You are about to remove the following student course{{
+                selectedCoursesWithWarnings.length > 1 ? "s" : ""
+              }}:
             </div>
             <v-row
               no-gutters
