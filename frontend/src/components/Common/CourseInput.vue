@@ -191,6 +191,9 @@ export default {
     },
   },
   created() {
+    if (this.localCourse.courseCode && this.localCourse.courseLevel && !this.localCourse.courseID) {
+      this.fetchCourse();
+    }
     this.debouncedLookup = debounce(this.fetchCourse, 1000);
   },
 };

@@ -24,7 +24,6 @@ const apiRouter = express.Router();
 const authRouter = require("./routes/auth");
 const promMid = require("express-prometheus-middleware");
 
-
 function addVersionToReq(req, res, next) {
   const { version } = req.params;
   // Check if the version is supported
@@ -45,6 +44,7 @@ const assessmentsRouter = require("./routes/assessments-router");
 const coursesRouter = require("./routes/courses-router");
 const studentGraduationRouter = require("./routes/student-graduation-router");
 const studentRouter = require("./routes/student-router");
+const codesRouter = require("./routes/codes-router");
 const graduationReportsRouter = require("./routes/graduation-reports-router");
 const batchRouter = require("./routes/batch-router");
 const distributionRouter = require("./routes/distribution-router");
@@ -152,28 +152,39 @@ auth
         }
       )
     );
-    passport.use('oidcIDIRSilent', new OidcStrategy({
-      issuer: discovery.issuer,
-      authorizationURL: discovery.authorization_endpoint,
-      tokenURL: discovery.token_endpoint,
-      userInfoURL: discovery['userinfo_endpoint'],
-      clientID: config.get('oidc:clientId'),
-      clientSecret: config.get('oidc:clientSecret'),
-      callbackURL: config.get('server:frontend') + '/api/auth/callback_idir_silent',
-      scope: 'openid profile',
-      kc_idp_hint: config.get('server:idirIDPHint')
-    }, (_issuer, _sub, profile, accessToken, refreshToken, done) => {
-      if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
-          (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
-        return done('No access token', null);
-      }
-      //Generate token for frontend validation
-      //set access and refresh tokens
-      profile.jwtFrontend = auth.generateUiToken();
-      profile.jwt = accessToken;
-      profile.refreshToken = refreshToken;
-      return done(null, profile);
-    }));
+    passport.use(
+      "oidcIDIRSilent",
+      new OidcStrategy(
+        {
+          issuer: discovery.issuer,
+          authorizationURL: discovery.authorization_endpoint,
+          tokenURL: discovery.token_endpoint,
+          userInfoURL: discovery["userinfo_endpoint"],
+          clientID: config.get("oidc:clientId"),
+          clientSecret: config.get("oidc:clientSecret"),
+          callbackURL:
+            config.get("server:frontend") + "/api/auth/callback_idir_silent",
+          scope: "openid profile",
+          kc_idp_hint: config.get("server:idirIDPHint"),
+        },
+        (_issuer, _sub, profile, accessToken, refreshToken, done) => {
+          if (
+            typeof accessToken === "undefined" ||
+            accessToken === null ||
+            typeof refreshToken === "undefined" ||
+            refreshToken === null
+          ) {
+            return done("No access token", null);
+          }
+          //Generate token for frontend validation
+          //set access and refresh tokens
+          profile.jwtFrontend = auth.generateUiToken();
+          profile.jwt = accessToken;
+          profile.refreshToken = refreshToken;
+          return done(null, profile);
+        }
+      )
+    );
     //JWT strategy is used for authorization
     passport.use(
       "jwt",
@@ -218,16 +229,25 @@ apiRouter.use("/auth", authRouter);
 apiRouter.use("/:version/batch", addVersionToReq, batchRouter);
 apiRouter.use("/:version/distribute", addVersionToReq, distributionRouter);
 apiRouter.use("/:version/program", addVersionToReq, programsRouter);
-apiRouter.use("/:version/course", addVersionToReq, coursesRouter);
-apiRouter.use("/:version/studentgraduation", addVersionToReq, studentGraduationRouter);
+apiRouter.use("/course", coursesRouter);
+apiRouter.use(
+  "/:version/studentgraduation",
+  addVersionToReq,
+  studentGraduationRouter
+);
 apiRouter.use("/:version/assessment", addVersionToReq, assessmentsRouter);
 apiRouter.use("/:version/trax", addVersionToReq, TRAXRouter);
-apiRouter.use("/:version/student", addVersionToReq, studentRouter);
-apiRouter.use("/:version/graduationreports", addVersionToReq, graduationReportsRouter);
+apiRouter.use("/student", studentRouter);
+apiRouter.use("/codes", codesRouter);
+apiRouter.use(
+  "/:version/graduationreports",
+  addVersionToReq,
+  graduationReportsRouter
+);
 apiRouter.use("/:version/graduate", addVersionToReq, graduationRouter);
 apiRouter.use("/:version/reports", addVersionToReq, reportsRouter);
 apiRouter.use("/:version/institute", addVersionToReq, instituteRouter);
-apiRouter.use("/:version/config",  addVersionToReq, configRouter);
+apiRouter.use("/:version/config", addVersionToReq, configRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

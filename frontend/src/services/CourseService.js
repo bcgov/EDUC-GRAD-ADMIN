@@ -1,77 +1,55 @@
 import ApiService from "../common/apiService";
 
 export default {
-  getCoursesByAdvanceSearch(params) {
-    return ApiService.apiAxios.get("/api/v1/course/coursesearch?" + params);
+  getCourseByCodeAndLevel(courseCode, courseLevel) {
+    return ApiService.apiAxios.get(
+      `/api/course/search?courseCode=${courseCode}&courseLevel=${courseLevel}`
+    );
   },
-  getCourses(courseCode) {
-    return ApiService.apiAxios.get("/api/v1/course/" + courseCode);
-  },
-  getCourseByCodeAndLevel(courseCode, courseLevel){
-    return ApiService.apiAxios.get(`/api/v2/course?courseCode=${courseCode}&courseLevel=${courseLevel}`);
-  },
-  getCourseByCode(courseCode){
-    return ApiService.apiAxios.get("/api/v1/course/" + courseCode );
-  },  
-  getAllCourses() {
-    return ApiService.apiAxios.get("/api/v1/course/");
+  getCourseByID(courseID) {
+    return ApiService.apiAxios.get(`api/course/courseID/${courseID}`);
   },
   getAllCourseRequirements() {
-    return ApiService.apiAxios.get("/api/v1/course/requirement");
+    return ApiService.apiAxios.get("/api/course/courseRequirements");
   },
   getCourseRestrictions() {
-    return ApiService.apiAxios.get("/api/v1/course/restriction");
+    return ApiService.apiAxios.get("/api/course/courseRestrictions");
   },
-   getCourseExaminableCourses() {
-    return ApiService.apiAxios.get("/api/v1/course/examinablecourses");
+  getCourseExaminableCourses() {
+    return ApiService.apiAxios.get("/api/course/examinableCourseSessions");
   },
   getCourseRestriction(mainCourseLevel, mainCourseCode) {
     return ApiService.apiAxios.get(
-      "/api/v1/course/courserestrictionsearch?mainCourseLevel=" +
-        mainCourseLevel +
-        "&mainCourseCode=" +
-        mainCourseCode
+      "/api/course/courseRestriction?mainCourseLevel=" +
+      mainCourseLevel +
+      "&mainCourseCode=" +
+      mainCourseCode
     );
   },
   createCourseRestriction(json) {
-      return ApiService.apiAxios.post(
-        `/api/v2/course/save-course-restriction`,
-        json
-      );
+    return ApiService.apiAxios.post(`/api/course/courseRestriction`, json);
   },
   updateCourseRestriction(restrictionId, json) {
-      return ApiService.apiAxios.put(
-        `/api/v2/course/save-course-restriction/` + restrictionId,
-        json
-      );
-  },  
+    return ApiService.apiAxios.put(
+      `/api/course/courseRestriction/` + restrictionId,
+      json
+    );
+  },
+  // IMPROVEMENT make this endpoint and service paginate with vuetify server data table
   getRuleCourseRequirements(rule) {
     return ApiService.apiAxios.get(
-      "/api/v1/course/requirement/rule?rule=" + rule + "&pageNo=0&pageSize=2000"
+      "/api/course/requirementRule?rule=" + rule + "&pageNo=0&pageSize=2000"
     );
   },
   getCourseRequirements(params) {
-    return ApiService.apiAxios.get(
-      "/api/v1/course/courserequirementsearch?" + params
-    );
+    return ApiService.apiAxios.get("/api/course/courseRequirements?" + params);
   },
   getStudentCourseAchievements(pen) {
-    return ApiService.apiAxios.get(
-      "/api/v1/course/studentcourse/pen/" + pen + "?sortForUI=true"
-    );
+    return ApiService.apiAxios.get("/api/course/legacy/studentCourses/" + pen);
   },
   getStudentExamDetailsLegacy(pen) {
     return ApiService.apiAxios.get(
-      "/api/v1/course/studentexam/pen/" + pen + "?sortForUI=true"
+      "/api/course/legacy/studentExamDetails/" + pen
     );
-  },
-  getFineArtsAppliedSkillsTypes() {
-    return ApiService.apiAxios.get("/api/v1/course/fineArtsAppliedSkillsCodes");
-  },
-  getExamSpecialCaseCodes() {
-    return ApiService.apiAxios.get("/api/v1/course/examSpecialCaseCodes");
-  },
-  getEquivalentOrChallengeCodes() {
-    return ApiService.apiAxios.get("/api/v1/course/equivalentOrChallengeCodes");
   },
 };
