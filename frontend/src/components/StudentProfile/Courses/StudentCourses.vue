@@ -98,20 +98,33 @@
                   </div>
 
                   <!-- Course Exam Details -->
-                  <div v-if="item.courseExam">
-                    <strong>Course Exam:</strong>
-                    <ul class="pl-4">
-                      <li>School %: {{ item.courseExam.schoolPercentage }}%</li>
-                      <li>
-                        Best School %:
-                        {{ item.courseExam.bestSchoolPercentage }}%
-                      </li>
-                      <li>
-                        Best Exam %: {{ item.courseExam.bestExamPercentage }}%
-                      </li>
-                      <li>Special Case: {{ item.courseExam.specialCase }}</li>
-                    </ul>
-                  </div>
+                  <v-row no-gutters v-if="item.courseExam">
+                    <v-col
+                      ><strong>Exam Percent</strong>&nbsp;{{
+                        item.courseExam.examPercentage
+                      }}%</v-col
+                    >
+                    <v-col
+                      ><strong>Best Exam Percent</strong>&nbsp;{{
+                        item.courseExam.bestExamPercentage
+                      }}%</v-col
+                    >
+                    <v-col
+                      ><strong>School Percent</strong>&nbsp;{{
+                        item.courseExam.schoolPercentage
+                      }}%</v-col
+                    >
+                    <v-col
+                      ><strong>Best School Percent</strong>&nbsp;{{
+                        item.courseExam.bestSchoolPercentage
+                      }}%</v-col
+                    >
+                    <v-col
+                      ><strong>Special Case</strong>&nbsp;{{
+                        item.courseExam.specialCase
+                      }}</v-col
+                    >
+                  </v-row>
                 </div>
               </td>
             </tr>

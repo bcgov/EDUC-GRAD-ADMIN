@@ -191,11 +191,25 @@
                 variant="text"
               ></v-btn>
             </template>
-            <v-card
-              title="Delete Student Optional Program"
-              max-width="500px"
-              class="mx-auto"
-            >
+            <v-card max-width="500px" class="mx-auto">
+              <v-card-title>
+                <v-row no-gutters>
+                  <div class="v-card-title">
+                    Delete Student Optional Program
+                  </div>
+                  <v-spacer />
+                  <v-btn
+                    icon="mdi-close"
+                    density="compact"
+                    rounded="sm"
+                    variant="outlined"
+                    color="error"
+                    class="mt-2"
+                    @click="deleteDialog[item.id] = false"
+                  />
+                </v-row>
+                <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
+              </v-card-title>
               <v-divider color="error" class="mt-0 mx-4" />
               <!-- START Optional Program Delete Warnings and Errors -->
               <v-alert
@@ -348,11 +362,27 @@
                           variant="text"
                         ></v-btn>
                       </template>
-                      <v-card
-                        title="Delete Student Career Program"
-                        max-width="500px"
-                        class="mx-auto"
-                      >
+                      <v-card max-width="500px" class="mx-auto">
+                        <v-card-title>
+                          <v-row no-gutters>
+                            <div class="v-card-title">
+                              Delete Student Career Program
+                            </div>
+                            <v-spacer />
+                            <v-btn
+                              icon="mdi-close"
+                              density="compact"
+                              rounded="sm"
+                              variant="outlined"
+                              color="error"
+                              class="mt-2"
+                              @click="deleteDialog[item.id] = false"
+                            />
+                          </v-row>
+                          <v-card-subtitle>{{
+                            studentPenAndName
+                          }}</v-card-subtitle>
+                        </v-card-title>
                         <v-divider color="error" class="mt-0 mx-4" />
                         <!-- START Career Program Delete Warnings and Errors -->
                         <v-alert
@@ -500,6 +530,7 @@ export default {
       studentOptionalPrograms: "studentOptionalPrograms",
       studentCareerPrograms: "studentCareerPrograms",
       studentGradStatus: "getStudentGradStatus",
+      studentPenAndName: "formattedStudentName",
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
   },

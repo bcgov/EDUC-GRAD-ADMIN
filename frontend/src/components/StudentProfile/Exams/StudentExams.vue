@@ -31,20 +31,28 @@
       <template v-slot:expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length">
-            <ul>
-              <li>
-                <strong>Course Title: </strong
-                >{{ item.courseDetails?.courseName }}
-              </li>
-              <li><strong>Interim %: </strong>{{ item.interimPercent }}</li>
-              <li>
-                <strong>Interim LG: </strong>{{ item.interimLetterGrade }}
-              </li>
-              <li>
-                <strong>Equivalency or Challenge: </strong
-                >{{ item.equivOrChallenge }}
-              </li>
-            </ul>
+            <v-row no-gutters>
+              <v-col
+                ><strong>Course Title</strong>&nbsp;{{
+                  item.courseDetails?.courseName
+                }}</v-col
+              >
+              <v-col
+                ><strong>Interim Percent</strong>&nbsp;{{
+                  item.interimPercent
+                }}%</v-col
+              >
+              <v-col
+                ><strong>Interim LG</strong>&nbsp;{{
+                  item.interimLetterGrade
+                }}</v-col
+              >
+              <v-col
+                ><strong>Equivalency or Challenge</strong>&nbsp;{{
+                  item.interimPercent
+                }}% {{ item.equivOrChallenge }}</v-col
+              >
+            </v-row>
           </td>
         </tr>
       </template>

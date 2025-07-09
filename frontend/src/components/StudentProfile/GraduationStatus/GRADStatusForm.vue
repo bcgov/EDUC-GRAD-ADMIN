@@ -3,23 +3,35 @@
     <v-btn
       v-if="hasPermissions('STUDENT', 'updateGradStatus')"
       @click="editGradStatus"
-      :disabled="allSet"
+      :disabled="!schoolsLoaded || mergedStudent"
     >
       Edit
       <v-progress-circular v-if="searchLoading" indeterminate color="green">
       </v-progress-circular>
     </v-btn>
     <v-dialog v-model="dialog" width="auto">
-      <v-card no-body title="GRAD Status">
+      <v-card no-body>
+        <v-card-title>
+          <v-row no-gutters>
+            <div class="v-card-title">Edit Student GRAD Status</div>
+            <v-spacer />
+            <v-btn
+              icon="mdi-close"
+              density="compact"
+              rounded="sm"
+              variant="outlined"
+              color="error"
+              class="mt-2"
+              @click="cancelGradStatus"
+            />
+          </v-row>
+          <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
+        </v-card-title>
         <v-card-text class="p-3">
           <!-- Alerts -->
           <div class="alerts">
             <!-- Info callout in edit form when student status is MER/Merged -->
-            <div
-              v-if="
-                studentGradStatus && studentGradStatus.studentStatus == 'MER'
-              "
-            >
+            <div v-if="mergedStudent">
               <v-alert
                 type="info"
                 variant="tonal"
@@ -725,6 +737,7 @@ export default {
       studentId: "getStudentId",
       studentGradStatus: "getStudentGradStatus",
       editedGradStatus: "getEditedGradStatus",
+      studentPenAndName: "formattedStudentName",
     }),
     ...mapState(useAppStore, {
       programOptions: "getProgramOptions",
@@ -769,21 +782,16 @@ export default {
     recalculateProjectedGradFlag() {
       return this.studentGradStatus?.recalculateProjectedGrad;
     },
-    allSet() {
+    schoolsLoaded() {
       if (this.getSchoolsList?.length == 0) {
-        return true;
+        return false;
       } else {
         this.searchLoading = false;
-        return false;
+        return true;
       }
     },
     mergedStudent() {
-      if (this.studentGradStatus?.studentStatus === "MER") {
-        return true;
-      } else {
-        this.searchLoading = false;
-        return false;
-      }
+      return this.studentGradStatus?.studentStatus === "MER";
     },
   },
   data() {

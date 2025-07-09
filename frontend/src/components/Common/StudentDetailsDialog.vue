@@ -4,13 +4,16 @@
       variant="plain"
       color="error"
       v-ripple
-      @click="studentDialog = !studentDialog"
+      @click="
+        studentStore.studentDialog =
+          !studentStore.studentDialog && (showAdopt = true)
+      "
       class="v-btn-link text-left px-0 d-block"
       v-if="more"
     >
       more
     </v-btn>
-    <v-dialog v-model="studentDialog" max-width="600px">
+    <v-dialog v-model="studentStore.studentDialog" max-width="600px">
       <v-card>
         <v-card-title
           ><v-row no-gutters>
@@ -20,7 +23,7 @@
               icon="mdi-close"
               density="compact"
               rounded="sm"
-              @click="studentDialog = !studentDialog"
+              @click="studentStore.studentDialog = !studentStore.studentDialog"
               class="mt-2"
             />
           </v-row>
@@ -65,16 +68,59 @@
           <div class="my-1">
             <strong>Status Code: </strong>{{ student.statusCode }}
           </div>
+          <div class="my-1">
+            <v-btn @click="openStudentAdmin" class="text">Student Admin</v-btn>
+          </div>
         </v-card-text>
+        <v-card-actions
+          class="sticky-form-actions"
+          v-if="hasPermissions('STUDENT', 'adoptPENStudent')"
+        >
+          <v-btn
+            color="error"
+            variant="outlined"
+            @click="studentStore.studentDialog = !studentStore.studentDialog"
+          >
+            Cancel
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            v-if="showAdopt"
+            id="save-status-btn"
+            color="primary"
+            variant="flat"
+            @click="showAdopt = !showAdopt"
+          >
+            Adopt PEN Student
+          </v-btn>
+          <v-btn
+            v-if="!showAdopt"
+            id="save-status-btn"
+            color="error"
+            variant="flat"
+            @click="adoptStudent(this.student)"
+          >
+            Confirm Adopt PEN Student
+            <v-progress-circular
+              v-if="adoptLoading"
+              indeterminate
+              color="error"
+              size="20"
+            >
+            </v-progress-circular>
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </div>
 </template>
 
 <script>
-import { mapState } from "pinia";
+import { mapState, mapActions, storeToRefs } from "pinia";
 import { useAppStore } from "@/store/modules/app";
-
+import { useStudentStore } from "../../store/modules/student";
+import { useAccessStore } from "@/store/modules/access";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   props: {
     student: Object,
@@ -84,16 +130,39 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      showAdopt: true,
+      studentStore: useStudentStore(),
+      snackbarStore: useSnackbarStore(),
+    };
+  },
   computed: {
     ...mapState(useAppStore, {
       schoolByMincode: "schoolByMincode",
     }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
+    ...mapState(useStudentStore, {
+      adoptLoading: "adoptLoading",
+    }),
   },
-  methods: {},
-  data() {
-    return {
-      studentDialog: false,
-    };
+  methods: {
+    ...mapActions(useStudentStore, {
+      adoptStudent: "adoptStudent",
+    }),
+
+    openStudentAdmin() {
+      const studentID = this.student?.studentID;
+      if (!studentID) {
+        this.snackbarStore.error("Student ID is missing.");
+        return;
+      }
+
+      this.$router.push({
+        name: "StudentAdmin",
+        params: { student: studentID },
+      });
+    },
   },
 };
 </script>

@@ -13,12 +13,13 @@
           <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
             @click="closeCreateStudentCourseDialog" />
         </v-row>
+        <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
       </v-card-title>
 
       <v-stepper alt-labels show-actions v-model="step">
         <template v-slot:default>
           <v-stepper-header>
-            <v-stepper-item title="Enter Courses" value="0" :rules="[() => !v$.$invalid]">
+            <v-stepper-item title="Enter Courses" value="0" :rules="[() => v$.$invalid]">
               <template #icon>
                 1
               </template>
@@ -42,8 +43,7 @@
                       <CourseDetailsInput :course="course" create>
                         <template #remove-button>
                           <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none"
-                            style="min-width: auto; width: 80px"
-                            @click="removeCourseFromCreate(course.courseID)">Remove</v-btn>
+                            style="min-width: auto; width: 80px" @click="removeCourse(course.courseID)">Remove</v-btn>
                         </template>
                       </CourseDetailsInput>
                       <v-divider v-if="index < coursesToCreate.length - 1" class="my-4" color="grey-darken-3" />
@@ -208,12 +208,13 @@
           </v-col>
 
           <v-col>
-            <v-btn :disabled="v$?.courseAdd?.$invalid" variant="flat" color="bcGovBlue" class="text-none mr-1"
+            <v-btn :disabled="v$?.courseAdd?.$invalid || isLoading" variant="flat" color="bcGovBlue" class="text-none"
               @click="addCourse">
-              Get Course
+              <v-progress-circular v-if="isLoading" indeterminate color="white" size="20" class="mr-2" />
+              <span v-if="!isLoading">Get Course</span>
             </v-btn>
-            <v-btn icon color="error" @click="closeCourseInput">
-              <v-icon size="24">mdi-trash-can</v-icon>
+            <v-btn :disabled="coursesToCreate.length == 0" color="error" @click="closeCourseInput">
+              <v-icon size="28">mdi-trash-can</v-icon>
             </v-btn>
           </v-col>
         </v-row>
@@ -221,7 +222,7 @@
       <v-row> <v-alert v-if="courseValidationMessage" type="error" variant="tonal" border="start"
           class="width-fit-content">{{ courseValidationMessage }}</v-alert></v-row>
       <v-row justify="center">
-        <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none" v-if="!showCourseInputs"
+        <v-btn variant=" outlined" color="bcGovBlue" class="mb-4 text-none" v-if="!showCourseInputs && step === 0"
           @click="showCourseInputs = !showCourseInputs">
           + Enter Course
         </v-btn>
@@ -280,11 +281,11 @@ export default {
       courseAdd: {
         code: { required },
         level: {
-          required: (value) => value !== undefined && value !== null
+
         },
         courseSession: {
           required,
-          validCourseSession: helpers.withMessage(
+          validCourseSessionMonth: helpers.withMessage(
             'Course session must be in YYYYMM format with a valid month (01–12)',
             (value) => {
               if (!value) return false
@@ -293,11 +294,36 @@ export default {
               // Must be exactly 6 numeric characters
               if (!/^\d{6}$/.test(stringValue)) return false
 
-              const year = parseInt(stringValue.slice(0, 4), 10)
               const month = parseInt(stringValue.slice(4, 6), 10)
 
               // Check month range
               return month >= 1 && month <= 12
+            }
+          ),
+          validCourseSessionPeriod: helpers.withMessage(
+            'Course session cannot be beyond the current reporting period or prior to 198401',
+            (value) => {
+              if (!value || value.length !== 6) return false;
+
+              const now = new Date();
+              const currentYear = now.getFullYear();
+              const currentMonth = now.getMonth() + 1; // JS months are 0-based
+
+              // Reporting period: Oct (10) to Sep (09)
+              let startYear, endYear;
+
+              if (currentMonth >= 10) {
+                startYear = currentYear;
+                endYear = currentYear + 1;
+              } else {
+                startYear = currentYear - 1;
+                endYear = currentYear;
+              }
+
+              const minSession = `198401`;
+              const maxSession = `${endYear}09`;
+
+              return value >= minSession && value <= maxSession;
             }
           )
         }
@@ -306,6 +332,7 @@ export default {
   },
   data() {
     return {
+      isLoading: false,
       showCourseInputs: true,
       createStudentResultsMessages: [],
       dialog: false,
@@ -360,11 +387,16 @@ export default {
       this.showCourseInputs = true;
       this.dialog = false;
     },
+    removeCourse(courseId) {
+      this.removeCourseFromCreate(courseId)
+      //show course inputs if the courese to create is empty
+      if (this.coursesToCreate.length == 0) {
+        this.showCourseInputs = true
+      }
+    },
     async addCourse() {
+      this.isLoading = true;
       this.courseValidationMessage = null; // reset validation message
-
-      // TODO - uncomment this when we complete the validations and input handling
-      //const { code, level, courseSession } = this.courseAdd;
 
       // TODO - improve the handling of course code | level | session date with validation ticket
       // removes hyphen before adding to store
@@ -373,9 +405,10 @@ export default {
         ""
       );
       const code = this.courseAdd.code.toUpperCase();
-      const level = this.courseAdd.level.toUpperCase();
 
-      if (code === undefined || level === undefined || courseSession === undefined) {
+      const level = this.courseAdd.level ? this.courseAdd.level.toUpperCase() : '';
+
+      if (code === undefined || courseSession === undefined) {
         this.$toast?.error?.("Please fill out all course fields.");
         return;
       }
@@ -384,7 +417,7 @@ export default {
         const response = await CourseService.getCourseByCodeAndLevel(code, level);
         const courseData = response?.data;
 
-
+        this.isLoading = false;
         if (courseData?.courseID) {
           // Clear previous validation message
           this.courseValidationMessage = null;
@@ -400,21 +433,6 @@ export default {
             this.clearForm();
             return;
           }
-          // Check for Q course
-          // if ((code || '').startsWith('Q')) {
-          //   const nonQCourseCode = code.slice(1);
-
-          //   const doesStudentHaveNonQCourse = this.studentCourses.some(course =>
-          //     course.courseCode === nonQCourseCode &&
-          //     course.courseLevel === this.course.courseLevel &&
-          //     course.courseSession === this.course.courseSession
-          //   );
-
-          //   if (!doesStudentHaveNonQCourse) {
-          //     this.courseValidationMessage = `Only use Q code if student was on Adult program at time of course completion or if course is marked as Equivalency.`;
-          //     this.clearForm();
-          //     return;
-          //   }
         }
         // Parse session date safely
         const sessionDateStr = String(this.courseAdd.courseSession); // e.g. "199801"
@@ -426,20 +444,10 @@ export default {
         const sessionDateISO = `${year}-${month}-${day}`;
         const sessionDate = new Date(sessionDateISO);
 
-        // Validate year range
-        const currentYear = new Date().getFullYear();
-        if (isNaN(year) || year <= 1984 || year >= currentYear) {
-          this.courseValidationMessage = `Session year must be greater than 1984 and less than ${currentYear}.`;
-          return;
-        }
-        if (isNaN(sessionDate)) {
-          this.courseValidationMessage = 'Session date is invalid.';
-          return;
-        }
-
         // Parse course start/end dates
+
         const startDate = new Date(courseData.startDate);
-        const endDate = courseData.endDate ? new Date(courseData.endDate) : null;
+        const endDate = courseData.completionEndDate ? new Date(courseData.completionEndDate) : new Date(9999, 11, 31);
 
         if (isNaN(startDate)) {
           this.courseValidationMessage = 'Course start date is invalid.';
@@ -452,12 +460,12 @@ export default {
 
         // 3. Date range validations
         if (sessionDate < startDate) {
-          this.courseValidationMessage = 'Course session is before the course start date';
+          this.courseValidationMessage = `Course session date is before the course start date (${courseData.startDate})`;
           return;
         }
 
         if (endDate && sessionDate > endDate) {
-          this.courseValidationMessage = 'Course session is after the course completion date';
+          this.courseValidationMessage = `Course session date is after the course completion date (${courseData.completionEndDate})`;
           return;
         }
 
@@ -473,6 +481,7 @@ export default {
 
       } catch (error) {
         //ADD VALIDATION ("Error fetching course data.");
+        this.isLoading = false;
         this.courseValidationMessage = "Invalid Course code/level - course code/level does not exist in the ministry course registry"; //need this here because course not found is a 404 error; TODO expand on this via error code
       }
     },

@@ -11,24 +11,27 @@
     </v-col>
     <v-col cols="10">
       <v-row no-gutters class="my-2">
-
+        {{ course }}
         <!-- Editable fields bound directly to the course object -->
         <v-col>
-          <v-text-field v-model="course.interimPercent" type="number" label="Interim %" variant="outlined"
-            density="compact" class="pa-1" clearable persistent-placeholder :disabled="course.courseSession < 199409"
-            persistent-hint :error="v$.course.interimPercent.$invalid && v$.course.interimPercent.$dirty"
+          <v-text-field v-model="course.interimPercent" type="number" min="0" max="100" label="Interim %"
+            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
+            :disabled="course.courseSession < 199409 || courseSessionLessThanReportingPeriod" persistent-hint
+            :error="v$.course.interimPercent.$invalid && v$.course.interimPercent.$dirty"
             @blur="v$.course.interimPercent.$touch" />
         </v-col>
 
         <v-col>
-          <v-select v-model="course.interimLetterGrade" :items="filteredInterimLetterGrades" label="Interim LG"
-            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint />
+          <v-select v-model="course.interimLetterGrade" :items="filteredInterimLetterGrades"
+            :disabled="courseSessionLessThanReportingPeriod" label="Interim LG" variant="outlined" density="compact"
+            class="pa-1" clearable persistent-placeholder persistent-hint />
         </v-col>
 
         <v-col>
-          <v-text-field v-model="course.finalPercent" type="number" label="Final %" variant="outlined" density="compact"
-            class="pa-1" clearable :disabled="course.courseSession < 199409" persistent-placeholder persistent-hint
-            :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty"
+          <v-text-field v-model="course.finalPercent" type="number" min="0" max="100" label="Final %" variant="outlined"
+            density="compact" class="pa-1" clearable
+            :disabled="course.courseSession < 199409 || courseSessionGreaterThanReportingPeriod" persistent-placeholder
+            persistent-hint :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty"
             @blur="v$.course.finalPercent.$touch" />
         </v-col>
 
@@ -36,7 +39,7 @@
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
             variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint
             :error="v$.course.finalLetterGrade.$invalid && v$.course.finalLetterGrade.$dirty"
-            @blur="v$.course.finalLetterGrade.$touch" />
+            @blur="v$.course.finalLetterGrade.$touch" :disabled="courseSessionGreaterThanReportingPeriod" />
         </v-col>
 
         <v-col>
@@ -75,14 +78,14 @@
         </v-col>
       </v-row>
       <!-- Display courseWarnings -->
-      <div v-if="warnings.length" class="mb-3">
-        <v-row v-for="(warning, index) in warnings" :key="index" class="align-center">
-          <v-col class="p-0 m-0" style="color: orange;">
-            <v-icon color="orange" small>mdi-alert</v-icon>
-            {{ warning }}
-          </v-col>
-        </v-row>
-      </div>
+
+      <v-row v-for="(warning, index) in warnings" :key="index" class="align-center">
+        <v-col class="p-0 m-0" style="color: orange;">
+          <v-icon color="orange" small>mdi-alert</v-icon>
+          {{ warning }}
+        </v-col>
+      </v-row>
+
 
       <v-row no-gutters v-if="course?.courseCode == 'IDS'">
         <v-col cols="12">
@@ -114,8 +117,14 @@ export default {
   mounted() {
     //set the initial credits
     if (!this.course?.credits && this.creditsAvailableForCourseSession.length > 0) {
-      this.course.credits = this.course.numCredits;
+      this.course.credits = this.creditsAvailableForCourseSession[0];
     }
+    // Check for Q course
+    if ((this.course.courseCode || '').startsWith("Q")) {
+      this.warnings.push("Only use Q code if student was on Adult program at time of course completion or if course is marked as Equivalency.");
+    }
+
+
 
     this.v$.$touch(); // <-- triggers validation on load
   },
@@ -184,53 +193,48 @@ export default {
 
         },
         finalLetterGrade: {
-          requiredIfSessionDatePassed: helpers.withMessage(
-            'Course session is in the past. Enter a final letter grade.',
-            function (value, vm) {
-              const finalLG = value;
-              if (finalLG !== null && finalLG !== '' && finalLG !== undefined) {
-                return true; // valid if already has a final letter grade
-              }
-
-              const sessionDateStr = vm.course.sessionDate;
-              if (!sessionDateStr || sessionDateStr.length !== 6) return true;
-
-              const year = sessionDateStr.slice(0, 4);
-              const month = sessionDateStr.slice(4, 6);
-              const sessionDate = new Date(`${year}-${month}-01`);
-              const currentDate = new Date();
-
-              if (sessionDate < currentDate) {
-                return !!value; // enforce required if course is in the past
-              }
-              return true; // still valid if session is in future
-            }
-          ),
-          isValidLetterGrade: helpers.withMessage(
-            'Invalid letter grade',
-            (value) => {
-              return (
-                value === '' ||
-                value === null ||
-                value === undefined ||
-                /^[A-F][+-]?$/.test(value)
-              );
-            }
-          ),
         },
         credits: {
           isCreditValue: helpers.withMessage(
             'Credits must be 0, 1, 2, 3, or 4',
-            (value) => {
+            function (value) {
               return (
                 value === '' ||
                 value === null ||
                 value === undefined ||
                 [0, 1, 2, 3, 4].includes(Number(value))
-              );
+              )
             }
           ),
+
+          creditsMustBe4ifStudentIsOnProgram1995AndCourseisB: helpers.withMessage(
+            'Number of Credits must be 4 if B has been selected for the Board Authority Authorized or Locally Developed course Fine Arts/Applied Skills flag',
+            function (value) {
+              const is1996Program = this.studentProgram === "1996-EN" || this.studentProgram === "1996-FR"
+              const isB = this.course.fineArtsAppliedSkills === "B"
+
+              if (is1996Program && isB) {
+                return Number(value) === 4
+              }
+              return true // don't enforce if condition doesn't apply
+            }
+          ),
+
+          creditsMustBeAtLeast2ifStudentIsOnProgram1995AndCourseisForA: helpers.withMessage(
+            'Number of Credits must be at least 2 if A or F has been selected for the Board Authority Authorized or Locally Developed course Fine Arts/Applied Skills flag',
+            function (value) {
+              const is1996Program = this.studentProgram === "1996-EN" || this.studentProgram === "1996-FR"
+              const isAorF = this.course.fineArtsAppliedSkills === "A" || this.course.fineArtsAppliedSkills === "F"
+
+              if (is1996Program && isAorF) {
+                return Number(value) >= 2
+              }
+
+              return true
+            }
+          )
         },
+
         fineArtsAppliedSkills: {
 
         },
@@ -293,12 +297,39 @@ export default {
     ...mapState(useStudentStore, {
       studentProgram: (state) => state.getStudentProgram,
     }),
+    courseSessionLessThanReportingPeriod() {
+      const session = this.course.courseSession;
+      if (!session || session.length !== 6) return false;
 
+      const year = session.slice(0, 4);
+      const month = session.slice(4, 6);
+      const sessionDate = new Date(`${year}-${month}-01`);
+
+      const today = new Date();
+      today.setDate(1); // Set to first of month to match format
+      console.log(sessionDate < today)
+      return sessionDate < today;
+    },
+
+    courseSessionGreaterThanReportingPeriod() {
+      const session = this.course.courseSession;
+      if (!session || session.length !== 6) return false;
+
+      const year = session.slice(0, 4);
+      const month = session.slice(4, 6);
+      const sessionDate = new Date(`${year}-${month}-01`);
+
+      const today = new Date();
+      today.setDate(1); // Set to first of month to match format
+      console.log(sessionDate > today)
+      console.log(sessionDate > today)
+      return sessionDate > today;
+    },
     fineArtsAndAppliedSkillsOptions() {
       return [
         { value: 'B', text: 'Both Fine Arts and Applied Skills' },
-        { value: 'A', text: 'A' },
-        { value: 'F', text: 'F' }
+        { value: 'A', text: 'Fine Arts' },
+        { value: 'F', text: 'Applied Skills' }
       ];
     },
 
@@ -320,7 +351,7 @@ export default {
       return this.course.courseAllowableCredit
         .filter(credit => {
           const start = new Date(credit.startDate);
-          const end = new Date(credit.endDate);
+          const end = credit.endDate ? new Date(credit.endDate) : new Date('9999-12-31');
           return sessionDate >= start && sessionDate <= end;
         })
         .map(credit => Number(credit.creditValue))
@@ -337,6 +368,7 @@ export default {
     },
   },
   methods: {
+
     updateWarnings() {
       const courseType = this.course.courseCategory?.description || '';
       const trimmedProgram = this.studentProgram?.trim();

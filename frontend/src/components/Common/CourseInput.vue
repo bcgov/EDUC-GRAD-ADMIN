@@ -3,11 +3,13 @@
     <v-row>
       <v-col>
         <v-text-field v-model="localCourse.courseCode" label="Course Code" @input="onInput" :disabled="loading"
-          variant="outlined" density="compact" class="my-2" hide-details persistent-placeholder persistent-hint />
+          variant="outlined" density="compact" class="my-2" persistent-placeholder persistent-hint
+          :rules="[v => !!v || 'Course Code is required']" />
       </v-col>
       <v-col>
         <v-text-field v-model="localCourse.courseLevel" label="Course Level" @input="onInput" :disabled="loading"
-          variant="outlined" density="compact" class="my-2" hide-details persistent-placeholder persistent-hint />
+          variant="outlined" density="compact" class="my-2" persistent-placeholder persistent-hint
+          :rules="[v => !!v || 'Course Level is required']" />
       </v-col>
     </v-row>
 
@@ -52,6 +54,7 @@
 import { debounce } from "lodash";
 import CourseService from "@/services/CourseService";
 import OpenStatusBadge from "@/components/Common/OpenStatusBadge.vue";
+import { useVuelidate } from "@vuelidate/core";
 
 export default {
   name: "CourseInput",
@@ -65,6 +68,9 @@ export default {
       type: [String, Number],
       default: '',
     },
+  },
+  setup() {
+    return { v$: useVuelidate() };
   },
   data() {
     return {
@@ -88,6 +94,11 @@ export default {
         if (newCourse && newCourse.courseID) {
           this.localCourse = { ...newCourse };
           this.notFound = false;
+        } else {
+          if (newCourse && newCourse.courseCode && newCourse.courseLevel) {
+            this.localCourse = { courseCode: newCourse.courseCode, courseLevel: newCourse.courseLevel };
+            this.notFound = false;
+          }
         }
       },
     },
@@ -99,14 +110,14 @@ export default {
           this.fetchCourseByID(newID);
         } else if (!newID) {
           // Clear localCourse if courseID cleared
-          this.localCourse = {
-            courseID: '',
-            courseCode: "",
-            courseLevel: "",
-            courseName: "",
-            startDate: "",
-            endDate: "",
-          };
+          // this.localCourse = {
+          //   courseID: '',
+          //   courseCode: "",
+          //   courseLevel: "",
+          //   courseName: "",
+          //   startDate: "",
+          //   endDate: "",
+          // };
           this.notFound = false;
         }
       },

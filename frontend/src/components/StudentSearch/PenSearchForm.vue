@@ -131,7 +131,6 @@ export default {
           .then((response) => {
             if (response.data.length != 0) {
               this.studentData = response.data[0];
-              console.log(this.studentData);
               if (!this.isStudentInGrad(this.studentData)) {
                 this.checkStudentStatus(this.studentData);
               } else {
