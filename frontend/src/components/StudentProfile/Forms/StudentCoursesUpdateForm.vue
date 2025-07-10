@@ -1,16 +1,11 @@
 <template>
   <div>
+
     <v-dialog v-model="dialog" persistent max-width="700px">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-          <v-btn
-            v-if="hasPermissions('STUDENT', 'courseUpdate')"
-            v-bind="props"
-            color="success"
-            icon="mdi-pencil"
-            density="compact"
-            variant="text"
-          />
+          <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" v-bind="props" color="success" icon="mdi-pencil"
+            density="compact" variant="text" />
         </slot>
       </template>
 
@@ -19,46 +14,26 @@
           <v-row no-gutters>
             <div class="v-card-title">Edit Student Courses</div>
             <v-spacer />
-            <v-btn
-              icon="mdi-close"
-              density="compact"
-              rounded="sm"
-              variant="outlined"
-              color="error"
-              class="mt-2"
-              @click="close"
-            />
+            <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
+              @click="close" />
           </v-row>
           <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
         </v-card-title>
 
         <v-card-text>
-          <CourseDetailsInput
-            v-for="(course, index) in selectedCoursesToUpdate"
-            :key="course.id"
-            :course="course"
-            update
-          />
+
+
+          <CourseDetailsInput :course="selectedCoursesToUpdate" update>
+          </CourseDetailsInput>
+          {{ selectedCoursesToUpdate }}
         </v-card-text>
 
         <v-card-actions>
-          <v-btn
-            color="error"
-            variant="outlined"
-            class="text-none"
-            density="default"
-            @click="close"
-          >
+          <v-btn color="error" variant="outlined" class="text-none" density="default" @click="close">
             Cancel
           </v-btn>
           <v-spacer />
-          <v-btn
-            color="bcGovBlue"
-            variant="flat"
-            class="text-none"
-            density="default"
-            @click="confirmUpdate"
-          >
+          <v-btn color="bcGovBlue" variant="flat" class="text-none" density="default" @click="confirmUpdate">
             Save Student Course(s)
           </v-btn>
         </v-card-actions>
@@ -80,7 +55,7 @@ export default {
   components: { CourseDetailsInput },
   props: {
     selectedCoursesToUpdate: {
-      type: Array,
+      type: Object,
       required: true,
     },
   },

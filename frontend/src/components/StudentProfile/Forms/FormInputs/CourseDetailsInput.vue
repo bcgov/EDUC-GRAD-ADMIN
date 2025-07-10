@@ -331,6 +331,9 @@ export default {
     },
 
     isBAAorLocallyDevelopedOrCP() {
+
+      //temporary fix
+      this.course.courseDetails = hey
       return !(
         this.course.courseCategory.description === 'Board Authority Authorized' ||
         this.course.courseCategory.description === 'Locally Developed' ||

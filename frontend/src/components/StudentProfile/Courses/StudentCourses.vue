@@ -131,7 +131,8 @@
           </template>
 
           <template v-slot:item.edit="{ item }">
-            <StudentCoursesUpdateForm :selectedCoursesToUpdate="[item]">
+          {{item}}
+            <StudentCoursesUpdateForm :selectedCoursesToUpdate="item">
             </StudentCoursesUpdateForm>
           </template>
           <template v-slot:item.delete="{ item }">
