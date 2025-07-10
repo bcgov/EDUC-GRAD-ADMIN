@@ -79,7 +79,7 @@
       <!-- Display courseWarnings -->
 
       <v-row v-for="(warning, index) in warnings" :key="index" class="align-center">
-        <v-col class="p-0 m-0" style="color: orange;">
+        <v-col class="pb-3 m-0" style="color: orange;">
           <v-icon color="orange" small>mdi-alert</v-icon>
           {{ warning }}
         </v-col>
@@ -122,9 +122,28 @@ export default {
     if ((this.course.courseCode || '').startsWith("Q")) {
       this.warnings.push("Only use Q code if student was on Adult program at time of course completion or if course is marked as Equivalency.");
     }
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1; // JS months are 0-based
 
+    // Reporting period: Oct (10) to Sep (09)
+    let startYear, endYear;
 
+    if (currentMonth >= 10) {
+      startYear = currentYear;
+      endYear = currentYear + 1;
+    } else {
+      startYear = currentYear - 1;
+      endYear = currentYear;
+    }
 
+    const minSession = `${startYear}09`;
+    const maxSession = `${endYear}09`;
+
+    if (this.course.courseSession < 198401 || (this.course.courseSession < minSession || this.course.courseSession > maxSession)) {
+      this.warnings.push("Course session cannot be beyond the current reporting period or prior to 198401")
+
+    }
     this.v$.$touch(); // <-- triggers validation on load
   },
   components: { CourseInput },
@@ -378,9 +397,6 @@ export default {
       ) {
         warnings.push('Flag is only applicable for this course type if student is on the 1995 program.');
       }
-
-      // Add more warnings here as needed
-
       this.warnings = warnings;
     },
 
