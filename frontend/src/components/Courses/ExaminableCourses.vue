@@ -43,6 +43,12 @@ export default {
           class: "text-left",
         },
         {
+          key: "programYear",
+          title: "Program Year",
+          sortable: true,
+          class: "text-left",
+        },
+        {
           key: "schoolWeightPercent",
           title: "% School Weight",
           sortable: true,
@@ -51,6 +57,18 @@ export default {
         {
           key: "examWeightPercent",
           title: "% Exam Weight",
+          sortable: true,
+          class: "text-left",
+        },
+        {
+          key: "schoolWeightPercentPre1989",
+          title: "% School Weight (Before 1989/08)",
+          sortable: true,
+          class: "text-left",
+        },
+        {
+          key: "examWeightPercentPre1989",
+          title: "% Exam Weight (Before 1989/08)",
           sortable: true,
           class: "text-left",
         },
@@ -71,19 +89,7 @@ export default {
           title: "Examinable End",
           sortable: true,
           class: "text-left",
-        },
-        {
-          key: "optionalStart",
-          title: "Optional Start",
-          sortable: true,
-          class: "text-left",
-        },
-        {
-          key: "optionalEnd",
-          title: "Optional End",
-          sortable: true,
-          class: "text-left",
-        },
+        }
       ],
     };
   },
