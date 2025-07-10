@@ -19,4 +19,10 @@ export default {
   getEquivalentOrChallengeCodes() {
     return ApiService.apiAxios.get("/api/codes/equivalencyChallengeCodes");
   },
+  getSchoolCategoryCodes() {
+    return ApiService.apiAxios.get("/api/codes/schoolCategoryCodes");
+  },
+  getFacilityCodes() {
+    return ApiService.apiAxios.get("/api/codes/schoolFacilityCodes");
+  },
 };

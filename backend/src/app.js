@@ -38,7 +38,7 @@ function addVersionToReq(req, res, next) {
 }
 
 //GRAD Routers
-const TRAXRouter = require("./routes/trax-router");
+const SchoolsRouter = require("./routes/schools-router");
 const programsRouter = require("./routes/programs-router");
 const assessmentsRouter = require("./routes/assessments-router");
 const coursesRouter = require("./routes/courses-router");
@@ -50,7 +50,6 @@ const batchRouter = require("./routes/batch-router");
 const distributionRouter = require("./routes/distribution-router");
 const graduationRouter = require("./routes/graduation-router");
 const reportsRouter = require("./routes/reports-router");
-const instituteRouter = require("./routes/institute-router");
 const configRouter = require("./routes/config-router");
 
 //initialize app
@@ -236,7 +235,7 @@ apiRouter.use(
   studentGraduationRouter
 );
 apiRouter.use("/:version/assessment", addVersionToReq, assessmentsRouter);
-apiRouter.use("/:version/trax", addVersionToReq, TRAXRouter);
+apiRouter.use("/schools", SchoolsRouter);
 apiRouter.use("/student", studentRouter);
 apiRouter.use("/codes", codesRouter);
 apiRouter.use(
@@ -246,7 +245,6 @@ apiRouter.use(
 );
 apiRouter.use("/:version/graduate", addVersionToReq, graduationRouter);
 apiRouter.use("/:version/reports", addVersionToReq, reportsRouter);
-apiRouter.use("/:version/institute", addVersionToReq, instituteRouter);
 apiRouter.use("/:version/config", addVersionToReq, configRouter);
 
 //Handle 500 error

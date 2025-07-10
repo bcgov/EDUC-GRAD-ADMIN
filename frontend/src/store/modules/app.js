@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
 import CommonService from "@/services/CommonService.js";
-import InstituteService from "@/services/InstituteService.js";
+import SchoolsService from "@/services/SchoolsService.js";
 import CodesService from "@/services/CodesService.js";
 import StudentGraduationService from "@/services/StudentGraduationService.js";
 import ProgramManagementService from "@/services/ProgramManagementService.js";
@@ -45,7 +45,7 @@ export const useAppStore = defineStore("app", {
     schoolByMincode: (state) => {
       return (mincode) =>
         state.schoolsList.find((school) => mincode === school.mincode);
-    },     
+    },
     getSchoolMincodeById: (state) => {
       return (schoolId) => {
         if (schoolId === "00000000-0000-0000-0000-000000000000") {
@@ -117,13 +117,13 @@ export const useAppStore = defineStore("app", {
           (facilityCode) => code === facilityCode.facilityTypeCode
         );
     },
-    getGradeCodes: (state) => state.studentGradeCodes,
-    getGradeCode: (state) => {
-      return (code) =>
-        state.studentGradeCodes.find(
-          (gradeCode) => code === gradeCode.schoolGradeCode
-        );
-    },
+    //studentGradeCodes: (state) => state.studentGradeCodes,
+    // getGradeCode: (state) => {
+    //   return (code) =>
+    //     state.studentGradeCodes.find(
+    //       (gradeCode) => code === gradeCode.schoolGradeCode
+    //     );
+    // },
     getTranscriptTypes: (state) => state.transcriptTypes,
     getCertificateTypes: (state) => state.certificationTypes,
     enableCRUD: (state) => {
@@ -242,7 +242,7 @@ export const useAppStore = defineStore("app", {
     // GET DATA FROM INSTITUTE
     async getSchools(getNewData = true) {
       if (getNewData || !sharedMethods.dataArrayExists(this.schoolsList)) {
-        let response = await InstituteService.getSchoolsList();
+        let response = await SchoolsService.getSchoolsList();
         await this.setSchoolsList(response.data);
         //await this.setSchoolsMap(response.data);
       }
@@ -258,7 +258,7 @@ export const useAppStore = defineStore("app", {
     },
     async getDistricts(getNewData = true) {
       if (getNewData || !sharedMethods.dataArrayExists(this.districtsList)) {
-        let response = await InstituteService.getDistrictsList();
+        let response = await SchoolsService.getDistrictsList();
         await this.setDistrictsList(response.data);
       }
     },
@@ -271,7 +271,7 @@ export const useAppStore = defineStore("app", {
         getNewData ||
         !sharedMethods.dataArrayExists(this.instituteCategoryCodes)
       ) {
-        let response = await InstituteService.getSchoolCategoryCodes();
+        let response = await CodesService.getSchoolCategoryCodes();
         await this.setInstituteCategoryCodes(response.data);
       }
     },
@@ -284,7 +284,7 @@ export const useAppStore = defineStore("app", {
         getNewData ||
         !sharedMethods.dataArrayExists(this.instituteFacilityCodes)
       ) {
-        let response = await InstituteService.getFacilityCodes();
+        let response = await CodesService.getFacilityCodes();
         await this.setInstituteFacilityCodes(response.data);
       }
     },

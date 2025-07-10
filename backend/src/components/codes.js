@@ -1,4 +1,8 @@
-const { errorResponse, getData } = require("../components/utils");
+const {
+  errorResponse,
+  getData,
+  getCommonServiceData,
+} = require("../components/utils");
 const config = require("../config/index");
 const log = require("../components/logger");
 const auth = require("../components/auth");
@@ -115,6 +119,37 @@ async function getExamSpecialCaseCodes(req, res) {
   }
 }
 
+async function getInstituteSchoolCategoryCodes(_req, res) {
+  try {
+    const url = `${config.get(
+      "server:instituteAPIURL"
+    )}/api/v1/institute/category-codes`;
+    const data = await getCommonServiceData(url);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+async function getInstituteFacilityCodes(_req, res) {
+  try {
+    const url = `${config.get(
+      "server:instituteAPIURL"
+    )}/api/v1/institute/facility-codes`;
+    const data = await getCommonServiceData(url);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 module.exports = {
   getStudentStatusCodes,
   getHistoryActivityCodes,
@@ -122,4 +157,6 @@ module.exports = {
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
   getExamSpecialCaseCodes,
+  getInstituteSchoolCategoryCodes,
+  getInstituteFacilityCodes,
 };

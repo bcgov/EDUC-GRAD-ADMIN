@@ -65,16 +65,14 @@
   </v-container>
 </template>
 <script>
-import { isProxy, toRaw, ref, watch } from "vue";
-import TRAXService from "@/services/TRAXService.js";
-import SchoolService from "@/services/SchoolService.js";
+import { ref, watch } from "vue";
 import StudentService from "@/services/StudentService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import { useAppStore } from "@/store/modules/app";
 import { useVuelidate } from "@vuelidate/core";
 import { mapActions, mapState } from "pinia";
 import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
-import { required, minLength, maxLength, helpers } from "@vuelidate/validators";
+import { minLength, maxLength } from "@vuelidate/validators";
 
 export default {
   components: {},

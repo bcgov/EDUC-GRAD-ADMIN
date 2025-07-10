@@ -11,6 +11,8 @@ const {
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
   getExamSpecialCaseCodes,
+  getInstituteSchoolCategoryCodes,
+  getInstituteFacilityCodes,
 } = require("../components/codes");
 
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
@@ -62,6 +64,20 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
   getExamSpecialCaseCodes
+);
+
+router.get(
+  "/schoolCategoryCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getInstituteSchoolCategoryCodes
+);
+
+router.get(
+  "/schoolFacilityCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getInstituteFacilityCodes
 );
 
 module.exports = router;
