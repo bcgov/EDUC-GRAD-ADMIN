@@ -11,7 +11,6 @@
     </v-col>
     <v-col cols="10">
       <v-row no-gutters class="my-2">
-        {{ course }}
         <!-- Editable fields bound directly to the course object -->
         <v-col>
           <v-text-field v-model="course.interimPercent" type="number" min="0" max="100" label="Interim %"
@@ -321,8 +320,6 @@ export default {
 
       const today = new Date();
       today.setDate(1); // Set to first of month to match format
-      console.log(sessionDate > today)
-      console.log(sessionDate > today)
       return sessionDate > today;
     },
     fineArtsAndAppliedSkillsOptions() {

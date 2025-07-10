@@ -129,7 +129,6 @@
                           No validation issues.
                         </v-alert>
                       </div>
-                      <pre>{{ course.originalCourse }}</pre>
                     </v-expansion-panel-text>
                   </v-expansion-panel>
                 </v-expansion-panels>
@@ -184,6 +183,7 @@
         </template>
       </v-stepper>
       <v-card-actions>
+
         <v-row v-if="showCourseInputs" no-gutters class="p-2">
           <v-col class="pr-1">
             Select Course
@@ -191,12 +191,14 @@
 
           <v-col class="pr-1">
             <v-text-field v-model="courseAdd.code" label="Course Code" :error="!!courseValidationMessage"
-              variant="outlined" density="compact" clearable persistent-placeholder persistent-hint />
+              variant="outlined" density="compact" clearable persistent-placeholder persistent-hint
+              :disabled="isLoading" />
           </v-col>
 
           <v-col class="pr-1">
             <v-text-field v-model="courseAdd.level" label="Course Level" :error="!!courseValidationMessage"
-              variant="outlined" density="compact" clearable persistent-placeholder persistent-hint />
+              variant="outlined" density="compact" clearable persistent-placeholder persistent-hint
+              :disabled="isLoading" />
           </v-col>
 
           <v-col class="pr-1">
@@ -204,7 +206,7 @@
               :error="v$.courseAdd.courseSession.$error"
               :error-messages="v$.courseAdd.courseSession.$errors.map(e => e.$message)"
               @blur="v$.courseAdd.courseSession.$touch()" variant="outlined" density="compact" clearable
-              persistent-placeholder persistent-hint />
+              persistent-placeholder persistent-hint :disabled="isLoading" />
           </v-col>
 
           <v-col>
@@ -222,7 +224,7 @@
       <v-row> <v-alert v-if="courseValidationMessage" type="error" variant="tonal" border="start"
           class="width-fit-content">{{ courseValidationMessage }}</v-alert></v-row>
       <v-row justify="center">
-        <v-btn variant=" outlined" color="bcGovBlue" class="mb-4 text-none" v-if="!showCourseInputs && step === 0"
+        <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none" v-if="!showCourseInputs && step === 0"
           @click="showCourseInputs = !showCourseInputs">
           + Enter Course
         </v-btn>
@@ -238,8 +240,9 @@
         </v-btn>
 
         <v-spacer />
+
         <v-btn v-if="step < 1" @click="step++" color="bcGovBlue" variant="outlined"
-          :disabled="coursesToCreate.length == 0">
+          :disabled="coursesToCreate.length == 0 || v$.$invalid">
           Next
         </v-btn>
 
@@ -279,16 +282,15 @@ export default {
   validations() {
     return {
       courseAdd: {
-        code: { required },
+        code: {},
         level: {
 
         },
         courseSession: {
-          required,
           validCourseSessionMonth: helpers.withMessage(
             'Course session must be in YYYYMM format with a valid month (01–12)',
             (value) => {
-              if (!value) return false
+              if (!value && !this.showCourseInputs) return true
               const stringValue = String(value)
 
               // Must be exactly 6 numeric characters
@@ -303,7 +305,8 @@ export default {
           validCourseSessionPeriod: helpers.withMessage(
             'Course session cannot be beyond the current reporting period or prior to 198401',
             (value) => {
-              if (!value || value.length !== 6) return false;
+              if (!value && !this.showCourseInputs) return true
+              if (value.length !== 6) return false;
 
               const now = new Date();
               const currentYear = now.getFullYear();
@@ -378,6 +381,7 @@ export default {
       this.step = 0;
       this.dialog = true;
       this.createStudentResultsMessages = [];
+      this.validationStep = false;
       this.clearCoursesToCreate();
       this.clearForm();
     },
