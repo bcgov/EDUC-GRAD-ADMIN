@@ -302,33 +302,6 @@ export default {
               return month >= 1 && month <= 12
             }
           ),
-          validCourseSessionPeriod: helpers.withMessage(
-            'Course session cannot be beyond the current reporting period or prior to 198401',
-            (value) => {
-              if (!value && !this.showCourseInputs) return true
-              if (value.length !== 6) return false;
-
-              const now = new Date();
-              const currentYear = now.getFullYear();
-              const currentMonth = now.getMonth() + 1; // JS months are 0-based
-
-              // Reporting period: Oct (10) to Sep (09)
-              let startYear, endYear;
-
-              if (currentMonth >= 10) {
-                startYear = currentYear;
-                endYear = currentYear + 1;
-              } else {
-                startYear = currentYear - 1;
-                endYear = currentYear;
-              }
-
-              const minSession = `198401`;
-              const maxSession = `${endYear}09`;
-
-              return value >= minSession && value <= maxSession;
-            }
-          )
         }
       }
     }
