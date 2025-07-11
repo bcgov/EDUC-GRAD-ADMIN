@@ -8,8 +8,7 @@ const {putStudentAssessmentSchema, postStudentAssessmentSchema} = require('../va
 const {
   getStudentAssessmentById, getStudentAssessmentPaginated,
   updateStudentAssessmentById, postStudentAssessment,
-  deleteStudentAssessmentByID, getAssessmentTypeCodes,
-  getAllAssessmentSessions
+  deleteStudentAssessmentByID, getAssessmentTypeCodes
 } = require('../components/assessments/student-assessment');
 
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
@@ -55,12 +54,6 @@ router.delete('/:studentAssessmentId',
   passport.authenticate('jwt', {session: false}, undefined),
   isValidUiTokenWithStaffRoles,
   deleteStudentAssessmentByID
-);
-
-router.get('/session/',
-  passport.authenticate('jwt', {session: false}, undefined),
-  isValidUiTokenWithStaffRoles,
-  getAllAssessmentSessions
 );
 
 module.exports = router;

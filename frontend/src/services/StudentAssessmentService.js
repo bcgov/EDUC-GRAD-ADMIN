@@ -15,8 +15,5 @@ export default {
   },
   getAssessmentTypeCodes() {
     return ApiService.apiAxios.get('/api/v1/student-assessment/assessment-type-codes')
-  },
-  getAssessmentSessions() {
-    return ApiService.apiAxios.get('/api/v1/student-assessment/sessions/')
   }
 };

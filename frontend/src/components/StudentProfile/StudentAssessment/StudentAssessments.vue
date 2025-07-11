@@ -114,22 +114,19 @@ export default {
   props: {},
   computed: {
     ...mapState(useStudentStore, { assessments: "studentAssessments" }),
-    //...mapState(useAppStore, {assessmentTypeCodes: "assessmentTypeCodes"}),
     ...mapState(useAssessmentsStore, {assessmentTypeCodes: "assessmentTypeCodes"}),
     processedAssessments() {
       if (!this.assessments) return [];
       
       return this.assessments.map(assessment => ({
         ...assessment,
-        assessmentType: this.assessmentTypeCodes.get(assessment.assessmentTypeCode) || null,
-        //assessmentSession: this.assessmentSessions.find(session => session.sessionId === assessment.sessionId) || null
+        assessmentType: this.assessmentTypeCodes.get(assessment.assessmentTypeCode) || null
       }));
     }
   },
 
   async mounted() {
     await this.assessmentStore.getAssessmentTypeCodes();
-    //await this.useAssessmentsStore.getAssessmentSessions();
   },
   data: function () {
     return {
