@@ -122,7 +122,7 @@ export default {
 		errorMsg: '.text-error > .v-alert__content'
 	},
 
-	assessments: {
+	assessmentsLegacy: {
 		navBtn: 'a[href="/assessments"]',
 		assessmentsView: '.assessments-view',
 		navSlider: 'main .v-slide-group__container',

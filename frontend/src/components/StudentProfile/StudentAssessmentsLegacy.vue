@@ -118,7 +118,7 @@ import DisplayTable from "@/components/DisplayTable.vue";
 import { useStudentStore } from "../../store/modules/student";
 import { mapState } from "pinia";
 export default {
-  name: "StudentAssessments",
+  name: "StudentAssessmentsLegacy",
   setup() {
     const studentStore = useStudentStore();
     return { studentStore };
@@ -128,7 +128,7 @@ export default {
   },
   props: {},
   computed: {
-    ...mapState(useStudentStore, { assessments: "getStudentAssessments" }),
+    ...mapState(useStudentStore, { assessments: "getStudentAssessmentsLegacy" }),
   },
   data: function () {
     return {

@@ -11,7 +11,7 @@
  */
 
 import selectors from "../../support/selectors"
-const assessmentsSelectors = selectors.assessments
+const assessmentsSelectors = selectors.assessmentsLegacy
 
 describe('Assessments', () => {
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe('Assessments', () => {
    * @name checkDataInTable
    * 
    * @description
-   * Goes through every table in the Assessments nav and checks if they load by making sure there is at least one row 
+   * Goes through every table in the Assessments nav and checks if they load by making sure there is at least one row
    * loaded in it.
    * 
    * ## Steps:
