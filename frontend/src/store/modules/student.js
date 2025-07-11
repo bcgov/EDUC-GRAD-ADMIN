@@ -612,6 +612,16 @@ export const useStudentStore = defineStore("student", {
         (course) => course.courseID !== courseID
       );
     },
+    async updateStudentCourse(course) {
+      try {
+        await StudentService.updateStudentCourse(this.id, course);
+        this.getStudentCourses(this.id);
+      } catch (error) {
+        console.error("Error updating student courses:", error);
+        throw error;
+      }
+
+    },
     clearCoursesToCreate(course) {
       this.create.courses = [];
     },

@@ -1,11 +1,10 @@
 <template>
   <v-row no-gutters class="mb-4" style="overflow-x: hidden;">
-    <!-- Disabled identifying fields -->
     <v-col cols="2" class="d-flex flex-column justify-start">
-      <strong>{{ course.courseCode }} {{ course.courseLevel }} -
+      <strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel }} -
         {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
-      {{ course.courseName }}
+      {{ course.courseDetails.courseName }}
       <slot name="remove-button"></slot>
 
     </v-col>
@@ -325,7 +324,6 @@ export default {
 
       const today = new Date();
       today.setDate(1); // Set to first of month to match format
-      console.log(sessionDate < today)
       return sessionDate < today;
     },
 
@@ -350,24 +348,21 @@ export default {
     },
 
     isBAAorLocallyDevelopedOrCP() {
-
-      //temporary fix
-      this.course.courseDetails = hey
       return !(
-        this.course.courseCategory.description === 'Board Authority Authorized' ||
-        this.course.courseCategory.description === 'Locally Developed' ||
-        this.course.courseCategory.description === 'Career Program'
+        this.course.courseDetails.courseCategory.description === 'Board Authority Authorized' ||
+        this.course.courseDetails.courseCategory.description === 'Locally Developed' ||
+        this.course.courseDetails.courseCategory.description === 'Career Program'
       );
     },
 
     creditsAvailableForCourseSession() {
-      if (!this.course.courseSession || !Array.isArray(this.course.courseAllowableCredit)) return [];
+      if (!this.course.courseSession || !Array.isArray(this.course.courseDetails.courseAllowableCredit)) return [];
 
       const sessionYear = this.course.courseSession.slice(0, 4);
       const sessionMonth = this.course.courseSession.slice(4, 6);
       const sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
 
-      return this.course.courseAllowableCredit
+      return this.course.courseDetails.courseAllowableCredit
         .filter(credit => {
           const start = new Date(credit.startDate);
           const end = credit.endDate ? new Date(credit.endDate) : new Date('9999-12-31');
@@ -389,7 +384,7 @@ export default {
   methods: {
 
     updateWarnings() {
-      const courseType = this.course.courseCategory?.description || '';
+      const courseType = this.course.courseDetails.courseCategory?.description || '';
       const trimmedProgram = this.studentProgram?.trim();
 
       const warnings = [];

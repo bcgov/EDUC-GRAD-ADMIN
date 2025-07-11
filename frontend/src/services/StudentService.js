@@ -5,7 +5,7 @@ export default {
   getStudentCourses(studentID) {
     return ApiService.apiAxios.get(`/api/student/${studentID}/courses`);
   },
-  updateStudentCourses(studentID, json) {
+  updateStudentCourse(studentID, json) {
     return ApiService.apiAxios.put(`/api/student/${studentID}/courses`, json);
   },
   createStudentCourses(studentID, json) {

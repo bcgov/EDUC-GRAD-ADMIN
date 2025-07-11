@@ -1,24 +1,13 @@
 <template>
   <div>
     <v-card>
-      <v-alert
-        type="info"
-        variant="tonal"
-        border="start"
-        class="mt-6 mb-0 ml-1 py-3 width-fit-content"
-      >
+      <v-alert type="info" variant="tonal" border="start" class="mt-6 mb-0 ml-1 py-3 width-fit-content">
         Until student course CRUD is live, student courses will not be kept in
         sync via ongoing updates. Instead there will be a gradual data
         migration.
       </v-alert>
-      <v-alert
-        v-if="environment == 'local' || environment == 'dev'"
-        color="debug"
-        variant="tonal"
-        icon="mdi-progress-wrench"
-        border="start"
-        class="mt-6 mb-0 ml-1 py-3 width-fit-content"
-      >
+      <v-alert v-if="environment == 'local' || environment == 'dev'" color="debug" variant="tonal"
+        icon="mdi-progress-wrench" border="start" class="mt-6 mb-0 ml-1 py-3 width-fit-content">
         Data shown is using new endpoint in student API. We can add courses with
         no UI validations (backend API does validate), delete courses
         w/validations
@@ -29,45 +18,25 @@
           This student does not have any courses.
         </v-alert>
         <v-row no-gutters>
-          <StudentCoursesDeleteForm
-            courseBatchDelete
-            :selectedCoursesToDelete="selected"
-          >
+          <StudentCoursesDeleteForm courseBatchDelete :selectedCoursesToDelete="selected">
           </StudentCoursesDeleteForm>
           <v-spacer />
           <StudentCoursesCreateForm />
         </v-row>
-        <v-data-table
-          v-if="courses"
-          v-model="selected"
-          :items="courses"
-          :headers="fields"
-          :item-value="(item) => item"
-          :items-per-page="'-1'"
-          title="studentCourse"
-          show-select
-        >
-          <template
-            v-slot:item.data-table-expand="{
-              item,
-              internalItem,
-              toggleExpand,
-              isExpanded,
-            }"
-          >
+        <v-data-table v-if="courses" v-model="selected" :items="courses" :headers="fields" :item-value="(item) => item"
+          :items-per-page="'-1'" title="studentCourse" show-select>
+          <template v-slot:item.data-table-expand="{
+            item,
+            internalItem,
+            toggleExpand,
+            isExpanded,
+          }">
             <td v-if="hasCourseInfo(item)">
-              <v-btn
-                variant="text"
-                density="comfortable"
-                @click="toggleExpand(internalItem)"
-                class="v-data-table__expand-icon"
-                :class="{ 'v-data-table__expand-icon--active': isExpanded }"
-                :icon="
-                  isExpanded(internalItem)
-                    ? 'mdi-chevron-down'
-                    : 'mdi-chevron-right'
-                "
-              >
+              <v-btn variant="text" density="comfortable" @click="toggleExpand(internalItem)"
+                class="v-data-table__expand-icon" :class="{ 'v-data-table__expand-icon--active': isExpanded }" :icon="isExpanded(internalItem)
+                  ? 'mdi-chevron-down'
+                  : 'mdi-chevron-right'
+                  ">
               </v-btn>
             </td>
           </template>
@@ -99,31 +68,21 @@
 
                   <!-- Course Exam Details -->
                   <v-row no-gutters v-if="item.courseExam">
-                    <v-col
-                      ><strong>Exam Percent</strong>&nbsp;{{
-                        item.courseExam.examPercentage
-                      }}%</v-col
-                    >
-                    <v-col
-                      ><strong>Best Exam Percent</strong>&nbsp;{{
-                        item.courseExam.bestExamPercentage
-                      }}%</v-col
-                    >
-                    <v-col
-                      ><strong>School Percent</strong>&nbsp;{{
-                        item.courseExam.schoolPercentage
-                      }}%</v-col
-                    >
-                    <v-col
-                      ><strong>Best School Percent</strong>&nbsp;{{
-                        item.courseExam.bestSchoolPercentage
-                      }}%</v-col
-                    >
-                    <v-col
-                      ><strong>Special Case</strong>&nbsp;{{
-                        item.courseExam.specialCase
-                      }}</v-col
-                    >
+                    <v-col><strong>Exam Percent</strong>&nbsp;{{
+                      item.courseExam.examPercentage
+                    }}%</v-col>
+                    <v-col><strong>Best Exam Percent</strong>&nbsp;{{
+                      item.courseExam.bestExamPercentage
+                    }}%</v-col>
+                    <v-col><strong>School Percent</strong>&nbsp;{{
+                      item.courseExam.schoolPercentage
+                    }}%</v-col>
+                    <v-col><strong>Best School Percent</strong>&nbsp;{{
+                      item.courseExam.bestSchoolPercentage
+                    }}%</v-col>
+                    <v-col><strong>Special Case</strong>&nbsp;{{
+                      item.courseExam.specialCase
+                    }}</v-col>
                   </v-row>
                 </div>
               </td>
@@ -131,8 +90,7 @@
           </template>
 
           <template v-slot:item.edit="{ item }">
-          {{item}}
-            <StudentCoursesUpdateForm :selectedCoursesToUpdate="item">
+            <StudentCoursesUpdateForm :course="item">
             </StudentCoursesUpdateForm>
           </template>
           <template v-slot:item.delete="{ item }">
@@ -349,7 +307,7 @@ export default {
   min-width: fit-content;
 }
 
-.popover-body > div > div:nth-child(2) {
+.popover-body>div>div:nth-child(2) {
   text-align: right;
 }
 </style>

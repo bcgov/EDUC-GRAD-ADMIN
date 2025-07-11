@@ -141,13 +141,13 @@
                   </div>
                   <v-row no-gutters v-for="course in coursesToCreate" :key="course.courseID + course.sessionDate"
                     class="mb-2">
-                    <v-col cols="12"><strong>{{ course.courseCode }} {{ course.courseLevel }} -
+                    <v-col cols="12"><strong>{{ course.courseDetails.courseCode }} {{ course.courseLevel }} -
                         {{
                           $filters.formatYYYYMMStringDate(course.courseSession)
                         }}</strong>
                     </v-col>
                     <v-col cols="12" class="ml-3">
-                      {{ course.courseName }}
+                      {{ course.courseDetails.courseName }}
                     </v-col>
                     <v-col class="ml-3"><strong>Interim</strong>&nbsp;
                       <span v-if="course.interimPercent">{{ course.interimPercent }}%
@@ -407,7 +407,6 @@ export default {
 
           if (isDuplicate) {
             this.courseValidationMessage = `${this.courseAdd.code} ${this.courseAdd.level} ${this.courseAdd.courseSession} is a duplicate course.`;
-            this.clearForm();
             return;
           }
         }
@@ -448,8 +447,9 @@ export default {
 
         // 4. Passed all validations — add course
         this.addCoursesToCreate({
-          ...courseData,
+          courseID: courseData.courseID,
           courseSession: this.courseAdd.courseSession,
+          courseDetails: courseData
 
         });
 
