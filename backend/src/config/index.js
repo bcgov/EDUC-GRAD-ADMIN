@@ -35,6 +35,11 @@ nconf.defaults({
     session: {
       maxAge: +process.env.SESSION_MAX_AGE,
     },
+    rateLimit: {
+      enabled: process.env.IS_RATE_LIMIT_ENABLED, // Disable if rate limiting is not required
+      windowInSec: process.env.RATE_LIMIT_WINDOW_IN_SEC, // 1 minute
+      limit: process.env.RATE_LIMIT_LIMIT, // Limit each IP to 100 requests per `window` (here, per 1 minute)
+    },
     administration: {
       roleAdmin: process.env.GRAD_ROLE_ADMIN,
       roleInfoOfficer: process.env.GRAD_ROLE_INFO_OFFICER,
