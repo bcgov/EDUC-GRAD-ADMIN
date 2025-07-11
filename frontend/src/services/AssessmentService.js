@@ -10,7 +10,7 @@ export default {
   getRuleCourseRequirements(rule) {
     return ApiService.apiAxios.get('/api/v1/assessment/requirement/rule?rule=' + rule)
   },
-  getStudentAssessment(pen) {
+  getStudentAssessmentLegacy(pen) {
     return ApiService.apiAxios.get('/api/v1/assessment/pen/'+ pen + '?sortForUI=true')
   }
 };

@@ -12,6 +12,7 @@ const { LocalDateTime, DateTimeFormatter } = require("@js-joda/core");
 const { Locale } = require("@js-joda/locale_en");
 const auth = require("./auth");
 const cache = require("memory-cache");
+const fsStringify = require('fast-safe-stringify');
 let memCache = new cache.Cache();
 
 axios.interceptors.request.use((axiosRequestConfig) => {
@@ -445,6 +446,36 @@ function errorResponse(res, msg, code) {
   });
 }
 
+async function logApiError(e, functionName, message) {
+  if (e?.response?.status === 404) {
+    log.info('Entity not found', e);
+  } else if (e?.response?.data) {
+    log.error(fsStringify(e.response.data));
+  } else if (message) {
+    log.error(message);
+    log.error(functionName, ' Error', JSON.stringify(e));
+  } else {
+    log.error(functionName, ' Error', JSON.stringify(e));
+  }
+}
+
+async function cachedApiCall(cacheKey, url, useCache = true) {
+  if (useCache) {
+    const cached = memCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+  }
+  const params = addTokenToHeader(null, await getBackendServiceToken());
+  const response = await axios.get(url, params);
+  const data = response.data;
+
+  if (useCache) {
+    memCache.put(cacheKey, data);
+  }
+  return data;
+}
+
 const utils = {
   prettyStringify: (obj, indent = 2) => JSON.stringify(obj, null, indent),
   getUser,
@@ -464,6 +495,8 @@ const utils = {
   cacheMiddleware,
   getBackendServiceToken,
   getCodeTable,
+  logApiError,
+  cachedApiCall
 };
 
 module.exports = utils;

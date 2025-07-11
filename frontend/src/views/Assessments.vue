@@ -4,9 +4,15 @@
     <div>
       <v-card no-body>
         <v-tabs v-model="tab" bg-color="bcGovLightGrey">
-          <v-tab value="assessmentTab" class="text-none" size="large"
+          <v-tab v-if="enableCRUD()" value="assessmentLegacyTab" class="text-none" size="large"
             >Assessments</v-tab
           >
+          <v-tab value="assessmentTab" class="text-none" size="large">
+            Assessments
+            <p class="text-caption font-weight-bold text-bcGovGold">
+              BETA
+            </p>
+          </v-tab>
           <v-tab
             value="assessmentRequirementsTab"
             class="text-none"
@@ -16,7 +22,10 @@
         </v-tabs>
         <v-card-text>
           <v-window v-model="tab">
-            <v-window-item value="assessmentTab">
+            <v-window-item value="assessmentLegacyTab">
+              <AssessmentsLegacy />
+            </v-window-item>
+            <v-window-item v-if="enableCRUD()" value="assessmentTab">
               <Assessments />
             </v-window-item>
             <v-window-item value="assessmentRequirementsTab">
@@ -31,12 +40,19 @@
 
 <script>
 import AssessmentRequirements from "@/components/Assessments/AssessmentRequirements.vue";
+import AssessmentsLegacy from "@/components/Assessments/AssessmentsLegacy.vue";
 import Assessments from "@/components/Assessments/Assessments.vue";
+import {mapState} from "pinia";
+import {useAppStore} from "@/store/modules/app";
 export default {
   name: "assessments",
   components: {
     AssessmentRequirements: AssessmentRequirements,
+    AssessmentsLegacy: AssessmentsLegacy,
     Assessments: Assessments,
+  },
+  computed: {
+    ...mapState(useAppStore, { enableCRUD: "enableCRUD" }),
   },
   data() {
     return {

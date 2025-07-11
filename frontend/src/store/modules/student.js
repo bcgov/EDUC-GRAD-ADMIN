@@ -26,6 +26,7 @@ export const useStudentStore = defineStore("student", {
     student: {
       profile: {},
       courses: [], // do we want to create a coursesMap ?
+      assessmentsLegacy: [],
       assessments: [],
       coursesLegacy: [],
       examsLegacy: [],
@@ -334,6 +335,7 @@ export const useStudentStore = defineStore("student", {
       this.student.id = [];
       this.student.coursesLegacy = [];
       this.student.courses = [];
+      this.student.assessmentsLegacy = [];
       this.student.assessments = [];
       this.student.examsLegacy = [];
       this.student.gradStatus = "not loaded";
@@ -422,9 +424,9 @@ export const useStudentStore = defineStore("student", {
     setStudentCoursesLegacy(payload) {
       this.student.coursesLegacy = payload;
     },
-    setStudentAssessments(payload) {
-      this.student.assessments = payload;
-      if (this.student.assessments.length) {
+    setStudentAssessmentsLegacy(payload) {
+      this.student.assessmentsLegacy = payload;
+      if (this.student.assessmentsLegacy.length) {
         this.student.hasAssessments = true;
       }
     },
@@ -589,7 +591,14 @@ export const useStudentStore = defineStore("student", {
     async setStudentCourses(payload) {
       this.student.courses = payload;
     },
-
+    setStudentAssessments(studentAssessments) {
+      this.student.assessments = studentAssessments;
+      console.log(studentAssessments);
+      if (this.student.assessments.length) {
+        console.log(this.student.assessments);
+        this.student.hasAssessments = true;
+      }
+    },
     // create student courses and form helpers
     async createStudentCourses(courses) {
       try {
@@ -723,14 +732,14 @@ export const useStudentStore = defineStore("student", {
         return this.student.examsLegacy;
       }
     },
-    getStudentAssessments() {
+    getStudentAssessmentsLegacy() {
       if (
-        !Array.isArray(this.student.assessments) ||
-        this.student.assessments.length === 0
+        !Array.isArray(this.student.assessmentsLegacy) ||
+        this.student.assessmentsLegacy.length === 0
       ) {
         return [];
       }
-      return this.student.assessments.map((assessment) => ({
+      return this.student.assessmentsLegacy.map((assessment) => ({
         ...assessment,
         id: `${assessment.assessmentCode}_${assessment.sessionDate}`,
       }));
@@ -837,6 +846,9 @@ export const useStudentStore = defineStore("student", {
         //return "error occurred getting student name, refresh or try again later";
         return "";
       }
+    },
+    studentAssessments() {
+      return this.student.assessments;
     },
     studentCourses() {
       return this.student.courses;

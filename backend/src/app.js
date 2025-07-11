@@ -42,6 +42,7 @@ function addVersionToReq(req, res, next) {
 const TRAXRouter = require("./routes/trax-router");
 const programsRouter = require("./routes/programs-router");
 const assessmentsRouter = require("./routes/assessments-router");
+const studentAssessmentRouter = require("./routes/student-assessment-router");
 const coursesRouter = require("./routes/courses-router");
 const studentGraduationRouter = require("./routes/student-graduation-router");
 const studentRouter = require("./routes/student-router");
@@ -221,6 +222,7 @@ apiRouter.use("/:version/program", addVersionToReq, programsRouter);
 apiRouter.use("/:version/course", addVersionToReq, coursesRouter);
 apiRouter.use("/:version/studentgraduation", addVersionToReq, studentGraduationRouter);
 apiRouter.use("/:version/assessment", addVersionToReq, assessmentsRouter);
+apiRouter.use("/:version/student-assessment", addVersionToReq, studentAssessmentRouter);
 apiRouter.use("/:version/trax", addVersionToReq, TRAXRouter);
 apiRouter.use("/:version/student", addVersionToReq, studentRouter);
 apiRouter.use("/:version/graduationreports", addVersionToReq, graduationReportsRouter);
