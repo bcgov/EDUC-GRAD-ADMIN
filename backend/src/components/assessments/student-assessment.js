@@ -4,7 +4,6 @@ const HttpStatus = require('http-status-codes');
 const utils = require('../utils');
 const config = require('../../config');
 const { createMoreFiltersSearchCriteria } = require('./studentFilters');
-const {DateTimeFormatter, LocalDate} = require('@js-joda/core');
 
 async function getAssessmentTypeCodes(req, res) {
   try {
@@ -136,36 +135,11 @@ async function deleteStudentAssessmentByID(req, res) {
   }
 }
 
-async function getAllAssessmentSessions(req, res) {
-  try {
-    const url = `${config.get('server:assessments:assessmentSessionsURL')}`;
-    const data = await getCommonServiceData(url);
-    const today = getCommonServiceData.now();
-    const formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-
-    data.forEach(session => {
-      const activeFromDate = LocalDate.parse(session.activeFromDate, formatter);
-      const activeUntilDate = LocalDate.parse(session.activeUntilDate, formatter);
-      session.isOpen = activeFromDate.isBefore(today) && activeUntilDate.isAfter(today);
-    });
-
-    return res.status(200).json(data);
-  } catch (e) {
-    logApiError(e, 'getAssessmentSessions', 'Error occurred while attempting to GET assessment sessions.');
-    if (e.data.message) {
-      return errorResponse(res, e.data.message, e.status);
-    } else {
-      return errorResponse(res);
-    }
-  }
-}
-
 module.exports = {
   getAssessmentTypeCodes,
   getStudentAssessmentById,
   getStudentAssessmentPaginated,
   updateStudentAssessmentById,
   postStudentAssessment,
-  deleteStudentAssessmentByID,
-  getAllAssessmentSessions
+  deleteStudentAssessmentByID
 };
