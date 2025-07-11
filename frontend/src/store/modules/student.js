@@ -593,9 +593,7 @@ export const useStudentStore = defineStore("student", {
     },
     setStudentAssessments(studentAssessments) {
       this.student.assessments = studentAssessments;
-      console.log(studentAssessments);
       if (this.student.assessments.length) {
-        console.log(this.student.assessments);
         this.student.hasAssessments = true;
       }
     },
