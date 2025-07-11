@@ -1,118 +1,98 @@
 import ApiService from "../common/apiService";
 
 export default {
-  // STUDENT STATUS
-  getStudentStatusCodes() {
-    return ApiService.apiAxios.get("/api/v1/student/studentstatus");
-  },
   // STUDENT COURSES
   getStudentCourses(studentID) {
-    return ApiService.apiAxios.get("/api/v1/student/courses/" + studentID);
+    return ApiService.apiAxios.get(`/api/student/${studentID}/courses`);
   },
   updateStudentCourses(studentID, json) {
-    return ApiService.apiAxios.put(
-      `/api/v1/student/courses/${studentID}`,
-      json
-    );
+    return ApiService.apiAxios.put(`/api/student/${studentID}/courses`, json);
   },
   createStudentCourses(studentID, json) {
-    return ApiService.apiAxios.post(
-      `/api/v1/student/courses/${studentID}`,
-      json
-    );
+    return ApiService.apiAxios.post(`/api/student/${studentID}/courses`, json);
   },
   deleteStudentCourses(studentID, courses) {
-    return ApiService.apiAxios.delete(`/api/v1/student/courses/${studentID}`, {
+    return ApiService.apiAxios.delete(`/api/student/${studentID}/courses`, {
       data: courses,
     });
   },
   getStudentCourseHistory(studentID) {
-    return ApiService.apiAxios.get(
-      `/api/v1/student/courses/${studentID}/history`
-    );
+    return ApiService.apiAxios.get(`/api/student/${studentID}/history/courses`);
   },
   // OPTIONAL STUDENT GRADUATION STATUS
-  getStudentCareerPrograms(id) {
-    return ApiService.apiAxios.get(
-      "/api/v1/student/studentcareerprogram/studentid/" + id
-    );
+  getStudentCareerPrograms(studentID) {
+    return ApiService.apiAxios.get(`/api/student/${studentID}/careerPrograms`);
   },
-  createStudentCareerPrograms(studentId, json) {
+  createStudentCareerPrograms(studentID, json) {
     return ApiService.apiAxios.post(
-      "/api/v1/student/" + studentId + "/careerPrograms",
+      `/api/student/${studentID}/careerPrograms`,
       json
     );
   },
-  deleteStudentCareerProgram(studentId, careerProgramCode) {
+  deleteStudentCareerProgram(studentID, careerProgramCode) {
     return ApiService.apiAxios.delete(
-      "/api/v1/student/" + studentId + "/careerPrograms/" + careerProgramCode
+      `/api/student/${studentID}/careerPrograms/${careerProgramCode}`
     );
   },
-  createStudentOptionalProgram(studentId, optionalProgramId) {
+  createStudentOptionalProgram(studentID, optionalProgramID) {
     return ApiService.apiAxios.post(
-      "/api/v1/student/" + studentId + "/optionalPrograms/" + optionalProgramId
+      `/api/student/${studentID}/optionalPrograms/${optionalProgramID}`
     );
   },
-  deleteStudentOptionalProgram(studentId, optionalProgramId) {
+  deleteStudentOptionalProgram(studentID, optionalProgramID) {
     return ApiService.apiAxios.delete(
-      "/api/v1/student/" + studentId + "/optionalPrograms/" + optionalProgramId
+      `/api/student/${studentID}/optionalPrograms/${optionalProgramID}`
     );
   },
-  getGraduationStatusOptionalPrograms(id) {
+  getGraduationStatusOptionalPrograms(studentID) {
     return ApiService.apiAxios.get(
-      "/api/v1/student/optionalprogram/studentid/" + id
+      `/api/student/${studentID}/optionalPrograms/status`
     );
   },
   // STUDENT GRADUATION STATUS
-  getStudentHistory(id) {
-    return ApiService.apiAxios.get("/api/v1/student/studentHistory/" + id);
-  },
-  getBatchHistory(id, itemsPerPage, page) {
+  getStudentHistory(studentID) {
     return ApiService.apiAxios.get(
-      "/api/v1/student/studentHistory/batchid/" +
-        id +
-        "?pageNumber=" +
-        page +
-        "&pageSize=" +
-        itemsPerPage
+      `/api/student/${studentID}/gradProgram/history`
     );
   },
-  getGraduationStatus(id) {
-    return ApiService.apiAxios.get("/api/v1/student/studentid/" + id);
+  getBatchHistory(batchID, itemsPerPage, page) {
+    return ApiService.apiAxios.get(
+      `/api/student/batchHistory/${batchID}?pageNumber=${page}&pageSize=${itemsPerPage}`
+    );
   },
-  editGraduationStatus(id, json) {
+  getGraduationStatus(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/${studentID}/gradProgram/status`
+    );
+  },
+  editGraduationStatus(studentID, json) {
     return ApiService.apiAxios.post(
-      "/api/v1/student/gradstudent/studentid/" + id,
+      `/api/student/${studentID}/gradProgram/status`,
       json
     );
   },
-  getStudentOptionalProgramHistory(id) {
+  getStudentOptionalProgramHistory(studentID) {
     return ApiService.apiAxios.get(
-      "/api/v1/student/studentOptionalProgramHistory/" + id
+      `/api/student/${studentID}/optionalPrograms/history`
     );
   },
-  ungradStudent(id, reasonCode, reasonDesc, json) {
+  ungradStudent(studentID, reasonCode, reasonDesc, json) {
     return ApiService.apiAxios.post(
-      "/api/v1/student/undocompletionstudent/studentid/" +
-        id +
-        "?ungradReasonCode=" +
-        reasonCode +
-        "&ungradReasonDesc=" +
-        reasonDesc,
+      `/api/student/${studentID}/gradProgram/undoCompletion?reasonCode=${reasonCode}&reasonDecision=${reasonDesc}`,
       json
     );
   },
   // STUDENT NOTES
-  addStudentNotes(json) {
-    return ApiService.apiAxios.post("/api/v1/student/studentnotes", json);
+  addStudentNotes(studentID, json) {
+    return ApiService.apiAxios.post(`/api/student/${studentID}/notes`, json);
   },
-  deleteStudentNotes(noteID) {
-    return ApiService.apiAxios.delete("/api/v1/student/studentnotes/" + noteID);
-  },
-  getStudentNotes(id) {
-    return ApiService.apiAxios.get(
-      "/api/v1/student/studentnotes/studentid/" + id
+  deleteStudentNotes(studentID, noteID) {
+    return ApiService.apiAxios.delete(
+      `/api/student/${studentID}/notes/${noteID}`
     );
+  },
+  getStudentNotes(studentID) {
+    return ApiService.apiAxios.get(`/api/student/${studentID}/notes`);
   },
   // STUDENT DEMOGRAPHICS
   getStudentsByAdvancedSearch(advancedSearchInput) {
@@ -126,30 +106,15 @@ export default {
         }
       }
     }
-    return ApiService.apiAxios.get(
-      "/api/v1/student/gradstudentsearch?" + queryString
-    );
+    return ApiService.apiAxios.get("/api/student/search?" + queryString);
   },
   getStudentByPen(pen) {
-    return ApiService.apiAxios.get("/api/v1/student/pen/" + pen);
-  },
-  getStudentPen(id) {
-    return ApiService.apiAxios.get("/api/v1/student/stdid/" + id);
+    return ApiService.apiAxios.get(`/api/student/pen/${pen}`);
   },
   getStudentByID(studentID) {
-    return ApiService.apiAxios.get("/api/v1/student/stdid/" + studentID);
-  }, // duplicate - CLEAN UP
-
-  // HISTORY ACTIVITY (code)
-  getStudentHistoryActivityCode() {
-    return ApiService.apiAxios.get("/api/v1/student/historyactivity");
+    return ApiService.apiAxios.get(`/api/student/id/${studentID}`);
   },
-  // STUDENT GRADE CODE
-  getStudentGradeCodes() {
-    return ApiService.apiAxios.get("/api/v1/student/grade-codes");
-  },
-  //ADOPT PEN STUDENT
   adoptPENStudent(studentData) {
-    return ApiService.apiAxios.post("/api/v1/student/adopt", studentData);
+    return ApiService.apiAxios.post(`/api/student/adopt`, studentData);
   },
 };

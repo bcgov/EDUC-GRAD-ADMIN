@@ -25,80 +25,7 @@
               <CourseRestrictionsDetailsInput :courseRestriction="courseRestriction" ref="CourseRestrictionsDetailsInputRef" create />
             </v-stepper-window-item>
 
-            <v-stepper-window-item value="2">
-              <v-expansion-panels>
-                <v-expansion-panel v-if="createCourseRestrictionResponse.hasPersisted !== null">
-                  <v-expansion-panel-title class="d-flex align-center justify-space-between">
-
-                    <div class="d-flex align-center flex-grow-1">
-                      <v-icon :color="createCourseRestrictionResponse.hasPersisted === false
-                          ? 'error'
-                          : 'success'
-                        " class="mr-2">
-                        {{
-                          createCourseRestrictionResponse.hasPersisted === false
-                            ? "mdi-close-circle"
-                            : "mdi-check-circle"
-                        }}
-                      </v-icon>
-
-                      <span>
-                        {{ createCourseRestrictionResponse.mainCourse }}
-                        {{ createCourseRestrictionResponse.mainCourseLevel }} –
-                        {{ createCourseRestrictionResponse.restrictedCourse }}
-                        {{ createCourseRestrictionResponse.restrictedCourseLevel }}
-                        {{
-                          createCourseRestrictionResponse.hasPersisted === false
-                            ? " failed to add course restriction"
-                            : " added to course restriction"
-                        }}
-                      </span>
-
-                      <v-spacer />
-                      <span class="text-caption text-grey-darken-1">
-                        {{
-                          (() => {
-                            const errors = createCourseRestrictionResponse.validationIssues.filter(
-                              (i) => i.validationIssueSeverityCode === "ERROR"
-                            ).length;
-                            const warnings = createCourseRestrictionResponse.validationIssues.filter(
-                              (i) => i.validationIssueSeverityCode === "WARNING"
-                            ).length;
-
-                            const parts = [];
-                            if (errors > 0) parts.push(`${errors} error(s)`);
-                            if (warnings > 0)
-                              parts.push(`${warnings} warning(s)`);
-                            return parts.join(", ");
-                          })()
-                        }}
-                      </span>
-                    </div>
-
-                    <template #actions>
-                      <v-icon>mdi-chevron-down</v-icon>
-                    </template>
-                  </v-expansion-panel-title>
-
-                  <v-expansion-panel-text>
-                    <div v-if="createCourseRestrictionResponse.validationIssues.length > 0">
-                      <v-alert v-for="(issue, i) in createCourseRestrictionResponse.validationIssues" :key="i" :type="issue.validationIssueSeverityCode === 'ERROR'
-                          ? 'error'
-                          : 'warning'
-                        " dense outlined class="mb-2">
-                        {{ issue.validationIssueMessage }}
-                      </v-alert>
-                    </div>
-                    <div v-else>
-                      <v-alert type="success" dense outlined>
-                        No validation issues.
-                      </v-alert>
-                    </div>
-                    <pre></pre>
-                  </v-expansion-panel-text>
-                </v-expansion-panel>
-              </v-expansion-panels>
-
+            <v-stepper-window-item value="2">            
               <v-alert v-if="createCourseRestrictionResponse.hasPersisted === null" type="info" class="mb-4"
                 border="start" elevation="2" variant="tonal">
                 <div class="mb-2">
@@ -138,7 +65,7 @@
         <v-btn v-else-if="step == 1" @click="step--" color="bcGovBlue" variant="outlined"
           :disabled="validationStep">Back</v-btn>
         <v-spacer />
-        <v-btn v-if="step < 1" @click="step++" color="bcGovBlue" variant="outlined"
+        <v-btn v-if="step < 1" @click="nextStep" color="bcGovBlue" variant="outlined"
           :disabled="courseRestriction.hasValidationError">Next</v-btn>
 
         <v-btn v-else-if="step == 1 && !validationStep" @click="submitForm" color="error" variant="flat"
@@ -160,6 +87,8 @@ import { useCourseStore } from "@/store/modules/course.js";
 import CourseRestrictionsDetailsInput from "@/components/Courses/Forms/FormInputs/CourseRestrictionsDetailsInput.vue";
 import { mapState, mapActions } from "pinia";
 import { toRaw } from "vue";
+import { useSnackbarStore } from "@/store/modules/snackbar";
+
 export default {
   name: "CourseRestrictionsCreateForm",
   components: {
@@ -171,6 +100,7 @@ export default {
       dialog: false,
       step: 0,
       validationStep: false,
+      snackbarStore: useSnackbarStore(),
     };
   },
   computed: {
@@ -187,14 +117,7 @@ export default {
     ]),
     getDefaultCourseRestrictionResponse() {
       return {
-        mainCourse: "",
-        mainCourseLevel: "",
-        restrictedCourse: "",
-        restrictedCourseLevel: "",
-        restrictionStartDate: "",
-        restrictionEndDate: "",
-        hasPersisted: null,
-        validationErrors: []
+        hasPersisted: null        
       };
     },
     openCreateCoursRestrictionsDialog() {
@@ -206,6 +129,11 @@ export default {
       this.createCourseRestrictionResponse = this.getDefaultCourseRestrictionResponse()
       this.dialog = false;
     },
+    nextStep() {
+    this.createCourseRestrictionResponse = this.getDefaultCourseRestrictionResponse()
+    this.validationStep = false;
+    this.step++; 
+  },
     clearForm() {
       this.clearCourseRestriction();
     },
@@ -215,16 +143,19 @@ export default {
         const createCourseRestrictionRequestBody = toRaw(this.courseRestriction);
 
         // Call API and get response
-        await this.createCourseRestriction(createCourseRestrictionRequestBody).then((response) => {
-          this.createCourseRestrictionResponse = response;
+        await this.createCourseRestriction(createCourseRestrictionRequestBody).then((response) => {                   
           this.validationStep = true;
-          if (this.createCourseRestrictionResponse.hasPersisted) {
+          if (response?.hasPersisted) {
             this.loadCourseRestrictions();
-            this.clearForm();
+            this.snackbarStore.showSnackbar("Course Restriction added", "success", 10000);
+          } else {
+            this.snackbarStore.showSnackbar("Failed to add Course Restriction", "error", 10000);
           }
+          this.closeCreateCoursRestrictionsDialog();
         });
       } catch (error) {
         console.error("Error creating course restriction form:", error);
+        this.snackbarStore.showSnackbar("Failed to add Course Restriction", "error", 5000);
       }
     },
   },

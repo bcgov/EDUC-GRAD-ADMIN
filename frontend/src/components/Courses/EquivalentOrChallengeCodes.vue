@@ -24,7 +24,7 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
-import CourseService from "@/services/CourseService";
+import CodesService from "@/services/CodesService";
 
 // import shared functions & validations
 import { applyDisplayOrder } from "@/utils/common.js";
@@ -36,7 +36,7 @@ export default {
   },
   created() {
     // get codes
-    CourseService.getEquivalentOrChallengeCodes()
+    CodesService.getEquivalentOrChallengeCodes()
       .then((response) => {
         this.equivalentOrChallengeCodes = response.data;
       })
