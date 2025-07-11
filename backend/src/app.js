@@ -252,7 +252,7 @@ apiRouter.use(
   studentGraduationRouter
 );
 apiRouter.use("/:version/assessment", addVersionToReq, assessmentsRouter);
-apiRouter.use("/v1/student-assessment", addVersionToReq, studentAssessmentRouter);
+apiRouter.use("/student-assessment", studentAssessmentRouter);
 apiRouter.use("/:version/trax", addVersionToReq, TRAXRouter);
 apiRouter.use("/student", studentRouter);
 apiRouter.use("/codes", codesRouter);

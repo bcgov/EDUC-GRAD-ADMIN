@@ -4,7 +4,7 @@ import {isEmpty, omitBy} from "lodash";
 export default {
   getStudentAssessmentsBySearchCriteria(searchParams, sort, pageNumber, pageSize) {
     return ApiService.apiAxios
-      .get('/api/v1/student-assessment/paginated', {
+      .get('/api/student-assessment/paginated', {
         params: {
           pageNumber: pageNumber - 1,
           pageSize: pageSize,
@@ -14,6 +14,6 @@ export default {
       })
   },
   getAssessmentTypeCodes() {
-    return ApiService.apiAxios.get('/api/v1/student-assessment/assessment-type-codes')
+    return ApiService.apiAxios.get('/api/student-assessment/assessment-type-codes')
   }
 };
