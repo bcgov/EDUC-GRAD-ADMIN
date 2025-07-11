@@ -27,12 +27,11 @@ async function getBackendServiceToken() {
 
 function getUsernameFromToken(token) {
   try {
-      const decoded = jsonwebtoken.decode(token); // Use decode if you don't need verification
-      return decoded?.idir_username || null;
-      
+    const decoded = jsonwebtoken.decode(token); // Use decode if you don't need verification
+    return decoded?.idir_username || null;
   } catch (error) {
-      console.error('Invalid token:', error);
-      return null;
+    console.error("Invalid token:", error);
+    return null;
   }
 }
 
@@ -80,16 +79,16 @@ function getAccessToken(req) {
   return user && user.jwt;
 }
 
-async function deleteData(token, url, data=null,  correlationID) {
+async function deleteData(token, url, data = null, correlationID) {
   try {
-    const username = getUsernameFromToken(token)
+    const username = getUsernameFromToken(token);
     const delConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
-        "User-Name": username || 'N/A'
+        "User-Name": username || "N/A",
       },
-       ...(data && { data })
+      ...(data && { data }),
     };
 
     log.info("delete Data Url", url);
@@ -181,13 +180,13 @@ async function getCommonServiceData(url, params) {
 }
 
 async function getData(token, url, correlationID) {
-  const username = getUsernameFromToken(token)
+  const username = getUsernameFromToken(token);
   try {
     const getDataConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
-        "User-Name": username || 'N/A'
+        "User-Name": username || "N/A",
       },
     };
     // log.info('get Data Url', url);
@@ -208,11 +207,11 @@ async function getData(token, url, correlationID) {
 
 async function getDataWithParams(token, url, params, correlationID) {
   try {
-    const username = getUsernameFromToken(token)
+    const username = getUsernameFromToken(token);
     params.headers = {
       Authorization: `Bearer ${token}`,
       correlationID: correlationID || uuidv4(),
-      "User-Name": username || 'N/A'
+      "User-Name": username || "N/A",
     };
 
     log.info("get Data Url", url);
@@ -266,12 +265,12 @@ async function forwardPostReq(req, res, url) {
 
 async function postData(token, url, data, correlationID) {
   try {
-    const username = getUsernameFromToken(token)
+    const username = getUsernameFromToken(token);
     const postDataConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
-        "User-Name": username || 'N/A'
+        "User-Name": username || "N/A",
       },
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
@@ -311,12 +310,12 @@ async function postData(token, url, data, correlationID) {
 
 async function putData(token, data, url, correlationID) {
   try {
-    const username = getUsernameFromToken(token)
+    const username = getUsernameFromToken(token);
     const putDataConfig = {
       headers: {
         Authorization: `Bearer ${token}`,
         correlationID: correlationID || uuidv4(),
-        "User-Name": username || 'N/A'
+        "User-Name": username || "N/A",
       },
     };
 
@@ -476,6 +475,18 @@ async function cachedApiCall(cacheKey, url, useCache = true) {
   return data;
 }
 
+function formatQueryParamString(queryParams) {
+  return (
+    "?" +
+    Object.entries(queryParams) //convert queryParams json into js object
+      .map(
+        ([key, value]) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+      )
+      .join("&")
+  );
+}
+
 const utils = {
   prettyStringify: (obj, indent = 2) => JSON.stringify(obj, null, indent),
   getUser,
@@ -496,7 +507,8 @@ const utils = {
   getBackendServiceToken,
   getCodeTable,
   logApiError,
-  cachedApiCall
+  cachedApiCall,
+  formatQueryParamString,
 };
 
 module.exports = utils;

@@ -4,7 +4,22 @@ const router = express.Router();
 const config = require("../config/index");
 const auth = require("../components/auth");
 const roles = require("../components/roles");
-const { errorResponse, getData, postData, putData } = require("../components/utils");
+const {
+  getCourseByCodeAndLevel,
+  getCourseByID,
+  getAllCourseRestrictions,
+  getCourseRestrictionByCodeAndLevel,
+  postCourseRestriction,
+  putCourseRestriction,
+  getExaminableCourseSessions,
+  getCourseRequirementsByRule,
+  getCourseRequirements,
+  getStudentCoursesLegacy,
+  getStudentExamDetailsLegacy,
+} = require("../components/course");
+const validate = require('../components/validator');
+const {createCourseRestrictionSchema, updateCourseRestrictionSchema} = require('../components/validations/course');
+
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
@@ -14,90 +29,83 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
   ]
 );
 
-//Course Routes
 router.get(
-  "/*",
+  "/search",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
-  getCourseAPI
+  getCourseByCodeAndLevel
+);
+
+router.get(
+  "/courseID/:courseID",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getCourseByID
+);
+
+router.get(
+  "/courseRestrictions",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getAllCourseRestrictions
+);
+
+router.get(
+  "/courseRestriction",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getCourseRestrictionByCodeAndLevel
 );
 
 router.post(
-  "/*",
+  "/courseRestriction",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
-  postCourseRestrictionAPI
+  validate(createCourseRestrictionSchema),
+  postCourseRestriction
 );
 
 router.put(
-  "/*",
+  "/courseRestriction/:restrictionID",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
-  putCourseRestrictionAPI
+  validate(updateCourseRestrictionSchema),
+  putCourseRestriction
 );
 
-async function getCourseAPI(req, res) {
-  const token = auth.getBackendToken(req);
-  const version = req.version;
-  try {
-  const cleanedUrl = req.url.replace(/^\/?\?/, '?');
-  const url = `${config.get("server:courseAPIURL")}/api/${version}/course${cleanedUrl}`;
-  console.log(url)
-      const data = await getData(token, url, req.session?.correlationID);
-      return res.status(200).json(data);
-    } catch (e) {
-    if (e.data.message) {
-      return errorResponse(res, e.data.message, e.status);
-    } else {
-      return errorResponse(res);
-    }
-  }
-}
+router.get(
+  "/examinableCourseSessions",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getExaminableCourseSessions
+);
 
-async function postCourseRestrictionAPI(req, res) {
-  const token = auth.getBackendToken(req);
-  const version = req.version;
-  try {
-    const url = `${config.get("server:courseAPIURL")}/api/${version}/course${
-      req.url
-    }`;
-    const data = await postData(
-          token,
-          url,
-          req.body,
-          req.session?.correlationID
-        );
-    return res.status(200).json(data);
-  } catch (e) {
-    if (e.data.message) {
-      return errorResponse(res, e.data.message, e.status);
-    } else {
-      return errorResponse(res);
-    }
-  }
-}
+router.get(
+  "/requirementRule",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getCourseRequirementsByRule
+);
 
-async function putCourseRestrictionAPI(req, res) {
-  const token = auth.getBackendToken(req);
-  const version = req.version;
-  try {
-    const url = `${config.get("server:courseAPIURL")}/api/${version}/course${
-      req.url
-    }`;    
-    const data = await putData(
-          token,          
-          req.body,
-          url,
-          req.session?.correlationID
-        );
-    return res.status(200).json(data);
-  } catch (e) {
-    if (e.data.message) {
-      return errorResponse(res, e.data.message, e.status);
-    } else {
-      return errorResponse(res);
-    }
-  }
-}
+router.get(
+  "/courseRequirements",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getCourseRequirements
+);
+
+router.get(
+  "/legacy/studentCourses/:studentPEN",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getStudentCoursesLegacy
+);
+
+router.get(
+  "/legacy/studentExamDetails/:studentPEN",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getStudentExamDetailsLegacy
+);
 
 module.exports = router;

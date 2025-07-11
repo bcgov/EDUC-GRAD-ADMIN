@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="dialog" persistent max-width="600px">
+    <v-dialog v-model="dialog" persistent max-width="1260">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
           <v-btn
@@ -51,33 +51,69 @@
           <v-alert
             v-if="selectedCoursesWithWarnings.length > 0"
             type="info"
+            class="mb-4"
             border="start"
-            prominent
-            class="pl-4"
             elevation="2"
             variant="tonal"
           >
-            You are about to remove the following courses:
-            {{ studentPen }}
-            <ul>
-              <li
-                v-for="course in selectedCoursesWithWarnings"
-                :key="course.id"
+            <div class="mb-2">
+              You are about to remove the following student course{{
+                selectedCoursesWithWarnings.length > 1 ? "s" : ""
+              }}:
+            </div>
+            <v-row
+              no-gutters
+              v-for="course in selectedCoursesWithWarnings"
+              :key="course.id"
+              class="mb-2"
+            >
+              <v-col cols="12">
+                <strong
+                  >{{ course.courseDetails.courseCode }}
+                  {{ course.courseDetails.courseLevel }} -
+                  {{
+                    $filters.formatYYYYMMStringDate(course.courseSession)
+                  }}</strong
+                >
+              </v-col>
+              <v-col cols="12" class="ml-3">
+                {{ course.courseDetails.courseName }}
+              </v-col>
+              <v-col class="ml-3"
+                ><strong>Interim</strong>&nbsp;
+                <span v-if="course.interimPercent"
+                  >{{ course.interimPercent }}%
+                  {{ course.interimLetterGrade }}</span
+                >
+                <span v-else> <i>null</i> </span>
+              </v-col>
+              <v-col
+                ><strong>Final</strong>&nbsp;
+                <span v-if="course.finalPercent">
+                  {{ course.finalPercent }}% {{ course.finalLetterGrade }}</span
+                ><span v-else><i>null</i></span></v-col
               >
-                <strong>
-                  {{ course.courseDetails.courseName }}
-                  {{ course.courseLevel }}
-                  {{ course.courseSession }}
-                </strong>
-                <ul style="padding-left: 1.5em">
-                  <li v-for="(issue, i) in course.validationIssues" :key="i">
-                    <div class="d-flex flex-column align-start">
-                      {{ issue.message }}
-                    </div>
-                  </li>
-                </ul>
-              </li>
-            </ul>
+              <!-- I don't think credits can have a null value? - Samara -->
+              <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
+              <v-col
+                ><strong>FA/AS</strong>&nbsp;
+                <span v-if="course.fineArtsAppliedSkills">
+                  {{ course.fineArtsAppliedSkills }}
+                </span>
+                <span v-else><i>null</i></span>
+              </v-col>
+              <v-col
+                ><strong>Eq/Ch</strong>&nbsp;
+                <span v-if="course.equivalencyOrChallenge">
+                  {{ course.equivalencyOrChallenge }}
+                </span>
+                <span v-else><i>null</i></span>
+              </v-col>
+              <v-col cols="12" class="ml-3" v-if="course.customizedCourseName"
+                ><strong>Custom Course Title</strong>
+                {{ course.customizedCourseName }}</v-col
+              >
+            </v-row>
           </v-alert>
         </v-card-text>
 

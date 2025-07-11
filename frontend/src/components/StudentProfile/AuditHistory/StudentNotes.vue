@@ -171,7 +171,7 @@ export default {
   methods: {
     onSaveEditedNote(studentNoteIndex, editedNote) {
       if (this.editedNote.note.length <= 255) {
-        StudentService.addStudentNotes(editedNote)
+        StudentService.addStudentNotes(this.profile.studentID, editedNote)
           .then((response) => {
             this.snackbarStore.showSnackbar(
               "Student note saved",
@@ -220,7 +220,7 @@ export default {
         this.newNote.studentID = this.$route.params.studentId;
         this.newNote.createUser = this.userInfo.userName;
         this.newNote.createDate = new Date().toISOString();
-        StudentService.addStudentNotes(this.newNote)
+        StudentService.addStudentNotes(this.profile.studentID, this.newNote)
           .then((response) => {
             if (response.data && response.data.value) {
               this.studentNotes.unshift(response.data.value);
@@ -254,7 +254,7 @@ export default {
       this.newNote.note = "";
     },
     onDelete(noteID) {
-      StudentService.deleteStudentNotes(noteID);
+      StudentService.deleteStudentNotes(this.profile.studentID, noteID);
       const removeIndex = this.studentNotes
         .map((item) => item.id)
         .indexOf(noteID);

@@ -697,7 +697,7 @@ export default {
   },
   async created() {
     const studentIdFromURL = this.$route.params.studentId;
-    StudentService.getStudentPen(studentIdFromURL)
+    StudentService.getStudentByID(studentIdFromURL)
       .then((response) => {
         this.pen = response.data.pen;
         this.setStudentPen(this.pen);
@@ -867,7 +867,7 @@ export default {
     window.removeEventListener("resize", this.handleResize);
   },
   beforeRouteUpdate(to, from, next) {
-    StudentService.getStudentPen(this.quickSearchId)
+    StudentService.getStudentByID(this.quickSearchId)
       .then((response) => {
         this.pen = response.data.pen;
         this.setStudentPen(this.pen);
