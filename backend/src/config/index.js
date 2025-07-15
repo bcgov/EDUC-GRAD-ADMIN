@@ -35,6 +35,11 @@ nconf.defaults({
     session: {
       maxAge: +process.env.SESSION_MAX_AGE,
     },
+    rateLimit: {
+      enabled: process.env.IS_RATE_LIMIT_ENABLED, // Disable if rate limiting is not required
+      windowInSec: process.env.RATE_LIMIT_WINDOW_IN_SEC, // 1 minute
+      limit: process.env.RATE_LIMIT_LIMIT, // Limit each IP to 100 requests per `window` (here, per 1 minute)
+    },
     administration: {
       roleAdmin: process.env.GRAD_ROLE_ADMIN,
       roleInfoOfficer: process.env.GRAD_ROLE_INFO_OFFICER,
@@ -53,6 +58,7 @@ nconf.defaults({
     reportAPIURL: process.env.GRAD_REPORT_API_URL,
     distributionAPIURL: process.env.DISTRIBUTION_API_URL,
     instituteAPIURL: process.env.INSTITUTE_API_URL,
+    studentAssessmentAPIURL: process.env.STUDENT_ASSESSMENT_API_URL,
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,
