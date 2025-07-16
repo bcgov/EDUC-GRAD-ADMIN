@@ -36,8 +36,8 @@ async function getStudentCourseByStudentID(req, res) {
       courseData.map(course => [course.courseID, course])
     );
 
-    // Step 2: Enrich each student course entry
-    const enrichedData = data.map(studentCourse => {
+    // Add courseDetails and releatedCourseDetails from course endpoint
+    const studentCoursesWithDetails = data.map(studentCourse => {
       const courseID = studentCourse.courseID;
       const relatedCourseId = studentCourse.relatedCourseId;
 
@@ -50,7 +50,7 @@ async function getStudentCourseByStudentID(req, res) {
         relatedCourseDetails: matchedRelatedCourse || null
       };
     });
-    return res.status(200).json(enrichedData);
+    return res.status(200).json(studentCoursesWithDetails);
   } catch (e) {
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);
