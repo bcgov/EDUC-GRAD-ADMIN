@@ -1,6 +1,15 @@
 <template>
   <v-row no-gutters class="mb-4" style="overflow-x: hidden;">
-    <v-col cols="2" class="d-flex flex-column justify-start">
+    <v-col v-if="create" cols="2" class="d-flex flex-column justify-start">
+      <strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel }} -
+        {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
+      </strong>
+      {{ course.courseDetails.courseName }}
+      <slot name="remove-button"></slot>
+
+    </v-col>
+
+    <v-col v-if="update" cols="2" class="d-flex flex-column justify-start">
       <strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel }} -
         {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
@@ -42,7 +51,7 @@
 
         <v-col>
           <v-select v-model="course.credits" :items="creditsAvailableForCourseSession" item-title="creditValue"
-            item-value="creditValue" label="Credits" variant="outlined" density="compact" class="pa-1" clearable
+            item-value="creditValue" label="Credits" variant="outlined" density="compact" class="pa-1"
             persistent-placeholder persistent-hint />
         </v-col>
 
@@ -53,9 +62,8 @@
         </v-col>
 
         <v-col>
-          <v-select v-model="course.equivalencyOrChallenge" :items="['Equivalency', 'Challenge', 'None']"
-            label="Eq / Ch" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
-            persistent-hint />
+          <v-select v-model="course.equivOrChallenge" :items="['Equivalency', 'Challenge', 'None']" label="Eq / Ch"
+            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint />
         </v-col>
       </v-row>
       <v-row v-if="course?.genericCourseType == 'G'">
@@ -255,7 +263,7 @@ export default {
         fineArtsAppliedSkills: {
 
         },
-        equivalencyOrChallenge: {
+        equivOrChallenge: {
           isEqChValue: helpers.withMessage(
             'Must be Equivalency, Challenge, or None',
             (value) => {

@@ -167,8 +167,8 @@
                       <span v-else><i>null</i></span>
                     </v-col>
                     <v-col><strong>Eq/Ch</strong>&nbsp;
-                      <span v-if="course.equivalencyOrChallenge">
-                        {{ course.equivalencyOrChallenge }}
+                      <span v-if="course.equivOrChallenge">
+                        {{ course.equivOrChallenge }}
                       </span>
                       <span v-else><i>null</i></span>
                     </v-col>
