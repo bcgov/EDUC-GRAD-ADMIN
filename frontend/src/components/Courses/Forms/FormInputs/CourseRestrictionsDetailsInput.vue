@@ -191,7 +191,7 @@ export default {
 
         }
         if (errorMessage == null && (mainCourseCompletionDate && restrictionEndDate > mainCourseCompletionDate) || (restrictedCourseCompletionDate && restrictionEndDate > restrictedCourseCompletionDate)) {
-          errorMessage = "Restriction Start Date is later than the latest completion date of the two courses";
+          errorMessage = "Restriction End Date is later than earlier course completion date of the two courses";
         }       
       }
        this.courseRestriction.hasValidationError = !this.validateCourseRestriction() || !!errorMessage;

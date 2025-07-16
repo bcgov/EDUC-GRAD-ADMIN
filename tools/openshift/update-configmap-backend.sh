@@ -13,6 +13,7 @@ GRAD_NAMESPACE=$9
 GRAD_BUSINESS_NAMESPACE=${10}
 SOAM_SERVICE_CLIENT_SECRET=${11}
 STUDENT_ADMIN_NAMESPACE=${12}
+STUDENT_ASSESSMENT_NAMESPACE=${13}
 
 SOAM_KC_REALM_ID="master"
 SOAM_KC=soam-$ENV.apps.silver.devops.gov.bc.ca
@@ -97,6 +98,10 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=GRAD_TRAX_API_URL="http://educ-grad-trax-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --from-literal=INSTITUTE_API_URL="http://institute-api-master.$COMMON_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --from-literal=STUDENT_ADMIN_URL="https://student-admin-$STUDENT_ADMIN_NAMESPACE-$ENV.apps.silver.devops.gov.bc.ca" \
+  --from-literal=IS_RATE_LIMIT_ENABLED=true \
+  --from-literal=RATE_LIMIT_WINDOW_IN_SEC="60" \
+  --from-literal=RATE_LIMIT_LIMIT="1000" \
+  --from-literal=STUDENT_ASSESSMENT_API_URL="http://student-assessment-api-master.$STUDENT_ASSESSMENT_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --dry-run=client -o yaml | oc apply -f -
 
 #### splunk
