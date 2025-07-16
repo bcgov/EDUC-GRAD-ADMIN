@@ -334,7 +334,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAccessStore, ["hasPermissions"]),
+    ...mapState(useAccessStore, ["hasPermissions", "getRoles"]),
     ...mapState(useStudentStore, {
       coursesToCreate: (state) => state.create.courses,
       studentPen: "getStudentPen",
@@ -394,10 +394,29 @@ export default {
         const response = await CourseService.getCourseByCodeAndLevel(code, level);
         const courseData = response?.data;
 
+        const examinableCourses = await CourseService.getCourseExaminableCourses();
+
+
         this.isLoading = false;
         if (courseData?.courseID) {
           // Clear previous validation message
           this.courseValidationMessage = null;
+
+
+          //Check if Course is examinable
+          const isExaminableCourse = examinableCourses.data.some(course =>
+            course.courseCode === code && course.courseLevel === level
+          );
+          if (isExaminableCourse) {
+            if (this.getRoles.includes("INFO_OFFICER")) {
+              this.courseValidationMessage = "This course required an exam at the time of the course session date"
+              //info officer does not have permission to add this course
+              return
+            }
+            if (this.getRoles.includes("GRAD_SYSTEM_COORDINATOR")) {
+              this.warnings.push("This course required an exam at the time of the course session date")
+            }
+          }
 
           // Check for duplicate
           const isDuplicate = this.studentCourses.some(course =>
