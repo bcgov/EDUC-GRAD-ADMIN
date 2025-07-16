@@ -42,9 +42,6 @@ async function getStudentCourseByStudentID(req, res) {
         courseDetails: matchedCourse || null // You can omit the fallback if not needed
       };
     });
-
-    console.log("courseData")
-    console.log(courseData)
     return res.status(200).json(enrichedData);
   } catch (e) {
     if (e.data.message) {
@@ -61,9 +58,6 @@ async function putStudentCoursesByStudentID(req, res) {
   try {
     const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.studentID
       }`;
-    console.log("1")
-    console.log(req.body)
-    console.log(url)
     const data = await putData(
       token,
       req.body,
