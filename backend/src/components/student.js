@@ -20,9 +20,12 @@ async function getStudentCourseByStudentID(req, res) {
 
     const courseIDsPayload = {
       courseIds: Array.isArray(data)
-        ? data
-          .filter(course => course.courseID)
-          .map(course => Number(course.courseID)) // Convert to numbers if needed
+        ? data.flatMap(course => {
+          const ids = [];
+          if (course.courseID) ids.push(Number(course.courseID));
+          if (course.relatedCourseId) ids.push(Number(course.relatedCourseId));
+          return ids;
+        })
         : []
     };
 
@@ -33,16 +36,21 @@ async function getStudentCourseByStudentID(req, res) {
       courseData.map(course => [course.courseID, course])
     );
 
-    // Step 2: Enrich each student course entry
-    const enrichedData = data.map(studentCourse => {
+    // Add courseDetails and releatedCourseDetails from course endpoint
+    const studentCoursesWithDetails = data.map(studentCourse => {
       const courseID = studentCourse.courseID;
+      const relatedCourseId = studentCourse.relatedCourseId;
+
       const matchedCourse = courseMap.get(courseID);
+      const matchedRelatedCourse = courseMap.get(relatedCourseId);
+
       return {
         ...studentCourse,
-        courseDetails: matchedCourse || null // You can omit the fallback if not needed
+        courseDetails: matchedCourse || null,
+        relatedCourseDetails: matchedRelatedCourse || null
       };
     });
-    return res.status(200).json(enrichedData);
+    return res.status(200).json(studentCoursesWithDetails);
   } catch (e) {
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);
