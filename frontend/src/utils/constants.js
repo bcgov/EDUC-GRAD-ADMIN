@@ -21,7 +21,7 @@ export const Routes = Object.freeze(object);
 // });
 export const RolePermissions = Object.freeze({
   STUDENT: {
-    allowAddExaminableCourse: {
+    createExaminableStudentCourse: {
       allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
     adoptPENStudent: {
