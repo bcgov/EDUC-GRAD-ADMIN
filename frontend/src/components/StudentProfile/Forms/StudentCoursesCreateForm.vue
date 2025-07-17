@@ -402,22 +402,6 @@ export default {
           // Clear previous validation message
           this.courseValidationMessage = null;
 
-
-          //Check if Course is examinable
-          const isExaminableCourse = examinableCourses.data.some(course =>
-            course.courseCode === code && course.courseLevel === level
-          );
-          if (isExaminableCourse) {
-            if (this.getRoles.includes("INFO_OFFICER")) {
-              this.courseValidationMessage = "This course required an exam at the time of the course session date"
-              //info officer does not have permission to add this course
-              return
-            }
-            if (this.getRoles.includes("GRAD_SYSTEM_COORDINATOR")) {
-              this.warnings.push("This course required an exam at the time of the course session date")
-            }
-          }
-
           // Check for duplicate
           const isDuplicate = this.studentCourses.some(course =>
             course.courseID === courseData.courseID &&
@@ -454,7 +438,7 @@ export default {
           return;
         }
 
-        // 3. Date range validations
+        // Date range validations
         if (sessionDate < startDate) {
           this.courseValidationMessage = `Course session date is before the course start date (${courseData.startDate})`;
           return;
@@ -464,11 +448,31 @@ export default {
           this.courseValidationMessage = `Course session date is after the course completion date (${courseData.completionEndDate})`;
           return;
         }
+        //Check if Course is examinable
+        const isExaminableCourse = examinableCourses.data.some(course => {
+          const start = new Date(course.examinableStart + "-01");
+          const end = course.examinableEnd ? new Date(course.examinableEnd + "-01") : new Date(9999, 11, 31);
 
-        // 4. Passed all validations — add course
+          return (
+            course.courseCode === code &&
+            course.courseLevel === level &&
+            start <= sessionDate &&
+            end >= sessionDate
+          );
+        });
+        if (isExaminableCourse) {
+          if (!this.getRoles.includes("GRAD_SYSTEM_COORDINATOR")) {
+            this.courseValidationMessage = "This course required an exam at the time of the course session date. Role does not have permission to add"
+            //info officer does not have permission to add this course
+            return
+          }
+        }
+
+        //  Passed all validations — add course
         this.addCoursesToCreate({
           ...courseData,
           courseSession: this.courseAdd.courseSession,
+          isExaminable: isExaminableCourse
 
         });
 
