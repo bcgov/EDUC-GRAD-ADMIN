@@ -334,7 +334,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAccessStore, ["hasPermissions"]),
+    ...mapState(useAccessStore, ["hasPermissions", "getRoles"]),
     ...mapState(useStudentStore, {
       coursesToCreate: (state) => state.create.courses,
       studentPen: "getStudentPen",
@@ -394,6 +394,9 @@ export default {
         const response = await CourseService.getCourseByCodeAndLevel(code, level);
         const courseData = response?.data;
 
+        const examinableCourses = await CourseService.getCourseExaminableCourses();
+
+
         this.isLoading = false;
         if (courseData?.courseID) {
           // Clear previous validation message
@@ -434,7 +437,7 @@ export default {
           return;
         }
 
-        // 3. Date range validations
+        // Date range validations
         if (sessionDate < startDate) {
           this.courseValidationMessage = `Course session date is before the course start date (${courseData.startDate})`;
           return;
@@ -444,12 +447,33 @@ export default {
           this.courseValidationMessage = `Course session date is after the course completion date (${courseData.completionEndDate})`;
           return;
         }
+        //Check if Course is examinable
+        const isExaminableCourse = examinableCourses.data.some(course => {
+          const start = new Date(course.examinableStart + "-01");
+          const end = course.examinableEnd ? new Date(course.examinableEnd + "-01") : new Date(9999, 11, 31);
 
-        // 4. Passed all validations — add course
+          return (
+            course.courseCode === code &&
+            course.courseLevel === level &&
+            start <= sessionDate &&
+            end >= sessionDate
+          );
+        });
+        if (isExaminableCourse) {
+
+          if (!this.hasPermissions('STUDENT', 'updateExaminableCourse')) {
+            //trigger error adding course if role is not allowed
+            this.courseValidationMessage = "This course required an exam at the time of the course session date.Your role does not have permission to add examinable courses."
+            return
+          }
+        }
+
+        //  Passed all validations — add course
         this.addCoursesToCreate({
           courseID: courseData.courseID,
           courseSession: this.courseAdd.courseSession,
           courseDetails: courseData
+          isExaminable: isExaminableCourse
 
         });
 

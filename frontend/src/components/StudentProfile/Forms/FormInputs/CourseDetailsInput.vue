@@ -107,6 +107,7 @@
 import { mapState } from "pinia";
 import { useAppStore } from "@/store/modules/app";
 import { useStudentStore } from "@/store/modules/student";
+import { useAccessStore } from "@/store/modules/access";
 import useVuelidate from '@vuelidate/core';
 import { required, helpers, numeric } from '@vuelidate/validators';
 import CourseInput from "@/components/Common/CourseInput.vue";
@@ -128,6 +129,9 @@ export default {
     // Check for Q course
     if ((this.course.courseCode || '').startsWith("Q")) {
       this.warnings.push("Only use Q code if student was on Adult program at time of course completion or if course is marked as Equivalency.");
+    }
+    if (this.course.isExaminable) {
+      this.warnings.push("This course required an exam at the time of the course session date")
     }
     const now = new Date();
     const currentYear = now.getFullYear();
@@ -322,6 +326,7 @@ export default {
     ...mapState(useStudentStore, {
       studentProgram: (state) => state.getStudentProgram,
     }),
+    ...mapState(useAccessStore, ["getRoles"]),
     courseSessionLessThanReportingPeriod() {
       const session = this.course.courseSession;
       if (!session || session.length !== 6) return false;

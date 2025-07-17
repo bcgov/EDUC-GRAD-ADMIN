@@ -3,7 +3,7 @@
     <div class="px-0">
       {{ studentInfo[0] }}
       <table v-if="!smallScreen" class="profile-name" aria-label="student information">
-        <tbody>
+        <thead>
           <tr>
             <th class="align-top px-2" scope="col"></th>
             <th class="align-top px-2" scope="col">
@@ -22,6 +22,8 @@
               <label>Birthdate (yyyy-mm-dd)</label>
             </th>
           </tr>
+        </thead>
+        <tbody>
           <tr>
             <td>
               <v-btn v-on:click="moreStudentInfo = !moreStudentInfo" text elevation="0" variant="flat"
