@@ -4,10 +4,11 @@ const HttpStatus = require('http-status-codes');
 const utils = require('../utils');
 const config = require('../../config');
 const { createMoreFiltersSearchCriteria } = require('./studentFilters');
+const API_BASE_ROUTE = '/api/v1/student-assessment';
 
 async function getAssessmentTypeCodes(req, res) {
   try {
-    let data = await cachedApiCall('assessment-type-codes', `${config.get('server:studentAssessmentAPIURL')}/assessment-types`);
+    let data = await cachedApiCall('assessment-type-codes', `${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/assessment-types`);
     return res.status(200).json(data);
   } catch (e) {
     if (e?.status === 404) {
@@ -25,7 +26,7 @@ async function getAssessmentTypeCodes(req, res) {
 
 async function getStudentAssessmentById(req, res) {
   try {
-    let data = await getCommonServiceData(`${config.get('server:studentAssessmentAPIURL')}/${req.params.studentAssessmentId}`);
+    let data = await getCommonServiceData(`${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/student/${req.params.studentAssessmentId}`);
     return res.status(200).json(data);
   } catch (e) {
     if (e?.status === 404) {
@@ -58,7 +59,7 @@ async function getStudentAssessmentPaginated(req, res) {
         searchCriteriaList: JSON.stringify(search),
       }
     };
-    let data =  await getCommonServiceData(`${config.get('server:studentAssessmentAPIURL')}/student/paginated`, params);
+    let data =  await getCommonServiceData(`${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student/paginated`, params);
     if (req?.query?.returnKey) {
       let result = data?.content.map((student) => student[req?.query?.returnKey]);
       return res.status(HttpStatus.OK).json(result);
