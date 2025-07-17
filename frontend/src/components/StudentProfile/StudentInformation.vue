@@ -37,33 +37,21 @@
                 <p class="profile-info">{{ studentFullName.pen }}</p>
               </strong>
             </td>
-            <<<<<<< HEAD <td class="align-top profile-name-data" v-if="studentFullName.legalLastName">
+            <td class="align-top profile-name-data" v-if="studentFullName.legalLastName">
               <p class="profile-info">{{ studentFullName.legalLastName }}</p>
-              </td>
-              <td class="align-top profile-name-data" v-if="studentFullName.legalFirstName">
-                <p class="profile-info">{{ studentFullName.legalFirstName }}</p>
-              </td>
-              <td class="align-top profile-name-data" v-if="studentFullName.legalMiddleNames">
-                <p class="profile-info">{{ studentFullName.legalMiddleNames }}</p>
-              </td>
-              <td class="align-top profile-name-data" v-if="!studentFullName.legalMiddleNames">
-                =======
-              <td class="align-top profile-name-data" v-if="studentFullName.legalLastName">
-                <p class="profile-info">{{ studentFullName.legalLastName }}</p>
-              </td>
-              <td class="align-top profile-name-data" v-if="studentFullName.legalFirstName">
-                <p class="profile-info">{{ studentFullName.legalFirstName }}</p>
-              </td>
-              <td class="align-top profile-name-data" v-if="studentFullName.legalMiddleNames">
-                <p class="profile-info">{{ studentFullName.legalMiddleNames }}</p>
-              </td>
-              <td class="align-top profile-name-data" v-if="!studentFullName.legalMiddleNames">
-                >>>>>>> 234856f557162bbbec9f13bcad89a61c21fd967c
-                <p class="profile-info"></p>
-              </td>
-              <td class="align-top profile-name-data" v-if="studentInfo.dob">
-                <p class="profile-info">{{ studentInfo.dob }}</p>
-              </td>
+            </td>
+            <td class="align-top profile-name-data" v-if="studentFullName.legalFirstName">
+              <p class="profile-info">{{ studentFullName.legalFirstName }}</p>
+            </td>
+            <td class="align-top profile-name-data" v-if="studentFullName.legalMiddleNames">
+              <p class="profile-info">{{ studentFullName.legalMiddleNames }}</p>
+            </td>
+            <td class="align-top profile-name-data" v-if="!studentFullName.legalMiddleNames">
+              <p class="profile-info"></p>
+            </td>
+            <td class="align-top profile-name-data" v-if="studentInfo.dob">
+              <p class="profile-info">{{ studentInfo.dob }}</p>
+            </td>
           </tr>
         </tbody>
       </table>
