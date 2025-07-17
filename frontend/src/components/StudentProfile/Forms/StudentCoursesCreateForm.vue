@@ -461,9 +461,10 @@ export default {
           );
         });
         if (isExaminableCourse) {
-          if (!this.getRoles.includes("GRAD_SYSTEM_COORDINATOR")) {
-            this.courseValidationMessage = "This course required an exam at the time of the course session date. Role does not have permission to add"
-            //info officer does not have permission to add this course
+
+          if (!this.hasPermissions('STUDENT', 'allowAddExaminableCourse')) {
+            //trigger error adding course if role is not allowed
+            this.courseValidationMessage = "This course required an exam at the time of the course session date.Your role does not have permission to add examinable courses."
             return
           }
         }
