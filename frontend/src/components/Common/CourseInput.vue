@@ -2,32 +2,14 @@
   <v-card flat class="p-0 m-0">
     <v-row>
       <v-col>
-        <v-text-field
-          v-model="localCourse.courseCode"
-          label="Course Code"
-          @input="onInput"
-          :disabled="loading"
-          variant="outlined"
-          density="compact"
-          class="my-2"
-          persistent-placeholder
-          persistent-hint
-          :rules="[v => !!v || 'Course Code is required']"  
-        />
+        <v-text-field v-model="localCourse.courseCode" label="Course Code" @input="onInput" :disabled="loading"
+          variant="outlined" density="compact" class="my-2" persistent-placeholder persistent-hint
+          :rules="[v => !!v || 'Course Code is required']" />
       </v-col>
       <v-col>
-        <v-text-field
-          v-model="localCourse.courseLevel"
-          label="Course Level"
-          @input="onInput"
-          :disabled="loading"
-          variant="outlined"
-          density="compact"
-          class="my-2"
-          persistent-placeholder
-          persistent-hint
-          :rules="[v => !!v || 'Course Level is required']"  
-        />
+        <v-text-field v-model="localCourse.courseLevel" label="Course Level" @input="onInput" :disabled="loading"
+          variant="outlined" density="compact" class="my-2" persistent-placeholder persistent-hint
+          :rules="[v => !!v || 'Course Level is required']" />
       </v-col>
     </v-row>
 
@@ -37,18 +19,12 @@
     </v-row>
 
     <!-- Course Info Panel -->
-    <v-expansion-panels
-      v-if="localCourse.courseName && !notFound && !loading"
-      class="mt-2"
-    >
+    <v-expansion-panels v-if="localCourse.courseName && !notFound && !loading" class="mt-2">
       <v-expansion-panel>
         <v-expansion-panel-title>
           <div class="d-flex align-center justify-space-between w-100">
             <strong>{{ localCourse.courseName }}</strong>
-            <OpenStatusBadge
-              :openedDateString="localCourse.startDate"
-              :closedDateString="localCourse.endDate"
-            />
+            <OpenStatusBadge :openedDateString="localCourse.startDate" :closedDateString="localCourse.endDate" />
           </div>
         </v-expansion-panel-title>
         <v-expansion-panel-text>
@@ -60,7 +36,7 @@
             <v-col cols="6"><strong>Start Date:</strong> {{ localCourse.startDate }}</v-col>
             <v-col cols="6"><strong>End Date:</strong> {{ localCourse.endDate }}</v-col>
             <v-col cols="6"><strong>Completion End Date:</strong> {{ localCourse.completionEndDate || "N/A" }}</v-col>
-            <v-col cols="6"><strong>Credits:</strong> {{ localCourse.numCredits }}</v-col>
+            <v-col cols="6"><strong>Credits:</strong> {{ localCourse.credits }}</v-col>
             <v-col cols="12"><strong>Course ID:</strong> {{ localCourse.courseID }}</v-col>
           </v-row>
         </v-expansion-panel-text>
@@ -119,10 +95,10 @@ export default {
           this.localCourse = { ...newCourse };
           this.notFound = false;
         } else {
-          if(newCourse && newCourse.courseCode && newCourse.courseLevel) {
+          if (newCourse && newCourse.courseCode && newCourse.courseLevel) {
             this.localCourse = { courseCode: newCourse.courseCode, courseLevel: newCourse.courseLevel };
             this.notFound = false;
-          } 
+          }
         }
       },
     },

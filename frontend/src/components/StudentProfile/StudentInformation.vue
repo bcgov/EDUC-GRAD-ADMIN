@@ -2,11 +2,7 @@
   <div>
     <div class="px-0">
       {{ studentInfo[0] }}
-      <table
-        v-if="!smallScreen"
-        class="profile-name"
-        aria-label="student information"
-      >
+      <table v-if="!smallScreen" class="profile-name" aria-label="student information">
         <thead>
           <tr>
             <th class="align-top px-2" scope="col"></th>
@@ -30,55 +26,27 @@
         <tbody>
           <tr>
             <td>
-              <v-btn
-                v-on:click="moreStudentInfo = !moreStudentInfo"
-                text
-                elevation="0"
-                variant="flat"
-                class="no-outline-btn"
-              >
-                <v-icon
-                  v-show="!moreStudentInfo"
-                  icon="mdi-chevron-right"
-                  size="large"
-                ></v-icon>
-                <v-icon
-                  v-show="moreStudentInfo"
-                  icon="mdi-chevron-down"
-                  size="large"
-                ></v-icon>
+              <v-btn v-on:click="moreStudentInfo = !moreStudentInfo" text elevation="0" variant="flat"
+                class="no-outline-btn">
+                <v-icon v-show="!moreStudentInfo" icon="mdi-chevron-right" size="large"></v-icon>
+                <v-icon v-show="moreStudentInfo" icon="mdi-chevron-down" size="large"></v-icon>
               </v-btn>
             </td>
-            <td
-              class="align-top profile-name-data px-0"
-              v-if="studentFullName.pen"
-            >
+            <td class="align-top profile-name-data px-0" v-if="studentFullName.pen">
               <strong>
                 <p class="profile-info">{{ studentFullName.pen }}</p>
               </strong>
             </td>
-            <td
-              class="align-top profile-name-data"
-              v-if="studentFullName.legalLastName"
-            >
+            <td class="align-top profile-name-data" v-if="studentFullName.legalLastName">
               <p class="profile-info">{{ studentFullName.legalLastName }}</p>
             </td>
-            <td
-              class="align-top profile-name-data"
-              v-if="studentFullName.legalFirstName"
-            >
+            <td class="align-top profile-name-data" v-if="studentFullName.legalFirstName">
               <p class="profile-info">{{ studentFullName.legalFirstName }}</p>
             </td>
-            <td
-              class="align-top profile-name-data"
-              v-if="studentFullName.legalMiddleNames"
-            >
+            <td class="align-top profile-name-data" v-if="studentFullName.legalMiddleNames">
               <p class="profile-info">{{ studentFullName.legalMiddleNames }}</p>
             </td>
-            <td
-              class="align-top profile-name-data"
-              v-if="!studentFullName.legalMiddleNames"
-            >
+            <td class="align-top profile-name-data" v-if="!studentFullName.legalMiddleNames">
               <p class="profile-info"></p>
             </td>
             <td class="align-top profile-name-data" v-if="studentInfo.dob">
@@ -96,17 +64,11 @@
           <label>Legal surname</label>
           <h2 class="px-0">{{ studentFullName.legalLastName }}</h2>
         </div>
-        <div
-          v-if="studentFullName.legalFirstName"
-          class="p-0 profile-name-data"
-        >
+        <div v-if="studentFullName.legalFirstName" class="p-0 profile-name-data">
           <label>Legal given</label>
           <h2 class="px-0">{{ studentFullName.legalFirstName }}</h2>
         </div>
-        <div
-          v-if="studentFullName.legalMiddleNames"
-          class="p-0 profile-name-data"
-        >
+        <div v-if="studentFullName.legalMiddleNames" class="p-0 profile-name-data">
           <label>Legal middle</label>
           <h2 class="px-0">{{ studentFullName.legalMiddleNames }}</h2>
         </div>
@@ -114,21 +76,9 @@
           <label>Birthdate(yyyy-mm-dd)</label>
           <h2 class="px-0">{{ studentInfo.dob }}</h2>
         </div>
-        <v-btn
-          class="text-decoration-none"
-          v-on:click="moreStudentInfo = !moreStudentInfo"
-          variant="plain"
-        >
-          <v-icon
-            v-show="!moreStudentInfo"
-            icon="mdi-chevron-right"
-            size="large"
-          ></v-icon>
-          <v-icon
-            v-show="moreStudentInfo"
-            icon="mdi-chevron-down"
-            size="large"
-          ></v-icon>
+        <v-btn class="text-decoration-none" v-on:click="moreStudentInfo = !moreStudentInfo" variant="plain">
+          <v-icon v-show="!moreStudentInfo" icon="mdi-chevron-right" size="large"></v-icon>
+          <v-icon v-show="moreStudentInfo" icon="mdi-chevron-down" size="large"></v-icon>
           &nbsp;{{ moreStudentInfo ? "Hide " : "Show " }}Student Details
         </v-btn>
       </div>
@@ -137,14 +87,7 @@
     <div class="col-12 px-3">
       <div v-show="moreStudentInfo">
         <v-card no-body class="border-0">
-          <v-table
-            striped
-            hover
-            small
-            stacked="lg"
-            role="presentation"
-            aria-label="student details"
-          >
+          <v-table striped hover small stacked="lg" role="presentation" aria-label="student details">
             <tbody>
               <tr>
                 <td class="px-2">
@@ -167,8 +110,7 @@
                 <td class="px-2">
                   <strong>True student ID: </strong>
                   <span v-if="studentInfo.trueStudentID">
-                    {{ studentInfo.trueStudentID }}</span
-                  >
+                    {{ studentInfo.trueStudentID }}</span>
                 </td>
                 <td class="px-2">
                   <strong>Local ID:</strong> {{ studentInfo.localID }}
