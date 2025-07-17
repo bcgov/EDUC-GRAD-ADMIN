@@ -462,7 +462,7 @@ export default {
         });
         if (isExaminableCourse) {
 
-          if (!this.hasPermissions('STUDENT', 'updateExaminableStudentCourse')) {
+          if (!this.hasPermissions('STUDENT', 'updateExaminableCourse')) {
             //trigger error adding course if role is not allowed
             this.courseValidationMessage = "This course required an exam at the time of the course session date.Your role does not have permission to add examinable courses."
             return
