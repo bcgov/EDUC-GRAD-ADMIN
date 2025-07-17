@@ -31,13 +31,13 @@
         <v-card-text>
           <div class="my-1"><strong>PEN: </strong>{{ student.pen }}</div>
           <div class="my-1">
+            <strong>Legal Last Names: </strong>{{ student.legalLastName }}
+          </div>
+          <div class="my-1">
             <strong>Legal First Name: </strong>{{ student.legalFirstName }}
           </div>
           <div class="my-1">
             <strong>Legal Middle Names: </strong>{{ student.legalMiddleNames }}
-          </div>
-          <div class="my-1">
-            <strong>Legal Last Names: </strong>{{ student.legalLastName }}
           </div>
           <div class="my-1">
             <strong>DOB: </strong>{{ $filters.formatSimpleDate(student.dob) }}
