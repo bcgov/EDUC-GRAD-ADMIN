@@ -21,9 +21,11 @@
             <strong>Completion End Date: </strong>
             {{ course.completionEndDate }}
             <br />
-            <strong>Credits: </strong> {{ course.credits }} <br />
+            <strong>Credits: </strong> {{ sortedCreditValues
+            }} <br />
             <strong>Generic Course Type: </strong>
             {{ course.genericCourseType }} <br />
+          
           </div>
         </v-card-text>
       </v-card>
@@ -37,7 +39,14 @@ export default {
   props: {
     course: Object,
   },
-  computed: {},
+  computed: {
+    sortedCreditValues() {
+      return (this.course?.courseAllowableCredit || [])
+        .map(c => Number(c.creditValue))
+        .sort((a, b) => a - b)
+        .join(', ');
+    }
+  },
   methods: {
     dialogTitle() {
       if (!!this.title) {
