@@ -86,6 +86,7 @@ import { required, helpers } from '@vuelidate/validators';
 import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
 import { useStudentStore } from "@/store/modules/student";
 import { mapState, mapActions } from "pinia";
+import { validateAndFetchCourse } from '@/components/StudentProfile/Forms/utils/validateCourse.js';
 
 export default {
   name: "StudentCoursesUpdateForm",
@@ -160,91 +161,31 @@ export default {
 
     async updateCourse() {
       this.isLoading = true;
-      this.courseValidationMessage = null; // reset validation message
+      this.courseValidationMessage = null;
 
-      // TODO - improve the handling of course code | level | session date with validation ticket
-      // removes hyphen before adding to store
-      const courseSession = this.courseAdd.courseSession.replace(
-        /[&\/\\#,+()$~%.'":*?<>{}-]/g,
-        ""
-      );
-      const code = this.courseAdd.code.toUpperCase();
+      const { code, level, courseSession } = this.courseAdd;
 
-      const level = this.courseAdd.level ? this.courseAdd.level.toUpperCase() : '';
-      console.log(code)
-      console.log(level)
+      const result = await validateAndFetchCourse({
+        code,
+        level,
+        courseSession,
+        existingCourses: this.studentCourses,
+        checkExaminable: false,
+      });
 
-      try {
+      this.isLoading = false;
 
-        const response = await CourseService.getCourseByCodeAndLevel(code, level);
-        console.log(response)
-        const courseData = response?.data;
-        console.log(courseData)
-        this.isLoading = false;
-        if (courseData?.courseID) {
-          // Clear previous validation message
-          this.courseValidationMessage = null;
-
-          // Check for duplicate
-          const isDuplicate = this.studentCourses.some(course =>
-            course.courseID === courseData.courseID &&
-            course.courseSession === this.courseAdd.courseSession
-          );
-
-          if (isDuplicate) {
-            this.courseValidationMessage = `${this.courseAdd.code} ${this.courseAdd.level} ${this.courseAdd.courseSession} is a duplicate course.`;
-            return;
-          }
-        }
-        // Parse session date safely
-        const sessionDateStr = String(this.courseAdd.courseSession); // e.g. "199801"
-        const year = sessionDateStr.slice(0, 4);
-        const month = sessionDateStr.slice(4, 6);
-        const day = '01';
-
-        // Construct date string YYYY-MM-DD
-        const sessionDateISO = `${year}-${month}-${day}`;
-        const sessionDate = new Date(sessionDateISO);
-
-        // Parse course start/end dates
-
-        const startDate = new Date(courseData.startDate);
-        const endDate = courseData.completionEndDate ? new Date(courseData.completionEndDate) : new Date(9999, 11, 31);
-
-        if (isNaN(startDate)) {
-          this.courseValidationMessage = 'Course start date is invalid.';
-          return;
-        }
-        if (endDate && isNaN(endDate)) {
-          this.courseValidationMessage = 'Course completion date is invalid.';
-          return;
-        }
-
-        // 3. Date range validations
-        if (sessionDate < startDate) {
-          this.courseValidationMessage = `Course session date is before the course start date (${courseData.startDate})`;
-          return;
-        }
-
-        if (endDate && sessionDate > endDate) {
-          this.courseValidationMessage = `Course session date is after the course completion date (${courseData.completionEndDate})`;
-          return;
-        }
-
-        // 4. Passed all validations — add course
-        this.selectedCourseToUpdate.courseID = courseData.courseID
-        this.selectedCourseToUpdate.courseSession = this.courseAdd.courseSession
-        this.selectedCourseToUpdate.courseDetails = courseData
-        this.courseValidationMessage = null;
-        this.showCourseInput = false;
-        this.clearForm();
-
-
-      } catch (error) {
-        //ADD VALIDATION ("Error fetching course data.");
-        this.isLoading = false;
-        this.courseValidationMessage = "Invalid Course code/level - course code/level does not exist in the ministry course registry"; //need this here because course not found is a 404 error; TODO expand on this via error code
+      if (result.error) {
+        this.courseValidationMessage = result.error;
+        return;
       }
+
+      this.selectedCourseToUpdate.courseID = result.courseID;
+      this.selectedCourseToUpdate.courseSession = result.courseSession;
+      this.selectedCourseToUpdate.courseDetails = result.courseData;
+      this.courseValidationMessage = null;
+      this.showCourseInput = false;
+      this.clearForm();
     },
     openDialog() {
       this.showCourseInput = false;
@@ -273,7 +214,8 @@ export default {
     async confirmUpdate() {
 
       try {
-        console.log(this.selectedCourseToUpdate)
+        //remove courseDetails from payload
+        delete this.selectedCourseToUpdate.courseDetails;
         await this.updateStudentCourse(this.selectedCourseToUpdate);
         this.close();
       } catch (error) {

@@ -268,6 +268,7 @@ import { required, helpers } from '@vuelidate/validators';
 import { useAccessStore } from "@/store/modules/access";
 import { useStudentStore } from "@/store/modules/student";
 import { mapState, mapActions } from "pinia";
+import { validateAndFetchCourse } from '@/components/StudentProfile/Forms/utils/validateCourse.js';
 
 export default {
   name: "StudentCoursesCreateForm",
@@ -373,118 +374,35 @@ export default {
     },
     async addCourse() {
       this.isLoading = true;
-      this.courseValidationMessage = null; // reset validation message
+      this.courseValidationMessage = null;
 
-      // TODO - improve the handling of course code | level | session date with validation ticket
-      // removes hyphen before adding to store
-      const courseSession = this.courseAdd.courseSession.replace(
-        /[&\/\\#,+()$~%.'":*?<>{}-]/g,
-        ""
-      );
-      const code = this.courseAdd.code.toUpperCase();
+      const { code, level, courseSession } = this.courseAdd;
 
-      const level = this.courseAdd.level ? this.courseAdd.level.toUpperCase() : '';
+      const result = await validateAndFetchCourse({
+        code,
+        level,
+        courseSession,
+        existingCourses: this.studentCourses,
+        checkExaminable: true,
+        canAddExaminable: () => this.hasPermissions('STUDENT', 'updateExaminableCourse'),
+      });
 
-      if (code === undefined || courseSession === undefined) {
-        this.$toast?.error?.("Please fill out all course fields.");
+      this.isLoading = false;
+
+      if (result.error) {
+        this.courseValidationMessage = result.error;
         return;
       }
 
-      try {
-        const response = await CourseService.getCourseByCodeAndLevel(code, level);
-        const courseData = response?.data;
+      this.addCoursesToCreate({
+        courseID: result.courseID,
+        courseSession: result.courseSession,
+        courseDetails: result.courseData,
+        isExaminable: result.isExaminable,
+      });
 
-        const examinableCourses = await CourseService.getCourseExaminableCourses();
-
-
-        this.isLoading = false;
-        if (courseData?.courseID) {
-          // Clear previous validation message
-          this.courseValidationMessage = null;
-
-          // Check for duplicate
-          const isDuplicate = this.studentCourses.some(course =>
-            course.courseID === courseData.courseID &&
-            course.courseSession === this.courseAdd.courseSession
-          );
-
-          if (isDuplicate) {
-            this.courseValidationMessage = `${this.courseAdd.code} ${this.courseAdd.level} ${this.courseAdd.courseSession} is a duplicate course.`;
-            return;
-          }
-        }
-        // Parse session date safely
-        const sessionDateStr = String(this.courseAdd.courseSession); // e.g. "199801"
-        const year = sessionDateStr.slice(0, 4);
-        const month = sessionDateStr.slice(4, 6);
-        const day = '01';
-
-        // Construct date string YYYY-MM-DD
-        const sessionDateISO = `${year}-${month}-${day}`;
-        const sessionDate = new Date(sessionDateISO);
-
-        // Parse course start/end dates
-
-        const startDate = new Date(courseData.startDate);
-        const endDate = courseData.completionEndDate ? new Date(courseData.completionEndDate) : new Date(9999, 11, 31);
-
-        if (isNaN(startDate)) {
-          this.courseValidationMessage = 'Course start date is invalid.';
-          return;
-        }
-        if (endDate && isNaN(endDate)) {
-          this.courseValidationMessage = 'Course completion date is invalid.';
-          return;
-        }
-
-        // Date range validations
-        if (sessionDate < startDate) {
-          this.courseValidationMessage = `Course session date is before the course start date (${courseData.startDate})`;
-          return;
-        }
-
-        if (endDate && sessionDate > endDate) {
-          this.courseValidationMessage = `Course session date is after the course completion date (${courseData.completionEndDate})`;
-          return;
-        }
-        //Check if Course is examinable
-        const isExaminableCourse = examinableCourses.data.some(course => {
-          const start = new Date(course.examinableStart + "-01");
-          const end = course.examinableEnd ? new Date(course.examinableEnd + "-01") : new Date(9999, 11, 31);
-
-          return (
-            course.courseCode === code &&
-            course.courseLevel === level &&
-            start <= sessionDate &&
-            end >= sessionDate
-          );
-        });
-        if (isExaminableCourse) {
-
-          if (!this.hasPermissions('STUDENT', 'updateExaminableCourse')) {
-            //trigger error adding course if role is not allowed
-            this.courseValidationMessage = "This course required an exam at the time of the course session date.Your role does not have permission to add examinable courses."
-            return
-          }
-        }
-
-        //  Passed all validations — add course
-        this.addCoursesToCreate({
-          courseID: courseData.courseID,
-          courseSession: this.courseAdd.courseSession,
-          courseDetails: courseData
-          isExaminable: isExaminableCourse
-
-        });
-
-        this.closeCourseInput();
-        this.courseValidationMessage = null;
-
-      } catch (error) {
-        //ADD VALIDATION ("Error fetching course data.");
-        this.isLoading = false;
-        this.courseValidationMessage = "Invalid Course code/level - course code/level does not exist in the ministry course registry"; //need this here because course not found is a 404 error; TODO expand on this via error code
-      }
+      this.closeCourseInput();
+      this.courseValidationMessage = null;
     },
     closeCourseInput() {
       this.clearForm();
@@ -504,7 +422,10 @@ export default {
 
     async submitForm() {
       this.createStudentResultsMessages = [];
-      const createStudentCoursesRequestBody = toRaw(this.coursesToCreate);
+
+      const courseWithoutCourseDetails = this.coursesToCreate.map(({ courseDetails, ...rest }) => ({ ...rest }));
+      await this.submitCourses(courseWithoutCourseDetails);
+      const createStudentCoursesRequestBody = toRaw(courseWithoutCourseDetails);
 
       // Call API and get response
       const response = await this.createStudentCourses(
