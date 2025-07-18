@@ -10,6 +10,7 @@
     </v-col>
 
     <v-col v-if="update" cols="2" class="d-flex flex-column justify-start">
+
       <strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel }} -
         {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
