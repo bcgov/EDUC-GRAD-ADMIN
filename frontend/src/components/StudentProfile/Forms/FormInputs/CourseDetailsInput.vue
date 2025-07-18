@@ -412,16 +412,22 @@ export default {
     },
 
     getGradesForPercent(percent) {
-      const allAllowableLetterGradesForCourse = this.allLetterGrades.filter((grade) => {
-        if (this.course.courseCode !== 'GT' && this.course.courseCode !== 'GTF') {
-          return grade.grade !== 'RM';
-        }
-        return true;
-      });
+      const isGTorGTF = this.course.courseDetails.courseCode === 'GT' || this.course.courseDetails.courseCode === 'GTF';
 
-      if (this.course.courseSession < 199409) {
-        return allAllowableLetterGradesForCourse.map((grade) => grade.grade);
-      }
+      const sessionDateStr = String(this.course.courseSession); // e.g., "199409"
+      const sessionYear = sessionDateStr.slice(0, 4);
+      const sessionMonth = sessionDateStr.slice(4, 6);
+      const sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
+
+      const allAllowableLetterGradesForCourse = this.allLetterGrades.filter(grade => {
+        // Exclude 'RM' if not GT or GTF
+        if (!isGTorGTF && grade.grade === 'RM') return false;
+
+        const effectiveDate = new Date(grade.effectiveDate);
+        const expiryDate = grade.expiryDate ? new Date(grade.expiryDate) : new Date(9999, 11, 31);
+
+        return sessionDate >= effectiveDate && sessionDate <= expiryDate;
+      });
 
       const numPercent = Number(percent);
       if (!percent || isNaN(numPercent)) {

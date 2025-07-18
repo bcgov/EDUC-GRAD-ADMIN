@@ -378,6 +378,20 @@ export default {
 
       const { code, level, courseSession } = this.courseAdd;
 
+      //Check if course already added
+      const isCourseDuplicate = this.coursesToCreate.some(course =>
+        course.courseDetails.courseCode?.toUpperCase() === code?.toUpperCase() &&
+        course.courseDetails.courseLevel?.toUpperCase() === level?.toUpperCase() &&
+        course.courseSession === courseSession
+      );
+
+      if (isCourseDuplicate) {
+        this.courseValidationMessage = "This course has already been added";
+        this.isLoading = false;
+        return;
+      }
+
+      //Validate the new course
       const result = await validateAndFetchCourse({
         code,
         level,
@@ -393,6 +407,7 @@ export default {
         this.courseValidationMessage = result.error;
         return;
       }
+
 
       this.addCoursesToCreate({
         courseID: result.courseID,
