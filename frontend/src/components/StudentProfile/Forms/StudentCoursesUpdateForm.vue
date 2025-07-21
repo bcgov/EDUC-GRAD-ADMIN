@@ -67,10 +67,9 @@
                           <v-progress-circular v-if="isLoading" indeterminate color="white" size="20" class="mr-2" />
                           <span v-if="!isLoading">Get Course</span>
                         </v-btn>
-                        <v-btn :disabled="v$?.courseAdd?.$invalid || isLoading" variant="flat" color="bcGovBlue"
-                          class="text-none" @click="closeCourseInput">
-
-                          <span v-if="!isLoading"><v-icon size="28">mdi-trash-can</v-icon></span>
+                        <v-btn :disabled="isLoading" class="pl-1" icon="mdi-delete-forever" density="compact"
+                          variant="text" color="error" @click="closeCourseInput">
+                          <v-icon size="28">mdi-trash-can</v-icon>
                         </v-btn>
                       </v-col>
                       <v-col cols="12"> <v-alert v-if="courseValidationMessage" type="error" variant="tonal"
@@ -272,6 +271,8 @@ export default {
       this.showCourseInput = false;
       this.dialog = true;
       this.selectedCourseToUpdate = JSON.parse(JSON.stringify(this.course));
+      //add if course is examinable
+      this.selectedCourseToUpdate.isExaminable = this.selectedCourseToUpdate.courseExam != null
       this.courseValidationMessage = "";
       this.step = 0;
     },
