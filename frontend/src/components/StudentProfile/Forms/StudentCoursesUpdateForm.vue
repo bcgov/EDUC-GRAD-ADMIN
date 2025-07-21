@@ -93,7 +93,7 @@
                     </div>
                     <v-row no-gutters class="mb-2">
                       <v-col cols="12"><strong>{{ selectedCourseToUpdate.courseDetails.courseCode }} {{
-                          selectedCourseToUpdate.courseLevel }} -
+                        selectedCourseToUpdate.courseLevel }} -
                           {{
                             $filters.formatYYYYMMStringDate(course.courseSession)
                           }}</strong>
@@ -162,7 +162,7 @@
 
 <script>
 import useVuelidate from '@vuelidate/core';
-import CourseService from "@/services/CourseService.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import { required, helpers } from '@vuelidate/validators';
 import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
 import { useStudentStore } from "@/store/modules/student";
@@ -225,6 +225,7 @@ export default {
         level: null,
         courseSession: null,
       },
+      snackbarStore: useSnackbarStore(),
     };
   },
   computed: {
@@ -303,9 +304,20 @@ export default {
       try {
         //remove courseDetails from payload
         await this.updateStudentCourse(this.selectedCourseToUpdate);
+        this.snackbarStore.showSnackbar(
+          "Student course successfully updated.",
+          "success",
+          10000,
+          "Student course"
+        );
         this.close();
       } catch (error) {
-        console.error("Failed to update student courses:", error);
+        this.snackbarStore.showSnackbar(
+          "Failed to update student course",
+          "danger",
+          10000,
+          "Student course"
+        );
       }
     },
 

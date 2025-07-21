@@ -344,6 +344,7 @@ export default {
     }),
   },
   methods: {
+
     ...mapActions(useStudentStore, [
       "addCoursesToCreate",
       "removeCourseFromCreate",
