@@ -63,8 +63,12 @@
         </v-col>
 
         <v-col>
-          <v-select v-model="course.equivOrChallenge" :items="['Equivalency', 'Challenge', 'None']" label="Eq / Ch"
-            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint />
+          <v-select v-model="course.equivOrChallenge" :items="[
+            { title: 'Equivalency', value: 'E' },
+            { title: 'Challenge', value: 'C' },
+            { title: 'None', value: null }
+          ]" label="Eq / Ch" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
+            persistent-hint />
         </v-col>
       </v-row>
       <v-row v-if="course?.genericCourseType == 'G'">
@@ -270,9 +274,9 @@ export default {
         },
         equivOrChallenge: {
           isEqChValue: helpers.withMessage(
-            'Must be Equivalency, Challenge, or None',
+            'Eq/CH must be Equivalency, Challenge, or None',
             (value) => {
-              return ['Equivalency', 'Challenge', 'None', '', null, undefined].includes(value);
+              return ['E', 'C', '', null, undefined].includes(value);
             }
           ),
         },

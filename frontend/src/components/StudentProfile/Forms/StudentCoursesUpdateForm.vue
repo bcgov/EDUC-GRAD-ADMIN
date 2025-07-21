@@ -92,40 +92,42 @@
                       <strong>{{ studentPenAndName }}</strong>:
                     </div>
                     <v-row no-gutters class="mb-2">
-                      <v-col cols="12"><strong>{{ course.courseDetails.courseCode }} {{ course.courseLevel }} -
+                      <v-col cols="12"><strong>{{ selectedCourseToUpdate.courseDetails.courseCode }} {{
+                          selectedCourseToUpdate.courseLevel }} -
                           {{
                             $filters.formatYYYYMMStringDate(course.courseSession)
                           }}</strong>
                       </v-col>
                       <v-col cols="12" class="ml-3">
-                        {{ course.courseDetails.courseName }}
+                        {{ selectedCourseToUpdate.courseDetails.courseName }}
                       </v-col>
                       <v-col class="ml-3"><strong>Interim</strong>&nbsp;
-                        <span v-if="course.interimPercent">{{ course.interimPercent }}%
-                          {{ course.interimLetterGrade }}</span>
+                        <span v-if="selectedCourseToUpdate.interimPercent">{{ selectedCourseToUpdate.interimPercent }}%
+                          {{ selectedCourseToUpdate.interimLetterGrade }}</span>
                         <span v-else> <i>null</i> </span>
                       </v-col>
                       <v-col><strong>Final</strong>&nbsp;
-                        <span v-if="course.finalPercent">
-                          {{ course.finalPercent }}%
-                          {{ course.finalLetterGrade }}</span><span v-else><i>null</i></span></v-col>
+                        <span v-if="selectedCourseToUpdate.finalPercent">
+                          {{ selectedCourseToUpdate.finalPercent }}%
+                          {{ selectedCourseToUpdate.finalLetterGrade }}</span><span v-else><i>null</i></span></v-col>
                       <!-- I don't think credits can have a null value? - Samara -->
-                      <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
+                      <v-col><strong>Credits</strong> {{ selectedCourseToUpdate.credits }}</v-col>
                       <v-col><strong>FA/AS</strong>&nbsp;
-                        <span v-if="course.fineArtsAppliedSkills">
-                          {{ course.fineArtsAppliedSkills }}
+                        <span v-if="selectedCourseToUpdate.fineArtsAppliedSkills">
+                          {{ selectedCourseToUpdate.fineArtsAppliedSkills }}
                         </span>
                         <span v-else><i>null</i></span>
                       </v-col>
                       <v-col><strong>Eq/Ch</strong>&nbsp;
-                        <span v-if="course.equivOrChallenge">
-                          {{ course.equivOrChallenge }}
+                        <span v-if="selectedCourseToUpdate.equivOrChallenge">
+                          {{ selectedCourseToUpdate.equivOrChallenge }}
                         </span>
                         <span v-else><i>null</i></span>
                       </v-col>
-                      <v-col cols="12" class="ml-3" v-if="course.customizedCourseName"><strong>Custom Course
+                      <v-col cols="12" class="ml-3" v-if="selectedCourseToUpdate.customizedCourseName"><strong>Custom
+                          Course
                           Title</strong>
-                        {{ course.customizedCourseName }}</v-col>
+                        {{ selectedCourseToUpdate.customizedCourseName }}</v-col>
                     </v-row>
                   </v-alert>
                 </v-stepper-window-item>

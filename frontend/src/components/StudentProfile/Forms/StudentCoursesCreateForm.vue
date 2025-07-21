@@ -439,7 +439,6 @@ export default {
       this.createStudentResultsMessages = [];
 
       const courseWithoutCourseDetails = this.coursesToCreate.map(({ courseDetails, ...rest }) => ({ ...rest }));
-      await this.submitCourses(courseWithoutCourseDetails);
       const createStudentCoursesRequestBody = toRaw(courseWithoutCourseDetails);
 
       // Call API and get response
