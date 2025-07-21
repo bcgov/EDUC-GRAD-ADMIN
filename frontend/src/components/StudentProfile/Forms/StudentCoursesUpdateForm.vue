@@ -45,24 +45,24 @@
                       </v-col>
 
                       <v-col class="pr-1">
-                        <v-text-field v-model="courseAdd.code" label="Course Code" :error="!!courseValidationMessage"
+                        <v-text-field v-model="courseUpdate.code" label="Course Code" :error="!!courseValidationMessage"
                           variant="outlined" density="compact" clearable persistent-placeholder persistent-hint
                           :disabled="isLoading" />
                       </v-col>
 
                       <v-col class="pr-1">
-                        <v-text-field v-model="courseAdd.level" label="Course Level" :error="!!courseValidationMessage"
-                          variant="outlined" density="compact" clearable persistent-placeholder persistent-hint
-                          :disabled="isLoading" />
+                        <v-text-field v-model="courseUpdate.level" label="Course Level"
+                          :error="!!courseValidationMessage" variant="outlined" density="compact" clearable
+                          persistent-placeholder persistent-hint :disabled="isLoading" />
                       </v-col>
                       <v-col class="pr-1">
-                        <v-text-field v-model="courseAdd.courseSession" label="Session Date (YYYYMM)" variant="outlined"
-                          density="compact" clearable persistent-placeholder persistent-hint />
+                        <v-text-field v-model="courseUpdate.courseSession" label="Session Date (YYYYMM)"
+                          variant="outlined" density="compact" clearable persistent-placeholder persistent-hint />
                       </v-col>
 
                       <v-col>
 
-                        <v-btn :disabled="v$?.courseAdd?.$invalid || isLoading" variant="flat" color="bcGovBlue"
+                        <v-btn :disabled="v$?.courseUpdate?.$invalid || isLoading" variant="flat" color="bcGovBlue"
                           class="text-none" @click="updateCourse">
                           <v-progress-circular v-if="isLoading" indeterminate color="white" size="20" class="mr-2" />
                           <span v-if="!isLoading">Get Course</span>
@@ -77,7 +77,7 @@
                     </v-row>
                     <CourseDetailsInput v-else :course="selectedCourseToUpdate" update>
                       <template #remove-button>
-                        <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none" style="min-width: auto;"
+                        <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none p-1" style="max-width: 120px;"
                           @click="showCourseInput = !showCourseInput">Change Course</v-btn>
                       </template>
                     </CourseDetailsInput>
@@ -185,7 +185,7 @@ export default {
   validations() {
     return {
       courseValidationMessage: null,
-      courseAdd: {
+      courseUpdate: {
         code: {},
         level: {
 
@@ -218,7 +218,7 @@ export default {
       showCourseInput: false,
       courseValidationMessage: null,
       selectedCourseToUpdate: {},
-      courseAdd: {
+      courseUpdate: {
         code: null,
         level: null,
         courseSession: null,
@@ -243,7 +243,7 @@ export default {
       this.isLoading = true;
       this.courseValidationMessage = null;
 
-      const { code, level, courseSession } = this.courseAdd;
+      const { code, level, courseSession } = this.courseUpdate;
 
       const result = await validateAndFetchCourse({
         code,
@@ -284,7 +284,7 @@ export default {
       this.step = 0;
     },
     clearForm() {
-      this.courseAdd = {
+      this.courseUpdate = {
         code: null,
         level: null,
         courseSession: null,
