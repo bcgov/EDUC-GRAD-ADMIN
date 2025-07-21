@@ -88,7 +88,7 @@
                 <v-stepper-window-item value="1">
                   <v-alert v-if="step == 1" type="info" class="mb-4" border="start" elevation="2" variant="tonal">
                     <div class="mb-2">
-                      You are about to add the following courses to student
+                      You are about to update the following courses to student
                       <strong>{{ studentPenAndName }}</strong>:
                     </div>
                     <v-row no-gutters class="mb-2">
