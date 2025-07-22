@@ -90,9 +90,9 @@
       </v-row>
       <!-- Display courseWarnings -->
 
-      <v-row v-for="(warning, index) in warnings" :key="index" class="align-center">
-        <v-col class="pb-3 m-0" style="color: orange;">
-          <v-icon color="orange" small>mdi-alert</v-icon>
+      <v-row no-gutters v-for="(warning, index) in warnings" :key="index" class="align-center">
+        <v-col class="py-1 m-0 d-flex align-center text-caption">
+          <v-icon color="orange" size="18" class="me-1">mdi-alert</v-icon>
           {{ warning }}
         </v-col>
       </v-row>

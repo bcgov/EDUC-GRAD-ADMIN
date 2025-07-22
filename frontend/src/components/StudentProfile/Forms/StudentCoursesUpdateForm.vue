@@ -34,7 +34,7 @@
 
 
             <v-stepper-window>
-              <div style="max-height: 60vh; overflow-y: auto; padding-right: 8px;">
+              <div style="padding-right: 8px;">
 
                 <!-- Step 1 -->
                 <v-stepper-window-item value="0">

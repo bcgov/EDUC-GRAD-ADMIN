@@ -76,9 +76,9 @@
                         </v-icon>
 
                         <span>
-                          {{ course.originalCourse.courseCode }}
-                          {{ course.originalCourse.courseLevel }} –
-                          {{ course.originalCourse.courseSession }}
+                          {{ course.originalCourse.courseDetails.courseCode }}
+                          {{ course.originalCourse.courseDetails.courseLevel }} –
+                          {{ course.originalCourse.courseDetails.courseSession }}
                           {{
                             course.validationIssues.some(
                               (i) => i.validationIssueSeverityCode === "ERROR"
@@ -117,12 +117,14 @@
 
                     <v-expansion-panel-text>
                       <div v-if="course.validationIssues.length">
-                        <v-alert v-for="(issue, i) in course.validationIssues" :key="i" :type="issue.validationIssueSeverityCode === 'ERROR'
-                          ? 'error'
-                          : 'warning'
-                          " dense outlined class="mb-2">
+                        <div v-for="(issue, i) in course.validationIssues" :key="i"
+                          class="pl-3 d-flex align-center mb-2">
+                          <v-icon :color="issue.validationIssueSeverityCode === 'ERROR' ? 'error' : 'warning'"
+                            class="me-2" size="18">
+                            {{ issue.validationIssueSeverityCode === 'ERROR' ? 'mdi-alert-circle' : 'mdi-alert' }}
+                          </v-icon>
                           {{ issue.validationIssueMessage }}
-                        </v-alert>
+                        </div>
                       </div>
                       <div v-else>
                         <v-alert type="success" dense outlined>
@@ -157,7 +159,8 @@
                     <v-col><strong>Final</strong>&nbsp;
                       <span v-if="course.finalPercent">
                         {{ course.finalPercent }}%
-                        {{ course.finalLetterGrade }}</span><span v-else><i>null</i></span></v-col>
+                        {{ course.finalLetterGrade }}</span>
+                      <span v-else><i>null</i></span></v-col>
                     <!-- I don't think credits can have a null value? - Samara -->
                     <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
                     <v-col><strong>FA/AS</strong>&nbsp;
@@ -184,8 +187,8 @@
       </v-stepper>
       <v-card-actions>
 
-        <v-row v-if="showCourseInputs" no-gutters class="p-2">
-          <v-col class="pr-1">
+        <v-row v-if="showCourseInputs" no-gutters class="p-3">
+          <v-col cols="1" class="pr-1">
             Select Course
           </v-col>
 
@@ -221,7 +224,7 @@
           </v-col>
         </v-row>
       </v-card-actions>
-      <v-row> <v-alert v-if="courseValidationMessage" type="error" variant="tonal" border="start"
+      <v-row class="pb-2"> <v-alert v-if="courseValidationMessage" type="error" variant="tonal" border="start"
           class="width-fit-content">{{ courseValidationMessage }}</v-alert></v-row>
       <v-row justify="center">
         <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none" v-if="!showCourseInputs && step === 0"
