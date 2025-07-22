@@ -614,10 +614,11 @@ export const useStudentStore = defineStore("student", {
     addCoursesToCreate(course) {
       this.create.courses.push(course);
     },
-    removeCourseFromCreate(courseID) {
+    removeCourseFromCreate(courseID, courseSession) {
       this.create.courses = this.create.courses.filter(
-        (course) => course.courseID !== courseID
+        (course) => !(course.courseID === courseID && course.courseSession === courseSession)
       );
+
     },
     async updateStudentCourse(course) {
       try {

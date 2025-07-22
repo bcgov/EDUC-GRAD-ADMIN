@@ -43,7 +43,8 @@
                       <CourseDetailsInput :course="course" create>
                         <template #remove-button>
                           <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none"
-                            style="min-width: auto; width: 80px" @click="removeCourse(course.courseID)">Remove</v-btn>
+                            style="min-width: auto; width: 80px"
+                            @click="removeCourse(course.courseID, course.courseSession)">Remove</v-btn>
                         </template>
                       </CourseDetailsInput>
                       <v-divider v-if="index < coursesToCreate.length - 1" class="my-4" color="grey-darken-3" />
@@ -369,8 +370,8 @@ export default {
       this.showCourseInputs = true;
       this.dialog = false;
     },
-    removeCourse(courseId) {
-      this.removeCourseFromCreate(courseId)
+    removeCourse(courseId, courseSession) {
+      this.removeCourseFromCreate(courseId, courseSession)
       //show course inputs if the courese to create is empty
       if (this.coursesToCreate.length == 0) {
         this.showCourseInputs = true
