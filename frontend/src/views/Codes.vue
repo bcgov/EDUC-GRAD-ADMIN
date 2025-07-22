@@ -107,7 +107,6 @@ import { useSnackbarStore } from "@/store/modules/snackbar";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import CodesService from "@/services/CodesService.js";
 import StudentGraduationService from "@/services/StudentGraduationService.js";
-import ProgramManagementService from "@/services/ProgramManagementService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 
 export default {
@@ -325,7 +324,7 @@ export default {
       this.url = URL.createObjectURL(file);
     },
     getCareerPrograms() {
-      ProgramManagementService.getCareerPrograms()
+      CodesService.getCareerProgramCodes()
         .then((response) => {
           this.careerPrograms = response.data;
         })
@@ -361,7 +360,7 @@ export default {
         });
     },
     getRequirementTypes() {
-      ProgramManagementService.getRequirementTypes()
+      CodesService.getRequirementTypeCodes()
         .then((response) => {
           this.requirementTypes = response.data;
         })

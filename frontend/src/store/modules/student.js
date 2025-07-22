@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import router from "@/router";
-import ProgramManagementService from "@/services/ProgramManagementService.js";
+import CodesService from "@/services/CodesService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import StudentService from "@/services/StudentService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
@@ -358,9 +358,9 @@ export const useStudentStore = defineStore("student", {
     setPermissions(payload) {
       this.permissions = payload;
     },
-
+    //IMPROVEMENT: Pull this data from the app store
     getGraduationPrograms() {
-      ProgramManagementService.getGraduationPrograms()
+      CodesService.getGradProgramCodes()
         .then((response) => {
           return response.data;
         })

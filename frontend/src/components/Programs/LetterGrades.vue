@@ -20,7 +20,7 @@
 
 <script>
 import DisplayTable from "../DisplayTable.vue";
-import ProgramManagementService from "@/services/ProgramManagementService.js";
+import CodesService from "@/services/CodesService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "LetterGrades",
@@ -28,7 +28,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    ProgramManagementService.getLetterGrades()
+    CodesService.getLetterGradeCodes()
       .then((response) => {
         this.letterGrades = response.data;
       })

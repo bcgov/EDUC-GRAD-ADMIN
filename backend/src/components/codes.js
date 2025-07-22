@@ -65,6 +65,76 @@ async function getStudentGradeCodes(req, res) {
   }
 }
 
+async function getGradProgramCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get("server:programAPIURL")}/api/v1/program/programs`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getOptionalProgramCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:programAPIURL"
+    )}/api/v1/program/optionalprograms`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getCareerProgramCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:programAPIURL"
+    )}/api/v1/program/careerprogram`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getRequirementTypeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:programAPIURL"
+    )}/api/v1/program/gradrequirementtype`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 async function getFineArtsAppliedSkillsCodes(req, res) {
   const token = auth.getBackendToken(req);
 
@@ -150,13 +220,74 @@ async function getInstituteFacilityCodes(_req, res) {
   }
 }
 
+async function getAssessmentSpecialCaseCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:studentGraduationAPIURL"
+    )}/api/v1/studentgraduation/lgSc/specialcase`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getCourseLetterGradeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:studentGraduationAPIURL"
+    )}/api/v1/studentgraduation/lgSc/lettergrade`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getTranscriptMessagingCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:studentGraduationAPIURL"
+    )}/api/v1/studentgraduation/transcript/gradmessages`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 module.exports = {
   getStudentStatusCodes,
   getHistoryActivityCodes,
   getStudentGradeCodes,
+  getGradProgramCodes,
+  getOptionalProgramCodes,
+  getCareerProgramCodes,
+  getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
   getExamSpecialCaseCodes,
   getInstituteSchoolCategoryCodes,
   getInstituteFacilityCodes,
+  getAssessmentSpecialCaseCodes,
+  getCourseLetterGradeCodes,
+  getTranscriptMessagingCodes,
 };

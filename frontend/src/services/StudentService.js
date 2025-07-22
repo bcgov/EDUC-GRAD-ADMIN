@@ -82,6 +82,26 @@ export default {
       json
     );
   },
+  graduateStudent(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/${studentID}/runGradAlgorithm`
+    );
+  },
+  projectedGradFinalMarks(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/${studentID}/previewFinalMarks`
+    );
+  },
+  projectedGradStatusWithFinalAndReg(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/${studentID}/updateTranscriptVerification`
+    );
+  },
+  updateStudentReports(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/${studentID}/updateTranscript`
+    );
+  },
   // STUDENT NOTES
   addStudentNotes(studentID, json) {
     return ApiService.apiAxios.post(`/api/student/${studentID}/notes`, json);

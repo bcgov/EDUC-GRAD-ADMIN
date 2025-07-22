@@ -24,7 +24,7 @@
 
 <script>
 import DisplayTable from "../DisplayTable.vue";
-import ProgramManagementService from "@/services/ProgramManagementService.js";
+import CodesService from "@/services/CodesService.js";
 import { useSnackbarStore } from "../../store/modules/snackbar";
 export default {
   name: "RequirementTypes",
@@ -32,7 +32,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    ProgramManagementService.getRequirementTypes()
+    CodesService.getRequirementTypeCodes()
       .then((response) => {
         this.requirementTypes = response.data;
       })

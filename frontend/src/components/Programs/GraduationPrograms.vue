@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import ProgramManagementService from "@/services/ProgramManagementService.js";
+import CodesService from "@/services/CodesService.js";
 import DisplayTable from "../DisplayTable.vue";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 
@@ -94,7 +94,7 @@ export default {
     };
   },
   created() {
-    ProgramManagementService.getGraduationPrograms()
+    CodesService.getGradProgramCodes()
       .then((response) => {
         // filters out the "No Program" option until business is ready to implement
         const gradPrograms = response.data.filter((obj) => {

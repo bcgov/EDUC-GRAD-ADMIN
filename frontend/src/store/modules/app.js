@@ -4,7 +4,6 @@ import CommonService from "@/services/CommonService.js";
 import SchoolsService from "@/services/SchoolsService.js";
 import CodesService from "@/services/CodesService.js";
 import StudentGraduationService from "@/services/StudentGraduationService.js";
-import ProgramManagementService from "@/services/ProgramManagementService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 
@@ -173,7 +172,7 @@ export const useAppStore = defineStore("app", {
     },
     async getProgramOptionCodes(getNewData = true) {
       if (getNewData || !sharedMethods.dataArrayExists(this.programOptions)) {
-        let response = await ProgramManagementService.getGraduationPrograms();
+        let response = await CodesService.getGradProgramCodes();
         await this.setProgramOptions(response.data);
       }
     },
@@ -311,7 +310,7 @@ export const useAppStore = defineStore("app", {
     },
     async getLetterGradeCodes(getNewData = true) {
       if (getNewData || !sharedMethods.dataArrayExists(this.letterGradeCodes)) {
-        let response = await ProgramManagementService.getLetterGrades();
+        let response = await CodesService.getLetterGradeCodes();
         await this.setLetterGrades(response.data);
       }
     },

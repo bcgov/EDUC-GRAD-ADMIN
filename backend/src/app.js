@@ -38,7 +38,7 @@ function addVersionToReq(req, res, next) {
 }
 
 //GRAD Routers
-const SchoolsRouter = require("./routes/schools-router");
+const schoolsRouter = require("./routes/schools-router");
 const programsRouter = require("./routes/programs-router");
 const assessmentsRouter = require("./routes/assessments-router");
 const coursesRouter = require("./routes/courses-router");
@@ -227,7 +227,7 @@ app.use(/(\/api)?/, apiRouter);
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/:version/batch", addVersionToReq, batchRouter);
 apiRouter.use("/:version/distribute", addVersionToReq, distributionRouter);
-apiRouter.use("/:version/program", addVersionToReq, programsRouter);
+apiRouter.use("/program", programsRouter);
 apiRouter.use("/course", coursesRouter);
 apiRouter.use(
   "/:version/studentgraduation",
@@ -235,7 +235,7 @@ apiRouter.use(
   studentGraduationRouter
 );
 apiRouter.use("/:version/assessment", addVersionToReq, assessmentsRouter);
-apiRouter.use("/schools", SchoolsRouter);
+apiRouter.use("/schools", schoolsRouter);
 apiRouter.use("/student", studentRouter);
 apiRouter.use("/codes", codesRouter);
 apiRouter.use(

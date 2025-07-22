@@ -366,6 +366,98 @@ async function postStudentUndoCompletion(req, res) {
   }
 }
 
+async function getRunGradAlgorithm(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationAPIURL"
+    )}/api/v1/graduate/studentid/${req.params?.studentID}/run/GS`;
+    const data = await getData(
+      token,
+      url,
+      req.body,
+      req.session?.correlationID
+    );
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getRunPreviewFinalMarks(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationAPIURL"
+    )}/api/v1/graduate/studentid/${req.params?.studentID}/run/FM`;
+    const data = await getData(
+      token,
+      url,
+      req.body,
+      req.session?.correlationID
+    );
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getRunTranscriptVerification(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationAPIURL"
+    )}/api/v1/graduate/studentid/${req.params?.studentID}/run/REGFM`;
+    const data = await getData(
+      token,
+      url,
+      req.body,
+      req.session?.correlationID
+    );
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getRunUpdateTranscript(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationAPIURL"
+    )}/api/v1/graduate/studentid/${req.params?.studentID}/run/FMR`;
+    const data = await getData(
+      token,
+      url,
+      req.body,
+      req.session?.correlationID
+    );
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 async function getStudentNotes(req, res) {
   const token = auth.getBackendToken(req);
 
@@ -518,6 +610,10 @@ module.exports = {
   getStudentGradStatus,
   postStudentGradStatus,
   postStudentUndoCompletion,
+  getRunGradAlgorithm,
+  getRunPreviewFinalMarks,
+  getRunTranscriptVerification,
+  getRunUpdateTranscript,
   getStudentNotes,
   postStudentNotes,
   deleteStudentNotes,

@@ -8,11 +8,18 @@ const {
   getStudentStatusCodes,
   getHistoryActivityCodes,
   getStudentGradeCodes,
+  getGradProgramCodes,
+  getOptionalProgramCodes,
+  getCareerProgramCodes,
+  getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
   getExamSpecialCaseCodes,
   getInstituteSchoolCategoryCodes,
   getInstituteFacilityCodes,
+  getAssessmentSpecialCaseCodes,
+  getCourseLetterGradeCodes,
+  getTranscriptMessagingCodes,
 } = require("../components/codes");
 
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
@@ -43,6 +50,34 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
   getStudentGradeCodes
+);
+
+router.get(
+  "/gradProgramCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getGradProgramCodes
+);
+
+router.get(
+  "/optionalProgramCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getOptionalProgramCodes
+);
+
+router.get(
+  "/careerProgramCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getCareerProgramCodes
+);
+
+router.get(
+  "/requirementTypeCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getRequirementTypeCodes
 );
 
 router.get(
@@ -78,6 +113,27 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
   getInstituteFacilityCodes
+);
+
+router.get(
+  "/assessmentSpecialCaseCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getAssessmentSpecialCaseCodes
+);
+
+router.get(
+  "/letterGradeCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getCourseLetterGradeCodes
+);
+
+router.get(
+  "/transcriptMessagingCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getTranscriptMessagingCodes
 );
 
 module.exports = router;
