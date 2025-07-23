@@ -3,12 +3,18 @@ const router = express.Router();
 const auth = require('../components/auth');
 const roles = require('../components/roles');
 const passport = require('passport');
-const validate = require('../validations/validator');
-const {putStudentAssessmentSchema, postStudentAssessmentSchema} = require('../validations/student-assessment');
+const validate = require('../components/validator');
+const {
+  putStudentAssessmentSchema,
+  postStudentAssessmentSchema,
+  deleteStudentAssessmentSchema,
+  getPaginatedStudentAssessmentSchema
+} = require('../components/validations/student-assessment');
 const {
   getStudentAssessmentById, getStudentAssessmentPaginated,
   updateStudentAssessmentById, postStudentAssessment,
-  deleteStudentAssessmentByID, getAssessmentTypeCodes
+  deleteStudentAssessmentByID, getAssessmentTypeCodes,
+  getAllAssessmentSessions, getProvincialSpecialCaseCodes
 } = require('../components/assessments/student-assessment');
 
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
@@ -24,36 +30,50 @@ router.get('/assessment-type-codes',
   getAssessmentTypeCodes
 );
 
-router.get('/paginated',
+router.get('/provincial-special-case-codes',
   passport.authenticate('jwt', {session: false}, undefined),
   isValidUiTokenWithStaffRoles,
+  getProvincialSpecialCaseCodes
+);
+
+router.get('/student/paginated',
+  passport.authenticate('jwt', {session: false}, undefined),
+  isValidUiTokenWithStaffRoles,
+  validate(getPaginatedStudentAssessmentSchema),
   getStudentAssessmentPaginated
 );
 
-router.get('/:studentAssessmentId',
+router.get('/student/:studentAssessmentId',
   passport.authenticate('jwt', {session: false}, undefined),
   isValidUiTokenWithStaffRoles,
   getStudentAssessmentById
 );
 
-router.put('/:studentAssessmentId',
+router.put('/student/:studentAssessmentId',
   passport.authenticate('jwt', {session: false}, undefined),
   isValidUiTokenWithStaffRoles,
   validate(putStudentAssessmentSchema),
   updateStudentAssessmentById
 );
 
-router.post('/student-assessment',
+router.post('/student',
   passport.authenticate('jwt', {session: false}, undefined),
   isValidUiTokenWithStaffRoles,
   validate(postStudentAssessmentSchema),
   postStudentAssessment
 );
 
-router.delete('/:studentAssessmentId',
+router.delete('/student/:studentAssessmentId',
   passport.authenticate('jwt', {session: false}, undefined),
   isValidUiTokenWithStaffRoles,
+  validate(deleteStudentAssessmentSchema),
   deleteStudentAssessmentByID
+);
+
+router.get('/sessions',
+  passport.authenticate('jwt', {session: false}, undefined),
+  isValidUiTokenWithStaffRoles,
+  getAllAssessmentSessions
 );
 
 module.exports = router;

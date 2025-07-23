@@ -1,12 +1,23 @@
 <template>
   <div>
-    <v-alert v-if="!assessments?.length" class="container">
+    <v-alert v-if="!studentAssessments?.length" class="container">
       This student does not have any assessments.
     </v-alert>
+    <v-row no-gutters>
+
+      <v-spacer />
+      <AddStudentAssessment
+          :student-id="studentId"
+          :assessment-sessions="assessmentSessions"
+          :is-loading-sessions="isLoadingSessions"
+          @saved="loadStudentAssessments"
+      />
+    </v-row>
     <v-data-table
         v-if="processedAssessments"
         :items="processedAssessments"
         :headers="fields"
+        :loading="isLoadingAssessments"
         showFilter="true"
         hide-default-footer
     >
@@ -95,43 +106,109 @@
           </td>
         </tr>
       </template>
+      <template v-slot:item.edit="{ item }">
+        <v-btn
+            color="success"
+            variant="text"
+            icon
+            @click="edit(item)"
+        >
+          <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+      </template>
+      <template v-slot:item.delete="{ item }">
+        <v-btn variant="text" icon @click="remove(item)">
+          <v-icon
+              color="error"
+              density="compact"
+              variant="text"
+          >mdi-delete-forever</v-icon>
+        </v-btn>
+      </template>
     </v-data-table>
+    <EditStudentAssessment
+        v-model="showEditDialog"
+        :student-id="studentId"
+        :assessment-item="selectedAssessment"
+        :assessment-sessions="assessmentSessions"
+        :is-loading-sessions="isLoadingSessions"
+        @saved="loadStudentAssessments"
+    />
+    <v-dialog v-model="showDeleteDialog" max-width="400">
+      <v-card>
+        <v-card-title>Confirm Delete</v-card-title>
+        <v-card-text>
+          Are you sure you want to delete this assessment?
+          <div v-if="studentToDelete" class="mt-2 text-body-2 text-medium-emphasis">
+            Assessment: {{ studentToDelete.assessmentTypeCode }} - {{ studentToDelete.sessionDate}}
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+              color="error"
+              variant="outlined"
+              class="text-none"
+              density="default"
+              text="Cancel"
+              @click="showDeleteDialog = false"/>
+          <v-spacer></v-spacer>
+          <v-btn
+              color="error"
+              variant="flat"
+              class="text-none"
+              density="default"
+              text="Delete"
+              :loading="isDeleting"
+              @click="confirmDelete"/>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
 import { useStudentStore } from "@/store/modules/student";
 import { useAppStore } from "@/store/modules/app";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import { mapState } from "pinia";
-import {useAssessmentsStore} from "@/store/modules/assessments";
+import {useAccessStore} from "@/store/modules/access";
+import {toRaw} from "vue";
+import StudentAssessmentService from "@/services/StudentAssessmentService";
+import EditStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/EditStudentAssessment.vue";
+import AddStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/AddStudentAssessment.vue";
+import StudentCoursesDeleteForm from "@/components/StudentProfile/Forms/StudentCoursesDeleteForm.vue";
+import StudentCoursesCreateForm from "@/components/StudentProfile/Forms/StudentCoursesCreateForm.vue";
 export default {
   name: "StudentAssessments",
+  components: {StudentCoursesCreateForm, StudentCoursesDeleteForm, AddStudentAssessment, EditStudentAssessment},
   setup() {
     const studentStore = useStudentStore();
     const appStore = useAppStore();
-    const assessmentStore = useAssessmentsStore();
-    return { studentStore, appStore, assessmentStore };
+    const snackbarStore = useSnackbarStore();
+    return { studentStore, appStore, snackbarStore };
   },
-  props: {},
-  computed: {
-    ...mapState(useStudentStore, { assessments: "studentAssessments" }),
-    ...mapState(useAssessmentsStore, {assessmentTypeCodes: "assessmentTypeCodes"}),
-    processedAssessments() {
-      if (!this.assessments) return [];
-      
-      return this.assessments.map(assessment => ({
-        ...assessment,
-        assessmentType: this.assessmentTypeCodes.get(assessment.assessmentTypeCode) || null
-      }));
+  props: {
+    studentId: {
+      type: String,
+      required: true
     }
   },
-
-  async mounted() {
-    await this.assessmentStore.getAssessmentTypeCodes();
-  },
-  data: function () {
-    return {
-      detailsShowing: false,
-      fields: [
+  computed: {
+    ...mapState(useAppStore, {
+      getSchoolsList: "getSchoolsList",
+      assessmentTypeCodes: "assessmentTypeCodes",
+      assessmentTypeCodesMap: "assessmentTypeCodesMap"}),
+    ...mapState(useStudentStore, { studentAssessments: "studentAssessments" }),
+    ...mapState(useAccessStore, ["hasPermissions"]),
+    processedAssessments() {
+      if (!this.studentAssessments) return [];
+      return this.studentAssessments.map(assessment => ({
+        ...assessment,
+        assessmentType: toRaw(this.assessmentTypeCodesMap.get(assessment.assessmentTypeCode)) || null,
+        sessionDate: `${assessment.courseYear}-${assessment.courseMonth}`
+      }));
+    },
+    fields() {
+      let baseFields = [
         {
           key: "data-table-expand",
           title: "",
@@ -149,8 +226,7 @@ export default {
           key: "sessionDate",
           title: "Session",
           sortable: true,
-          class: "text-md-center",
-          value: (item) => `${item.courseYear}/${item.courseMonth}`,
+          class: "text-md-center"
         },
         {
           key: "provincialSpecialCaseCode",
@@ -164,7 +240,7 @@ export default {
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
-          value:(item) => item.wroteFlag === true ? 'Y' : 'N'
+          value: (item) => item.wroteFlag === true ? 'Y' : 'N'
         },
         {
           key: "exceededWriteFlag",
@@ -172,7 +248,7 @@ export default {
           sortable: true,
           sortDirection: "desc",
           class: "text-md-center",
-          value:(item) => item.numberOfAttempts >= 3 ? 'Y' : 'N'
+          value: (item) => item.numberOfAttempts >= 3 ? 'Y' : 'N'
         },
         {
           key: "proficiencyScore",
@@ -188,9 +264,139 @@ export default {
           sortDirection: "desc",
           class: "text-left w-50",
         },
-      ],
+        {
+          key: "assessmentCenterSchoolID",
+          title: "Assessment Center",
+          sortDirection: "desc",
+          class: "text-left w-50",
+          value: (item) => this.getAssessmentCenterSchoolDisplayName(item.assessmentCenterSchoolID)
+        }
+      ]
+      if(this.hasPermissions('STUDENT', 'studentAssessmentUpdate')) {
+        baseFields.push({title: 'Edit', value: 'edit'}, {title: 'Delete', value: 'delete'});
+      }
+      return baseFields;
+    }
+  },
+  async mounted() {
+    this.appStore.getProvincialSpecialCaseCodes(false);
+    this.appStore.getAssessmentTypeCodes(false);
+    await this.loadAssessmentSessions();
+  },
+  data: function () {
+    return {
+      showEditDialog: false,
+      selectedAssessment: null,
+      assessmentSessions: [],
+      assessmentsInSession: [],
+      dialog: false,
+      detailsShowing: false,
+      hasError: false,
+      updateStudentAssessment: null,
+      showDeleteDialog: false,
+      studentToDelete: null,
+      isDeleting: false,
+      isSaving: false,
+      isLoadingSessions: true,
+      isLoadingAssessments: false,
     };
   },
+  methods: {
+    remove(assessmentStudent) {
+      this.studentToDelete = assessmentStudent;
+      this.showDeleteDialog = true;
+    },
+    async confirmDelete() {
+      if (!this.studentToDelete) return;
+
+      this.isDeleting = true;
+      try {
+        await StudentAssessmentService.deleteAssessmentStudent(this.studentToDelete.assessmentStudentID);
+        this.showDeleteDialog = false;
+        this.studentToDelete = null;
+
+        this.loadStudentAssessments();
+        this.snackbarStore.showSnackbar(
+            "Success! Student assessment deleted",
+            "success",
+            2000
+        );
+      } catch (error) {
+        console.log(error.response)
+        if(error?.response?.status === 409) {
+          this.snackbarStore.showSnackbar(
+              "Assessment student cannot be deleted. It has a proficiency score, or session is closed.",
+              "error",
+              5000
+          );
+        } else {
+          this.snackbarStore.showSnackbar(
+              "Failed to delete assessment student",
+              "error",
+              5000
+          );
+        }
+      } finally {
+        this.isDeleting = false;
+        this.showDeleteDialog = false;
+      }
+    },
+    edit(item) {
+      this.selectedAssessment = item;
+      this.showEditDialog = true;
+    },
+    async loadAssessmentSessions() {
+      this.isLoadingSessions = true;
+      try {
+        const response = await StudentAssessmentService.getAssessmentSessions();
+        this.assessmentSessions = response.data.map(session => ({
+          sessionID: session.sessionID,
+          sessionDate: `${session.courseYear}-${session.courseMonth}`,
+          assessments: session.assessments.map(assessment => ({
+            assessmentID: assessment.assessmentID,
+            assessmentTypeCode: assessment.assessmentTypeCode
+          }))
+        }));
+      } catch(error) {
+        this.snackbarStore.showSnackbar(
+            "Failed to fetch assessment sessions",
+            "error",
+            5000
+        );
+      } finally {
+        this.isLoadingSessions = false;
+      }
+    },
+    loadStudentAssessments() {
+      this.isLoadingAssessments = true;
+      let sort = {
+        'assessmentEntity.assessmentTypeCode': 'ASC',
+      };
+      let searchParams = {
+        studentId: this.studentId
+      };
+      StudentAssessmentService.getStudentAssessmentsBySearchCriteria(searchParams, sort, 1, 1000)
+        .then((response) => {
+          this.studentStore.setStudentAssessments(response?.data?.content);
+        })
+        .catch((error) => {
+          if (error.response?.status) {
+            this.snackbarStore.showSnackbar(
+                "Failed to load student assessments",
+                "error",
+                5000
+            );
+          }
+        })
+        .finally(() => {
+          this.isLoadingAssessments = false;
+        });
+    },
+    getAssessmentCenterSchoolDisplayName(schoolId) {
+      const school = this.getSchoolsList.find(school => school.schoolId === schoolId);
+      return school ? `${school.mincode} - ${school.displayName}` : '';
+    }
+  }
 };
 </script>
 

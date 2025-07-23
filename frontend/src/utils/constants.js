@@ -41,6 +41,9 @@ export const RolePermissions = Object.freeze({
     },
     courseUpdate: {
       allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"],
+    },
+    studentAssessmentUpdate: {
+      allowed: ["GRAD_SYSTEM_COORDINATOR"]
     }
 
   },

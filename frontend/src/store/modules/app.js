@@ -11,6 +11,7 @@ import BatchProcessingService from "@/services/BatchProcessingService.js";
 import { useSnackbarStore } from "../../store/modules/snackbar";
 
 import sharedMethods from "@/sharedMethods.js";
+import StudentAssessmentService from "@/services/StudentAssessmentService";
 export const useAppStore = defineStore("app", {
   state: () => ({
     snackbarStore: useSnackbarStore(),
@@ -29,6 +30,9 @@ export const useAppStore = defineStore("app", {
     instituteFacilityCodes: [],
     studentGradeCodes: [],
     config: null,
+    provincialSpecialCaseCodes: [],
+    assessmentTypeCodesMap: new Map(),
+    assessmentTypeCodes: []
   }),
   getters: {
     appEnvironment: (state) =>
@@ -315,5 +319,28 @@ export const useAppStore = defineStore("app", {
         await this.setLetterGrades(response.data);
       }
     },
+    async setAssessmentTypeCodes(assessmentTypeCodes) {
+      this.assessmentTypeCodes = sharedMethods.applyDisplayOrder(assessmentTypeCodes);
+      this.assessmentTypeCodesMap = new Map(
+        this.assessmentTypeCodes.map(type => [type.assessmentTypeCode, type])
+      );
+    },
+    async getAssessmentTypeCodes(getNewData = true) {
+      if (getNewData || this.assessmentTypeCodes.length === 0) {
+        let response = await StudentAssessmentService.getAssessmentTypeCodes();
+        await this.setAssessmentTypeCodes(response.data);
+      } else {
+        return this.assessmentTypeCodes;
+      }
+    },
+    async getProvincialSpecialCaseCodes(getNewData = true) {
+      if (getNewData || !sharedMethods.dataArrayExists(this.provincialSpecialCaseCodes)) {
+        let response = await StudentAssessmentService.getProvincialSpecialCaseCodes();
+        await this.setProvincialSpecialCaseCodes(response.data);
+      }
+    },
+    setProvincialSpecialCaseCodes(provincialSpecialCaseCodes) {
+      this.provincialSpecialCaseCodes = sharedMethods.applyDisplayOrder(provincialSpecialCaseCodes);
+    }
   },
 });
