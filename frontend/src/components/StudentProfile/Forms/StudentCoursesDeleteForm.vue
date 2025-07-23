@@ -3,27 +3,15 @@
     <v-dialog v-model="dialog" persistent max-width="1260">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-          <v-btn
-            v-if="
-              hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete
-            "
-            v-bind="props"
-            :disabled="selectedCoursesToDelete.length === 0"
-            color="error"
-            class="text-none"
-            prepend-icon="mdi-delete-forever"
-          >
+          <v-btn v-if="
+            hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete
+          " v-bind="props" :disabled="selectedCoursesToDelete.length === 0" color="error" class="text-none"
+            prepend-icon="mdi-delete-forever">
             Delete Selected Courses
           </v-btn>
 
-          <v-btn
-            v-else-if="hasPermissions('STUDENT', 'courseUpdate')"
-            v-bind="props"
-            color="error"
-            icon="mdi-delete-forever"
-            density="compact"
-            variant="text"
-          />
+          <v-btn v-else-if="hasPermissions('STUDENT', 'courseUpdate')" v-bind="props" color="error"
+            icon="mdi-delete-forever" density="compact" variant="text" />
         </slot>
       </template>
 
@@ -32,15 +20,8 @@
           <v-row no-gutters>
             <div class="v-card-title">Delete Student Course</div>
             <v-spacer />
-            <v-btn
-              icon="mdi-close"
-              density="compact"
-              rounded="sm"
-              variant="outlined"
-              color="error"
-              class="mt-2"
-              @click="close"
-            />
+            <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
+              @click="close" />
           </v-row>
           <v-card-subtitle>{{
             studentStore.formattedStudentName
@@ -48,96 +29,64 @@
         </v-card-title>
 
         <v-card-text>
-          <v-alert
-            v-if="selectedCoursesWithWarnings.length > 0"
-            type="info"
-            class="mb-4"
-            border="start"
-            elevation="2"
-            variant="tonal"
-          >
-            <div class="mb-2">
-              You are about to remove the following student course{{
-                selectedCoursesWithWarnings.length > 1 ? "s" : ""
-              }}:
-            </div>
-            <v-row
-              no-gutters
-              v-for="course in selectedCoursesWithWarnings"
-              :key="course.id"
-              class="mb-2"
-            >
+
+          <div class="mb-2" v-if="selectedCoursesWithWarnings.length > 0">
+            You are about to remove the following student course{{
+              selectedCoursesWithWarnings.length > 1 ? "s" : ""
+            }}:
+          </div>
+          <v-alert type="info" variant="outline" class="mb-4" border="start" elevation="2" no-gutters
+            v-for="course in selectedCoursesWithWarnings" :key="course.id">
+            <v-row class="mb-2">
+
               <v-col cols="12">
-                <strong
-                  >{{ course.courseDetails.courseCode }}
+                <strong>{{ course.courseDetails.courseCode }}
                   {{ course.courseDetails.courseLevel }} -
                   {{
                     $filters.formatYYYYMMStringDate(course.courseSession)
-                  }}</strong
-                >
-              </v-col>
-              <v-col cols="12" class="ml-3">
-                {{ course.courseDetails.courseName }}
-              </v-col>
-              <v-col class="ml-3"
-                ><strong>Interim</strong>&nbsp;
-                <span v-if="course.interimPercent"
-                  >{{ course.interimPercent }}%
-                  {{ course.interimLetterGrade }}</span
-                >
+                  }}</strong> <v-spacer />({{ course.courseDetails.courseName }}) </v-col>
+              <v-col class="ml-3"><strong>Interim</strong>&nbsp;
+                <span v-if="course.interimPercent">{{ course.interimPercent }}%
+                  {{ course.interimLetterGrade }}</span>
                 <span v-else> <i>null</i> </span>
               </v-col>
-              <v-col
-                ><strong>Final</strong>&nbsp;
+              <v-col><strong>Final</strong>&nbsp;
                 <span v-if="course.finalPercent">
-                  {{ course.finalPercent }}% {{ course.finalLetterGrade }}</span
-                ><span v-else><i>null</i></span></v-col
-              >
+                  {{ course.finalPercent }}% {{ course.finalLetterGrade }}</span><span v-else><i>null</i></span></v-col>
               <!-- I don't think credits can have a null value? - Samara -->
               <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
-              <v-col
-                ><strong>FA/AS</strong>&nbsp;
+              <v-col><strong>FA/AS</strong>&nbsp;
                 <span v-if="course.fineArtsAppliedSkills">
                   {{ course.fineArtsAppliedSkills }}
                 </span>
                 <span v-else><i>null</i></span>
               </v-col>
-              <v-col
-                ><strong>Eq/Ch</strong>&nbsp;
+              <v-col><strong>Eq/Ch</strong>&nbsp;
                 <span v-if="course.equivOrChallenge">
                   {{ course.equivOrChallenge }}
                 </span>
                 <span v-else><i>null</i></span>
               </v-col>
-              <v-col cols="12" class="ml-3" v-if="course.customizedCourseName"
-                ><strong>Custom Course Title</strong>
-                {{ course.customizedCourseName }}</v-col
-              >
+              <v-col cols="12" class="ml-3" v-if="course.customizedCourseName"><strong>Custom Course Title</strong>
+                {{ course.customizedCourseName }}</v-col>
+              <v-col cols="12">
+                <div v-for="(issue, index) in course.validationIssues" :key="index" class="d-flex align-center mb-1">
+                  <v-icon color="warning" class="mr-2">mdi-alert</v-icon>
+                  <span>{{ issue.message }}</span>
+                </div>
+              </v-col>
             </v-row>
           </v-alert>
+
         </v-card-text>
 
         <v-card-actions>
-          <v-btn
-            color="error"
-            variant="outlined"
-            class="text-none"
-            density="default"
-            @click="close"
-          >
+          <v-btn color="error" variant="outlined" class="text-none" density="default" @click="close">
             Cancel
           </v-btn>
           <v-spacer />
-          <v-btn
-            color="error"
-            variant="flat"
-            class="text-none"
-            density="default"
-            @click="confirmDelete"
-          >
-            Delete Course<span v-if="selectedCoursesToDelete.length > 1"
-              >s</span
-            >
+          <v-btn color="error" variant="flat" class="text-none" density="default" @click="confirmDelete">
+            Delete Course<span v-if="selectedCoursesToDelete.length > 1">s</span>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -190,7 +139,7 @@ export default {
               c.courseSession === course.courseDetails.courseSession
           );
 
-        const isUsedForGrad = match?.used || false;
+        const isUsedForGrad = match?.used == true
         const hasExam =
           match?.bestExamPercent !== null ||
           (match?.specialCase && match.specialCase !== "N") ||
@@ -203,20 +152,20 @@ export default {
             ...(course.validationIssues || []),
             ...(isUsedForGrad
               ? [
-                  {
-                    type: "warning",
-                    message:
-                      "This course is used to meet graduation requirements.",
-                  },
-                ]
+                {
+                  type: "warning",
+                  message:
+                    "This course is used to meet graduation requirements.",
+                },
+              ]
               : []),
             ...(hasExam
               ? [
-                  {
-                    type: "info",
-                    message: "This course has an associated exam record.",
-                  },
-                ]
+                {
+                  type: "info",
+                  message: "This course has an associated exam record.",
+                },
+              ]
               : []),
           ],
         };
