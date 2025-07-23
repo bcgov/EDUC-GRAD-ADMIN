@@ -10,8 +10,8 @@
             Delete Selected Courses
           </v-btn>
 
-          <v-btn v-else-if="hasPermissions('STUDENT', 'courseUpdate')" v-bind="props" color="error"
-            icon="mdi-delete-forever" density="compact" variant="text" />
+          <v-btn v-else-if="!courseBatchDelete" :disabled="!hasPermissions('STUDENT', 'courseUpdate')" v-bind="props"
+            color="error" icon="mdi-delete-forever" density="compact" variant="text" />
         </slot>
       </template>
 
@@ -96,6 +96,7 @@
 
 <script>
 import { useStudentStore } from "@/store/modules/student";
+import { useAccessStore } from "@/store/modules/access";
 
 export default {
   name: "StudentCoursesDeleteForm",
@@ -121,6 +122,9 @@ export default {
   computed: {
     studentStore() {
       return useStudentStore();
+    },
+    accessStore() {
+      return useAccessStore();
     },
     studentPen() {
       return this.studentStore.pen;
@@ -185,8 +189,8 @@ export default {
         console.error("Failed to delete student courses:", error);
       }
     },
-    hasPermissions(module, permission) {
-      return true; // Replace with real permission check
+    hasPermissions(group, permission) {
+      return this.accessStore.hasPermissions("STUDENT", "courseUpdate")
     },
   },
 };
