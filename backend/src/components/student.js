@@ -61,20 +61,21 @@ async function getStudentCourseByStudentID(req, res) {
 }
 
 async function putStudentCoursesByStudentID(req, res) {
+
   const token = auth.getBackendToken(req);
   try {
     const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.studentID
       }`;
     const data = await putData(
       token,
-      url,
       req.body,
+      url,
       req.session?.correlationID
     );
     return res.status(200).json(data);
   } catch (e) {
     if (e.data.message) {
-      return response(res, e.data.message, e.status);
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }

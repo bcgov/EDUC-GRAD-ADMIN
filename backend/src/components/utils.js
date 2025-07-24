@@ -61,10 +61,10 @@ function minify(obj, keys = ["documentData"]) {
   return lodash.transform(
     obj,
     (result, value, key) =>
-      (result[key] =
-        keys.includes(key) && lodash.isString(value)
-          ? value.substring(0, 1) + " ..."
-          : value)
+    (result[key] =
+      keys.includes(key) && lodash.isString(value)
+        ? value.substring(0, 1) + " ..."
+        : value)
   );
 }
 
@@ -382,11 +382,6 @@ async function putData(token, data, url, correlationID) {
 
     log.info("put Data Url", url);
     log.verbose("put Data Req", data);
-
-    // set updateUser to GRAD by default if key isn't provided in payload
-    if (!data.updateUser) {
-      data.updateUser = "GRAD";
-    }
 
     const response = await axios.put(url, data, putDataConfig);
 

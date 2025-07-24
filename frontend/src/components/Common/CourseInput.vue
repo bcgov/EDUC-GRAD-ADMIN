@@ -9,8 +9,9 @@
       <v-col>
         <v-text-field v-model="localCourse.courseLevel" label="Course Level" @input="onInput" :disabled="loading"
           variant="outlined" density="compact" class="my-2" persistent-placeholder persistent-hint
-          :rules="[v => !!v || 'Course Level is required']" />
+          />
       </v-col>
+      <slot name="additional-input-fields-cols" />
     </v-row>
 
     <!-- Loading Spinner -->
@@ -151,7 +152,7 @@ export default {
     async fetchCourse() {
       const { courseCode, courseLevel } = this.localCourse;
 
-      if (!courseCode || !courseLevel) {
+      if (!courseCode) {
         this.localCourse = { courseCode, courseLevel };
         this.notFound = false;
         this.loading = false;
@@ -194,7 +195,7 @@ export default {
     if (this.localCourse.courseCode && this.localCourse.courseLevel && !this.localCourse.courseID) {
       this.fetchCourse();
     }
-    this.debouncedLookup = debounce(this.fetchCourse, 1000);
+    this.debouncedLookup = debounce(this.fetchCourse, 1500);
   },
 };
 </script>

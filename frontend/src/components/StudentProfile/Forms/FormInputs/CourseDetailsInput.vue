@@ -1,11 +1,20 @@
 <template>
   <v-row no-gutters class="mb-4" style="overflow-x: hidden;">
-    <!-- Disabled identifying fields -->
-    <v-col cols="2" class="d-flex flex-column justify-start">
-      <strong>{{ course.courseCode }} {{ course.courseLevel }} -
+    <v-col v-if="create" cols="2" class="d-flex flex-column justify-start">
+      <strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel }} -
         {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
-      {{ course.courseName }}
+      {{ course.courseDetails.courseName }}
+      <slot name="remove-button"></slot>
+
+    </v-col>
+
+    <v-col v-if="update" cols="2" class="d-flex flex-column justify-start">
+
+      <strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel }} -
+        {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
+      </strong>
+      {{ course.courseDetails.courseName }}
       <slot name="remove-button"></slot>
 
     </v-col>
@@ -43,7 +52,7 @@
 
         <v-col>
           <v-select v-model="course.credits" :items="creditsAvailableForCourseSession" item-title="creditValue"
-            item-value="creditValue" label="Credits" variant="outlined" density="compact" class="pa-1" clearable
+            item-value="creditValue" label="Credits" variant="outlined" density="compact" class="pa-1"
             persistent-placeholder persistent-hint />
         </v-col>
 
@@ -54,8 +63,11 @@
         </v-col>
 
         <v-col>
-          <v-select v-model="course.equivalencyOrChallenge" :items="['Equivalency', 'Challenge', 'None']"
-            label="Eq / Ch" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
+          <v-select v-model="course.equivOrChallenge" :items="[
+            { title: 'Equivalency', value: 'E' },
+            { title: 'Challenge', value: 'C' },
+            { title: 'None', value: null }
+          ]" label="Eq / Ch" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
             persistent-hint />
         </v-col>
       </v-row>
@@ -78,9 +90,9 @@
       </v-row>
       <!-- Display courseWarnings -->
 
-      <v-row v-for="(warning, index) in warnings" :key="index" class="align-center">
-        <v-col class="pb-3 m-0" style="color: orange;">
-          <v-icon color="orange" small>mdi-alert</v-icon>
+      <v-row no-gutters v-for="(warning, index) in warnings" :key="index" class="align-center">
+        <v-col class="py-1 m-0 d-flex align-center text-caption">
+          <v-icon color="orange" size="18" class="me-1">mdi-alert</v-icon>
           {{ warning }}
         </v-col>
       </v-row>
@@ -260,11 +272,11 @@ export default {
         fineArtsAppliedSkills: {
 
         },
-        equivalencyOrChallenge: {
+        equivOrChallenge: {
           isEqChValue: helpers.withMessage(
-            'Must be Equivalency, Challenge, or None',
+            'Eq/CH must be Equivalency, Challenge, or None',
             (value) => {
-              return ['Equivalency', 'Challenge', 'None', '', null, undefined].includes(value);
+              return ['E', 'C', '', null, undefined].includes(value);
             }
           ),
         },
@@ -355,20 +367,20 @@ export default {
 
     isBAAorLocallyDevelopedOrCP() {
       return !(
-        this.course.courseCategory.description === 'Board Authority Authorized' ||
-        this.course.courseCategory.description === 'Locally Developed' ||
-        this.course.courseCategory.description === 'Career Program'
+        this.course.courseDetails.courseCategory.description === 'Board Authority Authorized' ||
+        this.course.courseDetails.courseCategory.description === 'Locally Developed' ||
+        this.course.courseDetails.courseCategory.description === 'Career Program'
       );
     },
 
     creditsAvailableForCourseSession() {
-      if (!this.course.courseSession || !Array.isArray(this.course.courseAllowableCredit)) return [];
+      if (!this.course.courseSession || !Array.isArray(this.course.courseDetails.courseAllowableCredit)) return [];
 
       const sessionYear = this.course.courseSession.slice(0, 4);
       const sessionMonth = this.course.courseSession.slice(4, 6);
       const sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
 
-      return this.course.courseAllowableCredit
+      return this.course.courseDetails.courseAllowableCredit
         .filter(credit => {
           const start = new Date(credit.startDate);
           const end = credit.endDate ? new Date(credit.endDate) : new Date('9999-12-31');
@@ -390,7 +402,7 @@ export default {
   methods: {
 
     updateWarnings() {
-      const courseType = this.course.courseCategory?.description || '';
+      const courseType = this.course.courseDetails.courseCategory?.description || '';
       const trimmedProgram = this.studentProgram?.trim();
 
       const warnings = [];
@@ -405,16 +417,22 @@ export default {
     },
 
     getGradesForPercent(percent) {
-      const allAllowableLetterGradesForCourse = this.allLetterGrades.filter((grade) => {
-        if (this.course.courseCode !== 'GT' && this.course.courseCode !== 'GTF') {
-          return grade.grade !== 'RM';
-        }
-        return true;
-      });
+      const isGTorGTF = this.course.courseDetails.courseCode === 'GT' || this.course.courseDetails.courseCode === 'GTF';
 
-      if (this.course.courseSession < 199409) {
-        return allAllowableLetterGradesForCourse.map((grade) => grade.grade);
-      }
+      const sessionDateStr = String(this.course.courseSession); // e.g., "199409"
+      const sessionYear = sessionDateStr.slice(0, 4);
+      const sessionMonth = sessionDateStr.slice(4, 6);
+      const sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
+
+      const allAllowableLetterGradesForCourse = this.allLetterGrades.filter(grade => {
+        // Exclude 'RM' if not GT or GTF
+        if (!isGTorGTF && grade.grade === 'RM') return false;
+
+        const effectiveDate = new Date(grade.effectiveDate);
+        const expiryDate = grade.expiryDate ? new Date(grade.expiryDate) : new Date(9999, 11, 31);
+
+        return sessionDate >= effectiveDate && sessionDate <= expiryDate;
+      });
 
       const numPercent = Number(percent);
       if (!percent || isNaN(numPercent)) {
