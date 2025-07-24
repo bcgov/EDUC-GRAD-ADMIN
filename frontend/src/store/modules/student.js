@@ -27,7 +27,7 @@ export const useStudentStore = defineStore("student", {
       profile: {},
       courses: [], // do we want to create a coursesMap ?
       assessmentsLegacy: [],
-      assessments: [],
+      assessmentStudents: [],
       coursesLegacy: [],
       examsLegacy: [],
       notes: [],
@@ -336,7 +336,7 @@ export const useStudentStore = defineStore("student", {
       this.student.coursesLegacy = [];
       this.student.courses = [];
       this.student.assessmentsLegacy = [];
-      this.student.assessments = [];
+      this.student.assessmentStudents = [];
       this.student.examsLegacy = [];
       this.student.gradStatus = "not loaded";
       this.student.optionalPrograms = [];
@@ -592,8 +592,8 @@ export const useStudentStore = defineStore("student", {
       this.student.courses = payload;
     },
     setStudentAssessments(studentAssessments) {
-      this.student.assessments = studentAssessments;
-      if (this.student.assessments.length) {
+      this.student.assessmentStudents = studentAssessments;
+      if (this.student.assessmentStudents.length) {
         this.student.hasAssessments = true;
       }
     },
@@ -752,7 +752,6 @@ export const useStudentStore = defineStore("student", {
         ...assessment,
         id: `${assessment.assessmentCode}_${assessment.sessionDate}`,
       }));
-      // return this.student.assessments;
     },
     getStudentNotes() {
       return this.student.notes;
@@ -857,7 +856,7 @@ export const useStudentStore = defineStore("student", {
       }
     },
     studentAssessments() {
-      return this.student.assessments;
+      return this.student.assessmentStudents;
     },
     studentCourses() {
       return this.student.courses;

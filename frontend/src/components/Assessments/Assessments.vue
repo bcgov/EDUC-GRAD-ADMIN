@@ -16,7 +16,7 @@
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import DisplayTable from "@/components/DisplayTable.vue";
 import {mapActions, mapState} from "pinia";
-import {useAssessmentsStore} from "@/store/modules/assessments";
+import {useAppStore} from "@/store/modules/app";
 
 export default {
   name: "Assessments",
@@ -24,7 +24,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   computed: {
-    ...mapState(useAssessmentsStore, {assessmentTypeCodes: "assessmentTypeCodes"}),
+    ...mapState(useAppStore, {assessmentTypeCodes: "assessmentTypeCodes"}),
   },
   data() {
     return {
@@ -71,7 +71,7 @@ export default {
     this.getAllAssessment();
   },
   methods: {
-    ...mapActions(useAssessmentsStore, ['getAssessmentTypeCodes']),
+    ...mapActions(useAppStore, ['getAssessmentTypeCodes']),
     formatDate(date) {
       return this.$filters.formatSimpleDate(date);
     },

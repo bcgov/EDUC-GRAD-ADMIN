@@ -178,6 +178,67 @@ async function getCommonServiceData(url, params) {
     throw new ApiError(status, { message: "API Get error" }, e);
   }
 }
+async function putCommonServiceData(url, data, user) {
+  try {
+    const putDataConfig  = addTokenToHeader(null, await getBackendServiceToken());
+    if(user && typeof user === 'string'){
+      data.updateUser = user;
+    } else {
+      data.updateUser = 'GRAD';
+    }
+    log.info('PUT', url);
+    log.debug('put Data Req', data);
+    const response = await axios.put(url, data, putDataConfig);
+    log.info(`put Data Status for url ${url} :: is :: `, response.status);
+    log.info(
+      `put Data StatusText for url ${url}  :: is :: `,
+      response.statusText
+    );
+    log.verbose(
+      `put Data Response for url ${url}  :: is :: `,
+      minify(response.data)
+    );
+    return response.data;
+  } catch (e) {
+    log.error('putData Error', e.response ? e.response.status : e.message);
+    const status = e.response
+      ? e.response.status
+      : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, { message: 'API Put error' }, e);
+  }
+}
+
+async function postCommonServiceData(url, data, user) {
+  try {
+    const putDataConfig  = addTokenToHeader(null, await getBackendServiceToken());
+    if(user && typeof user === 'string'){
+      data.updateUser = user;
+      data.createUser = user;
+    } else {
+      data.updateUser = 'GRAD';
+      data.createUser = 'GRAD';
+    }
+    log.info('POST', url);
+    log.debug('post Data Req', data);
+    const response = await axios.post(url, data, putDataConfig);
+    log.info(`post Data Status for url ${url} :: is :: `, response.status);
+    log.info(
+      `post Data StatusText for url ${url}  :: is :: `,
+      response.statusText
+    );
+    log.verbose(
+      `post Data Response for url ${url}  :: is :: `,
+      minify(response.data)
+    );
+    return response.data;
+  } catch (e) {
+    log.error('postData Error', e.response ? e.response.status : e.message);
+    const status = e.response
+      ? e.response.status
+      : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, { message: 'API Post error' }, e);
+  }
+}
 
 async function getData(token, url, correlationID) {
   const username = getUsernameFromToken(token);
@@ -494,7 +555,9 @@ const utils = {
   getCommonServiceData,
   forwardPostReq,
   postData,
+  postCommonServiceData,
   putData,
+  putCommonServiceData,
   formatCommentTimestamp,
   errorResponse,
   getCodes,
