@@ -84,8 +84,15 @@
                     BETA
                   </p></v-tab
                 >
-                <v-tab value="Assessments" class="text-none"
-                  >Assessments ({{ assessments.length }})</v-tab
+                <v-tab value="AssessmentsLegacy" class="text-none"
+                  >Assessments ({{ assessmentsLegacy.length }})</v-tab
+                >
+                <v-tab value="Assessments" class="text-none" v-if="enableCRUD()"
+                >Assessments ({{ assessments?.length }})
+                  <p class="text-caption font-weight-bold text-bcGovGold">
+                    BETA
+                  </p>
+                </v-tab
                 >
                 <v-tab value="ExamsLegacy" class="text-none"
                   >Exams Details ({{ examsLegacy.length }})</v-tab
@@ -190,7 +197,7 @@
                     <StudentCourses />
                   </v-window-item>
                   <v-window-item
-                    value="Assessments"
+                    value="AssessmentsLegacy"
                     data-cy="assessments-window-item"
                   >
                     <v-progress-circular
@@ -199,7 +206,20 @@
                       color="green"
                     >
                     </v-progress-circular>
-                    <StudentAssessments />
+                    <StudentAssessmentsLegacy />
+                  </v-window-item>
+                  <v-window-item
+                      v-if="enableCRUD()"
+                      value="Assessments"
+                      data-cy="assessments-window-item"
+                  >
+                    <v-progress-circular
+                        v-if="tabLoading"
+                        indeterminate
+                        color="green"
+                    >
+                    </v-progress-circular>
+                    <StudentAssessments :student-id="studentId" />
                   </v-window-item>
                   <v-window-item
                     value="ExamsLegacy"
@@ -616,6 +636,7 @@
 <script>
 import AssessmentService from "@/services/AssessmentService.js";
 import CourseService from "@/services/CourseService.js";
+import StudentAssessmentService from "@/services/StudentAssessmentService.js";
 import StudentService from "@/services/StudentService.js";
 
 // import components
@@ -625,7 +646,8 @@ import StudentCoursesLegacy from "@/components/StudentProfile/Courses/StudentCou
 import StudentExamsLegacy from "@/components/StudentProfile/Exams/StudentExamsLegacy.vue";
 import StudentCourses from "@/components/StudentProfile/Courses/StudentCourses.vue";
 import StudentExams from "@/components/StudentProfile/Exams/StudentExams.vue";
-import StudentAssessments from "@/components/StudentProfile/StudentAssessments.vue";
+import StudentAssessmentsLegacy from "@/components/StudentProfile/StudentAssessmentsLegacy.vue";
+import StudentAssessments from "@/components/StudentProfile/StudentAssessment/StudentAssessments.vue";
 import StudentGraduationStatus from "@/components/StudentProfile/StudentGraduationStatus.vue";
 import StudentOptionalPrograms from "@/components/StudentProfile/OptionalPrograms/StudentOptionalPrograms.vue";
 import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/StudentAuditHistory.vue";
@@ -723,6 +745,7 @@ export default {
     StudentExamsLegacy: StudentExamsLegacy,
     StudentCourses: StudentCourses,
     StudentExams: StudentExams,
+    StudentAssessmentsLegacy: StudentAssessmentsLegacy,
     StudentAssessments: StudentAssessments,
     GRADRequirementDetails: GRADRequirementDetails,
     StudentGraduationStatus: StudentGraduationStatus,
@@ -815,7 +838,8 @@ export default {
     ...mapState(useStudentStore, {
       profile: "getStudentProfile",
       courses: "getStudentCoursesLegacy",
-      assessments: "getStudentAssessments",
+      assessmentsLegacy: "getStudentAssessmentsLegacy",
+      assessments: "studentAssessments",
       examsLegacy: "getStudentExamsLegacy",
       gradInfo: "getStudentGraduationCreationAndUpdate",
       hasGradStatus: "studentHasGradStatus",
@@ -871,6 +895,7 @@ export default {
       "setStudentXmlReport",
       "setStudentGradStatus",
       "setStudentProfile",
+      "setStudentAssessmentsLegacy",
       "setStudentAssessments",
       "setStudentGradStatusOptionalPrograms",
       "setStudentCoursesLegacy",
@@ -1117,7 +1142,8 @@ export default {
     },
     loadStudent(studentIdFromURL) {
       this.loadStudentProfile();
-      this.loadAssessments();
+      this.loadAssessmentsLegacy();
+      this.loadStudentAssessments(studentIdFromURL);
       this.loadGraduationStatus(studentIdFromURL);
       this.loadStudentOptionalPrograms(studentIdFromURL);
       this.loadCareerPrograms(studentIdFromURL);
@@ -1167,11 +1193,31 @@ export default {
           }
         });
     },
-
-    loadAssessments() {
-      AssessmentService.getStudentAssessment(this.pen)
+    loadStudentAssessments(studentId) {
+      let sort = {
+        'assessmentEntity.assessmentTypeCode': 'ASC',
+      };
+      let searchParams = {
+        studentId: studentId
+      };
+      StudentAssessmentService.getStudentAssessmentsBySearchCriteria(searchParams, sort, 1, 1000)
+          .then((response) => {
+            this.setStudentAssessments(response?.data?.content);
+          })
+          .catch((error) => {
+            if (error.response?.status) {
+              this.snackbarStore.showSnackbar(
+                  "There was an error: " + error.response.status,
+                  "error",
+                  5000
+              );
+            }
+          });
+    },
+    loadAssessmentsLegacy() {
+      AssessmentService.getStudentAssessmentLegacy(this.pen)
         .then((response) => {
-          this.setStudentAssessments(response.data);
+          this.setStudentAssessmentsLegacy(response.data);
         })
         .catch((error) => {
           if (error.response.status) {

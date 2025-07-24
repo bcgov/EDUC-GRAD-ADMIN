@@ -85,7 +85,7 @@
                         <div class="row py-1">
                           <div class="col"><strong>Credits:</strong></div>
                           <div class="col">
-                            {{ item.courseDetails.numCredits }}
+                            {{ item.courseDetails.credits }}
                           </div>
                         </div>
                         <div class="row py-1">

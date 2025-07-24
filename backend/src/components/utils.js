@@ -12,6 +12,7 @@ const { LocalDateTime, DateTimeFormatter } = require("@js-joda/core");
 const { Locale } = require("@js-joda/locale_en");
 const auth = require("./auth");
 const cache = require("memory-cache");
+const fsStringify = require('fast-safe-stringify');
 let memCache = new cache.Cache();
 
 axios.interceptors.request.use((axiosRequestConfig) => {
@@ -60,10 +61,10 @@ function minify(obj, keys = ["documentData"]) {
   return lodash.transform(
     obj,
     (result, value, key) =>
-      (result[key] =
-        keys.includes(key) && lodash.isString(value)
-          ? value.substring(0, 1) + " ..."
-          : value)
+    (result[key] =
+      keys.includes(key) && lodash.isString(value)
+        ? value.substring(0, 1) + " ..."
+        : value)
   );
 }
 
@@ -175,6 +176,67 @@ async function getCommonServiceData(url, params) {
       ? e.response.status
       : HttpStatus.INTERNAL_SERVER_ERROR;
     throw new ApiError(status, { message: "API Get error" }, e);
+  }
+}
+async function putCommonServiceData(url, data, user) {
+  try {
+    const putDataConfig  = addTokenToHeader(null, await getBackendServiceToken());
+    if(user && typeof user === 'string'){
+      data.updateUser = user;
+    } else {
+      data.updateUser = 'GRAD';
+    }
+    log.info('PUT', url);
+    log.debug('put Data Req', data);
+    const response = await axios.put(url, data, putDataConfig);
+    log.info(`put Data Status for url ${url} :: is :: `, response.status);
+    log.info(
+      `put Data StatusText for url ${url}  :: is :: `,
+      response.statusText
+    );
+    log.verbose(
+      `put Data Response for url ${url}  :: is :: `,
+      minify(response.data)
+    );
+    return response.data;
+  } catch (e) {
+    log.error('putData Error', e.response ? e.response.status : e.message);
+    const status = e.response
+      ? e.response.status
+      : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, { message: 'API Put error' }, e);
+  }
+}
+
+async function postCommonServiceData(url, data, user) {
+  try {
+    const putDataConfig  = addTokenToHeader(null, await getBackendServiceToken());
+    if(user && typeof user === 'string'){
+      data.updateUser = user;
+      data.createUser = user;
+    } else {
+      data.updateUser = 'GRAD';
+      data.createUser = 'GRAD';
+    }
+    log.info('POST', url);
+    log.debug('post Data Req', data);
+    const response = await axios.post(url, data, putDataConfig);
+    log.info(`post Data Status for url ${url} :: is :: `, response.status);
+    log.info(
+      `post Data StatusText for url ${url}  :: is :: `,
+      response.statusText
+    );
+    log.verbose(
+      `post Data Response for url ${url}  :: is :: `,
+      minify(response.data)
+    );
+    return response.data;
+  } catch (e) {
+    log.error('postData Error', e.response ? e.response.status : e.message);
+    const status = e.response
+      ? e.response.status
+      : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, { message: 'API Post error' }, e);
   }
 }
 
@@ -321,11 +383,6 @@ async function putData(token, data, url, correlationID) {
     log.info("put Data Url", url);
     log.verbose("put Data Req", data);
 
-    // set updateUser to GRAD by default if key isn't provided in payload
-    if (!data.updateUser) {
-      data.updateUser = "GRAD";
-    }
-
     const response = await axios.put(url, data, putDataConfig);
 
     log.info(`put Data Status for url ${url} :: is :: `, response.status);
@@ -444,6 +501,36 @@ function errorResponse(res, msg, code) {
   });
 }
 
+async function logApiError(e, functionName, message) {
+  if (e?.response?.status === 404) {
+    log.info('Entity not found', e);
+  } else if (e?.response?.data) {
+    log.error(fsStringify(e.response.data));
+  } else if (message) {
+    log.error(message);
+    log.error(functionName, ' Error', JSON.stringify(e));
+  } else {
+    log.error(functionName, ' Error', JSON.stringify(e));
+  }
+}
+
+async function cachedApiCall(cacheKey, url, useCache = true) {
+  if (useCache) {
+    const cached = memCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+  }
+  const params = addTokenToHeader(null, await getBackendServiceToken());
+  const response = await axios.get(url, params);
+  const data = response.data;
+
+  if (useCache) {
+    memCache.put(cacheKey, data);
+  }
+  return data;
+}
+
 function formatQueryParamString(queryParams) {
   return (
     "?" +
@@ -468,13 +555,17 @@ const utils = {
   getCommonServiceData,
   forwardPostReq,
   postData,
+  postCommonServiceData,
   putData,
+  putCommonServiceData,
   formatCommentTimestamp,
   errorResponse,
   getCodes,
   cacheMiddleware,
   getBackendServiceToken,
   getCodeTable,
+  logApiError,
+  cachedApiCall,
   formatQueryParamString,
 };
 

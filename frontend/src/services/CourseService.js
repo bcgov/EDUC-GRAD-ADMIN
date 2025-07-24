@@ -21,9 +21,9 @@ export default {
   getCourseRestriction(mainCourseLevel, mainCourseCode) {
     return ApiService.apiAxios.get(
       "/api/course/courseRestriction?mainCourseLevel=" +
-        mainCourseLevel +
-        "&mainCourseCode=" +
-        mainCourseCode
+      mainCourseLevel +
+      "&mainCourseCode=" +
+      mainCourseCode
     );
   },
   createCourseRestriction(json) {

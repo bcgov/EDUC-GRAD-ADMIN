@@ -13,18 +13,14 @@
 </template>
 
 <script>
+import AssessmentService from "@/services/AssessmentService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import DisplayTable from "@/components/DisplayTable.vue";
-import {mapActions, mapState} from "pinia";
-import {useAppStore} from "@/store/modules/app";
 
 export default {
-  name: "Assessments",
+  name: "AssessmentsLegacy",
   components: {
     DisplayTable: DisplayTable,
-  },
-  computed: {
-    ...mapState(useAppStore, {assessmentTypeCodes: "assessmentTypeCodes"}),
   },
   data() {
     return {
@@ -32,14 +28,14 @@ export default {
       assessments: [],
       assessmentFields: [
         {
-          key: "assessmentTypeCode",
+          key: "assessmentCode",
           title: "Assessment Code",
           sortable: true,
           sortDirection: "desc",
           class: "w-15",
         },
         {
-          key: "label",
+          key: "assessmentName",
           title: "Assessment Name",
           sortable: true,
           class: "w-40",
@@ -48,21 +44,20 @@ export default {
           key: "language",
           title: "Language",
           sortable: true,
+          sortDirection: "desc",
           class: "w-5 text-center",
         },
         {
-          key: "effectiveDate",
+          key: "startDate",
           title: "Start Date",
           sortable: true,
           class: "w-20",
-          value: (item) => this.formatDate(item.effectiveDate)
         },
         {
-          key: "expiryDate",
+          key: "endDate",
           title: "End Date",
           sortable: true,
           class: "w-20",
-          value: (item) => this.formatDate(item.expiryDate)
         },
       ],
     };
@@ -71,18 +66,16 @@ export default {
     this.getAllAssessment();
   },
   methods: {
-    ...mapActions(useAppStore, ['getAssessmentTypeCodes']),
-    formatDate(date) {
-      return this.$filters.formatSimpleDate(date);
-    },
-    async getAllAssessment() {
-      try {
-        await this.getAssessmentTypeCodes();
-        this.assessments = Array.from(this.assessmentTypeCodes.values());
-      } catch(error) {
-        console.error("API error:", error);
-        this.snackbarStore.showSnackbar(error.message, "error", 5000);
-      }
+    getAllAssessment() {
+      AssessmentService.getAllAssesments()
+        .then((response) => {
+          this.assessments = response.data;
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error("API error:", error);
+          this.snackbarStore.showSnackbar(error.message, "error", 5000);
+        });
     },
   },
 };

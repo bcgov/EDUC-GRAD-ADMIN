@@ -26,7 +26,8 @@ export const useStudentStore = defineStore("student", {
     student: {
       profile: {},
       courses: [], // do we want to create a coursesMap ?
-      assessments: [],
+      assessmentsLegacy: [],
+      assessmentStudents: [],
       coursesLegacy: [],
       examsLegacy: [],
       notes: [],
@@ -282,7 +283,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the Student History): " +
-                error?.response?.status
+              error?.response?.status
             );
           }
         });
@@ -306,7 +307,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the Student Optional Program History): " +
-                error?.response?.status
+              error?.response?.status
             );
           }
         });
@@ -323,7 +324,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the Student Course History): " +
-                error?.response?.status
+              error?.response?.status
             );
           }
         });
@@ -334,7 +335,8 @@ export const useStudentStore = defineStore("student", {
       this.student.id = [];
       this.student.coursesLegacy = [];
       this.student.courses = [];
-      this.student.assessments = [];
+      this.student.assessmentsLegacy = [];
+      this.student.assessmentStudents = [];
       this.student.examsLegacy = [];
       this.student.gradStatus = "not loaded";
       this.student.optionalPrograms = [];
@@ -422,9 +424,9 @@ export const useStudentStore = defineStore("student", {
     setStudentCoursesLegacy(payload) {
       this.student.coursesLegacy = payload;
     },
-    setStudentAssessments(payload) {
-      this.student.assessments = payload;
-      if (this.student.assessments.length) {
+    setStudentAssessmentsLegacy(payload) {
+      this.student.assessmentsLegacy = payload;
+      if (this.student.assessmentsLegacy.length) {
         this.student.hasAssessments = true;
       }
     },
@@ -483,7 +485,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
-                error?.response?.status
+              error?.response?.status
             );
           }
         });
@@ -500,7 +502,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the student's Career Programs): " +
-                error?.response?.status
+              error?.response?.status
             );
           }
         });
@@ -589,7 +591,12 @@ export const useStudentStore = defineStore("student", {
     async setStudentCourses(payload) {
       this.student.courses = payload;
     },
-
+    setStudentAssessments(studentAssessments) {
+      this.student.assessmentStudents = studentAssessments;
+      if (this.student.assessmentStudents.length) {
+        this.student.hasAssessments = true;
+      }
+    },
     // create student courses and form helpers
     async createStudentCourses(courses) {
       try {
@@ -607,10 +614,21 @@ export const useStudentStore = defineStore("student", {
     addCoursesToCreate(course) {
       this.create.courses.push(course);
     },
-    removeCourseFromCreate(courseID) {
+    removeCourseFromCreate(courseID, courseSession) {
       this.create.courses = this.create.courses.filter(
-        (course) => course.courseID !== courseID
+        (course) => !(course.courseID === courseID && course.courseSession === courseSession)
       );
+
+    },
+    async updateStudentCourse(course) {
+      try {
+        await StudentService.updateStudentCourse(this.id, course);
+        this.getStudentCourses(this.id);
+      } catch (error) {
+        console.error("Error updating student courses:", error);
+        throw error;
+      }
+
     },
     clearCoursesToCreate(course) {
       this.create.courses = [];
@@ -723,18 +741,17 @@ export const useStudentStore = defineStore("student", {
         return this.student.examsLegacy;
       }
     },
-    getStudentAssessments() {
+    getStudentAssessmentsLegacy() {
       if (
-        !Array.isArray(this.student.assessments) ||
-        this.student.assessments.length === 0
+        !Array.isArray(this.student.assessmentsLegacy) ||
+        this.student.assessmentsLegacy.length === 0
       ) {
         return [];
       }
-      return this.student.assessments.map((assessment) => ({
+      return this.student.assessmentsLegacy.map((assessment) => ({
         ...assessment,
         id: `${assessment.assessmentCode}_${assessment.sessionDate}`,
       }));
-      // return this.student.assessments;
     },
     getStudentNotes() {
       return this.student.notes;
@@ -837,6 +854,9 @@ export const useStudentStore = defineStore("student", {
         //return "error occurred getting student name, refresh or try again later";
         return "";
       }
+    },
+    studentAssessments() {
+      return this.student.assessmentStudents;
     },
     studentCourses() {
       return this.student.courses;

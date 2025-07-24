@@ -6,6 +6,7 @@ const log = require("./components/logger");
 const morgan = require("morgan");
 const session = require("express-session");
 const express = require("express");
+const { rateLimit } = require("express-rate-limit");
 const passport = require("passport");
 const helmet = require("helmet");
 const cors = require("cors");
@@ -41,6 +42,7 @@ function addVersionToReq(req, res, next) {
 const schoolsRouter = require("./routes/schools-router");
 const programsRouter = require("./routes/programs-router");
 const assessmentsRouter = require("./routes/assessments-router");
+const studentAssessmentRouter = require("./routes/student-assessment-router");
 const coursesRouter = require("./routes/courses-router");
 const studentGraduationRouter = require("./routes/student-graduation-router");
 const studentRouter = require("./routes/student-router");
@@ -80,6 +82,22 @@ const logStream = {
     log.info(message);
   },
 };
+
+if (config.get("rateLimit:enabled")) {
+  const limiter = rateLimit({
+    windowMs: config.get("rateLimit:windowInSec") * 1000,
+    limit: config.get("rateLimit:limit"),
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers,
+    skipSuccessfulRequests: false, // Do not count successful responses
+    message: async () => {
+      return `You can only make ${config.get(
+        "rateLimit:limit"
+      )} requests every ${config.get("rateLimit:windowMs")} seconds.`;
+    },
+  });
+  app.use(limiter);
+}
 
 const Redis = require("./util/redis/redis-client");
 Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
@@ -231,6 +249,7 @@ apiRouter.use("/program", programsRouter);
 apiRouter.use("/course", coursesRouter);
 apiRouter.use("/:version/assessment", addVersionToReq, assessmentsRouter);
 apiRouter.use("/schools", schoolsRouter);
+apiRouter.use("/student-assessment", studentAssessmentRouter);
 apiRouter.use("/student", studentRouter);
 apiRouter.use("/codes", codesRouter);
 apiRouter.use(
