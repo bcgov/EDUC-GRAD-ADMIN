@@ -66,7 +66,6 @@
           <v-select v-model="course.equivOrChallenge" :items="[
             { title: 'Equivalency', value: 'E' },
             { title: 'Challenge', value: 'C' },
-            { title: 'None', value: null }
           ]" label="Eq / Ch" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
             persistent-hint />
         </v-col>
@@ -80,7 +79,7 @@
 
       <v-row no-gutters v-if="v$.$errors.length" class="my-2 ">
         <v-col cols="12">
-          <v-row v-for="(error, index) in v$.$errors" :key="index" class="align-center">
+          <v-row v-for="(error, index) in v$.$errors" :key="index" class="align-center">Microsoft Teams
             <v-col class="p-0 m-0 text-red-darken-4">
               <v-icon color="red-darken-2">mdi-alert-circle</v-icon>
               {{ error.$message }}
