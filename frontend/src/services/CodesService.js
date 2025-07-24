@@ -49,4 +49,7 @@ export default {
   getAlgorithmRulesCodes() {
     return ApiService.apiAxios.get("/api/codes/algorithmRulesCodes");
   },
+  getUndoCompletionReasonCodes() {
+    return ApiService.apiAxios.get("/api/codes/undoCompletionReasonCodes");
+  },
 };

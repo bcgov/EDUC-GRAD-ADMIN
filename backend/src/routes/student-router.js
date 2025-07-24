@@ -21,6 +21,7 @@ const {
   getBatchHistoryStudents,
   getStudentGradStatus,
   postStudentGradStatus,
+  getStudentUndoCompletion,
   postStudentUndoCompletion,
   getRunGradAlgorithm,
   getRunPreviewFinalMarks,
@@ -158,6 +159,13 @@ router.post(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
   postStudentGradStatus
+);
+
+router.get(
+  `/:studentID/gradProgram/undoCompletion`,
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getStudentUndoCompletion
 );
 
 router.post(

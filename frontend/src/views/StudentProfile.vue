@@ -617,7 +617,6 @@
 import AssessmentService from "@/services/AssessmentService.js";
 import CourseService from "@/services/CourseService.js";
 import StudentService from "@/services/StudentService.js";
-import StudentGraduationService from "@/services/StudentGraduationService.js";
 
 // import components
 import GRADRequirementDetails from "@/components/StudentProfile/GRADRequirementDetails.vue";
@@ -913,9 +912,13 @@ export default {
         });
         ungradDesc = ungradDesc[0].description;
       }
-      StudentService.ungradStudent(this.studentId, ungradCode, ungradDesc)
+      StudentService.undoStudentProgramCompletion(
+        this.studentId,
+        ungradCode,
+        ungradDesc
+      )
         .then(() => {
-          StudentGraduationService.getStudentUngradReasons(this.studentId)
+          StudentService.getStudentUndoCompletionReasons(this.studentId)
             .then((response) => {
               this.setStudentUngradReasons(response.data);
             })
@@ -1256,7 +1259,7 @@ export default {
         });
     },
     loadStudentUngradReasons(studentIdFromURL) {
-      StudentGraduationService.getStudentUngradReasons(studentIdFromURL)
+      StudentService.getStudentUndoCompletionReasons(studentIdFromURL)
         .then((response) => {
           this.setStudentUngradReasons(response.data);
         })

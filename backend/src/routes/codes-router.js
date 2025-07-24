@@ -20,6 +20,7 @@ const {
   getAssessmentSpecialCaseCodes,
   getCourseLetterGradeCodes,
   getTranscriptMessagingCodes,
+  getStudentUndoCompletionReasonCodes,
 } = require("../components/codes");
 
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
@@ -134,6 +135,13 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
   getTranscriptMessagingCodes
+);
+
+router.get(
+  "/undoCompletionReasonCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getStudentUndoCompletionReasonCodes
 );
 
 module.exports = router;

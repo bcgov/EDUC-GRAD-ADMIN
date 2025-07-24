@@ -106,7 +106,6 @@ import { useAuthStore } from "../store/modules/auth";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import CodesService from "@/services/CodesService.js";
-import StudentGraduationService from "@/services/StudentGraduationService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 
 export default {
@@ -395,7 +394,7 @@ export default {
         });
     },
     getUngradReasons() {
-      StudentGraduationService.getUngradReasons()
+      CodesService.getUndoCompletionReasonCodes()
         .then((response) => {
           this.ungradReasons = response.data;
         })

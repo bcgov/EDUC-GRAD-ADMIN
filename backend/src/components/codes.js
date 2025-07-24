@@ -274,6 +274,24 @@ async function getTranscriptMessagingCodes(req, res) {
   }
 }
 
+async function getStudentUndoCompletionReasonCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:studentGraduationAPIURL"
+    )}/api/v1/studentgraduation/undocompletion/undocompletionreason`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 module.exports = {
   getStudentStatusCodes,
   getHistoryActivityCodes,
@@ -290,4 +308,5 @@ module.exports = {
   getAssessmentSpecialCaseCodes,
   getCourseLetterGradeCodes,
   getTranscriptMessagingCodes,
+  getStudentUndoCompletionReasonCodes,
 };

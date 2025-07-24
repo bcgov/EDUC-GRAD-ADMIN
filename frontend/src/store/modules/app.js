@@ -3,7 +3,6 @@ import { defineStore } from "pinia";
 import CommonService from "@/services/CommonService.js";
 import SchoolsService from "@/services/SchoolsService.js";
 import CodesService from "@/services/CodesService.js";
-import StudentGraduationService from "@/services/StudentGraduationService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 
@@ -116,13 +115,6 @@ export const useAppStore = defineStore("app", {
           (facilityCode) => code === facilityCode.facilityTypeCode
         );
     },
-    //studentGradeCodes: (state) => state.studentGradeCodes,
-    // getGradeCode: (state) => {
-    //   return (code) =>
-    //     state.studentGradeCodes.find(
-    //       (gradeCode) => code === gradeCode.schoolGradeCode
-    //     );
-    // },
     getTranscriptTypes: (state) => state.transcriptTypes,
     getCertificateTypes: (state) => state.certificationTypes,
     enableCRUD: (state) => {
@@ -199,7 +191,7 @@ export const useAppStore = defineStore("app", {
     },
     async getUndoCompletionReasonCodes(getNewData = true) {
       if (getNewData || !sharedMethods.applyDisplayOrder(this.ungradReasons)) {
-        let response = await StudentGraduationService.getUngradReasons();
+        let response = await CodesService.getUndoCompletionReasonCodes();
         await this.setUndoCompletionReasons(response.data);
       }
     },

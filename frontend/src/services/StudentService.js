@@ -76,7 +76,12 @@ export default {
       `/api/student/${studentID}/optionalPrograms/history`
     );
   },
-  ungradStudent(studentID, reasonCode, reasonDesc, json) {
+  getStudentUndoCompletionReasons(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/${studentID}/gradProgram/undoCompletion`
+    );
+  },
+  undoStudentProgramCompletion(studentID, reasonCode, reasonDesc, json) {
     return ApiService.apiAxios.post(
       `/api/student/${studentID}/gradProgram/undoCompletion?reasonCode=${reasonCode}&reasonDecision=${reasonDesc}`,
       json
