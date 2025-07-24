@@ -29,7 +29,6 @@
         </v-card-title>
 
         <v-card-text>
-
           <div class="mb-2" v-if="selectedCoursesWithWarnings.length > 0">
             You are about to remove the following student course{{
               selectedCoursesWithWarnings.length > 1 ? "s" : ""
@@ -95,8 +94,10 @@
 </template>
 
 <script>
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
+
 
 export default {
   name: "StudentCoursesDeleteForm",
@@ -117,12 +118,14 @@ export default {
   data() {
     return {
       dialog: false,
+      snackbarStore: useSnackbarStore(),
     };
   },
   computed: {
     studentStore() {
       return useStudentStore();
     },
+
     accessStore() {
       return useAccessStore();
     },
@@ -179,11 +182,20 @@ export default {
   methods: {
     close() {
       this.dialog = false;
+      this.$emit('close');
     },
     async confirmDelete() {
       try {
         const request = this.selectedCoursesToDelete.map((item) => item.id);
-        await this.studentStore.deleteStudentCourses(request);
+        const response = await this.studentStore.deleteStudentCourses(request);
+
+        this.snackbarStore.showSnackbar(
+          "Student course(s) deleted successfully",
+          "success",
+          10000,
+          "Student course"
+        );
+
         this.close();
       } catch (error) {
         console.error("Failed to delete student courses:", error);
