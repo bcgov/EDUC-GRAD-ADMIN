@@ -8,6 +8,9 @@ env:
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
   OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-prod
+  GRAD_NAMESPACE: ${{ secrets.GRAD_NAMESPACE }}
+  KEYCLOAK_URL: ${{ secrets.KEYCLOAK_URL }}
+  KEYCLOAK_REALM: ${{ secrets.KEYCLOAK_REALM }}
 
   # 🖊️ EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
@@ -49,6 +52,22 @@ jobs:
       - name: Get latest tag
         uses: actions-ecosystem/action-get-latest-tag@v1
         id: get-latest-tag
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install axios
+          npm install mustache
+
+      - name: Create/Update clients
+        run: node ./tools/config/clients-and-scopes.js
+
+      - name: Create/Update secrets
+        run: node ./tools/openshift/fetch-and-create-secrets.js
 
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
@@ -94,13 +113,11 @@ jobs:
           ${{ env.APP_NAME }} \
           ${{ env.OPENSHIFT_NAMESPACE }} \
           grad.gov.bc.ca \
-          ${{ secrets.SOAM_CLIENT_SECRET }} \
           ${{ secrets.REDIS_PASSWORD }} \
           ${{ secrets.SPLUNK_TOKEN }} \
           ${{ secrets.COMMON_NAMESPACE }} \
           ${{ secrets.GRAD_NAMESPACE }} \
           ${{ secrets.GRAD_BUSINESS_NAMESPACE }} \
-          ${{ secrets.SOAM_SERVICE_CLIENT_SECRET }} \
           ${{ secrets.STUDENT_ADMIN_NAMESPACE }} \
           ${{ secrets.STUDENT_ASSESSMENT_NAMESPACE }}
           
