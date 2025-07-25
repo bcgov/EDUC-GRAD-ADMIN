@@ -3,8 +3,8 @@
     "clientId": "grad-admin-client-test-run",
     "name": "GRAD Admin Client test run",
     "description": "GRAD backend client test run",
-    "rootUrl": "https://{{rootUrl}}/*",
-    "adminUrl": "https://{{rootUrl}}/*",
+    "rootUrl": "",
+    "adminUrl": "",
     "baseUrl": "",
     "surrogateAuthRequired": false,
     "enabled": true,
@@ -18,7 +18,7 @@
       "https://{{rootUrl}}/*/*"
     ],
     "webOrigins": [
-      "https://{{rootUrl}}"
+      "+"
     ],
     "notBefore": 0,
     "bearerOnly": false,
@@ -30,6 +30,92 @@
     "publicClient": false,
     "frontchannelLogout": false,
     "protocol": "openid-connect",
+    "protocolMappers": [
+      {
+        "name": "Client Host",
+        "protocol": "openid-connect",
+        "protocolMapper": "oidc-usersessionmodel-note-mapper",
+        "consentRequired": false,
+        "config": {
+          "user.session.note": "clientHost",
+          "userinfo.token.claim": "true",
+          "id.token.claim": "true",
+          "access.token.claim": "true",
+          "claim.name": "clientHost",
+          "jsonType.label": "String"
+        }
+      },
+      {
+        "name": "idir_username",
+        "protocol": "openid-connect",
+        "protocolMapper": "oidc-usermodel-attribute-mapper",
+        "consentRequired": false,
+        "config": {
+          "userinfo.token.claim": "true",
+          "user.attribute": "idir_username",
+          "id.token.claim": "true",
+          "access.token.claim": "true",
+          "claim.name": "idir_username",
+          "jsonType.label": "String"
+        }
+      },
+      {
+        "name": "display_name",
+        "protocol": "openid-connect",
+        "protocolMapper": "oidc-usermodel-attribute-mapper",
+        "consentRequired": false,
+        "config": {
+          "userinfo.token.claim": "true",
+          "user.attribute": "display_name",
+          "id.token.claim": "true",
+          "access.token.claim": "true",
+          "claim.name": "display_name",
+          "jsonType.label": "String"
+        }
+      },
+      {
+        "name": "Client IP Address",
+        "protocol": "openid-connect",
+        "protocolMapper": "oidc-usersessionmodel-note-mapper",
+        "consentRequired": false,
+        "config": {
+          "user.session.note": "clientAddress",
+          "userinfo.token.claim": "true",
+          "id.token.claim": "true",
+          "access.token.claim": "true",
+          "claim.name": "clientAddress",
+          "jsonType.label": "String"
+        }
+      },
+      {
+        "name": "idir_guid",
+        "protocol": "openid-connect",
+        "protocolMapper": "oidc-usermodel-attribute-mapper",
+        "consentRequired": false,
+        "config": {
+          "userinfo.token.claim": "true",
+          "user.attribute": "idir_guid",
+          "id.token.claim": "true",
+          "access.token.claim": "true",
+          "claim.name": "idir_guid",
+          "jsonType.label": "String"
+        }
+      },
+      {
+        "name": "Client ID",
+        "protocol": "openid-connect",
+        "protocolMapper": "oidc-usersessionmodel-note-mapper",
+        "consentRequired": false,
+        "config": {
+          "user.session.note": "clientId",
+          "userinfo.token.claim": "true",
+          "id.token.claim": "true",
+          "access.token.claim": "true",
+          "claim.name": "clientId",
+          "jsonType.label": "String"
+        }
+      }
+    ],
     "defaultClientScopes": [
       "CREATE_GRAD_SPECIAL_PROGRAM_RULES_DATA",
       "READ_GRAD_STUDENT_NOTES_DATA",
