@@ -39,6 +39,10 @@ objects:
               envFrom:
                 - configMapRef:
                     name: "${APP_NAME}-backend-config-map"
+                - secretRef:
+                    name: grad-admin-client-test-run-secret
+                - secretRef:
+                    name: grad-admin-service-test-run-secret
               resources:
                 requests:
                   cpu: "${MIN_CPU}"
