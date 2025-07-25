@@ -79,7 +79,6 @@ async function getStudentAssessmentPaginated(req, res) {
         searchCriteriaList: JSON.stringify(search),
       }
     };
-    console.log('Values: ' + JSON.stringify(params));
     let data =  await getCommonServiceData(`${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student/paginated`, params);
     if (req?.query?.returnKey) {
       let result = data?.content.map((student) => student[req?.query?.returnKey]);
