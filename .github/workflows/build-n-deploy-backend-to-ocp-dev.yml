@@ -112,6 +112,9 @@ jobs:
       - name: Create/Update clients
         run: node ./tools/config/clients-and-scopes.js
 
+      - name: Create/Update secrets
+        run: node ./tools/openshift/fetch-and-create-secrets.js
+
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
         with:
