@@ -83,6 +83,7 @@ jobs:
     environment: dev
     env:
       OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-dev
+      GRAD_NAMESPACE: ${{ secrets.UI_NAMESPACE }}
       KEYCLOAK_URL: ${{ secrets.KEYCLOAK_URL }}
       KEYCLOAK_REALM: ${{ secrets.KEYCLOAK_REALM }}
       HOST_ROUTE: "educ-grad-admin-${{ secrets.UI_NAMESPACE }}-dev.apps.silver.devops.gov.bc.ca"
