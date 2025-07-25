@@ -196,6 +196,7 @@ export default {
     ...mapState(useAppStore, {
       getSchoolsList: "getSchoolsList",
       assessmentTypeCodes: "assessmentTypeCodes",
+      getStudentAssessmentProvincialSpecialCaseCodes: "getStudentAssessmentProvincialSpecialCaseCodes",
       assessmentTypeCodesMap: "assessmentTypeCodesMap"}),
     ...mapState(useStudentStore, { studentAssessments: "studentAssessments" }),
     ...mapState(useAccessStore, ["hasPermissions"]),
@@ -219,8 +220,13 @@ export default {
           key: "assessmentTypeCode",
           title: "Code",
           sortable: true,
-          sortDirection: "desc",
           class: "text-md-left",
+        },
+        {
+          key: "assessmentName",
+          title: "Name",
+          sortable: true,
+          class: "text-left w-50",
         },
         {
           key: "sessionDate",
@@ -229,16 +235,21 @@ export default {
           class: "text-md-center"
         },
         {
+          key: "proficiencyScore",
+          title: "Proficiency Score",
+          sortable: true,
+          class: "text-md-center",
+        },
+        {
           key: "provincialSpecialCaseCode",
           title: "Special Case",
           sortable: true,
-          sortDirection: "desc",
+          value: (item) => this.getProvincialSpecialCaseDisplayName(item.provincialSpecialCaseCode)
         },
         {
           key: "wroteFlag",
           title: "Wrote Flag",
           sortable: true,
-          sortDirection: "desc",
           class: "text-md-center",
           value: (item) => item.wroteFlag === true ? 'Y' : 'N'
         },
@@ -246,28 +257,12 @@ export default {
           key: "exceededWriteFlag",
           title: "Exceeded Writes",
           sortable: true,
-          sortDirection: "desc",
           class: "text-md-center",
           value: (item) => item.numberOfAttempts >= 3 ? 'Y' : 'N'
         },
         {
-          key: "proficiencyScore",
-          title: "Proficiency Score",
-          sortable: true,
-          sortDirection: "desc",
-          class: "text-md-center",
-        },
-        {
-          key: "assessmentName",
-          title: "Name",
-          sortable: true,
-          sortDirection: "desc",
-          class: "text-left w-50",
-        },
-        {
           key: "assessmentCenterSchoolID",
           title: "Assessment Center",
-          sortDirection: "desc",
           class: "text-left w-50",
           value: (item) => this.getAssessmentCenterSchoolDisplayName(item.assessmentCenterSchoolID)
         }
@@ -395,6 +390,10 @@ export default {
     getAssessmentCenterSchoolDisplayName(schoolId) {
       const school = this.getSchoolsList.find(school => school.schoolId === schoolId);
       return school ? `${school.mincode} - ${school.displayName}` : '';
+    },
+    getProvincialSpecialCaseDisplayName(code) {
+      const specialCase = this.getStudentAssessmentProvincialSpecialCaseCodes.find(specialCaseCode => specialCaseCode.provincialSpecialCaseCode === code);
+      return specialCase ? specialCase.label : '';
     }
   }
 };
