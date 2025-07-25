@@ -1,18 +1,15 @@
-const passport = require("passport");
-const express = require("express");
+const passport = require('passport');
+const express = require('express');
 const router = express.Router();
-const config = require("../config/index");
-const auth = require("../components/auth");
-const roles = require("../components/roles");
+const config = require('../config/index');
+const auth = require('../components/auth');
+const roles = require('../components/roles');
 const {
   errorResponse,
-  getData,
-  postData,
-  putData,
-  deleteData,
-} = require("../components/utils");
+  getData
+} = require('../components/utils');
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
-  "GRAD_SYSTEM_COORDINATOR",
+  'GRAD_SYSTEM_COORDINATOR',
   [
     roles.Admin.StaffInfoOfficer,
     roles.Admin.StaffAdministration,
@@ -22,8 +19,8 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
 
 //Assessment Routes
 router.get(
-  "/*",
-  passport.authenticate("jwt", { session: false }, undefined),
+  '/*',
+  passport.authenticate('jwt', { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
   getAssessmentAPI
 );
@@ -33,10 +30,10 @@ async function getAssessmentAPI(req, res) {
   const version = req.version;
   try {
     let url = `${config.get(
-      "server:assessmentAPIURL"
+      'server:assessmentAPIURL'
     )}/api/${version}/assessment`;
 
-    if (req.url != "/") {
+    if (req.url != '/') {
       url += req.url;
     }
     const data = await getData(token, url, req.session?.correlationID);

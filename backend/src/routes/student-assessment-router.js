@@ -14,7 +14,7 @@ const {
   getStudentAssessmentById, getStudentAssessmentPaginated,
   updateStudentAssessmentById, postStudentAssessment,
   deleteStudentAssessmentByID, getAssessmentTypeCodes,
-  getAllAssessmentSessions, getProvincialSpecialCaseCodes
+  getAllAssessmentSessions, getProvincialSpecialCaseCodes, getStudentAssessmentHistoryPaginated
 } = require('../components/assessments/student-assessment');
 
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
@@ -41,6 +41,13 @@ router.get('/student/paginated',
   isValidUiTokenWithStaffRoles,
   validate(getPaginatedStudentAssessmentSchema),
   getStudentAssessmentPaginated
+);
+
+router.get('/student-history/paginated',
+  passport.authenticate('jwt', {session: false}, undefined),
+  isValidUiTokenWithStaffRoles,
+  validate(getPaginatedStudentAssessmentSchema),
+  getStudentAssessmentHistoryPaginated
 );
 
 router.get('/student/:studentAssessmentId',
