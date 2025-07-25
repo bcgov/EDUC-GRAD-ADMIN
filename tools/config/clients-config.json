@@ -1,8 +1,8 @@
 [
   {
-    "clientId": "grad-admin-client-test-run",
-    "name": "GRAD Admin Client test run",
-    "description": "GRAD backend client test run",
+    "clientId": "grad-admin-client",
+    "name": "GRAD Admin Client",
+    "description": "GRAD backend client",
     "rootUrl": "",
     "adminUrl": "",
     "baseUrl": "",
@@ -290,8 +290,8 @@
     }
   },
   {
-    "clientId": "grad-admin-service-test-run",
-    "name": "grad-admin-service-test-run",
+    "clientId": "grad-admin-service",
+    "name": "grad-admin-service",
     "description": "Service client for the GRAD NodeJS backend to make callouts to non-grad services ",
     "enabled": true,
     "standardFlowEnabled": false,
