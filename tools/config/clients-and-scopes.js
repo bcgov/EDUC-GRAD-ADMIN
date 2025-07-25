@@ -58,7 +58,7 @@ async function getClientByClientId(token, clientId) {
   return response.data.length > 0 ? response.data[0] : null;
 }
 
-async function createClient(token, client, secret) {
+async function createClient(token, client) {
   const url = `${keycloakUrl}/auth/admin/realms/${realm}/clients`;
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -66,9 +66,7 @@ async function createClient(token, client, secret) {
   };
 
   const data = {
-    clientId: client.clientId,
-    secret: secret,
-    ...client.settings
+    ...client
   };
 
   const response = await axios.post(url, data, { headers });
@@ -168,14 +166,15 @@ async function assignScopes(token, clientId, scopeNames) {
 
       if (existingClient) {
         clientSecret = existingClient.secret;
+        client.secret = clientSecret;
         await deleteClient(token, client.clientId);
         console.log(`🔄 Deleted client "${client.clientId}".`);
       }
 
-      clientIdValue = await createClient(token, client, clientSecret);
+      clientIdValue = await createClient(token, client);
       console.log(`➕ Created client "${client.clientId}".`);
 
-      await assignScopes(token, clientIdValue, client.scopes);
+      await assignScopes(token, clientIdValue, client.defaultClientScopes);
     }
 
     console.log(`✅ All clients processed.`);
