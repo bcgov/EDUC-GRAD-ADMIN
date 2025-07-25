@@ -39,15 +39,25 @@
                 <div v-if="coursesToCreate.length > 0">
                   <div>
                     <template v-for="(course, index) in coursesToCreate" :key="course.courseID || index">
-
-                      <CourseDetailsInput :course="course" create>
+                      <div v-if="course.isExaminable">
+                        <CourseExamDetailsInput :course="course" create>
+                          <template #remove-button>
+                            <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none"
+                              style="min-width: auto; width: 80px"
+                              @click="removeCourse(course.courseID, course.courseSession)">Remove</v-btn>
+                          </template>
+                        </CourseExamDetailsInput>
+                      </div>
+                      <div v-else>
+                        <CourseDetailsInput :course="course" create>
                         <template #remove-button>
                           <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none"
                             style="min-width: auto; width: 80px"
                             @click="removeCourse(course.courseID, course.courseSession)">Remove</v-btn>
                         </template>
-                      </CourseDetailsInput>
-                      <v-divider v-if="index < coursesToCreate.length - 1" class="my-4" color="grey-darken-3" />
+                      </CourseDetailsInput>  
+                      </div>
+                    <v-divider v-if="index < coursesToCreate.length - 1" class="my-4" color="grey-darken-3" />
 
                     </template>
                   </div>
@@ -152,6 +162,28 @@
                     <v-col cols="12" class="ml-3">
                       {{ course.courseDetails.courseName }}
                     </v-col>
+                    <v-row v-if="course.isExaminable">
+                      <v-col class="ml-2"><strong>School %</strong>&nbsp;
+                      <span v-if="course.courseExam.schoolPercentage">{{ course.courseExam.schoolPercentage }}</span>
+                      <span v-else> <i>null</i> </span>
+                    </v-col>
+                    <v-col class="ml-2"><strong>Best School %</strong>&nbsp;
+                      <span v-if="course.courseExam.bestSchoolPercentage">{{ course.courseExam.bestSchoolPercentage }}</span>
+                      <span v-else> <i>null</i> </span>
+                    </v-col>
+                    <v-col class="ml-2"><strong>Special Case</strong> {{ course.courseExam.specialCase }}</v-col>
+                    <v-col class="ml-2"><strong>Exam Best %</strong>&nbsp;
+                      <span v-if="course.courseExam.bestExamPercentage">{{ course.courseExam.bestExamPercentage }}</span>
+                      <span v-else> <i>null</i> </span>
+                    </v-col>
+                    <v-col class="ml-2"><strong>Final %</strong>&nbsp;
+                      <span v-if="course.finalPercent">{{ course.finalPercent }}</span>
+                      <span v-else> <i>null</i> </span>
+                    </v-col>
+                    <v-col class="ml-2"><strong>Final LG</strong> {{ course.finalLetterGrade }}</v-col>
+                    <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
+                    </v-row>
+                    <v-row v-else>
                     <v-col class="ml-3"><strong>Interim</strong>&nbsp;
                       <span v-if="course.interimPercent">{{ course.interimPercent }}%
                         {{ course.interimLetterGrade }}</span>
@@ -179,6 +211,7 @@
                     <v-col cols="12" class="ml-3" v-if="course.customizedCourseName"><strong>Custom Course
                         Title</strong>
                       {{ course.customizedCourseName }}</v-col>
+                    </v-row>
                   </v-row>
                 </v-alert>
               </v-stepper-window-item>
@@ -265,6 +298,7 @@
 
 <script>
 import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
+import CourseExamDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseExamDetailsInput.vue";
 import CourseService from "@/services/CourseService.js";
 import { toRaw } from "vue";
 import useVuelidate from '@vuelidate/core';
@@ -283,6 +317,7 @@ export default {
   },
   components: {
     CourseDetailsInput,
+    CourseExamDetailsInput,
   },
   validations() {
     return {
@@ -419,6 +454,14 @@ export default {
         courseSession: result.courseSession,
         courseDetails: result.courseData,
         isExaminable: result.isExaminable,
+        ...(result.isExaminable && {
+          courseExam: { 
+            schoolPercentage: null, 
+            bestSchoolPercentage: null,
+            bestExamPercentage: null,
+            specialCase: null,
+          }
+        }),
       });
 
       this.closeCourseInput();
