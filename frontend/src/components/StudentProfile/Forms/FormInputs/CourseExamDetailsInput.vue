@@ -22,17 +22,31 @@
       <v-row no-gutters class="my-2">
         <!-- Editable fields bound directly to the course object -->
         <v-col>
-          <v-text-field v-model="course.interimPercent" type="number" min="0" max="100" label="Interim %"
-            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
-            :disabled="course.courseSession < 199409 || courseSessionLessThanReportingPeriod" persistent-hint
-            :error="v$.course.interimPercent.$invalid && v$.course.interimPercent.$dirty"
-            @blur="v$.course.interimPercent.$touch" />
+          <v-text-field v-model="course.courseExam.schoolPercentage" type="number" min="0" max="100" label="School %" variant="outlined"
+            density="compact" class="pa-1" clearable persistent-placeholder 
+            :error="v$.course.courseExam.schoolPercentage.$invalid && v$.course.courseExam.schoolPercentage.$dirty"
+            @blur="v$.course.courseExam.schoolPercentage.$touch"/>
         </v-col>
 
         <v-col>
-          <v-select v-model="course.interimLetterGrade" :items="filteredInterimLetterGrades"
-            :disabled="courseSessionLessThanReportingPeriod" label="Interim LG" variant="outlined" density="compact"
-            class="pa-1" clearable persistent-placeholder persistent-hint />
+          <v-text-field v-model="course.courseExam.bestSchoolPercentage" type="number" min="0" max="100" label="Best School %" variant="outlined"
+            density="compact" class="pa-1" clearable persistent-placeholder 
+            :error="v$.course.courseExam.bestSchoolPercentage.$invalid && v$.course.courseExam.bestSchoolPercentage.$dirty"
+            @blur="v$.course.courseExam.bestSchoolPercentage.$touch"/>
+        </v-col>
+
+        <v-col>
+          <v-select v-model="course.courseExam.specialCase" :items="filteredSpecialCaseCodes" label="Special Case"
+            item-title="label" item-value="examSpecialCaseCode"
+            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint
+            />
+        </v-col>
+
+         <v-col>
+          <v-text-field v-model="course.courseExam.bestExamPercentage" type="number" min="0" max="100" label="Exam Best %" variant="outlined"
+            density="compact" class="pa-1" clearable persistent-placeholder
+            :error="v$.course.courseExam.bestExamPercentage.$invalid && v$.course.courseExam.bestExamPercentage.$dirty"
+            @blur="v$.course.courseExam.bestExamPercentage.$touch"/>
         </v-col>
 
         <v-col>
@@ -56,33 +70,14 @@
             persistent-placeholder persistent-hint />
         </v-col>
 
-        <v-col>
-          <v-select v-model="course.fineArtsAppliedSkills" :items="fineArtsAndAppliedSkillsOptions" item-title="text"
-            item-value="value" label="FA/AS" variant="outlined" density="compact" class="pa-1" clearable
-            :disabled="isBAAorLocallyDevelopedOrCP" persistent-placeholder persistent-hint />
-        </v-col>
-
-        <v-col>
-          <v-select v-model="course.equivOrChallenge" :items="[
-            { title: 'Equivalency', value: 'E' },
-            { title: 'Challenge', value: 'C' },
-            { title: 'None', value: null }
-          ]" label="Eq / Ch" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
-            persistent-hint />
-        </v-col>
-      </v-row>
-      <v-row v-if="course?.genericCourseType == 'G'">
-        <v-col cols="12">
-          <v-text-field v-model="course.customizedCourseName" label="Customized Course Title" variant="outlined"
-            density="compact" class="pa-1" clearable hide-details persistent-placeholder persistent-hint />
-        </v-col>
-      </v-row>
+        
+      </v-row>      
 
       <v-row no-gutters v-if="v$.$errors.length" class="my-2 ">
         <v-col cols="12">
           <v-row v-for="(error, index) in v$.$errors" :key="index" class="align-center">
             <v-col class="py-1 m-0 d-flex text-red-darken-4 text-caption">
-              <v-icon color="red-darken-2">mdi-alert-circle</v-icon>
+              <v-icon color="red-darken-2" size="18" class="me-1">mdi-alert-circle</v-icon>
               {{ error.$message }}
             </v-col>
           </v-row>
@@ -98,12 +93,6 @@
       </v-row>
 
 
-      <v-row no-gutters v-if="course?.courseCode == 'IDS'">
-        <v-col cols="12">
-          <strong>Select Related Course</strong>
-          <CourseInput v-model:courseFoundID="course.relatedCourseId"></CourseInput>
-        </v-col>
-      </v-row>
     </v-col>
   </v-row>
 </template>
@@ -114,30 +103,45 @@ import { useAppStore } from "@/store/modules/app";
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
 import useVuelidate from '@vuelidate/core';
-import { required, helpers, numeric } from '@vuelidate/validators';
+import { helpers } from '@vuelidate/validators';
 import CourseInput from "@/components/Common/CourseInput.vue";
+import CodesService from "@/services/CodesService";
 
-import sharedMethods from "@/sharedMethods";
 
 export default {
-  name: "CourseDetailsInput",
+  name: "CourseExamDetailsInput",
   setup() {
     return {
       v$: useVuelidate(),
     };
   },
+  created() {
+    // get codes
+    CodesService.getExamSpecialCaseCodes()
+      .then((response) => {
+        this.examSpecialCaseCodes = response.data;
+      })
+      // eslint-disable-next-line
+      .catch((error) => {
+        // this.$bvToast.toast("ERROR " + error.response.statusText, {
+        //   title: "ERROR" + error.response.status,
+        //   variant: "danger",
+        //   noAutoHide: true,
+        // });
+        this.snackbarStore.showSnackbar(
+          "ERROR " + error.response.statusText,
+          "error",
+          10000,
+          "ERROR" + error.response.status
+        );
+      });
+  },
   mounted() {
     //set the initial credits
     if (!this.course?.credits && this.creditsAvailableForCourseSession.length > 0) {
       this.course.credits = this.creditsAvailableForCourseSession[0];
-    }
-    // Check for Q course
-    if ((this.course.courseCode || '').startsWith("Q")) {
-      this.warnings.push("Only use Q code if student was on Adult program at time of course completion or if course is marked as Equivalency.");
-    }
-    if (this.course.isExaminable) {
-      this.warnings.push("This course required an exam at the time of the course session date")
-    }
+    }   
+    
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth() + 1; // JS months are 0-based
@@ -160,6 +164,9 @@ export default {
       this.warnings.push("Course session cannot be beyond the current reporting period or prior to 198401")
 
     }
+    if (this.course.isExaminable) {
+      this.warnings.push("This course required an exam at the time of the course session date")
+    }
     this.v$.$touch(); // <-- triggers validation on load
   },
   components: { CourseInput },
@@ -180,29 +187,70 @@ export default {
   data() {
     return {
       warnings: [],  // array of warnings
+      examSpecialCaseCodes: [],
     }
   },
   validations() {
     return {
       course: {
-        interimPercent: {
-          isValidPercent: helpers.withMessage(
-            'Interim % must be a valid number between 0 and 100',
-            (value) => {
-              if (value === '' || value === null || value === undefined) return true; // allow empty if needed
+        courseExam:{
+            schoolPercentage: {
+            isValidPercent: helpers.withMessage(
+                'School % must be a valid number between 0 and 100',
+                (value) => {
+                if (value === '' || value === null || value === undefined) return true; // allow empty if needed
 
-              const strVal = String(value).trim();
+                const strVal = String(value).trim();
 
-              // Reject if contains any minus sign or invalid characters:
-              if (strVal.includes('-')) return false;
+                // Reject if contains any minus sign or invalid characters:
+                if (strVal.includes('-')) return false;
 
-              // Regex: only digits and optional decimal point
-              if (!/^\d*\.?\d+$/.test(strVal)) return false;
+                // Regex: only digits and optional decimal point
+                if (!/^\d*\.?\d+$/.test(strVal)) return false;
 
-              const numberValue = Number(strVal);
-              return numberValue >= 0 && numberValue <= 100;
-            }
-          ),
+                const numberValue = Number(strVal);
+                return numberValue >= 0 && numberValue <= 100;
+                }
+            ),
+            },
+            bestSchoolPercentage: {
+            isValidPercent: helpers.withMessage(
+                'Best School % must be a valid number between 0 and 100',
+                (value) => {
+                if (value === '' || value === null || value === undefined) return true; // allow empty if needed
+
+                const strVal = String(value).trim();
+
+                // Reject if contains any minus sign or invalid characters:
+                if (strVal.includes('-')) return false;
+
+                // Regex: only digits and optional decimal point
+                if (!/^\d*\.?\d+$/.test(strVal)) return false;
+
+                const numberValue = Number(strVal);
+                return numberValue >= 0 && numberValue <= 100;
+                }
+            ),
+            },
+            bestExamPercentage: {
+            isValidPercent: helpers.withMessage(
+                'Exam Best % must be a valid number between 0 and 100',
+                (value) => {
+                if (value === '' || value === null || value === undefined) return true; // allow empty if needed
+
+                const strVal = String(value).trim();
+
+                // Reject if contains any minus sign or invalid characters:
+                if (strVal.includes('-')) return false;
+
+                // Regex: only digits and optional decimal point
+                if (!/^\d*\.?\d+$/.test(strVal)) return false;
+
+                const numberValue = Number(strVal);
+                return numberValue >= 0 && numberValue <= 100;
+                }
+            ),
+            },
         },
         finalPercent: {
           isValidPercent: helpers.withMessage(
@@ -222,10 +270,27 @@ export default {
               return numberValue >= 0 && numberValue <= 100;
             }
           ),
-        },
-        interimLetterGrade: {
+        }, 
+        finalPercent: {
+          isValidPercent: helpers.withMessage(
+            'Final % must be a valid number between 0 and 100',
+            (value) => {
+              if (value === '' || value === null || value === undefined) return true; // allow empty if needed
 
+              const strVal = String(value).trim();
+
+              // Reject if contains any minus sign or invalid characters:
+              if (strVal.includes('-')) return false;
+
+              // Regex: only digits and optional decimal point
+              if (!/^\d*\.?\d+$/.test(strVal)) return false;
+
+              const numberValue = Number(strVal);
+              return numberValue >= 0 && numberValue <= 100;
+            }
+          ),
         },
+        
         finalLetterGrade: {
         },
         credits: {
@@ -272,47 +337,10 @@ export default {
         fineArtsAppliedSkills: {
 
         },
-        equivOrChallenge: {
-          isEqChValue: helpers.withMessage(
-            'Eq/CH must be Equivalency, Challenge, or None',
-            (value) => {
-              return ['E', 'C', '', null, undefined].includes(value);
-            }
-          ),
-        },
-        customizedCourseName: {
-          validString: helpers.withMessage(
-            'Must be a valid title',
-            (value) =>
-              value === '' ||
-              value === null ||
-              value === undefined ||
-              typeof value === 'string'
-          ),
-        },
-        relatedCourseId: {
-          validID: helpers.withMessage(
-            'Must be a valid related course ID',
-            (value) =>
-              value === '' ||
-              value === null ||
-              value === undefined ||
-              typeof value === 'string' ||
-              typeof value === 'number'
-          ),
-        },
-
       },
     }
   },
-  watch: {
-    'course.interimPercent'(newVal) {
-      if (newVal && newVal != 0) {
-        this.course.interimLetterGrade = this.filteredInterimLetterGrades[0] ?? '';
-      } else {
-        this.course.interimLetterGrade = ""
-      }
-    },
+  watch: {    
     'course.finalPercent'(newVal) {
       if (newVal && newVal != 0) {
         this.course.finalLetterGrade = this.filteredFinalLetterGrades[0] ?? '';
@@ -397,6 +425,12 @@ export default {
 
     filteredFinalLetterGrades() {
       return this.getGradesForPercent(this.course.finalPercent);
+    },
+    filteredSpecialCaseCodes() {
+      if(this.create) {
+      return this.examSpecialCaseCodes.filter(code => code.examSpecialCaseCode === "A");
+      }
+      return this.examSpecialCaseCodes;
     },
   },
   methods: {
