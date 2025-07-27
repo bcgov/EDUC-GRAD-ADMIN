@@ -626,8 +626,9 @@ export const useStudentStore = defineStore("student", {
     // delete student courses
     async deleteStudentCourses(courses) {
       try {
-        await StudentService.deleteStudentCourses(this.id, courses);
+        const response = await StudentService.deleteStudentCourses(this.id, courses);
         this.getStudentCourses(this.id);
+        return response;
       } catch (error) {
         console.error("Error deleting student courses:", error);
         throw error;

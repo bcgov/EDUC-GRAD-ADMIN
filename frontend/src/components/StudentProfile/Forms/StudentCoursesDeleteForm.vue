@@ -14,9 +14,6 @@
           <v-btn v-else-if="!courseBatchDelete"
             :disabled="!hasPermissions('STUDENT', 'courseUpdate') || studentStatus == 'MER'" v-bind="props"
             color="error" icon="mdi-delete-forever" density="compact" variant="text" />
-          {{ selectedCoursesWithValidations.error.length }}
-          {{ selectedCoursesWithValidations.warning.length }}
-          {{ selectedCoursesWithValidations.info.length }}
         </slot>
       </template>
 
@@ -126,7 +123,7 @@
         </v-card-text>
         <v-card-actions>
           <v-btn color="error" variant="outlined" class="text-none" density="default" @click="close">
-            Cancel
+            {{ hasCoursesToDelete ? 'Cancel' : 'Close' }}
           </v-btn>
           <v-spacer />
           <v-btn v-if="hasCoursesToDelete" color="error" variant="flat" class="text-none" density="default"
@@ -262,9 +259,41 @@ export default {
       try {
         const request = this.selectedCoursesToDelete.map((item) => item.id);
         const response = await this.studentStore.deleteStudentCourses(request);
+        console.log(response.data)
+
+        const notDeleted = response.data
+          .filter(course =>
+            course.validationIssues?.some(issue => issue.validationIssueSeverityCode === "ERROR")
+          )
+          .map(course => {
+            const errorMessages = course.validationIssues
+              .filter(issue => issue.validationIssueSeverityCode === "ERROR")
+              .map(issue => issue.validationIssueMessage)
+              .join("; ");
+
+            return `${course.courseCode} ${course.courseLevel} (${course.courseSession}): ${errorMessages}`;
+          })
+          .join("\n");
+
+        const deleted = response.data
+          .filter(course =>
+            !course.validationIssues?.some(issue => issue.validationIssueSeverityCode === "ERROR")
+          )
+          .map(course => `${course.courseCode} ${course.courseLevel} (${course.courseSession})`)
+          .join(", ");
+
+        // Format snackbar message
+        let message = "";
+        if (deleted) {
+          message += `Deleted: ${deleted}`;
+        }
+        if (notDeleted) {
+          if (deleted) message += "\n\n"; // spacing between groups
+          message += `Not Deleted:\n${notDeleted}`;
+        }
 
         this.snackbarStore.showSnackbar(
-          "Student course(s) deleted successfully",
+          message,
           "success",
           10000,
           "Student course"
