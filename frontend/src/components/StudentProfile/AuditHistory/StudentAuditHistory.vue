@@ -28,6 +28,15 @@
           Course Change History
         </v-chip>
       </v-tab>
+      <v-tab value="studentAssessmentHistory" v-if="enableCRUD()">
+        <v-chip
+            class="text-none"
+            color="primary"
+            :variant="selectedTab === 'studentAssessmentHistory' ? 'flat' : 'outlined'"
+        >
+          Student Assessment History
+        </v-chip>
+      </v-tab>
     </v-tabs>
     <v-card-text class="px-0">
       <v-window v-model="selectedTab">
@@ -43,7 +52,7 @@
             <template v-slot:expanded-row="{ columns, item }">
               <tr>
                 {{
-                  hisotryID
+                  historyID
                 }}
                 <td :colspan="columns.length">
                   <div class="mx-5 my-5">
@@ -270,6 +279,9 @@
         <v-window-item value="courseChangeHistory">
           <CourseChangeHistory />
         </v-window-item>
+        <v-window-item value="studentAssessmentHistory">
+          <StudentAssessmentHistory />
+        </v-window-item>
       </v-window>
     </v-card-text>
   </v-card>
@@ -281,10 +293,12 @@ import { mapState } from "pinia";
 import DisplayTable from "@/components/DisplayTable.vue";
 import { useAppStore } from "@/store/modules/app";
 import CourseChangeHistory from "@/components/StudentProfile/AuditHistory/CourseChangeHistory.vue";
+import StudentAssessmentHistory from "@/components/StudentProfile/AuditHistory/StudentAssessmentHistory.vue";
 
 export default {
   name: "StudentAuditHistory",
   components: {
+    StudentAssessmentHistory,
     CourseChangeHistory,
     DisplayTable: DisplayTable,
   },
