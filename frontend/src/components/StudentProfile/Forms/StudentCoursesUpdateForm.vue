@@ -302,13 +302,22 @@ export default {
 
       try {
         //remove courseDetails from payload
-        await this.updateStudentCourse(this.selectedCourseToUpdate);
-        this.snackbarStore.showSnackbar(
-          "Student course successfully updated.",
-          "success",
-          10000,
-          "Student course"
-        );
+        const response = await this.updateStudentCourse(this.selectedCourseToUpdate);
+        if (response.status == 200) {
+          this.snackbarStore.showSnackbar(
+            "Student course successfully updated.",
+            "success",
+            10000,
+            "Student course"
+          );
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Failed to update student course",
+            "danger",
+            10000,
+            "Student course"
+          );
+        }
         this.close();
       } catch (error) {
         this.snackbarStore.showSnackbar(

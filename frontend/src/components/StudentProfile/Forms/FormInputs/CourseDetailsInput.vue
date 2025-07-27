@@ -66,7 +66,6 @@
           <v-select v-model="course.equivOrChallenge" :items="[
             { title: 'Equivalency', value: 'E' },
             { title: 'Challenge', value: 'C' },
-            { title: 'None', value: null }
           ]" label="Eq / Ch" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
             persistent-hint />
         </v-col>

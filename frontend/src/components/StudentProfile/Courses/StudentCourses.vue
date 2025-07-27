@@ -18,7 +18,7 @@
           This student does not have any courses.
         </v-alert>
         <v-row no-gutters>
-          <StudentCoursesDeleteForm courseBatchDelete :selectedCoursesToDelete="selected">
+          <StudentCoursesDeleteForm @close="clearDeleteSelected" courseBatchDelete :selectedCoursesToDelete="selected">
           </StudentCoursesDeleteForm>
           <v-spacer />
           <StudentCoursesCreateForm />
@@ -259,6 +259,9 @@ export default {
       "setHasGradStatusPendingUpdates",
       "deleteStudentCourses",
     ]),
+    clearDeleteSelected() {
+      this.selected = []
+    },
     hasCourseInfo(item) {
       return !!(
         item.courseExam ||

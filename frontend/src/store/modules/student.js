@@ -74,6 +74,9 @@ export const useStudentStore = defineStore("student", {
     update: {
       courses: [],
     },
+    delete: {
+      courses: []
+    }
   }),
   actions: {
     async adoptStudent(studentData) {
@@ -272,13 +275,6 @@ export const useStudentStore = defineStore("student", {
         })
         .catch((error) => {
           if (error?.response?.status) {
-            // this.$bvToast.toast("ERROR " + error.response.statusText, {
-            //   title:
-            //     "There was an error with the Student Service (getting the Student History): " +
-            //     error.response.status,
-            //   variant: "danger",
-            //   noAutoHide: true,
-            // });
             this.snackbarStore.showSnackbar(
               "ERROR " + error?.response?.statusText,
               "error",
@@ -296,13 +292,6 @@ export const useStudentStore = defineStore("student", {
         })
         .catch((error) => {
           if (error?.response?.status) {
-            // this.$bvToast.toast("ERROR " + error.response.statusText, {
-            //   title:
-            //     "There was an error with the Student Service (getting the Student Optional Program History): " +
-            //     error.response.status,
-            //   variant: "danger",
-            //   noAutoHide: true,
-            // });
             this.snackbarStore.showSnackbar(
               "ERROR " + error?.response?.statusText,
               "error",
@@ -640,8 +629,9 @@ export const useStudentStore = defineStore("student", {
     },
     async updateStudentCourse(course) {
       try {
-        await StudentService.updateStudentCourse(this.id, course);
+        const response = await StudentService.updateStudentCourse(this.id, course);
         this.getStudentCourses(this.id);
+        return response
       } catch (error) {
         console.error("Error updating student courses:", error);
         throw error;
@@ -654,8 +644,9 @@ export const useStudentStore = defineStore("student", {
     // delete student courses
     async deleteStudentCourses(courses) {
       try {
-        await StudentService.deleteStudentCourses(this.id, courses);
+        const response = await StudentService.deleteStudentCourses(this.id, courses);
         this.getStudentCourses(this.id);
+        return response;
       } catch (error) {
         console.error("Error deleting student courses:", error);
         throw error;
