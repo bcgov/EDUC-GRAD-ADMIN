@@ -16,7 +16,7 @@
         <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
       </v-card-title>
 
-      <v-stepper alt-labels show-actions v-model="step">
+      <v-stepper show-actions v-model="step">
         <template v-slot:default>
           <v-stepper-header>
             <v-stepper-item title="Enter Courses" value="0" :rules="[() => v$.$invalid]">
@@ -50,14 +50,14 @@
                       </div>
                       <div v-else>
                         <CourseDetailsInput :course="course" create>
-                        <template #remove-button>
-                          <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none"
-                            style="min-width: auto; width: 80px"
-                            @click="removeCourse(course.courseID, course.courseSession)">Remove</v-btn>
-                        </template>
-                      </CourseDetailsInput>  
+                          <template #remove-button>
+                            <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none"
+                              style="min-width: auto; width: 80px"
+                              @click="removeCourse(course.courseID, course.courseSession)">Remove</v-btn>
+                          </template>
+                        </CourseDetailsInput>
                       </div>
-                    <v-divider v-if="index < coursesToCreate.length - 1" class="my-4" color="grey-darken-3" />
+                      <v-divider v-if="index < coursesToCreate.length - 1" class="my-4" color="grey-darken-3" />
 
                     </template>
                   </div>
@@ -68,82 +68,94 @@
               <!-- Step 2 -->
               <v-stepper-window-item value="1">
                 <v-expansion-panels multiple>
-                  <v-expansion-panel v-for="(course, index) in createStudentResultsMessages" :key="index">
-                    <v-expansion-panel-title class="d-flex align-center justify-space-between">
-                      <div class="d-flex align-center flex-grow-1">
-                        <v-icon :color="course.validationIssues.some(
-                          (i) => i.validationIssueSeverityCode === 'ERROR'
-                        )
-                          ? 'error'
-                          : 'success'
-                          " class="mr-2">
+
+
+                  <v-expansion-panel v-for="(course, index) in createStudentResultsMessages" :key="index" elevation="0"
+                    rounded="0" style="background-color: transparent; border:none">
+
+                    <v-alert
+                      :type="course.validationIssues.some(i => i.validationIssueSeverityCode === 'ERROR') ? 'error' : 'success'"
+                      border="start" variant="tonal" density="compact" class="my-1">
+
+                      <template #prepend>
+                        <v-icon
+                          :color="course.validationIssues.some(i => i.validationIssueSeverityCode === 'ERROR') ? 'error' : 'success'"
+                          style="margin-top: 15px;">
                           {{
-                            course.validationIssues.some(
-                              (i) => i.validationIssueSeverityCode === "ERROR"
-                            )
-                              ? "mdi-close-circle"
-                              : "mdi-check-circle"
+                            course.validationIssues.some(i => i.validationIssueSeverityCode === 'ERROR')
+                              ? 'mdi-close-circle'
+                              : 'mdi-check-circle'
                           }}
                         </v-icon>
-
-                        <span>
-                          {{ course.originalCourse.courseDetails.courseCode }}
-                          {{ course.originalCourse.courseDetails.courseLevel }} –
-                          {{ course.originalCourse.courseDetails.courseSession }}
-                          {{
-                            course.validationIssues.some(
-                              (i) => i.validationIssueSeverityCode === "ERROR"
-                            )
-                              ? " failed to add course"
-                              : ` added to student ${studentPen}`
-                          }}
-                        </span>
-
-                        <v-spacer />
-
-                        <span class="text-caption text-grey-darken-1">
-                          {{
-                            (() => {
-                              const errors = course.validationIssues.filter(
-                                (i) => i.validationIssueSeverityCode === "ERROR"
-                              ).length;
-                              const warnings = course.validationIssues.filter(
-                                (i) => i.validationIssueSeverityCode === "WARNING"
-                              ).length;
-
-                              const parts = [];
-                              if (errors > 0) parts.push(`${errors} error(s)`);
-                              if (warnings > 0)
-                                parts.push(`${warnings} warning(s)`);
-                              return parts.join(", ");
-                            })()
-                          }}
-                        </span>
-                      </div>
-
-                      <template #actions>
-                        <v-icon>mdi-chevron-down</v-icon>
                       </template>
-                    </v-expansion-panel-title>
 
-                    <v-expansion-panel-text>
-                      <div v-if="course.validationIssues.length">
-                        <div v-for="(issue, i) in course.validationIssues" :key="i"
-                          class="pl-3 d-flex align-center mb-2">
-                          <v-icon :color="issue.validationIssueSeverityCode === 'ERROR' ? 'error' : 'warning'"
-                            class="me-2" size="18">
-                            {{ issue.validationIssueSeverityCode === 'ERROR' ? 'mdi-alert-circle' : 'mdi-alert' }}
-                          </v-icon>
-                          {{ issue.validationIssueMessage }}
+
+                      <v-expansion-panel-title class="d-flex align-center justify-space-between">
+                        <div class="d-flex align-center flex-grow-1">
+
+                          <span>
+
+                            {{ course.originalCourse.courseDetails.courseCode }}
+                            {{ course.originalCourse.courseDetails.courseLevel }} –
+                            {{ course.originalCourse.courseSession }}
+                            {{
+                              course.validationIssues.some(
+                                (i) => i.validationIssueSeverityCode === "ERROR"
+                              )
+                                ? " failed to add course"
+                                : ` Added to student ${studentPen}`
+                            }}
+                          </span>
+
+                          <v-spacer />
+
+                          <span class="text-caption text-grey-darken-1">
+                            {{
+                              (() => {
+                                const errors = course.validationIssues.filter(
+                                  (i) => i.validationIssueSeverityCode === "ERROR"
+                                ).length;
+                                const warnings = course.validationIssues.filter(
+                                  (i) => i.validationIssueSeverityCode === "WARNING"
+                                ).length;
+
+                                const parts = [];
+                                if (errors > 0) parts.push(`${errors} error(s)`);
+                                if (warnings > 0)
+                                  parts.push(`${warnings} warning(s)`);
+                                return parts.join(", ");
+                              })()
+                            }}
+                          </span>
                         </div>
-                      </div>
-                      <div v-else>
-                        <v-alert type="success" dense outlined>
+
+                        <template #actions>
+                          <v-icon>mdi-chevron-down</v-icon>
+                        </template>
+                      </v-expansion-panel-title>
+
+                      <v-expansion-panel-text>
+                        <div v-if="course.validationIssues.length">
+                          <div v-for="(issue, i) in course.validationIssues" :key="i"
+                            class="pl-3 d-flex align-center mb-2">
+                            <v-icon :color="issue.validationIssueSeverityCode === 'ERROR' ? 'error' : 'warning'"
+                              class="me-2" size="18">
+                              {{ issue.validationIssueSeverityCode === 'ERROR' ? 'mdi-alert-circle' : 'mdi-alert' }}
+                            </v-icon>{{ issue.validationIssueSeverityCode === 'ERROR' ? 'Error' : 'Warning: ' }}
+
+
+                            {{ issue.validationIssueMessage }}
+                          </div>
+                        </div>
+                        <div v-else>
                           No validation issues.
-                        </v-alert>
-                      </div>
-                    </v-expansion-panel-text>
+
+                        </div>
+
+                      </v-expansion-panel-text>
+                    </v-alert>
                   </v-expansion-panel>
+
                 </v-expansion-panels>
 
                 <v-alert v-if="coursesToCreate.length > 0" type="info" class="mb-4" border="start" elevation="2"
@@ -164,53 +176,55 @@
                     </v-col>
                     <v-row v-if="course.isExaminable">
                       <v-col class="ml-2"><strong>School %</strong>&nbsp;
-                      <span v-if="course.courseExam.schoolPercentage">{{ course.courseExam.schoolPercentage }}</span>
-                      <span v-else> <i>null</i> </span>
-                    </v-col>
-                    <v-col class="ml-2"><strong>Best School %</strong>&nbsp;
-                      <span v-if="course.courseExam.bestSchoolPercentage">{{ course.courseExam.bestSchoolPercentage }}</span>
-                      <span v-else> <i>null</i> </span>
-                    </v-col>
-                    <v-col class="ml-2"><strong>Special Case</strong> {{ course.courseExam.specialCase }}</v-col>
-                    <v-col class="ml-2"><strong>Exam Best %</strong>&nbsp;
-                      <span v-if="course.courseExam.bestExamPercentage">{{ course.courseExam.bestExamPercentage }}</span>
-                      <span v-else> <i>null</i> </span>
-                    </v-col>
-                    <v-col class="ml-2"><strong>Final %</strong>&nbsp;
-                      <span v-if="course.finalPercent">{{ course.finalPercent }}</span>
-                      <span v-else> <i>null</i> </span>
-                    </v-col>
-                    <v-col class="ml-2"><strong>Final LG</strong> {{ course.finalLetterGrade }}</v-col>
-                    <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
+                        <span v-if="course.courseExam.schoolPercentage">{{ course.courseExam.schoolPercentage }}</span>
+                        <span v-else> <i>null</i> </span>
+                      </v-col>
+                      <v-col class="ml-2"><strong>Best School %</strong>&nbsp;
+                        <span v-if="course.courseExam.bestSchoolPercentage">{{ course.courseExam.bestSchoolPercentage
+                        }}</span>
+                        <span v-else> <i>null</i> </span>
+                      </v-col>
+                      <v-col class="ml-2"><strong>Special Case</strong> {{ course.courseExam.specialCase }}</v-col>
+                      <v-col class="ml-2"><strong>Exam Best %</strong>&nbsp;
+                        <span v-if="course.courseExam.bestExamPercentage">{{ course.courseExam.bestExamPercentage
+                        }}</span>
+                        <span v-else> <i>null</i> </span>
+                      </v-col>
+                      <v-col class="ml-2"><strong>Final %</strong>&nbsp;
+                        <span v-if="course.finalPercent">{{ course.finalPercent }}</span>
+                        <span v-else> <i>null</i> </span>
+                      </v-col>
+                      <v-col class="ml-2"><strong>Final LG</strong> {{ course.finalLetterGrade }}</v-col>
+                      <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
                     </v-row>
                     <v-row v-else>
-                    <v-col class="ml-3"><strong>Interim</strong>&nbsp;
-                      <span v-if="course.interimPercent">{{ course.interimPercent }}%
-                        {{ course.interimLetterGrade }}</span>
-                      <span v-else> <i>null</i> </span>
-                    </v-col>
-                    <v-col><strong>Final</strong>&nbsp;
-                      <span v-if="course.finalPercent">
-                        {{ course.finalPercent }}%
-                        {{ course.finalLetterGrade }}</span>
-                      <span v-else><i>null</i></span></v-col>
-                    <!-- I don't think credits can have a null value? - Samara -->
-                    <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
-                    <v-col><strong>FA/AS</strong>&nbsp;
-                      <span v-if="course.fineArtsAppliedSkills">
-                        {{ course.fineArtsAppliedSkills }}
-                      </span>
-                      <span v-else><i>null</i></span>
-                    </v-col>
-                    <v-col><strong>Eq/Ch</strong>&nbsp;
-                      <span v-if="course.equivOrChallenge">
-                        {{ course.equivOrChallenge }}
-                      </span>
-                      <span v-else><i>null</i></span>
-                    </v-col>
-                    <v-col cols="12" class="ml-3" v-if="course.customizedCourseName"><strong>Custom Course
-                        Title</strong>
-                      {{ course.customizedCourseName }}</v-col>
+                      <v-col class="ml-3"><strong>Interim</strong>&nbsp;
+                        <span v-if="course.interimPercent">{{ course.interimPercent }}%
+                          {{ course.interimLetterGrade }}</span>
+                        <span v-else> <i>null</i> </span>
+                      </v-col>
+                      <v-col><strong>Final</strong>&nbsp;
+                        <span v-if="course.finalPercent">
+                          {{ course.finalPercent }}%
+                          {{ course.finalLetterGrade }}</span>
+                        <span v-else><i>null</i></span></v-col>
+                      <!-- I don't think credits can have a null value? - Samara -->
+                      <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
+                      <v-col><strong>FA/AS</strong>&nbsp;
+                        <span v-if="course.fineArtsAppliedSkills">
+                          {{ course.fineArtsAppliedSkills }}
+                        </span>
+                        <span v-else><i>null</i></span>
+                      </v-col>
+                      <v-col><strong>Eq/Ch</strong>&nbsp;
+                        <span v-if="course.equivOrChallenge">
+                          {{ course.equivOrChallenge }}
+                        </span>
+                        <span v-else><i>null</i></span>
+                      </v-col>
+                      <v-col cols="12" class="ml-3" v-if="course.customizedCourseName"><strong>Custom Course
+                          Title</strong>
+                        {{ course.customizedCourseName }}</v-col>
                     </v-row>
                   </v-row>
                 </v-alert>
@@ -381,6 +395,7 @@ export default {
       studentCourses: "studentCourses",
       studentPenAndName: "formattedStudentName",
     }),
+
   },
   methods: {
 
@@ -455,8 +470,8 @@ export default {
         courseDetails: result.courseData,
         isExaminable: result.isExaminable,
         ...(result.isExaminable && {
-          courseExam: { 
-            schoolPercentage: null, 
+          courseExam: {
+            schoolPercentage: null,
             bestSchoolPercentage: null,
             bestExamPercentage: null,
             specialCase: null,
