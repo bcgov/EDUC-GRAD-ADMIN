@@ -10,19 +10,21 @@
 
       <v-card>
         <v-card-title>
-
           <v-row no-gutters>
             <div class="v-card-title">Edit Student Courses</div>
             <v-spacer />
             <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
               @click="close" />
           </v-row>
-          <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
         </v-card-title>
-        <v-stepper alt-labels show-actions v-model="step">
+        <v-col>
+          <StudentCourseAlert :studentStatus="studentStatus" />
+        </v-col>
+        <v-stepper show-actions v-model="step">
           <template v-slot:default>
+
             <v-stepper-header>
-              <v-stepper-item title="Enter Courses" value="0" :rules="[() => v$.$invalid]">
+              <v-stepper-item title="Update Course Info" value="0" :rules="[() => v$.$invalid]">
                 <template #icon>
                   1
                 </template>
@@ -31,17 +33,16 @@
               <v-stepper-item title="Confirmation" value="1">
                 <template #icon> 2 </template></v-stepper-item>
             </v-stepper-header>
-
-
             <v-stepper-window>
               <div style="padding-right: 8px;">
+
 
                 <!-- Step 1 -->
                 <v-stepper-window-item value="0">
                   <v-card-text>
                     <v-row no-gutters class="p-2" v-if="showCourseInput">
                       <v-col class="pr-1">
-                        Select Course
+                        <strong>Update Student Course</strong>
                       </v-col>
 
                       <v-col class="pr-1">
@@ -88,8 +89,7 @@
                 <v-stepper-window-item value="1">
                   <v-alert v-if="step == 1" type="info" class="mb-4" border="start" elevation="2" variant="tonal">
                     <div class="mb-2">
-                      You are about to update the following courses to student
-                      <strong>{{ studentPenAndName }}</strong>:
+                      You are about to save the following changes
                     </div>
                     <v-row no-gutters class="mb-2">
                       <v-col cols="12"><strong>{{ selectedCourseToUpdate.courseDetails.courseCode }} {{
@@ -146,13 +146,13 @@
           </v-btn>
           <v-spacer />
 
-          <v-btn v-if="step == 0" @click="step++" color="bcGovBlue" variant="outlined">
+          <v-btn v-if="step == 0" @click="step++" color="bcGovBlue" variant="flat">
             Next
           </v-btn>
-          <v-btn v-else color="bcGovBlue" variant="flat" class="text-none" density="default" @click="confirmUpdate"
+          <v-btn v-else color="error" variant="flat" class="text-none" density="default" @click="confirmUpdate"
             :disabled="isLoading">
 
-            Save Student Course(s)
+            Save Changes
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -165,6 +165,7 @@ import useVuelidate from '@vuelidate/core';
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { required, helpers } from '@vuelidate/validators';
 import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
+import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue";
 import { useStudentStore } from "@/store/modules/student";
 import { mapState, mapActions } from "pinia";
 import { validateAndFetchCourse } from '@/components/StudentProfile/Forms/utils/validateCourse.js';
@@ -176,7 +177,7 @@ export default {
       v$: useVuelidate(),
     };
   },
-  components: { CourseDetailsInput },
+  components: { CourseDetailsInput, StudentCourseAlert },
 
   props: {
     course: {
@@ -231,9 +232,12 @@ export default {
   computed: {
     ...mapState(useStudentStore, {
       studentPenAndName: "formattedStudentName"
+
     }),
     ...mapState(useStudentStore, {
       studentCourses: "studentCourses",
+      studentStatus: (state) => state.student.profile.studentStatus,
+
     }),
   },
 

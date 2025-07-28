@@ -1,5 +1,6 @@
 <template>
     <div>
+
         <v-alert v-if="studentStatus === 'ARC'" type="warning" border="start" variant="tonal" density="compact"
             icon="mdi-alert-circle">
             This student is not active. Re-activate by setting their status to "CUR" if they are currently attending

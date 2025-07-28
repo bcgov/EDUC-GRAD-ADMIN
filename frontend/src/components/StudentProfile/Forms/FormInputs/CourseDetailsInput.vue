@@ -131,7 +131,7 @@ export default {
       this.course.credits = this.creditsAvailableForCourseSession[0];
     }
     // Check for Q course
-    if ((this.course.courseCode || '').startsWith("Q")) {
+    if ((this.course?.courseDetails.courseCode).startsWith("Q")) {
       this.warnings.push("Only use Q code if student was on Adult program at time of course completion or if course is marked as Equivalency.");
     }
     if (this.course.isExaminable) {
@@ -186,7 +186,7 @@ export default {
       course: {
         interimPercent: {
           isValidPercent: helpers.withMessage(
-            'Interim % must be a valid number between 0 and 100',
+            'Interim % must be a valid number between 1 and 100',
             (value) => {
               if (value === '' || value === null || value === undefined) return true; // allow empty if needed
 
