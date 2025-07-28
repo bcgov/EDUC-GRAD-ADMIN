@@ -1,8 +1,8 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="80%">
     <template v-slot:activator="{ props }">
-      <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" color="bcGovBlue" prepend-icon="mdi-plus"
-        class="text-none" @click="openCreateStudentCoursesDialog" text="Add Student Courses" />
+      <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="studentStatus == 'MER'" color="bcGovBlue"
+        prepend-icon="mdi-plus" class="text-none" @click="openCreateStudentCoursesDialog" text="Add Student Courses" />
     </template>
 
     <v-card>
@@ -13,13 +13,24 @@
           <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
             @click="closeCreateStudentCourseDialog" />
         </v-row>
+
         <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
+        <v-card-subtitle>
+
+        </v-card-subtitle>
+
+
       </v-card-title>
+      <v-col>
+        <StudentCourseAlert :studentStatus="studentStatus" />
+      </v-col>
+
+
 
       <v-stepper show-actions v-model="step">
         <template v-slot:default>
           <v-stepper-header>
-            <v-stepper-item title="Enter Courses" value="0" :rules="[() => v$.$invalid]">
+            <v-stepper-item title="Enter Courses" value="0">
               <template #icon>
                 1
               </template>
@@ -30,7 +41,7 @@
           </v-stepper-header>
 
 
-          <v-stepper-window>
+          <v-stepper-window v-if="coursesToCreate.length > 0">
             <div style="max-height: 60vh; overflow-y: auto; padding-right: 8px;">
 
               <!-- Step 1 -->
@@ -235,7 +246,7 @@
       </v-stepper>
       <v-card-actions>
 
-        <v-row v-if="showCourseInputs" no-gutters class="p-3">
+        <v-row v-if="showCourseInputs" no-gutters class="px-3 pt-3">
           <v-col cols="1" class="pr-1">
             Select Course
           </v-col>
@@ -272,7 +283,8 @@
           </v-col>
         </v-row>
       </v-card-actions>
-      <v-row class="pb-2"> <v-alert v-if="courseValidationMessage" type="error" variant="tonal" border="start"
+
+      <v-row class="pb-2 m-2" v-if="courseValidationMessage"> <v-alert type="error" variant="tonal" border="start"
           class="width-fit-content">{{ courseValidationMessage }}</v-alert></v-row>
       <v-row justify="center">
         <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none" v-if="!showCourseInputs && step === 0"
@@ -291,7 +303,6 @@
         </v-btn>
 
         <v-spacer />
-
         <v-btn v-if="step < 1" @click="step++" color="bcGovBlue" variant="outlined"
           :disabled="coursesToCreate.length == 0 || v$.$invalid">
           Next
@@ -313,7 +324,7 @@
 <script>
 import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
 import CourseExamDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseExamDetailsInput.vue";
-import CourseService from "@/services/CourseService.js";
+import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue"
 import { toRaw } from "vue";
 import useVuelidate from '@vuelidate/core';
 import { required, helpers } from '@vuelidate/validators';
@@ -332,6 +343,7 @@ export default {
   components: {
     CourseDetailsInput,
     CourseExamDetailsInput,
+    StudentCourseAlert,
   },
   validations() {
     return {
@@ -394,6 +406,7 @@ export default {
       studentPen: "getStudentPen",
       studentCourses: "studentCourses",
       studentPenAndName: "formattedStudentName",
+      studentStatus: (state) => state.student.profile.studentStatus,
     }),
 
   },

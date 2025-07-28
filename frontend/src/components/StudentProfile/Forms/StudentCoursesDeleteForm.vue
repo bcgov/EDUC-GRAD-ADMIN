@@ -141,7 +141,7 @@
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
-import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue"
+import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue";
 
 
 

@@ -53,7 +53,6 @@ export async function validateAndFetchCourse({
         if (sessionDate > endDate) {
             return { error: `Course session date is after the course completion date (${courseData.completionEndDate})` };
         }
-
         let isExaminable = false;
         if (checkExaminable) {
             const examinableCourses = await CourseService.getCourseExaminableCourses();
@@ -76,6 +75,7 @@ export async function validateAndFetchCourse({
                     error: 'This course required an exam at the time of the course session date. Your role does not have permission to add examinable courses.',
                 };
             }
+            
         }
 
         return {
