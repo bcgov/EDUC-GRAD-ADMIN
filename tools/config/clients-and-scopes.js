@@ -7,7 +7,6 @@ const mustache = require('mustache');
 // Load config
 const configPath = path.resolve(__dirname, 'clients-config.json');
 const clients = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-//const httpsAgent = new https.Agent({ rejectUnauthorized: false }); // for self-signed certs
 const httpsAgent = new https.Agent();
 
 const keycloakUrl = process.env.KEYCLOAK_URL;

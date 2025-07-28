@@ -11,7 +11,6 @@ const openshiftNamespace = process.env.OPENSHIFT_NAMESPACE;
 const openshiftToken = process.env.OPENSHIFT_TOKEN;
 
 const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'clients.json'), 'utf8'));
-//const httpsAgent = new https.Agent({ rejectUnauthorized: false }); // for self-signed certs
 const httpsAgent = new https.Agent();
 
 async function getOpenShiftSecret(openshiftApi, openshiftToken, namespace, secretName) {
