@@ -6,6 +6,7 @@
     </template>
 
     <v-card>
+
       <v-card-title>
         <v-row no-gutters>
           <div class="v-card-title">Add Student Courses</div>
@@ -35,7 +36,7 @@
           </v-stepper-header>
 
 
-          <v-stepper-window v-if="coursesToCreate.length > 0">
+          <v-stepper-window>
             <div style="max-height: 60vh; overflow-y: auto; padding-right: 8px;">
 
               <!-- Step 1 -->
@@ -73,7 +74,6 @@
               <!-- Step 2 -->
               <v-stepper-window-item value="1">
                 <v-expansion-panels multiple>
-
 
                   <v-expansion-panel v-for="(course, index) in createStudentResultsMessages" :key="index" elevation="0"
                     rounded="0" style="background-color: transparent; border:none">
@@ -515,7 +515,7 @@ export default {
       const response = await this.createStudentCourses(
         createStudentCoursesRequestBody
       );
-
+      console.log(response)
       // Enrich response with entire original course object
       const enrichedResults = response.map((result) => {
         const original = this.coursesToCreate.find(
