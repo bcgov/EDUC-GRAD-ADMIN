@@ -134,10 +134,10 @@ export const Roles = Object.freeze({
 });
 
 export const MinistryAddress = Object.freeze({
-  streetLine1: "4TH FLOOR 620 SUPERIOR",
+  streetLine1: "2ND FLOOR, 395 WATERFRONT CRES",
   streetLine2: "PO BOX 9886 STN PROV GOVT",
   city: "VICTORIA",
   region: "BRITISH COLUMBIA",
   country: "CANADA",
-  code: "V8W9T6",
+  code: "V8T5K3",
 });
