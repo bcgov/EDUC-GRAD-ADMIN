@@ -13,6 +13,17 @@ export default {
         },
       })
   },
+  getStudentAssessmentHistoryBySearchCriteria(searchParams, sort, pageNumber, pageSize) {
+    return ApiService.apiAxios
+        .get('/api/student-assessment/student-history/paginated', {
+          params: {
+            pageNumber: pageNumber - 1,
+            pageSize: pageSize,
+            searchParams: omitBy(searchParams, isEmpty),
+            sort: sort,
+          },
+        })
+  },
   getAssessmentTypeCodes() {
     return ApiService.apiAxios.get('/api/student-assessment/assessment-type-codes')
   },

@@ -4,6 +4,7 @@ import ProgramManagementService from "@/services/ProgramManagementService.js";
 import GraduationReportService from "@/services/GraduationReportService.js";
 import StudentService from "@/services/StudentService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import StudentAssessmentService from "@/services/StudentAssessmentService";
 export const useStudentStore = defineStore("student", {
   namespaced: true,
   state: () => ({
@@ -328,6 +329,23 @@ export const useStudentStore = defineStore("student", {
             );
           }
         });
+    },
+    loadStudentAssessmentHistory(studentId) {
+      StudentAssessmentService.getStudentAssessmentHistoryBySearchCriteria(studentId)
+          .then((response) => {
+            this.setStudentCourseAuditHistory(response.data);
+          })
+          .catch((error) => {
+            if (error?.response?.status) {
+              this.snackbarStore.showSnackbar(
+                  "ERROR " + error?.response?.statusText,
+                  "error",
+                  10000,
+                  "There was an error with the Student Service (getting the Student Course History): " +
+                  error?.response?.status
+              );
+            }
+          });
     },
     unsetStudent() {
       this.student.profile = {};

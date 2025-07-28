@@ -1,9 +1,9 @@
-"use strict";
-const nconf = require("nconf");
-const dotenv = require("dotenv");
-const path = require("path");
+'use strict';
+const nconf = require('nconf');
+const dotenv = require('dotenv');
+const path = require('path');
 dotenv.config();
-const env = process.env.NODE_ENV || "local";
+const env = process.env.NODE_ENV || 'local';
 
 nconf
   .argv()
@@ -16,7 +16,7 @@ nconf.overrides({
 
   server: {
     logLevel: process.env.LOG_LEVEL,
-    morganFormat: "dev",
+    morganFormat: 'dev',
     port: 8080,
   },
 });
@@ -24,13 +24,13 @@ nconf.overrides({
 nconf.defaults({
   environment: env,
   logoutEndpoint:
-    process.env.SOAM_URL + "/auth/realms/master/protocol/openid-connect/logout",
+    process.env.SOAM_URL + '/auth/realms/master/protocol/openid-connect/logout',
   siteMinder_logout_endpoint: process.env.SITEMINDER_LOGOUT_ENDPOINT,
   server: {
     frontend: process.env.SERVER_FRONTEND,
-    backend: process.env.SERVER_FRONTEND + "/api",
+    backend: process.env.SERVER_FRONTEND + '/api',
     logLevel: process.env.LOG_LEVEL,
-    morganFormat: "dev",
+    morganFormat: 'dev',
     port: 8080,
     session: {
       maxAge: +process.env.SESSION_MAX_AGE,
