@@ -13,13 +13,7 @@
           <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
             @click="closeCreateStudentCourseDialog" />
         </v-row>
-
         <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
-        <v-card-subtitle>
-
-        </v-card-subtitle>
-
-
       </v-card-title>
       <v-col>
         <StudentCourseAlert :studentStatus="studentStatus" />

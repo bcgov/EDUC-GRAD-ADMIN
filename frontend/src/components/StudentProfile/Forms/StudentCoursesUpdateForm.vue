@@ -10,17 +10,19 @@
 
       <v-card>
         <v-card-title>
-
           <v-row no-gutters>
             <div class="v-card-title">Edit Student Courses</div>
             <v-spacer />
             <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
               @click="close" />
           </v-row>
-          <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
         </v-card-title>
+        <v-col>
+          <StudentCourseAlert :studentStatus="studentStatus" />
+        </v-col>
         <v-stepper show-actions v-model="step">
           <template v-slot:default>
+
             <v-stepper-header>
               <v-stepper-item title="Update Course Info" value="0" :rules="[() => v$.$invalid]">
                 <template #icon>
@@ -31,10 +33,9 @@
               <v-stepper-item title="Confirmation" value="1">
                 <template #icon> 2 </template></v-stepper-item>
             </v-stepper-header>
-
-
             <v-stepper-window>
               <div style="padding-right: 8px;">
+
 
                 <!-- Step 1 -->
                 <v-stepper-window-item value="0">
@@ -164,6 +165,7 @@ import useVuelidate from '@vuelidate/core';
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { required, helpers } from '@vuelidate/validators';
 import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
+import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue";
 import { useStudentStore } from "@/store/modules/student";
 import { mapState, mapActions } from "pinia";
 import { validateAndFetchCourse } from '@/components/StudentProfile/Forms/utils/validateCourse.js';
@@ -175,7 +177,7 @@ export default {
       v$: useVuelidate(),
     };
   },
-  components: { CourseDetailsInput },
+  components: { CourseDetailsInput, StudentCourseAlert },
 
   props: {
     course: {
@@ -230,9 +232,12 @@ export default {
   computed: {
     ...mapState(useStudentStore, {
       studentPenAndName: "formattedStudentName"
+
     }),
     ...mapState(useStudentStore, {
       studentCourses: "studentCourses",
+      studentStatus: (state) => state.student.profile.studentStatus,
+
     }),
   },
 
