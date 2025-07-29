@@ -3,6 +3,7 @@ import router from "@/router";
 import CodesService from "@/services/CodesService.js";
 import StudentService from "@/services/StudentService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import StudentAssessmentService from "@/services/StudentAssessmentService";
 export const useStudentStore = defineStore("student", {
   namespaced: true,
   state: () => ({
@@ -72,6 +73,9 @@ export const useStudentStore = defineStore("student", {
     update: {
       courses: [],
     },
+    delete: {
+      courses: []
+    }
   }),
   actions: {
     async adoptStudent(studentData) {
@@ -270,13 +274,6 @@ export const useStudentStore = defineStore("student", {
         })
         .catch((error) => {
           if (error?.response?.status) {
-            // this.$bvToast.toast("ERROR " + error.response.statusText, {
-            //   title:
-            //     "There was an error with the Student Service (getting the Student History): " +
-            //     error.response.status,
-            //   variant: "danger",
-            //   noAutoHide: true,
-            // });
             this.snackbarStore.showSnackbar(
               "ERROR " + error?.response?.statusText,
               "error",
@@ -294,13 +291,6 @@ export const useStudentStore = defineStore("student", {
         })
         .catch((error) => {
           if (error?.response?.status) {
-            // this.$bvToast.toast("ERROR " + error.response.statusText, {
-            //   title:
-            //     "There was an error with the Student Service (getting the Student Optional Program History): " +
-            //     error.response.status,
-            //   variant: "danger",
-            //   noAutoHide: true,
-            // });
             this.snackbarStore.showSnackbar(
               "ERROR " + error?.response?.statusText,
               "error",
@@ -327,6 +317,23 @@ export const useStudentStore = defineStore("student", {
             );
           }
         });
+    },
+    loadStudentAssessmentHistory(studentId) {
+      StudentAssessmentService.getStudentAssessmentHistoryBySearchCriteria(studentId)
+          .then((response) => {
+            this.setStudentCourseAuditHistory(response.data);
+          })
+          .catch((error) => {
+            if (error?.response?.status) {
+              this.snackbarStore.showSnackbar(
+                  "ERROR " + error?.response?.statusText,
+                  "error",
+                  10000,
+                  "There was an error with the Student Service (getting the Student Course History): " +
+                  error?.response?.status
+              );
+            }
+          });
     },
     unsetStudent() {
       this.student.profile = {};
@@ -624,8 +631,9 @@ export const useStudentStore = defineStore("student", {
     },
     async updateStudentCourse(course) {
       try {
-        await StudentService.updateStudentCourse(this.id, course);
+        const response = await StudentService.updateStudentCourse(this.id, course);
         this.getStudentCourses(this.id);
+        return response
       } catch (error) {
         console.error("Error updating student courses:", error);
         throw error;
@@ -637,8 +645,9 @@ export const useStudentStore = defineStore("student", {
     // delete student courses
     async deleteStudentCourses(courses) {
       try {
-        await StudentService.deleteStudentCourses(this.id, courses);
+        const response = await StudentService.deleteStudentCourses(this.id, courses);
         this.getStudentCourses(this.id);
+        return response;
       } catch (error) {
         console.error("Error deleting student courses:", error);
         throw error;

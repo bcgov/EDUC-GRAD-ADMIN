@@ -111,6 +111,13 @@ export const useAppStore = defineStore("app", {
 
       return categoryCode?.legacyCode + " - " + categoryCode?.label;
     },
+    getStudentAssessmentProvincialSpecialCaseCodes: (state) => state.provincialSpecialCaseCodes,
+    getProvincialSpecialCaseCode: (state) => {
+      return (code) =>
+          state.provincialSpecialCaseCodes.find(
+              (specialCase) => code === specialCase.provincialSpecialCaseCode
+          );
+    },
     getFacilityCodes: (state) => state.instituteFacilityCodes,
     getFacilityCode: (state) => {
       return (code) =>
@@ -147,6 +154,7 @@ export const useAppStore = defineStore("app", {
           // GET & SET INSTITUTE CODES
           await this.getInstituteCategoryCodes();
           await this.getInstituteFacilityCodes();
+          await this.getProvincialSpecialCaseCodes();
         }
       } catch (e) {
         if (e.response.status) {

@@ -2,6 +2,7 @@
 const { logApiError, getCommonServiceData, errorResponse, cachedApiCall } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const utils = require('../utils');
+
 const config = require('../../config');
 const { createMoreFiltersSearchCriteria } = require('./studentFilters');
 const API_BASE_ROUTE = '/api/v1/student-assessment';
@@ -86,6 +87,46 @@ async function getStudentAssessmentPaginated(req, res) {
     return res.status(200).json(data);
   } catch (e) {
     await logApiError(e, 'Error getting student assessment paginated list');
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getStudentAssessmentHistoryPaginated(req, res) {
+  try {
+    const search = [];
+    if (req.query?.searchParams) {
+      let criteriaArray = createMoreFiltersSearchCriteria(req.query.searchParams);
+      criteriaArray.forEach(criteria => {
+        search.push(criteria);
+      });
+    }
+    const params = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: JSON.stringify(req.query.sort),
+        searchCriteriaList: JSON.stringify(search),
+      }
+    };
+    let data =  await getCommonServiceData(`${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student-history/paginated`, params);
+    
+    if(data?.content){
+      data.content.forEach((assessment) => {
+        assessment.historyDate = assessment.createDate.substring(0, 19).replace('T', ' ');
+      });
+    }
+    
+    if (req?.query?.returnKey) {
+      let result = data?.content.map((student) => student[req?.query?.returnKey]);
+      return res.status(HttpStatus.OK).json(result);
+    }
+    return res.status(200).json(data);
+  } catch (e) {
+    await logApiError(e, 'Error getting student assessment history paginated list: ' + e.message);
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);
     } else {
@@ -194,5 +235,6 @@ module.exports = {
   postStudentAssessment,
   deleteStudentAssessmentByID,
   getAllAssessmentSessions,
-  getProvincialSpecialCaseCodes
+  getProvincialSpecialCaseCodes,
+  getStudentAssessmentHistoryPaginated
 };

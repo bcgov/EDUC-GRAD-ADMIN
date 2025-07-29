@@ -5,15 +5,13 @@ ENV=$1
 APP_NAME=$2
 OPENSHIFT_NAMESPACE=$3
 BASE_URL=$4
-SOAM_CLIENT_SECRET=$5
-REDIS_PASSWORD=$6
-SPLUNK_TOKEN=$7
-COMMON_NAMESPACE=$8
-GRAD_NAMESPACE=$9
-GRAD_BUSINESS_NAMESPACE=${10}
-SOAM_SERVICE_CLIENT_SECRET=${11}
-STUDENT_ADMIN_NAMESPACE=${12}
-STUDENT_ASSESSMENT_NAMESPACE=${13}
+REDIS_PASSWORD=$5
+SPLUNK_TOKEN=$6
+COMMON_NAMESPACE=$7
+GRAD_NAMESPACE=$8
+GRAD_BUSINESS_NAMESPACE=$9
+STUDENT_ADMIN_NAMESPACE=${10}
+STUDENT_ASSESSMENT_NAMESPACE=${11}
 
 SOAM_KC_REALM_ID="master"
 SOAM_KC=soam-$ENV.apps.silver.devops.gov.bc.ca
@@ -66,10 +64,6 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=LOG_LEVEL=info \
   --from-literal=SERVER_FRONTEND="https://$BASE_URL" \
   --from-literal=SOAM_PUBLIC_KEY="$formattedPublicKey" \
-  --from-literal=SOAM_CLIENT_ID="grad-admin-client" \
-  --from-literal=SOAM_CLIENT_SECRET="$SOAM_CLIENT_SECRET" \
-  --from-literal=SOAM_SERVICE_CLIENT_ID="grad-admin-service" \
-  --from-literal=SOAM_SERVICE_CLIENT_SECRET="$SOAM_SERVICE_CLIENT_SECRET" \
   --from-literal=SOAM_URL="https://soam-$ENV.apps.silver.devops.gov.bc.ca" \
   --from-literal=SOAM_DISCOVERY="https://soam-$ENV.apps.silver.devops.gov.bc.ca/auth/realms/master/.well-known/openid-configuration" \
   --from-literal=IDIR_IDP_HINT=keycloak_bcdevexchange_idir \
