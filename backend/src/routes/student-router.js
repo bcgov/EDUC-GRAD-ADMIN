@@ -27,6 +27,10 @@ const {
   getRunPreviewFinalMarks,
   getRunTranscriptVerification,
   getRunUpdateTranscript,
+  getStudentTranscript,
+  getStudentTVR,
+  getStudentCertificate,
+  getStudentXMLReport,
   getStudentNotes,
   postStudentNotes,
   deleteStudentNotes,
@@ -201,6 +205,35 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
   getRunUpdateTranscript
+);
+
+// STUDENT REPORTS
+router.get(
+  "/studentReports/:studentID/transcript",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getStudentTranscript
+);
+
+router.get(
+  "/studentReports/:studentID/transcriptVerificationReport",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getStudentTVR
+);
+
+router.get(
+  "/studentReports/:studentID/certificate",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getStudentCertificate
+);
+
+router.get(
+  "/studentReports/:studentPEN/XML",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getStudentXMLReport
 );
 
 // STUDENT NOTES

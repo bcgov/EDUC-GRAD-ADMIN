@@ -67,7 +67,6 @@
 <script>
 import { ref, watch } from "vue";
 import StudentService from "@/services/StudentService.js";
-import GraduationReportService from "@/services/GraduationReportService.js";
 import { useAppStore } from "@/store/modules/app";
 import { useVuelidate } from "@vuelidate/core";
 import { mapActions, mapState } from "pinia";
@@ -218,8 +217,9 @@ export default {
             this.runType == "DISTRUNUSER" &&
             (this.credentialType == "RC" || this.credentialType == "OC")
           ) {
-            let certificate =
-              await GraduationReportService.getStudentCertificates(studentID);
+            let certificate = await StudentService.getStudentCertificates(
+              studentID
+            );
 
             if (!certificate?.data.length) {
               if (this.credentialType == "RC") {

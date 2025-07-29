@@ -107,6 +107,30 @@ export default {
       `/api/student/${studentID}/updateTranscript`
     );
   },
+  // STUDENT REPORTS
+  getStudentTranscript(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/studentReports/${studentID}/transcript`
+    );
+  },
+
+  getStudentTVR(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/studentReports/${studentID}/transcriptVerificationReport`
+    );
+  },
+
+  getStudentCertificates(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/studentReports/${studentID}/certificate`
+    );
+  },
+
+  getStudentXMLReport(pen) {
+    console.log("WORLD");
+    return ApiService.apiAxios.get(`/api/student/studentReports/${pen}/XML`);
+  },
+
   // STUDENT NOTES
   addStudentNotes(studentID, json) {
     return ApiService.apiAxios.post(`/api/student/${studentID}/notes`, json);

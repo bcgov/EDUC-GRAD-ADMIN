@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import router from "@/router";
 import CodesService from "@/services/CodesService.js";
-import GraduationReportService from "@/services/GraduationReportService.js";
 import StudentService from "@/services/StudentService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export const useStudentStore = defineStore("student", {
@@ -164,7 +163,7 @@ export const useStudentStore = defineStore("student", {
       this.loadStudentReports(this.id);
     },
     loadStudentXmlReport(pen) {
-      GraduationReportService.getStudentXmlReport(pen)
+      StudentService.getStudentXMLReport(pen)
         .then((response) => {
           this.setStudentXmlReport(response.data);
         })
@@ -178,7 +177,7 @@ export const useStudentStore = defineStore("student", {
         });
     },
     loadStudentCertificates(id) {
-      GraduationReportService.getStudentCertificates(id)
+      StudentService.getStudentCertificates(id)
         .then((response) => {
           this.setStudentCertificates(response.data);
         })
@@ -204,7 +203,7 @@ export const useStudentStore = defineStore("student", {
         });
     },
     loadStudentReports(id) {
-      GraduationReportService.getStudentReports(id)
+      StudentService.getStudentTVR(id)
         .then((response) => {
           this.setStudentReports(response.data);
         })
@@ -230,7 +229,7 @@ export const useStudentStore = defineStore("student", {
         });
     },
     loadStudentTranscripts(id) {
-      GraduationReportService.getStudentTranscripts(id)
+      StudentService.getStudentTranscript(id)
         .then((response) => {
           this.setStudentTranscripts(response.data);
         })
@@ -283,7 +282,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the Student History): " +
-              error?.response?.status
+                error?.response?.status
             );
           }
         });
@@ -307,7 +306,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the Student Optional Program History): " +
-              error?.response?.status
+                error?.response?.status
             );
           }
         });
@@ -324,7 +323,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the Student Course History): " +
-              error?.response?.status
+                error?.response?.status
             );
           }
         });
@@ -485,7 +484,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the Graduation Status Optional Programs): " +
-              error?.response?.status
+                error?.response?.status
             );
           }
         });
@@ -502,7 +501,7 @@ export const useStudentStore = defineStore("student", {
               "error",
               10000,
               "There was an error with the Student Service (getting the student's Career Programs): " +
-              error?.response?.status
+                error?.response?.status
             );
           }
         });
@@ -616,9 +615,12 @@ export const useStudentStore = defineStore("student", {
     },
     removeCourseFromCreate(courseID, courseSession) {
       this.create.courses = this.create.courses.filter(
-        (course) => !(course.courseID === courseID && course.courseSession === courseSession)
+        (course) =>
+          !(
+            course.courseID === courseID &&
+            course.courseSession === courseSession
+          )
       );
-
     },
     async updateStudentCourse(course) {
       try {
@@ -628,7 +630,6 @@ export const useStudentStore = defineStore("student", {
         console.error("Error updating student courses:", error);
         throw error;
       }
-
     },
     clearCoursesToCreate(course) {
       this.create.courses = [];

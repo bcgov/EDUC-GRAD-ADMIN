@@ -52,4 +52,24 @@ export default {
   getUndoCompletionReasonCodes() {
     return ApiService.apiAxios.get("/api/codes/undoCompletionReasonCodes");
   },
+  getTranscriptTypeCodes() {
+    return ApiService.apiAxios.get("/api/codes/transcriptTypeCodes");
+  },
+  getCertificateTypeCodes() {
+    return ApiService.apiAxios.get("/api/codes/certificateTypeCodes");
+  },
+  getProgramCertificateTranscriptCodes() {
+    return ApiService.apiAxios.get(
+      "/api/codes/programCertificateTranscriptCodes"
+    );
+  },
+  getReportTypeCodes() {
+    return ApiService.apiAxios.get("/api/codes/reportTypeCodes");
+  },
+  getDocumentStatusCodes() {
+    return ApiService.apiAxios.get("/api/codes/documentStatusCodes");
+  },
+  getDigitalSignatureBlockTypeCodes() {
+    return ApiService.apiAxios.get("/api/codes/signatureBlockTypeCodes");
+  },
 };

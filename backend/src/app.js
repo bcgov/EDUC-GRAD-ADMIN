@@ -44,13 +44,10 @@ const programsRouter = require("./routes/programs-router");
 const assessmentsRouter = require("./routes/assessments-router");
 const studentAssessmentRouter = require("./routes/student-assessment-router");
 const coursesRouter = require("./routes/courses-router");
-const studentGraduationRouter = require("./routes/student-graduation-router");
 const studentRouter = require("./routes/student-router");
 const codesRouter = require("./routes/codes-router");
-const graduationReportsRouter = require("./routes/graduation-reports-router");
 const batchRouter = require("./routes/batch-router");
 const distributionRouter = require("./routes/distribution-router");
-const graduationRouter = require("./routes/graduation-router");
 const reportsRouter = require("./routes/reports-router");
 const configRouter = require("./routes/config-router");
 
@@ -252,13 +249,7 @@ apiRouter.use("/schools", schoolsRouter);
 apiRouter.use("/student-assessment", studentAssessmentRouter);
 apiRouter.use("/student", studentRouter);
 apiRouter.use("/codes", codesRouter);
-apiRouter.use(
-  "/:version/graduationreports",
-  addVersionToReq,
-  graduationReportsRouter
-);
-apiRouter.use("/:version/graduate", addVersionToReq, graduationRouter);
-apiRouter.use("/:version/reports", addVersionToReq, reportsRouter);
+apiRouter.use("/reports", reportsRouter);
 apiRouter.use("/:version/config", addVersionToReq, configRouter);
 
 //Handle 500 error

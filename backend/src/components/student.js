@@ -14,30 +14,39 @@ const auth = require("../components/auth");
 async function getStudentCourseByStudentID(req, res) {
   const token = auth.getBackendToken(req);
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.studentID
-      }`;
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${
+      req.params?.studentID
+    }`;
     const data = await getData(token, url, req.session?.correlationID);
 
     const courseIDsPayload = {
       courseIds: Array.isArray(data)
-        ? data.flatMap(course => {
-          const ids = [];
-          if (course.courseID) ids.push(Number(course.courseID));
-          if (course.relatedCourseId) ids.push(Number(course.relatedCourseId));
-          return ids;
-        })
-        : []
+        ? data.flatMap((course) => {
+            const ids = [];
+            if (course.courseID) ids.push(Number(course.courseID));
+            if (course.relatedCourseId)
+              ids.push(Number(course.relatedCourseId));
+            return ids;
+          })
+        : [],
     };
 
-    const courseSearchUrl = `${config.get("server:courseAPIURL")}/api/v2/course/search`;
-    const courseData = await postData(token, courseSearchUrl, courseIDsPayload, req.session?.correlationID);
+    const courseSearchUrl = `${config.get(
+      "server:courseAPIURL"
+    )}/api/v2/course/search`;
+    const courseData = await postData(
+      token,
+      courseSearchUrl,
+      courseIDsPayload,
+      req.session?.correlationID
+    );
 
     const courseMap = new Map(
-      courseData.map(course => [course.courseID, course])
+      courseData.map((course) => [course.courseID, course])
     );
 
     // Add courseDetails and releatedCourseDetails from course endpoint
-    const studentCoursesWithDetails = data.map(studentCourse => {
+    const studentCoursesWithDetails = data.map((studentCourse) => {
       const courseID = studentCourse.courseID;
       const relatedCourseId = studentCourse.relatedCourseId;
 
@@ -47,7 +56,7 @@ async function getStudentCourseByStudentID(req, res) {
       return {
         ...studentCourse,
         courseDetails: matchedCourse || null,
-        relatedCourseDetails: matchedRelatedCourse || null
+        relatedCourseDetails: matchedRelatedCourse || null,
       };
     });
     return res.status(200).json(studentCoursesWithDetails);
@@ -61,11 +70,11 @@ async function getStudentCourseByStudentID(req, res) {
 }
 
 async function putStudentCoursesByStudentID(req, res) {
-
   const token = auth.getBackendToken(req);
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.studentID
-      }`;
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${
+      req.params?.studentID
+    }`;
     const data = await putData(
       token,
       req.body,
@@ -86,8 +95,9 @@ async function postStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.studentID
-      }`;
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${
+      req.params?.studentID
+    }`;
     const data = await postData(
       token,
       url,
@@ -108,8 +118,9 @@ async function deleteStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.studentID
-      }`;
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${
+      req.params?.studentID
+    }`;
     const data = await deleteData(
       token,
       url,
@@ -130,8 +141,9 @@ async function getStudentCourseHistory(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.studentID
-      }/history`;
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${
+      req.params?.studentID
+    }/history`;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -165,8 +177,9 @@ async function postStudentCareerProgram(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/${req.params?.studentID
-      }/careerPrograms`;
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/${
+      req.params?.studentID
+    }/careerPrograms`;
     const data = await postData(
       token,
       url,
@@ -187,8 +200,9 @@ async function deleteStudentCareerProgram(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/${req.params?.studentID
-      }/careerPrograms/${req.params?.careerProgramCode}`;
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/${
+      req.params?.studentID
+    }/careerPrograms/${req.params?.careerProgramCode}`;
     const data = await deleteData(
       token,
       url,
@@ -209,8 +223,9 @@ async function postStudentOptionalProgram(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/${req.params?.studentID
-      }/optionalPrograms/${req.params?.optionalProgramID}`;
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/${
+      req.params?.studentID
+    }/optionalPrograms/${req.params?.optionalProgramID}`;
     const data = await postData(
       token,
       url,
@@ -231,8 +246,9 @@ async function deleteStudentOptionalProgram(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/${req.params?.studentID
-      }/optionalPrograms/${req.params?.optionalProgramID}`;
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/${
+      req.params?.studentID
+    }/optionalPrograms/${req.params?.optionalProgramID}`;
     const data = await deleteData(
       token,
       url,
@@ -309,8 +325,9 @@ async function getBatchHistoryStudents(req, res) {
   try {
     const url = `${config.get(
       "server:studentAPIURL"
-    )}/api/v1/student/studentHistory/batchid/${req.params?.batchID
-      }?pageNumber=${req.query?.pageNumber}&pageSize=${req.query?.pageSize}`;
+    )}/api/v1/student/studentHistory/batchid/${
+      req.params?.batchID
+    }?pageNumber=${req.query?.pageNumber}&pageSize=${req.query?.pageSize}`;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -389,9 +406,11 @@ async function postStudentUndoCompletion(req, res) {
   try {
     const url = `${config.get(
       "server:studentAPIURL"
-    )}/api/v1/student/undocompletionstudent/studentid/${req.params?.studentID
-      }?ungradReasonCode=${req.query?.reasonCode}&ungradReasonDesc=${req.query?.reasonDecision
-      }`;
+    )}/api/v1/student/undocompletionstudent/studentid/${
+      req.params?.studentID
+    }?ungradReasonCode=${req.query?.reasonCode}&ungradReasonDesc=${
+      req.query?.reasonDecision
+    }`;
     const data = await postData(
       token,
       url,
@@ -469,6 +488,80 @@ async function getRunUpdateTranscript(req, res) {
     const url = `${config.get(
       "server:graduationAPIURL"
     )}/api/v1/graduate/studentid/${req.params?.studentID}/run/FMR`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getStudentTranscript(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/studenttranscript/${req.params?.studentID}`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getStudentTVR(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/studentreport/${req.params?.studentID}`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getStudentCertificate(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/studentcertificate/${req.params?.studentID}`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getStudentXMLReport(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationAPIURL"
+    )}/api/v1/graduate/report/transcript/${
+      req.params?.studentPEN
+    }?interim=Interim&preview=true`;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -561,8 +654,9 @@ async function getStudentByPen(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/pen/${req.params?.studentPEN
-      }`;
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/pen/${
+      req.params?.studentPEN
+    }`;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -578,8 +672,9 @@ async function getStudentByID(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/stdid/${req.params?.studentID
-      }`;
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/stdid/${
+      req.params?.studentID
+    }`;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -613,20 +708,24 @@ async function postAdoptPENStudent(req, res) {
 }
 
 module.exports = {
+  // STUDENT COURSES
   getStudentCourseByStudentID,
   putStudentCoursesByStudentID,
   postStudentCoursesByStudentID,
   deleteStudentCoursesByStudentID,
   getStudentCourseHistory,
+  // STUDENT OPTIONAL AND CAREER PROGRAMS
   getStudentCareerPrograms,
   postStudentCareerProgram,
   deleteStudentCareerProgram,
   getStudentOptionalPrograms,
   postStudentOptionalProgram,
   deleteStudentOptionalProgram,
+  // STUDENT HISTORY
   getStudentGradStatusHistory,
   getStudentOptionalProgramHistory,
   getBatchHistoryStudents,
+  // STUDENT GRAD PROGRAM
   getStudentGradStatus,
   postStudentGradStatus,
   getStudentUndoCompletion,
@@ -635,11 +734,19 @@ module.exports = {
   getRunPreviewFinalMarks,
   getRunTranscriptVerification,
   getRunUpdateTranscript,
+  // STUDENT REPORTS
+  getStudentTranscript,
+  getStudentTVR,
+  getStudentCertificate,
+  getStudentXMLReport,
+  // STUDENT NOTES
   getStudentNotes,
   postStudentNotes,
   deleteStudentNotes,
+  // STUDENT SEARCH
   getStudentAdvancedSearch,
   getStudentByPen,
   getStudentByID,
+  // STUDENT ADOPT
   postAdoptPENStudent,
 };

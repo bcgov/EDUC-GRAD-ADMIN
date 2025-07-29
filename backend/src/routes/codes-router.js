@@ -21,6 +21,12 @@ const {
   getCourseLetterGradeCodes,
   getTranscriptMessagingCodes,
   getStudentUndoCompletionReasonCodes,
+  getTranscriptTypeCodes,
+  getCertificateTypeCodes,
+  getProgramCertificateTranscriptCodes,
+  getReportTypeCodes,
+  getDocumentStatusCodes,
+  getDigitalSignatureBlockTypeCodes,
 } = require("../components/codes");
 
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
@@ -142,6 +148,48 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
   getStudentUndoCompletionReasonCodes
+);
+
+router.get(
+  "/transcriptTypeCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getTranscriptTypeCodes
+);
+
+router.get(
+  "/certificateTypeCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getCertificateTypeCodes
+);
+
+router.get(
+  "/programCertificateTranscriptCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getProgramCertificateTranscriptCodes
+);
+
+router.get(
+  "/reportTypeCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getReportTypeCodes
+);
+
+router.get(
+  "/documentStatusCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getDocumentStatusCodes
+);
+
+router.get(
+  "/signatureBlockTypeCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getDigitalSignatureBlockTypeCodes
 );
 
 module.exports = router;

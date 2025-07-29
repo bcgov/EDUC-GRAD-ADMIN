@@ -292,6 +292,132 @@ async function getStudentUndoCompletionReasonCodes(req, res) {
   }
 }
 
+async function getTranscriptTypeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/transcripttype`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getCertificateTypeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/certificatetype`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getCertificateTypeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/certificatetype`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getProgramCertificateTranscriptCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/allprogramcertificates`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getReportTypeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/reporttype`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getDocumentStatusCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/documentstatus`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getDigitalSignatureBlockTypeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:reportAPIURL"
+    )}/api/v1/reports/signatures/getSignatureBlockTypeCodes`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 module.exports = {
   getStudentStatusCodes,
   getHistoryActivityCodes,
@@ -309,4 +435,10 @@ module.exports = {
   getCourseLetterGradeCodes,
   getTranscriptMessagingCodes,
   getStudentUndoCompletionReasonCodes,
+  getTranscriptTypeCodes,
+  getCertificateTypeCodes,
+  getProgramCertificateTranscriptCodes,
+  getReportTypeCodes,
+  getDocumentStatusCodes,
+  getDigitalSignatureBlockTypeCodes,
 };

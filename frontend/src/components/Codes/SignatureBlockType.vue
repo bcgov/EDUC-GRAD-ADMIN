@@ -16,7 +16,7 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
-import GraduationReportService from "@/services/GraduationReportService.js";
+import CodesService from "@/services/CodesService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "SignatureBlockType",
@@ -24,7 +24,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    GraduationReportService.getDigitalSignaturesBlockTypes()
+    CodesService.getDigitalSignatureBlockTypeCodes()
       .then((response) => {
         this.signatureBlock = response.data;
       })

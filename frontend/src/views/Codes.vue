@@ -104,7 +104,6 @@
 import { mapState } from "pinia";
 import { useAuthStore } from "../store/modules/auth";
 import { useSnackbarStore } from "@/store/modules/snackbar";
-import GraduationReportService from "@/services/GraduationReportService.js";
 import CodesService from "@/services/CodesService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 
@@ -335,7 +334,7 @@ export default {
         });
     },
     getCertificateTypes() {
-      GraduationReportService.getCertificateTypes()
+      CodesService.getCertificateTypeCodes()
         .then((response) => {
           this.certificateTypes = response.data;
         })
@@ -347,7 +346,7 @@ export default {
         });
     },
     getReportTypes() {
-      GraduationReportService.getReportTypes()
+      CodesService.getReportTypeCodes()
         .then((response) => {
           this.reportTypes = response.data;
         })
@@ -397,18 +396,6 @@ export default {
       CodesService.getUndoCompletionReasonCodes()
         .then((response) => {
           this.ungradReasons = response.data;
-        })
-        // eslint-disable-next-line
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.error("API error:", error);
-          this.snackbarStore.showSnackbar(error.message, "error", 5000);
-        });
-    },
-    getReportSignatures() {
-      GraduationReportService.getReportSignatures()
-        .then((response) => {
-          this.reportSignatures = response.data;
         })
         // eslint-disable-next-line
         .catch((error) => {

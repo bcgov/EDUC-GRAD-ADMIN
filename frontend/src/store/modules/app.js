@@ -3,7 +3,6 @@ import { defineStore } from "pinia";
 import CommonService from "@/services/CommonService.js";
 import SchoolsService from "@/services/SchoolsService.js";
 import CodesService from "@/services/CodesService.js";
-import GraduationReportService from "@/services/GraduationReportService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 
 import { useSnackbarStore } from "../../store/modules/snackbar";
@@ -30,7 +29,7 @@ export const useAppStore = defineStore("app", {
     config: null,
     provincialSpecialCaseCodes: [],
     assessmentTypeCodesMap: new Map(),
-    assessmentTypeCodes: []
+    assessmentTypeCodes: [],
   }),
   getters: {
     appEnvironment: (state) =>
@@ -213,7 +212,7 @@ export const useAppStore = defineStore("app", {
     },
     async getTranscriptTypeCodes(getNewData = true) {
       if (getNewData || !sharedMethods.dataArrayExists(this.transcriptTypes)) {
-        let response = await GraduationReportService.getTranscriptTypes();
+        let response = await CodesService.getTranscriptTypeCodes();
         await this.setTranscriptTypes(response.data);
       }
     },
@@ -226,7 +225,7 @@ export const useAppStore = defineStore("app", {
         getNewData ||
         !sharedMethods.dataArrayExists(this.certificationTypes)
       ) {
-        let response = await GraduationReportService.getCertificateTypes();
+        let response = await CodesService.getCertificateTypeCodes();
         await this.setCertificateTypes(response.data);
       }
     },
@@ -311,9 +310,10 @@ export const useAppStore = defineStore("app", {
       }
     },
     async setAssessmentTypeCodes(assessmentTypeCodes) {
-      this.assessmentTypeCodes = sharedMethods.applyDisplayOrder(assessmentTypeCodes);
+      this.assessmentTypeCodes =
+        sharedMethods.applyDisplayOrder(assessmentTypeCodes);
       this.assessmentTypeCodesMap = new Map(
-        this.assessmentTypeCodes.map(type => [type.assessmentTypeCode, type])
+        this.assessmentTypeCodes.map((type) => [type.assessmentTypeCode, type])
       );
     },
     async getAssessmentTypeCodes(getNewData = true) {
@@ -325,13 +325,19 @@ export const useAppStore = defineStore("app", {
       }
     },
     async getProvincialSpecialCaseCodes(getNewData = true) {
-      if (getNewData || !sharedMethods.dataArrayExists(this.provincialSpecialCaseCodes)) {
-        let response = await StudentAssessmentService.getProvincialSpecialCaseCodes();
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.provincialSpecialCaseCodes)
+      ) {
+        let response =
+          await StudentAssessmentService.getProvincialSpecialCaseCodes();
         await this.setProvincialSpecialCaseCodes(response.data);
       }
     },
     setProvincialSpecialCaseCodes(provincialSpecialCaseCodes) {
-      this.provincialSpecialCaseCodes = sharedMethods.applyDisplayOrder(provincialSpecialCaseCodes);
-    }
+      this.provincialSpecialCaseCodes = sharedMethods.applyDisplayOrder(
+        provincialSpecialCaseCodes
+      );
+    },
   },
 });
