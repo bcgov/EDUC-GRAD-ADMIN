@@ -19,6 +19,7 @@
 
     </v-col>
     <v-col cols="10">
+
       <v-row no-gutters class="my-2">
         <!-- Editable fields bound directly to the course object -->
         <v-col>
@@ -59,7 +60,7 @@
         <v-col>
           <v-select v-model="course.fineArtsAppliedSkills" :items="fineArtsAndAppliedSkillsOptions" item-title="text"
             item-value="value" label="FA/AS" variant="outlined" density="compact" class="pa-1" clearable
-            :disabled="isBAAorLocallyDevelopedOrCP" persistent-placeholder persistent-hint />
+            :disabled="shouldDisableFAAS" persistent-placeholder persistent-hint />
         </v-col>
 
         <v-col>
@@ -364,12 +365,15 @@ export default {
       ];
     },
 
-    isBAAorLocallyDevelopedOrCP() {
-      return !(
-        this.course.courseDetails.courseCategory.description === 'Board Authority Authorized' ||
+    shouldDisableFAAS() {
+      const level = this.course.courseDetails.courseLevel;
+
+      const isBAAorLocallyDevelopedOrCP = this.course.courseDetails.courseCategory.description === 'Board Authority Authorized' ||
         this.course.courseDetails.courseCategory.description === 'Locally Developed' ||
         this.course.courseDetails.courseCategory.description === 'Career Program'
-      );
+      const isGrade11 = level?.startsWith('11');
+      return (!isGrade11 || !isBAAorLocallyDevelopedOrCP
+      )
     },
 
     creditsAvailableForCourseSession() {
