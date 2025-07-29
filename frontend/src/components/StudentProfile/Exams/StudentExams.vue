@@ -59,6 +59,10 @@
       <template v-slot:item.courseSession="{ item }">
         {{ $filters.formatYYYYMMStringDate(item.courseSession) }}
       </template>
+      <template v-slot:item.edit="{ item }">
+            <StudentCoursesExamUpdateForm :course="item">
+            </StudentCoursesExamUpdateForm>
+          </template>
     </v-data-table>
   </div>
 </template>
@@ -67,6 +71,7 @@
 import { useStudentStore } from "@/store/modules/student";
 import { mapState } from "pinia";
 import DisplayTable from "@/components/DisplayTable.vue";
+import StudentCoursesExamUpdateForm from "@/components/StudentProfile/Forms/StudentCoursesExamUpdateForm.vue";
 export default {
   name: "StudentExams",
   props: {},
@@ -77,6 +82,7 @@ export default {
   },
   components: {
     DisplayTable: DisplayTable,
+    StudentCoursesExamUpdateForm: StudentCoursesExamUpdateForm,
   },
   data: function () {
     return {
@@ -136,6 +142,14 @@ export default {
         {
           key: "credits",
           title: "Credits",
+        },
+        {
+          key: "edit",
+          title: "Edit",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
         },
       ],
     };
