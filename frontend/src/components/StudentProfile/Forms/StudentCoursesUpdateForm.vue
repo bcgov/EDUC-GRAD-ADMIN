@@ -105,7 +105,7 @@
                       <v-col cols="12"><strong>{{ selectedCourseToUpdate.courseDetails.courseCode }} {{
                         selectedCourseToUpdate.courseLevel }} -
                           {{
-                            $filters.formatYYYYMMStringDate(course.courseSession)
+                            $filters.formatYYYYMMStringDate(selectedCourseToUpdate.courseSession)
                           }}</strong>
                       </v-col>
                       <v-col cols="12" class="ml-3">
