@@ -1,16 +1,11 @@
 <template>
   <div>
     <v-card>
-      <v-alert type="info" variant="tonal" border="start" class="mt-6 mb-0 ml-1 py-3 width-fit-content">
+      <v-alert v-if="enableCRUD()" color="debug" variant="tonal" icon="mdi-progress-wrench" border="start"
+        class="mt-6 mb-0 ml-1 py-3 width-fit-content">
         Until student course CRUD is live, student courses will not be kept in
         sync via ongoing updates. Instead there will be a gradual data
         migration.
-      </v-alert>
-      <v-alert v-if="environment == 'local' || environment == 'dev'" color="debug" variant="tonal"
-        icon="mdi-progress-wrench" border="start" class="mt-6 mb-0 ml-1 py-3 width-fit-content">
-        Data shown is using new endpoint in student API. We can add courses with
-        no UI validations (backend API does validate), delete courses
-        w/validations
         <br />
       </v-alert>
       <v-card-text>
@@ -255,6 +250,9 @@ export default {
     };
   },
   methods: {
+    ...mapActions(useAppStore, [
+      "enableCRUD",
+    ]),
     ...mapActions(useStudentStore, [
       "setHasGradStatusPendingUpdates",
       "deleteStudentCourses",
