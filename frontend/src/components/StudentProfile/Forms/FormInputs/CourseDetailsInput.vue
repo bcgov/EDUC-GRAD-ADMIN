@@ -42,11 +42,10 @@
             persistent-hint :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty"
             @blur="v$.course.finalPercent.$touch" />
         </v-col>
-
         <v-col>
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
             variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint
-            :error="v$.course.finalLetterGrade.$invalid && v$.course.finalLetterGrade.$dirty"
+            :error="v$.course.finalLetterGrade.$invalid && v$.course.finalLetterGrade.$dirty"            
             @blur="v$.course.finalLetterGrade.$touch" :disabled="courseSessionGreaterThanReportingPeriod" />
         </v-col>
 
@@ -152,10 +151,10 @@ export default {
       endYear = currentYear;
     }
 
-    const minSession = `${startYear}09`;
-    const maxSession = `${endYear}09`;
+    this.minSession = `${startYear}09`;
+    this.maxSession = `${endYear}09`;
 
-    if (this.course.courseSession < 198401 || (this.course.courseSession < minSession || this.course.courseSession > maxSession)) {
+    if (this.course.courseSession < 198401 || (this.course.courseSession < this.minSession || this.course.courseSession > this.maxSession)) {
       this.warnings.push("Course session cannot be beyond the current reporting period or prior to 198401")
 
     }
@@ -179,6 +178,8 @@ export default {
   data() {
     return {
       warnings: [],  // array of warnings
+      minSession: null,
+      maxSession: null,
     }
   },
   validations() {
@@ -226,6 +227,15 @@ export default {
 
         },
         finalLetterGrade: {
+          isValid: helpers.withMessage(
+            'Course session is in the past. Enter a final mark.',
+            function (value) {
+              if(this.course.courseSession < this.maxSession && !this.course.finalPercent && (value === '' || value === null || value === undefined)) {
+                return false;
+              }  
+              return true;
+            }
+          ),
         },
         credits: {
           isCreditValue: helpers.withMessage(
@@ -265,7 +275,7 @@ export default {
 
               return true
             }
-          )
+          ),          
         },
 
         fineArtsAppliedSkills: {

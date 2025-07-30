@@ -211,7 +211,7 @@ export default {
       v$: useVuelidate(),
     };
   },
-  components: { CourseDetailsInput, CourseExamDetailsInput },
+  components: { CourseDetailsInput, CourseExamDetailsInput, StudentCourseAlert },
 
   props: {
     course: {
