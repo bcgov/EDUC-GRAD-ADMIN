@@ -296,7 +296,8 @@ export default {
 
       try {
         //remove courseDetails from payload
-        await this.updateStudentCourse(this.selectedCourseToUpdate);
+        const { courseDetails, relatedCourseDetails, ...courseWithoutCourseDetails } = this.selectedCourseToUpdate;
+        await this.updateStudentCourse(courseWithoutCourseDetails);
         this.snackbarStore.showSnackbar(
           "Student course exam successfully updated.",
           "success",

@@ -198,6 +198,7 @@ export default {
             isValidPercent: helpers.withMessage(
                 'School % must be a valid number between 0 and 100',
                 (value) => {
+                if(this.create && (value === '' || value === null || value === undefined)) return false; // Mandatory on create
                 if (value === '' || value === null || value === undefined) return true; // allow empty if needed
 
                 const strVal = String(value).trim();
@@ -217,6 +218,7 @@ export default {
             isValidPercent: helpers.withMessage(
                 'Best School % must be a valid number between 0 and 100',
                 (value) => {
+                if(this.create && (value === '' || value === null || value === undefined)) return false; // Mandatory on create
                 if (value === '' || value === null || value === undefined) return true; // allow empty if needed
 
                 const strVal = String(value).trim();
@@ -297,6 +299,7 @@ export default {
           isCreditValue: helpers.withMessage(
             'Credits must be 0, 1, 2, 3, or 4',
             function (value) {
+              if(this.update && this.creditsAvailableForCourseSession.length > 0 && (value === '' || value === null || value === undefined)) return false; // Mandatory on update
               return (
                 value === '' ||
                 value === null ||
