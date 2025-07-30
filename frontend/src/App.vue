@@ -22,15 +22,8 @@
             </v-card-text>
 
             <v-card-actions>
-              <v-btn
-                color="bcGovBlue"
-                variant="outlined"
-                class="text-none"
-                density="default"
-                text
-                @click="dialog = false"
-                >Close</v-btn
-              >
+              <v-btn color="bcGovBlue" variant="outlined" class="text-none" density="default" text
+                @click="dialog = false">Close</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -194,42 +187,55 @@ export default {
   font-size: 14px;
   margin-top: 135px !important;
 }
+
 .logo {
   align-self: center;
   color: #fff;
   font-weight: bold;
 }
+
 .main-nav {
   display: flex;
   justify-content: space-between;
   padding: 0.5rem 0.8rem;
 }
+
 #grad-drawer {
   z-index: 200 !important;
 }
+
 ul.sidebar-panel-nav {
   list-style-type: none;
 }
-ul.sidebar-panel-nav > li > a {
+
+ul.sidebar-panel-nav>li>a {
   color: #fff;
   text-decoration: none;
   font-size: 1.2rem;
   display: block;
   padding-bottom: 0.5em;
 }
+
 .fade-enter-active {
   transition: opacity 0.5s;
 }
-.fade-enter /* .fade-leave-active below version 2.1.8 */ {
+
+.fade-enter
+
+/* .fade-leave-active below version 2.1.8 */
+  {
   opacity: 0.2;
 }
+
 .container {
   max-width: 100% !important;
 }
+
 .no-outline-btn:focus {
   outline: none;
   box-shadow: none;
 }
+
 @media (min-width: 1300px) {
   .container {
     /* max-width: 1300px !important; */
@@ -238,6 +244,7 @@ ul.sidebar-panel-nav > li > a {
       padding-left: 50px !important; */
   }
 }
+
 /* .bcheader {
   height: 115px;
 }
