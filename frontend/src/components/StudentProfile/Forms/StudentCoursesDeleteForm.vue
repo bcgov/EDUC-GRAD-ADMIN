@@ -220,7 +220,8 @@ export default {
           (
             course.courseExam.examPercentage != null ||
             (course.courseExam.specialCase != null && course.courseExam.specialCase !== "N") ||
-            course.finalPercent != null
+            course.finalPercent != null ||
+            course.finalLetterGrade != null
           );
 
         const studentIsGraduatedAndNotOnSCCP = this.studentStore.student.gradStatus?.program != "SCCP" && this.studentStore.student.gradStatus?.programCompletionDate
