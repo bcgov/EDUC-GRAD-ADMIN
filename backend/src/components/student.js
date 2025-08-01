@@ -503,7 +503,7 @@ async function postAdoptPENStudent(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/adopt`;
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/adopt/${req.params?.studentID}`;
     const data = await postData(
       token,
       url,

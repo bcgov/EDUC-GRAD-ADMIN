@@ -210,7 +210,7 @@ router.get(
 );
 
 router.post(
-  "/adopt",
+  "/adopt/:studentID",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
   postAdoptPENStudent
