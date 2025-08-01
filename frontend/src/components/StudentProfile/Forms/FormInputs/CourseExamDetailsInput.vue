@@ -417,19 +417,23 @@ export default {
 
       const sessionYear = this.course.courseSession.slice(0, 4);
       const sessionMonth = this.course.courseSession.slice(4, 6);
-      const sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
-
+      let sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
+      const courseEndDate = new Date(this.course.courseDetails.endDate)
+      const courseCompletionEndDate = new Date(this.course.courseDetails.completionEndDate)
+      if (courseEndDate && courseCompletionEndDate && sessionDate > courseEndDate && sessionDate < courseCompletionEndDate) {
+        sessionDate = courseEndDate
+      }
       return this.course.courseDetails.courseAllowableCredit
         .filter(credit => {
           const start = new Date(credit.startDate);
           const end = credit.endDate ? new Date(credit.endDate) : new Date('9999-12-31');
+
           return sessionDate >= start && sessionDate <= end;
         })
         .map(credit => Number(credit.creditValue))
         .sort((a, b) => b - a)
         .map(value => value.toString());
     },
-
     filteredInterimLetterGrades() {
       return this.getGradesForPercent(this.course.interimPercent);
     },
@@ -480,13 +484,14 @@ export default {
       });
 
       const numPercent = Number(percent);
-      if (!percent || isNaN(numPercent)) {
+      if (percent === null || percent === undefined || percent === '' || isNaN(numPercent)) {
         return allAllowableLetterGradesForCourse.map((grade) => grade.grade);
       }
 
       return allAllowableLetterGradesForCourse
         .filter((grade) =>
-          grade.percentRangeLow <= numPercent && numPercent <= grade.percentRangeHigh
+          grade.percentRangeLow !== null &&
+          grade.percentRangeHigh !== null && grade.percentRangeLow <= numPercent && numPercent <= grade.percentRangeHigh
         )
         .map((grade) => grade.grade);
     },

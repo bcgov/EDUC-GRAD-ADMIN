@@ -45,7 +45,7 @@
         </v-col>
         <v-col>
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
-            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint
+            variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint
             :error="v$.course.finalLetterGrade.$invalid && v$.course.finalLetterGrade.$dirty"
             @blur="v$.course.finalLetterGrade.$touch" :disabled="courseSessionGreaterThanReportingPeriod" />
         </v-col>
@@ -104,9 +104,11 @@
           <CourseInput v-model:courseFoundID="course.relatedCourseId" v-model:courseFound="course.relatedCourseDetails"
             :code="course?.relatedCourseDetails?.courseCode" :level="course?.relatedCourseDetails?.courseLevel">
           </CourseInput>
+
         </v-col>
       </v-row>
     </v-col>
+
   </v-row>
 </template>
 
@@ -292,16 +294,26 @@ export default {
     }
   },
   watch: {
+
+
+    'course.finalLetterGrade'(newVal) {
+      if (newVal) {
+        // Trigger re-validation to clear stale silent errors
+        this.v$.course.finalLetterGrade.$validate();
+      }
+    },
+
     'course.interimPercent'(newVal) {
-      if (newVal && newVal != 0) {
+      if (newVal) {
         this.course.interimLetterGrade = this.filteredInterimLetterGrades[0] ?? '';
       } else {
         this.course.interimLetterGrade = ""
       }
     },
     'course.finalPercent'(newVal) {
-      if (newVal && newVal != 0) {
+      if (newVal) {
         this.course.finalLetterGrade = this.filteredFinalLetterGrades[0] ?? '';
+        this.v$.course.finalLetterGrade.$validate();
       } else {
         this.course.finalLetterGrade = ""
       }
@@ -378,12 +390,17 @@ export default {
 
       const sessionYear = this.course.courseSession.slice(0, 4);
       const sessionMonth = this.course.courseSession.slice(4, 6);
-      const sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
-
+      let sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
+      const courseEndDate = new Date(this.course.courseDetails.endDate)
+      const courseCompletionEndDate = new Date(this.course.courseDetails.completionEndDate)
+      if (courseEndDate && courseCompletionEndDate && sessionDate > courseEndDate && sessionDate < courseCompletionEndDate) {
+        sessionDate = courseEndDate
+      }
       return this.course.courseDetails.courseAllowableCredit
         .filter(credit => {
           const start = new Date(credit.startDate);
           const end = credit.endDate ? new Date(credit.endDate) : new Date('9999-12-31');
+
           return sessionDate >= start && sessionDate <= end;
         })
         .map(credit => Number(credit.creditValue))
@@ -455,13 +472,22 @@ export default {
       });
 
       const numPercent = Number(percent);
-      if (!percent || isNaN(numPercent)) {
-        return allAllowableLetterGradesForCourse.map((grade) => grade.grade);
+      if (percent === null || percent === undefined || percent === '' || isNaN(numPercent)) {
+        if (this.course.courseSession < 199409) {
+          return allAllowableLetterGradesForCourse.map((grade) => grade.grade);
+        } else {
+          return allAllowableLetterGradesForCourse
+            .filter((grade) =>
+              grade.percentRangeLow == null && grade.percentRangeHigh == null
+            ).map((grade) => grade.grade);
+        }
+
       }
 
       return allAllowableLetterGradesForCourse
         .filter((grade) =>
-          grade.percentRangeLow <= numPercent && numPercent <= grade.percentRangeHigh
+          grade.percentRangeLow !== null &&
+          grade.percentRangeHigh !== null && grade.percentRangeLow <= numPercent && numPercent <= grade.percentRangeHigh
         )
         .map((grade) => grade.grade);
     },
