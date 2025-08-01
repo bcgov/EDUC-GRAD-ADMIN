@@ -7,6 +7,7 @@ const {
   putStudentCourseSchema,
   deleteStudentCourseSchema
 } = require('../components/validations/student-course');
+const { postAdoptStudentSchema } = require('../components/validations/grad-student');
 const auth = require("../components/auth");
 const roles = require("../components/roles");
 const {
@@ -210,9 +211,10 @@ router.get(
 );
 
 router.post(
-  "/adopt",
+  "/adopt/:studentID",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
+  validate(postAdoptStudentSchema),
   postAdoptPENStudent
 );
 

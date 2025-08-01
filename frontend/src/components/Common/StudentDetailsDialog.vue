@@ -98,7 +98,7 @@
             id="save-status-btn"
             color="error"
             variant="flat"
-            @click="adoptStudent(this.student)"
+            @click="adoptStudent(this.student.studentID)"
           >
             Confirm Adopt PEN Student
             <v-progress-circular

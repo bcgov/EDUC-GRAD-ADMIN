@@ -339,8 +339,10 @@ async function postData(token, url, data, correlationID) {
 
     log.info('post Data Url', url);
     log.verbose('post Data Req', minify(data));
-    data.createUser = 'GRAD';
-    data.updateUser = 'GRAD';
+    if(data) {
+      data.createUser = 'GRAD';
+      data.updateUser = 'GRAD';
+    }
     const response = await axios.post(url, data, postDataConfig);
 
     log.info(`post Data Status for url ${url} :: is :: `, response.status);
