@@ -46,7 +46,7 @@
         <v-col>
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
             variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint
-            :error="v$.course.finalLetterGrade.$invalid && v$.course.finalLetterGrade.$dirty"            
+            :error="v$.course.finalLetterGrade.$invalid && v$.course.finalLetterGrade.$dirty"
             @blur="v$.course.finalLetterGrade.$touch" :disabled="courseSessionGreaterThanReportingPeriod" />
         </v-col>
 
@@ -70,7 +70,7 @@
             persistent-hint />
         </v-col>
       </v-row>
-      <v-row v-if="course?.genericCourseType == 'G'">
+      <v-row v-if="course?.courseDetails.genericCourseType == 'G'">
         <v-col cols="12">
           <v-text-field v-model="course.customizedCourseName" label="Customized Course Title" variant="outlined"
             density="compact" class="pa-1" clearable hide-details persistent-placeholder persistent-hint />
@@ -81,7 +81,7 @@
         <v-col cols="12">
           <v-row v-for="(error, index) in v$.$errors" :key="index" class="align-center">
             <v-col class="py-1 m-0 d-flex text-red-darken-4 text-caption">
-              <v-icon color="red-darken-2">mdi-alert-circle</v-icon>
+              <v-icon color="red-darken-2" size="18" class="me-1">mdi-alert-circle</v-icon>
               {{ error.$message }}
             </v-col>
           </v-row>
@@ -97,10 +97,13 @@
       </v-row>
 
 
-      <v-row no-gutters v-if="course?.courseCode == 'IDS'">
-        <v-col cols="12">
+      <v-row no-gutters v-if="course?.courseDetails.courseCode == 'IDS'">
+        <v-col cols="12" class="pt-2">
           <strong>Select Related Course</strong>
-          <CourseInput v-model:courseFoundID="course.relatedCourseId"></CourseInput>
+
+          <CourseInput v-model:courseFoundID="course.relatedCourseId" v-model:courseFound="course.relatedCourseDetails"
+            :code="course?.relatedCourseDetails?.courseCode" :level="course?.relatedCourseDetails?.courseLevel">
+          </CourseInput>
         </v-col>
       </v-row>
     </v-col>
@@ -204,9 +207,9 @@ export default {
           isValid: helpers.withMessage(
             'Course session is in the past. Enter a final mark.',
             function (value) {
-              if(this.course.courseSession < this.maxSession && !this.course.finalPercent && (value === '' || value === null || value === undefined)) {
+              if (this.course.courseSession < this.maxSession && !this.course.finalPercent && (value === '' || value === null || value === undefined)) {
                 return false;
-              }  
+              }
               return true;
             }
           ),
@@ -249,7 +252,7 @@ export default {
 
               return true
             }
-          ),          
+          ),
         },
 
         fineArtsAppliedSkills: {

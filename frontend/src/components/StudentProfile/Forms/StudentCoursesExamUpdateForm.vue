@@ -77,7 +77,8 @@
                     </v-row>
                     <CourseExamDetailsInput :course="selectedCourseToUpdate" update>
                       <template #remove-button>
-                        <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none p-1" style="max-width: 7.5rem;"
+                        <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none p-1"
+                          style="max-width: 7.5rem;" :disabled="selectedCourseToUpdate.isExaminable"
                           @click="showCourseInput = !showCourseInput">Change Course</v-btn>
                       </template>
                     </CourseExamDetailsInput>
@@ -102,24 +103,30 @@
                         {{ selectedCourseToUpdate.courseDetails.courseName }}
                       </v-col>
                       <v-col class="ml-2"><strong>School %</strong>&nbsp;
-                      <span v-if="selectedCourseToUpdate.courseExam.schoolPercentage">{{ selectedCourseToUpdate.courseExam.schoolPercentage }}</span>
-                      <span v-else> <i>null</i> </span>
-                    </v-col>
-                    <v-col class="ml-2"><strong>Best School %</strong>&nbsp;
-                      <span v-if="selectedCourseToUpdate.courseExam.bestSchoolPercentage">{{ selectedCourseToUpdate.courseExam.bestSchoolPercentage }}</span>
-                      <span v-else> <i>null</i> </span>
-                    </v-col>
-                    <v-col class="ml-2"><strong>Special Case</strong> {{ selectedCourseToUpdate.courseExam.specialCase }}</v-col>
-                    <v-col class="ml-2"><strong>Exam Best %</strong>&nbsp;
-                      <span v-if="selectedCourseToUpdate.courseExam.bestExamPercentage">{{ selectedCourseToUpdate.courseExam.bestExamPercentage }}</span>
-                      <span v-else> <i>null</i> </span>
-                    </v-col>
-                    <v-col class="ml-2"><strong>Final %</strong>&nbsp;
-                      <span v-if="selectedCourseToUpdate.finalPercent">{{ selectedCourseToUpdate.finalPercent }}</span>
-                      <span v-else> <i>null</i> </span>
-                    </v-col>
-                    <v-col class="ml-2"><strong>Final LG</strong> {{ selectedCourseToUpdate.finalLetterGrade }}</v-col>
-                    <v-col><strong>Credits</strong> {{ selectedCourseToUpdate.credits }}</v-col>
+                        <span v-if="selectedCourseToUpdate.courseExam.schoolPercentage">{{
+                          selectedCourseToUpdate.courseExam.schoolPercentage }}</span>
+                        <span v-else> <i>null</i> </span>
+                      </v-col>
+                      <v-col class="ml-2"><strong>Best School %</strong>&nbsp;
+                        <span v-if="selectedCourseToUpdate.courseExam.bestSchoolPercentage">{{
+                          selectedCourseToUpdate.courseExam.bestSchoolPercentage }}</span>
+                        <span v-else> <i>null</i> </span>
+                      </v-col>
+                      <v-col class="ml-2"><strong>Special Case</strong> {{ selectedCourseToUpdate.courseExam.specialCase
+                      }}</v-col>
+                      <v-col class="ml-2"><strong>Exam Best %</strong>&nbsp;
+                        <span v-if="selectedCourseToUpdate.courseExam.bestExamPercentage">{{
+                          selectedCourseToUpdate.courseExam.bestExamPercentage }}</span>
+                        <span v-else> <i>null</i> </span>
+                      </v-col>
+                      <v-col class="ml-2"><strong>Final %</strong>&nbsp;
+                        <span v-if="selectedCourseToUpdate.finalPercent">{{ selectedCourseToUpdate.finalPercent
+                        }}</span>
+                        <span v-else> <i>null</i> </span>
+                      </v-col>
+                      <v-col class="ml-2"><strong>Final LG</strong> {{ selectedCourseToUpdate.finalLetterGrade
+                      }}</v-col>
+                      <v-col><strong>Credits</strong> {{ selectedCourseToUpdate.credits }}</v-col>
                     </v-row>
                   </v-alert>
                 </v-stepper-window-item>
@@ -143,7 +150,7 @@
           </v-btn>
           <v-btn v-else color="bcGovBlue" variant="flat" class="text-none" density="default" @click="confirmUpdate"
             :disabled="isLoading">
-
+            <v-progress-circular v-if="isLoading" indeterminate color="white" size="20" class="mr-2" />
             Save Student Course(s)
           </v-btn>
         </v-card-actions>
