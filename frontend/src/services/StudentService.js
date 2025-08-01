@@ -114,7 +114,7 @@ export default {
   getStudentByID(studentID) {
     return ApiService.apiAxios.get(`/api/student/id/${studentID}`);
   },
-  adoptPENStudent(studentData) {
-    return ApiService.apiAxios.post(`/api/student/adopt/${studentData.studentID}`, studentData);
+  adoptPENStudent(studentID) {
+    return ApiService.apiAxios.post(`/api/student/adopt/${studentID}`, null);
   },
 };

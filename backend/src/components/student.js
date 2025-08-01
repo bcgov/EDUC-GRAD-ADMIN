@@ -507,7 +507,7 @@ async function postAdoptPENStudent(req, res) {
     const data = await postData(
       token,
       url,
-      req.body,
+      null,
       req.session?.correlationID
     );
     return res.status(200).json(data);
