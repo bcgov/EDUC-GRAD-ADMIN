@@ -83,7 +83,6 @@
                         </CourseExamDetailsInput>
                       </div>
                       <div v-else>
-                        {{ selectedCourseToUpdate }}
                         <CourseDetailsInput :course="selectedCourseToUpdate" update>
                           <template #remove-button>
                             <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none p-1"
