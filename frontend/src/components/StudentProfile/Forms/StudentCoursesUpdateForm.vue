@@ -83,7 +83,6 @@
                         </CourseExamDetailsInput>
                       </div>
                       <div v-else>
-                        {{ selectedCourseToUpdate }}
                         <CourseDetailsInput :course="selectedCourseToUpdate" update>
                           <template #remove-button>
                             <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none p-1"
@@ -105,7 +104,7 @@
                     </div>
                     <v-row no-gutters class="mb-2">
                       <v-col cols="12"><strong>{{ selectedCourseToUpdate.courseDetails.courseCode }} {{
-                        selectedCourseToUpdate.courseLevel }} -
+                        selectedCourseToUpdate.courseDetails.courseLevel }} -
                           {{
                             $filters.formatYYYYMMStringDate(selectedCourseToUpdate.courseSession)
                           }}</strong>
