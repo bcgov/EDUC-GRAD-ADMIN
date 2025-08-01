@@ -57,6 +57,7 @@
 
                   <!-- Related Course Details -->
                   <div v-if="item.relatedCourseDetails">
+
                     <strong>Related Course:</strong>
                     <CourseDetails :course="item.relatedCourseDetails" />
                   </div>

@@ -199,7 +199,7 @@ export default {
             isValidPercent: helpers.withMessage(
               'School % must be a valid number between 0 and 100',
               (value) => {
-                if (this.create && (value === '' || value === null || value === undefined))  return false; // Mandatory on create
+                if (this.create && (value === '' || value === null || value === undefined)) return false; // Mandatory on create
 
                 const strVal = String(value).trim();
 
@@ -218,7 +218,7 @@ export default {
             isValidPercent: helpers.withMessage(
               'Best School % must be a valid number between 0 and 100',
               (value) => {
-               if (this.create && (value === '' || value === null || value === undefined))  return false; // Mandatory on create
+                if (this.create && (value === '' || value === null || value === undefined)) return false; // Mandatory on create
 
                 const strVal = String(value).trim();
 
@@ -296,9 +296,9 @@ export default {
           isValid: helpers.withMessage(
             'Course session is in the past. Enter a final mark.',
             function (value) {
-              if(this.course.courseSession < this.maxSession && !this.course.finalPercent && (value === '' || value === null || value === undefined)) {
+              if (this.course.courseSession < this.maxSession && !this.course.finalPercent && (value === '' || value === null || value === undefined)) {
                 return false;
-              }  
+              }
               return true;
             }
           ),
@@ -307,7 +307,7 @@ export default {
           isCreditValue: helpers.withMessage(
             'Credits must be 0, 1, 2, 3, or 4',
             function (value) {
-              if(this.update && this.creditsAvailableForCourseSession.length > 0 && (value === '' || value === null || value === undefined)) return false; // Mandatory on update
+              if (this.update && this.creditsAvailableForCourseSession.length > 0 && (value === '' || value === null || value === undefined)) return false; // Mandatory on update
               return (
                 value === '' ||
                 value === null ||

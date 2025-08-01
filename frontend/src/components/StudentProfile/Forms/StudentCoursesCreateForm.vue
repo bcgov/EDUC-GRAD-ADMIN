@@ -228,8 +228,11 @@
                         <span v-else><i>null</i></span>
                       </v-col>
                       <v-col cols="12" class="ml-3" v-if="course.customizedCourseName"><strong>Custom Course
-                          Title</strong>
+                          Title:</strong>
                         {{ course.customizedCourseName }}</v-col>
+                      <v-col cols="12" class="ml-3" v-if="course.relatedCourseId"><strong>Related Course:</strong>
+                        {{ course.relatedCourseDetails.courseName }}
+                      </v-col>
                     </v-row>
                   </v-row>
                 </v-alert>
@@ -238,8 +241,7 @@
           </v-stepper-window>
         </template>
       </v-stepper>
-      <v-card-actions>
-
+      <v-card-actions v-if="step == 0">
         <v-row v-if="showCourseInputs" no-gutters class="px-3 pt-3">
           <v-col cols="1" class="pr-1">
             Select Course
@@ -275,17 +277,19 @@
               <v-icon size="28">mdi-trash-can</v-icon>
             </v-btn>
           </v-col>
+          <v-col cols="12" class="pb-2 m-2" v-if="courseValidationMessage"> <v-alert type="error" variant="tonal"
+              border="start">{{ courseValidationMessage }}</v-alert></v-col>
+        </v-row>
+        <v-row v-else justify="center">
+          <v-btn variant="outlined" color="bcGovBlue" class="mt-4 text-none" v-if="!showCourseInputs && step === 0"
+            @click="showCourseInputs = !showCourseInputs">
+            + Enter Course
+          </v-btn>
         </v-row>
       </v-card-actions>
 
-      <v-row class="pb-2 m-2" v-if="courseValidationMessage"> <v-alert type="error" variant="tonal" border="start"
-          class="width-fit-content">{{ courseValidationMessage }}</v-alert></v-row>
-      <v-row justify="center">
-        <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none" v-if="!showCourseInputs && step === 0"
-          @click="showCourseInputs = !showCourseInputs">
-          + Enter Course
-        </v-btn>
-      </v-row>
+
+
       <v-card-actions>
         <v-btn v-if="step === 0" @click="closeCreateStudentCourseDialog" color="error" variant="outlined"
           class="text-none">
@@ -302,9 +306,14 @@
           Next
         </v-btn>
 
-        <v-btn v-else-if="step == 1 && !validationStep" @click="submitForm" color="error" variant="flat"
-          class="text-none">
-          Add Student Courses
+        <v-btn v-else-if="step == 1 && !validationStep" :disabled="isLoading" @click="submitForm" color="error"
+          variant="flat" class="text-none">
+
+
+          <span v-if="isLoading"><v-progress-circular v-if="isLoading" indeterminate color="white" size="20"
+              class="mr-2" />
+            Add Student Courses</span>
+          <span v-else> Add Student Courses</span>
         </v-btn>
         <v-btn v-else-if="step == 1 && validationStep" @click="closeCreateStudentCourseDialog" color="error"
           variant="flat" class="text-none">
@@ -414,6 +423,7 @@ export default {
     ]),
 
     openCreateStudentCoursesDialog() {
+      this.loading = false;
       this.step = 0;
       this.dialog = true;
       this.createStudentResultsMessages = [];
@@ -435,7 +445,7 @@ export default {
       }
     },
     async addCourse() {
-      this.isLoading = true;
+
       this.courseValidationMessage = null;
 
       const { code, level, courseSession } = this.courseAdd;
@@ -463,14 +473,12 @@ export default {
         canAddExaminable: () => this.hasPermissions('STUDENT', 'updateExaminableCourse'),
       });
 
-      this.isLoading = false;
+
 
       if (result.error) {
         this.courseValidationMessage = result.error;
         return;
       }
-
-
       this.addCoursesToCreate({
         courseID: result.courseID,
         courseSession: result.courseSession,
@@ -506,16 +514,16 @@ export default {
     },
 
     async submitForm() {
+      this.isLoading = true;
       this.createStudentResultsMessages = [];
 
-      const courseWithoutCourseDetails = this.coursesToCreate.map(({ courseDetails, ...rest }) => ({ ...rest }));
+      const courseWithoutCourseDetails = this.coursesToCreate.map(({ courseDetails, relatedCourseDetails, ...rest }) => ({ ...rest }));
       const createStudentCoursesRequestBody = toRaw(courseWithoutCourseDetails);
 
       // Call API and get response
       const response = await this.createStudentCourses(
         createStudentCoursesRequestBody
       );
-      console.log(response)
       // Enrich response with entire original course object
       const enrichedResults = response.map((result) => {
         const original = this.coursesToCreate.find(
@@ -529,6 +537,7 @@ export default {
 
       this.createStudentResultsMessages = enrichedResults;
       this.clearCoursesToCreate(); // optional
+      this.isLoading = false;
       this.validationStep = true;
     },
   },

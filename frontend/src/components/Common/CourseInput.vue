@@ -3,26 +3,25 @@
     <v-row>
       <v-col>
         <v-text-field v-model="localCourse.courseCode" label="Course Code" @input="onInput" :disabled="loading"
-          variant="outlined" density="compact" class="my-2" persistent-placeholder persistent-hint
+          variant="outlined" density="compact" class="my-2" hide-details
           :rules="[v => !!v || 'Course Code is required']" />
       </v-col>
       <v-col>
         <v-text-field v-model="localCourse.courseLevel" label="Course Level" @input="onInput" :disabled="loading"
-          variant="outlined" density="compact" class="my-2" persistent-placeholder persistent-hint
-          />
+          variant="outlined" density="compact" class="my-2" hide-details />
       </v-col>
       <slot name="additional-input-fields-cols" />
     </v-row>
 
     <!-- Loading Spinner -->
-    <v-row v-if="loading" justify="center" class="mt-2">
+    <v-row v-if="loading" justify="center" class="">
       <v-progress-circular indeterminate color="primary" />
     </v-row>
 
     <!-- Course Info Panel -->
-    <v-expansion-panels v-if="localCourse.courseName && !notFound && !loading" class="mt-2">
+    <v-expansion-panels v-if="localCourse.courseName && !notFound && !loading" class="">
       <v-expansion-panel>
-        <v-expansion-panel-title>
+        <v-expansion-panel-title class="pl-3 m-0">
           <div class="d-flex align-center justify-space-between w-100">
             <strong>{{ localCourse.courseName }}</strong>
             <OpenStatusBadge :openedDateString="localCourse.startDate" :closedDateString="localCourse.endDate" />
@@ -69,6 +68,15 @@ export default {
       type: [String, Number],
       default: '',
     },
+    code: {
+      type: String,
+      default: '',
+    },
+    level: {
+      type: String,
+      default: '',
+    },
+
   },
   setup() {
     return { v$: useVuelidate() };
@@ -191,11 +199,22 @@ export default {
       this.debouncedLookup();
     },
   },
+
   created() {
+    // Prepopulate from props if no courseFound is provided
+    if (!this.courseFound?.courseID && this.code && this.level) {
+      this.localCourse.courseCode = this.code;
+      this.localCourse.courseLevel = this.level;
+      this.fetchCourse(); // Trigger lookup
+    }
+
+    // If courseCode and courseLevel are already set but no courseID, fetch course
     if (this.localCourse.courseCode && this.localCourse.courseLevel && !this.localCourse.courseID) {
       this.fetchCourse();
     }
+
     this.debouncedLookup = debounce(this.fetchCourse, 1500);
-  },
+  }
+
 };
 </script>
