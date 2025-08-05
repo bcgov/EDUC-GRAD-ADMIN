@@ -16,7 +16,11 @@
             <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
               @click="close" />
           </v-row>
+          <v-card-subtitle>{{
+            studentStore.formattedStudentName
+          }}</v-card-subtitle>
         </v-card-title>
+
         <v-col>
           <StudentCourseAlert :studentStatus="studentStatus" />
         </v-col>
@@ -285,6 +289,10 @@ export default {
       studentStatus: (state) => state.student.profile.studentStatus,
 
     }),
+    studentStore() {
+      return useStudentStore();
+    },
+
   },
 
   methods: {

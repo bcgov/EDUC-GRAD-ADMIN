@@ -25,21 +25,19 @@
         <v-col>
           <v-text-field v-model="course.interimPercent" type="number" min="0" max="100" label="Interim %"
             variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
-            :disabled="course.courseSession < 199409 || courseSessionLessThanReportingPeriod" persistent-hint
+            :disabled="course.courseSession < 199409" persistent-hint
             :error="v$.course.interimPercent.$invalid && v$.course.interimPercent.$dirty"
             @blur="v$.course.interimPercent.$touch" />
         </v-col>
 
         <v-col>
-          <v-select v-model="course.interimLetterGrade" :items="filteredInterimLetterGrades"
-            :disabled="courseSessionLessThanReportingPeriod" label="Interim LG" variant="outlined" density="compact"
-            class="pa-1" clearable persistent-placeholder persistent-hint />
+          <v-select v-model="course.interimLetterGrade" :items="filteredInterimLetterGrades" label="Interim LG"
+            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint />
         </v-col>
 
         <v-col>
           <v-text-field v-model="course.finalPercent" type="number" min="0" max="100" label="Final %" variant="outlined"
-            density="compact" class="pa-1" clearable
-            :disabled="course.courseSession < 199409 || courseSessionGreaterThanReportingPeriod" persistent-placeholder
+            density="compact" class="pa-1" clearable :disabled="course.courseSession < 199409" persistent-placeholder
             persistent-hint :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty"
             @blur="v$.course.finalPercent.$touch" />
         </v-col>
@@ -47,7 +45,7 @@
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
             variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint
             :error="v$.course.finalLetterGrade.$invalid && v$.course.finalLetterGrade.$dirty"
-            @blur="v$.course.finalLetterGrade.$touch" :disabled="courseSessionGreaterThanReportingPeriod" />
+            @blur="v$.course.finalLetterGrade.$touch" />
         </v-col>
 
         <v-col>
@@ -369,11 +367,10 @@ export default {
     fineArtsAndAppliedSkillsOptions() {
       return [
         { value: 'B', text: 'Both Fine Arts and Applied Skills' },
-        { value: 'A', text: 'Fine Arts' },
-        { value: 'F', text: 'Applied Skills' }
+        { value: 'A', text: 'Applied Skills' },
+        { value: 'F', text: 'Fine Arts' }
       ];
     },
-
     shouldDisableFAAS() {
       const level = this.course.courseDetails.courseLevel;
 
