@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="dialog" persistent max-width="80%">
+    <v-dialog v-model="dialog" persistent max-width="1260px">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
           <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" @click="openDialog" v-bind="props" color="success"
@@ -10,21 +10,19 @@
 
       <v-card>
         <v-card-title>
+
           <v-row no-gutters>
-            <div class="v-card-title">Edit Student Courses</div>
+            <div class="v-card-title">Edit Student Course Exam</div>
             <v-spacer />
             <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
               @click="close" />
           </v-row>
+          <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
         </v-card-title>
-        <v-col>
-          <StudentCourseAlert :studentStatus="studentStatus" />
-        </v-col>
-        <v-stepper show-actions v-model="step">
+        <v-stepper alt-labels show-actions v-model="step">
           <template v-slot:default>
-
             <v-stepper-header>
-              <v-stepper-item title="Update Course Info" value="0" :rules="[() => v$.$invalid]">
+              <v-stepper-item title="Enter Courses" value="0" :rules="[() => v$.$invalid]">
                 <template #icon>
                   1
                 </template>
@@ -33,16 +31,17 @@
               <v-stepper-item title="Confirmation" value="1">
                 <template #icon> 2 </template></v-stepper-item>
             </v-stepper-header>
+
+
             <v-stepper-window>
               <div style="padding-right: 8px;">
-
 
                 <!-- Step 1 -->
                 <v-stepper-window-item value="0">
                   <v-card-text>
                     <v-row no-gutters class="p-2" v-if="showCourseInput">
                       <v-col class="pr-1">
-                        <strong>Update Student Course</strong>
+                        Select Course
                       </v-col>
 
                       <v-col class="pr-1">
@@ -76,23 +75,13 @@
                       <v-col cols="12"> <v-alert v-if="courseValidationMessage" type="error" variant="tonal"
                           border="start" class="width-fit-content">{{ courseValidationMessage }}</v-alert></v-col>
                     </v-row>
-                    <div v-else>
-
-                      <div v-if="selectedCourseToUpdate.isExaminable">
-                        <CourseExamDetailsInput :course="selectedCourseToUpdate" update>
-                        </CourseExamDetailsInput>
-                      </div>
-                      <div v-else>
-                        <CourseDetailsInput :course="selectedCourseToUpdate" update>
-                          <template #remove-button>
-                            <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none p-1"
-                              style="max-width: 7.5rem;" @click="showCourseInput = !showCourseInput">Change
-                              Course</v-btn>
-                          </template>
-                        </CourseDetailsInput>
-                      </div>
-                    </div>
-
+                    <CourseExamDetailsInput :course="selectedCourseToUpdate" update>
+                      <template #remove-button>
+                        <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none p-1"
+                          style="max-width: 7.5rem;" :disabled="selectedCourseToUpdate.isExaminable"
+                          @click="showCourseInput = !showCourseInput">Change Course</v-btn>
+                      </template>
+                    </CourseExamDetailsInput>
                   </v-card-text>
                 </v-stepper-window-item>
 
@@ -100,11 +89,12 @@
                 <v-stepper-window-item value="1">
                   <v-alert v-if="step == 1" type="info" class="mb-4" border="start" elevation="2" variant="tonal">
                     <div class="mb-2">
-                      You are about to save the following changes
+                      You are about to update the following courses to student
+                      <strong>{{ studentPenAndName }}</strong>:
                     </div>
                     <v-row no-gutters class="mb-2">
                       <v-col cols="12"><strong>{{ selectedCourseToUpdate.courseDetails.courseCode }} {{
-                        selectedCourseToUpdate.courseDetails.courseLevel }} -
+                        selectedCourseToUpdate.courseLevel }} -
                           {{
                             $filters.formatYYYYMMStringDate(selectedCourseToUpdate.courseSession)
                           }}</strong>
@@ -112,67 +102,31 @@
                       <v-col cols="12" class="ml-3">
                         {{ selectedCourseToUpdate.courseDetails.courseName }}
                       </v-col>
-                      <v-row v-if="selectedCourseToUpdate.isExaminable">
-                        <v-col class="ml-2"><strong>School %</strong>&nbsp;
-                          <span v-if="selectedCourseToUpdate.courseExam.schoolPercentage">{{
-                            selectedCourseToUpdate.courseExam.schoolPercentage }}</span>
-                          <span v-else> <i>null</i> </span>
-                        </v-col>
-                        <v-col class="ml-2"><strong>Best School %</strong>&nbsp;
-                          <span v-if="selectedCourseToUpdate.courseExam.bestSchoolPercentage">{{
-                            selectedCourseToUpdate.courseExam.bestSchoolPercentage }}</span>
-                          <span v-else> <i>null</i> </span>
-                        </v-col>
-                        <v-col class="ml-2"><strong>Special Case</strong> {{
-                          selectedCourseToUpdate.courseExam.specialCase
-                        }}</v-col>
-                        <v-col class="ml-2"><strong>Exam Best %</strong>&nbsp;
-                          <span v-if="selectedCourseToUpdate.courseExam.bestExamPercentage">{{
-                            selectedCourseToUpdate.courseExam.bestExamPercentage }}</span>
-                          <span v-else> <i>null</i> </span>
-                        </v-col>
-                        <v-col class="ml-2"><strong>Final %</strong>&nbsp;
-                          <span v-if="selectedCourseToUpdate.finalPercent">{{ selectedCourseToUpdate.finalPercent
-                          }}</span>
-                          <span v-else> <i>null</i> </span>
-                        </v-col>
-                        <v-col class="ml-2"><strong>Final LG</strong> {{ selectedCourseToUpdate.finalLetterGrade
-                        }}</v-col>
-                        <v-col><strong>Credits</strong> {{ selectedCourseToUpdate.credits }}</v-col>
-                      </v-row>
-                      <v-row v-else>
-                        <v-col class="ml-3"><strong>Interim</strong>&nbsp;
-                          <span v-if="selectedCourseToUpdate.interimPercent">{{ selectedCourseToUpdate.interimPercent
-                          }}%
-                            {{ selectedCourseToUpdate.interimLetterGrade }}</span>
-                          <span v-else> <i>null</i> </span>
-                        </v-col>
-                        <v-col><strong>Final</strong>&nbsp;
-                          <span v-if="selectedCourseToUpdate.finalPercent">
-                            {{ selectedCourseToUpdate.finalPercent }}%
-                            {{ selectedCourseToUpdate.finalLetterGrade }}</span><span v-else><i>null</i></span></v-col>
-                        <!-- I don't think credits can have a null value? - Samara -->
-                        <v-col><strong>Credits</strong> {{ selectedCourseToUpdate.credits }}</v-col>
-                        <v-col><strong>FA/AS</strong>&nbsp;
-                          <span v-if="selectedCourseToUpdate.fineArtsAppliedSkills">
-                            {{ selectedCourseToUpdate.fineArtsAppliedSkills }}
-                          </span>
-                          <span v-else><i>null</i></span>
-                        </v-col>
-                        <v-col><strong>Eq/Ch</strong>&nbsp;
-                          <span v-if="selectedCourseToUpdate.equivOrChallenge">
-                            {{ selectedCourseToUpdate.equivOrChallenge }}
-                          </span>
-                          <span v-else><i>null</i></span>
-                        </v-col>
-                        <v-col cols="12" class="ml-3" v-if="selectedCourseToUpdate.customizedCourseName"><strong>Custom
-                            Course
-                            Title: </strong>
-                          {{ selectedCourseToUpdate.customizedCourseName }}</v-col>
-                        <v-col cols="12" class="ml-3" v-if="course.relatedCourseId"><strong>Related Course:</strong>
-                          {{ selectedCourseToUpdate.relatedCourseDetails.courseName }}
-                        </v-col>
-                      </v-row>
+                      <v-col class="ml-2"><strong>School %</strong>&nbsp;
+                        <span v-if="selectedCourseToUpdate.courseExam.schoolPercentage">{{
+                          selectedCourseToUpdate.courseExam.schoolPercentage }}</span>
+                        <span v-else> <i>null</i> </span>
+                      </v-col>
+                      <v-col class="ml-2"><strong>Best School %</strong>&nbsp;
+                        <span v-if="selectedCourseToUpdate.courseExam.bestSchoolPercentage">{{
+                          selectedCourseToUpdate.courseExam.bestSchoolPercentage }}</span>
+                        <span v-else> <i>null</i> </span>
+                      </v-col>
+                      <v-col class="ml-2"><strong>Special Case</strong> {{ selectedCourseToUpdate.courseExam.specialCase
+                      }}</v-col>
+                      <v-col class="ml-2"><strong>Exam Best %</strong>&nbsp;
+                        <span v-if="selectedCourseToUpdate.courseExam.bestExamPercentage">{{
+                          selectedCourseToUpdate.courseExam.bestExamPercentage }}</span>
+                        <span v-else> <i>null</i> </span>
+                      </v-col>
+                      <v-col class="ml-2"><strong>Final %</strong>&nbsp;
+                        <span v-if="selectedCourseToUpdate.finalPercent">{{ selectedCourseToUpdate.finalPercent
+                        }}</span>
+                        <span v-else> <i>null</i> </span>
+                      </v-col>
+                      <v-col class="ml-2"><strong>Final LG</strong> {{ selectedCourseToUpdate.finalLetterGrade
+                      }}</v-col>
+                      <v-col><strong>Credits</strong> {{ selectedCourseToUpdate.credits }}</v-col>
                     </v-row>
                   </v-alert>
                 </v-stepper-window-item>
@@ -191,13 +145,13 @@
           </v-btn>
           <v-spacer />
 
-          <v-btn v-if="step == 0" @click="step++" color="bcGovBlue" variant="flat">
+          <v-btn v-if="step == 0" @click="step++" color="bcGovBlue" variant="outlined">
             Next
           </v-btn>
-          <v-btn v-else color="error" variant="flat" class="text-none" density="default" @click="confirmUpdate"
+          <v-btn v-else color="bcGovBlue" variant="flat" class="text-none" density="default" @click="confirmUpdate"
             :disabled="isLoading">
-
-            Save Changes
+            <v-progress-circular v-if="isLoading" indeterminate color="white" size="20" class="mr-2" />
+            Save Student Course(s)
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -209,21 +163,19 @@
 import useVuelidate from '@vuelidate/core';
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { required, helpers } from '@vuelidate/validators';
-import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
 import CourseExamDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseExamDetailsInput.vue";
-import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue";
 import { useStudentStore } from "@/store/modules/student";
 import { mapState, mapActions } from "pinia";
 import { validateAndFetchCourse } from '@/components/StudentProfile/Forms/utils/validateCourse.js';
 
 export default {
-  name: "StudentCoursesUpdateForm",
+  name: "StudentCoursesExamUpdateForm",
   setup() {
     return {
       v$: useVuelidate(),
     };
   },
-  components: { CourseDetailsInput, CourseExamDetailsInput, StudentCourseAlert },
+  components: { CourseExamDetailsInput },
 
   props: {
     course: {
@@ -278,12 +230,9 @@ export default {
   computed: {
     ...mapState(useStudentStore, {
       studentPenAndName: "formattedStudentName"
-
     }),
     ...mapState(useStudentStore, {
       studentCourses: "studentCourses",
-      studentStatus: (state) => state.student.profile.studentStatus,
-
     }),
   },
 
@@ -315,6 +264,7 @@ export default {
 
       this.selectedCourseToUpdate.courseID = result.courseID;
       this.selectedCourseToUpdate.courseSession = result.courseSession;
+      this.selectedCourseToUpdate.courseDetails = result.courseData;
       this.selectedCourseToUpdate.courseDetails = result.courseData;
       this.courseValidationMessage = null;
       this.showCourseInput = false;
@@ -354,26 +304,17 @@ export default {
       try {
         //remove courseDetails from payload
         const { courseDetails, relatedCourseDetails, ...courseWithoutCourseDetails } = this.selectedCourseToUpdate;
-        const response = await this.updateStudentCourse(courseWithoutCourseDetails);
-        if (response.status == 200) {
-          this.snackbarStore.showSnackbar(
-            "Student course successfully updated.",
-            "success",
-            10000,
-            "Student course"
-          );
-        } else {
-          this.snackbarStore.showSnackbar(
-            "Failed to update student course",
-            "danger",
-            10000,
-            "Student course"
-          );
-        }
+        await this.updateStudentCourse(courseWithoutCourseDetails);
+        this.snackbarStore.showSnackbar(
+          "Student course exam successfully updated.",
+          "success",
+          10000,
+          "Student course"
+        );
         this.close();
       } catch (error) {
         this.snackbarStore.showSnackbar(
-          "Failed to update student course",
+          "Failed to update student course exam",
           "danger",
           10000,
           "Student course"

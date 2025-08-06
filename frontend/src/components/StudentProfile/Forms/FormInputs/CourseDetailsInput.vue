@@ -19,6 +19,7 @@
 
     </v-col>
     <v-col cols="10">
+
       <v-row no-gutters class="my-2">
         <!-- Editable fields bound directly to the course object -->
         <v-col>
@@ -42,7 +43,6 @@
             persistent-hint :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty"
             @blur="v$.course.finalPercent.$touch" />
         </v-col>
-
         <v-col>
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
             variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint
@@ -59,19 +59,18 @@
         <v-col>
           <v-select v-model="course.fineArtsAppliedSkills" :items="fineArtsAndAppliedSkillsOptions" item-title="text"
             item-value="value" label="FA/AS" variant="outlined" density="compact" class="pa-1" clearable
-            :disabled="isBAAorLocallyDevelopedOrCP" persistent-placeholder persistent-hint />
+            :disabled="shouldDisableFAAS" persistent-placeholder persistent-hint />
         </v-col>
 
         <v-col>
           <v-select v-model="course.equivOrChallenge" :items="[
             { title: 'Equivalency', value: 'E' },
             { title: 'Challenge', value: 'C' },
-            { title: 'None', value: null }
           ]" label="Eq / Ch" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
             persistent-hint />
         </v-col>
       </v-row>
-      <v-row v-if="course?.genericCourseType == 'G'">
+      <v-row v-if="course?.courseDetails.genericCourseType == 'G'">
         <v-col cols="12">
           <v-text-field v-model="course.customizedCourseName" label="Customized Course Title" variant="outlined"
             density="compact" class="pa-1" clearable hide-details persistent-placeholder persistent-hint />
@@ -82,7 +81,7 @@
         <v-col cols="12">
           <v-row v-for="(error, index) in v$.$errors" :key="index" class="align-center">
             <v-col class="py-1 m-0 d-flex text-red-darken-4 text-caption">
-              <v-icon color="red-darken-2">mdi-alert-circle</v-icon>
+              <v-icon color="red-darken-2" size="18" class="me-1">mdi-alert-circle</v-icon>
               {{ error.$message }}
             </v-col>
           </v-row>
@@ -98,10 +97,13 @@
       </v-row>
 
 
-      <v-row no-gutters v-if="course?.courseCode == 'IDS'">
-        <v-col cols="12">
+      <v-row no-gutters v-if="course?.courseDetails.courseCode == 'IDS'">
+        <v-col cols="12" class="pt-2">
           <strong>Select Related Course</strong>
-          <CourseInput v-model:courseFoundID="course.relatedCourseId"></CourseInput>
+
+          <CourseInput v-model:courseFoundID="course.relatedCourseId" v-model:courseFound="course.relatedCourseDetails"
+            :code="course?.relatedCourseDetails?.courseCode" :level="course?.relatedCourseDetails?.courseLevel">
+          </CourseInput>
         </v-col>
       </v-row>
     </v-col>
@@ -131,35 +133,8 @@ export default {
     if (!this.course?.credits && this.creditsAvailableForCourseSession.length > 0) {
       this.course.credits = this.creditsAvailableForCourseSession[0];
     }
-    // Check for Q course
-    if ((this.course.courseCode || '').startsWith("Q")) {
-      this.warnings.push("Only use Q code if student was on Adult program at time of course completion or if course is marked as Equivalency.");
-    }
-    if (this.course.isExaminable) {
-      this.warnings.push("This course required an exam at the time of the course session date")
-    }
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1; // JS months are 0-based
 
-    // Reporting period: Oct (10) to Sep (09)
-    let startYear, endYear;
-
-    if (currentMonth >= 10) {
-      startYear = currentYear;
-      endYear = currentYear + 1;
-    } else {
-      startYear = currentYear - 1;
-      endYear = currentYear;
-    }
-
-    const minSession = `${startYear}09`;
-    const maxSession = `${endYear}09`;
-
-    if (this.course.courseSession < 198401 || (this.course.courseSession < minSession || this.course.courseSession > maxSession)) {
-      this.warnings.push("Course session cannot be beyond the current reporting period or prior to 198401")
-
-    }
+    this.updateWarnings();
     this.v$.$touch(); // <-- triggers validation on load
   },
   components: { CourseInput },
@@ -180,6 +155,8 @@ export default {
   data() {
     return {
       warnings: [],  // array of warnings
+      minSession: null,
+      maxSession: null,
     }
   },
   validations() {
@@ -187,7 +164,7 @@ export default {
       course: {
         interimPercent: {
           isValidPercent: helpers.withMessage(
-            'Interim % must be a valid number between 0 and 100',
+            'Interim % must be a valid number between 1 and 100',
             (value) => {
               if (value === '' || value === null || value === undefined) return true; // allow empty if needed
 
@@ -227,6 +204,15 @@ export default {
 
         },
         finalLetterGrade: {
+          isValid: helpers.withMessage(
+            'Course session is in the past. Enter a final mark.',
+            function (value) {
+              if (this.course.courseSession < this.maxSession && !this.course.finalPercent && (value === '' || value === null || value === undefined)) {
+                return false;
+              }
+              return true;
+            }
+          ),
         },
         credits: {
           isCreditValue: helpers.withMessage(
@@ -266,7 +252,7 @@ export default {
 
               return true
             }
-          )
+          ),
         },
 
         fineArtsAppliedSkills: {
@@ -321,7 +307,18 @@ export default {
       }
     },
     'course.fineArtsAppliedSkills'(newVal) {
+      const courseType = this.course.courseDetails.courseCategory?.description || '';
+      const trimmedProgram = this.studentProgram?.trim();
+
+      const warnings = [];
       this.updateWarnings();
+      if (
+        (courseType === "Locally Developed" || courseType === "Career Program") &&
+        (trimmedProgram === "1996-EN" || trimmedProgram === "1996-PF")
+      ) {
+        this.warnings.push('Flag is only applicable for this course type if student is on the 1995 program.');
+      }
+
     },
   },
   computed: {
@@ -365,12 +362,15 @@ export default {
       ];
     },
 
-    isBAAorLocallyDevelopedOrCP() {
-      return !(
-        this.course.courseDetails.courseCategory.description === 'Board Authority Authorized' ||
+    shouldDisableFAAS() {
+      const level = this.course.courseDetails.courseLevel;
+
+      const isBAAorLocallyDevelopedOrCP = this.course.courseDetails.courseCategory.description === 'Board Authority Authorized' ||
         this.course.courseDetails.courseCategory.description === 'Locally Developed' ||
         this.course.courseDetails.courseCategory.description === 'Career Program'
-      );
+      const isGrade11 = level?.startsWith('11');
+      return (!isGrade11 || !isBAAorLocallyDevelopedOrCP
+      )
     },
 
     creditsAvailableForCourseSession() {
@@ -402,18 +402,38 @@ export default {
   methods: {
 
     updateWarnings() {
-      const courseType = this.course.courseDetails.courseCategory?.description || '';
-      const trimmedProgram = this.studentProgram?.trim();
-
-      const warnings = [];
-
-      if (
-        (courseType === "Locally Developed" || courseType === "Career Program") &&
-        (trimmedProgram === "1996-EN" || trimmedProgram === "1996-PF" || trimmedProgram === "2018-EN")
-      ) {
-        warnings.push('Flag is only applicable for this course type if student is on the 1995 program.');
+      this.warnings = []
+      // Check for Q course
+      if ((this.course?.courseDetails.courseCode).startsWith("Q")) {
+        this.warnings.push("Only use Q code if student was on Adult program at time of course completion or if course is marked as Equivalency.");
       }
-      this.warnings = warnings;
+      if (this.course.isExaminable) {
+        this.warnings.push("This course required an exam at the time of the course session date")
+      }
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1; // JS months are 0-based
+
+      // Reporting period: Oct (10) to Sep (09)
+      let startYear, endYear;
+
+      if (currentMonth >= 10) {
+        startYear = currentYear;
+        endYear = currentYear + 1;
+      } else {
+        startYear = currentYear - 1;
+        endYear = currentYear;
+      }
+
+      this.minSession = `${startYear}09`;
+      this.maxSession = `${endYear}09`;
+
+      if (this.course.courseSession < 198401 || (this.course.courseSession < this.minSession || this.course.courseSession > this.maxSession)) {
+        this.warnings.push("Course session cannot be beyond the current reporting period or prior to 198401")
+
+      }
+
+
     },
 
     getGradesForPercent(percent) {

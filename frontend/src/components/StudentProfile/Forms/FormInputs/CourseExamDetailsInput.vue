@@ -22,31 +22,30 @@
       <v-row no-gutters class="my-2">
         <!-- Editable fields bound directly to the course object -->
         <v-col>
-          <v-text-field v-model="course.courseExam.schoolPercentage" type="number" min="0" max="100" label="School %" variant="outlined"
-            density="compact" class="pa-1" clearable persistent-placeholder 
+          <v-text-field v-model="course.courseExam.schoolPercentage" type="number" min="0" max="100" label="School %"
+            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
             :error="v$.course.courseExam.schoolPercentage.$invalid && v$.course.courseExam.schoolPercentage.$dirty"
-            @blur="v$.course.courseExam.schoolPercentage.$touch"/>
+            @blur="v$.course.courseExam.schoolPercentage.$touch" />
         </v-col>
 
         <v-col>
-          <v-text-field v-model="course.courseExam.bestSchoolPercentage" type="number" min="0" max="100" label="Best School %" variant="outlined"
-            density="compact" class="pa-1" clearable persistent-placeholder 
+          <v-text-field v-model="course.courseExam.bestSchoolPercentage" type="number" min="0" max="100"
+            label="Best School %" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
             :error="v$.course.courseExam.bestSchoolPercentage.$invalid && v$.course.courseExam.bestSchoolPercentage.$dirty"
-            @blur="v$.course.courseExam.bestSchoolPercentage.$touch"/>
+            @blur="v$.course.courseExam.bestSchoolPercentage.$touch" />
         </v-col>
 
         <v-col>
           <v-select v-model="course.courseExam.specialCase" :items="filteredSpecialCaseCodes" label="Special Case"
-            item-title="label" item-value="examSpecialCaseCode"
-            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint
-            />
+            item-title="label" item-value="examSpecialCaseCode" variant="outlined" density="compact" class="pa-1"
+            clearable persistent-placeholder persistent-hint />
         </v-col>
 
-         <v-col>
-          <v-text-field v-model="course.courseExam.bestExamPercentage" type="number" min="0" max="100" label="Exam Best %" variant="outlined"
-            density="compact" class="pa-1" clearable persistent-placeholder
+        <v-col>
+          <v-text-field v-model="course.courseExam.bestExamPercentage" type="number" min="0" max="100"
+            label="Exam Best %" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
             :error="v$.course.courseExam.bestExamPercentage.$invalid && v$.course.courseExam.bestExamPercentage.$dirty"
-            @blur="v$.course.courseExam.bestExamPercentage.$touch"/>
+            @blur="v$.course.courseExam.bestExamPercentage.$touch" />
         </v-col>
 
         <v-col>
@@ -70,8 +69,8 @@
             persistent-placeholder persistent-hint />
         </v-col>
 
-        
-      </v-row>      
+
+      </v-row>
 
       <v-row no-gutters v-if="v$.$errors.length" class="my-2 ">
         <v-col cols="12">
@@ -140,8 +139,8 @@ export default {
     //set the initial credits
     if (!this.course?.credits && this.creditsAvailableForCourseSession.length > 0) {
       this.course.credits = this.creditsAvailableForCourseSession[0];
-    }   
-    
+    }
+
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth() + 1; // JS months are 0-based
@@ -157,10 +156,10 @@ export default {
       endYear = currentYear;
     }
 
-    const minSession = `${startYear}09`;
-    const maxSession = `${endYear}09`;
+    this.minSession = `${startYear}09`;
+    this.maxSession = `${endYear}09`;
 
-    if (this.course.courseSession < 198401 || (this.course.courseSession < minSession || this.course.courseSession > maxSession)) {
+    if (this.course.courseSession < 198401 || (this.course.courseSession < this.minSession || this.course.courseSession > this.maxSession)) {
       this.warnings.push("Course session cannot be beyond the current reporting period or prior to 198401")
 
     }
@@ -188,16 +187,56 @@ export default {
     return {
       warnings: [],  // array of warnings
       examSpecialCaseCodes: [],
+      minSession: null,
+      maxSession: null,
     }
   },
   validations() {
     return {
       course: {
-        courseExam:{
-            schoolPercentage: {
+        courseExam: {
+          schoolPercentage: {
             isValidPercent: helpers.withMessage(
-                'School % must be a valid number between 0 and 100',
-                (value) => {
+              'School % must be a valid number between 0 and 100',
+              (value) => {
+                if (this.create && (value === '' || value === null || value === undefined)) return false; // Mandatory on create
+
+                const strVal = String(value).trim();
+
+                // Reject if contains any minus sign or invalid characters:
+                if (strVal.includes('-')) return false;
+
+                // Regex: only digits and optional decimal point
+                if (!/^\d*\.?\d+$/.test(strVal)) return false;
+
+                const numberValue = Number(strVal);
+                return numberValue >= 0 && numberValue <= 100;
+              }
+            ),
+          },
+          bestSchoolPercentage: {
+            isValidPercent: helpers.withMessage(
+              'Best School % must be a valid number between 0 and 100',
+              (value) => {
+                if (this.create && (value === '' || value === null || value === undefined)) return false; // Mandatory on create
+
+                const strVal = String(value).trim();
+
+                // Reject if contains any minus sign or invalid characters:
+                if (strVal.includes('-')) return false;
+
+                // Regex: only digits and optional decimal point
+                if (!/^\d*\.?\d+$/.test(strVal)) return false;
+
+                const numberValue = Number(strVal);
+                return numberValue >= 0 && numberValue <= 100;
+              }
+            ),
+          },
+          bestExamPercentage: {
+            isValidPercent: helpers.withMessage(
+              'Exam Best % must be a valid number between 0 and 100',
+              (value) => {
                 if (value === '' || value === null || value === undefined) return true; // allow empty if needed
 
                 const strVal = String(value).trim();
@@ -210,47 +249,9 @@ export default {
 
                 const numberValue = Number(strVal);
                 return numberValue >= 0 && numberValue <= 100;
-                }
+              }
             ),
-            },
-            bestSchoolPercentage: {
-            isValidPercent: helpers.withMessage(
-                'Best School % must be a valid number between 0 and 100',
-                (value) => {
-                if (value === '' || value === null || value === undefined) return true; // allow empty if needed
-
-                const strVal = String(value).trim();
-
-                // Reject if contains any minus sign or invalid characters:
-                if (strVal.includes('-')) return false;
-
-                // Regex: only digits and optional decimal point
-                if (!/^\d*\.?\d+$/.test(strVal)) return false;
-
-                const numberValue = Number(strVal);
-                return numberValue >= 0 && numberValue <= 100;
-                }
-            ),
-            },
-            bestExamPercentage: {
-            isValidPercent: helpers.withMessage(
-                'Exam Best % must be a valid number between 0 and 100',
-                (value) => {
-                if (value === '' || value === null || value === undefined) return true; // allow empty if needed
-
-                const strVal = String(value).trim();
-
-                // Reject if contains any minus sign or invalid characters:
-                if (strVal.includes('-')) return false;
-
-                // Regex: only digits and optional decimal point
-                if (!/^\d*\.?\d+$/.test(strVal)) return false;
-
-                const numberValue = Number(strVal);
-                return numberValue >= 0 && numberValue <= 100;
-                }
-            ),
-            },
+          },
         },
         finalPercent: {
           isValidPercent: helpers.withMessage(
@@ -270,7 +271,7 @@ export default {
               return numberValue >= 0 && numberValue <= 100;
             }
           ),
-        }, 
+        },
         finalPercent: {
           isValidPercent: helpers.withMessage(
             'Final % must be a valid number between 0 and 100',
@@ -290,13 +291,23 @@ export default {
             }
           ),
         },
-        
+
         finalLetterGrade: {
+          isValid: helpers.withMessage(
+            'Course session is in the past. Enter a final mark.',
+            function (value) {
+              if (this.course.courseSession < this.maxSession && !this.course.finalPercent && (value === '' || value === null || value === undefined)) {
+                return false;
+              }
+              return true;
+            }
+          ),
         },
         credits: {
           isCreditValue: helpers.withMessage(
             'Credits must be 0, 1, 2, 3, or 4',
             function (value) {
+              if (this.update && this.creditsAvailableForCourseSession.length > 0 && (value === '' || value === null || value === undefined)) return false; // Mandatory on update
               return (
                 value === '' ||
                 value === null ||
@@ -340,7 +351,7 @@ export default {
       },
     }
   },
-  watch: {    
+  watch: {
     'course.finalPercent'(newVal) {
       if (newVal && newVal != 0) {
         this.course.finalLetterGrade = this.filteredFinalLetterGrades[0] ?? '';
@@ -427,8 +438,8 @@ export default {
       return this.getGradesForPercent(this.course.finalPercent);
     },
     filteredSpecialCaseCodes() {
-      if(this.create) {
-      return this.examSpecialCaseCodes.filter(code => code.examSpecialCaseCode === "A");
+      if (this.create) {
+        return this.examSpecialCaseCodes.filter(code => code.examSpecialCaseCode === "A");
       }
       return this.examSpecialCaseCodes;
     },

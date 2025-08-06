@@ -28,7 +28,7 @@ const putStudentAssessmentSchema = object({
   }).concat(baseRequestSchema).noUnknown(),
   params: object({
     studentAssessmentId: uuidGeneric().required()
-  }),
+  }).noUnknown(),
   query: object().noUnknown(),
 }).noUnknown();
 
