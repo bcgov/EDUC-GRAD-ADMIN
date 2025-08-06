@@ -205,15 +205,15 @@
                     </v-row>
                     <v-row v-else>
                       <v-col class="ml-3"><strong>Interim</strong>&nbsp;
-                        <span v-if="course.interimPercent">{{ course.interimPercent }}%
-                          {{ course.interimLetterGrade }}</span>
-                        <span v-else> <i>null</i> </span>
+                        <span v-if="course.interimPercent">{{ course.interimPercent }}% </span>
+                        <span v-if="course.interimLetterGrade">{{ course.interimLetterGrade }} </span>
                       </v-col>
                       <v-col><strong>Final</strong>&nbsp;
                         <span v-if="course.finalPercent">
-                          {{ course.finalPercent }}%
+                          {{ course.finalPercent }}%&nbsp;</span>
+                        <span v-if="course.finalLetterGrade">
                           {{ course.finalLetterGrade }}</span>
-                        <span v-else><i>null</i></span></v-col>
+                      </v-col>
                       <!-- I don't think credits can have a null value? - Samara -->
                       <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
                       <v-col><strong>FA/AS</strong>&nbsp;
@@ -272,7 +272,7 @@
             <v-btn :disabled="v$?.courseAdd?.$invalid || isLoading" variant="flat" color="bcGovBlue" class="text-none"
               @click="addCourse">
               <v-progress-circular v-if="isLoading" indeterminate color="white" size="20" class="mr-2" />
-              <span v-if="!isLoading">Get Course</span>
+              <span>Get Course</span>
             </v-btn>
             <v-btn :disabled="coursesToCreate.length == 0" color="error" @click="closeCourseInput">
               <v-icon size="28">mdi-trash-can</v-icon>
@@ -288,9 +288,6 @@
           </v-btn>
         </v-row>
       </v-card-actions>
-
-
-
       <v-card-actions>
         <v-btn v-if="step === 0" @click="closeCreateStudentCourseDialog" color="error" variant="outlined"
           class="text-none">
@@ -353,9 +350,7 @@ export default {
     return {
       courseAdd: {
         code: {},
-        level: {
-
-        },
+        level: {},
         courseSession: {
           validCourseSessionMonth: helpers.withMessage(
             'Course session must be in YYYYMM format with a valid month (01–12)',
@@ -424,7 +419,7 @@ export default {
     ]),
 
     openCreateStudentCoursesDialog() {
-      this.loading = false;
+      this.isLoading = false;
       this.step = 0;
       this.dialog = true;
       this.createStudentResultsMessages = [];
@@ -446,7 +441,7 @@ export default {
       }
     },
     async addCourse() {
-
+      this.isLoading = true;
       this.courseValidationMessage = null;
 
       const { code, level, courseSession } = this.courseAdd;
@@ -478,6 +473,7 @@ export default {
 
       if (result.error) {
         this.courseValidationMessage = result.error;
+        this.isLoading = false;
         return;
       }
       this.addCoursesToCreate({
@@ -496,6 +492,7 @@ export default {
       });
 
       this.closeCourseInput();
+      this.isLoading = false;
       this.courseValidationMessage = null;
     },
     closeCourseInput() {
@@ -513,7 +510,6 @@ export default {
       this.courseValidationMessage = "";
 
     },
-
     async submitForm() {
       this.isLoading = true;
       this.createStudentResultsMessages = [];
@@ -526,6 +522,7 @@ export default {
         createStudentCoursesRequestBody
       );
       // Enrich response with entire original course object
+
       const enrichedResults = response.map((result) => {
         const original = this.coursesToCreate.find(
           (course) => course.courseID === result.courseID
