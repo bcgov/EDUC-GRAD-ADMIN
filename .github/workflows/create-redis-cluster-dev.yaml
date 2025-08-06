@@ -1,4 +1,4 @@
-name: create-redis-cluster-dev.yaml
+name: Build Redis Cluster - DEV
 env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
