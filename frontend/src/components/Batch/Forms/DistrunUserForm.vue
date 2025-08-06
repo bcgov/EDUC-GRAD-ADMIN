@@ -461,6 +461,7 @@ export default {
       "getDistribution",
       "getCopies",
       "gwtWhere",
+      "getUserDistributionAddress"
     ]),
     groupItems() {
       if (this.getCredential === "Blank certificate print") {
@@ -558,14 +559,7 @@ export default {
           this.getDistribution == "User"
         ) {
           requestPayload.user = this.userFullName;
-          requestPayload.address = {
-            streetLine1: "4TH FLOOR 620 SUPERIOR",
-            streetLine2: "PO BOX 9886 STN PROV GOVT",
-            city: "VICTORIA",
-            region: "BRITISH COLUMBIA",
-            country: "CANADA",
-            code: "V8W9T6",
-          };
+          requestPayload.address = this.getUserDistributionAddress;
         }
 
         //set schoolIds to "000000" for Ministry of Advanced Education
