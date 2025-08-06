@@ -399,8 +399,8 @@ export default {
     fineArtsAndAppliedSkillsOptions() {
       return [
         { value: 'B', text: 'Both Fine Arts and Applied Skills' },
-        { value: 'A', text: 'Fine Arts' },
-        { value: 'F', text: 'Applied Skills' }
+        { value: 'A', text: 'Applied Skills' },
+        { value: 'F', text: 'Fine Arts' }
       ];
     },
 

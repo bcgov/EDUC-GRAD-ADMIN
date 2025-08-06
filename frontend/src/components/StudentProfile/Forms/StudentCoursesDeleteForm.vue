@@ -25,7 +25,6 @@
             <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
               @click="close" />
           </v-row>
-          hey
           <v-card-subtitle>{{
             studentStore.formattedStudentName
           }}</v-card-subtitle>

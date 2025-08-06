@@ -172,7 +172,7 @@
                   <v-row no-gutters v-for="course in coursesToCreate" :key="course.courseID + course.sessionDate"
                     class="mb-2">
                     <v-col cols="12"><strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel
-                    }} -
+                        }} -
                         {{
                           $filters.formatYYYYMMStringDate(course.courseSession)
                         }}</strong>
@@ -350,9 +350,7 @@ export default {
     return {
       courseAdd: {
         code: {},
-        level: {
-
-        },
+        level: {},
         courseSession: {
           validCourseSessionMonth: helpers.withMessage(
             'Course session must be in YYYYMM format with a valid month (01–12)',
@@ -524,6 +522,7 @@ export default {
         createStudentCoursesRequestBody
       );
       // Enrich response with entire original course object
+
       const enrichedResults = response.map((result) => {
         const original = this.coursesToCreate.find(
           (course) => course.courseID === result.courseID

@@ -14,30 +14,30 @@
       <strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel }} -
         {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
-      {{ course.courseDetails.courseName }}
       <slot name="remove-button"></slot>
 
     </v-col>
     <v-col cols="10">
-
       <v-row no-gutters class="my-2">
         <!-- Editable fields bound directly to the course object -->
         <v-col>
           <v-text-field v-model="course.interimPercent" type="number" min="0" max="100" label="Interim %"
             variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
-            :disabled="course.courseSession < 199409" persistent-hint
+            :disabled="course.courseSession < 199409 || courseSessionLessThanReportingPeriod" persistent-hint
             :error="v$.course.interimPercent.$invalid && v$.course.interimPercent.$dirty"
             @blur="v$.course.interimPercent.$touch" />
         </v-col>
 
         <v-col>
-          <v-select v-model="course.interimLetterGrade" :items="filteredInterimLetterGrades" label="Interim LG"
-            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint />
+          <v-select v-model="course.interimLetterGrade" :items="filteredInterimLetterGrades"
+            :disabled="courseSessionLessThanReportingPeriod" label="Interim LG" variant="outlined" density="compact"
+            class="pa-1" clearable persistent-placeholder persistent-hint />
         </v-col>
 
         <v-col>
           <v-text-field v-model="course.finalPercent" type="number" min="0" max="100" label="Final %" variant="outlined"
-            density="compact" class="pa-1" clearable :disabled="course.courseSession < 199409" persistent-placeholder
+            density="compact" class="pa-1" clearable
+            :disabled="course.courseSession < 199409 || courseSessionGreaterThanReportingPeriod" persistent-placeholder
             persistent-hint :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty"
             @blur="v$.course.finalPercent.$touch" />
         </v-col>
@@ -45,7 +45,7 @@
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
             variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint
             :error="v$.course.finalLetterGrade.$invalid && v$.course.finalLetterGrade.$dirty"
-            @blur="v$.course.finalLetterGrade.$touch" />
+            @blur="v$.course.finalLetterGrade.$touch" :disabled="courseSessionGreaterThanReportingPeriod" />
         </v-col>
 
         <v-col>
@@ -213,6 +213,7 @@ export default {
               return true;
             }
           ),
+
         },
         credits: {
           isCreditValue: helpers.withMessage(
@@ -253,6 +254,18 @@ export default {
               return true
             }
           ),
+          creditsMustBe0IfLetterGradeIsW: helpers.withMessage(
+            'Credits for W letter grade must be 0',
+            function (value) {
+              if (this.course.finalLetterGrade == 'W') {
+                this.course.credits = 0;
+                return this.course.credits == 0
+              }
+              else {
+                return true
+              }
+            }
+          ),
         },
 
         fineArtsAppliedSkills: {
@@ -276,17 +289,19 @@ export default {
               typeof value === 'string'
           ),
         },
+
+
         relatedCourseId: {
-          validID: helpers.withMessage(
+          validCourseID: helpers.withMessage(
             'Must be a valid related course ID',
-            (value) =>
-              value === '' ||
-              value === null ||
-              value === undefined ||
-              typeof value === 'string' ||
-              typeof value === 'number'
-          ),
-        },
+            (value, vm) => {
+
+              const validCourse = (!this.course.relatedCourseId && this.course.courseDetails.courseCode != "IDS") || (this.course.relatedCourseDetails.courseID == this.course.relatedCourseId);
+              return validCourse;
+            }
+          )
+        }
+
 
       },
     }
@@ -296,7 +311,12 @@ export default {
 
     'course.finalLetterGrade'(newVal) {
       if (newVal) {
+        //set credits to 0 if lettergrade is set to W
+        if (newVal == 'W') {
+          this.course.credits = 0
+        }
         // Trigger re-validation to clear stale silent errors
+
         this.v$.course.finalLetterGrade.$validate();
       }
     },

@@ -49,7 +49,7 @@ router.get(
   "/:studentID/courses",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
-  getStudentCourseByStudentID
+  getStudentCourseByStudentID,
 );
 
 router.put(

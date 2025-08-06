@@ -3,8 +3,9 @@
     <v-dialog v-model="dialog" persistent max-width="80%">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-          <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" @click="openDialog" v-bind="props" color="success"
-            icon="mdi-pencil" density="compact" variant="text" />
+
+          <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="studentStatus == 'MER'" @click="
+            openDialog" v-bind="props" color="success" icon="mdi-pencil" density="compact" variant="text" />
         </slot>
       </template>
 
@@ -60,9 +61,13 @@
                           :error="!!courseValidationMessage" variant="outlined" density="compact" clearable
                           persistent-placeholder persistent-hint :disabled="isLoading" />
                       </v-col>
+
                       <v-col class="pr-1">
                         <v-text-field v-model="courseUpdate.courseSession" label="Session Date (YYYYMM)"
-                          variant="outlined" density="compact" clearable persistent-placeholder persistent-hint />
+                          :error="v$.courseUpdate.courseSession.$error"
+                          :error-messages="v$.courseUpdate.courseSession.$errors.map(e => e.$message)"
+                          @blur="v$.courseUpdate.courseSession.$touch()" variant="outlined" density="compact" clearable
+                          persistent-placeholder persistent-hint :disabled="isLoading" />
                       </v-col>
 
                       <v-col>
@@ -195,7 +200,7 @@
           </v-btn>
           <v-spacer />
 
-          <v-btn v-if="step == 0" @click="step++" color="bcGovBlue" variant="flat">
+          <v-btn v-if="step == 0" @click="step++" color="bcGovBlue" variant="flat" :disabled="v$.$invalid">
             Next
           </v-btn>
           <v-btn v-else color="error" variant="flat" class="text-none" density="default" @click="confirmUpdate"
@@ -237,12 +242,33 @@ export default {
   },
   validations() {
     return {
-      courseValidationMessage: null,
+      selectedCourseToUpdate: {
+
+        isDifferentFromOriginal: helpers.withMessage(
+          'No changes detected in the course details',
+          function (value) {
+            const normalize = (obj) => {
+              return JSON.parse(JSON.stringify(obj), (key, val) => {
+                // Convert numeric strings to numbers
+                if (typeof val === 'string' && !isNaN(val)) {
+                  return Number(val);
+                }
+                return val;
+              });
+            };
+
+            const normalizedValue = normalize(value);
+            const normalizedOriginal = normalize(this.course);
+
+            return JSON.stringify(normalizedValue) !== JSON.stringify(normalizedOriginal);
+          }
+        )
+
+      },
+
       courseUpdate: {
         code: {},
-        level: {
-
-        },
+        level: {},
         courseSession: {
           validCourseSessionMonth: helpers.withMessage(
             'Course session must be in YYYYMM format with a valid month (01–12)',
@@ -331,11 +357,12 @@ export default {
     openDialog() {
       this.showCourseInput = false;
       this.dialog = true;
-      this.selectedCourseToUpdate = JSON.parse(JSON.stringify(this.course));
       //add if course is examinable
-      this.selectedCourseToUpdate.isExaminable = this.selectedCourseToUpdate.courseExam != null
+      const isExaminable = this.course.courseExam != null;
+      this.course.isExaminable = isExaminable
       this.courseValidationMessage = "";
       this.step = 0;
+      this.selectedCourseToUpdate = JSON.parse(JSON.stringify(this.course));
     },
     close() {
       this.clearForm();
@@ -363,6 +390,7 @@ export default {
         //remove courseDetails from payload
         const { courseDetails, relatedCourseDetails, ...courseWithoutCourseDetails } = this.selectedCourseToUpdate;
         const response = await this.updateStudentCourse(courseWithoutCourseDetails);
+        console.log(response)
         if (response.status == 200) {
           this.snackbarStore.showSnackbar(
             "Student course successfully updated.",
@@ -372,7 +400,7 @@ export default {
           );
         } else {
           this.snackbarStore.showSnackbar(
-            "Failed to update student course",
+            "Failed to update student course \n" + response.data,
             "danger",
             10000,
             "Student course"
@@ -394,15 +422,7 @@ export default {
     },
   },
 
-  validations() {
-    return {
-      selectedCourseToUpdate: {
-        // example rule: at least one field required
-        courseCode: { required: helpers.withMessage('Course code is required', required) },
-        // Add more validations depending on the course object structure
-      },
-    };
-  },
+
 
 };
 </script>
