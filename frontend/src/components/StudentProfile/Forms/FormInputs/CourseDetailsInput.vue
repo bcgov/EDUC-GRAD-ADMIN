@@ -8,8 +8,9 @@
       <slot name="remove-button"></slot>
 
     </v-col>
-
+    {{ fineArtsAppliedSkillsTypeCodes }}
     <v-col v-if="update" cols="2" class="d-flex flex-column justify-start">
+
 
       <strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel }} -
         {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
@@ -55,9 +56,9 @@
         </v-col>
 
         <v-col>
-          <v-select v-model="course.fineArtsAppliedSkills" :items="fineArtsAndAppliedSkillsOptions" item-title="text"
-            item-value="value" label="FA/AS" variant="outlined" density="compact" class="pa-1" clearable
-            :disabled="shouldDisableFAAS" persistent-placeholder persistent-hint />
+          <v-select v-model="course.fineArtsAppliedSkills" :items="fineArtsAndAppliedSkillsOptions"
+            item-value="fineArtsAppliedSkillsCode" item-title="label" label="FA/AS" variant="outlined" density="compact"
+            class="pa-1" clearable :disabled="shouldDisableFAAS" persistent-placeholder persistent-hint />
         </v-col>
 
         <v-col>
@@ -111,7 +112,7 @@
 </template>
 
 <script>
-import { mapState } from "pinia";
+import { mapActions, mapState } from "pinia";
 import { useAppStore } from "@/store/modules/app";
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
@@ -133,7 +134,6 @@ export default {
     if (!this.course?.credits && this.creditsAvailableForCourseSession.length > 0) {
       this.course.credits = this.creditsAvailableForCourseSession[0];
     }
-
     this.updateWarnings();
     this.v$.$touch(); // <-- triggers validation on load
   },
@@ -307,8 +307,6 @@ export default {
     }
   },
   watch: {
-
-
     'course.finalLetterGrade'(newVal) {
       if (newVal) {
         //set credits to 0 if lettergrade is set to W
@@ -354,6 +352,7 @@ export default {
   computed: {
     ...mapState(useAppStore, {
       allLetterGrades: (state) => state.letterGradeCodes,
+      fineArtsAndAppliedSkillsOptions: (state) => state.FAASTypeCodes,
     }),
     ...mapState(useStudentStore, {
       studentProgram: (state) => state.getStudentProgram,
@@ -384,20 +383,21 @@ export default {
       today.setDate(1); // Set to first of month to match format
       return sessionDate > today;
     },
-    fineArtsAndAppliedSkillsOptions() {
-      return [
-        { value: 'B', text: 'Both Fine Arts and Applied Skills' },
-        { value: 'A', text: 'Applied Skills' },
-        { value: 'F', text: 'Fine Arts' }
-      ];
-    },
+    // fineArtsAndAppliedSkillsOptions() {
+    //   return [
+    //     { value: 'B', text: 'Both Fine Arts and Applied Skills' },
+    //     { value: 'A', text: 'Applied Skills' },
+    //     { value: 'F', text: 'Fine Arts' }
+    //   ];
+    // },
     shouldDisableFAAS() {
       const level = this.course.courseDetails.courseLevel;
+      const isGrade11 = level?.startsWith('11');
 
       const isBAAorLocallyDevelopedOrCP = this.course.courseDetails.courseCategory.description === 'Board Authority Authorized' ||
         this.course.courseDetails.courseCategory.description === 'Locally Developed' ||
         this.course.courseDetails.courseCategory.description === 'Career Program'
-      const isGrade11 = level?.startsWith('11');
+
       return (!isGrade11 || !isBAAorLocallyDevelopedOrCP
       )
     },
@@ -466,10 +466,7 @@ export default {
         this.warnings.push("Course session cannot be beyond the current reporting period or prior to 198401")
 
       }
-
-
     },
-
     getGradesForPercent(percent) {
       const isGTorGTF = this.course.courseDetails.courseCode === 'GT' || this.course.courseDetails.courseCode === 'GTF';
 

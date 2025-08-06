@@ -396,13 +396,6 @@ export default {
       today.setDate(1); // Set to first of month to match format
       return sessionDate > today;
     },
-    fineArtsAndAppliedSkillsOptions() {
-      return [
-        { value: 'B', text: 'Both Fine Arts and Applied Skills' },
-        { value: 'A', text: 'Applied Skills' },
-        { value: 'F', text: 'Fine Arts' }
-      ];
-    },
 
     isBAAorLocallyDevelopedOrCP() {
       return !(
