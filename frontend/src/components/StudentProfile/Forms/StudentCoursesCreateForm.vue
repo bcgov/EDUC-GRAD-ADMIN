@@ -172,7 +172,7 @@
                   <v-row no-gutters v-for="course in coursesToCreate" :key="course.courseID + course.sessionDate"
                     class="mb-2">
                     <v-col cols="12"><strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel
-                        }} -
+                    }} -
                         {{
                           $filters.formatYYYYMMStringDate(course.courseSession)
                         }}</strong>
@@ -281,20 +281,22 @@
           <v-col cols="12" class="pb-2 m-2" v-if="courseValidationMessage"> <v-alert type="error" variant="tonal"
               border="start">{{ courseValidationMessage }}</v-alert></v-col>
         </v-row>
-        <v-row v-else justify="center">
-          <v-btn variant="outlined" color="bcGovBlue" class="mt-4 text-none" v-if="!showCourseInputs && step === 0"
-            @click="showCourseInputs = !showCourseInputs">
-            + Enter Course
-          </v-btn>
-        </v-row>
+
       </v-card-actions>
       <v-card-actions>
+
         <v-btn v-if="step === 0" @click="closeCreateStudentCourseDialog" color="error" variant="outlined"
           class="text-none">
           Cancel
         </v-btn>
+        <v-spacer />
+        <v-btn variant="outlined" color="bcGovBlue" class=" text-none" v-if="!showCourseInputs && step === 0"
+          @click="showCourseInputs = !showCourseInputs && step === 0">
+          + Enter Course
+        </v-btn>
 
-        <v-btn v-else @click="step--" color="bcGovBlue" variant="outlined" :disabled="step == 0 || validationStep">
+        <v-btn v-else-if="step > 0" @click="step--" color="bcGovBlue" variant="outlined"
+          :disabled="step == 0 || validationStep">
           Back
         </v-btn>
 

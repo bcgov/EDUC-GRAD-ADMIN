@@ -383,13 +383,6 @@ export default {
       today.setDate(1); // Set to first of month to match format
       return sessionDate > today;
     },
-    // fineArtsAndAppliedSkillsOptions() {
-    //   return [
-    //     { value: 'B', text: 'Both Fine Arts and Applied Skills' },
-    //     { value: 'A', text: 'Applied Skills' },
-    //     { value: 'F', text: 'Fine Arts' }
-    //   ];
-    // },
     shouldDisableFAAS() {
       const level = this.course.courseDetails.courseLevel;
       const isGrade11 = level?.startsWith('11');
@@ -475,15 +468,25 @@ export default {
       const sessionMonth = sessionDateStr.slice(4, 6);
       const sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
 
-      const allAllowableLetterGradesForCourse = this.allLetterGrades.filter(grade => {
-        // Exclude 'RM' if not GT or GTF
-        if (!isGTorGTF && grade.grade === 'RM') return false;
+      let allAllowableLetterGradesForCourse;
 
-        const effectiveDate = new Date(grade.effectiveDate);
-        const expiryDate = grade.expiryDate ? new Date(grade.expiryDate) : new Date(9999, 11, 31);
+      if (isGTorGTF) {
+        // Keep only grades where grade === 'GT'
+        allAllowableLetterGradesForCourse = this.allLetterGrades.filter(grade => grade.grade === 'RM');
+      } else {
+        // Standard filtering logic
+        allAllowableLetterGradesForCourse = this.allLetterGrades.filter(grade => {
+          if (grade.grade === 'RM') return false;
 
-        return sessionDate >= effectiveDate && sessionDate <= expiryDate;
-      });
+          const effectiveDate = new Date(grade.effectiveDate);
+          const expiryDate = grade.expiryDate ? new Date(grade.expiryDate) : new Date(9999, 11, 31);
+
+          return sessionDate >= effectiveDate && sessionDate <= expiryDate;
+        });
+      }
+
+
+
 
       const numPercent = Number(percent);
       if (percent === null || percent === undefined || percent === '' || isNaN(numPercent)) {
