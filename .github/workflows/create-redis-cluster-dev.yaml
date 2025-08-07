@@ -2,7 +2,7 @@ name: Build Redis Cluster - DEV
 env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
-  OPENSHIFT_NAMESPACE: ${{ vars.GRAD_NAMESPACE }}-dev
+  OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-dev
   REPLICAS: 3
 on:
   workflow_dispatch:
