@@ -11,7 +11,7 @@ const Redis = {
     const IOREDIS = require('ioredis');
     const config = require('../../config');
     const log = require('../../components/logger');
-    if('dev' === config.get('environment') || 'local' === config.get('environment')){
+    if('local' === config.get('environment')){
       redisClient = new IOREDIS({
         host: config.get('redis:host'),
         port: config.get('redis:port'),
@@ -20,7 +20,8 @@ const Redis = {
     } else {
       redisClient = new IOREDIS.Cluster([{
         host: config.get('redis:host'),
-        port: config.get('redis:port')
+        port: config.get('redis:port'),
+        password: config.get('redis:password')
       }]);
     }
     redisClient.on('error', (error) => {
