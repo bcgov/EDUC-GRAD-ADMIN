@@ -172,7 +172,7 @@
                   <v-row no-gutters v-for="course in coursesToCreate" :key="course.courseID + course.sessionDate"
                     class="mb-2">
                     <v-col cols="12"><strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel
-                    }} -
+                        }} -
                         {{
                           $filters.formatYYYYMMStringDate(course.courseSession)
                         }}</strong>
@@ -242,8 +242,8 @@
           </v-stepper-window>
         </template>
       </v-stepper>
-      <v-card-actions v-if="step == 0">
-        <v-row v-if="showCourseInputs" no-gutters class="px-3 pt-3">
+      <v-card-actions v-if="step == 0 && showCourseInputs">
+        <v-row no-gutters class="px-3 pt-3">
           <v-col cols="1" class="pr-1">
             Select Course
           </v-col>
@@ -284,12 +284,11 @@
 
       </v-card-actions>
       <v-card-actions>
-
         <v-btn v-if="step === 0" @click="closeCreateStudentCourseDialog" color="error" variant="outlined"
           class="text-none">
           Cancel
         </v-btn>
-        <v-spacer />
+        <v-spacer v-if="step === 0" />
         <v-btn variant="outlined" color="bcGovBlue" class=" text-none" v-if="!showCourseInputs && step === 0"
           @click="showCourseInputs = !showCourseInputs && step === 0">
           + Enter Course
