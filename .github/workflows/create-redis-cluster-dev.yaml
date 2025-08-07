@@ -3,7 +3,7 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-dev
-  REPLICAS: 6
+  REPLICAS: 3
 on:
   workflow_dispatch:
 jobs:
@@ -36,7 +36,7 @@ jobs:
       - name: Wait for Readiness
         run: |
           echo "Waiting for pods to be ready..."
-          oc wait pod -l app=redis-ha --for=condition=Ready --timeout=180s
+          oc rollout status statefulset/redis-ha --timeout=300s
       - name: Create Cluster
         run: |
           echo "Retrieve redis password..."
