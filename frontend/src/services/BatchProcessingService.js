@@ -305,15 +305,20 @@ export default {
   // getBatchJobTypes() { //codes
   //   return ApiService.apiAxios.get("/api/v1/batch/batchjobtype");
   // },
-  rerunBatchSchoolReports(bid) {
+  rerunBatchSchoolReports(batchID) {
     return ApiService.apiAxios.get(
-      "/api/v1/batch/regenerate/school-report/" + bid
+      //"/api/v1/batch/regenerate/school-report/" + bid
+      `/api/batch/history/${batchID}/schoolReport/rerun`
     );
   },
-  rerunBatch(bid) {
-    return ApiService.apiAxios.get("/api/v1/batch/rerun/all/" + bid);
+  rerunBatch(batchID) {
+    //return ApiService.apiAxios.get("/api/v1/batch/rerun/all/" + bid);
+    return ApiService.apiAxios.get(`/api/batch//history/${batchID}/rerun`);
   },
-  rerunBatchStudentErrors(bid) {
-    return ApiService.apiAxios.get("/api/v1/batch/rerun/failed/" + bid);
+  rerunBatchStudentErrors(batchID) {
+    //return ApiService.apiAxios.get("/api/v1/batch/rerun/failed/" + bid);
+    return ApiService.apiAxios.get(
+      `/api/batch//history/${batchID}/failed/rerun`
+    );
   },
 };
