@@ -118,15 +118,6 @@ export default {
         if (newID && newID !== this.localCourse.courseID) {
           this.fetchCourseByID(newID);
         } else if (!newID) {
-          // Clear localCourse if courseID cleared
-          // this.localCourse = {
-          //   courseID: '',
-          //   courseCode: "",
-          //   courseLevel: "",
-          //   courseName: "",
-          //   startDate: "",
-          //   endDate: "",
-          // };
           this.notFound = false;
         }
       },
@@ -158,7 +149,11 @@ export default {
       }
     },
     async fetchCourse() {
-      const { courseCode, courseLevel } = this.localCourse;
+      let { courseCode, courseLevel } = this.localCourse;
+
+      // Normalize to uppercase
+      courseCode = courseCode?.toUpperCase();
+      courseLevel = courseLevel?.toUpperCase();
 
       if (!courseCode) {
         this.localCourse = { courseCode, courseLevel };

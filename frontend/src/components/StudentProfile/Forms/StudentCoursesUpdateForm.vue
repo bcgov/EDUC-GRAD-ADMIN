@@ -391,10 +391,9 @@ export default {
         //remove courseDetails from payload
         const { courseDetails, relatedCourseDetails, ...courseWithoutCourseDetails } = this.selectedCourseToUpdate;
         const response = await this.updateStudentCourse(courseWithoutCourseDetails);
-        console.log(response)
         if (response.status == 200) {
           this.snackbarStore.showSnackbar(
-            "Student course successfully updated.",
+            `${courseDetails.courseCode} ${courseDetails.courseLevel} - ${courseWithoutCourseDetails.courseSession} successfully updated.`,
             "success",
             10000,
             "Student course"
