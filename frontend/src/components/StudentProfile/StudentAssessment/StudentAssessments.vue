@@ -107,40 +107,73 @@
         </tr>
       </template>
       <template v-slot:item.edit="{ item }">
+        <v-tooltip v-if="!canDeleteStudentAssessment(item)" text="You do not have permission to edit this provincial specialty code">
+          <template v-slot:activator="{ props }">
+            <div v-bind="props">
+              <v-btn
+                  variant="text"
+                  icon="mdi-pencil"
+                  :disabled="!canDeleteStudentAssessment(item)"
+                  @click="remove(item)">
+              </v-btn>
+            </div>
+          </template>
+        </v-tooltip>
         <v-btn
+            v-else
             color="success"
             variant="text"
-            icon
+            icon="mdi-pencil"
             @click="edit(item)"
         >
-          <v-icon>mdi-pencil</v-icon>
         </v-btn>
       </template>
       <template v-slot:item.delete="{ item }">
-        <v-btn variant="text" icon @click="remove(item)">
-          <v-icon
-              color="error"
-              density="compact"
-              variant="text"
-          >mdi-delete-forever</v-icon>
+        <v-tooltip v-if="!canDeleteStudentAssessment(item)" text="You do not have permission to delete this provincial specialty code">
+          <template v-slot:activator="{ props }">
+            <div v-bind="props">
+              <v-btn
+                  variant="text"
+                  color="error"
+                  icon="mdi-delete-forever"
+                  :disabled="!canDeleteStudentAssessment(item)"
+                  @click="remove(item)">
+              </v-btn>
+            </div>
+          </template>
+        </v-tooltip>
+        <v-btn
+            v-else
+            variant="text"
+            color="error"
+            icon="mdi-delete-forever"
+            :disabled="!canDeleteStudentAssessment(item)"
+            @click="remove(item)">
         </v-btn>
       </template>
     </v-data-table>
     <EditStudentAssessment
         v-model="showEditDialog"
-        :student-id="studentId"
         :assessment-item="selectedAssessment"
         :assessment-sessions="assessmentSessions"
-        :is-loading-sessions="isLoadingSessions"
         @saved="loadStudentAssessments"
     />
-    <v-dialog v-model="showDeleteDialog" max-width="400">
+    <v-dialog v-model="showDeleteDialog" max-width="600">
       <v-card>
         <v-card-title>Confirm Delete</v-card-title>
         <v-card-text>
+          <v-alert
+              v-if="studentToDelete?.provincialSpecialCaseCode && canDeleteStudentAssessment(studentToDelete)"
+              type="warning"
+              border="start"
+              variant="tonal"
+              density="compact"
+          >
+            This student assessment has the provincial special case code <i>{{ this.getProvincialSpecialCaseDisplayName(studentToDelete?.provincialSpecialCaseCode) }}</i>
+          </v-alert>
           Are you sure you want to delete this assessment?
           <div v-if="studentToDelete" class="mt-2 text-body-2 text-medium-emphasis">
-            Assessment: {{ studentToDelete.assessmentTypeCode }} - {{ studentToDelete.sessionDate}}
+            Assessment: {{ studentToDelete.assessmentTypeCode }} - {{ studentToDelete.sessionDate }}
           </div>
         </v-card-text>
         <v-card-actions>
@@ -159,7 +192,8 @@
               density="default"
               text="Delete"
               :loading="isDeleting"
-              @click="confirmDelete"/>
+              :disabled="!canDeleteStudentAssessment"
+              @click="confirmDelete(studentToDelete?.provincialSpecialCaseCode != null && canDeleteStudentAssessment(studentToDelete))"/>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -175,11 +209,9 @@ import {toRaw} from "vue";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
 import EditStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/EditStudentAssessment.vue";
 import AddStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/AddStudentAssessment.vue";
-import StudentCoursesDeleteForm from "@/components/StudentProfile/Forms/StudentCoursesDeleteForm.vue";
-import StudentCoursesCreateForm from "@/components/StudentProfile/Forms/StudentCoursesCreateForm.vue";
 export default {
   name: "StudentAssessments",
-  components: {StudentCoursesCreateForm, StudentCoursesDeleteForm, AddStudentAssessment, EditStudentAssessment},
+  components: { AddStudentAssessment, EditStudentAssessment},
   setup() {
     const studentStore = useStudentStore();
     const appStore = useAppStore();
@@ -195,7 +227,6 @@ export default {
   computed: {
     ...mapState(useAppStore, {
       getSchoolsList: "getSchoolsList",
-      assessmentTypeCodes: "assessmentTypeCodes",
       getStudentAssessmentProvincialSpecialCaseCodes: "getStudentAssessmentProvincialSpecialCaseCodes",
       assessmentTypeCodesMap: "assessmentTypeCodesMap"}),
     ...mapState(useStudentStore, { studentAssessments: "studentAssessments" }),
@@ -271,6 +302,20 @@ export default {
         baseFields.push({title: 'Edit', value: 'edit'}, {title: 'Delete', value: 'delete'});
       }
       return baseFields;
+    },
+    canDeleteStudentAssessment() {
+      return (studentAssessment) => {
+        if(!studentAssessment?.provincialSpecialCaseCode) {
+          return true;
+        }
+        const assessmentAllowedCodes = ['A', 'E', 'Q'];
+        const gradAllowedCode = 'E';
+        if (this.hasPermissions('STUDENT', 'editAllSpecialCases')) {
+          return assessmentAllowedCodes.includes(studentAssessment?.provincialSpecialCaseCode);
+        } else {
+          return studentAssessment?.provincialSpecialCaseCode === gradAllowedCode;
+        }
+      }
     }
   },
   async mounted() {
@@ -283,15 +328,9 @@ export default {
       showEditDialog: false,
       selectedAssessment: null,
       assessmentSessions: [],
-      assessmentsInSession: [],
-      dialog: false,
-      detailsShowing: false,
-      hasError: false,
-      updateStudentAssessment: null,
       showDeleteDialog: false,
       studentToDelete: null,
       isDeleting: false,
-      isSaving: false,
       isLoadingSessions: true,
       isLoadingAssessments: false,
     };
@@ -301,12 +340,12 @@ export default {
       this.studentToDelete = assessmentStudent;
       this.showDeleteDialog = true;
     },
-    async confirmDelete() {
+    async confirmDelete(allowRuleOverride) {
       if (!this.studentToDelete) return;
 
       this.isDeleting = true;
       try {
-        await StudentAssessmentService.deleteAssessmentStudent(this.studentToDelete.assessmentStudentID);
+        await StudentAssessmentService.deleteAssessmentStudent(this.studentToDelete.assessmentStudentID, allowRuleOverride);
         this.showDeleteDialog = false;
         this.studentToDelete = null;
 
@@ -319,8 +358,9 @@ export default {
       } catch (error) {
         console.log(error.response)
         if(error?.response?.status === 409) {
+          let message = error?.response?.data?.message ? error.response.data.message : "Assessment student cannot be deleted. It has a proficiency score, or session is closed."
           this.snackbarStore.showSnackbar(
-              "Assessment student cannot be deleted. It has a proficiency score, or session is closed.",
+              message,
               "error",
               5000
           );
@@ -398,7 +438,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-
-</style>
