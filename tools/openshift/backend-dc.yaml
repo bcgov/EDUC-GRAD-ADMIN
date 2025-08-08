@@ -43,8 +43,6 @@ objects:
                     name: grad-admin-client-secret
                 - secretRef:
                     name: grad-admin-service-secret
-                - secretRef:
-                    name: redis-ha
               resources:
                 requests:
                   cpu: "${MIN_CPU}"

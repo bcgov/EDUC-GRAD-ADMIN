@@ -39,10 +39,8 @@ jobs:
           oc rollout status statefulset/redis-ha --timeout=300s
       - name: Create Cluster
         run: |
-          echo "Retrieve redis password..."
-          REDIS_PASSWORD=$(oc -o json get secret redis-ha | sed -n 's|.*"REDIS_PASSWORD": "\([^"]*\)".*|\1|p' | base64 --decode)
           echo "Creating Cluster..."
-          oc exec -i redis-ha-0 -- redis-cli --cluster create --cluster-replicas 0 $(oc get pods -l app=redis-ha -o jsonpath='{range.items[*]}{.status.podIP}:6379 {end}') --cluster-yes -a $REDIS_PASSWORD
+          oc exec -i redis-ha-0 -- redis-cli --cluster create --cluster-replicas 0 $(oc get pods -l app=redis-ha -o jsonpath='{range.items[*]}{.status.podIP}:6379 {end}') --cluster-yes
           echo "Success!"
       - name: Restart admin backend
         run: |
