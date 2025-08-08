@@ -21,7 +21,6 @@ const Redis = {
       redisClient = new IOREDIS.Cluster([{
         host: config.get('redis:host'),
         port: config.get('redis:port'),
-        password: config.get('redis:password')
       }]);
     }
     redisClient.on('error', (error) => {
