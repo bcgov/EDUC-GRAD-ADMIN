@@ -156,10 +156,10 @@ export default {
       endYear = currentYear;
     }
 
-    const minSession = `${startYear}09`;
-    const maxSession = `${endYear}09`;
+    this.minSession = `${startYear}09`;
+    this.maxSession = `${endYear}09`;
 
-    if (this.course.courseSession < 198401 || (this.course.courseSession < minSession || this.course.courseSession > maxSession)) {
+    if (this.course.courseSession < 198401 || (this.course.courseSession < this.minSession || this.course.courseSession > this.maxSession)) {
       this.warnings.push("Course session cannot be beyond the current reporting period or prior to 198401")
 
     }
@@ -187,6 +187,8 @@ export default {
     return {
       warnings: [],  // array of warnings
       examSpecialCaseCodes: [],
+      minSession: null,
+      maxSession: null,
     }
   },
   validations() {
@@ -197,7 +199,7 @@ export default {
             isValidPercent: helpers.withMessage(
               'School % must be a valid number between 0 and 100',
               (value) => {
-                if (value === '' || value === null || value === undefined) return true; // allow empty if needed
+                if (this.create && (value === '' || value === null || value === undefined)) return false; // Mandatory on create
 
                 const strVal = String(value).trim();
 
@@ -216,7 +218,7 @@ export default {
             isValidPercent: helpers.withMessage(
               'Best School % must be a valid number between 0 and 100',
               (value) => {
-                if (value === '' || value === null || value === undefined) return true; // allow empty if needed
+                if (this.create && (value === '' || value === null || value === undefined)) return false; // Mandatory on create
 
                 const strVal = String(value).trim();
 
@@ -291,11 +293,21 @@ export default {
         },
 
         finalLetterGrade: {
+          isValid: helpers.withMessage(
+            'Course session is in the past. Enter a final mark.',
+            function (value) {
+              if (this.course.courseSession < this.maxSession && !this.course.finalPercent && (value === '' || value === null || value === undefined)) {
+                return false;
+              }
+              return true;
+            }
+          ),
         },
         credits: {
           isCreditValue: helpers.withMessage(
             'Credits must be 0, 1, 2, 3, or 4',
             function (value) {
+              if (this.update && this.creditsAvailableForCourseSession.length > 0 && (value === '' || value === null || value === undefined)) return false; // Mandatory on update
               return (
                 value === '' ||
                 value === null ||
@@ -384,13 +396,6 @@ export default {
       today.setDate(1); // Set to first of month to match format
       return sessionDate > today;
     },
-    fineArtsAndAppliedSkillsOptions() {
-      return [
-        { value: 'B', text: 'Both Fine Arts and Applied Skills' },
-        { value: 'A', text: 'Fine Arts' },
-        { value: 'F', text: 'Applied Skills' }
-      ];
-    },
 
     isBAAorLocallyDevelopedOrCP() {
       return !(
@@ -405,19 +410,23 @@ export default {
 
       const sessionYear = this.course.courseSession.slice(0, 4);
       const sessionMonth = this.course.courseSession.slice(4, 6);
-      const sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
-
+      let sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
+      const courseEndDate = new Date(this.course.courseDetails.endDate)
+      const courseCompletionEndDate = new Date(this.course.courseDetails.completionEndDate)
+      if (courseEndDate && courseCompletionEndDate && sessionDate > courseEndDate && sessionDate < courseCompletionEndDate) {
+        sessionDate = courseEndDate
+      }
       return this.course.courseDetails.courseAllowableCredit
         .filter(credit => {
           const start = new Date(credit.startDate);
           const end = credit.endDate ? new Date(credit.endDate) : new Date('9999-12-31');
+
           return sessionDate >= start && sessionDate <= end;
         })
         .map(credit => Number(credit.creditValue))
         .sort((a, b) => b - a)
         .map(value => value.toString());
     },
-
     filteredInterimLetterGrades() {
       return this.getGradesForPercent(this.course.interimPercent);
     },
@@ -468,13 +477,14 @@ export default {
       });
 
       const numPercent = Number(percent);
-      if (!percent || isNaN(numPercent)) {
+      if (percent === null || percent === undefined || percent === '' || isNaN(numPercent)) {
         return allAllowableLetterGradesForCourse.map((grade) => grade.grade);
       }
 
       return allAllowableLetterGradesForCourse
         .filter((grade) =>
-          grade.percentRangeLow <= numPercent && numPercent <= grade.percentRangeHigh
+          grade.percentRangeLow !== null &&
+          grade.percentRangeHigh !== null && grade.percentRangeLow <= numPercent && numPercent <= grade.percentRangeHigh
         )
         .map((grade) => grade.grade);
     },

@@ -1,7 +1,13 @@
 const passport = require("passport");
 const express = require("express");
 const router = express.Router();
-
+const validate = require('../components/validator');
+const {
+  postStudentCourseSchema,
+  putStudentCourseSchema,
+  deleteStudentCourseSchema
+} = require('../components/validations/student-course');
+const { postAdoptStudentSchema } = require('../components/validations/grad-student');
 const auth = require("../components/auth");
 const roles = require("../components/roles");
 const {
@@ -54,13 +60,14 @@ router.get(
   "/:studentID/courses",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
-  getStudentCourseByStudentID
+  getStudentCourseByStudentID,
 );
 
 router.put(
   "/:studentID/courses",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
+  validate(putStudentCourseSchema),
   putStudentCoursesByStudentID
 );
 
@@ -68,6 +75,7 @@ router.post(
   "/:studentID/courses",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
+  validate(postStudentCourseSchema),
   postStudentCoursesByStudentID
 );
 
@@ -75,6 +83,7 @@ router.delete(
   "/:studentID/courses",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
+  validate(deleteStudentCourseSchema),
   deleteStudentCoursesByStudentID
 );
 
@@ -282,9 +291,10 @@ router.get(
 
 // STUDENT ADOPT
 router.post(
-  "/adopt",
+  "/adopt/:studentID",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
+  validate(postAdoptStudentSchema),
   postAdoptPENStudent
 );
 
