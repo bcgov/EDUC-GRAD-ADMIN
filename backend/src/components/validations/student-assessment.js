@@ -18,6 +18,7 @@ const putStudentAssessmentSchema = object({
     proficiencyScore: number().notRequired(),
     assessmentFormID: uuidGeneric().notRequired(),
     adaptedAssessmentCode: string().max(10).notRequired(),
+    studentStatus: string().max(10).notRequired(),
     irtScore: string().max(7).notRequired(),
     provincialSpecialCaseCode: string().max(1).notRequired(),
     numberOfAttempts: number().notRequired(),
@@ -37,15 +38,20 @@ const postStudentAssessmentSchema = object({
     assessmentID:uuidGeneric().required(),
     assessmentCenterSchoolID: uuidGeneric().notRequired(),
     provincialSpecialCaseCode: string().max(1).notRequired(),
+    schoolAtWriteSchoolID: uuidGeneric().notRequired(),
     studentID: uuidGeneric().required(),
   }).concat(baseRequestSchema).noUnknown(),
-  query: object().noUnknown(),
+  query: object({
+    allowRuleOverride: string().oneOf(['true', 'false']).optional()
+  }).noUnknown(),
   params: object().noUnknown(),
 }).noUnknown();
 
 const deleteStudentAssessmentSchema = object({
   body: object().noUnknown(),
-  query: object().noUnknown(),
+  query: object({
+    allowRuleOverride: string().oneOf(['true', 'false']).optional()
+  }).noUnknown(),
   params: object({
     studentAssessmentId: uuidGeneric().required()
   }).noUnknown()
