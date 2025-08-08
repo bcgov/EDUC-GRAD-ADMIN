@@ -27,6 +27,7 @@ const {
   getReportTypeCodes,
   getDocumentStatusCodes,
   getDigitalSignatureBlockTypeCodes,
+  getBatchJobTypes,
 } = require("../components/codes");
 
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
@@ -190,6 +191,13 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
   getDigitalSignatureBlockTypeCodes
+);
+
+router.get(
+  "/batchJobTypes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getBatchJobTypes
 );
 
 module.exports = router;

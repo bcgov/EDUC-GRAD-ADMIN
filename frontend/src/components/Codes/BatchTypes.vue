@@ -20,7 +20,7 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
-import BatchProcessingService from "@/services/BatchProcessingService.js";
+import CodesService from "@/services/CodesService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "BatchTypes",
@@ -28,7 +28,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    BatchProcessingService.getBatchJobTypes()
+    CodesService.getBatchJobTypes()
       .then((response) => {
         this.batchTypes = response.data;
       })

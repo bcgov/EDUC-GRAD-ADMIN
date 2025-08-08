@@ -105,7 +105,6 @@ import { mapState } from "pinia";
 import { useAuthStore } from "../store/modules/auth";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import CodesService from "@/services/CodesService.js";
-import BatchProcessingService from "@/services/BatchProcessingService.js";
 
 export default {
   name: "codes",
@@ -382,7 +381,7 @@ export default {
         });
     },
     getBatchJobTypes() {
-      BatchProcessingService.getBatchJobTypes()
+      CodesService.getBatchJobTypes()
         .then((response) => {
           this.batchTypes = response.data;
         })

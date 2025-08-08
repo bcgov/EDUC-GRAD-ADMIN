@@ -111,12 +111,13 @@ export const useAppStore = defineStore("app", {
 
       return categoryCode?.legacyCode + " - " + categoryCode?.label;
     },
-    getStudentAssessmentProvincialSpecialCaseCodes: (state) => state.provincialSpecialCaseCodes,
+    getStudentAssessmentProvincialSpecialCaseCodes: (state) =>
+      state.provincialSpecialCaseCodes,
     getProvincialSpecialCaseCode: (state) => {
       return (code) =>
-          state.provincialSpecialCaseCodes.find(
-              (specialCase) => code === specialCase.provincialSpecialCaseCode
-          );
+        state.provincialSpecialCaseCodes.find(
+          (specialCase) => code === specialCase.provincialSpecialCaseCode
+        );
     },
     getFacilityCodes: (state) => state.instituteFacilityCodes,
     getFacilityCode: (state) => {
@@ -211,7 +212,7 @@ export const useAppStore = defineStore("app", {
     },
     async getBatchJobTypeCodes(getNewData = true) {
       if (getNewData || !sharedMethods.dataArrayExists(this.batchTypeCodes)) {
-        let response = await BatchProcessingService.getBatchJobTypes();
+        let response = await CodesService.getBatchJobTypes();
         await this.setBatchJobTypes(response.data);
       }
     },

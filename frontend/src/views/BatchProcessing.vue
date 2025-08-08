@@ -186,7 +186,6 @@
                   <v-tooltip max-width="500">
                     {{ item.description }}
                     <template v-slot:activator="{ props }">
-                      
                       <v-icon v-bind="props" color="bcGovBlue" small size="18"
                         >mdi-information-outline</v-icon
                       >
@@ -254,7 +253,7 @@
 </template>
 
 <script>
-import BatchProcessingService from "@/services/BatchProcessingService.js";
+import CodesService from "@/services/CodesService.js";
 import DistributionService from "@/services/DistributionService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 import ScheduledBatchRuns from "@/components/Batch/ScheduledBatchRuns.vue";
@@ -421,7 +420,7 @@ export default {
   },
   created() {
     this.updateAllDashboards();
-    BatchProcessingService.getBatchJobTypes()
+    CodesService.getBatchJobTypes()
       .then((response) => {
         this.batchTypes = response.data;
         this.batchRunGradOptions = this.filterBatchTypes(this.batchTypes, [

@@ -4,7 +4,8 @@ export default {
   getDashboardInfo(params) {
     const encodedSortParams = encodeURIComponent(JSON.stringify(params.sort));
     return ApiService.apiAxios.get(
-      `/api/v2/batch/dashboard?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&sort=${encodedSortParams}`
+      //`/api/v2/batch/dashboard?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&sort=${encodedSortParams}`
+      `/api/batch/history?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&sort=${encodedSortParams}`
     );
   },
   runREGALG(request, cronTime = "") {
@@ -17,7 +18,11 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return;
     } else {
-      return ApiService.apiAxios.post("/api/v1/batch/specialrun", request);
+      //return ApiService.apiAxios.post("/api/v1/batch/specialrun", request);
+      return ApiService.apiAxios.post(
+        "/api/batch/run/graduation/regularAlgorithm",
+        request
+      );
     }
   },
   runTVRRUN(request, cronTime = "") {
@@ -31,7 +36,8 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return;
     } else {
-      return ApiService.apiAxios.post("/api/v1/batch/tvrspecialrun", request);
+      //return ApiService.apiAxios.post("/api/v1/batch/tvrspecialrun", request);
+      return ApiService.apiAxios.post("/api/batch/run/graduation/TVR", request);
     }
   },
   runDISTRUNUSER(request, credentialType, cronTime = "") {
@@ -62,28 +68,34 @@ export default {
       return;
     } else {
       if (credentialType == "OT") {
+        ///api/batch/userRequest/distribution/originalTranscript
         return ApiService.apiAxios.post(
-          "/api/v1/batch/userrequestdisrun/OT",
+          //"/api/v1/batch/userrequestdisrun/OT",
+          "/api/batch/run/userRequest/distribution/originalTranscript",
           request
         );
       } else if (credentialType == "OC") {
         return ApiService.apiAxios.post(
-          "/api/v1/batch/userrequestdisrun/OC",
+          //"/api/v1/batch/userrequestdisrun/OC",
+          "/api/batch/run/userRequest/distribution/originalCertificate",
           request
         );
       } else if (credentialType == "RC") {
         return ApiService.apiAxios.post(
-          "/api/v1/batch/userrequestdisrun/RC",
+          //"/api/v1/batch/userrequestdisrun/RC",
+          "/api/batch/run/userRequest/distribution/reprintCertificate",
           request
         );
       } else if (credentialType == "Blank transcript print") {
         return ApiService.apiAxios.post(
-          "/api/v1/batch/userrequestblankdisrun/OT",
+          //"/api/v1/batch/userrequestblankdisrun/OT",
+          "/api/batch/run/userRequest/distribution/blankTranscript",
           request
         );
       } else if (credentialType == "Blank certificate print") {
         return ApiService.apiAxios.post(
-          "/api/v1/batch/userrequestblankdisrun/OC",
+          //"/api/v1/batch/userrequestblankdisrun/OC",
+          "/api/batch/run/userRequest/distribution/blankCertificate",
           request
         );
       }
@@ -98,7 +110,8 @@ export default {
       scheduledRequest.payload = request;
       this.addScheduledJob(scheduledRequest);
     } else {
-      return ApiService.apiAxios.get("/api/v1/batch/executedisrunbatchjob");
+      //return ApiService.apiAxios.get("/api/v1/batch/executedisrunbatchjob");
+      return ApiService.apiAxios.get("/api/batch/run/graduation/distribution");
     }
   },
   runSCHL_RPT_REGEN(request, cronTime = "") {
@@ -111,13 +124,11 @@ export default {
       this.addScheduledJob(scheduledRequest);
     } else {
       return ApiService.apiAxios.post(
-        `/api/v1/batch/regenerate/school-report`,
+        //`/api/v1/batch/regenerate/school-report`,
+        `/api/batch/run/regeneration/schoolReport`,
         request
       );
     }
-  },
-  runDISTRUN_SUPP() {
-    return ApiService.apiAxios.get("/api/v1/batch/executesuppdisrunbatchjob");
   },
   runNONGRADRUN(request, cronTime = "") {
     if (cronTime) {
@@ -129,7 +140,8 @@ export default {
       this.addScheduledJob(scheduledRequest, id);
     } else {
       return ApiService.apiAxios.post(
-        "/api/v1/batch/executenongraddisrunbatchjob",
+        //"/api/v1/batch/executenongraddisrunbatchjob",
+        "/api/batch/run/yearEnd/distribution/nonGraduate",
         request
       );
     }
@@ -145,24 +157,26 @@ export default {
       return;
     } else {
       return ApiService.apiAxios.post(
-        "/api/v1/batch/executeyearlydisrunbatchjob",
+        //"/api/v1/batch/executeyearlydisrunbatchjob",
+        "/api/batch/run/yearEnd/distribution/credentials",
         request
       );
     }
   },
-  runBlankDISTRUNUSERUserRequest(request, credentialType) {
-    return ApiService.apiAxios.post(
-      "/api/v1/batch/userrequestblankdisrun/" + credentialType,
-      request
-    );
-  },
-  runDISTRUN_SUPP() {
-    return ApiService.apiAxios.get("/api/v1/batch/executesuppdisrunbatchjob");
-  },
+  // runBlankDISTRUNUSERUserRequest(request, credentialType) {
+  //   return ApiService.apiAxios.post(
+  //     "/api/v1/batch/userrequestblankdisrun/" + credentialType,
+  //     request
+  //   );
+  // },
+  // runDISTRUN_SUPP() {
+  //   return ApiService.apiAxios.get("/api/v1/batch/executesuppdisrunbatchjob");
+  // },
   runCERTREGEN_ALL() {
     //To run regenerate all Certificates, you must run a get
 
-    return ApiService.apiAxios.get("/api/v1/batch/executecertregenbatchjob");
+    //return ApiService.apiAxios.get("/api/v1/batch/executecertregenbatchjob");
+    return ApiService.apiAxios.get("/api/batch/run/regeneration/certificate");
   },
   runCERTREGEN(request, cronTime = "") {
     if (
@@ -183,7 +197,7 @@ export default {
       return;
     } else {
       return ApiService.apiAxios.post(
-        "/api/v1/batch/executecertregenbatchjob",
+        "/api/batch/run/regeneration/certificate",
         request
       );
     }
@@ -200,7 +214,8 @@ export default {
       this.addScheduledJob(scheduledRequest);
     } else {
       return ApiService.apiAxios.post(
-        "/api/v1/batch/report/student/delete",
+        //"/api/v1/batch/report/student/delete",
+        "/api/batch/run/yearEnd/TVRDelete",
         request
       );
     }
@@ -215,7 +230,11 @@ export default {
       this.addScheduledJob(scheduledRequest);
       return;
     } else {
-      return ApiService.apiAxios.post("/api/v1/batch/student/archive", request);
+      //return ApiService.apiAxios.post("/api/v1/batch/student/archive", request);
+      return ApiService.apiAxios.post(
+        "/api/batch/run/yearEnd/ArchiveStudents",
+        request
+      );
     }
   },
   runArchiveSchoolReports(request, cronTime = "") {
@@ -229,7 +248,8 @@ export default {
       return;
     } else {
       return ApiService.apiAxios.post(
-        "/api/v1/batch/report/school/archive",
+        //"/api/v1/batch/report/school/archive",
+        "/api/batch/run/yearEnd/ArchiveSchoolReports",
         request
       );
     }
@@ -245,42 +265,46 @@ export default {
       return;
     } else {
       return ApiService.apiAxios.post(
-        "/api/v1/batch/executepsireportbatchjob/" + transmissionType,
+        //"/api/v1/batch/executepsireportbatchjob/" + transmissionType,
+        `/api/batch/run/yearEnd/PSI/${transmissionType}`,
         request
       );
     }
   },
   getBatchErrors(id, page) {
     return ApiService.apiAxios.get(
-      "/api/v1/batch/dashboard/errors/" + id + "?pageNumber=" + page
+      //"/api/v1/batch/dashboard/errors/" + id + "?pageNumber=" + page
+      "/api/batch/history/errors/" + id + "?pageNumber=" + page
     );
   },
-  getBatchSummary() {
-    return ApiService.apiAxios.get("/api/v1/batch/dashboard/summary");
-  },
+  // getBatchSummary() {
+  //   return ApiService.apiAxios.get("/api/v1/batch/dashboard/summary");
+  // },
   getScheduledBatchJobs() {
-    return ApiService.apiAxios.get("/api/v1/batch/schedule/listjobs");
+    //return ApiService.apiAxios.get("/api/v1/batch/schedule/listjobs");
+    return ApiService.apiAxios.get("/api/batch/scheduledJobs");
   },
   addScheduledJob(scheduledJob) {
     return ApiService.apiAxios.post(
-      "/api/v1/batch/schedule/add?batchJobTypeCode=" + scheduledJob.jobName,
+      //"/api/v1/batch/schedule/add?batchJobTypeCode=" + scheduledJob.jobName,
+      "/api/batch/scheduledJobs/" + scheduledJob.jobName,
       scheduledJob
     );
   },
   removeScheduledJobs(id) {
-    return ApiService.apiAxios.delete("/api/v1/batch/schedule/remove/" + id);
+    //return ApiService.apiAxios.delete("/api/v1/batch/schedule/remove/" + id);
+    return ApiService.apiAxios.delete("/api/batch/scheduledJobs/" + id);
   },
   batchProcessingRoutines() {
-    return ApiService.apiAxios.get("/api/v1/batch/processing/all");
+    //return ApiService.apiAxios.get("/api/v1/batch/processing/all");
+    return ApiService.apiAxios.get("/api/batch/routines");
   },
   batchProcessingToggleRoutine(jobType) {
-    return ApiService.apiAxios.put(
-      "/api/v1/batch/processing/toggle/" + jobType
-    );
+    return ApiService.apiAxios.put("/api/batch/routines/toggle/" + jobType);
   },
-  getBatchJobTypes() {
-    return ApiService.apiAxios.get("/api/v1/batch/batchjobtype");
-  },
+  // getBatchJobTypes() { //codes
+  //   return ApiService.apiAxios.get("/api/v1/batch/batchjobtype");
+  // },
   rerunBatchSchoolReports(bid) {
     return ApiService.apiAxios.get(
       "/api/v1/batch/regenerate/school-report/" + bid

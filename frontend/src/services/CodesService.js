@@ -72,4 +72,7 @@ export default {
   getDigitalSignatureBlockTypeCodes() {
     return ApiService.apiAxios.get("/api/codes/signatureBlockTypeCodes");
   },
+  getBatchJobTypes() {
+    return ApiService.apiAxios.get("/api/codes/batchJobTypes");
+  },
 };

@@ -240,7 +240,7 @@ app.use(/(\/api)?/, apiRouter);
 
 //:version routes
 apiRouter.use("/auth", authRouter);
-apiRouter.use("/:version/batch", addVersionToReq, batchRouter);
+apiRouter.use("/batch", batchRouter);
 apiRouter.use("/:version/distribute", addVersionToReq, distributionRouter);
 apiRouter.use("/program", programsRouter);
 apiRouter.use("/course", coursesRouter);
