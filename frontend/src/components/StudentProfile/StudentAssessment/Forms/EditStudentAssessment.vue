@@ -34,58 +34,56 @@
                   v-for="(issue, i) in updateStudentAssessment.assessmentStudentValidationIssues"
                   :key="i"
                   type="error"
-                  dense
-                  outlined
-                  class="mb-2"
+                  border="start"
+                  variant="tonal"
+                  density="compact"
               >
                 {{ issue.validationMessage }}
               </v-alert>
             </v-col>
           </v-row>
         </v-expand-transition>
+        <v-row class="pl-2">
+            <v-col class="py-0"><strong>Session:</strong></v-col>
+            <v-col class="py-0">
+              {{ sessionDisplayValue }}
+            </v-col>
+        </v-row>
+        <v-row class="pl-2">
+            <v-col class="py-0"><strong>Assessment Code:</strong></v-col>
+            <v-col class="pt-0">
+              {{ updateStudentAssessment.assessmentTypeCode }}
+            </v-col>
+        </v-row>
         <v-row class="mt-n2">
           <v-col class="pb-0">
-            <v-autocomplete
+            <v-select
                 v-model="updateStudentAssessment.provincialSpecialCaseCode"
                 label="Provincial Special Case Code"
-                :items="provincialSpecialCaseCodes"
+                :items="provincialSpecialCaseDropdown.displayItems()"
                 item-title="label"
                 item-value="provincialSpecialCaseCode"
-                clearable
-            />
-            <v-autocomplete
-                v-model="updateStudentAssessment.assessmentCenterSchoolID"
-                label="Assessment Center"
-                :items="getSchoolsList"
-                :item-title="schoolTitle"
-                item-value="schoolId"
-                :rules="requiredRules"
-                clearable
+                :clearable="provincialSpecialCaseDropdown.canClear()"
             >
-              <template v-slot:label="label">
-                {{ label.label }}
-              </template>
-
-              <template v-slot:append-inner>
-                <OpenStatusBadge
-                    :compact="false"
-                    :openedDateString="getSchoolsList?.find(item => item.schoolId === updateStudentAssessment.assessmentCenterSchoolID)?.openedDate"
-                    :closedDateString="getSchoolsList?.find(item => item.schoolId === updateStudentAssessment.assessmentCenterSchoolID)?.closedDate"
-                />
-
-              </template>
-
               <template v-slot:item="{ props, item }">
-                <v-list-item v-bind="props" :key="item.value">
-                  <template v-slot:append>
-                    <OpenStatusBadge
-                        :openedDateString="item.raw.openedDate"
-                        :closedDateString="item.raw.closedDate"
-                    />
-                  </template>
+                <v-list-item
+                    v-bind="props"
+                    :disabled="provincialSpecialCaseDropdown.isOptionDisabled(item.raw)"
+                    :class="{ 'text-disabled': provincialSpecialCaseDropdown.isOptionDisabled(item.raw) }"
+                >
                 </v-list-item>
               </template>
-            </v-autocomplete>
+            </v-select>
+            <SchoolDropdown
+                v-model="updateStudentAssessment.assessmentCenterSchoolID"
+                label="Assessment Center"
+            />
+            <SchoolDropdown
+                v-if="hasPermissions('STUDENT', 'editSchoolAtWrite')"
+                v-model="updateStudentAssessment.schoolAtWriteSchoolID"
+                label="School of Record At Write"
+                :required="wasWritten"
+            />
           </v-col>
         </v-row>
       </v-card-text>
@@ -119,19 +117,17 @@ import { mapState } from "pinia";
 import { omit } from 'lodash';
 import { reactive } from "vue";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
-import OpenStatusBadge from "@/components/Common/OpenStatusBadge.vue";
+import {useAccessStore} from "@/store/modules/access";
+import { usePermissionBasedDropdown } from '@/composables/usePermissionBasedDropdown';
+import SchoolDropdown from "@/components/Common/SchoolDropdown.vue";
 
 export default {
   name: "EditStudentAssessment",
-  components: {OpenStatusBadge},
+  components: {SchoolDropdown},
   props: {
     modelValue: {
       type: Boolean,
       default: false
-    },
-    studentId: {
-      type: String,
-      required: true
     },
     assessmentItem: {
       type: Object,
@@ -140,20 +136,18 @@ export default {
     assessmentSessions: {
       type: Array,
       required: true
-    },
-    isLoadingSessions: {
-      type: Boolean,
-      required: true
     }
   },
   emits: ['update:modelValue', 'saved'],
   setup() {
-    const appStore = useAppStore();
     const snackbarStore = useSnackbarStore();
-    return { appStore, snackbarStore };
+    return { snackbarStore };
   },
   computed: {
-    ...mapState(useAppStore, { getSchoolsList: "getSchoolsList", provincialSpecialCaseCodes: "provincialSpecialCaseCodes" }),
+    ...mapState(useAppStore, {
+      provincialSpecialCaseCodes: 'provincialSpecialCaseCodes'
+    }),
+    ...mapState(useAccessStore, ['hasPermissions']),
     dialog: {
       get() {
         return this.modelValue;
@@ -162,15 +156,28 @@ export default {
         this.$emit('update:modelValue', value);
       }
     },
+    provincialSpecialCaseDropdown() {
+      return usePermissionBasedDropdown({
+        items: this.provincialSpecialCaseCodes,
+        currentValue: this.updateStudentAssessment?.provincialSpecialCaseCode,
+        itemValueKey: 'provincialSpecialCaseCode',
+        permissionKey: 'editAllSpecialCases',
+        allowedCodes: ['A', 'E', 'Q'],
+        defaultAllowedCodes: ['E']
+      })
+    },
+    sessionDisplayValue() {
+      return this.assessmentSessions.find(session => session.sessionID === this.updateStudentAssessment.sessionID).sessionDate;
+    },
+    wasWritten() {
+      return !!(this.updateStudentAssessment?.proficiencyScore || this.updateStudentAssessment?.provincialSpecialCaseCode);
+    }
   },
   data: function() {
     return {
-      hasError: false,
       updateStudentAssessment: null,
       isSaving: false,
-      requiredRules: [v => !!v || 'Required'],
-      isValidForm: false,
-      specialCases: []
+      isValidForm: false
     }
   },
   watch: {
@@ -178,13 +185,15 @@ export default {
       if (newVal && this.assessmentItem) {
         this.edit(this.assessmentItem);
       }
+    },
+    'updateStudentAssessment.provincialSpecialCaseCode'() {
+      this.$nextTick(() => {
+        this.$refs.editStudentAssessmentForm?.validate()
+      })
     }
-  },
-  async mounted() {
   },
   methods: {
     closeDialog() {
-      this.hasError = false;
       this.updateStudentAssessment = null;
       this.isSaving = false;
       this.dialog = false;
@@ -202,9 +211,7 @@ export default {
         this.updateStudentAssessment.assessmentStudentValidationIssues = res.data.assessmentStudentValidationIssues;
 
         if(this.updateStudentAssessment.assessmentStudentValidationIssues){
-          this.hasError = true;
         } else if(!this.updateStudentAssessment.assessmentStudentValidationIssues) {
-          this.hasError = false;
           this.dialog = false;
           this.$emit('saved');
           this.snackbarStore.showSnackbar(
@@ -222,18 +229,7 @@ export default {
       } finally {
         this.isSaving = false;
       }
-    },
-    schoolTitle(item) {
-      if (item) {
-        return `${item.mincode} - ${item.displayName}`;
-      } else {
-        return null;
-      }
     }
   }
 }
 </script>
-
-<style scoped>
-
-</style>

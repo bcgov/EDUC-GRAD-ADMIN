@@ -39,13 +39,16 @@ export default {
       json
     );
   },
-  async createAssessmentStudent(json) {
+  async createAssessmentStudent(json, allowRuleOverride = false) {
+    const params = allowRuleOverride ? { allowRuleOverride: 'true' } : {};
     return ApiService.apiAxios.post(
       '/api/student-assessment/student/',
-      json
+      json,
+      { params }
     );
   },
-  async deleteAssessmentStudent(assessmentStudentId) {
-    return ApiService.apiAxios.delete('/api/student-assessment/student/' + assessmentStudentId);
+  async deleteAssessmentStudent(assessmentStudentId, allowRuleOverride) {
+    const params = allowRuleOverride ? { allowRuleOverride: 'true' } : {};
+    return ApiService.apiAxios.delete('/api/student-assessment/student/' + assessmentStudentId, { params });
   }
 };

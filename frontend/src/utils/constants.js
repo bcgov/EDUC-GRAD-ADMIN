@@ -43,9 +43,14 @@ export const RolePermissions = Object.freeze({
       allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"],
     },
     studentAssessmentUpdate: {
-      allowed: ["GRAD_SYSTEM_COORDINATOR"]
+      allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER", "GRAD_ASSESSMENTS"]
+    },
+    editAllSpecialCases: {
+      allowed: ["GRAD_ASSESSMENTS"]
+    },
+    editSchoolAtWrite: {
+      allowed: ["GRAD_ASSESSMENTS"]
     }
-
   },
   ADMIN: {
     readPage: {
