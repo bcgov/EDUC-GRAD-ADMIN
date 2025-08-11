@@ -77,7 +77,7 @@ import CourseTransfer from "@/components/StudentProfile/Forms/wizard/support/Cou
                 this.validateCourse(sourceCourse, targetCourse)
               );
               if (matchedTarget) {
-                this.courseReconciliation.conflicts.push({ "source": sourceCourse, "target": matchedTarget, "message": "Course already exists" });
+                this.courseReconciliation.conflicts.push({ "source": sourceCourse, "target": matchedTarget, "message": "Course for this session already exists" });
               } else {
                 this.courseReconciliation.info.push({ "source": sourceCourse, "target": null, "message": "No validation errors" });
               }
