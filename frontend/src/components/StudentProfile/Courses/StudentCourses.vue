@@ -12,9 +12,39 @@
         <v-alert v-if="!courses" class="container">
           This student does not have any courses.
         </v-alert>
+        <div class="col-12 px-3">
+        <div class="float-left grad-actions" >
+          <v-menu offset-y >
+            <template v-slot:activator="{ props }">
+              <v-btn
+                text
+                v-bind="props"
+                :disabled="selected.length === 0"
+                id="actions"
+                right
+                class="float-right admin-actions text-none"
+                prepend-icon="mdi-select-multiple"
+                append-icon="mdi-menu-down"
+                color="error" >Bulk Actions</v-btn>
+            </template>
+            <v-list>
+              <v-list-item v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
+              @click="showCourseDelete">
+                <v-icon color="error" >mdi-delete-forever</v-icon> Delete Selected Courses
+              </v-list-item>
+              <v-list-item v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
+              @click="showCourseTransfer">
+                <v-icon color="error" >mdi-transfer</v-icon> Transfer Selected Courses
+              </v-list-item>              
+            </v-list>
+          </v-menu>
+        </div>
+      </div>
         <v-row no-gutters>
-          <StudentCoursesDeleteForm @close="clearDeleteSelected" courseBatchDelete :selectedCoursesToDelete="selected">
+          <StudentCoursesDeleteForm @close="clearSelected" courseBatchDelete :selectedCoursesToDelete="selected" ref="courseDeleteFormRef">
           </StudentCoursesDeleteForm>
+          <StudentCoursesTransferForm @close="clearSelected" :selectedCoursesToTransfer="selected" ref="courseTransferFormRef">
+          </StudentCoursesTransferForm>
           <v-spacer />
           <StudentCoursesCreateForm />
         </v-row>
@@ -108,12 +138,14 @@ import CourseDetails from "@/components/Common/CourseDetails.vue";
 import StudentCoursesDeleteForm from "@/components/StudentProfile/Forms/StudentCoursesDeleteForm.vue";
 import StudentCoursesCreateForm from "@/components/StudentProfile/Forms/StudentCoursesCreateForm.vue";
 import StudentCoursesUpdateForm from "@/components/StudentProfile/Forms/StudentCoursesUpdateForm.vue";
+import StudentCoursesTransferForm from "@/components/StudentProfile/Forms/StudentCoursesTransferForm.vue";
 export default {
   name: "StudentCourses",
   components: {
     StudentCoursesCreateForm: StudentCoursesCreateForm,
     StudentCoursesDeleteForm: StudentCoursesDeleteForm,
     StudentCoursesUpdateForm: StudentCoursesUpdateForm,
+    StudentCoursesTransferForm: StudentCoursesTransferForm,
     CourseDetails: CourseDetails,
   },
   computed: {
@@ -258,7 +290,13 @@ export default {
       "setHasGradStatusPendingUpdates",
       "deleteStudentCourses",
     ]),
-    clearDeleteSelected() {
+    showCourseDelete() {
+      this.$refs.courseDeleteFormRef.openDeleteStudentCoursesDialog();
+    },
+    showCourseTransfer() {
+      this.$refs.courseTransferFormRef.openTransferStudentCoursesDialog();
+    },
+    clearSelected() {
       this.selected = []
     },
     hasCourseInfo(item) {
