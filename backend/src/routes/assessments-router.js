@@ -48,10 +48,6 @@ async function getAllAssessments(req, res) {
   const token = auth.getBackendToken(req);
   try {
     let url = `${config.get("server:assessmentAPIURL")}/api/v1/assessment`;
-
-    if (req.url != "/") {
-      url += req.url;
-    }
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -69,10 +65,6 @@ async function getAllAssessmentRequirements(req, res) {
     let url = `${config.get(
       "server:assessmentAPIURL"
     )}/api/v1/assessment/requirement`;
-
-    if (req.url != "/") {
-      url += req.url;
-    }
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -90,10 +82,6 @@ async function getAssessmentRequirementRule(req, res) {
     let url = `${config.get(
       "server:assessmentAPIURL"
     )}/api/v1/assessment/requirement/rule?rule=${req.params?.rule}`;
-
-    if (req.url != "/") {
-      url += req.url;
-    }
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -111,10 +99,6 @@ async function getStudentAssessment(req, res) {
     let url = `${config.get("server:assessmentAPIURL")}/api/v1/assessment/pen/${
       req.params?.pen
     }?sortForUI=true`;
-
-    if (req.url != "/") {
-      url += req.url;
-    }
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
