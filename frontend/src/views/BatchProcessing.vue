@@ -254,7 +254,7 @@
 
 <script>
 import CodesService from "@/services/CodesService.js";
-import DistributionService from "@/services/DistributionService.js";
+import BatchProcessingService from "@/services/BatchProcessingService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 import ScheduledBatchRuns from "@/components/Batch/ScheduledBatchRuns.vue";
 import DistrunUserForm from "@/components/Batch/Forms/DistrunUserForm.vue";
@@ -510,20 +510,17 @@ export default {
     ]),
 
     downloadDISTRUNUSER(bid, transmissionMode = null) {
-      DistributionService.downloadDISTRUNUSER(bid, transmissionMode).then(
-        (response) => {
-          sharedMethods.base64ToFileTypeAndDownload(
-            response.data,
-            "application/zip",
-            bid
-          );
-          this.snackbarStore.showSnackbar(
-            "Download completed",
-            "success",
-            5000
-          );
-        }
-      );
+      BatchProcessingService.downloadUserDistribution(
+        bid,
+        transmissionMode
+      ).then((response) => {
+        sharedMethods.base64ToFileTypeAndDownload(
+          response.data,
+          "application/zip",
+          bid
+        );
+        this.snackbarStore.showSnackbar("Download completed", "success", 5000);
+      });
     },
     removeEmpty(obj) {
       Object.keys(obj).forEach(

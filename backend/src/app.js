@@ -47,7 +47,6 @@ const coursesRouter = require("./routes/courses-router");
 const studentRouter = require("./routes/student-router");
 const codesRouter = require("./routes/codes-router");
 const batchRouter = require("./routes/batch-router");
-const distributionRouter = require("./routes/distribution-router");
 const reportsRouter = require("./routes/reports-router");
 const configRouter = require("./routes/config-router");
 
@@ -241,16 +240,15 @@ app.use(/(\/api)?/, apiRouter);
 //:version routes
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/batch", batchRouter);
-apiRouter.use("/:version/distribute", addVersionToReq, distributionRouter);
 apiRouter.use("/program", programsRouter);
 apiRouter.use("/course", coursesRouter);
-apiRouter.use("/:version/assessment", addVersionToReq, assessmentsRouter);
+apiRouter.use("/assessment", assessmentsRouter);
 apiRouter.use("/schools", schoolsRouter);
 apiRouter.use("/student-assessment", studentAssessmentRouter);
 apiRouter.use("/student", studentRouter);
 apiRouter.use("/codes", codesRouter);
 apiRouter.use("/reports", reportsRouter);
-apiRouter.use("/:version/config", addVersionToReq, configRouter);
+apiRouter.use("/config", configRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

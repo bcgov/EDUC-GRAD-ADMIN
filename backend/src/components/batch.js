@@ -549,6 +549,23 @@ async function postArchiveSchoolReports(req, res) {
   }
 }
 
+async function getUserDistributionDownload(req, res) {
+  const token = auth.getBackendToken(req);
+  try {
+    const url = `${config.get(
+      "server:distributionAPIURL"
+    )}/api/v1/distribute/download/${req.params?.batchID}`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 module.exports = {
   getBatchHistoryDashboard,
   getBatchHistoryErrors,
@@ -576,4 +593,5 @@ module.exports = {
   postYearEndTVRDelete,
   postArchiveStudents,
   postArchiveSchoolReports,
+  getUserDistributionDownload,
 };
