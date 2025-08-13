@@ -25,19 +25,6 @@ const apiRouter = express.Router();
 const authRouter = require("./routes/auth");
 const promMid = require("express-prometheus-middleware");
 
-function addVersionToReq(req, res, next) {
-  const { version } = req.params;
-  // Check if the version is supported
-  const supportedVersions = ["v1", "v2"];
-  if (!supportedVersions.includes(version)) {
-    return res.status(404).json({ error: "Invalid API version" });
-  }
-  // Add version to req object
-  req.version = version;
-  // Proceed to the next middleware or route handler
-  next();
-}
-
 //GRAD Routers
 const schoolsRouter = require("./routes/schools-router");
 const programsRouter = require("./routes/programs-router");
