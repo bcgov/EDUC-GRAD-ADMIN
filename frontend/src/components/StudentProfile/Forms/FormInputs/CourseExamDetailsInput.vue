@@ -159,8 +159,8 @@ export default {
     this.minSession = `${startYear}09`;
     this.maxSession = `${endYear}09`;
 
-    if (this.course.courseSession < 198401 || (this.course.courseSession < this.minSession || this.course.courseSession > this.maxSession)) {
-      this.warnings.push("Course session cannot be beyond the current reporting period or prior to 198401")
+    if (this.course.courseSession < 198401 || this.course.courseSession > this.maxSession) {
+      this.warnings.push("Course session cannot be after the current reporting period or prior to 198401")
 
     }
     if (this.course.isExaminable) {

@@ -4,9 +4,7 @@
       <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="studentStatus == 'MER'" color="bcGovBlue"
         prepend-icon="mdi-plus" class="text-none" @click="openCreateStudentCoursesDialog" text="Add Student Courses" />
     </template>
-
     <v-card>
-
       <v-card-title>
         <v-row no-gutters>
           <div class="v-card-title">Add Student Courses</div>
@@ -291,7 +289,7 @@
         <v-spacer v-if="step === 0" />
         <v-btn variant="outlined" color="bcGovBlue" class=" text-none" v-if="!showCourseInputs && step === 0"
           @click="showCourseInputs = !showCourseInputs && step === 0">
-          + Enter Course
+          + Add Another Course
         </v-btn>
 
         <v-btn v-else-if="step > 0" @click="step--" color="bcGovBlue" variant="outlined"
