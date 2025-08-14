@@ -556,6 +556,28 @@ function formatQueryParamString(queryParams) {
       .join("&")
   );
 }
+
+function sortCourses(courses) {
+  return courses.sort((a, b) => {
+    const codeA = a.courseDetails.courseCode.toUpperCase();
+    const codeB = b.courseDetails.courseCode.toUpperCase();
+
+    if (codeA < codeB) return -1;
+    if (codeA > codeB) return 1;
+
+    const levelA = a.courseDetails.courseLevel.toUpperCase();
+    const levelB = b.courseDetails.courseLevel.toUpperCase();
+
+    if (levelA < levelB) return -1;
+    if (levelA > levelB) return 1;
+
+    const sessionA = a.courseSession;
+    const sessionB = b.courseSession;
+
+    return sessionA.localeCompare(sessionB);
+  });
+}
+
 function addCourseDetails(courseData, data) {
   const courseMap = new Map(
     courseData.map((course) => [course.courseID, course])
@@ -649,6 +671,7 @@ const utils = {
   getCourseIDsPayload,
   fetchCourseDetails,
   addCourseDetails,
+  sortCourses,
 };
 
 module.exports = utils;

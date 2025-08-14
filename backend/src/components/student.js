@@ -9,6 +9,7 @@ const {
   getCourseIDsPayload,
   fetchCourseDetails,
   addCourseDetails,
+  sortCourses,
 } = require("../components/utils");
 const config = require("../config/index");
 const log = require("../components/logger");
@@ -35,7 +36,7 @@ async function getStudentCourseByStudentID(req, res) {
 
     const studentCoursesWithDetails = addCourseDetails(CourseDetails, data);
     // Final Response
-    return res.status(200).json(studentCoursesWithDetails);
+    return res.status(200).json(sortCourses(studentCoursesWithDetails));
   } catch (e) {
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);
