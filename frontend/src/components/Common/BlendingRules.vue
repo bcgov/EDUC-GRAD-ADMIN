@@ -1,8 +1,9 @@
 <template>
+
     <v-expansion-panels v-model="panel" multiple>
         <v-expansion-panel elevation="0" rounded="0" style="background-color: transparent; border: none"
             :expand="expand">
-            <v-alert type=" info" border="start" variant="tonal" density="compact" class="my-0 pl-4 py-0">
+            <v-alert type="info" border="start" variant="tonal" density="compact" class="my-0 pl-4 py-0">
                 <template #prepend>
                     <div class="mt-2">
                         <v-icon color="info">mdi-information</v-icon>
@@ -20,7 +21,8 @@
                 <v-expansion-panel-text class="m-0 p-0">
                     <strong>Step 1: Determine if the Exam Was Required</strong>
                     <p>
-                        Use the <a href="">Examinable Course Table</a> to check the course code, level, and applicable
+                        Use the <a href="">Examinable Course Table</a> to check the course code, level, and
+                        applicable
                         graduation program.
                     </p>
 
@@ -36,7 +38,8 @@
 
                     <strong>Step 3A: Adding a New School and Final Mark Session</strong>
                     <ul class="mb-4">
-                        <li class="ml-4">Enter the school session date (must be within 36 months of the exam session).
+                        <li class="ml-4">Enter the school session date (must be within 36 months of the exam
+                            session).
                         </li>
                         <li class="ml-4">Enter the new school %, the best school %, and the best exam %.</li>
                         <li class="ml-4">Use the table to find the appropriate exam and school weighting.</li>
@@ -50,7 +53,8 @@
                         <em>Example:</em> SS 11 with a Best Exam of 64% and a Best School of 52%:<br />
                         (.64 × .20) + (.52 × .80) = <strong>54% Final Mark</strong>
                     </p>
-                    <p>Assign the letter grade using the <strong>Letter Grades table</strong> under the Program tab.</p>
+                    <p>Assign the letter grade using the <strong>Letter Grades table</strong> under the Program tab.
+                    </p>
 
                     <strong>Step 3B: Updating an Existing School Mark Session</strong>
                     <ul class="mb-4">
