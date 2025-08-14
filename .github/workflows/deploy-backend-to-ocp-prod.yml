@@ -113,7 +113,6 @@ jobs:
           ${{ env.APP_NAME }} \
           ${{ env.OPENSHIFT_NAMESPACE }} \
           grad.gov.bc.ca \
-          ${{ secrets.REDIS_PASSWORD }} \
           ${{ secrets.SPLUNK_TOKEN }} \
           ${{ secrets.COMMON_NAMESPACE }} \
           ${{ secrets.GRAD_NAMESPACE }} \
