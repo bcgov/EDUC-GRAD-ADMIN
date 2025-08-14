@@ -90,6 +90,19 @@
           {{ warning }}
         </v-col>
       </v-row>
+      <v-row class="align-center">
+        <v-col class="py-0 m-0 d-flex align-center text-caption">
+          <v-icon color="info" size="18" class="me-1">mdi-information</v-icon>
+
+          <router-link to="/courses/examinable-courses/blending-rules" custom v-slot="{ href, navigate }">
+            <a :href="href" @click="navigate" target="_blank" rel="noopener noreferrer">
+              Instructions for calculating a blended mark
+              <v-icon size="16" color="info" class="ms-1">mdi-open-in-new</v-icon>
+            </a>
+          </router-link>
+
+        </v-col>
+      </v-row>
 
 
     </v-col>
@@ -159,8 +172,8 @@ export default {
     this.minSession = `${startYear}09`;
     this.maxSession = `${endYear}09`;
 
-    if (this.course.courseSession < 198401 || (this.course.courseSession < this.minSession || this.course.courseSession > this.maxSession)) {
-      this.warnings.push("Course session cannot be beyond the current reporting period or prior to 198401")
+    if (this.course.courseSession < 198401 || this.course.courseSession > this.maxSession) {
+      this.warnings.push("Course session cannot be after the current reporting period or prior to 198401")
 
     }
     if (this.course.isExaminable) {
