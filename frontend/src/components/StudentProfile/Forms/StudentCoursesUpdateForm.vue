@@ -95,8 +95,7 @@
                         <CourseDetailsInput :course="selectedCourseToUpdate" update>
                           <template #remove-button>
                             <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none p-1"
-                              style="max-width: 7.5rem;"
-                              @click="showCourseInput = !showCourseInput; populateCourseInputs()">Change
+                              style="max-width: 7.5rem;" @click="showCourseInputAndPopulate()">Change
                               Course</v-btn>
                           </template>
                         </CourseDetailsInput>
@@ -382,7 +381,7 @@ export default {
       }
       this.courseValidationMessage = "";
     },
-    showCourseInput() {
+    showCourseInputAndPopulate() {
       this.clearForm();
       this.showCourseInput = true;
       this.courseUpdate.code = this.course.courseDetails.courseCode;
