@@ -556,6 +556,26 @@ function formatQueryParamString(queryParams) {
       .join("&")
   );
 }
+function addCourseDetails(courseData, data) {
+  const courseMap = new Map(
+    courseData.map((course) => [course.courseID, course])
+  );
+
+  const studentCoursesWithDetails = data.map((studentCourse) => {
+    const courseID = studentCourse.courseID;
+    const relatedCourseId = studentCourse.relatedCourseId;
+
+    const matchedCourse = courseMap.get(courseID);
+    const matchedRelatedCourse = courseMap.get(relatedCourseId);
+
+    return {
+      ...studentCourse,
+      courseDetails: matchedCourse || null,
+      relatedCourseDetails: matchedRelatedCourse || null,
+    };
+  });
+  return studentCoursesWithDetails;
+}
 /**
  * Extracts unique course IDs from an array of student course objects.
  * @param {Array<Object>} studentCourses The array of course objects returned from the student API.
@@ -601,6 +621,7 @@ const fetchCourseDetails = async (token, courseIDsPayload, correlationID) => {
   );
   return courseData;
 };
+
 const utils = {
   prettyStringify: (obj, indent = 2) => JSON.stringify(obj, null, indent),
   getUser,
@@ -627,6 +648,7 @@ const utils = {
   formatQueryParamString,
   getCourseIDsPayload,
   fetchCourseDetails,
+  addCourseDetails,
 };
 
 module.exports = utils;

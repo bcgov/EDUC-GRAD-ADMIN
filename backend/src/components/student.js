@@ -8,10 +8,12 @@ const {
   formatQueryParamString,
   getCourseIDsPayload,
   fetchCourseDetails,
+  addCourseDetails,
 } = require("../components/utils");
 const config = require("../config/index");
 const log = require("../components/logger");
 const auth = require("../components/auth");
+const { add } = require("lodash");
 
 async function getStudentCourseByStudentID(req, res) {
   const token = auth.getBackendToken(req);
@@ -23,52 +25,15 @@ async function getStudentCourseByStudentID(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     // Preparing the Course ID Payload
     const courseIDsPayload = getCourseIDsPayload(data);
-    // const courseIDsPayload = {
-    //   courseIds: Array.isArray(data)
-    //     ? data.flatMap((course) => {
-    //         const ids = [];
-    //         if (course.courseID) ids.push(Number(course.courseID));
-    //         if (course.relatedCourseId)
-    //           ids.push(Number(course.relatedCourseId));
-    //         return ids;
-    //       })
-    //     : [],
-    // };
 
     // Fetching Detailed Course Information
-    const courseData = await fetchCourseDetails(
+    const CourseDetails = await fetchCourseDetails(
       token,
       courseIDsPayload,
       req.session?.correlationID
     );
-    // const courseSearchUrl = `${config.get(
-    //   "server:courseAPIURL"
-    // )}/api/v2/course/search`;
-    // const courseData = await postData(
-    //   token,
-    //   courseSearchUrl,
-    //   courseIDsPayload,
-    //   req.session?.correlationID
-    // );
-    // Merging Data
-    const courseMap = new Map(
-      courseData.map((course) => [course.courseID, course])
-    );
 
-    // Add courseDetails and releatedCourseDetails from course endpoint
-    const studentCoursesWithDetails = data.map((studentCourse) => {
-      const courseID = studentCourse.courseID;
-      const relatedCourseId = studentCourse.relatedCourseId;
-
-      const matchedCourse = courseMap.get(courseID);
-      const matchedRelatedCourse = courseMap.get(relatedCourseId);
-
-      return {
-        ...studentCourse,
-        courseDetails: matchedCourse || null,
-        relatedCourseDetails: matchedRelatedCourse || null,
-      };
-    });
+    const studentCoursesWithDetails = addCourseDetails(CourseDetails, data);
     // Final Response
     return res.status(200).json(studentCoursesWithDetails);
   } catch (e) {
