@@ -3,15 +3,7 @@
     <v-dialog v-model="dialog" persistent max-width="760">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-
-          <v-btn v-if="
-            hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete" v-bind="props"
-            :disabled="selectedCoursesToDelete.length === 0 || studentStatus == 'MER'" color="error" class="text-none"
-            prepend-icon="mdi-delete-forever">
-            Delete Selected Courses
-          </v-btn>
-
-          <v-btn v-else-if="!courseBatchDelete"
+          <v-btn v-if="!courseBatchDelete"
             :disabled="!hasPermissions('STUDENT', 'courseUpdate') || studentStatus == 'MER'" v-bind="props"
             color="error" icon="mdi-delete-forever" density="compact" variant="text" />
         </slot>
@@ -305,6 +297,10 @@ export default {
     },
     hasPermissions(group, permission) {
       return this.accessStore.hasPermissions("STUDENT", "courseUpdate")
+    },       
+    openDeleteStudentCoursesDialog() {
+      this.step = 0;
+      this.dialog = true;      
     },
   },
 };

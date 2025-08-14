@@ -16,6 +16,9 @@ export default {
       data: courses,
     });
   },
+  transferStudentCourses(sourceStudentID, targetStudentID, json) {
+    return ApiService.apiAxios.post(`/api/student/${sourceStudentID}/courses/transfer/${targetStudentID}`, json);
+  },
   getStudentCourseHistory(studentID) {
     return ApiService.apiAxios.get(`/api/student/${studentID}/history/courses`);
   },
