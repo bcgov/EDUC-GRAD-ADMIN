@@ -1,57 +1,36 @@
 <template>
   <div>
+    <BlendingRules />
     <v-alert info v-if="!studentExamCourses || studentExamCourses.length === 0">
       This student does not have any exams.
     </v-alert>
-    <v-data-table
-      v-else
-      :items="studentExamCourses"
-      :headers="studentExamsHeaders"
-      :items-per-page="'-1'"
-    >
-      <template
-        v-slot:item.data-table-expand="{
-          item,
-          internalItem,
-          toggleExpand,
-          isExpanded,
-        }"
-      >
-        <v-btn
-          variant="text"
-          density="comfortable"
-          @click="toggleExpand(internalItem)"
-          class="v-data-table__expand-icon"
-          :class="{ 'v-data-table__expand-icon--active': isExpanded }"
-          :icon="
-            isExpanded(internalItem) ? 'mdi-chevron-down' : 'mdi-chevron-right'
-          "
-        />
+    <v-data-table v-else :items="studentExamCourses" :headers="studentExamsHeaders" :items-per-page="'-1'">
+      <template v-slot:item.data-table-expand="{
+        item,
+        internalItem,
+        toggleExpand,
+        isExpanded,
+      }">
+        <v-btn variant="text" density="comfortable" @click="toggleExpand(internalItem)"
+          class="v-data-table__expand-icon" :class="{ 'v-data-table__expand-icon--active': isExpanded }" :icon="isExpanded(internalItem) ? 'mdi-chevron-down' : 'mdi-chevron-right'
+            " />
       </template>
       <template v-slot:expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length">
             <v-row no-gutters>
-              <v-col
-                ><strong>Course Title</strong>&nbsp;{{
-                  item.courseDetails?.courseName
-                }}</v-col
-              >
-              <v-col
-                ><strong>Interim Percent</strong>&nbsp;{{
-                  item.interimPercent
-                }}%</v-col
-              >
-              <v-col
-                ><strong>Interim LG</strong>&nbsp;{{
-                  item.interimLetterGrade
-                }}</v-col
-              >
-              <v-col
-                ><strong>Equivalency or Challenge</strong>&nbsp;{{
-                  item.interimPercent
-                }}% {{ item.equivOrChallenge }}</v-col
-              >
+              <v-col><strong>Course Title</strong>&nbsp;{{
+                item.courseDetails?.courseName
+              }}</v-col>
+              <v-col><strong>Interim Percent</strong>&nbsp;{{
+                item.interimPercent
+              }}%</v-col>
+              <v-col><strong>Interim LG</strong>&nbsp;{{
+                item.interimLetterGrade
+              }}</v-col>
+              <v-col><strong>Equivalency or Challenge</strong>&nbsp;{{
+                item.interimPercent
+              }}% {{ item.equivOrChallenge }}</v-col>
             </v-row>
           </td>
         </tr>
@@ -60,9 +39,9 @@
         {{ $filters.formatYYYYMMStringDate(item.courseSession) }}
       </template>
       <template v-slot:item.edit="{ item }">
-            <StudentCoursesExamUpdateForm :course="item">
-            </StudentCoursesExamUpdateForm>
-          </template>
+        <StudentCoursesExamUpdateForm :course="item">
+        </StudentCoursesExamUpdateForm>
+      </template>
     </v-data-table>
   </div>
 </template>
@@ -71,6 +50,7 @@
 import { useStudentStore } from "@/store/modules/student";
 import { mapState } from "pinia";
 import DisplayTable from "@/components/DisplayTable.vue";
+import BlendingRules from "@/components/Common/BlendingRules.vue";
 import StudentCoursesExamUpdateForm from "@/components/StudentProfile/Forms/StudentCoursesExamUpdateForm.vue";
 export default {
   name: "StudentExams",
@@ -81,6 +61,7 @@ export default {
     }),
   },
   components: {
+    BlendingRules: BlendingRules,
     DisplayTable: DisplayTable,
     StudentCoursesExamUpdateForm: StudentCoursesExamUpdateForm,
   },

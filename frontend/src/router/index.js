@@ -34,6 +34,15 @@ import LetterGrades from "../components/Programs/LetterGrades.vue";
 import SpecialCases from "../components/Programs/SpecialCases.vue";
 import RequirementTypes from "../components/Programs/RequirementTypes.vue";
 import GraduationProgramTranscriptMessage from "../components/Programs/GraduationProgramTranscriptMessage.vue";
+
+//Courses
+import ExaminableCourses from "../components/Courses/ExaminableCourses.vue";
+import CourseRestrictions from "../components/Courses/CourseRestrictions.vue";
+import CourseRequirements from "../components/Courses/CourseRequirementsSearch.vue";
+import FineArtsAppliedSkillsCodes from "../components/Courses/FineArtsAppliedSkillsCodes.vue";
+import ExamSpecialCaseCodes from "../components/Courses/ExamSpecialCaseCodes.vue";
+import EquivalentOrChallengeCodes from "../components/Courses/EquivalentOrChallengeCodes.vue";
+import BlendingRules from "../components/Common/BlendingRules.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -192,10 +201,73 @@ const router = createRouter({
       path: "/courses",
       name: "Courses",
       component: () => import("../views/Courses.vue"),
+       children: [
+        {
+          path: "",
+          component: CourseRestrictions,
+          meta: {
+            requiresAuth: true,
+          },
+        },
+
+        {
+          path: "course-restrictions",
+          component: CourseRestrictions,
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
+          path: "course-requirements",
+          component: CourseRequirements,
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        
+        {
+          path: "examinable-courses/",
+          component: ExaminableCourses,
+          meta: {
+            requiresAuth: true,
+          },
+        },
+                {
+          path: "examinable-courses/blending-rules",
+          component: ExaminableCourses,
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
+          path: "finearts-appliedskills",
+          component: FineArtsAppliedSkillsCodes,
+          meta: {
+            requiresAuth: true,
+          },
+        },        
+        {
+          path: "exam-special-cases",
+          component: ExamSpecialCaseCodes,
+          meta: {
+            requiresAuth: true,
+          },
+        },        
+{
+          path: "equivalency-or-challenge",
+          component: EquivalentOrChallengeCodes,
+          meta: {
+            requiresAuth: true,
+          },
+        },                
+      ],
       meta: {
         requiresAuth: true,
       },
     },
+
+
+
     {
       path: "/error",
       name: "error",

@@ -1,14 +1,10 @@
 <template>
   <div>
+    <BlendingRules :expand="$route.path === '/courses/examinable-courses/blending-rules'" />
     <h3 class="ml-2 mt-5">Examinable Courses</h3>
-    <DisplayTable
-      title="Examinable Courses"
-      v-bind:items="examinableCourses"
-      v-bind:fields="examinableCoursesFields"
-      id="examinableCourseID"
-      :showFilter="true"
-      pagination="true"
-    >
+
+    <DisplayTable title="Examinable Courses" v-bind:items="examinableCourses" v-bind:fields="examinableCoursesFields"
+      id="examinableCourseID" :showFilter="true" pagination="true">
     </DisplayTable>
   </div>
 </template>
@@ -16,11 +12,13 @@
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import CourseService from "@/services/CourseService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
+import BlendingRules from "@/components/Common/BlendingRules.vue";
 
 export default {
   name: "ExaminableCourses",
   components: {
     DisplayTable: DisplayTable,
+    BlendingRules: BlendingRules,
   },
   created() {
     this.getAllExaminableCourses();
