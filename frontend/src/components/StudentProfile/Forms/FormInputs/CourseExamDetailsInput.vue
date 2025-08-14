@@ -93,8 +93,8 @@
       <v-row class="align-center">
         <v-col class="py-0 m-0 d-flex align-center text-caption">
           <v-icon color="info" size="18" class="me-1">mdi-information</v-icon>
-          <router-link to="/courses/blending-rules">Instructions for calculating a blended mark <v-icon size="16"
-              color="info" class="ms-1">mdi-open-in-new</v-icon></router-link>
+          <router-link to="/courses/examinable-courses/blending-rules">Instructions for calculating a blended mark
+            <v-icon size="16" color="info" class="ms-1">mdi-open-in-new</v-icon></router-link>
         </v-col>
       </v-row>
 
