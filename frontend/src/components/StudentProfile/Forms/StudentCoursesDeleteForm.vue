@@ -5,8 +5,8 @@
         <slot name="activator" v-bind="props">
 
           <v-btn v-if="
-            hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete
-          " v-bind="props" :disabled="selectedCoursesToDelete.length === 0" color="error" class="text-none"
+            hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete" v-bind="props"
+            :disabled="selectedCoursesToDelete.length === 0 || studentStatus == 'MER'" color="error" class="text-none"
             prepend-icon="mdi-delete-forever">
             Delete Selected Courses
           </v-btn>

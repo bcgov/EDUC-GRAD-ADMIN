@@ -75,11 +75,11 @@
                         <v-btn :disabled="v$?.courseUpdate?.$invalid || isLoading" variant="flat" color="bcGovBlue"
                           class="text-none" @click="updateCourse">
                           <v-progress-circular v-if="isLoading" indeterminate color="white" size="20" class="mr-2" />
-                          <span v-if="!isLoading">Get Course</span>
+                          <span v-if="!isLoading">Change Course</span>
                         </v-btn>
-                        <v-btn :disabled="isLoading" class="pl-1" icon="mdi-delete-forever" density="compact"
-                          variant="text" color="error" @click="closeCourseInput">
-                          <v-icon size="28">mdi-trash-can</v-icon>
+                        <v-btn :disabled="isLoading" class="pl-1" density="compact" variant="outline" color="error"
+                          @click="closeCourseInput">
+                          Close
                         </v-btn>
                       </v-col>
                       <v-col cols="12"> <v-alert v-if="courseValidationMessage" type="error" variant="tonal"
@@ -95,7 +95,8 @@
                         <CourseDetailsInput :course="selectedCourseToUpdate" update>
                           <template #remove-button>
                             <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none p-1"
-                              style="max-width: 7.5rem;" @click="showCourseInput = !showCourseInput">Change
+                              style="max-width: 7.5rem;"
+                              @click="showCourseInput = !showCourseInput; populateCourseInputs()">Change
                               Course</v-btn>
                           </template>
                         </CourseDetailsInput>
@@ -333,6 +334,7 @@ export default {
 
       const { code, level, courseSession } = this.courseUpdate;
 
+
       const result = await validateAndFetchCourse({
         code,
         level,
@@ -379,6 +381,13 @@ export default {
         courseSession: null,
       }
       this.courseValidationMessage = "";
+    },
+    showCourseInput() {
+      this.clearForm();
+      this.showCourseInput = true;
+      this.courseUpdate.code = this.course.courseDetails.courseCode;
+      this.courseUpdate.level = this.course.courseDetails.courseLevel;
+      this.courseUpdate.courseSession = this.course.courseSession;
     },
     closeCourseInput() {
       this.clearForm();

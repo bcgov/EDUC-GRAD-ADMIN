@@ -8,10 +8,7 @@
       <slot name="remove-button"></slot>
 
     </v-col>
-    {{ fineArtsAppliedSkillsTypeCodes }}
     <v-col v-if="update" cols="2" class="d-flex flex-column justify-start">
-
-
       <strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel }} -
         {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
@@ -52,7 +49,9 @@
         <v-col>
           <v-select v-model="course.credits" :items="creditsAvailableForCourseSession" item-title="creditValue"
             item-value="creditValue" label="Credits" variant="outlined" density="compact" class="pa-1"
-            persistent-placeholder persistent-hint />
+            persistent-placeholder persistent-hint :disabled="disableCreditsInputIfNoAllowableCredits"
+            :placeholder="disableCreditsInputIfNoAllowableCredits ? 'N/A' : ''" />
+
         </v-col>
 
         <v-col>
@@ -94,7 +93,6 @@
           {{ warning }}
         </v-col>
       </v-row>
-
 
       <v-row no-gutters v-if="course?.courseDetails.courseCode == 'IDS'">
         <v-col cols="12" class="pt-2">
@@ -261,9 +259,11 @@ export default {
                 this.course.credits = 0;
                 return this.course.credits == 0
               }
-              else {
-                return true
-              }
+              else if (this.course.credits == 0 && this.course.finalLetterGrade != "W") {
+                this.course.credits = this.creditsAvailableForCourseSession[0];
+                return true;
+
+              } else return true
             }
           ),
         },
@@ -293,11 +293,11 @@ export default {
 
         relatedCourseId: {
           validCourseID: helpers.withMessage(
-            'Must be a valid related course ID',
+            'Related Courses must be a valid course',
             (value, vm) => {
-
+              const noRelatedCourse = (value == '');
               const validCourse = (!this.course.relatedCourseId && this.course.courseDetails.courseCode != "IDS") || (this.course.relatedCourseDetails.courseID == this.course.relatedCourseId);
-              return validCourse;
+              return validCourse || noRelatedCourse;
             }
           )
         }
@@ -342,7 +342,7 @@ export default {
       this.updateWarnings();
       if (
         (courseType === "Locally Developed" || courseType === "Career Program") &&
-        (trimmedProgram === "1996-EN" || trimmedProgram === "1996-PF")
+        (trimmedProgram !== "1996-EN" && trimmedProgram !== "1996-PF")
       ) {
         this.warnings.push('Flag is only applicable for this course type if student is on the 1995 program.');
       }
@@ -387,6 +387,7 @@ export default {
       const level = this.course.courseDetails.courseLevel;
       const isGrade11 = level?.startsWith('11');
 
+
       const isBAAorLocallyDevelopedOrCP = this.course.courseDetails.courseCategory.description === 'Board Authority Authorized' ||
         this.course.courseDetails.courseCategory.description === 'Locally Developed' ||
         this.course.courseDetails.courseCategory.description === 'Career Program'
@@ -395,6 +396,9 @@ export default {
       )
     },
 
+    disableCreditsInputIfNoAllowableCredits() {
+      return this.course.courseDetails.courseAllowableCredit.length === 0;
+    },
     creditsAvailableForCourseSession() {
       if (!this.course.courseSession || !Array.isArray(this.course.courseDetails.courseAllowableCredit)) return [];
 
@@ -455,8 +459,8 @@ export default {
       this.minSession = `${startYear}09`;
       this.maxSession = `${endYear}09`;
 
-      if (this.course.courseSession < 198401 || (this.course.courseSession < this.minSession || this.course.courseSession > this.maxSession)) {
-        this.warnings.push("Course session cannot be beyond the current reporting period or prior to 198401")
+      if (this.course.courseSession < 198401 || this.course.courseSession > this.maxSession) {
+        this.warnings.push("Course session cannot be after the current reporting period or prior to 198401")
 
       }
     },
@@ -484,10 +488,6 @@ export default {
           return sessionDate >= effectiveDate && sessionDate <= expiryDate;
         });
       }
-
-
-
-
       const numPercent = Number(percent);
       if (percent === null || percent === undefined || percent === '' || isNaN(numPercent)) {
         if (this.course.courseSession < 199409) {
@@ -500,7 +500,6 @@ export default {
         }
 
       }
-
       return allAllowableLetterGradesForCourse
         .filter((grade) =>
           grade.percentRangeLow !== null &&

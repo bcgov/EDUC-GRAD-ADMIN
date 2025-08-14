@@ -85,9 +85,15 @@ export async function validateAndFetchCourse({
             isExaminable,
         };
     } catch (err) {
-        return {
-
-            error: 'Invalid Course code/level - course code/level does not exist in the ministry course registry',
-        };
+        if(err?.response?.data?.code === "500"){
+            return {
+                error: "Error connecting to the course web service"
+            }
+        }else{
+            return {
+                error: 'Invalid Course code/level - course code/level does not exist in the ministry course registry',
+            };
+        }
+        
     }
 }
