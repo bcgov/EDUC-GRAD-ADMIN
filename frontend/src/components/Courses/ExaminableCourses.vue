@@ -20,9 +20,15 @@
     <BlendingRules :expand="$route.path === '/courses/examinable-courses/blending-rules'" />
     <h3 class="ml-2 mt-5">Examinable Courses</h3>
 
-    <DisplayTable title="Examinable Courses" v-bind:items="examinableCourses" v-bind:fields="examinableCoursesFields"
+    <v-data-table title="Examinable Courses" v-bind:items="examinableCourses" v-bind:headers="examinableCoursesFields"
       id="examinableCourseID" :showFilter="true" pagination="true">
-    </DisplayTable>
+
+
+      <template #item.programYear="{ item }">
+        {{ item.programYear ?? '2004+' }}
+      </template>
+
+    </v-data-table>
   </div>
 </template>
 <script>
