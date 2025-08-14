@@ -297,6 +297,10 @@ export default {
     },
     hasPermissions(group, permission) {
       return this.accessStore.hasPermissions("STUDENT", "courseUpdate")
+    },       
+    openDeleteStudentCoursesDialog() {
+      this.step = 0;
+      this.dialog = true;      
     },
   },
 };

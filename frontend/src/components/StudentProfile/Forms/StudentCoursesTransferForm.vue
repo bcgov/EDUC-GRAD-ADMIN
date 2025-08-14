@@ -45,6 +45,7 @@
               </v-stepper-window-item>
               <!-- Step 2 -->
               <v-stepper-window-item value="3">
+                <div style="max-height: 60vh; overflow-y: auto; padding-right: 0.5rem;">
                 <v-expansion-panels multiple>
 
                   <v-expansion-panel v-for="(course, index) in transferStudentCourseResultsMessages" :key="index"
@@ -181,7 +182,8 @@
                     </v-row>
                   </v-row>
                 </v-alert>
-              </v-stepper-window-item>
+                </div>
+              </v-stepper-window-item>            
             </v-stepper-window>
           </template>
         </v-stepper>
