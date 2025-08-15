@@ -30,6 +30,7 @@ export const useAppStore = defineStore("app", {
     instituteFacilityCodes: [],
     studentGradeCodes: [],
     config: null,
+    FAASTypeCodes: [],
     provincialSpecialCaseCodes: [],
     assessmentTypeCodesMap: new Map(),
     assessmentTypeCodes: []
@@ -158,6 +159,7 @@ export const useAppStore = defineStore("app", {
           await this.getCertificateTypeCodes();
           await this.getStudentGradeCodes();
           await this.getLetterGradeCodes();
+          await this.getFAASTypeCodes();
           // GET & SET INSTITUTE SCHOOL AND DISTRICT LISTS
           await this.getSchools();
           await this.getDistricts();
@@ -325,6 +327,15 @@ export const useAppStore = defineStore("app", {
       if (getNewData || !sharedMethods.dataArrayExists(this.letterGradeCodes)) {
         let response = await ProgramManagementService.getLetterGrades();
         await this.setLetterGrades(response.data);
+      }
+    },
+    async setFAASTypeCodes(FAASTypeCodes) {
+      this.FAASTypeCodes = FAASTypeCodes;
+    },
+    async getFAASTypeCodes(getNewData = true) {
+      if (getNewData || !sharedMethods.dataArrayExists(this.FAASTypeCodes)) {
+        let response = await CodesService.getFineArtsAppliedSkillsTypes();
+        await this.setFAASTypeCodes(response.data);
       }
     },
     async setAssessmentTypeCodes(assessmentTypeCodes) {

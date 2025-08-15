@@ -8,18 +8,14 @@
       <slot name="remove-button"></slot>
 
     </v-col>
-
     <v-col v-if="update" cols="2" class="d-flex flex-column justify-start">
-
       <strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel }} -
         {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
-      {{ course.courseDetails.courseName }}
       <slot name="remove-button"></slot>
 
     </v-col>
     <v-col cols="10">
-
       <v-row no-gutters class="my-2">
         <!-- Editable fields bound directly to the course object -->
         <v-col>
@@ -45,7 +41,7 @@
         </v-col>
         <v-col>
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
-            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint
+            variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint
             :error="v$.course.finalLetterGrade.$invalid && v$.course.finalLetterGrade.$dirty"
             @blur="v$.course.finalLetterGrade.$touch" :disabled="courseSessionGreaterThanReportingPeriod" />
         </v-col>
@@ -53,13 +49,15 @@
         <v-col>
           <v-select v-model="course.credits" :items="creditsAvailableForCourseSession" item-title="creditValue"
             item-value="creditValue" label="Credits" variant="outlined" density="compact" class="pa-1"
-            persistent-placeholder persistent-hint />
+            persistent-placeholder persistent-hint :disabled="disableCreditsInputIfNoAllowableCredits"
+            :placeholder="disableCreditsInputIfNoAllowableCredits ? 'N/A' : ''" />
+
         </v-col>
 
         <v-col>
-          <v-select v-model="course.fineArtsAppliedSkills" :items="fineArtsAndAppliedSkillsOptions" item-title="text"
-            item-value="value" label="FA/AS" variant="outlined" density="compact" class="pa-1" clearable
-            :disabled="shouldDisableFAAS" persistent-placeholder persistent-hint />
+          <v-select v-model="course.fineArtsAppliedSkills" :items="fineArtsAndAppliedSkillsOptions"
+            item-value="fineArtsAppliedSkillsCode" item-title="label" label="FA/AS" variant="outlined" density="compact"
+            class="pa-1" clearable :disabled="shouldDisableFAAS" persistent-placeholder persistent-hint />
         </v-col>
 
         <v-col>
@@ -96,7 +94,6 @@
         </v-col>
       </v-row>
 
-
       <v-row no-gutters v-if="course?.courseDetails.courseCode == 'IDS'">
         <v-col cols="12" class="pt-2">
           <strong>Select Related Course</strong>
@@ -104,14 +101,16 @@
           <CourseInput v-model:courseFoundID="course.relatedCourseId" v-model:courseFound="course.relatedCourseDetails"
             :code="course?.relatedCourseDetails?.courseCode" :level="course?.relatedCourseDetails?.courseLevel">
           </CourseInput>
+
         </v-col>
       </v-row>
     </v-col>
+
   </v-row>
 </template>
 
 <script>
-import { mapState } from "pinia";
+import { mapActions, mapState } from "pinia";
 import { useAppStore } from "@/store/modules/app";
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
@@ -133,7 +132,6 @@ export default {
     if (!this.course?.credits && this.creditsAvailableForCourseSession.length > 0) {
       this.course.credits = this.creditsAvailableForCourseSession[0];
     }
-
     this.updateWarnings();
     this.v$.$touch(); // <-- triggers validation on load
   },
@@ -213,6 +211,7 @@ export default {
               return true;
             }
           ),
+
         },
         credits: {
           isCreditValue: helpers.withMessage(
@@ -253,6 +252,20 @@ export default {
               return true
             }
           ),
+          creditsMustBe0IfLetterGradeIsW: helpers.withMessage(
+            'Credits for W letter grade must be 0',
+            function (value) {
+              if (this.course.finalLetterGrade == 'W') {
+                this.course.credits = 0;
+                return this.course.credits == 0
+              }
+              else if (this.course.credits == 0 && this.course.finalLetterGrade != "W") {
+                this.course.credits = this.creditsAvailableForCourseSession[0];
+                return true;
+
+              } else return true
+            }
+          ),
         },
 
         fineArtsAppliedSkills: {
@@ -276,32 +289,47 @@ export default {
               typeof value === 'string'
           ),
         },
+
+
         relatedCourseId: {
-          validID: helpers.withMessage(
-            'Must be a valid related course ID',
-            (value) =>
-              value === '' ||
-              value === null ||
-              value === undefined ||
-              typeof value === 'string' ||
-              typeof value === 'number'
-          ),
-        },
+          validCourseID: helpers.withMessage(
+            'Related Courses must be a valid course',
+            (value, vm) => {
+              const noRelatedCourse = (value == '');
+              const validCourse = (!this.course.relatedCourseId && this.course.courseDetails.courseCode != "IDS") || (this.course.relatedCourseDetails.courseID == this.course.relatedCourseId);
+              return validCourse || noRelatedCourse;
+            }
+          )
+        }
+
 
       },
     }
   },
   watch: {
+    'course.finalLetterGrade'(newVal) {
+      if (newVal) {
+        //set credits to 0 if lettergrade is set to W
+        if (newVal == 'W') {
+          this.course.credits = 0
+        }
+        // Trigger re-validation to clear stale silent errors
+
+        this.v$.course.finalLetterGrade.$validate();
+      }
+    },
+
     'course.interimPercent'(newVal) {
-      if (newVal && newVal != 0) {
+      if (newVal) {
         this.course.interimLetterGrade = this.filteredInterimLetterGrades[0] ?? '';
       } else {
         this.course.interimLetterGrade = ""
       }
     },
     'course.finalPercent'(newVal) {
-      if (newVal && newVal != 0) {
+      if (newVal) {
         this.course.finalLetterGrade = this.filteredFinalLetterGrades[0] ?? '';
+        this.v$.course.finalLetterGrade.$validate();
       } else {
         this.course.finalLetterGrade = ""
       }
@@ -314,7 +342,7 @@ export default {
       this.updateWarnings();
       if (
         (courseType === "Locally Developed" || courseType === "Career Program") &&
-        (trimmedProgram === "1996-EN" || trimmedProgram === "1996-PF")
+        (trimmedProgram !== "1996-EN" && trimmedProgram !== "1996-PF")
       ) {
         this.warnings.push('Flag is only applicable for this course type if student is on the 1995 program.');
       }
@@ -324,6 +352,7 @@ export default {
   computed: {
     ...mapState(useAppStore, {
       allLetterGrades: (state) => state.letterGradeCodes,
+      fineArtsAndAppliedSkillsOptions: (state) => state.FAASTypeCodes,
     }),
     ...mapState(useStudentStore, {
       studentProgram: (state) => state.getStudentProgram,
@@ -354,36 +383,38 @@ export default {
       today.setDate(1); // Set to first of month to match format
       return sessionDate > today;
     },
-    fineArtsAndAppliedSkillsOptions() {
-      return [
-        { value: 'B', text: 'Both Fine Arts and Applied Skills' },
-        { value: 'A', text: 'Fine Arts' },
-        { value: 'F', text: 'Applied Skills' }
-      ];
-    },
-
     shouldDisableFAAS() {
       const level = this.course.courseDetails.courseLevel;
+      const isGrade11 = level?.startsWith('11');
+
 
       const isBAAorLocallyDevelopedOrCP = this.course.courseDetails.courseCategory.description === 'Board Authority Authorized' ||
         this.course.courseDetails.courseCategory.description === 'Locally Developed' ||
         this.course.courseDetails.courseCategory.description === 'Career Program'
-      const isGrade11 = level?.startsWith('11');
+
       return (!isGrade11 || !isBAAorLocallyDevelopedOrCP
       )
     },
 
+    disableCreditsInputIfNoAllowableCredits() {
+      return this.course.courseDetails.courseAllowableCredit.length === 0;
+    },
     creditsAvailableForCourseSession() {
       if (!this.course.courseSession || !Array.isArray(this.course.courseDetails.courseAllowableCredit)) return [];
 
       const sessionYear = this.course.courseSession.slice(0, 4);
       const sessionMonth = this.course.courseSession.slice(4, 6);
-      const sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
-
+      let sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
+      const courseEndDate = new Date(this.course.courseDetails.endDate)
+      const courseCompletionEndDate = new Date(this.course.courseDetails.completionEndDate)
+      if (courseEndDate && courseCompletionEndDate && sessionDate > courseEndDate && sessionDate < courseCompletionEndDate) {
+        sessionDate = courseEndDate
+      }
       return this.course.courseDetails.courseAllowableCredit
         .filter(credit => {
           const start = new Date(credit.startDate);
           const end = credit.endDate ? new Date(credit.endDate) : new Date('9999-12-31');
+
           return sessionDate >= start && sessionDate <= end;
         })
         .map(credit => Number(credit.creditValue))
@@ -428,14 +459,11 @@ export default {
       this.minSession = `${startYear}09`;
       this.maxSession = `${endYear}09`;
 
-      if (this.course.courseSession < 198401 || (this.course.courseSession < this.minSession || this.course.courseSession > this.maxSession)) {
-        this.warnings.push("Course session cannot be beyond the current reporting period or prior to 198401")
+      if (this.course.courseSession < 198401 || this.course.courseSession > this.maxSession) {
+        this.warnings.push("Course session cannot be after the current reporting period or prior to 198401")
 
       }
-
-
     },
-
     getGradesForPercent(percent) {
       const isGTorGTF = this.course.courseDetails.courseCode === 'GT' || this.course.courseDetails.courseCode === 'GTF';
 
@@ -444,24 +472,38 @@ export default {
       const sessionMonth = sessionDateStr.slice(4, 6);
       const sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
 
-      const allAllowableLetterGradesForCourse = this.allLetterGrades.filter(grade => {
-        // Exclude 'RM' if not GT or GTF
-        if (!isGTorGTF && grade.grade === 'RM') return false;
+      let allAllowableLetterGradesForCourse;
 
-        const effectiveDate = new Date(grade.effectiveDate);
-        const expiryDate = grade.expiryDate ? new Date(grade.expiryDate) : new Date(9999, 11, 31);
+      if (isGTorGTF) {
+        // Keep only grades where grade === 'GT'
+        allAllowableLetterGradesForCourse = this.allLetterGrades.filter(grade => grade.grade === 'RM');
+      } else {
+        // Standard filtering logic
+        allAllowableLetterGradesForCourse = this.allLetterGrades.filter(grade => {
+          if (grade.grade === 'RM') return false;
 
-        return sessionDate >= effectiveDate && sessionDate <= expiryDate;
-      });
+          const effectiveDate = new Date(grade.effectiveDate);
+          const expiryDate = grade.expiryDate ? new Date(grade.expiryDate) : new Date(9999, 11, 31);
 
-      const numPercent = Number(percent);
-      if (!percent || isNaN(numPercent)) {
-        return allAllowableLetterGradesForCourse.map((grade) => grade.grade);
+          return sessionDate >= effectiveDate && sessionDate <= expiryDate;
+        });
       }
+      const numPercent = Number(percent);
+      if (percent === null || percent === undefined || percent === '' || isNaN(numPercent)) {
+        if (this.course.courseSession < 199409) {
+          return allAllowableLetterGradesForCourse.map((grade) => grade.grade);
+        } else {
+          return allAllowableLetterGradesForCourse
+            .filter((grade) =>
+              grade.percentRangeLow == null && grade.percentRangeHigh == null
+            ).map((grade) => grade.grade);
+        }
 
+      }
       return allAllowableLetterGradesForCourse
         .filter((grade) =>
-          grade.percentRangeLow <= numPercent && numPercent <= grade.percentRangeHigh
+          grade.percentRangeLow !== null &&
+          grade.percentRangeHigh !== null && grade.percentRangeLow <= numPercent && numPercent <= grade.percentRangeHigh
         )
         .map((grade) => grade.grade);
     },

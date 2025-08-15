@@ -114,6 +114,48 @@ async function deleteStudentCoursesByStudentID(req, res) {
   }
 }
 
+async function transferStudentCoursesByStudentID(req, res) {
+  const token = auth.getBackendToken(req);
+  const courseWithoutID = req.body.map(({id, ...rest }) => ({ ...rest }));
+
+  try {
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.targetStudentID
+      }`;
+    const createTransferResponse = await postData(
+      token,
+      url,
+      courseWithoutID,
+      req.session?.correlationID
+    );
+    if (Array.isArray(createTransferResponse) && createTransferResponse.length > 0) {
+      // Collect IDs of successfully transferred courses to delete from source student
+      const courseIDsToDelete = createTransferResponse
+        .filter(course => course.hasPersisted)
+        .map(course => {
+          const match = req.body.find(
+            reqItem =>
+              reqItem.courseID === course.courseID &&
+              reqItem.courseSession === course.courseSession
+          );
+          return match?.id;
+        })
+        .filter(Boolean); 
+      if (courseIDsToDelete.length > 0) {
+        const deleteUrl = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.sourceStudentID}`;
+        await deleteData(token, deleteUrl, courseIDsToDelete, req.session?.correlationID);
+      }
+    }
+    return res.status(200).json(createTransferResponse);
+  } catch (e) {
+    console.error("Error transferring student courses:", e);
+    if (e?.createTransferResponse?.messages) {
+      return errorResponse(res, e.createTransferResponse.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 async function getStudentCourseHistory(req, res) {
   const token = auth.getBackendToken(req);
 
@@ -520,6 +562,7 @@ module.exports = {
   putStudentCoursesByStudentID,
   postStudentCoursesByStudentID,
   deleteStudentCoursesByStudentID,
+  transferStudentCoursesByStudentID,
   getStudentCourseHistory,
   getStudentCareerPrograms,
   postStudentCareerProgram,

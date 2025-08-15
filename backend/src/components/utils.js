@@ -8,13 +8,7 @@ const lodash = require("lodash");
 const { ApiError } = require("./error");
 const jsonwebtoken = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
-const {
-  LocalDateTime,
-  DateTimeFormatter,
-  LocalDate,
-  DateTimeFormatterBuilder,
-  ResolverStyle,
-} = require("@js-joda/core");
+const { LocalDateTime, DateTimeFormatter } = require("@js-joda/core");
 const { Locale } = require("@js-joda/locale_en");
 const auth = require("./auth");
 const cache = require("memory-cache");
@@ -170,10 +164,10 @@ async function getCommonServiceData(url, params) {
     throw new ApiError(status, { message: "API Get error" }, e);
   }
 }
-async function putCommonServiceData(url, data, user) {
+async function putCommonServiceData(url, data, user, putDataConfig) {
   try {
-    const putDataConfig = addTokenToHeader(
-      null,
+    putDataConfig = addTokenToHeader(
+      putDataConfig,
       await getBackendServiceToken()
     );
     if (user && typeof user === "string") {
@@ -193,10 +187,10 @@ async function putCommonServiceData(url, data, user) {
   }
 }
 
-async function postCommonServiceData(url, data, user) {
+async function postCommonServiceData(url, data, user, putDataConfig) {
   try {
-    const putDataConfig = addTokenToHeader(
-      null,
+    putDataConfig = addTokenToHeader(
+      putDataConfig,
       await getBackendServiceToken()
     );
     if (user && typeof user === "string") {
@@ -213,7 +207,13 @@ async function postCommonServiceData(url, data, user) {
     const status = e.response
       ? e.response.status
       : HttpStatus.INTERNAL_SERVER_ERROR;
-    throw new ApiError(status, { message: "API Post error" }, e);
+    let data;
+    if (e?.response?.data) {
+      data = e.response.data;
+    } else {
+      data = { message: "API Post error" };
+    }
+    throw new ApiError(status, data, e);
   }
 }
 

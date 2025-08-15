@@ -4,9 +4,7 @@
       <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="studentStatus == 'MER'" color="bcGovBlue"
         prepend-icon="mdi-plus" class="text-none" @click="openCreateStudentCoursesDialog" text="Add Student Courses" />
     </template>
-
     <v-card>
-
       <v-card-title>
         <v-row no-gutters>
           <div class="v-card-title">Add Student Courses</div>
@@ -205,15 +203,15 @@
                     </v-row>
                     <v-row v-else>
                       <v-col class="ml-3"><strong>Interim</strong>&nbsp;
-                        <span v-if="course.interimPercent">{{ course.interimPercent }}%
-                          {{ course.interimLetterGrade }}</span>
-                        <span v-else> <i>null</i> </span>
+                        <span v-if="course.interimPercent">{{ course.interimPercent }}% </span>
+                        <span v-if="course.interimLetterGrade">{{ course.interimLetterGrade }} </span>
                       </v-col>
                       <v-col><strong>Final</strong>&nbsp;
                         <span v-if="course.finalPercent">
-                          {{ course.finalPercent }}%
+                          {{ course.finalPercent }}%&nbsp;</span>
+                        <span v-if="course.finalLetterGrade">
                           {{ course.finalLetterGrade }}</span>
-                        <span v-else><i>null</i></span></v-col>
+                      </v-col>
                       <!-- I don't think credits can have a null value? - Samara -->
                       <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
                       <v-col><strong>FA/AS</strong>&nbsp;
@@ -242,8 +240,8 @@
           </v-stepper-window>
         </template>
       </v-stepper>
-      <v-card-actions v-if="step == 0">
-        <v-row v-if="showCourseInputs" no-gutters class="px-3 pt-3">
+      <v-card-actions v-if="step == 0 && showCourseInputs">
+        <v-row no-gutters class="px-3 pt-3">
           <v-col cols="1" class="pr-1">
             Select Course
           </v-col>
@@ -272,7 +270,7 @@
             <v-btn :disabled="v$?.courseAdd?.$invalid || isLoading" variant="flat" color="bcGovBlue" class="text-none"
               @click="addCourse">
               <v-progress-circular v-if="isLoading" indeterminate color="white" size="20" class="mr-2" />
-              <span v-if="!isLoading">Get Course</span>
+              <span>Get Course</span>
             </v-btn>
             <v-btn :disabled="coursesToCreate.length == 0" color="error" @click="closeCourseInput">
               <v-icon size="28">mdi-trash-can</v-icon>
@@ -281,23 +279,21 @@
           <v-col cols="12" class="pb-2 m-2" v-if="courseValidationMessage"> <v-alert type="error" variant="tonal"
               border="start">{{ courseValidationMessage }}</v-alert></v-col>
         </v-row>
-        <v-row v-else justify="center">
-          <v-btn variant="outlined" color="bcGovBlue" class="mt-4 text-none" v-if="!showCourseInputs && step === 0"
-            @click="showCourseInputs = !showCourseInputs">
-            + Enter Course
-          </v-btn>
-        </v-row>
+
       </v-card-actions>
-
-
-
       <v-card-actions>
         <v-btn v-if="step === 0" @click="closeCreateStudentCourseDialog" color="error" variant="outlined"
           class="text-none">
           Cancel
         </v-btn>
+        <v-spacer v-if="step === 0" />
+        <v-btn variant="outlined" color="bcGovBlue" class=" text-none" v-if="!showCourseInputs && step === 0"
+          @click="showCourseInputs = !showCourseInputs && step === 0">
+          + Add Another Course
+        </v-btn>
 
-        <v-btn v-else @click="step--" color="bcGovBlue" variant="outlined" :disabled="step == 0 || validationStep">
+        <v-btn v-else-if="step > 0" @click="step--" color="bcGovBlue" variant="outlined"
+          :disabled="step == 0 || validationStep">
           Back
         </v-btn>
 
@@ -353,9 +349,7 @@ export default {
     return {
       courseAdd: {
         code: {},
-        level: {
-
-        },
+        level: {},
         courseSession: {
           validCourseSessionMonth: helpers.withMessage(
             'Course session must be in YYYYMM format with a valid month (01–12)',
@@ -424,7 +418,7 @@ export default {
     ]),
 
     openCreateStudentCoursesDialog() {
-      this.loading = false;
+      this.isLoading = false;
       this.step = 0;
       this.dialog = true;
       this.createStudentResultsMessages = [];
@@ -446,7 +440,7 @@ export default {
       }
     },
     async addCourse() {
-
+      this.isLoading = true;
       this.courseValidationMessage = null;
 
       const { code, level, courseSession } = this.courseAdd;
@@ -478,6 +472,7 @@ export default {
 
       if (result.error) {
         this.courseValidationMessage = result.error;
+        this.isLoading = false;
         return;
       }
       this.addCoursesToCreate({
@@ -496,6 +491,7 @@ export default {
       });
 
       this.closeCourseInput();
+      this.isLoading = false;
       this.courseValidationMessage = null;
     },
     closeCourseInput() {
@@ -513,7 +509,6 @@ export default {
       this.courseValidationMessage = "";
 
     },
-
     async submitForm() {
       this.isLoading = true;
       this.createStudentResultsMessages = [];
@@ -526,6 +521,7 @@ export default {
         createStudentCoursesRequestBody
       );
       // Enrich response with entire original course object
+
       const enrichedResults = response.map((result) => {
         const original = this.coursesToCreate.find(
           (course) => course.courseID === result.courseID

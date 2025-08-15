@@ -5,13 +5,12 @@ ENV=$1
 APP_NAME=$2
 OPENSHIFT_NAMESPACE=$3
 BASE_URL=$4
-REDIS_PASSWORD=$5
-SPLUNK_TOKEN=$6
-COMMON_NAMESPACE=$7
-GRAD_NAMESPACE=$8
-GRAD_BUSINESS_NAMESPACE=$9
-STUDENT_ADMIN_NAMESPACE=${10}
-STUDENT_ASSESSMENT_NAMESPACE=${11}
+SPLUNK_TOKEN=$5
+COMMON_NAMESPACE=$6
+GRAD_NAMESPACE=$7
+GRAD_BUSINESS_NAMESPACE=$8
+STUDENT_ADMIN_NAMESPACE=$9
+STUDENT_ASSESSMENT_NAMESPACE=${10}
 
 SOAM_KC_REALM_ID="master"
 SOAM_KC=soam-$ENV.apps.silver.devops.gov.bc.ca
@@ -76,9 +75,8 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=GRAD_ROLE_ADMIN=GRAD_SYSTEM_COORDINATOR \
   --from-literal=GRAD_PROGRAM_AREA_BA=GRAD_PROGRAM_AREA_BA \
   --from-literal=GRAD_ROLE_INFO_OFFICER=GRAD_INFO_OFFICER \
-  --from-literal=REDIS_HOST=redis \
+  --from-literal=REDIS_HOST=redis-ha \
   --from-literal=REDIS_PORT=6379 \
-  --from-literal=REDIS_PASSWORD="$REDIS_PASSWORD" \
   --from-literal=BATCH_API_URL="http://educ-grad-batch-graduation-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --from-literal=STUDENT_GRADUATION_API_URL="http://educ-grad-student-graduation-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --from-literal=GRADUATION_API_URL="http://educ-grad-graduation-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080" \

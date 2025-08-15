@@ -5,7 +5,8 @@ const validate = require('../components/validator');
 const {
   postStudentCourseSchema,
   putStudentCourseSchema,
-  deleteStudentCourseSchema
+  deleteStudentCourseSchema,
+  postTransferStudentCourseSchema
 } = require('../components/validations/student-course');
 const { postAdoptStudentSchema } = require('../components/validations/grad-student');
 const auth = require("../components/auth");
@@ -15,6 +16,7 @@ const {
   putStudentCoursesByStudentID,
   postStudentCoursesByStudentID,
   deleteStudentCoursesByStudentID,
+  transferStudentCoursesByStudentID,
   getStudentCourseHistory,
   getStudentCareerPrograms,
   postStudentCareerProgram,
@@ -50,7 +52,7 @@ router.get(
   "/:studentID/courses",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
-  getStudentCourseByStudentID
+  getStudentCourseByStudentID,
 );
 
 router.put(
@@ -67,6 +69,14 @@ router.post(
   isValidUiTokenWithStaffRoles,
   validate(postStudentCourseSchema),
   postStudentCoursesByStudentID
+);
+
+router.post(
+  "/:sourceStudentID/courses/transfer/:targetStudentID",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  validate(postTransferStudentCourseSchema),
+  transferStudentCoursesByStudentID
 );
 
 router.delete(

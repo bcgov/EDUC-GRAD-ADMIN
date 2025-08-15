@@ -90,6 +90,19 @@
           {{ warning }}
         </v-col>
       </v-row>
+      <v-row class="align-center">
+        <v-col class="py-0 m-0 d-flex align-center text-caption">
+          <v-icon color="info" size="18" class="me-1">mdi-information</v-icon>
+
+          <router-link to="/courses/examinable-courses/blending-rules" custom v-slot="{ href, navigate }">
+            <a :href="href" @click="navigate" target="_blank" rel="noopener noreferrer">
+              Instructions for calculating a blended mark
+              <v-icon size="16" color="info" class="ms-1">mdi-open-in-new</v-icon>
+            </a>
+          </router-link>
+
+        </v-col>
+      </v-row>
 
 
     </v-col>
@@ -159,8 +172,8 @@ export default {
     this.minSession = `${startYear}09`;
     this.maxSession = `${endYear}09`;
 
-    if (this.course.courseSession < 198401 || (this.course.courseSession < this.minSession || this.course.courseSession > this.maxSession)) {
-      this.warnings.push("Course session cannot be beyond the current reporting period or prior to 198401")
+    if (this.course.courseSession < 198401 || this.course.courseSession > this.maxSession) {
+      this.warnings.push("Course session cannot be after the current reporting period or prior to 198401")
 
     }
     if (this.course.isExaminable) {
@@ -396,13 +409,6 @@ export default {
       today.setDate(1); // Set to first of month to match format
       return sessionDate > today;
     },
-    fineArtsAndAppliedSkillsOptions() {
-      return [
-        { value: 'B', text: 'Both Fine Arts and Applied Skills' },
-        { value: 'A', text: 'Fine Arts' },
-        { value: 'F', text: 'Applied Skills' }
-      ];
-    },
 
     isBAAorLocallyDevelopedOrCP() {
       return !(
@@ -417,19 +423,23 @@ export default {
 
       const sessionYear = this.course.courseSession.slice(0, 4);
       const sessionMonth = this.course.courseSession.slice(4, 6);
-      const sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
-
+      let sessionDate = new Date(`${sessionYear}-${sessionMonth}-01`);
+      const courseEndDate = new Date(this.course.courseDetails.endDate)
+      const courseCompletionEndDate = new Date(this.course.courseDetails.completionEndDate)
+      if (courseEndDate && courseCompletionEndDate && sessionDate > courseEndDate && sessionDate < courseCompletionEndDate) {
+        sessionDate = courseEndDate
+      }
       return this.course.courseDetails.courseAllowableCredit
         .filter(credit => {
           const start = new Date(credit.startDate);
           const end = credit.endDate ? new Date(credit.endDate) : new Date('9999-12-31');
+
           return sessionDate >= start && sessionDate <= end;
         })
         .map(credit => Number(credit.creditValue))
         .sort((a, b) => b - a)
         .map(value => value.toString());
     },
-
     filteredInterimLetterGrades() {
       return this.getGradesForPercent(this.course.interimPercent);
     },
@@ -480,13 +490,14 @@ export default {
       });
 
       const numPercent = Number(percent);
-      if (!percent || isNaN(numPercent)) {
+      if (percent === null || percent === undefined || percent === '' || isNaN(numPercent)) {
         return allAllowableLetterGradesForCourse.map((grade) => grade.grade);
       }
 
       return allAllowableLetterGradesForCourse
         .filter((grade) =>
-          grade.percentRangeLow <= numPercent && numPercent <= grade.percentRangeHigh
+          grade.percentRangeLow !== null &&
+          grade.percentRangeHigh !== null && grade.percentRangeLow <= numPercent && numPercent <= grade.percentRangeHigh
         )
         .map((grade) => grade.grade);
     },

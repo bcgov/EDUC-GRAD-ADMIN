@@ -136,11 +136,6 @@ async function getStudentAssessmentHistoryPaginated(req, res) {
 }
 
 async function postStudentAssessment(req, res){
-  if (req.body.assessmentStudentID) {
-    return res.status(HttpStatus.BAD_REQUEST).json({
-      message: 'The studentAssessmentId must be null.'
-    });
-  }
   try {
     const userName = utils.getUser(req).idir_username;
     const payload = {
@@ -156,11 +151,19 @@ async function postStudentAssessment(req, res){
     payload.schoolOfRecordSchoolID = student.schoolOfRecordId;
     payload.pen = student.pen;
 
-    const result = await utils.postCommonServiceData(`${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student`, payload, userName);
+    const allowRuleOverride = req.query.allowRuleOverride === 'true';
+    const params = allowRuleOverride ? { params: { allowRuleOverride: true } } : {};
+
+    const result = await utils.postCommonServiceData(
+      `${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student`,
+      payload,
+      userName,
+      params
+    );
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     await logApiError(e, 'postStudentAssessment', 'Error occurred while attempting to create the student assessment.');
-    if (e.data.message) {
+    if (e.data?.message) {
       return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
@@ -185,7 +188,8 @@ async function updateStudentAssessmentById(req, res) {
     const result = await utils.putCommonServiceData(
       `${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/student/${req.params.studentAssessmentId}`,
       payload,
-      userName);
+      userName,
+      { params: { allowRuleOverride: true } });
 
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
@@ -200,7 +204,15 @@ async function updateStudentAssessmentById(req, res) {
 
 async function deleteStudentAssessmentByID(req, res) {
   try {
-    const result = await utils.postCommonServiceData(`${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/student/delete-students`, [req.params.studentAssessmentId]);
+    const allowRuleOverride = req.query.allowRuleOverride === 'true';
+    const params = allowRuleOverride ? { params: { allowRuleOverride: true } } : {};
+
+    const result = await utils.postCommonServiceData(
+      `${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/student/delete-students`,
+      [req.params.studentAssessmentId],
+      null,
+      params
+    );
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     logApiError(e, 'deleteStudentAssessmentById', 'Error occurred while attempting to delete the student assessment.');

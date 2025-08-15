@@ -3,8 +3,9 @@
     <v-dialog v-model="dialog" persistent max-width="80%">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-          <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" @click="openDialog" v-bind="props" color="success"
-            icon="mdi-pencil" density="compact" variant="text" />
+
+          <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="studentStatus == 'MER'" @click="
+            openDialog" v-bind="props" color="success" icon="mdi-pencil" density="compact" variant="text" />
         </slot>
       </template>
 
@@ -16,7 +17,11 @@
             <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
               @click="close" />
           </v-row>
+          <v-card-subtitle>{{
+            studentStore.formattedStudentName
+          }}</v-card-subtitle>
         </v-card-title>
+
         <v-col>
           <StudentCourseAlert :studentStatus="studentStatus" />
         </v-col>
@@ -56,9 +61,13 @@
                           :error="!!courseValidationMessage" variant="outlined" density="compact" clearable
                           persistent-placeholder persistent-hint :disabled="isLoading" />
                       </v-col>
+
                       <v-col class="pr-1">
                         <v-text-field v-model="courseUpdate.courseSession" label="Session Date (YYYYMM)"
-                          variant="outlined" density="compact" clearable persistent-placeholder persistent-hint />
+                          :error="v$.courseUpdate.courseSession.$error"
+                          :error-messages="v$.courseUpdate.courseSession.$errors.map(e => e.$message)"
+                          @blur="v$.courseUpdate.courseSession.$touch()" variant="outlined" density="compact" clearable
+                          persistent-placeholder persistent-hint :disabled="isLoading" />
                       </v-col>
 
                       <v-col>
@@ -66,11 +75,11 @@
                         <v-btn :disabled="v$?.courseUpdate?.$invalid || isLoading" variant="flat" color="bcGovBlue"
                           class="text-none" @click="updateCourse">
                           <v-progress-circular v-if="isLoading" indeterminate color="white" size="20" class="mr-2" />
-                          <span v-if="!isLoading">Get Course</span>
+                          <span v-if="!isLoading">Change Course</span>
                         </v-btn>
-                        <v-btn :disabled="isLoading" class="pl-1" icon="mdi-delete-forever" density="compact"
-                          variant="text" color="error" @click="closeCourseInput">
-                          <v-icon size="28">mdi-trash-can</v-icon>
+                        <v-btn :disabled="isLoading" class="pl-1" density="compact" variant="outline" color="error"
+                          @click="closeCourseInput">
+                          Close
                         </v-btn>
                       </v-col>
                       <v-col cols="12"> <v-alert v-if="courseValidationMessage" type="error" variant="tonal"
@@ -86,7 +95,7 @@
                         <CourseDetailsInput :course="selectedCourseToUpdate" update>
                           <template #remove-button>
                             <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none p-1"
-                              style="max-width: 7.5rem;" @click="showCourseInput = !showCourseInput">Change
+                              style="max-width: 7.5rem;" @click="showCourseInputAndPopulate()">Change
                               Course</v-btn>
                           </template>
                         </CourseDetailsInput>
@@ -191,7 +200,7 @@
           </v-btn>
           <v-spacer />
 
-          <v-btn v-if="step == 0" @click="step++" color="bcGovBlue" variant="flat">
+          <v-btn v-if="step == 0" @click="step++" color="bcGovBlue" variant="flat" :disabled="v$.$invalid">
             Next
           </v-btn>
           <v-btn v-else color="error" variant="flat" class="text-none" density="default" @click="confirmUpdate"
@@ -233,12 +242,33 @@ export default {
   },
   validations() {
     return {
-      courseValidationMessage: null,
+      selectedCourseToUpdate: {
+
+        isDifferentFromOriginal: helpers.withMessage(
+          'No changes detected in the course details',
+          function (value) {
+            const normalize = (obj) => {
+              return JSON.parse(JSON.stringify(obj), (key, val) => {
+                // Convert numeric strings to numbers
+                if (typeof val === 'string' && !isNaN(val)) {
+                  return Number(val);
+                }
+                return val;
+              });
+            };
+
+            const normalizedValue = normalize(value);
+            const normalizedOriginal = normalize(this.course);
+
+            return JSON.stringify(normalizedValue) !== JSON.stringify(normalizedOriginal);
+          }
+        )
+
+      },
+
       courseUpdate: {
         code: {},
-        level: {
-
-        },
+        level: {},
         courseSession: {
           validCourseSessionMonth: helpers.withMessage(
             'Course session must be in YYYYMM format with a valid month (01–12)',
@@ -276,6 +306,7 @@ export default {
     };
   },
   computed: {
+
     ...mapState(useStudentStore, {
       studentPenAndName: "formattedStudentName"
 
@@ -285,6 +316,10 @@ export default {
       studentStatus: (state) => state.student.profile.studentStatus,
 
     }),
+    studentStore() {
+      return useStudentStore();
+    },
+
   },
 
   methods: {
@@ -297,6 +332,7 @@ export default {
       this.courseValidationMessage = null;
 
       const { code, level, courseSession } = this.courseUpdate;
+
 
       const result = await validateAndFetchCourse({
         code,
@@ -323,11 +359,12 @@ export default {
     openDialog() {
       this.showCourseInput = false;
       this.dialog = true;
-      this.selectedCourseToUpdate = JSON.parse(JSON.stringify(this.course));
       //add if course is examinable
-      this.selectedCourseToUpdate.isExaminable = this.selectedCourseToUpdate.courseExam != null
+      const isExaminable = this.course.courseExam != null;
+      this.course.isExaminable = isExaminable
       this.courseValidationMessage = "";
       this.step = 0;
+      this.selectedCourseToUpdate = JSON.parse(JSON.stringify(this.course));
     },
     close() {
       this.clearForm();
@@ -344,6 +381,13 @@ export default {
       }
       this.courseValidationMessage = "";
     },
+    showCourseInputAndPopulate() {
+      this.clearForm();
+      this.showCourseInput = true;
+      this.courseUpdate.code = this.course.courseDetails.courseCode;
+      this.courseUpdate.level = this.course.courseDetails.courseLevel;
+      this.courseUpdate.courseSession = this.course.courseSession;
+    },
     closeCourseInput() {
       this.clearForm();
       this.showCourseInput = false;
@@ -357,14 +401,14 @@ export default {
         const response = await this.updateStudentCourse(courseWithoutCourseDetails);
         if (response.status == 200) {
           this.snackbarStore.showSnackbar(
-            "Student course successfully updated.",
+            `${courseDetails.courseCode} ${courseDetails.courseLevel} - ${courseWithoutCourseDetails.courseSession} successfully updated.`,
             "success",
             10000,
             "Student course"
           );
         } else {
           this.snackbarStore.showSnackbar(
-            "Failed to update student course",
+            "Failed to update student course \n" + response.data,
             "danger",
             10000,
             "Student course"
@@ -386,15 +430,7 @@ export default {
     },
   },
 
-  validations() {
-    return {
-      selectedCourseToUpdate: {
-        // example rule: at least one field required
-        courseCode: { required: helpers.withMessage('Course code is required', required) },
-        // Add more validations depending on the course object structure
-      },
-    };
-  },
+
 
 };
 </script>
