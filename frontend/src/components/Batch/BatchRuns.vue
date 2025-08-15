@@ -403,7 +403,7 @@ export default {
       });
     },
     downloadDISTRUNUSER(bid, transmissionMode = null) {
-      DistributionService.downloadDISTRUNUSER(bid, transmissionMode)
+      BatchProcessingService.downloadUserDistribution(bid, transmissionMode)
         .then((response) => {
           if (!response.data || response.data.length === 0) {
             this.snackbarStore.showSnackbar(

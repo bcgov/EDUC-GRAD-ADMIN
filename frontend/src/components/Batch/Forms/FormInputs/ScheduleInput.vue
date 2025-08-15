@@ -167,8 +167,7 @@
   </div>
 </template>
 <script>
-import { isProxy, toRaw, ref, watch } from "vue";
-import SchoolService from "@/services/SchoolService.js";
+import { ref, watch } from "vue";
 import { VTimePicker } from "vuetify/labs/VTimePicker";
 import { useDate } from "vuetify";
 import { useVuelidate } from "@vuelidate/core";

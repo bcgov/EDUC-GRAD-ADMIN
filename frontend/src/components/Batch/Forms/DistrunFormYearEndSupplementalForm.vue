@@ -4,8 +4,6 @@
   </div>
 </template>
 <script>
-import GraduationReportService from "@/services/GraduationReportService.js";
-import BatchProcessingService from "@/services/BatchProcessingService.js";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import DistrictInput from "@/components/Batch/Forms/FormInputs/DistrictInput.vue";

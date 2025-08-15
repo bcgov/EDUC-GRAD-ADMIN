@@ -26,7 +26,7 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
-import GraduationReportService from "@/services/GraduationReportService.js";
+import CodesService from "@/services/CodesService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "ProgramCertificateTranscripts",
@@ -34,7 +34,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    GraduationReportService.getProgramCertificateTranscripts()
+    CodesService.getProgramCertificateTranscriptCodes()
       .then((response) => {
         this.programCertificateTranscripts = response.data;
       })

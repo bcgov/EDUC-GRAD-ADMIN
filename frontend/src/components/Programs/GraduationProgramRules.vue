@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import ProgramManagementService from "@/services/ProgramManagementService.js";
+import ProgramService from "@/services/ProgramService.js";
 import DisplayTable from "../DisplayTable.vue";
 import CourseService from "@/services/CourseService.js";
 import AssessmentService from "@/services/AssessmentService.js";
@@ -110,7 +110,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    ProgramManagementService.getProgramRules()
+    ProgramService.getProgramRules()
       .then((response) => {
         this.graduationProgramRules = response.data;
         this.isLoading = false;

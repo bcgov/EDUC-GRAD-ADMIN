@@ -23,13 +23,13 @@
 </template>
 
 <script>
-import StudentGraduationService from "@/services/StudentGraduationService.js";
+import CodesService from "@/services/CodesService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "Undo Completion Reasons",
   components: {},
   created() {
-    StudentGraduationService.getUngradReasons()
+    CodesService.getUndoCompletionReasonCodes()
       .then((response) => {
         this.ungradReasons = response.data;
       })

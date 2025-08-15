@@ -124,7 +124,7 @@
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
 import OpenStatusBadge from "@/components/Common/OpenStatusBadge.vue";
-import GraduationReportService from "@/services/GraduationReportService.js";
+import ReportService from "@/services/ReportService.js";
 import sharedMethods from "../../sharedMethods";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { mapState } from "pinia";
@@ -223,7 +223,7 @@ export default {
         this.searchLoading = false;
         this.searchMessage = "Select a school to view reports.";
       } else {
-        GraduationReportService.getAllReportsForSchool(this.searchSchoolId)
+        ReportService.getSchoolReportsById(this.searchSchoolId)
           .then((response) => {
             this.reports = response.data;
             this.searchLoading = false;

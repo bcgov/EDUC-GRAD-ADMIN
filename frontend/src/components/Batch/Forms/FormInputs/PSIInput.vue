@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import TRAXService from "@/services/TRAXService.js";
+import SchoolsService from "@/services/SchoolsService.js";
 import { useVuelidate } from "@vuelidate/core";
 import { minLength } from "@vuelidate/validators";
 import { mapActions, mapState } from "pinia";
@@ -145,7 +145,7 @@ export default {
           this.validationMessage = "";
           if (value === "") return true;
           if (value.length === 3) {
-            let psi = await TRAXService.getPSIByAdvancedSearch(
+            let psi = await SchoolsService.getPSIByAdvancedSearch(
               `psiCode=${value}`
             );
             if (psi.data[0]) {
@@ -203,7 +203,7 @@ export default {
       this.validationMessage = "";
       if (this.psi === "") return true;
       if (this.psi.length === 3) {
-        let psi = await TRAXService.getPSIByAdvancedSearch(
+        let psi = await SchoolsService.getPSIByAdvancedSearch(
           `psiCode=${this.psi}`
         );
         if (psi.data[0]) {

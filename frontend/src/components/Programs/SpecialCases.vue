@@ -14,7 +14,7 @@
 
 <script>
 import DisplayTable from "../DisplayTable.vue";
-import ProgramManagementService from "@/services/ProgramManagementService.js";
+import CodesService from "@/services/CodesService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "SpecialCases",
@@ -22,7 +22,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    ProgramManagementService.getSpecialCases()
+    CodesService.getSpecialCaseCodes()
       .then((response) => {
         this.specialCases = response.data;
       })

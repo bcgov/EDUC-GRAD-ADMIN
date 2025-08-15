@@ -32,7 +32,7 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
-import GraduationReportService from "@/services/GraduationReportService.js";
+import ReportService from "@/services/ReportService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 
 export default {
@@ -41,7 +41,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    GraduationReportService.getDigitalSignatures()
+    ReportService.getDigitalSignatures()
       .then((response) => {
         this.isLoading = false;
         this.digitalSignatures = response.data;

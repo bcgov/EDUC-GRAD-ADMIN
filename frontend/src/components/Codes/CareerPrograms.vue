@@ -31,7 +31,7 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
-import ProgramManagementService from "@/services/ProgramManagementService.js";
+import CodesService from "@/services/CodesService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "CareerPrograms",
@@ -39,7 +39,8 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    ProgramManagementService.getCareerPrograms()
+    //IMPROVEMENT: Set & Get these in app store
+    CodesService.getCareerProgramCodes()
       .then((response) => {
         this.careerPrograms = response.data;
         this.isLoading = false;

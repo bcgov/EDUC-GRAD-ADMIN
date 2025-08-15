@@ -8,9 +8,26 @@ const {
   getStudentStatusCodes,
   getHistoryActivityCodes,
   getStudentGradeCodes,
+  getGradProgramCodes,
+  getOptionalProgramCodes,
+  getCareerProgramCodes,
+  getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
   getExamSpecialCaseCodes,
+  getInstituteSchoolCategoryCodes,
+  getInstituteFacilityCodes,
+  getAssessmentSpecialCaseCodes,
+  getCourseLetterGradeCodes,
+  getTranscriptMessagingCodes,
+  getStudentUndoCompletionReasonCodes,
+  getTranscriptTypeCodes,
+  getCertificateTypeCodes,
+  getProgramCertificateTranscriptCodes,
+  getReportTypeCodes,
+  getDocumentStatusCodes,
+  getDigitalSignatureBlockTypeCodes,
+  getBatchJobTypes,
 } = require("../components/codes");
 
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
@@ -44,6 +61,34 @@ router.get(
 );
 
 router.get(
+  "/gradProgramCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getGradProgramCodes
+);
+
+router.get(
+  "/optionalProgramCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getOptionalProgramCodes
+);
+
+router.get(
+  "/careerProgramCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getCareerProgramCodes
+);
+
+router.get(
+  "/requirementTypeCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getRequirementTypeCodes
+);
+
+router.get(
   "/fineArtsAppliedSkillsCodes",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
@@ -62,6 +107,97 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffRoles,
   getExamSpecialCaseCodes
+);
+
+router.get(
+  "/schoolCategoryCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getInstituteSchoolCategoryCodes
+);
+
+router.get(
+  "/schoolFacilityCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getInstituteFacilityCodes
+);
+
+router.get(
+  "/assessmentSpecialCaseCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getAssessmentSpecialCaseCodes
+);
+
+router.get(
+  "/letterGradeCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getCourseLetterGradeCodes
+);
+
+router.get(
+  "/transcriptMessagingCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getTranscriptMessagingCodes
+);
+
+router.get(
+  "/undoCompletionReasonCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getStudentUndoCompletionReasonCodes
+);
+
+router.get(
+  "/transcriptTypeCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getTranscriptTypeCodes
+);
+
+router.get(
+  "/certificateTypeCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getCertificateTypeCodes
+);
+
+router.get(
+  "/programCertificateTranscriptCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getProgramCertificateTranscriptCodes
+);
+
+router.get(
+  "/reportTypeCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getReportTypeCodes
+);
+
+router.get(
+  "/documentStatusCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getDocumentStatusCodes
+);
+
+router.get(
+  "/signatureBlockTypeCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getDigitalSignatureBlockTypeCodes
+);
+
+router.get(
+  "/batchJobTypes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffRoles,
+  getBatchJobTypes
 );
 
 module.exports = router;

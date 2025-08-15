@@ -300,7 +300,7 @@
                   <v-select
                     data-cy="student-grade-select"
                     v-model="editedGradStatus.studentGrade"
-                    :items="getGradeCodes"
+                    :items="getStudentGradeCodes"
                     :item-title="formatGradeOption"
                     item-value="studentGradeCode"
                     label="Select"
@@ -717,7 +717,7 @@ import OpenStatusBadge from "@/components/Common/OpenStatusBadge.vue";
 
 import sharedMethods from "../../../sharedMethods";
 import StudentService from "@/services/StudentService.js";
-import InstituteService from "@/services/InstituteService.js";
+import SchoolsService from "@/services/SchoolsService.js";
 export default {
   name: "GRADStatusForm",
   components: {
@@ -745,7 +745,7 @@ export default {
       getSchoolsList: "getSchoolsList",
       getSchoolMincodeById: "getSchoolMincodeById",
       getSchoolById: "getSchoolById",
-      getGradeCodes: "getGradeCodes",
+      getStudentGradeCodes: "getStudentGradeCodes",
     }),
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
@@ -1352,7 +1352,7 @@ export default {
         // Create a Set from the schoolGradesToCheck array for efficient lookups.
         const gradesToCheckSet = new Set(schoolGradesToCheck);
         // Calling out to institute for GRADES
-        const response = await InstituteService.getSchoolById(schoolId);
+        const response = await SchoolsService.getSchoolById(schoolId);
         const schoolGrades = response?.data?.grades;
         for (const grade of schoolGrades) {
           // If the current grade's schoolGradeCode is in the Set, return true.
@@ -1400,7 +1400,7 @@ export default {
       return openedDate < currentDate && closedDate === null;
     },
     isGradeExpected(grade) {
-      const foundGrade = this.getGradeCodes.find(
+      const foundGrade = this.getStudentGradeCodes.find(
         (obj) => obj.studentGradeCode === grade
       );
       return foundGrade?.expected === "Y";

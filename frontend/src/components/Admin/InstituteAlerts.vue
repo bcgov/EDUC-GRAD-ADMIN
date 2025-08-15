@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import TRAXService from "../../services/TRAXService";
+import SchoolsService from "../../services/SchoolsService";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 
 // I don't like how I'm getting the user's IDIR right now
@@ -180,7 +180,7 @@ export default {
         });
       }
       // update to pass in page, itemsPerPage, and sortBy
-      TRAXService.getInstituteEventHistory(params)
+      SchoolsService.getInstituteEventHistory(params)
         .then((response) => {
           this.instituteAlerts = response.data.content;
           this.totalElements = response.data.totalElements;
@@ -199,7 +199,7 @@ export default {
         id: id,
         acknowledgeFlag: acknowledgeFlag,
       };
-      TRAXService.putInstituteEventHistory(payload)
+      SchoolsService.putInstituteEventHistory(payload)
         .then((response) => {
           this.getInstituteAlerts();
         })

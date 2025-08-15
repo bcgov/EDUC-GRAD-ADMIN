@@ -2,7 +2,7 @@
   <v-container :class="{ 'pt-0': !!$slots.inputWarning }">
     <v-row>
       <v-col>
-        <v-alert v-if="$slots.inputWarning" type="info" class=" mb-5 pb-0">
+        <v-alert v-if="$slots.inputWarning" type="info" class="mb-5 pb-0">
           <slot name="inputWarning"></slot>
         </v-alert>
 
@@ -94,18 +94,13 @@
   </v-container>
 </template>
 <script>
-import { isProxy, toRaw, ref, watch } from "vue";
-import TRAXService from "@/services/TRAXService.js";
-import SchoolService from "@/services/SchoolService.js";
-import StudentService from "@/services/StudentService.js";
-import GraduationReportService from "@/services/GraduationReportService.js";
+import { ref, watch } from "vue";
 import DateRangeInput from "./DateRangeInput.vue";
 import OpenStatusBadge from "@/components/Common/OpenStatusBadge.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
 import { useAppStore } from "../../../../store/modules/app";
-import { mapActions, mapState } from "pinia";
-import { required, minLength, helpers } from "@vuelidate/validators";
+import { mapState } from "pinia";
 
 export default {
   components: {

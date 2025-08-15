@@ -28,7 +28,7 @@
 
 <script>
 import DisplayTable from "../DisplayTable.vue";
-import ProgramManagementService from "@/services/ProgramManagementService.js";
+import ProgramService from "@/services/ProgramService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "AlgorithmRules",
@@ -36,7 +36,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    ProgramManagementService.getAlgorithmRules()
+    ProgramService.getAlgorithmRules()
       .then((response) => {
         this.algorithmRules = response.data;
         this.isLoading = false;
