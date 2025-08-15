@@ -6,6 +6,7 @@
       <div v-if="isAuthenticatedGet && dataReady">
         <v-btn @click="dialog = true">{{ userInfoGet.userName }}</v-btn>
 
+
         <!-- Dialog component -->
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on, attrs }">
@@ -129,6 +130,51 @@ export default {
     timeRemaining: function () {
       return Math.floor(this.timerValue);
     },
+    timeRemainingFormatted: function () {
+      const seconds = this.timerValue
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins} minute(s) and ${secs} second(s)`;
+    },
+
+    decodedJwtPayload() {
+      if (!this.jwtTokenGet) return null;
+
+      const [header, payload, signature] = this.jwtTokenGet.split('.');
+
+      const decodeBase64 = (str) => {
+        const padded = str.padEnd(str.length + (4 - str.length % 4) % 4, '=');
+        return JSON.parse(atob(padded));
+      };
+
+      try {
+
+        const decodedPayload = decodeBase64(payload);
+
+        // Convert timestamps to readable dates
+        const iatReadable = new Date(decodedPayload.iat * 1000).toLocaleString();
+        const expReadable = new Date(decodedPayload.exp * 1000).toLocaleString();
+
+        // Replace the original timestamps
+        decodedPayload.iat = iatReadable;
+        decodedPayload.exp = expReadable;
+
+        return decodedPayload;
+
+
+      } catch (e) {
+        console.error("Failed to decode JWT:", e);
+        return null;
+      }
+    },
+    jwtTokenTrimmed() {
+      if (this.jwtTokenGet) {
+        const last10 = this.jwtTokenGet.slice(-10)
+        return last10;
+      } else return ""
+
+    }
+
   },
   methods: {
     ...mapActions(useAuthStore, [
@@ -150,10 +196,19 @@ export default {
       }
     },
     setupTimer() {
+      //initialize currentToken on app load
+      let currentToken = localStorage.getItem("jwtToken");
       setInterval(async () => {
+        const browserTokenWasUpdated = currentToken !== localStorage.getItem("jwtToken")
+        if (browserTokenWasUpdated) {
+          console.log("another tab updated the JWT")
+          currentToken = localStorage.getItem("jwtToken")
+          this.setJwtToken(currentToken)
+        }
         if (this.jwtTokenGet) {
+
           this.timerValue = await this.getTokenRemainingTime();
-          if (this.timerValue < 300) this.tokenExpiring = true;
+          this.tokenExpiring = this.timerValue < 300;
           this.tokenExpired = await this.checkJWTTokenExpired();
         }
       }, 30000); // Update every 10000 milliseconds (30 seconds)
@@ -173,6 +228,7 @@ export default {
       await this.logout();
       window.location.href = this.authRoutes.LOGIN;
     },
+
   },
 };
 </script>
