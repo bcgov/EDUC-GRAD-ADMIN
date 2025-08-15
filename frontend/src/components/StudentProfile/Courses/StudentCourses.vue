@@ -12,44 +12,39 @@
         <v-alert v-if="!courses" class="container">
           This student does not have any courses.
         </v-alert>
-        <div class="col-12 px-3">
-        <div class="float-left grad-actions" >
-          <v-menu offset-y >
-            <template v-slot:activator="{ props }">
-              <v-btn
-                text
-                v-bind="props"
-                :disabled="selected.length === 0"
-                id="actions"
-                right
-                class="float-right admin-actions text-none"
-                prepend-icon="mdi-select-multiple"
-                append-icon="mdi-menu-down"
-                color="error" >Bulk Actions</v-btn>
-            </template>
-            <v-list>
-              <v-list-item v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
-              @click="showCourseDelete">
-                <v-icon color="error" >mdi-delete-forever</v-icon> Delete Selected Courses
-              </v-list-item>
-              <v-list-item v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
-              @click="showCourseTransfer">
-                <v-icon color="error" >mdi-transfer</v-icon> Transfer Selected Courses
-              </v-list-item>              
-            </v-list>
-          </v-menu>
+        <div class="col-12 px-3" v-if="allowUpdateStudentCourseExam">
+          <div class="float-left grad-actions">
+            <v-menu offset-y>
+              <template v-slot:activator="{ props }">
+                <v-btn text v-bind="props" :disabled="selected.length === 0" id="actions" right
+                  class="float-right admin-actions text-none" prepend-icon="mdi-select-multiple"
+                  append-icon="mdi-menu-down" color="error">Bulk Actions</v-btn>
+              </template>
+              <v-list>
+                <v-list-item v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
+                  @click="showCourseDelete">
+                  <v-icon color="error">mdi-delete-forever</v-icon> Delete Selected Courses
+                </v-list-item>
+                <v-list-item v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
+                  @click="showCourseTransfer">
+                  <v-icon color="error">mdi-transfer</v-icon> Transfer Selected Courses
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
         </div>
-      </div>
         <v-row no-gutters>
-          <StudentCoursesDeleteForm @close="clearSelected" courseBatchDelete :selectedCoursesToDelete="selected" ref="courseDeleteFormRef">
+          <StudentCoursesDeleteForm @close="clearSelected" courseBatchDelete :selectedCoursesToDelete="selected"
+            ref="courseDeleteFormRef">
           </StudentCoursesDeleteForm>
-          <StudentCoursesTransferForm @close="clearSelected" :selectedCoursesToTransfer="selected" ref="courseTransferFormRef">
+          <StudentCoursesTransferForm @close="clearSelected" :selectedCoursesToTransfer="selected"
+            ref="courseTransferFormRef">
           </StudentCoursesTransferForm>
           <v-spacer />
-          <StudentCoursesCreateForm />
+          <StudentCoursesCreateForm type="all"/>
         </v-row>
         <v-data-table v-if="courses" v-model="selected" :items="courses" :headers="fields" :item-value="(item) => item"
-          :items-per-page="'-1'" title="studentCourse" show-select>
+          :items-per-page="'-1'" title="studentCourse" :show-select="allowUpdateStudentCourseExam">
           <template v-slot:item.data-table-expand="{
             item,
             internalItem,
@@ -65,7 +60,6 @@
               </v-btn>
             </td>
           </template>
-
           <template v-slot:item.courseSession="{ item }">
             {{ $filters.formatYYYYMMStringDate(item.courseSession) }}
           </template>
@@ -81,8 +75,10 @@
                 <div v-if="hasCourseInfo(item)">
                   <!-- Customized Course Name -->
                   <div v-if="item.customizedCourseName">
-                    <strong>Customized Course:</strong>
-                    {{ item.customizedCourseName }}
+                    <strong>Customized Course&nbsp;</strong>
+                    <span v-if="item.customizedCourseName">{{ item.customizedCourseName
+                      }}</span>
+                      <span v-else> <i>null</i> </span>
                   </div>
 
                   <!-- Related Course Details -->
@@ -94,34 +90,47 @@
 
                   <!-- Course Exam Details -->
                   <v-row no-gutters v-if="item.courseExam">
-                    <v-col><strong>Exam Percent</strong>&nbsp;{{
-                      item.courseExam.examPercentage
-                    }}%</v-col>
-                    <v-col><strong>Best Exam Percent</strong>&nbsp;{{
-                      item.courseExam.bestExamPercentage
-                    }}%</v-col>
-                    <v-col><strong>School Percent</strong>&nbsp;{{
-                      item.courseExam.schoolPercentage
-                    }}%</v-col>
-                    <v-col><strong>Best School Percent</strong>&nbsp;{{
-                      item.courseExam.bestSchoolPercentage
-                    }}%</v-col>
-                    <v-col><strong>Special Case</strong>&nbsp;{{
-                      item.courseExam.specialCase
-                    }}</v-col>
+                    <v-col><strong>Exam %&nbsp;</strong>                    
+                    <span v-if="item.courseExam.examPercentage">{{ item.courseExam.examPercentage
+                      }}</span>
+                      <span v-else> <i>null</i> </span>  
+                    </v-col>
+                    <v-col><strong>Best Exam %&nbsp;</strong>
+                    <span v-if="item.courseExam.bestExamPercentage">{{ item.courseExam.bestExamPercentage
+                      }}</span>
+                      <span v-else> <i>null</i> </span>    
+                    </v-col>
+                    <v-col><strong>School %&nbsp;</strong>
+                    <span v-if="item.courseExam.schoolPercentage">{{ item.courseExam.schoolPercentage
+                      }}</span>
+                      <span v-else> <i>null</i> </span>      
+                    </v-col>
+                    <v-col><strong>Best School %&nbsp;</strong>
+                    <span v-if="item.courseExam.bestSchoolPercentage">{{ item.courseExam.bestSchoolPercentage
+                      }}</span>
+                    <span v-else> <i>null</i> </span> 
+                    </v-col>
+                    <v-col><strong>Special Case&nbsp;</strong>
+                    <span v-if="item.courseExam.specialCase">{{ item.courseExam.specialCase
+                      }}</span>
+                    <span v-else> <i>null</i> </span> 
+                    </v-col>
                   </v-row>
                 </div>
               </td>
             </tr>
           </template>
-
           <template v-slot:item.edit="{ item }">
-            <StudentCoursesUpdateForm :course="item">
-            </StudentCoursesUpdateForm>
+            <div v-if="!item.courseExam || allowUpdateStudentCourseExam">
+              <StudentCoursesUpdateForm :course="item">
+              </StudentCoursesUpdateForm>
+            </div>
           </template>
           <template v-slot:item.delete="{ item }">
-            <StudentCoursesDeleteForm :selectedCoursesToDelete="[item]">
-            </StudentCoursesDeleteForm>
+            <div v-if="!item.courseExam || allowUpdateStudentCourseExam">
+              <StudentCoursesDeleteForm :selectedCoursesToDelete="[item]">
+              </StudentCoursesDeleteForm>
+            </div>
           </template>
         </v-data-table>
       </v-card-text>
@@ -149,6 +158,9 @@ export default {
     CourseDetails: CourseDetails,
   },
   computed: {
+    ...mapState(useAccessStore, {
+      allowUpdateStudentCourseExam: "allowUpdateStudentCourseExam",
+    }),
     ...mapState(useStudentStore, {
       courses: "studentCourses",
       gradStatusCourses: "gradStatusCourses",
