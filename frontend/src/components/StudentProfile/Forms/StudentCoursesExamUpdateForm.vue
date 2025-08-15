@@ -1,9 +1,9 @@
 <template>
   <div>
-    <v-dialog v-model="dialog" persistent max-width="1260px">
+    <v-dialog v-model="dialog" persistent max-width="80%">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-          <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" @click="openDialog" v-bind="props" color="success"
+          <v-btn :disabled="studentStatus === 'MER'" @click="openDialog" v-bind="props" color="success"
             icon="mdi-pencil" density="compact" variant="text" />
         </slot>
       </template>
@@ -17,8 +17,13 @@
             <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
               @click="close" />
           </v-row>
-          <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
+          <v-card-subtitle>{{
+            studentStore.formattedStudentName
+          }}</v-card-subtitle>
         </v-card-title>
+        <v-col>
+          <StudentCourseAlert :studentStatus="studentStatus" />
+        </v-col>
         <v-stepper alt-labels show-actions v-model="step">
           <template v-slot:default>
             <v-stepper-header>
@@ -78,8 +83,8 @@
 
                     <CourseExamDetailsInput :course="selectedCourseToUpdate" update>
                       <template #remove-button>
-                        <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none p-1"
-                          style="max-width: 7.5rem;" :disabled="selectedCourseToUpdate.isExaminable"
+                        <v-btn v-if="!selectedCourseToUpdate.isExaminable" variant="outlined" color="bcGovBlue" class="mb-4 text-none p-1"
+                          style="max-width: 7.5rem;" 
                           @click="showCourseInput = !showCourseInput">Change Course</v-btn>
                       </template>
                     </CourseExamDetailsInput>
@@ -137,7 +142,6 @@
         </v-stepper>
 
         <v-card-actions>
-
           <v-btn v-if="step === 0" color="error" variant="outlined" class="text-none" density="default" @click="close">
             Cancel
           </v-btn>
@@ -145,8 +149,7 @@
             Back
           </v-btn>
           <v-spacer />
-
-          <v-btn v-if="step == 0" @click="step++" color="bcGovBlue" variant="outlined">
+          <v-btn v-if="step == 0" @click="step++" color="bcGovBlue" variant="flat" :disabled="v$.$invalid">
             Next
           </v-btn>
           <v-btn v-else color="bcGovBlue" variant="flat" class="text-none" density="default" @click="confirmUpdate"
@@ -163,11 +166,12 @@
 <script>
 import useVuelidate from '@vuelidate/core';
 import { useSnackbarStore } from "@/store/modules/snackbar";
-import { required, helpers } from '@vuelidate/validators';
+import { helpers } from '@vuelidate/validators';
 import CourseExamDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseExamDetailsInput.vue";
 import { useStudentStore } from "@/store/modules/student";
 import { mapState, mapActions } from "pinia";
 import { validateAndFetchCourse } from '@/components/StudentProfile/Forms/utils/validateCourse.js';
+import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue";
 
 export default {
   name: "StudentCoursesExamUpdateForm",
@@ -176,7 +180,7 @@ export default {
       v$: useVuelidate(),
     };
   },
-  components: { CourseExamDetailsInput },
+  components: { CourseExamDetailsInput, StudentCourseAlert },
 
   props: {
     course: {
@@ -186,11 +190,30 @@ export default {
   },
   validations() {
     return {
-      courseValidationMessage: null,
+      selectedCourseToUpdate: {
+        isDifferentFromOriginal: helpers.withMessage(
+          'No changes detected in the course details',
+          function (value) {
+            const normalize = (obj) => {
+              return JSON.parse(JSON.stringify(obj), (key, val) => {
+                // Convert numeric strings to numbers
+                if (typeof val === 'string' && !isNaN(val)) {
+                  return Number(val);
+                }
+                return val;
+              });
+            };
+
+            const normalizedValue = normalize(value);
+            const normalizedOriginal = normalize(this.course);
+
+            return JSON.stringify(normalizedValue) !== JSON.stringify(normalizedOriginal);
+          }
+        )        
+      },
       courseUpdate: {
         code: {},
         level: {
-
         },
         courseSession: {
           validCourseSessionMonth: helpers.withMessage(
@@ -235,6 +258,9 @@ export default {
     ...mapState(useStudentStore, {
       studentCourses: "studentCourses",
     }),
+    studentStore() {
+      return useStudentStore();
+    },
   },
 
   methods: {
@@ -301,17 +327,25 @@ export default {
       this.step = 0;
     },
     async confirmUpdate() {
-
       try {
         //remove courseDetails from payload
         const { courseDetails, relatedCourseDetails, ...courseWithoutCourseDetails } = this.selectedCourseToUpdate;
-        await this.updateStudentCourse(courseWithoutCourseDetails);
+        const response = await this.updateStudentCourse(courseWithoutCourseDetails);
+        if (response.status == 200) {
         this.snackbarStore.showSnackbar(
-          "Student course exam successfully updated.",
+          `${courseDetails.courseCode} ${courseDetails.courseLevel} - ${courseWithoutCourseDetails.courseSession} successfully updated.`,
           "success",
           10000,
           "Student course"
         );
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Failed to update student course \n" + response.data,
+            "danger",
+            10000,
+            "Student course"
+          );
+        }
         this.close();
       } catch (error) {
         this.snackbarStore.showSnackbar(
@@ -322,20 +356,6 @@ export default {
         );
       }
     },
-
-    hasPermissions(module, permission) {
-      return true; // Replace with actual logic
-    },
-  },
-
-  validations() {
-    return {
-      selectedCourseToUpdate: {
-        // example rule: at least one field required
-        courseCode: { required: helpers.withMessage('Course code is required', required) },
-        // Add more validations depending on the course object structure
-      },
-    };
   },
 
 };

@@ -41,9 +41,8 @@
         </v-col>
         <v-col>
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
-            variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint
-            :error="v$.course.finalLetterGrade.$invalid && v$.course.finalLetterGrade.$dirty"
-            @blur="v$.course.finalLetterGrade.$touch" :disabled="courseSessionGreaterThanReportingPeriod" />
+            variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint            
+           :disabled="courseSessionGreaterThanReportingPeriod" />
         </v-col>
 
         <v-col>
@@ -201,18 +200,6 @@ export default {
         interimLetterGrade: {
 
         },
-        finalLetterGrade: {
-          isValid: helpers.withMessage(
-            'Course session is in the past. Enter a final mark.',
-            function (value) {
-              if (this.course.courseSession < this.maxSession && !this.course.finalPercent && (value === '' || value === null || value === undefined)) {
-                return false;
-              }
-              return true;
-            }
-          ),
-
-        },
         credits: {
           isCreditValue: helpers.withMessage(
             'Credits must be 0, 1, 2, 3, or 4',
@@ -314,9 +301,8 @@ export default {
           this.course.credits = 0
         }
         // Trigger re-validation to clear stale silent errors
-
-        this.v$.course.finalLetterGrade.$validate();
       }
+      this.updateWarnings();
     },
 
     'course.interimPercent'(newVal) {
@@ -329,10 +315,10 @@ export default {
     'course.finalPercent'(newVal) {
       if (newVal) {
         this.course.finalLetterGrade = this.filteredFinalLetterGrades[0] ?? '';
-        this.v$.course.finalLetterGrade.$validate();
       } else {
         this.course.finalLetterGrade = ""
       }
+      this.updateWarnings();
     },
     'course.fineArtsAppliedSkills'(newVal) {
       const courseType = this.course.courseDetails.courseCategory?.description || '';
@@ -347,7 +333,7 @@ export default {
         this.warnings.push('Flag is only applicable for this course type if student is on the 1995 program.');
       }
 
-    },
+    }
   },
   computed: {
     ...mapState(useAppStore, {
@@ -462,6 +448,10 @@ export default {
       if (this.course.courseSession < 198401 || this.course.courseSession > this.maxSession) {
         this.warnings.push("Course session cannot be after the current reporting period or prior to 198401")
 
+      }
+
+      if (this.course.courseSession < this.maxSession && !this.course.finalPercent && (this.course.finalLetterGrade === '' || this.course.finalLetterGrade === null || this.course.finalLetterGrade === undefined)) {
+        this.warnings.push('Course session is in the past. Enter a final mark.');
       }
     },
     getGradesForPercent(percent) {

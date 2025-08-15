@@ -42,6 +42,12 @@
         </v-col>
 
         <v-col>
+          <v-text-field v-model="course.courseExam.examPercentage" type="number" min="0" max="100"
+            label="Exam %" variant="outlined" density="compact" class="pa-1" :disabled="true" persistent-placeholder
+            persistent-hint/>
+        </v-col>
+
+        <v-col>
           <v-text-field v-model="course.courseExam.bestExamPercentage" type="number" min="0" max="100"
             label="Exam Best %" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
             :error="v$.course.courseExam.bestExamPercentage.$invalid && v$.course.courseExam.bestExamPercentage.$dirty"
@@ -51,7 +57,7 @@
         <v-col>
           <v-text-field v-model="course.finalPercent" type="number" min="0" max="100" label="Final %" variant="outlined"
             density="compact" class="pa-1" clearable
-            :disabled="course.courseSession < 199409 || courseSessionGreaterThanReportingPeriod" persistent-placeholder
+            :disabled="courseSessionGreaterThanReportingPeriod" persistent-placeholder
             persistent-hint :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty"
             @blur="v$.course.finalPercent.$touch" />
         </v-col>
@@ -59,8 +65,7 @@
         <v-col>
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
             variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint
-            :error="v$.course.finalLetterGrade.$invalid && v$.course.finalLetterGrade.$dirty"
-            @blur="v$.course.finalLetterGrade.$touch" :disabled="courseSessionGreaterThanReportingPeriod" />
+            :disabled="courseSessionGreaterThanReportingPeriod" />
         </v-col>
 
         <v-col>
@@ -171,14 +176,14 @@ export default {
 
     this.minSession = `${startYear}09`;
     this.maxSession = `${endYear}09`;
-
+    this.updateWarnings();
     if (this.course.courseSession < 198401 || this.course.courseSession > this.maxSession) {
       this.warnings.push("Course session cannot be after the current reporting period or prior to 198401")
-
     }
     if (this.course.isExaminable) {
       this.warnings.push("This course required an exam at the time of the course session date")
     }
+    
     this.v$.$touch(); // <-- triggers validation on load
   },
   components: { CourseInput },
@@ -304,18 +309,6 @@ export default {
             }
           ),
         },
-
-        finalLetterGrade: {
-          isValid: helpers.withMessage(
-            'Course session is in the past. Enter a final mark.',
-            function (value) {
-              if (this.course.courseSession < this.maxSession && !this.course.finalPercent && (value === '' || value === null || value === undefined)) {
-                return false;
-              }
-              return true;
-            }
-          ),
-        },
         credits: {
           isCreditValue: helpers.withMessage(
             'Credits must be 0, 1, 2, 3, or 4',
@@ -371,6 +364,7 @@ export default {
       } else {
         this.course.finalLetterGrade = ""
       }
+      this.updateWarnings();
     },
     'course.fineArtsAppliedSkills'(newVal) {
       this.updateWarnings();
@@ -468,9 +462,11 @@ export default {
       ) {
         warnings.push('Flag is only applicable for this course type if student is on the 1995 program.');
       }
+      if (this.course.courseSession < this.maxSession && (this.course.finalPercent === '' || this.course.finalPercent === null || this.course.finalPercent === undefined) && (this.course.finalLetterGrade === '' || this.course.finalLetterGrade === null || this.course.finalLetterGrade === undefined)) {
+        warnings.push('Course session is in the past. Enter a final mark.');
+      }
       this.warnings = warnings;
     },
-
     getGradesForPercent(percent) {
       const isGTorGTF = this.course.courseDetails.courseCode === 'GT' || this.course.courseDetails.courseCode === 'GTF';
 
