@@ -307,7 +307,7 @@ export default {
 
         finalLetterGrade: {
           isValid: helpers.withMessage(
-            'Course session is in the past. Enter a final mark.',
+            'Course session is current or in the past. Enter a final mark.',
             function (value) {
               if (this.course.courseSession < this.maxSession && !this.course.finalPercent && (value === '' || value === null || value === undefined)) {
                 return false;
