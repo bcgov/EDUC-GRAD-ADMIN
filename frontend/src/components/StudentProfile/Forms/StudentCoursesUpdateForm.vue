@@ -79,7 +79,7 @@
                         </v-btn>
                         <v-btn :disabled="isLoading" class="pl-1" density="compact" variant="outline" color="error"
                           @click="closeCourseInput">
-                          Close
+                          <v-icon size="25">mdi-close-circle-outline</v-icon>
                         </v-btn>
                       </v-col>
                       <v-col cols="12"> <v-alert v-if="courseValidationMessage" type="error" variant="tonal"
