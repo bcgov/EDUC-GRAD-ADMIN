@@ -116,40 +116,55 @@ async function deleteStudentCoursesByStudentID(req, res) {
 
 async function transferStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);
-  const courseWithoutID = req.body.map(({id, ...rest }) => ({ ...rest }));
+  const courseWithoutID = req.body.map(({ id, ...rest }) => ({ ...rest }));
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.targetStudentID
-      }`;
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${
+      req.params?.targetStudentID
+    }`;
     const createTransferResponse = await postData(
       token,
       url,
       courseWithoutID,
       req.session?.correlationID
     );
-    if (Array.isArray(createTransferResponse) && createTransferResponse.length > 0) {
+    if (
+      Array.isArray(createTransferResponse) &&
+      createTransferResponse.length > 0
+    ) {
       // Collect IDs of successfully transferred courses to delete from source student
       const courseIDsToDelete = createTransferResponse
-        .filter(course => course.hasPersisted)
-        .map(course => {
+        .filter((course) => course.hasPersisted)
+        .map((course) => {
           const match = req.body.find(
-            reqItem =>
+            (reqItem) =>
               reqItem.courseID === course.courseID &&
               reqItem.courseSession === course.courseSession
           );
           return match?.id;
         })
-        .filter(Boolean); 
+        .filter(Boolean);
       if (courseIDsToDelete.length > 0) {
-        const deleteUrl = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.sourceStudentID}`;
-        await deleteData(token, deleteUrl, courseIDsToDelete, req.session?.correlationID);
+        const deleteUrl = `${config.get(
+          "server:studentAPIURL"
+        )}/api/v1/student/courses/${req.params?.sourceStudentID}`;
+        await deleteData(
+          token,
+          deleteUrl,
+          courseIDsToDelete,
+          req.session?.correlationID
+        );
       }
     }
     return res.status(200).json(createTransferResponse);
   } catch (e) {
     console.error("Error transferring student courses:", e);
     if (e?.createTransferResponse?.messages) {
-      return errorResponse(res, e.createTransferResponse.messages[0].message, e.status);
+      return errorResponse(
+        res,
+        e.createTransferResponse.messages[0].message,
+        e.status
+      );
     } else {
       return errorResponse(res);
     }
@@ -164,7 +179,16 @@ async function getStudentCourseHistory(req, res) {
       req.params?.studentID
     }/history`;
     const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data);
+    // Preparing the Course ID Payload
+    const courseIDsPayload = getCourseIDsPayload(data);
+    // Fetching Detailed Course Information
+    const CourseDetails = await fetchCourseDetails(
+      token,
+      courseIDsPayload,
+      req.session?.correlationID
+    );
+    const studentCoursesWithDetails = addCourseDetails(CourseDetails, data);
+    return res.status(200).json(sortCourses(studentCoursesWithDetails));
   } catch (e) {
     if (e.data.messages) {
       return errorResponse(res, e.data.messages[0].message, e.status);
