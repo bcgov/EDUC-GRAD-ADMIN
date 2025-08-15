@@ -97,18 +97,7 @@ async function deleteData(token, url, data = null, correlationID) {
       ...(data && { data }),
     };
 
-    log.info("delete Data Url", url);
     const response = await axios.delete(url, delConfig);
-    log.info(`delete Data Status for url ${url} :: is :: `, response.status);
-    log.info(
-      `delete Data StatusText for url ${url}  :: is :: `,
-      response.statusText
-    );
-    log.verbose(
-      `delete Data Response for url ${url}  :: is :: `,
-      minify(response.data)
-    );
-
     return response.data;
   } catch (e) {
     log.error("deleteData Error", e.response ? e.response.status : e.message);
@@ -131,8 +120,6 @@ async function forwardGetReq(req, res, url) {
     const params = {
       params: req.query,
     };
-
-    log.info("forwardGetReq Url", url);
     const data = await getDataWithParams(
       accessToken,
       url,
@@ -170,7 +157,6 @@ function addTokenToHeader(params, token) {
 async function getCommonServiceData(url, params) {
   try {
     params = addTokenToHeader(params, await getBackendServiceToken());
-    log.info("GET", url);
     const response = await axios.get(url, params);
     return response.data;
   } catch (e) {
@@ -195,18 +181,8 @@ async function putCommonServiceData(url, data, user) {
     } else {
       data.updateUser = "GRAD";
     }
-    log.info("PUT", url);
-    log.debug("put Data Req", data);
+
     const response = await axios.put(url, data, putDataConfig);
-    log.info(`put Data Status for url ${url} :: is :: `, response.status);
-    log.info(
-      `put Data StatusText for url ${url}  :: is :: `,
-      response.statusText
-    );
-    log.verbose(
-      `put Data Response for url ${url}  :: is :: `,
-      minify(response.data)
-    );
     return response.data;
   } catch (e) {
     log.error("putData Error", e.response ? e.response.status : e.message);
@@ -230,18 +206,7 @@ async function postCommonServiceData(url, data, user) {
       data.updateUser = "GRAD";
       data.createUser = "GRAD";
     }
-    log.info("POST", url);
-    log.debug("post Data Req", data);
     const response = await axios.post(url, data, putDataConfig);
-    log.info(`post Data Status for url ${url} :: is :: `, response.status);
-    log.info(
-      `post Data StatusText for url ${url}  :: is :: `,
-      response.statusText
-    );
-    log.verbose(
-      `post Data Response for url ${url}  :: is :: `,
-      minify(response.data)
-    );
     return response.data;
   } catch (e) {
     log.error("postData Error", e.response ? e.response.status : e.message);
@@ -262,12 +227,7 @@ async function getData(token, url, correlationID) {
         "User-Name": username || "N/A",
       },
     };
-    // log.info('get Data Url', url);
     const response = await axios.get(url, getDataConfig);
-    // log.info(`get Data Status for url ${url} :: is :: `, response.status);
-    // log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
-    // log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
-
     return response.data;
   } catch (e) {
     log.error("getData Error", e.response ? e.response.status : e.message);
@@ -286,19 +246,7 @@ async function getDataWithParams(token, url, params, correlationID) {
       correlationID: correlationID || uuidv4(),
       "User-Name": username || "N/A",
     };
-
-    log.info("get Data Url", url);
     const response = await axios.get(url, params);
-    log.info(`get Data Status for url ${url} :: is :: `, response.status);
-    log.info(
-      `get Data StatusText for url ${url}  :: is :: `,
-      response.statusText
-    );
-    log.verbose(
-      `get Data Response for url ${url}  :: is :: `,
-      minify(response.data)
-    );
-
     return response.data;
   } catch (e) {
     log.error(
@@ -349,23 +297,11 @@ async function postData(token, url, data, correlationID) {
       maxBodyLength: Infinity,
     };
 
-    log.info("post Data Url", url);
-    log.verbose("post Data Req", minify(data));
     if (data) {
       data.createUser = "GRAD";
       data.updateUser = "GRAD";
     }
     const response = await axios.post(url, data, postDataConfig);
-
-    log.info(`post Data Status for url ${url} :: is :: `, response.status);
-    log.info(
-      `post Data StatusText for url ${url}  :: is :: `,
-      response.statusText
-    );
-    log.verbose(
-      `post Data Response for url ${url}  :: is :: `,
-      typeof response.data === "string" ? response.data : minify(response.data)
-    );
 
     return response.data;
   } catch (e) {
@@ -393,22 +329,7 @@ async function putData(token, data, url, correlationID) {
         "User-Name": username || "N/A",
       },
     };
-
-    log.info("put Data Url", url);
-    log.verbose("put Data Req", data);
-
     const response = await axios.put(url, data, putDataConfig);
-
-    log.info(`put Data Status for url ${url} :: is :: `, response.status);
-    log.info(
-      `put Data StatusText for url ${url}  :: is :: `,
-      response.statusText
-    );
-    log.verbose(
-      `put Data Response for url ${url}  :: is :: `,
-      minify(response.data)
-    );
-
     return response.data;
   } catch (e) {
     log.error("putData Error", e.response ? e.response.status : e.message);
@@ -437,8 +358,6 @@ function getCodeTable(token, key, url, useCache = true) {
           Authorization: `Bearer ${token}`,
         },
       };
-      log.info("get Data Url", url);
-
       return axios
         .get(url, getDataConfig)
         .then((response) => {
