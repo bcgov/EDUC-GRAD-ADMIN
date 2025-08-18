@@ -26,6 +26,16 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
     roles.Admin.StaffInfoOfficer,
     roles.Admin.StaffAdministration,
     roles.Admin.StaffGradProgramBA,
+    roles.Admin.StaffGradAssessments,
+  ]
+);
+
+const isValidUiTokenWithEditStaffRoles = auth.isValidUiTokenWithRoles(
+  "GRAD_SYSTEM_COORDINATOR",
+  [
+    roles.Admin.StaffInfoOfficer,
+    roles.Admin.StaffAdministration,
+    roles.Admin.StaffGradProgramBA
   ]
 );
 
@@ -60,7 +70,7 @@ router.get(
 router.post(
   "/courseRestriction",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   validate(createCourseRestrictionSchema),
   postCourseRestriction
 );
@@ -68,7 +78,7 @@ router.post(
 router.put(
   "/courseRestriction/:restrictionID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   validate(updateCourseRestrictionSchema),
   putCourseRestriction
 );
