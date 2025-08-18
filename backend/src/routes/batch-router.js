@@ -18,6 +18,7 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
     roles.Admin.StaffInfoOfficer,
     roles.Admin.StaffAdministration,
     roles.Admin.StaffGradProgramBA,
+    roles.Admin.StaffGradAssessments,
   ]
 );
 

@@ -7,6 +7,7 @@
 
       <v-spacer />
       <AddStudentAssessment
+          v-if="studentStatus !== 'MER'"
           :student-id="studentId"
           :assessment-sessions="assessmentSessions"
           :is-loading-sessions="isLoadingSessions"
@@ -193,7 +194,7 @@
               text="Delete"
               :loading="isDeleting"
               :disabled="!canDeleteStudentAssessment"
-              @click="confirmDelete(studentToDelete?.provincialSpecialCaseCode != null && canDeleteStudentAssessment(studentToDelete))"/>
+              @click="confirmDelete(true)"/>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -238,6 +239,10 @@ export default {
         assessmentType: toRaw(this.assessmentTypeCodesMap.get(assessment.assessmentTypeCode)) || null,
         sessionDate: `${assessment.courseYear}-${assessment.courseMonth}`
       }));
+    },
+    studentStatus() {
+      console.log(this.studentStore.student.profile.studentStatus)
+      return this.studentStore.student.profile.studentStatus;
     },
     fields() {
       let baseFields = [
@@ -298,7 +303,7 @@ export default {
           value: (item) => this.getAssessmentCenterSchoolDisplayName(item.assessmentCenterSchoolID)
         }
       ]
-      if(this.hasPermissions('STUDENT', 'studentAssessmentUpdate')) {
+      if(this.hasPermissions('STUDENT', 'studentAssessmentUpdate') && this.studentStatus !== 'MER') {
         baseFields.push({title: 'Edit', value: 'edit'}, {title: 'Delete', value: 'delete'});
       }
       return baseFields;
@@ -358,7 +363,11 @@ export default {
       } catch (error) {
         console.log(error.response)
         if(error?.response?.status === 409) {
-          let message = error?.response?.data?.message ? error.response.data.message : "Assessment student cannot be deleted. It has a proficiency score, or session is closed."
+          let message = error?.response?.data?.message ?
+              (error.response.data.message.includes("Reason:") ?
+                  "Cannot delete assessment record. Reason:" + error.response.data.message.split("Reason:")[1] :
+                  error.response.data.message) :
+              "Cannot delete assessment record. It has a proficiency score, or session is closed.";
           this.snackbarStore.showSnackbar(
               message,
               "error",

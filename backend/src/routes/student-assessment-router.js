@@ -17,10 +17,22 @@ const {
   getAllAssessmentSessions, getProvincialSpecialCaseCodes, getStudentAssessmentHistoryPaginated
 } = require('../components/assessments/student-assessment');
 
+const isValidUiTokenWithStaffEditRoles = auth.isValidUiTokenWithRoles(
+  'GRAD_SYSTEM_COORDINATOR',
+  [
+    roles.Admin.StaffAdministration,
+    roles.Admin.StaffInfoOfficer,
+    roles.Admin.StaffGradAssessments
+  ]
+);
+
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
   'GRAD_SYSTEM_COORDINATOR',
   [
     roles.Admin.StaffAdministration,
+    roles.Admin.StaffInfoOfficer,
+    roles.Admin.StaffGradAssessments,
+    roles.Admin.StaffGradProgramBA,
   ]
 );
 
@@ -58,21 +70,21 @@ router.get('/student/:studentAssessmentId',
 
 router.put('/student/:studentAssessmentId',
   passport.authenticate('jwt', {session: false}, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffEditRoles,
   validate(putStudentAssessmentSchema),
   updateStudentAssessmentById
 );
 
 router.post('/student',
   passport.authenticate('jwt', {session: false}, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffEditRoles,
   validate(postStudentAssessmentSchema),
   postStudentAssessment
 );
 
 router.delete('/student/:studentAssessmentId',
   passport.authenticate('jwt', {session: false}, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffEditRoles,
   validate(deleteStudentAssessmentSchema),
   deleteStudentAssessmentByID
 );
