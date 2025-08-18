@@ -241,7 +241,6 @@ export default {
       }));
     },
     studentStatus() {
-      console.log(this.studentStore.student.profile.studentStatus)
       return this.studentStore.student.profile.studentStatus;
     },
     fields() {
