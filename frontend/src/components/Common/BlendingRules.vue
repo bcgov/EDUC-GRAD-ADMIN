@@ -10,9 +10,9 @@
                     </div>
                 </template>
 
-                <v-expansion-panel-title class="d-flex align-center justify-space-between ml-0 pt-3 pl-0">
+                <v-expansion-panel-title class="d-flex align-center justify-space-between ml-0 pl-0">
                     <div class="d-flex align-center flex-grow-1">
-                        <span>Instructions for calculating a blended mark</span>
+                        <span>Instructions for calculating as blended mark</span>
                         <v-spacer />
                         <span class="text-caption text-grey-darken-1">View Instructions</span>
                     </div>

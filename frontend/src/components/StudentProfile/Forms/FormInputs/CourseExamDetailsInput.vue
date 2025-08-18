@@ -90,10 +90,9 @@
           {{ warning }}
         </v-col>
       </v-row>
-      <v-row class="align-center">
+      <v-row no-gutters>
         <v-col class="py-0 m-0 d-flex align-center text-caption">
           <v-icon color="info" size="18" class="me-1">mdi-information</v-icon>
-
           <router-link to="/courses/examinable-courses/blending-rules" custom v-slot="{ href, navigate }">
             <a :href="href" @click="navigate" target="_blank" rel="noopener noreferrer">
               Instructions for calculating a blended mark

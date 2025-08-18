@@ -314,6 +314,7 @@ export default {
     ...mapState(useStudentStore, {
       studentCourses: "studentCourses",
       studentStatus: (state) => state.student.profile.studentStatus,
+      studentProgram: (state) => state.student.profile.program,
 
     }),
     studentStore() {
@@ -338,6 +339,7 @@ export default {
         code,
         level,
         courseSession,
+        studentProgram: this.studentProgram,
         existingCourses: this.studentCourses,
         checkExaminable: false,
       });

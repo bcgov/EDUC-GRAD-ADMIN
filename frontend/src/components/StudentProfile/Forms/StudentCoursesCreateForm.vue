@@ -19,7 +19,6 @@
       </v-col>
 
 
-
       <v-stepper show-actions v-model="step">
         <template v-slot:default>
           <v-stepper-header>
@@ -405,6 +404,7 @@ export default {
       studentCourses: "studentCourses",
       studentPenAndName: "formattedStudentName",
       studentStatus: (state) => state.student.profile.studentStatus,
+      studentProgram: (state) => state.student.profile.program,
     }),
 
   },
@@ -463,6 +463,7 @@ export default {
         code,
         level,
         courseSession,
+        studentProgram: this.studentProgram,
         existingCourses: this.studentCourses,
         checkExaminable: true,
         canAddExaminable: () => this.hasPermissions('STUDENT', 'updateExaminableCourse'),
