@@ -344,6 +344,13 @@ export default {
     CourseExamDetailsInput,
     StudentCourseAlert,
   },
+  props: {
+    type: {
+      type: String,
+      default: 'all', // 'examinable' or 'all'
+      required: true
+    }
+  },
   validations() {
     return {
       courseAdd: {
@@ -467,6 +474,7 @@ export default {
         existingCourses: this.studentCourses,
         checkExaminable: true,
         canAddExaminable: () => this.hasPermissions('STUDENT', 'updateExaminableCourse'),
+        canAddNonExaminable: () => this.type === 'all' || this.hasPermissions('STUDENT', 'updateNonExaminableCourse'),
       });
 
 
