@@ -29,15 +29,17 @@
           class="v-data-table__expand-icon" :class="{ 'v-data-table__expand-icon--active': isExpanded }" :icon="isExpanded(internalItem) ? 'mdi-chevron-down' : 'mdi-chevron-right'
             " />
       </template>
-       <template v-slot:item.courseDetails.courseName="{ item }">
-            <CourseDetails :course="item.courseDetails" />
-       </template>
       <template v-slot:expanded-row="{ columns, item }">
         <tr>
           <td></td>
           <td></td>
           <td :colspan="columns.length-2">
-            <v-row no-gutters>              
+            <v-row no-gutters>    
+              <v-col><strong>Course Title&nbsp;</strong>
+              <span v-if="item.courseDetails.courseName">{{ item.courseDetails.courseName
+                }}</span>
+              <span v-else> <i>null</i> </span>  
+              </v-col>          
               <v-col><strong>Interim %&nbsp;</strong>
               <span v-if="item.interimPercent">{{ item.interimPercent
                 }}</span>
@@ -82,7 +84,6 @@ import BlendingRules from "@/components/Common/BlendingRules.vue";
 import StudentCoursesExamUpdateForm from "@/components/StudentProfile/Forms/StudentCoursesExamUpdateForm.vue";
 import StudentCoursesCreateForm from "@/components/StudentProfile/Forms/StudentCoursesCreateForm.vue";
 import StudentCoursesDeleteForm from "@/components/StudentProfile/Forms/StudentCoursesDeleteForm.vue";
-import CourseDetails from "@/components/Common/CourseDetails.vue";
 
 export default {
   name: "StudentExams",
@@ -102,7 +103,6 @@ export default {
     StudentCoursesExamUpdateForm: StudentCoursesExamUpdateForm,
     StudentCoursesCreateForm: StudentCoursesCreateForm,
     StudentCoursesDeleteForm: StudentCoursesDeleteForm,
-    CourseDetails: CourseDetails,
   },
   data: function () {
     return {
@@ -162,12 +162,6 @@ export default {
         {
           key: "credits",
           title: "Credits",
-        }, 
-        {
-          key: "courseDetails.courseName",
-          title: "Course Title",
-          sortable: true,
-          class: "text-left",
         },     
       ],
       studentExamsActionHeaders: [

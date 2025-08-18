@@ -257,6 +257,7 @@ export default {
     }),
     ...mapState(useStudentStore, {
       studentCourses: "studentCourses",
+      studentStatus: (state) => state.student.profile.studentStatus,
     }),
     studentStore() {
       return useStudentStore();
