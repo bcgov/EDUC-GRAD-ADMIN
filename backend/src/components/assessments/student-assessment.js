@@ -5,6 +5,7 @@ const utils = require('../utils');
 
 const config = require('../../config');
 const { createMoreFiltersSearchCriteria } = require('./studentFilters');
+const { STUDENT_STATUS_CODE_MAP } = require('../constants/student-status-codes');
 const API_BASE_ROUTE = '/api/v1/student-assessment';
 const auth = require('../auth');
 
@@ -144,12 +145,13 @@ async function postStudentAssessment(req, res){
       createDate: null
     };
     const token = auth.getBackendToken(req);
-    const student = await utils.getData(token, `${config.get('server:studentAPIURL')}/api/v1/student/grad/${req.body?.studentID}`, req.session?.correlationID);
+    const student = await utils.getData(token, `${config.get('server:studentAPIURL')}/api/v1/student/stdid/${req.body?.studentID}`, req.session?.correlationID);
 
     payload.surname = student.legalLastName;
     payload.givenName = student.legalFirstName;
     payload.schoolOfRecordSchoolID = student.schoolOfRecordId;
     payload.pen = student.pen;
+    payload.studentStatusCode = STUDENT_STATUS_CODE_MAP[student.statusCode];
 
     const allowRuleOverride = req.query.allowRuleOverride === 'true';
     const params = allowRuleOverride ? { params: { allowRuleOverride: true } } : {};

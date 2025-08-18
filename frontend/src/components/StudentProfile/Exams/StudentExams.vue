@@ -34,12 +34,14 @@
           <td></td>
           <td></td>
           <td :colspan="columns.length-2">
-            <v-row no-gutters>    
-              <v-col><strong>Course Title&nbsp;</strong>
-              <span v-if="item.courseDetails.courseName">{{ item.courseDetails.courseName
-                }}</span>
-              <span v-else> <i>null</i> </span>  
-              </v-col>          
+            <v-row no-gutters> 
+              <v-col>
+              <strong>Course Title&nbsp;</strong>
+              <span v-if="item.courseDetails.courseName"  style="display: inline-block;" ><CourseDetails :course="item.courseDetails"  /></span>
+              <span v-else  style="display: inline-block;"> <i>null</i> </span>  
+              </v-col>    
+            </v-row>
+            <v-row no-gutters>                
               <v-col><strong>Interim %&nbsp;</strong>
               <span v-if="item.interimPercent">{{ item.interimPercent
                 }}</span>
@@ -84,6 +86,7 @@ import BlendingRules from "@/components/Common/BlendingRules.vue";
 import StudentCoursesExamUpdateForm from "@/components/StudentProfile/Forms/StudentCoursesExamUpdateForm.vue";
 import StudentCoursesCreateForm from "@/components/StudentProfile/Forms/StudentCoursesCreateForm.vue";
 import StudentCoursesDeleteForm from "@/components/StudentProfile/Forms/StudentCoursesDeleteForm.vue";
+import CourseDetails from "@/components/Common/CourseDetails.vue";
 
 export default {
   name: "StudentExams",
@@ -103,6 +106,7 @@ export default {
     StudentCoursesExamUpdateForm: StudentCoursesExamUpdateForm,
     StudentCoursesCreateForm: StudentCoursesCreateForm,
     StudentCoursesDeleteForm: StudentCoursesDeleteForm,
+    CourseDetails: CourseDetails,
   },
   data: function () {
     return {

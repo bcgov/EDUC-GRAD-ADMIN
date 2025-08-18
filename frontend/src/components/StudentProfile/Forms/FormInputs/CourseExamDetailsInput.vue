@@ -38,7 +38,8 @@
         <v-col>
           <v-select v-model="course.courseExam.specialCase" :items="filteredSpecialCaseCodes" label="Special Case"
             item-title="label" item-value="examSpecialCaseCode" variant="outlined" density="compact" class="pa-1"
-            clearable persistent-placeholder persistent-hint />
+            clearable persistent-placeholder persistent-hint
+            :disabled="!(create || (update && ['N', null].includes(existingSpecialCaseCode)))" />
         </v-col>
 
         <v-col>
@@ -174,14 +175,11 @@ export default {
 
     this.minSession = `${startYear}09`;
     this.maxSession = `${endYear}09`;
-    this.updateWarnings();
-    if (this.course.courseSession < 198401 || this.course.courseSession > this.maxSession) {
-      this.warnings.push("Course session cannot be after the current reporting period or prior to 198401")
-    }
-    if (this.course.isExaminable) {
-      this.warnings.push("This course required an exam at the time of the course session date")
-    }
 
+    if (this.course?.courseExam.specialCase) {
+      this.existingSpecialCaseCode = this.course?.courseExam.specialCase;
+    }
+    this.updateWarnings();
     this.v$.$touch(); // <-- triggers validation on load
   },
   components: { CourseInput },
@@ -205,6 +203,7 @@ export default {
       examSpecialCaseCodes: [],
       minSession: null,
       maxSession: null,
+      existingSpecialCaseCode: null, // used for local special case code
     }
   },
   validations() {
@@ -364,6 +363,9 @@ export default {
       }
       this.updateWarnings();
     },
+    'course.finalLetterGrade'(newVal) {
+      this.updateWarnings();
+    },
     'course.fineArtsAppliedSkills'(newVal) {
       this.updateWarnings();
     },
@@ -443,7 +445,7 @@ export default {
       if (this.create) {
         return this.examSpecialCaseCodes.filter(code => code.examSpecialCaseCode === "A");
       }
-      return this.examSpecialCaseCodes;
+      return this.examSpecialCaseCodes.filter(code => code.examSpecialCaseCode === "A" || code.examSpecialCaseCode === "N");
     },
   },
   methods: {
@@ -453,7 +455,12 @@ export default {
       const trimmedProgram = this.studentProgram?.trim();
 
       const warnings = [];
-
+      if (this.course.courseSession < 198401 || this.course.courseSession > this.maxSession) {
+        warnings.push("Course session cannot be after the current reporting period or prior to 198401")
+      }
+      if (this.course.isExaminable) {
+        warnings.push("This course required an exam at the time of the course session date")
+      }
       if (
         (courseType === "Locally Developed" || courseType === "Career Program") &&
         (trimmedProgram === "1996-EN" || trimmedProgram === "1996-PF" || trimmedProgram === "2018-EN")
