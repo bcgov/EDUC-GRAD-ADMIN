@@ -77,12 +77,10 @@ if (checkExaminable) {
   console.log(matchingCourses)
     //get the year of the student program
     const studentProgramYear = studentProgram.substring(0, 4)
-        //if studentProgram is SCCP and not a year-en or year-fn course
+        //if studentProgram is SCCP and not a year-en or year-fn 
         if (isNaN(parseInt(studentProgramYear))) {
             return false;
         }
-
-    
         const matchingProgramCourses = matchingCourses.filter(course => {
         const examinableCourseYear = course.programYear || "2004"; // default to "2004" if empty
 
