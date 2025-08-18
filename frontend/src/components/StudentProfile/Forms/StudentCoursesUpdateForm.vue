@@ -3,9 +3,10 @@
     <v-dialog v-model="dialog" persistent max-width="80%">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-
-          <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="studentStatus == 'MER'" @click="
-            openDialog" v-bind="props" color="success" icon="mdi-pencil" density="compact" variant="text" />
+          <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate') &&
+            (!course.courseExam || hasPermissions('STUDENT', 'updateExaminableCourse'))"
+            :disabled="studentStatus == 'MER'" @click="
+              openDialog" v-bind="props" color="success" icon="mdi-pencil" density="compact" variant="text" />
         </slot>
       </template>
 
@@ -222,6 +223,7 @@ import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/Cou
 import CourseExamDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseExamDetailsInput.vue";
 import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue";
 import { useStudentStore } from "@/store/modules/student";
+import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
 import { validateAndFetchCourse } from '@/components/StudentProfile/Forms/utils/validateCourse.js';
 
@@ -306,7 +308,7 @@ export default {
     };
   },
   computed: {
-
+    ...mapState(useAccessStore, ["hasPermissions", "getRoles"]),
     ...mapState(useStudentStore, {
       studentPenAndName: "formattedStudentName"
 
@@ -427,9 +429,6 @@ export default {
       }
     },
 
-    hasPermissions(module, permission) {
-      return true; // Replace with actual logic
-    },
   },
 
 

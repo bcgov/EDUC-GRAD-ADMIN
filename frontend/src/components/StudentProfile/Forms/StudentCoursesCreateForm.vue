@@ -474,7 +474,7 @@ export default {
         existingCourses: this.studentCourses,
         checkExaminable: true,
         canAddExaminable: () => this.hasPermissions('STUDENT', 'updateExaminableCourse'),
-        canAddNonExaminable: () => this.type === 'all' || this.hasPermissions('STUDENT', 'updateNonExaminableCourse'),
+        canAddNonExaminable: () => this.type === 'all' || this.hasPermissions('STUDENT', 'updateExaminableCourse'),
       });
 
 

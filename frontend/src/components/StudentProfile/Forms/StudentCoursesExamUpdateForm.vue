@@ -7,7 +7,6 @@
             icon="mdi-pencil" density="compact" variant="text" />
         </slot>
       </template>
-
       <v-card>
         <v-card-title>
 
