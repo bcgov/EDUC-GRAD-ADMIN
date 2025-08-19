@@ -19,12 +19,14 @@
                             getFormattedStudentInfo(targetStudentData) }}<v-icon color="info"
                             :size="18">mdi-open-in-new</v-icon></router-link>
                 </template>
-                <template v-slot:item.source="{ item }">
-                    <CourseReview :course="item.source" />
+                <template v-slot:item.source="{ item }" >
+                    <div style="max-width:98%;font-size: 0.875rem;">
+                        <CourseReview :course="item.source"/>
+                    </div>                       
                 </template>
                 <template v-slot:item.target="{ item }">
-                    <span v-if="item.target">
-                        <CourseReview :course="item.target" />
+                    <span v-if="item.target" style="max-width:98%;font-size: 0.875rem;">
+                        <CourseReview :course="item.target"/>
                     </span>
                     <span v-else :class="getProperty(key, 'style')" style="font-size: 0.75rem;">{{ item.message }}</span>
                 </template>
