@@ -6,60 +6,37 @@ const {
   putData,
   deleteData,
   formatQueryParamString,
+  getCourseIDsPayload,
+  fetchCourseDetails,
+  addCourseDetails,
+  sortCourses,
 } = require("../components/utils");
 const config = require("../config/index");
 const log = require("../components/logger");
 const auth = require("../components/auth");
+const { add } = require("lodash");
 
 async function getStudentCourseByStudentID(req, res) {
   const token = auth.getBackendToken(req);
   try {
+    // Fetch student courses from the student API
     const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${
       req.params?.studentID
     }`;
     const data = await getData(token, url, req.session?.correlationID);
+    // Preparing the Course ID Payload
+    const courseIDsPayload = getCourseIDsPayload(data);
 
-    const courseIDsPayload = {
-      courseIds: Array.isArray(data)
-        ? data.flatMap((course) => {
-            const ids = [];
-            if (course.courseID) ids.push(Number(course.courseID));
-            if (course.relatedCourseId)
-              ids.push(Number(course.relatedCourseId));
-            return ids;
-          })
-        : [],
-    };
-
-    const courseSearchUrl = `${config.get(
-      "server:courseAPIURL"
-    )}/api/v2/course/search`;
-    const courseData = await postData(
+    // Fetching Detailed Course Information
+    const CourseDetails = await fetchCourseDetails(
       token,
-      courseSearchUrl,
       courseIDsPayload,
       req.session?.correlationID
     );
 
-    const courseMap = new Map(
-      courseData.map((course) => [course.courseID, course])
-    );
-
-    // Add courseDetails and releatedCourseDetails from course endpoint
-    const studentCoursesWithDetails = data.map((studentCourse) => {
-      const courseID = studentCourse.courseID;
-      const relatedCourseId = studentCourse.relatedCourseId;
-
-      const matchedCourse = courseMap.get(courseID);
-      const matchedRelatedCourse = courseMap.get(relatedCourseId);
-
-      return {
-        ...studentCourse,
-        courseDetails: matchedCourse || null,
-        relatedCourseDetails: matchedRelatedCourse || null,
-      };
-    });
-    return res.status(200).json(studentCoursesWithDetails);
+    const studentCoursesWithDetails = addCourseDetails(CourseDetails, data);
+    // Final Response
+    return res.status(200).json(sortCourses(studentCoursesWithDetails));
   } catch (e) {
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);
@@ -137,6 +114,63 @@ async function deleteStudentCoursesByStudentID(req, res) {
   }
 }
 
+async function transferStudentCoursesByStudentID(req, res) {
+  const token = auth.getBackendToken(req);
+  const courseWithoutID = req.body.map(({ id, ...rest }) => ({ ...rest }));
+
+  try {
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${
+      req.params?.targetStudentID
+    }`;
+    const createTransferResponse = await postData(
+      token,
+      url,
+      courseWithoutID,
+      req.session?.correlationID
+    );
+    if (
+      Array.isArray(createTransferResponse) &&
+      createTransferResponse.length > 0
+    ) {
+      // Collect IDs of successfully transferred courses to delete from source student
+      const courseIDsToDelete = createTransferResponse
+        .filter((course) => course.hasPersisted)
+        .map((course) => {
+          const match = req.body.find(
+            (reqItem) =>
+              reqItem.courseID === course.courseID &&
+              reqItem.courseSession === course.courseSession
+          );
+          return match?.id;
+        })
+        .filter(Boolean);
+      if (courseIDsToDelete.length > 0) {
+        const deleteUrl = `${config.get(
+          "server:studentAPIURL"
+        )}/api/v1/student/courses/${req.params?.sourceStudentID}`;
+        await deleteData(
+          token,
+          deleteUrl,
+          courseIDsToDelete,
+          req.session?.correlationID
+        );
+      }
+    }
+    return res.status(200).json(createTransferResponse);
+  } catch (e) {
+    console.error("Error transferring student courses:", e);
+    if (e?.createTransferResponse?.messages) {
+      return errorResponse(
+        res,
+        e.createTransferResponse.messages[0].message,
+        e.status
+      );
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 async function getStudentCourseHistory(req, res) {
   const token = auth.getBackendToken(req);
 
@@ -145,7 +179,16 @@ async function getStudentCourseHistory(req, res) {
       req.params?.studentID
     }/history`;
     const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data);
+    // Preparing the Course ID Payload
+    const courseIDsPayload = getCourseIDsPayload(data);
+    // Fetching Detailed Course Information
+    const CourseDetails = await fetchCourseDetails(
+      token,
+      courseIDsPayload,
+      req.session?.correlationID
+    );
+    const studentCoursesWithDetails = addCourseDetails(CourseDetails, data);
+    return res.status(200).json(sortCourses(studentCoursesWithDetails));
   } catch (e) {
     if (e.data.messages) {
       return errorResponse(res, e.data.messages[0].message, e.status);
@@ -690,13 +733,10 @@ async function postAdoptPENStudent(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/adopt/${req.params?.studentID}`;
-    const data = await postData(
-      token,
-      url,
-      null,
-      req.session?.correlationID
-    );
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/adopt/${
+      req.params?.studentID
+    }`;
+    const data = await postData(token, url, null, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
     if (e.data.messages) {
@@ -713,6 +753,7 @@ module.exports = {
   putStudentCoursesByStudentID,
   postStudentCoursesByStudentID,
   deleteStudentCoursesByStudentID,
+  transferStudentCoursesByStudentID,
   getStudentCourseHistory,
   // STUDENT OPTIONAL AND CAREER PROGRAMS
   getStudentCareerPrograms,

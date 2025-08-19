@@ -23,6 +23,7 @@ const isValidStaffUserWithRoles = auth.isValidUserWithRoles(
     roles.Admin.StaffInfoOfficer,
     roles.Admin.StaffAdministration,
     roles.Admin.StaffGradProgramBA,
+    roles.Admin.StaffGradAssessments,
   ]
 );
 

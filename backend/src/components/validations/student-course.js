@@ -48,6 +48,17 @@ const postStudentCourseSchema = object({
   query: object().noUnknown(),
 }).noUnknown();
 
+const postTransferStudentCourseSchema = object({
+   body: array().of(studentCourseSchema.shape({
+    id: uuidGeneric().required(), 
+}).noUnknown()),
+  params: object({
+    sourceStudentID: uuidGeneric().required(),
+    targetStudentID: uuidGeneric().required()
+  }),
+  query: object().noUnknown(),
+}).noUnknown();
+
 const deleteStudentCourseSchema = object({
   body:array().of(uuidGeneric().required()),
   query: object().noUnknown(),
@@ -60,4 +71,5 @@ module.exports = {
   putStudentCourseSchema,
   postStudentCourseSchema,
   deleteStudentCourseSchema,
+  postTransferStudentCourseSchema
 };

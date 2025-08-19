@@ -75,6 +75,9 @@ export const useStudentStore = defineStore("student", {
     },
     delete: {
       courses: []
+    },
+    transfer: {
+      courses: [],
     }
   }),
   actions: {
@@ -655,6 +658,33 @@ export const useStudentStore = defineStore("student", {
         console.error("Error deleting student courses:", error);
         throw error;
       }
+    },
+    // Transfer student courses
+    async transferStudentCourses(sourceStudentID, targetStudentID, courses) {
+      try {
+        const response = await StudentService.transferStudentCourses(
+          sourceStudentID,
+          targetStudentID,
+          courses
+        );
+        this.getStudentCourses(sourceStudentID);
+        this.loadStudentGradStatus(sourceStudentID);
+        return response.data;
+      } catch (error) {
+        console.error("Error transferring student courses: ", error);
+        return error;
+      }
+    },
+    addCoursesToTransfer(course) {
+      this.transfer.courses.push(course);
+    },
+    clearCoursesToTransfer() {
+      this.transfer.courses = [];
+    },
+    removeCourseFromTransfer(courseID, courseSession) {
+      this.transfer.courses = this.transfer.courses.filter(
+        (course) => !(course.courseID === courseID && course.courseSession === courseSession)
+      );
     },
   },
   getters: {

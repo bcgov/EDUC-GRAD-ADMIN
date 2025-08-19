@@ -5,7 +5,8 @@ const validate = require('../components/validator');
 const {
   postStudentCourseSchema,
   putStudentCourseSchema,
-  deleteStudentCourseSchema
+  deleteStudentCourseSchema,
+  postTransferStudentCourseSchema
 } = require('../components/validations/student-course');
 const { postAdoptStudentSchema } = require('../components/validations/grad-student');
 const auth = require("../components/auth");
@@ -15,6 +16,7 @@ const {
   putStudentCoursesByStudentID,
   postStudentCoursesByStudentID,
   deleteStudentCoursesByStudentID,
+  transferStudentCoursesByStudentID,
   getStudentCourseHistory,
   getStudentCareerPrograms,
   postStudentCareerProgram,
@@ -46,12 +48,22 @@ const {
   postAdoptPENStudent,
 } = require("../components/student");
 
+const isValidUiTokenWithEditStaffRoles = auth.isValidUiTokenWithRoles(
+  "GRAD_SYSTEM_COORDINATOR",
+  [
+    roles.Admin.StaffInfoOfficer,
+    roles.Admin.StaffAdministration,
+    roles.Admin.StaffGradProgramBA,
+  ]
+);
+
 const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
     roles.Admin.StaffInfoOfficer,
     roles.Admin.StaffAdministration,
     roles.Admin.StaffGradProgramBA,
+    roles.Admin.StaffGradAssessments,
   ]
 );
 
@@ -66,7 +78,7 @@ router.get(
 router.put(
   "/:studentID/courses",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   validate(putStudentCourseSchema),
   putStudentCoursesByStudentID
 );
@@ -74,15 +86,23 @@ router.put(
 router.post(
   "/:studentID/courses",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   validate(postStudentCourseSchema),
   postStudentCoursesByStudentID
+);
+
+router.post(
+  "/:sourceStudentID/courses/transfer/:targetStudentID",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithEditStaffRoles,
+  validate(postTransferStudentCourseSchema),
+  transferStudentCoursesByStudentID
 );
 
 router.delete(
   "/:studentID/courses",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   validate(deleteStudentCourseSchema),
   deleteStudentCoursesByStudentID
 );
@@ -98,14 +118,14 @@ router.get(
 router.post(
   "/:studentID/optionalPrograms/:optionalProgramID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   postStudentOptionalProgram
 );
 
 router.delete(
   "/:studentID/optionalPrograms/:optionalProgramID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   deleteStudentOptionalProgram
 );
 
@@ -256,14 +276,14 @@ router.get(
 router.post(
   "/:studentID/notes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   postStudentNotes
 );
 
 router.delete(
   "/:studentID/notes/:noteID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   deleteStudentNotes
 );
 
@@ -293,7 +313,7 @@ router.get(
 router.post(
   "/adopt/:studentID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   validate(postAdoptStudentSchema),
   postAdoptPENStudent
 );

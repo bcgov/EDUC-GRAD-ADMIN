@@ -1,17 +1,9 @@
 <template>
   <div>
-    <v-dialog v-model="dialog" persistent max-width="760">
+    <v-dialog v-model="dialog" persistent max-width="70%">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-
-          <v-btn v-if="
-            hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete
-          " v-bind="props" :disabled="selectedCoursesToDelete.length === 0" color="error" class="text-none"
-            prepend-icon="mdi-delete-forever">
-            Delete Selected Courses
-          </v-btn>
-
-          <v-btn v-else-if="!courseBatchDelete"
+          <v-btn v-if="!courseBatchDelete"
             :disabled="!hasPermissions('STUDENT', 'courseUpdate') || studentStatus == 'MER'" v-bind="props"
             color="error" icon="mdi-delete-forever" density="compact" variant="text" />
         </slot>
@@ -27,7 +19,7 @@
           </v-row>
           <v-card-subtitle>{{
             studentStore.formattedStudentName
-          }}</v-card-subtitle>
+            }}</v-card-subtitle>
 
         </v-card-title>
         <v-card-text>
@@ -54,7 +46,7 @@
                   </v-col>
                   <v-col class="ml-3"><strong>Interim</strong>&nbsp;
                     <span v-if="course.interimPercent">{{ course.interimPercent }}% {{ course.interimLetterGrade
-                    }}</span>
+                      }}</span>
                     <span v-else><i>null</i></span>
                   </v-col>
                   <v-col><strong>Final</strong>&nbsp;
@@ -95,27 +87,56 @@
                       {{ $filters.formatYYYYMMStringDate(course.courseSession) }}</strong>
                     ({{ course.courseDetails.courseName }})
                   </v-col>
-                  <v-col class="ml-3"><strong>Interim</strong>&nbsp;
-                    <span v-if="course.interimPercent">{{ course.interimPercent }}% {{ course.interimLetterGrade
-                    }}</span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col><strong>Final</strong>&nbsp;
-                    <span v-if="course.finalPercent">{{ course.finalPercent }}% {{ course.finalLetterGrade }}</span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
-                  <v-col><strong>FA/AS</strong>&nbsp;
-                    <span v-if="course.fineArtsAppliedSkills">{{ course.fineArtsAppliedSkills }}</span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col><strong>Eq/Ch</strong>&nbsp;
-                    <span v-if="course.equivOrChallenge">{{ course.equivOrChallenge }}</span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col cols="12" class="ml-3" v-if="course.customizedCourseName">
-                    <strong>Custom Course Title</strong> {{ course.customizedCourseName }}
-                  </v-col>
+                  <v-row v-if="course.courseExam !== null" no-gutters class="px-0 py-1" style="font-size: 0.875rem;" compact>
+                    <v-col class="ml-4"><strong>School %</strong>&nbsp;
+                      <span v-if="course.courseExam.schoolPercentage">{{ course.courseExam.schoolPercentage }}</span>
+                      <span v-else> <i>null</i> </span>
+                    </v-col>
+                    <v-col><strong>Best School %</strong>&nbsp;
+                      <span v-if="course.courseExam.bestSchoolPercentage">{{ course.courseExam.bestSchoolPercentage
+                      }}</span>
+                      <span v-else> <i>null</i> </span>
+                    </v-col>
+                    <v-col><strong>Special Case</strong> {{ course.courseExam.specialCase }}</v-col>
+                    <v-col><strong>Exam %</strong>&nbsp;
+                      <span v-if="course.courseExam.examPercentage">{{ course.courseExam.examPercentage
+                      }}</span>
+                      <span v-else> <i>null</i> </span>
+                    </v-col>
+                    <v-col><strong>Exam Best %</strong>&nbsp;
+                      <span v-if="course.courseExam.bestExamPercentage">{{ course.courseExam.bestExamPercentage
+                      }}</span>
+                      <span v-else> <i>null</i> </span>
+                    </v-col>
+                    <v-col><strong>Final</strong>&nbsp;
+                      <span v-if="course.finalPercent">{{ course.finalPercent }}% {{ course.finalLetterGrade }}</span>
+                      <span v-else><i>null</i></span>
+                    </v-col>
+                    <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
+                  </v-row>
+                  <v-row v-else no-gutters class="px-0 py-1" style="font-size: 0.875rem;" compact>
+                    <v-col class="ml-4"><strong>Interim</strong>&nbsp;
+                      <span v-if="course.interimPercent">{{ course.interimPercent }}% {{ course.interimLetterGrade
+                        }}</span>
+                      <span v-else><i>null</i></span>
+                    </v-col>
+                    <v-col><strong>Final</strong>&nbsp;
+                      <span v-if="course.finalPercent">{{ course.finalPercent }}% {{ course.finalLetterGrade }}</span>
+                      <span v-else><i>null</i></span>
+                    </v-col>
+                    <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
+                    <v-col><strong>FA/AS</strong>&nbsp;
+                      <span v-if="course.fineArtsAppliedSkills">{{ course.fineArtsAppliedSkills }}</span>
+                      <span v-else><i>null</i></span>
+                    </v-col>
+                    <v-col><strong>Eq/Ch</strong>&nbsp;
+                      <span v-if="course.equivOrChallenge">{{ course.equivOrChallenge }}</span>
+                      <span v-else><i>null</i></span>
+                    </v-col>
+                    <v-col cols="12" class="ml-3" v-if="course.customizedCourseName">
+                      <strong>Custom Course Title</strong> {{ course.customizedCourseName }}
+                    </v-col>
+                  </v-row>
                 </v-row>
               </v-alert>
             </div>
@@ -305,6 +326,10 @@ export default {
     },
     hasPermissions(group, permission) {
       return this.accessStore.hasPermissions("STUDENT", "courseUpdate")
+    },       
+    openDeleteStudentCoursesDialog() {
+      this.step = 0;
+      this.dialog = true;      
     },
   },
 };
