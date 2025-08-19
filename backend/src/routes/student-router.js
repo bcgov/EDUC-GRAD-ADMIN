@@ -146,14 +146,14 @@ router.get(
 router.post(
   "/:studentID/careerPrograms",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   postStudentCareerProgram
 );
 
 router.delete(
   "/:studentID/careerPrograms/:careerProgramCode",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   deleteStudentCareerProgram
 );
 
@@ -190,7 +190,7 @@ router.get(
 router.post(
   "/:studentID/gradProgram/status",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   postStudentGradStatus
 );
 
@@ -204,7 +204,7 @@ router.get(
 router.post(
   `/:studentID/gradProgram/undoCompletion`,
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithEditStaffRoles,
   postStudentUndoCompletion
 );
 
