@@ -87,13 +87,18 @@
                 <v-tab value="AssessmentsLegacy" class="text-none"
                   >Assessments ({{ assessmentsLegacy.length }})</v-tab
                 >
-                <v-tab value="Assessments" class="text-none" v-if="hasPermissions('STUDENT', 'studentAssessmentUpdate') && enableCRUD()"
-                >Assessments ({{ assessments?.length }})
+                <v-tab
+                  value="Assessments"
+                  class="text-none"
+                  v-if="
+                    hasPermissions('STUDENT', 'studentAssessmentUpdate') &&
+                    enableCRUD()
+                  "
+                  >Assessments ({{ assessments?.length }})
                   <p class="text-caption font-weight-bold text-bcGovGold">
                     BETA
                   </p>
-                </v-tab
-                >
+                </v-tab>
                 <v-tab value="ExamsLegacy" class="text-none"
                   >Exams Details ({{ examsLegacy.length }})</v-tab
                 >
@@ -209,14 +214,17 @@
                     <StudentAssessmentsLegacy />
                   </v-window-item>
                   <v-window-item
-                      v-if="hasPermissions('STUDENT', 'studentAssessmentUpdate') && enableCRUD()"
-                      value="Assessments"
-                      data-cy="assessments-window-item"
+                    v-if="
+                      hasPermissions('STUDENT', 'studentAssessmentUpdate') &&
+                      enableCRUD()
+                    "
+                    value="Assessments"
+                    data-cy="assessments-window-item"
                   >
                     <v-progress-circular
-                        v-if="tabLoading"
-                        indeterminate
-                        color="green"
+                      v-if="tabLoading"
+                      indeterminate
+                      color="green"
                     >
                     </v-progress-circular>
                     <StudentAssessments :student-id="studentId" />
@@ -832,7 +840,7 @@ export default {
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
       allowRunGradAlgorithm: "allowRunGradAlgorithm",
-      hasPermissions: "hasPermissions"
+      hasPermissions: "hasPermissions",
     }),
     ...mapState(useAppStore, {
       ungradReasons: "ungradReasons",
@@ -1141,7 +1149,10 @@ export default {
     },
     loadStudent(studentIdFromURL) {
       this.loadStudentProfile();
-      if(this.hasPermissions("STUDENT", "studentAssessmentUpdate") && this.enableCRUD) {
+      if (
+        this.hasPermissions("STUDENT", "studentAssessmentUpdate") &&
+        this.enableCRUD
+      ) {
         this.loadAssessmentsLegacy();
         this.loadStudentAssessments(studentIdFromURL);
       }
@@ -1167,7 +1178,7 @@ export default {
             // Fetch the true student data first
             StudentService.getStudentByID(data[0].trueStudentID)
               .then((response) => {
-                data[0].trueStudentID = response.data.pen;
+                data[0].trueStudentPen = response.data.pen;
                 this.setStudentProfile(data);
               })
               .catch((error) => {
@@ -1196,24 +1207,29 @@ export default {
     },
     loadStudentAssessments(studentId) {
       let sort = {
-        'assessmentEntity.assessmentTypeCode': 'ASC',
+        "assessmentEntity.assessmentTypeCode": "ASC",
       };
       let searchParams = {
-        studentId: studentId
+        studentId: studentId,
       };
-      StudentAssessmentService.getStudentAssessmentsBySearchCriteria(searchParams, sort, 1, 1000)
-          .then((response) => {
-            this.setStudentAssessments(response?.data?.content);
-          })
-          .catch((error) => {
-            if (error.response?.status) {
-              this.snackbarStore.showSnackbar(
-                  "There was an error: " + error.response.status,
-                  "error",
-                  5000
-              );
-            }
-          });
+      StudentAssessmentService.getStudentAssessmentsBySearchCriteria(
+        searchParams,
+        sort,
+        1,
+        1000
+      )
+        .then((response) => {
+          this.setStudentAssessments(response?.data?.content);
+        })
+        .catch((error) => {
+          if (error.response?.status) {
+            this.snackbarStore.showSnackbar(
+              "There was an error: " + error.response.status,
+              "error",
+              5000
+            );
+          }
+        });
     },
     loadAssessmentsLegacy() {
       AssessmentService.getStudentAssessmentLegacy(this.pen)
