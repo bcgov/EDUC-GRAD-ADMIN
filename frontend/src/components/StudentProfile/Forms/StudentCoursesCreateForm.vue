@@ -204,14 +204,15 @@
                       <v-col class="ml-3"><strong>Interim</strong>&nbsp;
                         <span v-if="course.interimPercent">{{ course.interimPercent }}% </span>
                         <span v-if="course.interimLetterGrade">{{ course.interimLetterGrade }} </span>
+                        <span v-if="!course.interimPercent && !course.interimLetterGrade"><i>null</i></span>
                       </v-col>
                       <v-col><strong>Final</strong>&nbsp;
                         <span v-if="course.finalPercent">
                           {{ course.finalPercent }}%&nbsp;</span>
                         <span v-if="course.finalLetterGrade">
                           {{ course.finalLetterGrade }}</span>
+                        <span v-if="!course.finalPercent && !course.finalLetterGrade"><i>null</i></span>
                       </v-col>
-                      <!-- I don't think credits can have a null value? - Samara -->
                       <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
                       <v-col><strong>FA/AS</strong>&nbsp;
                         <span v-if="course.fineArtsAppliedSkills">
@@ -272,7 +273,7 @@
               <span>Get Course</span>
             </v-btn>
             <v-btn :disabled="coursesToCreate.length == 0" color="error" @click="closeCourseInput">
-              <v-icon size="28">mdi-trash-can</v-icon>
+              <v-icon size="28">mdi-close-circle</v-icon>
             </v-btn>
           </v-col>
           <v-col cols="12" class="pb-2 m-2" v-if="courseValidationMessage"> <v-alert type="error" variant="tonal"
