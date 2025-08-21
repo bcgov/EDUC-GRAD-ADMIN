@@ -3,7 +3,8 @@
     <v-dialog v-model="dialog" persistent max-width="80%">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-          <v-btn v-if="!courseBatchDelete"
+          <v-btn v-if="!courseBatchDelete && hasPermissions('STUDENT', 'courseUpdate') &&
+            (!hasExam || hasPermissions('STUDENT', 'updateExaminableCourse'))"
             :disabled="!hasPermissions('STUDENT', 'courseUpdate') || studentStatus == 'MER'" v-bind="props"
             color="error" icon="mdi-delete-forever" density="compact" variant="text" />
         </slot>
@@ -19,7 +20,7 @@
           </v-row>
           <v-card-subtitle>{{
             studentStore.formattedStudentName
-            }}</v-card-subtitle>
+          }}</v-card-subtitle>
 
         </v-card-title>
         <v-card-text>
@@ -38,12 +39,12 @@
                     <div class="d-flex align-center mb-1">
                       <span>{{ course.validationMessage }}</span>
                     </div>
-                  </v-col>                 
-                </v-row>               
+                  </v-col>
+                </v-row>
                 <v-row class="px-3 py-3" no-gutters>
                   <v-col cols="12">
-                     <div style="font-size: 1rem;">
-                        <CourseReview :shouldRemoveGutters="false" :course="course"/>
+                    <div style="font-size: 1rem;">
+                      <CourseReview :shouldRemoveGutters="false" :course="course" />
                     </div>
                   </v-col>
                 </v-row>
@@ -62,12 +63,12 @@
                     <div class="d-flex align-center mb-1">
                       <span>{{ course.validationMessage }}</span>
                     </div>
-                  </v-col>   
-                  </v-row>                            
-                  <v-row class="px-3 py-3" no-gutters>
-                  <v-col cols="12" >
+                  </v-col>
+                </v-row>
+                <v-row class="px-3 py-3" no-gutters>
+                  <v-col cols="12">
                     <div style="font-size: 1rem;">
-                        <CourseReview :shouldRemoveGutters="false" :course="course"/>
+                      <CourseReview :shouldRemoveGutters="false" :course="course" />
                     </div>
                   </v-col>
                 </v-row>
@@ -118,10 +119,16 @@ export default {
       default: null,
     },
   },
+  created() {
+    if (!this.courseBatchDelete) {
+      this.hasExam = this.selectedCoursesToDelete[0].courseExam ? true : false
+    }
+  },
   data() {
     return {
       dialog: false,
       snackbarStore: useSnackbarStore(),
+      hasExam: false,
     };
   },
   computed: {
@@ -162,7 +169,9 @@ export default {
       const { info, warning } = this.selectedCoursesWithValidations;
       return info.length > 0 || warning.length > 0;
     },
-
+    hasCourseExam() {
+      return this.selectedCoursesToDelete[0]?.courseExam || false
+    },
     selectedCoursesWithValidations() {
       const grouped = {
         error: [],
@@ -257,7 +266,7 @@ export default {
       }
     },
     hasPermissions(group, permission) {
-      return this.accessStore.hasPermissions("STUDENT", "courseUpdate")
+      return this.accessStore.hasPermissions(group, permission)
     },
     openDeleteStudentCoursesDialog() {
       this.step = 0;

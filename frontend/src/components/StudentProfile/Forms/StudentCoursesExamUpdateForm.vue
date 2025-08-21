@@ -7,7 +7,6 @@
             icon="mdi-pencil" density="compact" variant="text" />
         </slot>
       </template>
-
       <v-card>
         <v-card-title>
 
@@ -83,8 +82,8 @@
 
                     <CourseExamDetailsInput :course="selectedCourseToUpdate" update>
                       <template #remove-button>
-                        <v-btn v-if="!selectedCourseToUpdate.isExaminable" variant="outlined" color="bcGovBlue" class="mb-4 text-none p-1"
-                          style="max-width: 7.5rem;" 
+                        <v-btn v-if="!selectedCourseToUpdate.isExaminable" variant="outlined" color="bcGovBlue"
+                          class="mb-4 text-none p-1" style="max-width: 7.5rem;"
                           @click="showCourseInput = !showCourseInput">Change Course</v-btn>
                       </template>
                     </CourseExamDetailsInput>
@@ -209,7 +208,7 @@ export default {
 
             return JSON.stringify(normalizedValue) !== JSON.stringify(normalizedOriginal);
           }
-        )        
+        )
       },
       courseUpdate: {
         code: {},
@@ -257,6 +256,7 @@ export default {
     }),
     ...mapState(useStudentStore, {
       studentCourses: "studentCourses",
+      studentProgram: (state) => state.student.profile.program,
       studentStatus: (state) => state.student.profile.studentStatus,
     }),
     studentStore() {
@@ -279,6 +279,7 @@ export default {
         code,
         level,
         courseSession,
+        studentProgram: this.studentProgram,
         existingCourses: this.studentCourses,
         checkExaminable: false,
       });
@@ -333,12 +334,12 @@ export default {
         const { courseDetails, relatedCourseDetails, ...courseWithoutCourseDetails } = this.selectedCourseToUpdate;
         const response = await this.updateStudentCourse(courseWithoutCourseDetails);
         if (response.status == 200) {
-        this.snackbarStore.showSnackbar(
-          `${courseDetails.courseCode} ${courseDetails.courseLevel} - ${courseWithoutCourseDetails.courseSession} successfully updated.`,
-          "success",
-          10000,
-          "Student course"
-        );
+          this.snackbarStore.showSnackbar(
+            `${courseDetails.courseCode} ${courseDetails.courseLevel} - ${courseWithoutCourseDetails.courseSession} successfully updated.`,
+            "success",
+            10000,
+            "Student course"
+          );
         } else {
           this.snackbarStore.showSnackbar(
             "Failed to update student course \n" + response.data,

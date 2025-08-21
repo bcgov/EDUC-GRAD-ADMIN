@@ -4,6 +4,7 @@ export async function validateAndFetchCourse({
     code,
     level,
     courseSession,
+    studentProgram,
     existingCourses = [],
     checkExaminable = false,
     canAddExaminable = () => true,
@@ -20,6 +21,7 @@ export async function validateAndFetchCourse({
     try {
         const response = await CourseService.getCourseByCodeAndLevel(upperCode, upperLevel);
         const courseData = response?.data;
+        
 
         if (!courseData?.courseID) {
             return {
@@ -54,22 +56,44 @@ export async function validateAndFetchCourse({
         if (sessionDate > endDate) {
             return { error: `Course session date is after the course completion date (${courseData.completionEndDate})` };
         }
-        let isExaminable = false;
+        
+        let isExaminable= false;
         if (checkExaminable) {
-            const examinableCourses = await CourseService.getCourseExaminableCourses();
+        const { data: examinableCourses } = await CourseService.getCourseExaminableCourses();
 
-            isExaminable = examinableCourses?.data?.some(course => {
-                const start = new Date(`${course.examinableStart}-01`);
-                const end = course.examinableEnd
-                    ? new Date(`${course.examinableEnd}-01`)
-                    : new Date(9999, 11, 31);
-                return (
-                    course.courseCode === upperCode &&
-                    course.courseLevel === upperLevel &&
-                    start <= sessionDate &&
-                    end >= sessionDate
-                );
+        const matchingCourses = examinableCourses?.filter(course => {
+            const start = new Date(`${course.examinableStart}-01`);
+            const end = course.examinableEnd
+            ? new Date(`${course.examinableEnd}-01`)
+            : new Date(9999, 11, 31);
+
+            return (
+            course.courseCode === upperCode &&
+            course.courseLevel === upperLevel &&
+            start <= sessionDate &&
+            end >= sessionDate
+            );
+        }) || [];
+
+            //get the year of the student program
+            const studentProgramYear = studentProgram.substring(0, 4)
+                //if studentProgram is SCCP and not a year-en or year-fn 
+                if (isNaN(parseInt(studentProgramYear))) {
+                    return false;
+                }
+                const matchingProgramCourses = matchingCourses.filter(course => {
+                const examinableCourseYear = course.programYear || "2004"; // default to "2004" if empty
+
+                if (examinableCourseYear === "2004") {
+                    return studentProgramYear >= examinableCourseYear;
+                } else {
+                    return studentProgramYear === examinableCourseYear;
+                }
             });
+
+
+        isExaminable = matchingProgramCourses.length > 0;
+
             if (!isExaminable && !canAddNonExaminable()) {
                 return {
                     error: 'An exam is not required for this course and session date and it cannot be entered as examinable.',
@@ -80,9 +104,8 @@ export async function validateAndFetchCourse({
                     error: 'This course required an exam at the time of the course session date. Your role does not have permission to add examinable courses.',
                 };
             }
-            
-        }
 
+        }
         return {
             courseData,
             courseID: courseData.courseID,

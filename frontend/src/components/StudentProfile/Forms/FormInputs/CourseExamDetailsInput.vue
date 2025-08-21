@@ -43,9 +43,8 @@
         </v-col>
 
         <v-col>
-          <v-text-field v-model="course.courseExam.examPercentage" type="number" min="0" max="100"
-            label="Exam %" variant="outlined" density="compact" class="pa-1" :disabled="true" persistent-placeholder
-            persistent-hint/>
+          <v-text-field v-model="course.courseExam.examPercentage" type="number" min="0" max="100" label="Exam %"
+            variant="outlined" density="compact" class="pa-1" :disabled="true" persistent-placeholder persistent-hint />
         </v-col>
 
         <v-col>
@@ -57,9 +56,9 @@
 
         <v-col>
           <v-text-field v-model="course.finalPercent" type="number" min="0" max="100" label="Final %" variant="outlined"
-            density="compact" class="pa-1" clearable
-            :disabled="courseSessionGreaterThanReportingPeriod" persistent-placeholder
-            persistent-hint :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty"
+            density="compact" class="pa-1" clearable :disabled="courseSessionGreaterThanReportingPeriod"
+            persistent-placeholder persistent-hint
+            :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty"
             @blur="v$.course.finalPercent.$touch" />
         </v-col>
 
@@ -96,10 +95,9 @@
           {{ warning }}
         </v-col>
       </v-row>
-      <v-row class="align-center">
+      <v-row no-gutters>
         <v-col class="py-0 m-0 d-flex align-center text-caption">
           <v-icon color="info" size="18" class="me-1">mdi-information</v-icon>
-
           <router-link to="/courses/examinable-courses/blending-rules" custom v-slot="{ href, navigate }">
             <a :href="href" @click="navigate" target="_blank" rel="noopener noreferrer">
               Instructions for calculating a blended mark
@@ -177,8 +175,8 @@ export default {
 
     this.minSession = `${startYear}09`;
     this.maxSession = `${endYear}09`;
-    
-    if(this.course?.courseExam.specialCase) {
+
+    if (this.course?.courseExam.specialCase) {
       this.existingSpecialCaseCode = this.course?.courseExam.specialCase;
     }
     this.updateWarnings();
@@ -365,7 +363,7 @@ export default {
       }
       this.updateWarnings();
     },
-    'course.finalLetterGrade'(newVal) {      
+    'course.finalLetterGrade'(newVal) {
       this.updateWarnings();
     },
     'course.fineArtsAppliedSkills'(newVal) {
