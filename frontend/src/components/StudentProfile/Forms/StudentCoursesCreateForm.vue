@@ -169,7 +169,7 @@
                   <v-row no-gutters v-for="course in coursesToCreate" :key="course.courseID + course.sessionDate"
                     class="mb-2">
                     <v-col cols="12"><strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel
-                    }} -
+                        }} -
                         {{
                           $filters.formatYYYYMMStringDate(course.courseSession)
                         }}</strong>
@@ -273,7 +273,7 @@
               <span>Get Course</span>
             </v-btn>
             <v-btn :disabled="coursesToCreate.length == 0" color="error" @click="closeCourseInput">
-              <v-icon size="28">mdi-trash-can</v-icon>
+              <v-icon size="28">mdi-close-circle</v-icon>
             </v-btn>
           </v-col>
           <v-col cols="12" class="pb-2 m-2" v-if="courseValidationMessage"> <v-alert type="error" variant="tonal"
