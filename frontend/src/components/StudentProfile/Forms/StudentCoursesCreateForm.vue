@@ -170,7 +170,7 @@
                   <v-row no-gutters v-for="course in coursesToCreate" :key="course.courseID + course.sessionDate"
                     class="mb-2">
                     <v-col cols="12"><strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel
-                        }} -
+                    }} -
                         {{
                           $filters.formatYYYYMMStringDate(course.courseSession)
                         }}</strong>
@@ -205,14 +205,15 @@
                       <v-col class="ml-3"><strong>Interim</strong>&nbsp;
                         <span v-if="course.interimPercent">{{ course.interimPercent }}% </span>
                         <span v-if="course.interimLetterGrade">{{ course.interimLetterGrade }} </span>
+                        <span v-if="!course.interimPercent && !course.interimLetterGrade"><i>null</i></span>
                       </v-col>
                       <v-col><strong>Final</strong>&nbsp;
                         <span v-if="course.finalPercent">
                           {{ course.finalPercent }}%&nbsp;</span>
                         <span v-if="course.finalLetterGrade">
                           {{ course.finalLetterGrade }}</span>
+                        <span v-if="!course.finalPercent && !course.finalLetterGrade"><i>null</i></span>
                       </v-col>
-                      <!-- I don't think credits can have a null value? - Samara -->
                       <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
                       <v-col><strong>FA/AS</strong>&nbsp;
                         <span v-if="course.fineArtsAppliedSkills">

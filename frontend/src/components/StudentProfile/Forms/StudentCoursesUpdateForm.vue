@@ -150,18 +150,29 @@
                         <v-col><strong>Credits</strong> {{ selectedCourseToUpdate.credits }}</v-col>
                       </v-row>
                       <v-row v-else>
+
                         <v-col class="ml-3"><strong>Interim</strong>&nbsp;
                           <span v-if="selectedCourseToUpdate.interimPercent">{{ selectedCourseToUpdate.interimPercent
                           }}%
-                            {{ selectedCourseToUpdate.interimLetterGrade }}</span>
-                          <span v-else> <i>null</i> </span>
+                          </span>
+                          <span v-if="selectedCourseToUpdate.interimLetterGrade">{{
+                            selectedCourseToUpdate.interimLetterGrade }}
+                          </span>
+                          <span
+                            v-if="!selectedCourseToUpdate.interimLetterGrade && !selectedCourseToUpdate.interimPercent">
+                            <i>null</i></span>
                         </v-col>
                         <v-col><strong>Final</strong>&nbsp;
                           <span v-if="selectedCourseToUpdate.finalPercent">
-                            {{ selectedCourseToUpdate.finalPercent }}%
-                            {{ selectedCourseToUpdate.finalLetterGrade }}</span><span v-else><i>null</i></span></v-col>
-                        <!-- I don't think credits can have a null value? - Samara -->
-                        <v-col><strong>Credits</strong> {{ selectedCourseToUpdate.credits }}</v-col>
+                            {{ selectedCourseToUpdate.finalPercent }}%&nbsp;</span>
+                          <span v-if="selectedCourseToUpdate.finalLetterGrade">
+                            {{ selectedCourseToUpdate.finalLetterGrade }}</span>
+                          <span v-if="!selectedCourseToUpdate.finalLetterGrade && !selectedCourseToUpdate.finalPercent">
+                            <i>null</i></span>
+                        </v-col>
+
+                        <v-col><strong>Credits</strong> <span v-if="selectedCourseToUpdate.credits"> {{
+                          selectedCourseToUpdate.credits }}</span><span v-else><i>null</i></span></v-col>
                         <v-col><strong>FA/AS</strong>&nbsp;
                           <span v-if="selectedCourseToUpdate.fineArtsAppliedSkills">
                             {{ selectedCourseToUpdate.fineArtsAppliedSkills }}
