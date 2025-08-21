@@ -87,7 +87,13 @@
                 <v-tab value="AssessmentsLegacy" class="text-none"
                   >Assessments ({{ assessmentsLegacy.length }})</v-tab
                 >
-                <v-tab value="Assessments" class="text-none" v-if="enableCRUD()"
+                <v-tab
+                  value="Assessments"
+                  class="text-none"
+                  v-if="
+                    hasPermissions('STUDENT', 'studentAssessmentUpdate') &&
+                    enableCRUD()
+                  "
                   >Assessments ({{ assessments?.length }})
                   <p class="text-caption font-weight-bold text-bcGovGold">
                     BETA
@@ -208,7 +214,10 @@
                     <StudentAssessmentsLegacy />
                   </v-window-item>
                   <v-window-item
-                    v-if="enableCRUD()"
+                    v-if="
+                      hasPermissions('STUDENT', 'studentAssessmentUpdate') &&
+                      enableCRUD()
+                    "
                     value="Assessments"
                     data-cy="assessments-window-item"
                   >
@@ -829,6 +838,7 @@ export default {
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
       allowRunGradAlgorithm: "allowRunGradAlgorithm",
+      hasPermissions: "hasPermissions",
     }),
     ...mapState(useAppStore, {
       ungradReasons: "ungradReasons",
@@ -1141,8 +1151,13 @@ export default {
     },
     loadStudent(studentIdFromURL) {
       this.loadStudentProfile();
-      this.loadAssessmentsLegacy();
-      this.loadStudentAssessments(studentIdFromURL);
+      if (
+        this.hasPermissions("STUDENT", "studentAssessmentUpdate") &&
+        this.enableCRUD
+      ) {
+        this.loadAssessmentsLegacy();
+        this.loadStudentAssessments(studentIdFromURL);
+      }
       this.loadGraduationStatus(studentIdFromURL);
       this.loadStudentOptionalPrograms(studentIdFromURL);
       this.loadCareerPrograms(studentIdFromURL);

@@ -1,15 +1,15 @@
-name: Build Redis Cluster - DEV
+name: Build Redis Cluster - PROD
 env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
-  OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-dev
-  REPLICAS: 3
+  OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-prod
+  REPLICAS: 6
 on:
   workflow_dispatch:
 jobs:
   create-redis-cluster:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: prod
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -40,7 +40,7 @@ jobs:
       - name: Create Cluster
         run: |
           echo "Creating Cluster..."
-          oc exec -i redis-ha-0 -- redis-cli --cluster create --cluster-replicas 0 $(oc get pods -l app=redis-ha -o jsonpath='{range.items[*]}{.status.podIP}:6379 {end}') --cluster-yes
+          oc exec -i redis-ha-0 -- redis-cli --cluster create --cluster-replicas 1 $(oc get pods -l app=redis-ha -o jsonpath='{range.items[*]}{.status.podIP}:6379 {end}') --cluster-yes
           echo "Success!"
       - name: Restart admin backend
         run: |

@@ -1,17 +1,9 @@
 <template>
   <div>
-    <v-dialog v-model="dialog" persistent max-width="760">
+    <v-dialog v-model="dialog" persistent max-width="80%">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-
-          <v-btn v-if="
-            hasPermissions('STUDENT', 'courseUpdate') && courseBatchDelete
-          " v-bind="props" :disabled="selectedCoursesToDelete.length === 0" color="error" class="text-none"
-            prepend-icon="mdi-delete-forever">
-            Delete Selected Courses
-          </v-btn>
-
-          <v-btn v-else-if="!courseBatchDelete"
+          <v-btn v-if="!courseBatchDelete"
             :disabled="!hasPermissions('STUDENT', 'courseUpdate') || studentStatus == 'MER'" v-bind="props"
             color="error" icon="mdi-delete-forever" density="compact" variant="text" />
         </slot>
@@ -27,7 +19,7 @@
           </v-row>
           <v-card-subtitle>{{
             studentStore.formattedStudentName
-          }}</v-card-subtitle>
+            }}</v-card-subtitle>
 
         </v-card-title>
         <v-card-text>
@@ -41,40 +33,21 @@
               :key="'deletable-' + index" class="mb-3">
               <v-alert :type="course.validationType" border="start" variant="tonal" density="compact"
                 icon="mdi-alert-circle">
-                <v-row class="mb-2">
+                <v-row no-gutters compact>
                   <v-col cols="12" v-if="course.validationMessage">
                     <div class="d-flex align-center mb-1">
                       <span>{{ course.validationMessage }}</span>
                     </div>
-                  </v-col>
+                  </v-col>                 
+                </v-row>               
+                <v-row class="px-3 py-3" no-gutters>
                   <v-col cols="12">
-                    <strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel }} -
-                      {{ $filters.formatYYYYMMStringDate(course.courseSession) }}</strong>
-                    <v-spacer /> ({{ course.courseDetails.courseName }})
+                     <div style="font-size: 1rem;">
+                        <CourseReview :shouldRemoveGutters="false" :course="course"/>
+                    </div>
                   </v-col>
-                  <v-col class="ml-3"><strong>Interim</strong>&nbsp;
-                    <span v-if="course.interimPercent">{{ course.interimPercent }}% {{ course.interimLetterGrade
-                    }}</span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col><strong>Final</strong>&nbsp;
-                    <span v-if="course.finalPercent">{{ course.finalPercent }}% {{ course.finalLetterGrade }}</span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
-                  <v-col><strong>FA/AS</strong>&nbsp;
-                    <span v-if="course.fineArtsAppliedSkills">{{ course.fineArtsAppliedSkills }}</span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col><strong>Eq/Ch</strong>&nbsp;
-                    <span v-if="course.equivOrChallenge">{{ course.equivOrChallenge }}</span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col cols="12" class="ml-3" v-if="course.customizedCourseName">
-                    <strong>Custom Course Title</strong> {{ course.customizedCourseName }}
-                  </v-col>
-
                 </v-row>
+
               </v-alert>
             </div>
           </div>
@@ -84,37 +57,18 @@
             <h4 class="font-weight-bold my-2">The following courses will NOT be deleted</h4>
             <div v-for="(course, index) in selectedCoursesWithValidations.error" :key="'error-' + index" class="mb-3">
               <v-alert type="error" border="start" variant="tonal" density="compact" icon="mdi-alert-circle">
-                <v-row class="mb-2">
+                <v-row no-gutters compact>
                   <v-col cols="12">
                     <div class="d-flex align-center mb-1">
                       <span>{{ course.validationMessage }}</span>
                     </div>
-                  </v-col>
-                  <v-col cols="12">
-                    <strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel }} -
-                      {{ $filters.formatYYYYMMStringDate(course.courseSession) }}</strong>
-                    ({{ course.courseDetails.courseName }})
-                  </v-col>
-                  <v-col class="ml-3"><strong>Interim</strong>&nbsp;
-                    <span v-if="course.interimPercent">{{ course.interimPercent }}% {{ course.interimLetterGrade
-                    }}</span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col><strong>Final</strong>&nbsp;
-                    <span v-if="course.finalPercent">{{ course.finalPercent }}% {{ course.finalLetterGrade }}</span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
-                  <v-col><strong>FA/AS</strong>&nbsp;
-                    <span v-if="course.fineArtsAppliedSkills">{{ course.fineArtsAppliedSkills }}</span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col><strong>Eq/Ch</strong>&nbsp;
-                    <span v-if="course.equivOrChallenge">{{ course.equivOrChallenge }}</span>
-                    <span v-else><i>null</i></span>
-                  </v-col>
-                  <v-col cols="12" class="ml-3" v-if="course.customizedCourseName">
-                    <strong>Custom Course Title</strong> {{ course.customizedCourseName }}
+                  </v-col>   
+                  </v-row>                            
+                  <v-row class="px-3 py-3" no-gutters>
+                  <v-col cols="12" >
+                    <div style="font-size: 1rem;">
+                        <CourseReview :shouldRemoveGutters="false" :course="course"/>
+                    </div>
                   </v-col>
                 </v-row>
               </v-alert>
@@ -142,11 +96,13 @@ import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
 import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue";
+import CourseReview from "@/components/StudentProfile/Forms/wizard/common/CourseReview.vue";
 
 export default {
   name: "StudentCoursesDeleteForm",
   components: {
     StudentCourseAlert,
+    CourseReview
   },
   props: {
     selectedCoursesToDelete: {
@@ -219,11 +175,8 @@ export default {
           course?.courseExam &&
           (
             course.courseExam.examPercentage != null ||
-            (course.courseExam.specialCase != null && course.courseExam.specialCase !== "N") ||
-            course.finalPercent != null ||
-            course.finalLetterGrade != null
+            (course.courseExam.specialCase != null && course.courseExam.specialCase !== "N")
           );
-
         const studentIsGraduatedAndNotOnSCCP = this.studentStore.student.gradStatus?.program != "SCCP" && this.studentStore.student.gradStatus?.programCompletionDate
 
         let validationType = "info";
@@ -231,7 +184,7 @@ export default {
 
         if (hasExam) {
           validationType = "error";
-          validationMessage = "Associated Exam Record - This course has an associated exam record and cannot be deleted";
+          validationMessage = "Associated Exam Record - This course has an exam result and cannot be deleted";
         } else if (studentIsGraduatedAndNotOnSCCP) {
           validationType = "warning";
           validationMessage = "Graduated Student - ensure this course can be deleted without removing any graduation or optional program requirements.";
@@ -305,6 +258,10 @@ export default {
     },
     hasPermissions(group, permission) {
       return this.accessStore.hasPermissions("STUDENT", "courseUpdate")
+    },
+    openDeleteStudentCoursesDialog() {
+      this.step = 0;
+      this.dialog = true;
     },
   },
 };

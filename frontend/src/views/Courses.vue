@@ -4,58 +4,20 @@
     <div>
       <v-card no-body>
         <v-tabs v-model="tab" bg-color="bcGovLightGrey">
-          <v-tab value="courseRestrictionsTab" class="text-none" size="large"
-            >Course Restrictions</v-tab
-          >
-          <v-tab value="courseRequirementsTab" class="text-none" size="large"
-            >Course Requirements</v-tab
-          >
-          <v-tab value="examinableCoursesTab" class="text-none" size="large"
-            >Examinable Courses</v-tab
-          >
-          <v-tab value="fineArtsAppliedSkillsTab" class="text-none" size="large"
-            >Fine Arts Applied Skills</v-tab
-          >
-          <v-tab value="examSpecialCaseCodesTab" class="text-none" size="large"
-            >Exam Special Cases</v-tab
-          >
-          <v-tab
-            value="equivalentOrChallengeCodesTab"
-            class="text-none"
-            size="large"
-            >Equivalency or Challenge</v-tab
-          >
+          <v-tab to="/courses/course-restrictions" class="text-none" size="large">Course Restrictions</v-tab>
+          <v-tab to="/courses/course-requirements/" class="text-none" size="large">Course Requirements</v-tab>
+          <v-tab to="/courses/examinable-courses/" class="text-none" size="large">Examinable Courses</v-tab>
+          <!-- <v-tab value="examinableCoursesTab" class="text-none" size="large">Examinable Courses</v-tab> -->
+          <v-tab to="/courses/finearts-appliedskills/" class="text-none" size="large">Fine Arts Applied Skills</v-tab>
+          <v-tab to="/courses/exam-special-cases/" class="text-none" size="large">Exam Special Cases</v-tab>
+          <v-tab to="/courses/equivalency-or-challenge/" class="text-none" size="large">Equivalency or Challenge</v-tab>
           <v-spacer />
-          <v-btn
-            color="bcGovBlue"
-            append-icon="mdi-open-in-new"
+          <v-btn color="bcGovBlue" append-icon="mdi-open-in-new"
             href="https://www.bced.gov.bc.ca/datacollections/course_registry_web_search/advanced-search.php"
-            target="_blank"
-            class="text-none mr-1 my-1"
-            >Search Courses</v-btn
-          >
+            target="_blank" class="text-none mr-1 my-1">Search Courses</v-btn>
         </v-tabs>
         <v-card-text>
-          <v-window v-model="tab">
-            <v-window-item value="courseRestrictionsTab">
-              <CourseRestrictions />
-            </v-window-item>
-            <v-window-item value="courseRequirementsTab">
-              <CourseRequirementsSearch />
-            </v-window-item>
-            <v-window-item value="examinableCoursesTab">
-              <ExaminableCourses />
-            </v-window-item>
-            <v-window-item value="fineArtsAppliedSkillsTab">
-              <FineArtsAppliedSkillsCodes
-            /></v-window-item>
-            <v-window-item value="examSpecialCaseCodesTab">
-              <ExamSpecialCaseCodes
-            /></v-window-item>
-            <v-window-item value="equivalentOrChallengeCodesTab">
-              <EquivalentOrChallengeCodes
-            /></v-window-item>
-          </v-window>
+          <router-view :key="$route.fullPath"></router-view>
         </v-card-text>
       </v-card>
     </div>
@@ -82,11 +44,11 @@ export default {
     EquivalentOrChallengeCodes: EquivalentOrChallengeCodes,
     ExaminableCourses: ExaminableCourses,
   },
-  created() {},
+  created() { },
   data() {
     return {
       snackbarStore: useSnackbarStore(),
-      tab: null,
+      tab: 0,
       courseCode: "",
       show: false,
       displayMessage: null,
@@ -102,15 +64,19 @@ export default {
   padding-left: 25px;
   padding-right: 25px;
 }
+
 .close-record {
   float: right;
 }
+
 .tab-loading {
   color: green !important;
 }
+
 .profile-name {
   padding-bottom: 10px;
 }
+
 .table-filter {
   top: 0px !important;
 }

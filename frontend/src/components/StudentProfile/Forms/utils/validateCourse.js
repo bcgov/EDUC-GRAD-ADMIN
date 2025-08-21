@@ -7,6 +7,7 @@ export async function validateAndFetchCourse({
     existingCourses = [],
     checkExaminable = false,
     canAddExaminable = () => true,
+    canAddNonExaminable = () => true,
 }) {
     const cleanedSession = courseSession?.replace(/[&/\\#,+()$~%.'":*?<>{}-]/g, '');
     const upperCode = code?.toUpperCase();
@@ -69,7 +70,11 @@ export async function validateAndFetchCourse({
                     end >= sessionDate
                 );
             });
-
+            if (!isExaminable && !canAddNonExaminable()) {
+                return {
+                    error: 'An exam is not required for this course and session date and it cannot be entered as examinable.',
+                };
+            }
             if (isExaminable && !canAddExaminable()) {
                 return {
                     error: 'This course required an exam at the time of the course session date. Your role does not have permission to add examinable courses.',
@@ -85,9 +90,15 @@ export async function validateAndFetchCourse({
             isExaminable,
         };
     } catch (err) {
-        return {
-
-            error: 'Invalid Course code/level - course code/level does not exist in the ministry course registry',
-        };
+        if(err?.response?.data?.code === "500"){
+            return {
+                error: "Error connecting to the course web service"
+            }
+        }else{
+            return {
+                error: 'Invalid Course code/level - course code/level does not exist in the ministry course registry',
+            };
+        }
+        
     }
 }
