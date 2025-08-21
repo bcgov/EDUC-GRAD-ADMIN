@@ -1,5 +1,16 @@
 <template>
   <div>
+
+    <v-alert v-if="studentInfo.trueStudentPen" type="info" variant="tonal" class="full-width-div pt-4"
+      icon="mdi-information">
+
+      Record is no longer in use. TRUE Student Profile:
+      <v-btn class="text-none p-0" variant="link" @click="loadStudentInfo(studentInfo.trueStudentPen)"
+        style="font-size: 1rem; margin-top:-5px"
+        :aria-label="`View TRUE Student Profile ${studentInfo.trueStudentPen}`">
+        {{ studentInfo.trueStudentPen }}
+      </v-btn>
+    </v-alert>
     <div class="px-0">
       {{ studentInfo[0] }}
       <table v-if="!smallScreen" class="profile-name" aria-label="student information">
@@ -109,8 +120,8 @@
                 </td>
                 <td class="px-2">
                   <strong>True student ID: </strong>
-                  <span v-if="studentInfo.trueStudentID">
-                    {{ studentInfo.trueStudentID }}</span>
+                  <span v-if="studentInfo.trueStudentPen">
+                    {{ studentInfo.trueStudentPen }}</span>
                 </td>
                 <td class="px-2">
                   <strong>Local ID:</strong> {{ studentInfo.localID }}
@@ -136,9 +147,11 @@
 </template>
 
 <script>
-import sharedMethods from "../../sharedMethods";
 import { useStudentStore } from "../../store/modules/student";
 import { mapState } from "pinia";
+import { useSnackbarStore } from "@/store/modules/snackbar";
+import StudentService from "@/services/StudentService";
+import { loadStudent } from "../../utils/common.js";
 export default {
   name: "StudentInformation",
   components: {},
@@ -150,10 +163,12 @@ export default {
     ...mapState(useStudentStore, {
       studentInfo: "getStudentProfile",
       studentFullName: "getStudentFullName",
+      getStudentIdByPen: "getStudentIdByPen",
     }),
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       smallScreen: false,
       moreStudentInfo: false,
       window: {
@@ -163,7 +178,7 @@ export default {
     };
   },
   created() {
-    this.loadStudent = sharedMethods.loadStudent;
+    this.loadStudent = loadStudent;
     this.window.width = window.innerWidth;
     this.window.height = window.innerHeight;
     if (this.window.width < 768) {
@@ -178,11 +193,54 @@ export default {
       //Use this until validation library implemented
       return num && num.length === 9;
     },
+    loadStudentInfo(pen) {
+      if (pen) {
+        if (pen == this.studentInfo.pen) {
+          this.snackbarStore.showSnackbar(
+            "The entered PEN is the same as the currently loaded student",
+            "warning",
+            5000
+          );
+        } else {
+          StudentService.getStudentByPen(pen)
+            .then((response) => {
+              if (response.data) {
+                if (response.data.length == 0) {
+                  throw new Error(
+                    `Student ${pen} cannot be found on the GRAD or PEN database`
+                  );
+                } else if (response.data[0].program == null || "") {
+                  throw new Error(
+                    `Student ${pen} exists in PEN but does not have a GRAD system record.`
+                  );
+                }
+                this.studentStore.unsetStudent();
+                this.studentStore.setQuickSearchId(response.data[0].studentID);
+                this.loadStudent(response.data);
+              }
+            })
+            .catch((error) => {
+              // eslint-disable-next-line
+              console.error("Header Search: ", error?.message);
+              this.snackbarStore.showSnackbar(error?.message, "error", 5000);
+            });
+        }
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
+.full-width-div {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 97.5vw;
+  background-color: #f0f0f0;
+  padding: 1rem;
+  top: -19%;
+}
+
 .profile-info {
   font-size: 29px;
 }
