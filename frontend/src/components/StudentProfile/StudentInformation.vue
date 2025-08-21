@@ -1,19 +1,25 @@
 <template>
   <div>
+    <v-alert
+      v-if="studentInfo.trueStudentPen"
+      type="info"
+      variant="tonal"
+      class="full-width-div"
+    >
+      <p>
+        Record is no longer in use. TRUE Student Profile:
+        <v-btn
+          class="text-none"
+          variant="text"
+          v-if="studentInfo.trueStudentPen"
+          v-on:click="loadStudentInfo(studentInfo.trueStudentPen)"
+          style="font-size: 1rem"
+        >
+          {{ studentInfo.trueStudentPen }}</v-btn
+        >
+      </p>
+    </v-alert>
     <div class="px-0">
-      <v-alert v-if="studentInfo.trueStudentPen" type="info" class="pb-2">
-        <p>
-          Record is no longer in use. TRUE Student Profile:
-          <v-btn
-            size="small"
-            class="text-none"
-            v-if="studentInfo.trueStudentPen"
-            v-on:click="loadStudentInfo(studentInfo.trueStudentPen)"
-          >
-            {{ studentInfo.trueStudentPen }}</v-btn
-          >
-        </p>
-      </v-alert>
       {{ studentInfo[0] }}
       <table
         v-if="!smallScreen"
@@ -292,6 +298,14 @@ export default {
 </script>
 
 <style scoped>
+.full-width-div {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 97.5vw;
+  background-color: #f0f0f0;
+  padding: 1rem;
+  top: -19%;
+}
 .profile-info {
   font-size: 29px;
 }
