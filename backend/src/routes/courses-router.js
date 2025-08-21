@@ -17,10 +17,13 @@ const {
   getStudentCoursesLegacy,
   getStudentExamDetailsLegacy,
 } = require("../components/course");
-const validate = require('../components/validator');
-const { createCourseRestrictionSchema, updateCourseRestrictionSchema } = require('../components/validations/course');
+const validate = require("../components/validator");
+const {
+  createCourseRestrictionSchema,
+  updateCourseRestrictionSchema,
+} = require("../components/validations/course");
 
-const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
+const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
     roles.Admin.StaffInfoOfficer,
@@ -32,38 +35,34 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
 
 const isValidUiTokenWithEditStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
-  [
-    roles.Admin.StaffInfoOfficer,
-    roles.Admin.StaffAdministration,
-    roles.Admin.StaffGradProgramBA
-  ]
+  [roles.Admin.StaffInfoOfficer, roles.Admin.StaffAdministration]
 );
 
 router.get(
   "/search",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getCourseByCodeAndLevel
 );
 
 router.get(
   "/courseID/:courseID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getCourseByID
 );
 
 router.get(
   "/courseRestrictions",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getAllCourseRestrictions
 );
 
 router.get(
   "/courseRestriction",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getCourseRestrictionByCodeAndLevel
 );
 
@@ -86,35 +85,35 @@ router.put(
 router.get(
   "/examinableCourseSessions",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getExaminableCourseSessions
 );
 
 router.get(
   "/requirementRule",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getCourseRequirementsByRule
 );
 
 router.get(
   "/courseRequirements",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getCourseRequirements
 );
 
 router.get(
   "/legacy/studentCourses/:studentPEN",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentCoursesLegacy
 );
 
 router.get(
   "/legacy/studentExamDetails/:studentPEN",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentExamDetailsLegacy
 );
 

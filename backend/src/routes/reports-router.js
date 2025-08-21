@@ -8,7 +8,7 @@ const {
   getDistrictReport,
   getDigitalSignatures,
 } = require("../components/reports");
-const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
+const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
     roles.Admin.StaffInfoOfficer,
@@ -21,21 +21,21 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
 router.get(
   "/schoolReports/school/:schoolID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getSchoolReport
 );
 
 router.get(
   "/schoolReports/district/:districtID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getDistrictReport
 );
 
 router.get(
   "/signatures",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getDigitalSignatures
 );
 

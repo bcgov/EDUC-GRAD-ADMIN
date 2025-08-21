@@ -34,7 +34,7 @@ const {
   getUserDistributionDownload,
 } = require("../components/batch");
 const { request } = require("../app");
-const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
+const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
     roles.Admin.StaffInfoOfficer,
@@ -44,18 +44,23 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
   ]
 );
 
+const isValidUiTokenWithStaffUpdateRoles = auth.isValidUiTokenWithRoles(
+  "GRAD_SYSTEM_COORDINATOR",
+  [roles.Admin.StaffInfoOfficer, roles.Admin.StaffAdministration]
+);
+
 // BATCH HISTORY
 router.get(
   "/history",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getBatchHistoryDashboard
 );
 
 router.get(
   "/history/errors/:batchID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getBatchHistoryErrors
 );
 
@@ -63,7 +68,7 @@ router.get(
 router.get(
   "/history/:batchID/schoolReport/rerun",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getRerunSchoolReports
 );
 
@@ -71,7 +76,7 @@ router.get(
 router.get(
   "/history/:batchID/rerun",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getRerunBatch
 );
 
@@ -79,7 +84,7 @@ router.get(
 router.get(
   "/history/:batchID/failed/rerun",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getRerunFailed
 );
 
@@ -87,21 +92,21 @@ router.get(
 router.get(
   "/scheduledJobs",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getBatchScheduledJobs
 );
 
 router.post(
   "/scheduledJobs/:jobTypeCode",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postCreateScheduledJob
 );
 
 router.delete(
   "/scheduledJobs/:jobID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   deleteScheduledJob
 );
 
@@ -109,14 +114,14 @@ router.delete(
 router.get(
   "/routines",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getBatchProcessingRoutines
 );
 
 router.post(
   "/routines/toggle/:jobType",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postBatchProcessingRoutineToggle
 );
 
@@ -124,21 +129,21 @@ router.post(
 router.post(
   "/run/graduation/regularAlgorithm",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postRegularGraduationAlgorithmBatch
 );
 
 router.post(
   "/run/graduation/TVR",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postTranscriptVerificationReportBatch
 );
 
 router.post(
   "/run/graduation/distribution",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postMonthlyDistributionRun
 );
 
@@ -146,7 +151,7 @@ router.post(
 router.post(
   "/run/userRequest/distribution/originalTranscript",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postUserRequestDistributionOriginalTranscript
 );
 
@@ -154,7 +159,7 @@ router.post(
 router.post(
   "/run/userRequest/distribution/originalCertificate",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postUserRequestDistributionOriginalCertificate
 );
 
@@ -162,76 +167,76 @@ router.post(
 router.post(
   "/run/userRequest/distribution/reprintCertificate",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postUserRequestDistributionReprintCertificate
 );
 
 router.post(
   "/run/userRequest/distribution/blankCertificate",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postUserRequestBlankCertificate
 );
 
 router.post(
   "/run/userRequest/distribution/blankTranscript",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postUserRequestBlankTranscript
 );
 
 router.post(
   "/run/regeneration/schoolReport",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postUserRequestRegenSchoolReport
 );
 
 router.post(
   "/run/regeneration/certificate",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postUserRequestRegenCertificate
 );
 
 router.post(
   "/run/yearEnd/PSI/:transmissionType",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postYearEndPSIRun
 );
 router.post(
   "/run/yearEnd/distribution/nonGraduate",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postNonGraduateTranscriptDistributionRun
 );
 // Year end credentials and transcript
 router.post(
   "/run/yearEnd/distribution/credentials",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postYearEndCredentialsDistributionRun
 );
 
 router.post(
   "/run/yearEnd/TVRDelete",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postYearEndTVRDelete
 );
 
 router.post(
   "/run/yearEnd/ArchiveStudents",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postArchiveStudents
 );
 
 router.post(
   "/run/yearEnd/ArchiveSchoolReports",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithStaffUpdateRoles,
   postArchiveSchoolReports
 );
 
@@ -239,7 +244,7 @@ router.post(
 router.get(
   "/distribution/download/:batchID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getUserDistributionDownload
 );
 

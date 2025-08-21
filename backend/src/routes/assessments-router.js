@@ -5,7 +5,7 @@ const config = require("../config/index");
 const auth = require("../components/auth");
 const roles = require("../components/roles");
 const { errorResponse, getData } = require("../components/utils");
-const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
+const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
     roles.Admin.StaffInfoOfficer,
@@ -20,28 +20,28 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
 router.get(
   "/assessments",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getAllAssessments
 );
 
 router.get(
   "/requirements",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getAllAssessmentRequirements
 );
 
 router.get(
   "/requirements/rule/:rule",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getAssessmentRequirementRule
 );
 
 router.get(
   "/studentAssessment/:pen",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentAssessment
 );
 

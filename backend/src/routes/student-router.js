@@ -52,14 +52,10 @@ const {
 
 const isValidUiTokenWithEditStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
-  [
-    roles.Admin.StaffInfoOfficer,
-    roles.Admin.StaffAdministration,
-    roles.Admin.StaffGradProgramBA,
-  ]
+  [roles.Admin.StaffInfoOfficer, roles.Admin.StaffAdministration]
 );
 
-const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
+const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
     roles.Admin.StaffInfoOfficer,
@@ -73,7 +69,7 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
 router.get(
   "/:studentID/courses",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentCourseByStudentID
 );
 
@@ -112,7 +108,7 @@ router.delete(
 router.get(
   "/:studentID/history/courses",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentCourseHistory
 );
 
@@ -134,14 +130,14 @@ router.delete(
 router.get(
   "/:studentID/optionalPrograms/status",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentOptionalPrograms
 );
 
 router.get(
   "/:studentID/careerPrograms",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentCareerPrograms
 );
 
@@ -163,21 +159,21 @@ router.delete(
 router.get(
   "/:studentID/gradProgram/history",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentGradStatusHistory
 );
 
 router.get(
   "/:studentID/optionalPrograms/history",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentOptionalProgramHistory
 );
 
 router.get(
   "/batchHistory/:batchID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getBatchHistoryStudents
 );
 
@@ -185,7 +181,7 @@ router.get(
 router.get(
   "/:studentID/gradProgram/status",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentGradStatus
 );
 
@@ -199,7 +195,7 @@ router.post(
 router.get(
   `/:studentID/gradProgram/undoCompletion`,
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentUndoCompletion
 );
 
@@ -213,28 +209,28 @@ router.post(
 router.get(
   "/:studentID/runGradAlgorithm",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getRunGradAlgorithm
 );
 
 router.get(
   "/:studentID/previewFinalMarks",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getRunPreviewFinalMarks
 );
 
 router.get(
   "/:studentID/updateTranscriptVerification",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getRunTranscriptVerification
 );
 
 router.get(
   "/:studentID/updateTranscript",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getRunUpdateTranscript
 );
 
@@ -242,28 +238,28 @@ router.get(
 router.get(
   "/studentReports/:studentID/transcript",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentTranscript
 );
 
 router.get(
   "/studentReports/:studentID/transcriptVerificationReport",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentTVR
 );
 
 router.get(
   "/studentReports/:studentID/certificate",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentCertificate
 );
 
 router.get(
   "/studentReports/:studentPEN/XML",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentXMLReport
 );
 
@@ -271,7 +267,7 @@ router.get(
 router.get(
   "/:studentID/notes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentNotes
 );
 
@@ -293,21 +289,21 @@ router.delete(
 router.get(
   "/search",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentAdvancedSearch
 );
 
 router.get(
   "/pen/:studentPEN",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentByPen
 );
 
 router.get(
   "/id/:studentID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentByID
 );
 

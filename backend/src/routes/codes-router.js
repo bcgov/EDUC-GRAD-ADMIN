@@ -30,7 +30,7 @@ const {
   getBatchJobTypes,
 } = require("../components/codes");
 
-const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
+const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
     roles.Admin.StaffInfoOfficer,
@@ -43,161 +43,161 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
 router.get(
   "/studentStatusCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentStatusCodes
 );
 
 router.get(
   "/studentHistoryActivityCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getHistoryActivityCodes
 );
 
 router.get(
   "/studentGradeCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentGradeCodes
 );
 
 router.get(
   "/gradProgramCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getGradProgramCodes
 );
 
 router.get(
   "/optionalProgramCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getOptionalProgramCodes
 );
 
 router.get(
   "/careerProgramCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getCareerProgramCodes
 );
 
 router.get(
   "/requirementTypeCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getRequirementTypeCodes
 );
 
 router.get(
   "/fineArtsAppliedSkillsCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getFineArtsAppliedSkillsCodes
 );
 
 router.get(
   "/equivalencyChallengeCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getEquivalentOrChallengeCodes
 );
 
 router.get(
   "/examSpecialCaseCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getExamSpecialCaseCodes
 );
 
 router.get(
   "/schoolCategoryCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getInstituteSchoolCategoryCodes
 );
 
 router.get(
   "/schoolFacilityCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getInstituteFacilityCodes
 );
 
 router.get(
   "/assessmentSpecialCaseCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getAssessmentSpecialCaseCodes
 );
 
 router.get(
   "/letterGradeCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getCourseLetterGradeCodes
 );
 
 router.get(
   "/transcriptMessagingCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getTranscriptMessagingCodes
 );
 
 router.get(
   "/undoCompletionReasonCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getStudentUndoCompletionReasonCodes
 );
 
 router.get(
   "/transcriptTypeCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getTranscriptTypeCodes
 );
 
 router.get(
   "/certificateTypeCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getCertificateTypeCodes
 );
 
 router.get(
   "/programCertificateTranscriptCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getProgramCertificateTranscriptCodes
 );
 
 router.get(
   "/reportTypeCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getReportTypeCodes
 );
 
 router.get(
   "/documentStatusCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getDocumentStatusCodes
 );
 
 router.get(
   "/signatureBlockTypeCodes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getDigitalSignatureBlockTypeCodes
 );
 
 router.get(
   "/batchJobTypes",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getBatchJobTypes
 );
 

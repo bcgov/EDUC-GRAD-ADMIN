@@ -12,7 +12,7 @@ const {
   getInstituteEventHistory,
   putInstituteEventHistory,
 } = require("../components/schools");
-const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
+const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
     roles.Admin.StaffInfoOfficer,
@@ -20,53 +20,57 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
     roles.Admin.StaffGradProgramBA,
   ]
 );
+const isValidUiTokenWithUpdateStaffRoles = auth.isValidUiTokenWithRoles(
+  "GRAD_SYSTEM_COORDINATOR",
+  [roles.Admin.StaffAdministration]
+);
 
 router.get(
   "/allSchools",
   passport.authenticate("jwt", { session: false }),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getInstituteSchoolsList
 );
 
 router.get(
   "/school/:schoolID",
   passport.authenticate("jwt", { session: false }),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getInstituteSchool
 );
 
 router.get(
   "/allDistricts",
   passport.authenticate("jwt", { session: false }),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getInstituteDistrictsList
 );
 
 router.get(
   "/district/:districtID",
   passport.authenticate("jwt", { session: false }),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getInstituteDistrict
 );
 
 router.get(
   "/postSecondary/search",
   passport.authenticate("jwt", { session: false }),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getPSISearch
 );
 
 router.get(
   "/eventHistory",
   passport.authenticate("jwt", { session: false }),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getInstituteEventHistory
 );
 
 router.put(
   "/eventHistory",
   passport.authenticate("jwt", { session: false }),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithUpdateStaffRoles,
   putInstituteEventHistory
 );
 

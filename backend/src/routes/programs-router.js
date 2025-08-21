@@ -10,7 +10,7 @@ const {
   getOptionalProgramRules,
   getAlgorithmRules,
 } = require("../components/programs");
-const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
+const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
     roles.Admin.StaffInfoOfficer,
@@ -23,35 +23,35 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
 router.get(
   "/gradProgram/rules",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getGradProgramRules
 );
 
 router.get(
   "/gradProgram/rules/:programCode",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getGradProgramRulesByCode
 );
 
 router.get(
   "/gradProgram/:programCode",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getGradProgramByCode
 );
 
 router.get(
   "/optionalProgram/rules",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getOptionalProgramRules
 );
 
 router.get(
   "/algorithm/rules",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
+  isValidUiTokenWithReadStaffRoles,
   getAlgorithmRules
 );
 
