@@ -3,9 +3,10 @@
     <v-dialog v-model="dialog" persistent max-width="80%">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-
-          <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="studentStatus == 'MER'" @click="
-            openDialog" v-bind="props" color="success" icon="mdi-pencil" density="compact" variant="text" />
+          <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate') &&
+            (!course.courseExam || hasPermissions('STUDENT', 'updateExaminableCourse'))"
+            :disabled="studentStatus == 'MER'" @click="
+              openDialog" v-bind="props" color="success" icon="mdi-pencil" density="compact" variant="text" />
         </slot>
       </template>
 
@@ -79,7 +80,7 @@
                         </v-btn>
                         <v-btn :disabled="isLoading" class="pl-1" density="compact" variant="outline" color="error"
                           @click="closeCourseInput">
-                          Close
+                          <v-icon size="25">mdi-close-circle-outline</v-icon>
                         </v-btn>
                       </v-col>
                       <v-col cols="12"> <v-alert v-if="courseValidationMessage" type="error" variant="tonal"
@@ -233,6 +234,7 @@ import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/Cou
 import CourseExamDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseExamDetailsInput.vue";
 import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue";
 import { useStudentStore } from "@/store/modules/student";
+import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
 import { validateAndFetchCourse } from '@/components/StudentProfile/Forms/utils/validateCourse.js';
 
@@ -317,7 +319,7 @@ export default {
     };
   },
   computed: {
-
+    ...mapState(useAccessStore, ["hasPermissions", "getRoles"]),
     ...mapState(useStudentStore, {
       studentPenAndName: "formattedStudentName"
 
@@ -325,6 +327,7 @@ export default {
     ...mapState(useStudentStore, {
       studentCourses: "studentCourses",
       studentStatus: (state) => state.student.profile.studentStatus,
+      studentProgram: (state) => state.student.profile.program,
 
     }),
     studentStore() {
@@ -349,6 +352,7 @@ export default {
         code,
         level,
         courseSession,
+        studentProgram: this.studentProgram,
         existingCourses: this.studentCourses,
         checkExaminable: false,
       });
@@ -436,9 +440,6 @@ export default {
       }
     },
 
-    hasPermissions(module, permission) {
-      return true; // Replace with actual logic
-    },
   },
 
 

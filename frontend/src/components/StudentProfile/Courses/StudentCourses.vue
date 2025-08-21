@@ -41,7 +41,7 @@
             ref="courseTransferFormRef">
           </StudentCoursesTransferForm>
           <v-spacer />
-          <StudentCoursesCreateForm type="all"/>
+          <StudentCoursesCreateForm type="all" />
         </v-row>
         <v-data-table v-if="courses" v-model="selected" :items="courses" :headers="fields" :item-value="(item) => item"
           :items-per-page="'-1'" title="studentCourse" :show-select="allowUpdateStudentCourseExam">
@@ -77,8 +77,8 @@
                   <div v-if="item.customizedCourseName">
                     <strong>Customized Course&nbsp;</strong>
                     <span v-if="item.customizedCourseName">{{ item.customizedCourseName
-                      }}</span>
-                      <span v-else> <i>null</i> </span>
+                    }}</span>
+                    <span v-else> <i>null</i> </span>
                   </div>
 
                   <!-- Related Course Details -->
@@ -90,30 +90,30 @@
 
                   <!-- Course Exam Details -->
                   <v-row no-gutters v-if="item.courseExam">
-                    <v-col><strong>Exam %&nbsp;</strong>                    
-                    <span v-if="item.courseExam.examPercentage">{{ item.courseExam.examPercentage
+                    <v-col><strong>Exam %&nbsp;</strong>
+                      <span v-if="item.courseExam.examPercentage">{{ item.courseExam.examPercentage
                       }}</span>
-                      <span v-else> <i>null</i> </span>  
+                      <span v-else> <i>null</i> </span>
                     </v-col>
                     <v-col><strong>Best Exam %&nbsp;</strong>
-                    <span v-if="item.courseExam.bestExamPercentage">{{ item.courseExam.bestExamPercentage
+                      <span v-if="item.courseExam.bestExamPercentage">{{ item.courseExam.bestExamPercentage
                       }}</span>
-                      <span v-else> <i>null</i> </span>    
+                      <span v-else> <i>null</i> </span>
                     </v-col>
                     <v-col><strong>School %&nbsp;</strong>
-                    <span v-if="item.courseExam.schoolPercentage">{{ item.courseExam.schoolPercentage
+                      <span v-if="item.courseExam.schoolPercentage">{{ item.courseExam.schoolPercentage
                       }}</span>
-                      <span v-else> <i>null</i> </span>      
+                      <span v-else> <i>null</i> </span>
                     </v-col>
                     <v-col><strong>Best School %&nbsp;</strong>
-                    <span v-if="item.courseExam.bestSchoolPercentage">{{ item.courseExam.bestSchoolPercentage
+                      <span v-if="item.courseExam.bestSchoolPercentage">{{ item.courseExam.bestSchoolPercentage
                       }}</span>
-                    <span v-else> <i>null</i> </span> 
+                      <span v-else> <i>null</i> </span>
                     </v-col>
                     <v-col><strong>Special Case&nbsp;</strong>
-                    <span v-if="item.courseExam.specialCase">{{ item.courseExam.specialCase
+                      <span v-if="item.courseExam.specialCase">{{ item.courseExam.specialCase
                       }}</span>
-                    <span v-else> <i>null</i> </span> 
+                      <span v-else> <i>null</i> </span>
                     </v-col>
                   </v-row>
                 </div>
