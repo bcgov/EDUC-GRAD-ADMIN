@@ -38,7 +38,13 @@
         <v-col>
           <v-select v-model="course.courseExam.specialCase" :items="filteredSpecialCaseCodes" label="Special Case"
             item-title="label" item-value="examSpecialCaseCode" variant="outlined" density="compact" class="pa-1"
-            clearable persistent-placeholder persistent-hint />
+            clearable persistent-placeholder persistent-hint
+            :disabled="!(create || (update && ['N', null].includes(existingSpecialCaseCode)))" />
+        </v-col>
+
+        <v-col>
+          <v-text-field v-model="course.courseExam.examPercentage" type="number" min="0" max="100" label="Exam %"
+            variant="outlined" density="compact" class="pa-1" :disabled="true" persistent-placeholder persistent-hint />
         </v-col>
 
         <v-col>
@@ -50,17 +56,16 @@
 
         <v-col>
           <v-text-field v-model="course.finalPercent" type="number" min="0" max="100" label="Final %" variant="outlined"
-            density="compact" class="pa-1" clearable
-            :disabled="course.courseSession < 199409 || courseSessionGreaterThanReportingPeriod" persistent-placeholder
-            persistent-hint :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty"
+            density="compact" class="pa-1" clearable :disabled="courseSessionGreaterThanReportingPeriod"
+            persistent-placeholder persistent-hint
+            :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty"
             @blur="v$.course.finalPercent.$touch" />
         </v-col>
 
         <v-col>
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
             variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder persistent-hint
-            :error="v$.course.finalLetterGrade.$invalid && v$.course.finalLetterGrade.$dirty"
-            @blur="v$.course.finalLetterGrade.$touch" :disabled="courseSessionGreaterThanReportingPeriod" />
+            :disabled="courseSessionGreaterThanReportingPeriod" />
         </v-col>
 
         <v-col>
@@ -90,10 +95,9 @@
           {{ warning }}
         </v-col>
       </v-row>
-      <v-row class="align-center">
+      <v-row no-gutters>
         <v-col class="py-0 m-0 d-flex align-center text-caption">
           <v-icon color="info" size="18" class="me-1">mdi-information</v-icon>
-
           <router-link to="/courses/examinable-courses/blending-rules" custom v-slot="{ href, navigate }">
             <a :href="href" @click="navigate" target="_blank" rel="noopener noreferrer">
               Instructions for calculating a blended mark
@@ -172,13 +176,10 @@ export default {
     this.minSession = `${startYear}09`;
     this.maxSession = `${endYear}09`;
 
-    if (this.course.courseSession < 198401 || this.course.courseSession > this.maxSession) {
-      this.warnings.push("Course session cannot be after the current reporting period or prior to 198401")
-
+    if (this.course?.courseExam.specialCase) {
+      this.existingSpecialCaseCode = this.course?.courseExam.specialCase;
     }
-    if (this.course.isExaminable) {
-      this.warnings.push("This course required an exam at the time of the course session date")
-    }
+    this.updateWarnings();
     this.v$.$touch(); // <-- triggers validation on load
   },
   components: { CourseInput },
@@ -202,6 +203,7 @@ export default {
       examSpecialCaseCodes: [],
       minSession: null,
       maxSession: null,
+      existingSpecialCaseCode: null, // used for local special case code
     }
   },
   validations() {
@@ -304,18 +306,6 @@ export default {
             }
           ),
         },
-
-        finalLetterGrade: {
-          isValid: helpers.withMessage(
-            'Course session is in the past. Enter a final mark.',
-            function (value) {
-              if (this.course.courseSession < this.maxSession && !this.course.finalPercent && (value === '' || value === null || value === undefined)) {
-                return false;
-              }
-              return true;
-            }
-          ),
-        },
         credits: {
           isCreditValue: helpers.withMessage(
             'Credits must be 0, 1, 2, 3, or 4',
@@ -371,6 +361,10 @@ export default {
       } else {
         this.course.finalLetterGrade = ""
       }
+      this.updateWarnings();
+    },
+    'course.finalLetterGrade'(newVal) {
+      this.updateWarnings();
     },
     'course.fineArtsAppliedSkills'(newVal) {
       this.updateWarnings();
@@ -451,7 +445,7 @@ export default {
       if (this.create) {
         return this.examSpecialCaseCodes.filter(code => code.examSpecialCaseCode === "A");
       }
-      return this.examSpecialCaseCodes;
+      return this.examSpecialCaseCodes.filter(code => code.examSpecialCaseCode === "A" || code.examSpecialCaseCode === "N");
     },
   },
   methods: {
@@ -461,16 +455,23 @@ export default {
       const trimmedProgram = this.studentProgram?.trim();
 
       const warnings = [];
-
+      if (this.course.courseSession < 198401 || this.course.courseSession > this.maxSession) {
+        warnings.push("Course session cannot be after the current reporting period or prior to 198401")
+      }
+      if (this.course.isExaminable) {
+        warnings.push("This course required an exam at the time of the course session date")
+      }
       if (
         (courseType === "Locally Developed" || courseType === "Career Program") &&
         (trimmedProgram === "1996-EN" || trimmedProgram === "1996-PF" || trimmedProgram === "2018-EN")
       ) {
         warnings.push('Flag is only applicable for this course type if student is on the 1995 program.');
       }
+      if (this.course.courseSession < this.maxSession && (this.course.finalPercent === '' || this.course.finalPercent === null || this.course.finalPercent === undefined) && (this.course.finalLetterGrade === '' || this.course.finalLetterGrade === null || this.course.finalLetterGrade === undefined)) {
+        warnings.push('Course session is in the past. Enter a final mark.');
+      }
       this.warnings = warnings;
     },
-
     getGradesForPercent(percent) {
       const isGTorGTF = this.course.courseDetails.courseCode === 'GT' || this.course.courseDetails.courseCode === 'GTF';
 

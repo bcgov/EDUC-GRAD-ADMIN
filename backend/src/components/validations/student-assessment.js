@@ -18,7 +18,7 @@ const putStudentAssessmentSchema = object({
     proficiencyScore: number().notRequired(),
     assessmentFormID: uuidGeneric().notRequired(),
     adaptedAssessmentCode: string().max(10).notRequired(),
-    studentStatus: string().max(10).notRequired(),
+    studentStatusCode: string().max(10).required(),
     irtScore: string().max(7).notRequired(),
     provincialSpecialCaseCode: string().max(1).notRequired(),
     numberOfAttempts: number().notRequired(),

@@ -3,9 +3,10 @@
     <v-dialog v-model="dialog" persistent max-width="80%">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-
-          <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="studentStatus == 'MER'" @click="
-            openDialog" v-bind="props" color="success" icon="mdi-pencil" density="compact" variant="text" />
+          <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate') &&
+            (!course.courseExam || hasPermissions('STUDENT', 'updateExaminableCourse'))"
+            :disabled="studentStatus == 'MER'" @click="
+              openDialog" v-bind="props" color="success" icon="mdi-pencil" density="compact" variant="text" />
         </slot>
       </template>
 
@@ -79,7 +80,7 @@
                         </v-btn>
                         <v-btn :disabled="isLoading" class="pl-1" density="compact" variant="outline" color="error"
                           @click="closeCourseInput">
-                          Close
+                          <v-icon size="25">mdi-close-circle-outline</v-icon>
                         </v-btn>
                       </v-col>
                       <v-col cols="12"> <v-alert v-if="courseValidationMessage" type="error" variant="tonal"
@@ -150,18 +151,29 @@
                         <v-col><strong>Credits</strong> {{ selectedCourseToUpdate.credits }}</v-col>
                       </v-row>
                       <v-row v-else>
+
                         <v-col class="ml-3"><strong>Interim</strong>&nbsp;
                           <span v-if="selectedCourseToUpdate.interimPercent">{{ selectedCourseToUpdate.interimPercent
                           }}%
-                            {{ selectedCourseToUpdate.interimLetterGrade }}</span>
-                          <span v-else> <i>null</i> </span>
+                          </span>
+                          <span v-if="selectedCourseToUpdate.interimLetterGrade">{{
+                            selectedCourseToUpdate.interimLetterGrade }}
+                          </span>
+                          <span
+                            v-if="!selectedCourseToUpdate.interimLetterGrade && !selectedCourseToUpdate.interimPercent">
+                            <i>null</i></span>
                         </v-col>
                         <v-col><strong>Final</strong>&nbsp;
                           <span v-if="selectedCourseToUpdate.finalPercent">
-                            {{ selectedCourseToUpdate.finalPercent }}%
-                            {{ selectedCourseToUpdate.finalLetterGrade }}</span><span v-else><i>null</i></span></v-col>
-                        <!-- I don't think credits can have a null value? - Samara -->
-                        <v-col><strong>Credits</strong> {{ selectedCourseToUpdate.credits }}</v-col>
+                            {{ selectedCourseToUpdate.finalPercent }}%&nbsp;</span>
+                          <span v-if="selectedCourseToUpdate.finalLetterGrade">
+                            {{ selectedCourseToUpdate.finalLetterGrade }}</span>
+                          <span v-if="!selectedCourseToUpdate.finalLetterGrade && !selectedCourseToUpdate.finalPercent">
+                            <i>null</i></span>
+                        </v-col>
+
+                        <v-col><strong>Credits</strong> <span v-if="selectedCourseToUpdate.credits"> {{
+                          selectedCourseToUpdate.credits }}</span><span v-else><i>null</i></span></v-col>
                         <v-col><strong>FA/AS</strong>&nbsp;
                           <span v-if="selectedCourseToUpdate.fineArtsAppliedSkills">
                             {{ selectedCourseToUpdate.fineArtsAppliedSkills }}
@@ -222,6 +234,7 @@ import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/Cou
 import CourseExamDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseExamDetailsInput.vue";
 import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue";
 import { useStudentStore } from "@/store/modules/student";
+import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
 import { validateAndFetchCourse } from '@/components/StudentProfile/Forms/utils/validateCourse.js';
 
@@ -306,7 +319,7 @@ export default {
     };
   },
   computed: {
-
+    ...mapState(useAccessStore, ["hasPermissions", "getRoles"]),
     ...mapState(useStudentStore, {
       studentPenAndName: "formattedStudentName"
 
@@ -314,6 +327,7 @@ export default {
     ...mapState(useStudentStore, {
       studentCourses: "studentCourses",
       studentStatus: (state) => state.student.profile.studentStatus,
+      studentProgram: (state) => state.student.profile.program,
 
     }),
     studentStore() {
@@ -338,6 +352,7 @@ export default {
         code,
         level,
         courseSession,
+        studentProgram: this.studentProgram,
         existingCourses: this.studentCourses,
         checkExaminable: false,
       });
@@ -352,6 +367,7 @@ export default {
       this.selectedCourseToUpdate.courseID = result.courseID;
       this.selectedCourseToUpdate.courseSession = result.courseSession;
       this.selectedCourseToUpdate.courseDetails = result.courseData;
+
       this.courseValidationMessage = null;
       this.showCourseInput = false;
       this.clearForm();
@@ -384,9 +400,14 @@ export default {
     showCourseInputAndPopulate() {
       this.clearForm();
       this.showCourseInput = true;
-      this.courseUpdate.code = this.course.courseDetails.courseCode;
-      this.courseUpdate.level = this.course.courseDetails.courseLevel;
-      this.courseUpdate.courseSession = this.course.courseSession;
+
+
+
+      this.courseUpdate.courseDetails = this.selectedCourseToUpdate.courseDetails;
+      this.courseUpdate.code = this.selectedCourseToUpdate.courseDetails.courseCode;
+      this.courseUpdate.level = this.selectedCourseToUpdate.courseDetails.courseLevel;
+      this.courseUpdate.courseSession = this.selectedCourseToUpdate.courseSession;
+
     },
     closeCourseInput() {
       this.clearForm();
@@ -425,9 +446,6 @@ export default {
       }
     },
 
-    hasPermissions(module, permission) {
-      return true; // Replace with actual logic
-    },
   },
 
 

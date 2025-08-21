@@ -44,6 +44,7 @@ nconf.defaults({
       roleAdmin: process.env.GRAD_ROLE_ADMIN,
       roleInfoOfficer: process.env.GRAD_ROLE_INFO_OFFICER,
       roleGradProgramAreaBA: process.env.GRAD_PROGRAM_AREA_BA,
+      roleGradAssessments: process.env.GRAD_ROLE_ASSESSMENTS
     },
     idirIDPHint: process.env.IDIR_IDP_HINT,
     assessmentAPIURL: process.env.ASSESSMENT_API_URL,
