@@ -153,7 +153,6 @@ async function deleteScheduledJob(req, res) {
     const url = `${config.get(
       "server:batchAPIURL"
     )}/api/v1/batch/schedule/remove/${req.params?.jobID}`;
-    console.log(url);
     const data = await deleteData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
