@@ -17,9 +17,7 @@ export default {
   async refreshAuthToken(token) {
     try {
     
-      const response = await axios.post(Routes.REFRESH, {
-        refreshToken: token,
-      });
+      const response = await axios.get(Routes.TOKEN);
 
       if (response.data.error) {
         return { error: response.data.error_description };
