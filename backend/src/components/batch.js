@@ -152,7 +152,8 @@ async function deleteScheduledJob(req, res) {
   try {
     const url = `${config.get(
       "server:batchAPIURL"
-    )}/api/v1/batch/schedule/remove/${req.params?.jobID}}`;
+    )}/api/v1/batch/schedule/remove/${req.params?.jobID}`;
+    console.log(url);
     const data = await deleteData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -177,13 +178,13 @@ async function getBatchProcessingRoutines(req, res) {
   }
 }
 
-async function postBatchProcessingRoutineToggle(req, res) {
+async function putBatchProcessingRoutineToggle(req, res) {
   const token = auth.getBackendToken(req);
   try {
     const url = `${config.get(
       "server:batchAPIURL"
     )}/api/v1/batch/processing/toggle/${req.params?.jobType}`;
-    const data = await postData(
+    const data = await putData(
       token,
       url,
       req.body,
@@ -576,7 +577,7 @@ module.exports = {
   postCreateScheduledJob,
   deleteScheduledJob,
   getBatchProcessingRoutines,
-  postBatchProcessingRoutineToggle,
+  putBatchProcessingRoutineToggle,
   postRegularGraduationAlgorithmBatch,
   postTranscriptVerificationReportBatch,
   postMonthlyDistributionRun,

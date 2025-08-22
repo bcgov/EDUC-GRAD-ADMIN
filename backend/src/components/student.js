@@ -54,8 +54,8 @@ async function putStudentCoursesByStudentID(req, res) {
     }`;
     const data = await putData(
       token,
-      req.body,
       url,
+      req.body,
       req.session?.correlationID
     );
     return res.status(200).json(data);

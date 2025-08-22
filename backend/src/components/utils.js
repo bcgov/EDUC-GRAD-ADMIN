@@ -318,7 +318,7 @@ async function postData(token, url, data, correlationID) {
   }
 }
 
-async function putData(token, data, url, correlationID) {
+async function putData(token, url, data, correlationID) {
   try {
     const username = getUsernameFromToken(token);
     const putDataConfig = {

@@ -130,8 +130,8 @@ async function putCourseRestriction(req, res) {
     )}/api/v2/course/save-course-restriction/${req.params?.restrictionID}`;
     const data = await putData(
       token,
-      req.body,
       url,
+      req.body,
       req.session?.correlationID
     );
     return res.status(200).json(data);

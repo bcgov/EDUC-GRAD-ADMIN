@@ -14,7 +14,7 @@ const {
   postCreateScheduledJob,
   deleteScheduledJob,
   getBatchProcessingRoutines,
-  postBatchProcessingRoutineToggle,
+  putBatchProcessingRoutineToggle,
   postRegularGraduationAlgorithmBatch,
   postTranscriptVerificationReportBatch,
   postMonthlyDistributionRun,
@@ -118,11 +118,11 @@ router.get(
   getBatchProcessingRoutines
 );
 
-router.post(
+router.put(
   "/routines/toggle/:jobType",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffUpdateRoles,
-  postBatchProcessingRoutineToggle
+  putBatchProcessingRoutineToggle
 );
 
 // NEW BATCH REQUESTS
