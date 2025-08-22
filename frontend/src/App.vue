@@ -39,6 +39,14 @@
 
     <!-- <div class="container"> -->
     <v-main>
+      <v-alert>
+        Time Remaining: {{ timeRemainingFormatted }}
+        token:
+        <pre>{{ decodedJwtPayload }}</pre>
+        <h2>{{ jwtTokenTrimmed }}</h2>
+
+
+      </v-alert>
       <router-view />
       <div class="overlay-dialog">
         <v-dialog v-model="tokenExpiring" max-width="600px">
@@ -158,9 +166,7 @@ export default {
         // Replace the original timestamps
         decodedPayload.iat = iatReadable;
         decodedPayload.exp = expReadable;
-
         return decodedPayload;
-
 
       } catch (e) {
         console.error("Failed to decode JWT:", e);
@@ -201,14 +207,13 @@ export default {
       setInterval(async () => {
         const browserTokenWasUpdated = currentToken !== localStorage.getItem("jwtToken")
         if (browserTokenWasUpdated) {
-          console.log("another tab updated the JWT")
           currentToken = localStorage.getItem("jwtToken")
           this.setJwtToken(currentToken)
         }
         if (this.jwtTokenGet) {
-
           this.timerValue = await this.getTokenRemainingTime();
-          this.tokenExpiring = this.timerValue < 300;
+          //this.tokenExpiring = this.timerValue < 300;
+          this.tokenExpiring = true
           this.tokenExpired = await this.checkJWTTokenExpired();
         }
       }, 30000); // Update every 10000 milliseconds (30 seconds)
@@ -220,6 +225,7 @@ export default {
       const updatedJwtToken = await authService.refreshAuthToken(
         this.jwtTokenGet
       );
+      console.log(updatedJwtToken)
       this.setJwtToken(updatedJwtToken.jwtFrontend);
       this.tokenExpiring = false; // Hide the overlay dialog
     },

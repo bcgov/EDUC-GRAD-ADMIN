@@ -133,16 +133,35 @@ router.post("/refresh", [body("refreshToken").exists()], async (req, res) => {
       errors: errors.array(),
     });
   }
+
+
+
+    const decoded = jsonwebtoken.decode(req["user"].refreshToken);
+
+    if (decoded) {
+      const issuedAt = new Date(decoded.iat * 1000).toLocaleString("en-CA", { timeZone: "America/Vancouver" });
+      const expiresAt = new Date(decoded.exp * 1000).toLocaleString("en-CA", { timeZone: "America/Vancouver" });
+
+      console.log("Issued At:", issuedAt);
+      console.log("Expires At:", expiresAt);
+    }
+
   if (!req["user"] || !req["user"].refreshToken || !req?.user?.jwt) {
     res.status(HttpStatus.UNAUTHORIZED).json();
   } else {
+
+
     if (auth.isTokenExpired(req.user.jwt)) {
+      console.log("DEBUG: Auth.isTokenExpire(jwt) = true" )
       if (req?.user?.refreshToken && auth.isRenewable(req.user.refreshToken)) {
-        return generateTokens(req, res);
+        const response = generateTokens(req, res);
+        console.log(response);
+        return response;
       } else {
         res.status(HttpStatus.UNAUTHORIZED).json();
       }
     } else {
+      console.log("DEBUG: REFereshing jwt" )
       const isAuthorizedUser = isValidStaffUserWithRoles(req);
       const responseJson = {
         jwtFrontend: req.user.jwtFrontend,
