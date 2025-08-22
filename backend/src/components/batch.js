@@ -12,8 +12,6 @@ const {
 async function getBatchHistoryDashboard(req, res) {
   const token = auth.getBackendToken(req);
 
-  // idk why this works for event history without having to do this translation here
-  // I'll debug later
   const sort =
     typeof req.query?.sort === "string"
       ? JSON.parse(req.query.sort)
