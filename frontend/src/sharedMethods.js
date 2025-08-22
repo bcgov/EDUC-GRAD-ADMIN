@@ -1,5 +1,5 @@
 import StudentService from "@/services/StudentService.js";
-import InstituteService from "./services/InstituteService";
+
 export default {
   applyDisplayOrder(unsorted) {
     return unsorted.sort((a, b) => a.displayOrder - b.displayOrder);
@@ -96,6 +96,7 @@ export default {
     link.click();
     URL.revokeObjectURL(link.href);
   },
+  // IMPROVEMENT: Should not be doing callouts from shared methods, these should be used via the student store
   getStudentID: function (pen) {
     StudentService.getStudentByPen(pen)
       .then((response) => {
@@ -106,6 +107,7 @@ export default {
         console.log(error);
       });
   },
+  // IMPROVEMENT: Same as above
   getStudentPen: function (studentID) {
     StudentService.getStudentByID(studentID)
       .then((response) => {

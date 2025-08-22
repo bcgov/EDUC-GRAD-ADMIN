@@ -17,7 +17,10 @@ export default {
     });
   },
   transferStudentCourses(sourceStudentID, targetStudentID, json) {
-    return ApiService.apiAxios.post(`/api/student/${sourceStudentID}/courses/transfer/${targetStudentID}`, json);
+    return ApiService.apiAxios.post(
+      `/api/student/${sourceStudentID}/courses/transfer/${targetStudentID}`,
+      json
+    );
   },
   getStudentCourseHistory(studentID) {
     return ApiService.apiAxios.get(`/api/student/${studentID}/history/courses`);
@@ -79,12 +82,60 @@ export default {
       `/api/student/${studentID}/optionalPrograms/history`
     );
   },
-  ungradStudent(studentID, reasonCode, reasonDesc, json) {
+  getStudentUndoCompletionReasons(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/${studentID}/gradProgram/undoCompletion`
+    );
+  },
+  undoStudentProgramCompletion(studentID, reasonCode, reasonDesc, json) {
     return ApiService.apiAxios.post(
       `/api/student/${studentID}/gradProgram/undoCompletion?reasonCode=${reasonCode}&reasonDecision=${reasonDesc}`,
       json
     );
   },
+  graduateStudent(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/${studentID}/runGradAlgorithm`
+    );
+  },
+  projectedGradFinalMarks(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/${studentID}/previewFinalMarks`
+    );
+  },
+  projectedGradStatusWithFinalAndReg(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/${studentID}/updateTranscriptVerification`
+    );
+  },
+  updateStudentReports(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/${studentID}/updateTranscript`
+    );
+  },
+  // STUDENT REPORTS
+  getStudentTranscript(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/studentReports/${studentID}/transcript`
+    );
+  },
+
+  getStudentTVR(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/studentReports/${studentID}/transcriptVerificationReport`
+    );
+  },
+
+  getStudentCertificates(studentID) {
+    return ApiService.apiAxios.get(
+      `/api/student/studentReports/${studentID}/certificate`
+    );
+  },
+
+  getStudentXMLReport(pen) {
+    return ApiService.apiAxios.get(`/api/student/studentReports/${pen}/XML`);
+  },
+
   // STUDENT NOTES
   addStudentNotes(studentID, json) {
     return ApiService.apiAxios.post(`/api/student/${studentID}/notes`, json);

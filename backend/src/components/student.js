@@ -54,8 +54,8 @@ async function putStudentCoursesByStudentID(req, res) {
     }`;
     const data = await putData(
       token,
-      req.body,
       url,
+      req.body,
       req.session?.correlationID
     );
     return res.status(200).json(data);
@@ -423,6 +423,26 @@ async function postStudentGradStatus(req, res) {
   }
 }
 
+async function getStudentUndoCompletion(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:studentGraduationAPIURL"
+    )}/api/v1/studentgraduation/undocompletion/studentundocompletionreason/studentid/${
+      req.params?.studentID
+    }`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 async function postStudentUndoCompletion(req, res) {
   const token = auth.getBackendToken(req);
 
@@ -440,6 +460,152 @@ async function postStudentUndoCompletion(req, res) {
       req.body,
       req.session?.correlationID
     );
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getRunGradAlgorithm(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationAPIURL"
+    )}/api/v1/graduate/studentid/${req.params?.studentID}/run/GS`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getRunPreviewFinalMarks(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationAPIURL"
+    )}/api/v1/graduate/studentid/${req.params?.studentID}/run/FM`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getRunTranscriptVerification(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationAPIURL"
+    )}/api/v1/graduate/studentid/${req.params?.studentID}/run/REGFM`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getRunUpdateTranscript(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationAPIURL"
+    )}/api/v1/graduate/studentid/${req.params?.studentID}/run/FMR`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getStudentTranscript(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/studenttranscript/${req.params?.studentID}`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getStudentTVR(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/studentreport/${req.params?.studentID}`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getStudentCertificate(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/studentcertificate/${req.params?.studentID}`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getStudentXMLReport(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationAPIURL"
+    )}/api/v1/graduate/report/transcript/${
+      req.params?.studentPEN
+    }?interim=Interim&preview=true`;
+    const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
     if (e.data.messages) {
@@ -582,29 +748,46 @@ async function postAdoptPENStudent(req, res) {
 }
 
 module.exports = {
+  // STUDENT COURSES
   getStudentCourseByStudentID,
   putStudentCoursesByStudentID,
   postStudentCoursesByStudentID,
   deleteStudentCoursesByStudentID,
   transferStudentCoursesByStudentID,
   getStudentCourseHistory,
+  // STUDENT OPTIONAL AND CAREER PROGRAMS
   getStudentCareerPrograms,
   postStudentCareerProgram,
   deleteStudentCareerProgram,
   getStudentOptionalPrograms,
   postStudentOptionalProgram,
   deleteStudentOptionalProgram,
+  // STUDENT HISTORY
   getStudentGradStatusHistory,
   getStudentOptionalProgramHistory,
   getBatchHistoryStudents,
+  // STUDENT GRAD PROGRAM
   getStudentGradStatus,
   postStudentGradStatus,
+  getStudentUndoCompletion,
   postStudentUndoCompletion,
+  getRunGradAlgorithm,
+  getRunPreviewFinalMarks,
+  getRunTranscriptVerification,
+  getRunUpdateTranscript,
+  // STUDENT REPORTS
+  getStudentTranscript,
+  getStudentTVR,
+  getStudentCertificate,
+  getStudentXMLReport,
+  // STUDENT NOTES
   getStudentNotes,
   postStudentNotes,
   deleteStudentNotes,
+  // STUDENT SEARCH
   getStudentAdvancedSearch,
   getStudentByPen,
   getStudentByID,
+  // STUDENT ADOPT
   postAdoptPENStudent,
 };

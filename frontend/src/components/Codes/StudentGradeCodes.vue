@@ -90,7 +90,7 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, {
-      studentGradeCodes: "getGradeCodes",
+      studentGradeCodes: "getStudentGradeCodes",
     }),
   },
   methods: {

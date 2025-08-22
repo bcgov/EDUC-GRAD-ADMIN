@@ -646,8 +646,6 @@ import AssessmentService from "@/services/AssessmentService.js";
 import CourseService from "@/services/CourseService.js";
 import StudentAssessmentService from "@/services/StudentAssessmentService.js";
 import StudentService from "@/services/StudentService.js";
-import StudentGraduationService from "@/services/StudentGraduationService.js";
-import GraduationService from "@/services/GraduationService.js";
 
 // import components
 import GRADRequirementDetails from "@/components/StudentProfile/GRADRequirementDetails.vue";
@@ -948,9 +946,13 @@ export default {
         });
         ungradDesc = ungradDesc[0].description;
       }
-      StudentService.ungradStudent(this.studentId, ungradCode, ungradDesc)
+      StudentService.undoStudentProgramCompletion(
+        this.studentId,
+        ungradCode,
+        ungradDesc
+      )
         .then(() => {
-          StudentGraduationService.getStudentUngradReasons(this.studentId)
+          StudentService.getStudentUndoCompletionReasons(this.studentId)
             .then((response) => {
               this.setStudentUngradReasons(response.data);
             })
@@ -1017,7 +1019,7 @@ export default {
     graduateStudent() {
       this.selectedTab = "GRAD";
       this.tabLoading = true;
-      GraduationService.graduateStudent(this.studentId)
+      StudentService.graduateStudent(this.studentId)
         .then(() => {
           this.loadStudent(this.studentId);
         })
@@ -1036,7 +1038,7 @@ export default {
       this.disableScreen = true;
       this.selectedTab = "GRAD";
       this.tabLoading = true;
-      GraduationService.updateStudentReports(this.studentId)
+      StudentService.updateStudentReports(this.studentId)
         .then(() => {
           this.loadStudentOptionalPrograms(this.studentId);
           this.loadStudentHistory(this.studentId);
@@ -1072,7 +1074,7 @@ export default {
     },
     projectedGradStatusWithFinalMarks() {
       this.tabLoading = true;
-      GraduationService.projectedGradFinalMarks(this.studentId)
+      StudentService.projectedGradFinalMarks(this.studentId)
         .then((response) => {
           this.projectedGradStatus = JSON.parse(
             response.data.graduationStudentRecord.studentGradData
@@ -1103,7 +1105,7 @@ export default {
       this.nonGradReasons =
         this.studentGradStatus.studentGradData.nonGradReasons;
       this.tabLoading = true;
-      GraduationService.projectedGradStatusWithFinalAndReg(this.studentId)
+      StudentService.projectedGradStatusWithFinalAndReg(this.studentId)
         .then((response) => {
           this.projectedGradStatusWithRegistrations = response.data;
           this.projectedGradStatusWithRegistrations = JSON.parse(
@@ -1322,7 +1324,7 @@ export default {
         });
     },
     loadStudentUngradReasons(studentIdFromURL) {
-      StudentGraduationService.getStudentUngradReasons(studentIdFromURL)
+      StudentService.getStudentUndoCompletionReasons(studentIdFromURL)
         .then((response) => {
           this.setStudentUngradReasons(response.data);
         })

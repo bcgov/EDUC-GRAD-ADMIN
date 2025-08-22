@@ -232,7 +232,7 @@
 </template>
 
 <script>
-import TRAXService from "../services/TRAXService.js";
+import SchoolsService from "../services/SchoolsService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
@@ -453,7 +453,7 @@ export default {
               }
             }
           } //if this.advanceSearchInput
-          TRAXService.getPSIByAdvancedSearch(this.params)
+          SchoolsService.getPSIByAdvancedSearch(this.params)
             .then((response) => {
               this.advancedSearchLoading = false;
               this.psiResults = response.data;
@@ -468,7 +468,7 @@ export default {
               // eslint-disable-next-line
               console.log("There was an error:" + error);
               this.snackbarStore.showSnackbar(error.message, "error", 5000);
-            }); //TRAXService
+            });
         } catch (error) {
           this.advancedSearchLoading = false;
           this.advancedSearchMessage = "Search Error" + error;

@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import ProgramManagementService from "@/services/ProgramManagementService.js";
+import CodesService from "@/services/CodesService.js";
 import DisplayTable from "../DisplayTable.vue";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 
@@ -89,7 +89,8 @@ export default {
     };
   },
   created() {
-    ProgramManagementService.getOptionalPrograms()
+    // IMPROVEMENT: get this from app store
+    CodesService.getOptionalProgramCodes()
       .then((response) => {
         this.graduationOptionalPrograms = response.data;
       })

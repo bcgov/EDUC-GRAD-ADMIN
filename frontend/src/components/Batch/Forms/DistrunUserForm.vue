@@ -204,17 +204,25 @@
                     step == 0 ||
                     (step == 1 &&
                       getCredential !== 'Blank certificate print' &&
-                      getCredential !== 'Blank transcript print')"
-                  variant="outlined">
+                      getCredential !== 'Blank transcript print')
+                  "
+                  variant="outlined"
+                >
                   Back
                 </v-btn>
                 <v-spacer />
                 <!-- Right Action Button -->
                 <v-btn
-                  v-if="step < 3" 
-                  @click="step++" 
-                  :disabled="step!==0 && v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid || step === 0 && v$.getBatchRequest.credentialTypeSelected.$invalid" 
-                  color="bcGovBlue">
+                  v-if="step < 3"
+                  @click="step++"
+                  :disabled="
+                    (step !== 0 &&
+                      v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid) ||
+                    (step === 0 &&
+                      v$.getBatchRequest.credentialTypeSelected.$invalid)
+                  "
+                  color="bcGovBlue"
+                >
                   Next
                 </v-btn>
                 <v-btn
@@ -225,7 +233,8 @@
                   density="default"
                   :loading="batchLoading"
                   :disabled="v$.$invalid || batchLoading"
-                  @click="submit">
+                  @click="submit"
+                >
                   Download
                 </v-btn>
                 <v-btn
@@ -236,7 +245,8 @@
                   density="default"
                   @click="submit"
                   :loading="batchLoading"
-                  :disabled="v$.$invalid || batchLoading">
+                  :disabled="v$.$invalid || batchLoading"
+                >
                   Submit
                 </v-btn>
               </div>
@@ -256,8 +266,7 @@ import StudentInput from "@/components/Batch/Forms/FormInputs/StudentInput.vue";
 import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import { useVuelidate } from "@vuelidate/core";
-import { required, helpers } from "@vuelidate/validators";
-import GraduationReportService from "@/services/GraduationReportService.js";
+import { helpers } from "@vuelidate/validators";
 import DistributionInput from "@/components/Batch/Forms/FormInputs/DistributionInput.vue";
 
 import { mapActions, mapState } from "pinia";

@@ -59,10 +59,8 @@
   </v-container>
 </template>
 <script>
-import { isProxy, toRaw, ref, watch } from "vue";
-import SchoolService from "@/services/SchoolService.js";
+import { ref, watch } from "vue";
 import { useVuelidate } from "@vuelidate/core";
-import { required, helpers } from "@vuelidate/validators";
 import { useBatchRequestFormStore } from "../../../../store/modules/batchRequestFormStore";
 import { useAuthStore } from "../../../../store/modules/auth";
 
