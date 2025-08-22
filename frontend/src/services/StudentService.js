@@ -17,7 +17,10 @@ export default {
     });
   },
   transferStudentCourses(sourceStudentID, targetStudentID, json) {
-    return ApiService.apiAxios.post(`/api/student/${sourceStudentID}/courses/transfer/${targetStudentID}`, json);
+    return ApiService.apiAxios.post(
+      `/api/student/${sourceStudentID}/courses/transfer/${targetStudentID}`,
+      json
+    );
   },
   getStudentCourseHistory(studentID) {
     return ApiService.apiAxios.get(`/api/student/${studentID}/history/courses`);
@@ -130,7 +133,6 @@ export default {
   },
 
   getStudentXMLReport(pen) {
-    console.log("WORLD");
     return ApiService.apiAxios.get(`/api/student/studentReports/${pen}/XML`);
   },
 

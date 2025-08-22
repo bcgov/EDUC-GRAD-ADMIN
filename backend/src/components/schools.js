@@ -79,7 +79,7 @@ async function getPSISearch(req, res) {
       "server:gradTraxAPIURL"
     )}/api/v1/trax/psi/search${formatQueryParamString(req.query)}`;
     const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data); //idk about this, do we always want to return a 200?
+    return res.status(200).json(data);
   } catch (e) {
     log.error(
       e,
@@ -107,7 +107,7 @@ async function getInstituteEventHistory(req, res) {
       JSON.stringify(req.query?.searchParams)
     )}`;
     const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data); //idk about this, do we always want to return a 200?
+    return res.status(200).json(data);
   } catch (e) {
     log.error(
       e,

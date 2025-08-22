@@ -14,7 +14,8 @@ export default {
     return ApiService.apiAxios.get("/api/schools/district/" + id);
   },
 
-  // These still come from TRAX API need to be reviewed in the future when it's decommissioned
+  // These still come from TRAX API (not TRAX itself, PSI reads from STS and event history reads from NATS listener in TRAX API)
+  // Structure may change in future when TRAX API is decommissioned depending on what APIs they land in
   getPSIByAdvancedSearch(params) {
     return ApiService.apiAxios.get(
       "/api/schools/postSecondary/search?" + params
@@ -25,7 +26,6 @@ export default {
     const encodedSearchParams = encodeURIComponent(
       JSON.stringify(params.searchParams)
     );
-    console.log(params.pageSize);
     return ApiService.apiAxios.get(
       `/api/schools/eventHistory?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&sort=${encodedSortParams}&searchParams=${encodedSearchParams}`
     );
