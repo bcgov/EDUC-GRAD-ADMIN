@@ -190,8 +190,8 @@ async function getStudentCourseHistory(req, res) {
     const studentCoursesWithDetails = addCourseDetails(CourseDetails, data);
     return res.status(200).json(sortCourses(studentCoursesWithDetails));
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -208,8 +208,8 @@ async function getStudentCareerPrograms(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -231,8 +231,8 @@ async function postStudentCareerProgram(req, res) {
     );
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -254,8 +254,8 @@ async function deleteStudentCareerProgram(req, res) {
     );
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -277,8 +277,8 @@ async function postStudentOptionalProgram(req, res) {
     );
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -300,8 +300,8 @@ async function deleteStudentOptionalProgram(req, res) {
     );
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -318,8 +318,8 @@ async function getStudentOptionalPrograms(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -336,8 +336,8 @@ async function getStudentGradStatusHistory(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -354,8 +354,8 @@ async function getStudentOptionalProgramHistory(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -374,8 +374,8 @@ async function getBatchHistoryStudents(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -392,8 +392,8 @@ async function getStudentGradStatus(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -415,8 +415,8 @@ async function postStudentGradStatus(req, res) {
     );
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -435,8 +435,8 @@ async function getStudentUndoCompletion(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -462,8 +462,8 @@ async function postStudentUndoCompletion(req, res) {
     );
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -480,8 +480,8 @@ async function getRunGradAlgorithm(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -498,8 +498,8 @@ async function getRunPreviewFinalMarks(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -516,8 +516,8 @@ async function getRunTranscriptVerification(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -534,8 +534,8 @@ async function getRunUpdateTranscript(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -552,8 +552,8 @@ async function getStudentTranscript(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -570,8 +570,8 @@ async function getStudentTVR(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -588,8 +588,8 @@ async function getStudentCertificate(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -608,8 +608,14 @@ async function getStudentXMLReport(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else if (e.status) {
+      return errorResponse(
+        res,
+        "there was an error getting student XML Preview",
+        e.status
+      );
     } else {
       return errorResponse(res);
     }
@@ -626,8 +632,8 @@ async function getStudentNotes(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -649,8 +655,8 @@ async function postStudentNotes(req, res) {
     );
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -667,8 +673,8 @@ async function deleteStudentNotes(req, res) {
     const data = await deleteData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -685,8 +691,8 @@ async function getStudentAdvancedSearch(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -703,8 +709,8 @@ async function getStudentByPen(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -721,8 +727,8 @@ async function getStudentByID(req, res) {
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -739,8 +745,8 @@ async function postAdoptPENStudent(req, res) {
     const data = await postData(token, url, null, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
