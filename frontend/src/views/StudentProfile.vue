@@ -8,6 +8,7 @@
         <div class="float-right grad-actions" v-if="allowRunGradAlgorithm">
           <v-progress-circular v-if="tabLoading" indeterminate color="green">
           </v-progress-circular>
+          <span v-if="studentGradStatus.studentStatus !== 'MER'">
           <v-menu offset-y>
             <template v-slot:activator="{ props }">
               <v-btn
@@ -64,6 +65,18 @@
               >
             </v-list>
           </v-menu>
+          </span>
+          <span v-else>
+            <v-btn text class="float-right admin-actions text-none" prepend-icon="mdi-source-merge" color="primary"
+              @click="showStudentDataMerge">
+              Reconcile Student Data
+            </v-btn>
+            <v-row no-gutters>
+              <StudentDataMergeForm ref="studentDataMergeFormRef">
+              </StudentDataMergeForm>
+              <v-spacer />
+            </v-row>
+          </span>
         </div>
       </div>
     </div>
@@ -662,6 +675,7 @@ import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/Studen
 import StudentUndoCompletionReasons from "@/components/StudentProfile/StudentUndoCompletionReasons.vue";
 import StudentNotes from "@/components/StudentProfile/AuditHistory/StudentNotes.vue";
 import DisplayTable from "@/components/DisplayTable.vue";
+import StudentDataMergeForm from "@/components/StudentProfile/Forms/StudentDataMergeForm.vue";
 
 // shared functions
 import { isProgramComplete } from "../utils/common";
@@ -761,6 +775,7 @@ export default {
     StudentAuditHistory: StudentAuditHistory,
     StudentNotes: StudentNotes,
     DisplayTable: DisplayTable,
+    StudentDataMergeForm : StudentDataMergeForm,
   },
   props: {},
   data() {
@@ -1340,6 +1355,10 @@ export default {
     },
     isProgramComplete(date, program) {
       return isProgramComplete(date, program);
+    },
+    //Open Student Merge Form
+    showStudentDataMerge() {
+      this.$refs.studentDataMergeFormRef.openStudentDataMergeDialog();
     },
   },
 };

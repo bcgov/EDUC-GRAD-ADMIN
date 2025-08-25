@@ -159,12 +159,52 @@ async function transferStudentCoursesByStudentID(req, res) {
     return res.status(200).json(createTransferResponse);
   } catch (e) {
     console.error("Error transferring student courses:", e);
-    if (e?.createTransferResponse?.messages) {
-      return errorResponse(
-        res,
-        e.createTransferResponse.messages[0].message,
-        e.status
+    if (e?.data?.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function mergeStudentCoursesByStudentID(req, res) {
+  const token = auth.getBackendToken(req);
+  let localStudentCourses = { ...req.body };
+  let tobeDeleted = localStudentCourses.conflicts.length > 0 ? localStudentCourses.conflicts.map(item => item.target?.id).filter(id => id !== undefined) : [];
+  let tobeAdded = [...localStudentCourses.info.map(item => item.source), ...localStudentCourses.conflicts.map(item => item.source)];
+  const courseWithoutID = tobeAdded.map(({ id, ...rest }) => ({ ...rest }));
+  try {
+    //Remove courses if any
+    if (tobeDeleted && tobeDeleted.length > 0) {
+      const deletUrl = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.targetStudentID}`;
+      const deleteResponse = await deleteData(
+        token,
+        deletUrl,
+        tobeDeleted,
+        req.session?.correlationID
       );
+      const notDeleted = deleteResponse.filter((course) =>
+        course.validationIssues?.some(
+          (issue) => issue.validationIssueSeverityCode === "ERROR"
+        )
+      ).map((course) => course.id);
+      if (notDeleted.length > 0) {
+        console.error( "Error removing student courses during merge process", notDeleted);
+      }
+    }
+    //Add courses
+    const addUrl = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.targetStudentID}`;
+    const createResponse = await postData(
+      token,
+      addUrl,
+      courseWithoutID,
+      req.session?.correlationID
+    );
+    return res.status(200).json(createResponse);
+  } catch (e) {
+    console.error("Error merging student courses:", e);
+    if (e?.data?.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -754,6 +794,7 @@ module.exports = {
   postStudentCoursesByStudentID,
   deleteStudentCoursesByStudentID,
   transferStudentCoursesByStudentID,
+  mergeStudentCoursesByStudentID,
   getStudentCourseHistory,
   // STUDENT OPTIONAL AND CAREER PROGRAMS
   getStudentCareerPrograms,

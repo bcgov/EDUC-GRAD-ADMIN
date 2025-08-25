@@ -78,6 +78,25 @@ export const useStudentStore = defineStore("student", {
     },
     transfer: {
       courses: [],
+    },
+    merge: {
+      examinableCourses: {
+        info: [],
+        conflicts: [],
+        errors: []
+      },
+      nonExaminableCourses: {
+        info: [],
+        conflicts: [],
+        errors: []
+      },
+      assessments: {
+        info: [],
+        conflicts: [],
+        errors: []
+      },
+      gradStatus: {},
+      notes: [],
     }
   }),
   actions: {
@@ -680,7 +699,45 @@ export const useStudentStore = defineStore("student", {
     },
     clearCoursesToTransfer() {
       this.transfer.courses = [];
+    },    
+    clearExaminableCoursesToMerge() {
+      this.merge.examinableCourses.info = [];
+      this.merge.examinableCourses.conflicts = [];
     },
+    clearNonExaminableCoursesToMerge() {
+      this.merge.nonExaminableCourses.info = [];
+      this.merge.nonExaminableCourses.conflicts = [];
+    },
+    clearAssessmentsToMerge() {
+      this.merge.assessments.info = [];
+      this.merge.assessments.conflicts = [];
+    },
+    clearGradStatusToMerge() {
+      this.merge.gradStatus = {};
+    },
+    clearNotesToMerge() {
+      this.merge.notes = [];
+    },
+    clearStudentMerge() {
+      this.clearExaminableCoursesToMerge();
+      this.clearNonExaminableCoursesToMerge();
+      this.clearAssessmentsToMerge();
+      this.clearGradStatusToMerge();
+      this.clearNotesToMerge();
+    },
+    // Merge student courses
+    async mergeStudentCourses(sourceStudentID, targetStudentID, studentCourses) {
+      try {
+        return await StudentService.mergeStudentCourses(
+          sourceStudentID,
+          targetStudentID,
+          studentCourses
+        );
+      } catch (error) {
+        console.error("Error merging student courses: ", error);
+        return error;
+      }
+    },    
     removeCourseFromTransfer(courseID, courseSession) {
       this.transfer.courses = this.transfer.courses.filter(
         (course) => !(course.courseID === courseID && course.courseSession === courseSession)

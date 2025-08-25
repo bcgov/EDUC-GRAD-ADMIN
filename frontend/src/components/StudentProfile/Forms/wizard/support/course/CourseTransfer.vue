@@ -7,7 +7,7 @@
                 </div>
             </v-alert>
             <v-data-table v-if="value.length > 0" :items="value" class="mb-4" hide-default-footer
-                :headers="courseTransferHeaders(key)">
+                :headers="courseTransferHeaders(key)" :items-per-page="-1">
                 <template v-slot:header.source="{ header }">
                     <router-link :to="'/student-profile/' + sourceStudentData.studentID" target="_blank">{{
                         getFormattedStudentInfo(sourceStudentData) }}<v-icon color="info"
