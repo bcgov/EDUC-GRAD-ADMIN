@@ -17,9 +17,9 @@
 </template>
 <script>
 import { useVuelidate } from "@vuelidate/core";
-import CourseTransfer from "@/components/StudentProfile/Forms/wizard/support/CourseTransfer.vue";
-import ExaminableCourseMerge from "./support/ExaminableCourseMerge.vue";
-import NonExaminableCourseMerge from "./support/NonExaminableCourseMerge.vue";
+import CourseTransfer from "./support/course/CourseTransfer.vue";
+import ExaminableCourseMerge from "./support/course/ExaminableCourseMerge.vue";
+import NonExaminableCourseMerge from "./support/course/NonExaminableCourseMerge.vue";
 
   export default {
   name: "CourseReviewAndReconcile",
