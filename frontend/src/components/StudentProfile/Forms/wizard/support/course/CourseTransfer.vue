@@ -28,7 +28,7 @@
                     <span v-if="item.target" style="max-width:98%;font-size: 0.875rem;">
                         <CourseReview :course="item.target"/>
                     </span>
-                    <span v-else :class="getProperty(key, 'style')" style="font-size: 0.75rem;">{{ item.message }}</span>
+                    <span v-else :class="getProperty(key, 'style')" style="font-size: 1rem;">{{ item.message }}</span>
                 </template>
                 <template v-if="key === 'info'" v-slot:item.delete="{ item }">
                     <v-btn @click="removeCourseInfo(item.source)" color="error" icon="mdi-close-circle" variant="text"

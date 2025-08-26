@@ -24,9 +24,7 @@
                 <template v-slot:item.source="{ item }">
                     <div v-if="item.source != null" style="font-size: 0.875rem;">
                         <CourseReview :course="item.source" />
-                    </div>
-                    <span v-else :class="getProperty(key, 'style')" style="font-size: 0.75rem;">{{ item.message }}
-                    </span>
+                    </div>                    
                 </template>
                 <template v-slot:item.target="{ item }">
                     <span v-if="item.target != null && !isRowSelected(key, item.source)" style="font-size: 0.875rem;">
@@ -49,9 +47,7 @@
                             <v-icon small class="mr-1">mdi-plus-circle-outline</v-icon>
                             <CourseReview :course="item.source" />
                         </div>
-                    </div>
-                    <span v-else :class="getProperty(key, 'style')" style="font-size: 0.75rem;">{{ item.message }}
-                    </span>
+                    </div>                    
                 </template>
             </v-data-table>
         </v-row>

@@ -135,13 +135,13 @@ export default {
   },
   computed: {
     ...mapState(useStudentStore, {
-      studentDataToMerge: (state) => state.merge,
+      studentDataToMerge: (state) => state.merge
     }),
     studentStore() {
       return useStudentStore();
     },
     sourceStudent() {
-      return this.studentStore.student.gradStatus.studentGradData?.gradStudent;
+      return this.studentStore.student.profile;
     },
     trueStudentPen() {
       return this.studentStore.student.profile.trueStudentPen;
