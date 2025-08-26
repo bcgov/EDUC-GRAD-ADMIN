@@ -22,7 +22,7 @@
                     <strong>Step 1: Determine if the Exam Was Required</strong>
                     <p>
                     <ul class="mb-4">
-                        <li class="ml-4">Use the <router-link to="'/courses/examinable-courses/''" target="_blank"
+                        <li class="ml-4">Use the <router-link to="/courses/examinable-courses/" target="_blank"
                                 rel="noopener noreferrer">
                                 Examinable Course Table <v-icon>mdi-open-in-new</v-icon>
                             </router-link> to check the course code, level, and
@@ -39,11 +39,9 @@
                             exam session
                             date.</li>
                         <li class="ml-4">If not, you may enter the school mark but <strong>do not assign a final
-                                mark</strong>. The
-                            course cannot appear as
-                            completed on a transcript.</li>
-                        <li class="ml-4">In such cases, advise the student to request a <strong>school-based
-                                transcript</strong>.</li>
+                                mark</strong>. The course cannot appear as completed on a transcript. In such cases,
+                            advise the student
+                            to request a school-based transcript.</li>
                     </ul>
 
                     <strong>Step 3A: Adding a New School and Final Mark Session</strong>
@@ -61,13 +59,9 @@
 
                     <ul>
                         <li class="ml-4">
-                            Final Mark % = (Best Exam % × Exam Weight) + (Best School % × School Weight)
-                        </li>
-                        <li class="ml-4">
-                            Round to the nearest whole number.
-                        </li>
-                        <li class="ml-4">
-                            <em>Example:</em> SS 11 with a Best Exam of 64% and a Best School of 52%:
+                            Final Mark % = (Best Exam % × Exam Weight) + (Best School % × School Weight). Round to the
+                            nearest whole
+                            number. <em>Example:</em> SS 11 with a Best Exam of 64% and a Best School of 52%:
                             (.64 × .20) + (.52 × .80) = <strong>54% Final Mark</strong>
                         </li>
                         <li class="ml-4">
