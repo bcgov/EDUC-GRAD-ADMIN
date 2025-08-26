@@ -21,6 +21,9 @@
         :loading="isLoadingAssessments"
         showFilter="true"
         hide-default-footer
+        show-select
+        v-model="selectedAssessments"
+        :item-value="(item) => item"
     >
       <template
           v-slot:item.data-table-expand="{
@@ -329,6 +332,7 @@ export default {
   },
   data: function () {
     return {
+      selectedAssessments: [],
       showEditDialog: false,
       selectedAssessment: null,
       assessmentSessions: [],
