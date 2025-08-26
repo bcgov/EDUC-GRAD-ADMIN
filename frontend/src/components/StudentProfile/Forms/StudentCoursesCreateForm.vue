@@ -169,7 +169,7 @@
                   <v-row no-gutters v-for="course in coursesToCreate" :key="course.courseID + course.sessionDate"
                     class="mb-2">
                     <v-col cols="12"><strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel
-                        }} -
+                    }} -
                         {{
                           $filters.formatYYYYMMStringDate(course.courseSession)
                         }}</strong>
@@ -475,7 +475,11 @@ export default {
         existingCourses: this.studentCourses,
         checkExaminable: true,
         canAddExaminable: () => this.hasPermissions('STUDENT', 'updateExaminableCourse'),
-        canAddNonExaminable: () => this.type === 'all' || this.hasPermissions('STUDENT', 'updateExaminableCourse'),
+        canAddNonExaminable: () => {
+          if (this.type === 'examinable') return false;
+          return this.type === 'all' || this.hasPermissions('STUDENT', 'updateExaminableCourse');
+        }
+
       });
 
 

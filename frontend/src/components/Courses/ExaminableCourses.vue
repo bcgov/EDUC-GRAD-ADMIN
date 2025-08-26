@@ -15,7 +15,6 @@
     <p>
       *"2004+" refers to all program codes from 2004 onward.
     </p>
-    sss
     <BlendingRules :expand="$route.path === '/courses/examinable-courses/blending-rules'" class="message" />
 
     <DisplayTable title="Examinable Courses" v-bind:items="examinableCourses" v-bind:fields="examinableCoursesFields"
