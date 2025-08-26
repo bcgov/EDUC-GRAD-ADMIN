@@ -1,20 +1,19 @@
 <template>
   <div v-if="enableCRUD()" class="col-12 px-3 py-0 width-fit-content">
-  <v-alert color="debug" variant="tonal" icon="mdi-progress-wrench" border="start"
-        >
-        Until student course CRUD is live, student courses will not be kept in
-        sync via ongoing updates. Instead there will be a gradual data
-        migration.
-        <br />
-      </v-alert>  
+    <v-alert color="debug" variant="tonal" icon="mdi-progress-wrench" border="start">
+      Until student course CRUD is live, student courses will not be kept in
+      sync via ongoing updates. Instead there will be a gradual data
+      migration.
+      <br />
+    </v-alert>
   </div>
   <div class="col-12 px-3 py-3">
     <BlendingRules />
-    <div class="col-12 px-3 py-3 float-right grad-actions"  v-if="allowUpdateStudentCourseExam">
-    <v-row no-gutters justify="end">
-      <StudentCoursesCreateForm  type="examinable"/>
-    </v-row>
-  </div>
+    <div class="col-12 px-3 py-3 float-right grad-actions" v-if="allowUpdateStudentCourseExam">
+      <v-row no-gutters justify="end">
+        <StudentCoursesCreateForm type="examinable" />
+      </v-row>
+    </div>
     <v-alert info v-if="!studentExamCourses || studentExamCourses.length === 0">
       This student does not have any exams.
     </v-alert>
@@ -33,29 +32,31 @@
         <tr>
           <td></td>
           <td></td>
-          <td :colspan="columns.length-2">
-            <v-row no-gutters> 
+          <td :colspan="columns.length - 2">
+            <v-row no-gutters>
               <v-col>
-              <strong>Course Title&nbsp;</strong>
-              <span v-if="item.courseDetails.courseName"  style="display: inline-block;" ><CourseDetails :course="item.courseDetails"  /></span>
-              <span v-else  style="display: inline-block;"> <i>null</i> </span>  
-              </v-col>    
+                <strong>Course Title&nbsp;</strong>
+                <span v-if="item.courseDetails.courseName" style="display: inline-block;">
+                  <CourseDetails :course="item.courseDetails" />
+                </span>
+                <span v-else style="display: inline-block;"> <i>null</i> </span>
+              </v-col>
             </v-row>
-            <v-row no-gutters>                
+            <v-row no-gutters>
               <v-col><strong>Interim %&nbsp;</strong>
-              <span v-if="item.interimPercent">{{ item.interimPercent
+                <span v-if="item.interimPercent">{{ item.interimPercent
                 }}</span>
-              <span v-else> <i>null</i> </span>  
+                <span v-else> <i>null</i> </span>
               </v-col>
               <v-col><strong>Interim LG&nbsp;</strong>
-              <span v-if="item.interimLetterGrade">{{ item.interimLetterGrade
+                <span v-if="item.interimLetterGrade">{{ item.interimLetterGrade
                 }}</span>
-              <span v-else> <i>null</i> </span> 
+                <span v-else> <i>null</i> </span>
               </v-col>
               <v-col><strong>Eq/Ch&nbsp;</strong>
-              <span v-if="item.equivOrChallenge">{{ item.equivOrChallenge
+                <span v-if="item.equivOrChallenge">{{ item.equivOrChallenge
                 }}</span>
-              <span v-else> <i>null</i> </span> 
+                <span v-else> <i>null</i> </span>
               </v-col>
             </v-row>
           </td>
@@ -69,9 +70,9 @@
         </StudentCoursesExamUpdateForm>
       </template>
       <template v-slot:item.delete="{ item }" v-if="allowUpdateStudentCourseExam">
-            <StudentCoursesDeleteForm :selectedCoursesToDelete="[item]">
-            </StudentCoursesDeleteForm>
-          </template>
+        <StudentCoursesDeleteForm :selectedCoursesToDelete="[item]">
+        </StudentCoursesDeleteForm>
+      </template>
     </v-data-table>
   </div>
 </template>
@@ -166,7 +167,7 @@ export default {
         {
           key: "credits",
           title: "Credits",
-        },     
+        },
       ],
       studentExamsActionHeaders: [
         {
@@ -193,9 +194,9 @@ export default {
       "enableCRUD",
     ]),
     courseExamHeaders() {
-      if(this.allowUpdateStudentCourseExam) {
+      if (this.allowUpdateStudentCourseExam) {
         return this.studentExamsHeaders.concat(this.studentExamsActionHeaders);
-      } 
+      }
       return this.studentExamsHeaders;
     }
   },
