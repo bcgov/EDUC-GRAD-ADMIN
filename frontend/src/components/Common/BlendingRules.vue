@@ -20,7 +20,7 @@
 
                 <v-expansion-panel-text class="m-0 p-0">
                     <strong>Step 1: Determine if the Exam Was Required</strong>
-                    <p>
+
                     <ul class="mb-4">
                         <li class="ml-4">Use the <router-link to="/courses/examinable-courses/" target="_blank"
                                 rel="noopener noreferrer">
@@ -31,7 +31,7 @@
                         </li>
                     </ul>
 
-                    </p>
+
 
                     <strong>Step 2: Check the Timing</strong>
                     <ul class="mb-4">
@@ -55,7 +55,8 @@
                     </ul>
 
                     <p>
-                        <strong>Final Mark Formula:</strong><br />
+                        <strong>Final Mark Formula:</strong>
+                    </p>
 
                     <ul>
                         <li class="ml-4">
@@ -72,7 +73,7 @@
                             under the Program tab.
                         </li>
                     </ul>
-                    </p>
+
                     <strong>Step 3B: Updating an Existing School Mark Session</strong>
                     <ul class="mb-4">
                         <li class="ml-4">Enter the new school % and update the best school %.</li>
