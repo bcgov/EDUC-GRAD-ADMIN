@@ -40,6 +40,7 @@
     <!-- <div class="container"> -->
     <v-main>
       <v-alert>
+        <v-btn @click="getuserSessionRemainingTime">REMAINING <TIME></TIME></v-btn>
         Time Remaining: {{ timeRemainingFormatted }}
         token:
         <pre>{{ decodedJwtPayload }}</pre>
@@ -212,17 +213,21 @@ export default {
         }
         if (this.jwtTokenGet) {
           this.timerValue = await this.getTokenRemainingTime();
-          //this.tokenExpiring = this.timerValue < 300;
-          this.tokenExpiring = true
+          this.tokenExpiring = this.timerValue < 180;
+          //this.tokenExpiring = true
           this.tokenExpired = await this.checkJWTTokenExpired();
         }
       }, 30000); // Update every 10000 milliseconds (30 seconds)
     },
-    async resumeSession() {
+    async getuserSessionRemainingTime() {
+      const maxAge = await authService.sessionTimeRemaining();
+      console.log(maxAge);
+    },
+    async resumeSession() { //change to extend
       // Handle the logic to resume the session
       // For example, refresh the token or perform any necessary actions
 
-      const updatedJwtToken = await authService.refreshAuthToken(
+      const updatedJwtToken = await authService.extendInactiveSession(
         this.jwtTokenGet
       );
       console.log(updatedJwtToken)

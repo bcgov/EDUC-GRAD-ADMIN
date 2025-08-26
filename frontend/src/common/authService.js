@@ -12,12 +12,49 @@ export default {
       throw e;
     }
   },
+  
 
+  async sessionTimeRemaining(){
+    try {
+    
+      const response = await axios.get("/api/auth/user-session-remaining-time");
+
+      if (response.data.error) {
+        return { error: response.data.error_description };
+      }
+
+      return response;      
+    } catch (e) {
+      console.log(`Failed to refresh JWT token - ${e}`); // eslint-disable-line no-console
+
+      throw e;
+    }
+  },
+  async extendInactiveSession(token){
+    try {
+    
+      const response = await axios.post("/api/auth/renew-token", {
+        refreshToken: token,
+      });
+
+      if (response.data.error) {
+        return { error: response.data.error_description };
+      }
+
+      return response.data;      
+    } catch (e) {
+      console.log(`Failed to refresh JWT token - ${e}`); // eslint-disable-line no-console
+
+      throw e;
+    }
+  },
   //Refreshes the users auth token
   async refreshAuthToken(token) {
     try {
     
-      const response = await axios.get(Routes.TOKEN);
+      const response = await axios.post(Routes.REFRESH, {
+        refreshToken: token,
+      });
 
       if (response.data.error) {
         return { error: response.data.error_description };

@@ -124,6 +124,37 @@ async function generateTokens(req, res) {
     res.status(HttpStatus.UNAUTHORIZED).json();
   }
 }
+router.post("/renew-token", [body("refreshToken").exists()], async (req, res) => {
+  console.log("IS RENEWABLE!!!!!")
+  const jwt = require("jsonwebtoken");
+
+
+  const decoded = jwt.decode(req.user.refreshToken);
+  if (decoded?.iat && decoded?.exp) {
+    const issuedAt = new Date(decoded.iat * 1000).toLocaleString("en-CA", { timeZone: "America/Vancouver" });
+    const expiresAt = new Date(decoded.exp * 1000).toLocaleString("en-CA", { timeZone: "America/Vancouver" });
+
+    console.log("Issued At:", issuedAt);
+    console.log("Expires At:", expiresAt);
+  } else {
+    console.log("Token missing iat or exp");
+  }
+
+
+
+
+
+
+  if (req?.user?.refreshToken && auth.isRenewable(req.user.refreshToken)) {
+
+    
+    const response = generateTokens(req, res);
+    console.log(response);
+    return response;
+  } else {
+    res.status(HttpStatus.UNAUTHORIZED).json();
+  }
+});
 
 //refreshes jwt on refresh if refreshToken is valid
 router.post("/refresh", [body("refreshToken").exists()], async (req, res) => {
@@ -152,7 +183,6 @@ router.post("/refresh", [body("refreshToken").exists()], async (req, res) => {
 
 
     if (auth.isTokenExpired(req.user.jwt)) {
-      console.log("DEBUG: Auth.isTokenExpire(jwt) = true" )
       if (req?.user?.refreshToken && auth.isRenewable(req.user.refreshToken)) {
         const response = generateTokens(req, res);
         console.log(response);
@@ -172,6 +202,9 @@ router.post("/refresh", [body("refreshToken").exists()], async (req, res) => {
   }
 });
 
+
+
+
 //provides a jwt to authenticated users
 router.get("/token", auth.refreshJWT, (req, res) => {
   const isAuthorizedUser = isValidStaffUserWithRoles(req);
@@ -189,6 +222,7 @@ router.get("/token", auth.refreshJWT, (req, res) => {
       jwtFrontend: req["user"].jwtFrontend,
       isAuthorizedUser: isAuthorizedUser,
     };
+    
     res.status(HttpStatus.OK).json(responseJson);
   } else {
     res.status(HttpStatus.UNAUTHORIZED).json({
