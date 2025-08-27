@@ -169,7 +169,7 @@
                   <v-row no-gutters v-for="course in coursesToCreate" :key="course.courseID + course.sessionDate"
                     class="mb-2">
                     <v-col cols="12"><strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel
-                    }} -
+                        }} -
                         {{
                           $filters.formatYYYYMMStringDate(course.courseSession)
                         }}</strong>
@@ -198,7 +198,8 @@
                         <span v-else> <i>null</i> </span>
                       </v-col>
                       <v-col class="ml-2"><strong>Final LG</strong> {{ course.finalLetterGrade }}</v-col>
-                      <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
+                      <v-col><strong>Credits</strong> <span v-if="course.credits">{{ course.credits }} </span><span
+                          v-else><i>null</i></span></v-col>
                     </v-row>
                     <v-row v-else>
                       <v-col class="ml-3"><strong>Interim</strong>&nbsp;
@@ -213,7 +214,8 @@
                           {{ course.finalLetterGrade }}</span>
                         <span v-if="!course.finalPercent && !course.finalLetterGrade"><i>null</i></span>
                       </v-col>
-                      <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
+                      <v-col><strong>Credits</strong> <span v-if="course.credits"> {{ course.credits }}</span> <span
+                          v-else><i>null</i></span></v-col>
                       <v-col><strong>FA/AS</strong>&nbsp;
                         <span v-if="course.fineArtsAppliedSkills">
                           {{ course.fineArtsAppliedSkills }}
@@ -476,7 +478,7 @@ export default {
         checkExaminable: true,
         canAddExaminable: () => this.hasPermissions('STUDENT', 'updateExaminableCourse'),
         canAddNonExaminable: () => {
-          if (this.type === 'examinable') return false;
+          if (this.type === 'examinableOnly') return false;
           return this.type === 'all' || this.hasPermissions('STUDENT', 'updateExaminableCourse');
         }
 

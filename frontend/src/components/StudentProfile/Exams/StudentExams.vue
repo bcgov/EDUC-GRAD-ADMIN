@@ -11,7 +11,7 @@
     <BlendingRules />
     <div class="col-12 px-3 py-3 float-right grad-actions" v-if="allowUpdateStudentCourseExam">
       <v-row no-gutters justify="end">
-        <StudentCoursesCreateForm type="examinable" />
+        <StudentCoursesCreateForm type="examinableOnly" />
       </v-row>
     </div>
     <v-alert info v-if="!studentExamCourses || studentExamCourses.length === 0">

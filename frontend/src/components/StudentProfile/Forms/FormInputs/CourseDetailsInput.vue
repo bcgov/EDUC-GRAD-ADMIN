@@ -41,8 +41,8 @@
         </v-col>
         <v-col>
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
-            variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint            
-           :disabled="courseSessionGreaterThanReportingPeriod" />
+            variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint
+            :disabled="courseSessionGreaterThanReportingPeriod" />
         </v-col>
 
         <v-col>
@@ -324,13 +324,15 @@ export default {
       const courseType = this.course.courseDetails.courseCategory?.description || '';
       const trimmedProgram = this.studentProgram?.trim();
 
-      const warnings = [];
-      this.updateWarnings();
+
       if (
         (courseType === "Locally Developed" || courseType === "Career Program") &&
         (trimmedProgram !== "1996-EN" && trimmedProgram !== "1996-PF")
       ) {
-        this.warnings.push('Flag is only applicable for this course type if student is on the 1995 program.');
+        this.updateWarnings();
+        if (newVal) {
+          this.warnings.push('Flag is only applicable for this course type if student is on the 1995 program.');
+        }
       }
 
     }
