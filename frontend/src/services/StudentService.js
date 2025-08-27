@@ -22,6 +22,12 @@ export default {
       json
     );
   },
+  mergeStudentCourses(sourceStudentID, targetStudentID, json) {
+    return ApiService.apiAxios.post(
+      `/api/student/${sourceStudentID}/courses/merge/${targetStudentID}`,
+      json
+    );
+  },
   getStudentCourseHistory(studentID) {
     return ApiService.apiAxios.get(`/api/student/${studentID}/history/courses`);
   },

@@ -9,16 +9,15 @@ const config = require("../config/index");
 const auth = require("./auth");
 const log = require("../components/logger");
 
-async function getInstituteSchoolsList(_req, res) {
+async function getInstituteSchoolsList(req, res) {
+  const token = auth.getBackendToken(req);
   try {
-    const url = `${config.get(
-      "server:instituteAPIURL"
-    )}/api/v1/institute/school`;
-    const data = await getCommonServiceData(url);
+    const url = `${config.get("server:gradTraxAPIURL")}/api/v2/trax/school`;
+    const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -33,8 +32,8 @@ async function getInstituteDistrictsList(_req, res) {
     const data = await getCommonServiceData(url);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -42,15 +41,16 @@ async function getInstituteDistrictsList(_req, res) {
 }
 
 async function getInstituteSchool(req, res) {
+  const token = auth.getBackendToken(req);
   try {
-    const url = `${config.get(
-      "server:instituteAPIURL"
-    )}/api/v1/institute/school/${req.params?.schoolID}`;
-    const data = await getCommonServiceData(url);
+    `${config.get("server:gradTraxAPIURL")}/api/v2/trax/school/${
+      req.params?.schoolID
+    }`;
+    const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -65,8 +65,8 @@ async function getInstituteDistrict(req, res) {
     const data = await getCommonServiceData(url);
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
@@ -147,8 +147,8 @@ async function putInstituteEventHistory(req, res) {
     );
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
     }
