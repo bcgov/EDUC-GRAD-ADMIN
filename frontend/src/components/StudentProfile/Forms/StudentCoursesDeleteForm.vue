@@ -81,7 +81,7 @@
             {{ hasCoursesToDelete ? 'Cancel' : 'Close' }}
           </v-btn>
           <v-spacer />
-          <v-btn v-if="hasCoursesToDelete" color="error" variant="flat" class="text-none" density="default"
+          <v-btn v-if="hasCoursesToDelete" color="error" variant="flat" class="text-none" density="default" :disabled="validationStep"
             @click="confirmDelete">
             Delete Course<span v-if="selectedCoursesToDelete.length > 1">s</span>
           </v-btn>
@@ -129,6 +129,7 @@ export default {
       dialog: false,
       snackbarStore: useSnackbarStore(),
       hasExam: false,
+      validationStep: false,
     };
   },
   computed: {
@@ -214,10 +215,12 @@ export default {
   methods: {
     close() {
       this.dialog = false;
+      this.validationStep = false;
       this.$emit('close');
     },
     async confirmDelete() {
       try {
+        this.validationStep = true;
         const request = this.selectedCoursesToDelete.map((item) => item.id);
         const response = await this.studentStore.deleteStudentCourses(request);
         console.log(response.data)
@@ -263,6 +266,8 @@ export default {
         this.close();
       } catch (error) {
         console.error("Failed to delete student courses:", error);
+      } finally {
+        this.validationStep = false;
       }
     },
     hasPermissions(group, permission) {
