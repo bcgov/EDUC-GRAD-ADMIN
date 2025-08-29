@@ -6,6 +6,9 @@
         <v-tab value="institute-alerts" class="text-none" size="large">
           Institute Event Messaging</v-tab
         >
+        <v-tab value="course-alerts" class="text-none" size="large">
+          Course Event Messaging</v-tab
+        >
       </v-tabs>
       <v-card-text>
         <v-window v-model="tab">
@@ -15,6 +18,13 @@
           >
             <h3>Institute Event Messaging</h3>
             <InstituteAlerts />
+          </v-window-item>
+          <v-window-item
+              v-if="hasPermissions('ADMIN', 'readInstituteEventMessaging')"
+              value="course-alerts"
+          >
+            <h3>Course Event Messaging</h3>
+            <CourseAlerts />
           </v-window-item>
         </v-window>
       </v-card-text>
@@ -28,6 +38,7 @@ import InstituteAlerts from "@/components/Admin/InstituteAlerts.vue";
 import { useAccessStore } from "@/store/modules/access";
 import { useAppStore } from "@/store/modules/app";
 import { mapState, mapActions } from "pinia";
+import CourseAlerts from "@/components/Admin/CourseAlerts.vue";
 
 export default {
   name: "admin",
@@ -52,6 +63,7 @@ export default {
     }
   },
   components: {
+    CourseAlerts,
     InstituteAlerts: InstituteAlerts,
   },
   computed: {
