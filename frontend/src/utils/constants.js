@@ -62,6 +62,9 @@ export const RolePermissions = Object.freeze({
     updateInstituteEventMessaging: {
       allowed: ["GRAD_SYSTEM_COORDINATOR"],
     },
+    updateCourseEventMessaging: {
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
+    },
   },
   BATCH: {
     createBatchJob: {

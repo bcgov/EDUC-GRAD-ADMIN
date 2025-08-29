@@ -144,6 +144,7 @@ export default {
       // update to pass in page, itemsPerPage, and sortBy
       CourseService.getCourseEventHistory(params)
         .then((response) => {
+          this.courseAlerts = [];
           response.data.content.forEach((item) => {
             if(item.event?.eventPayload){
               const parsedPayload = JSON.parse(item.event.eventPayload);
