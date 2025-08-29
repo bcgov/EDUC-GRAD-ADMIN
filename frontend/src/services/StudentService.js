@@ -28,8 +28,24 @@ export default {
       json
     );
   },
+  
   getStudentCourseHistory(studentID) {
     return ApiService.apiAxios.get(`/api/student/${studentID}/history/courses`);
+  },
+  // STUDENT ASSESSMENTS
+  mergeStudentAssessments(sourceStudentID, targetStudentID, json) {
+    console.log(json)
+    return new Promise((resolve) => {
+      resolve({
+        status: 200,
+        data: {
+          message: "Merge successful",
+          sourceStudentID,
+          targetStudentID,
+          mergedData: json
+        }
+      });
+    });
   },
   // OPTIONAL STUDENT GRADUATION STATUS
   getStudentCareerPrograms(studentID) {
