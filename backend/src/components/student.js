@@ -167,6 +167,124 @@ async function transferStudentCoursesByStudentID(req, res) {
   }
 }
 
+
+
+
+
+
+
+  // try {
+  //   const userName = utils.getUser(req).idir_username;
+  //   const payload = {
+  //     ...req.body,
+  //     updateDate: null,
+  //     createDate: null
+  //   };
+  //   const token = auth.getBackendToken(req);
+  //   const student = await utils.getData(token, `${config.get('server:studentAPIURL')}/api/v1/student/stdid/${req.body?.studentID}`, req.session?.correlationID);
+
+  //   payload.surname = student.legalLastName;
+  //   payload.givenName = student.legalFirstName;
+  //   payload.schoolOfRecordSchoolID = student.schoolOfRecordId;
+  //   payload.pen = student.pen;
+  //   payload.studentStatusCode = STUDENT_STATUS_CODE_MAP[student.statusCode];
+
+  //   const allowRuleOverride = req.query.allowRuleOverride === 'true';
+  //   const params = allowRuleOverride ? { params: { allowRuleOverride: true } } : {};
+  //   console.log(payload)
+  //   const result = await utils.postCommonServiceData(
+  //     `${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student`,
+  //     payload,
+  //     userName,
+  //     params
+  //   );
+  //   return res.status(HttpStatus.OK).json(result);
+  // } catch (e) {
+  //   await logApiError(e, 'postStudentAssessment', 'Error occurred while attempting to create the student assessment.');
+  //   if (e.data?.message) {
+  //     return errorResponse(res, e.data.message, e.status);
+  //   } else {
+  //     return errorResponse(res);
+  //   }
+  // }
+
+
+
+
+
+
+
+
+async function mergeStudentAssessmentsByStudentID(req, res) {
+  try {
+    
+    console.log("MERGE ASSESSMENTS");
+    console.log(JSON.stringify(req.body, null, 2));
+
+    const token = auth.getBackendToken(req);
+    let localStudentAssessments = { ...req.body };
+
+    // Prepare data
+    let tobeDeleted = localStudentAssessments.conflicts.length > 0
+      ? localStudentAssessments.conflicts
+          .map(item => item.target?.assessmentID)
+          .filter(assessmentID => assessmentID !== undefined)
+      : [];
+
+    let tobeAdded = [
+      ...localStudentAssessments.info.map(item => item.source),
+      ...localStudentAssessments.conflicts.map(item => item.source)
+    ];
+
+    console.log("DELETE");
+    console.log(tobeDeleted);
+    console.log("ADD");
+    console.log(tobeAdded);
+
+    // Delete assessments
+    if (tobeDeleted && tobeDeleted.length > 0) {
+      const baseUrl = `${config.get("server:studentAPIURL")}/api/v1/student/assessments`;
+
+      for (const assessmentID of tobeDeleted) {
+        const deleteUrl = `${baseUrl}/${req.params?.targetStudentID}/${assessmentID}`;
+        try {
+          // await deleteData(token, deleteUrl, null, req.session?.correlationID);
+          console.log(`DELETE URL: ${deleteUrl}`);
+        } catch (err) {
+          console.error(`Failed to delete assessment ${assessmentID}:`, err);
+        }
+      }
+    }
+
+    // Add assessments
+    if (tobeAdded && tobeAdded.length > 0) {
+      const baseUrl = `${config.get("server:studentAPIURL")}/api/v1/student-assessments/student/`;
+
+      for (const assessment of tobeAdded) {
+        const addUrl = `${baseUrl}/${req.params?.targetStudentID}`;
+        try {
+        } catch (err) {
+          console.error(`Failed to add assessment:`, err);
+        }
+      }
+    }
+
+    return res.status(200).json({ message: "Student assessments merged successfully." });
+
+  } catch (e) {
+    console.error("Error merging student assessments:", e);
+    if (e?.data?.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+
+
+
+
 async function mergeStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);
   let localStudentCourses = { ...req.body };
@@ -210,6 +328,9 @@ async function mergeStudentCoursesByStudentID(req, res) {
     }
   }
 }
+
+
+
 
 async function getStudentCourseHistory(req, res) {
   const token = auth.getBackendToken(req);
@@ -802,6 +923,8 @@ module.exports = {
   transferStudentCoursesByStudentID,
   mergeStudentCoursesByStudentID,
   getStudentCourseHistory,
+  // STUDENT ASSESSMENTS
+  mergeStudentAssessmentsByStudentID,
   // STUDENT OPTIONAL AND CAREER PROGRAMS
   getStudentCareerPrograms,
   postStudentCareerProgram,

@@ -719,13 +719,13 @@ export const useStudentStore = defineStore("student", {
     async mergeStudentAssessments(
       sourceStudentID,
       targetStudentID,
-      studentCourses
+      studentAssessments
     ) {
       try {
         return await StudentService.mergeStudentAssessments(
           sourceStudentID,
           targetStudentID,
-          studentCourses
+          studentAssessments
         );
       } catch (error) {
         console.error("Error merging student assessments: ", error);

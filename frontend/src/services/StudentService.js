@@ -34,18 +34,24 @@ export default {
   },
   // STUDENT ASSESSMENTS
   mergeStudentAssessments(sourceStudentID, targetStudentID, json) {
+    console.log("json")
     console.log(json)
-    return new Promise((resolve) => {
-      resolve({
-        status: 200,
-        data: {
-          message: "Merge successful",
-          sourceStudentID,
-          targetStudentID,
-          mergedData: json
-        }
-      });
-    });
+    return ApiService.apiAxios.post(
+      `/api/student/${sourceStudentID}/assessments/merge/${targetStudentID}`,
+      json
+    );
+
+    // return new Promise((resolve) => {
+    //   resolve({
+    //     status: 200,
+    //     data: {
+    //       message: "Merge successful",
+    //       sourceStudentID,
+    //       targetStudentID,
+    //       mergedData: json
+    //     }
+    //   });
+    // });
   },
   // OPTIONAL STUDENT GRADUATION STATUS
   getStudentCareerPrograms(studentID) {

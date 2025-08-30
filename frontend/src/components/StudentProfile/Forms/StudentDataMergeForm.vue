@@ -46,7 +46,9 @@
               </v-stepper-window-item>
               <!-- Step 2 -->
               <v-stepper-window-item value="2">
+
                 <div style="max-height: 60vh; overflow-y: auto; padding-right: 0.5rem;">
+                  <pre>{{ studentDataToMerge.nonExaminableCourses }}</pre>
                   <CourseReviewAndReconcile :sourceStudentData="sourceStudentData"
                     :targetStudentData="targetStudentData"
                     :sourceStudentCourses="sourceStudentReconcileData.nonExaminableCourses"
@@ -59,7 +61,7 @@
               <!-- Step 3 -->
               <v-stepper-window-item value="3">
                 <div style="max-height: 60vh; overflow-y: auto; padding-right: 0.5rem;">
-
+                  {{ studentDataToMerge.assessments }}
                   <AssessmentReviewAndReconcile :sourceStudentData="sourceStudentData"
                     :targetStudentData="targetStudentData"
                     :sourceStudentAssessments="sourceStudentReconcileData.assessments"
@@ -279,9 +281,6 @@ export default {
         );
         return [];
       }
-
-
-
     },
     async fetchStudentCourses(studentID) {
       if (!studentID) return [];
@@ -304,10 +303,12 @@ export default {
     },
     async saveAssessments() {
       this.validationStep = true;
+      console.log("SAVE ASSESMENTS")
+      console.log(this.studentDataToMerge.assessments)
       const response = await this.persistStudentAssessments(this.studentDataToMerge.assessments);
       if (response.status === 200) {
         this.clearAssessmentsToMerge();
-        let studentAssessments = await this.fetchStudentCourses(this.targetStudentData.studentID);
+        let studentAssessments = await this.fetchStudentAssessments(this.targetStudentData.studentID);
         this.targetStudentReconcileData.assessments = studentAssessments
         this.snackbarStore.showSnackbar("Successfully merged examinable courses", "success", 10000, "Student course");
         this.validationStep = false;
@@ -361,6 +362,13 @@ export default {
         this.snackbarStore.showSnackbar("Failed to merge student assessments", "error", 10000, "Student course");
       }
     },
+    normalizedAssessmentMergeData(studentAssessmentsData) {
+
+      const studentAssessmentsDataWithoutMessage = studentAssessmentsData.map(({ message, ...rest }) => rest)
+      return studentAssessmentsDataWithoutMessage
+
+    },
+
     async persistStudentCourses(isExaminable, studentCourses) {
       this.mergeStudentCourseResultsMessages = [];
       let localStudentCourses = { ...studentCourses };
