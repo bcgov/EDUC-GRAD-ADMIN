@@ -74,11 +74,30 @@ export const useStudentStore = defineStore("student", {
       courses: [],
     },
     delete: {
-      courses: []
+      courses: [],
     },
     transfer: {
       courses: [],
-    }
+    },
+    merge: {
+      examinableCourses: {
+        info: [],
+        conflicts: [],
+        errors: [],
+      },
+      nonExaminableCourses: {
+        info: [],
+        conflicts: [],
+        errors: [],
+      },
+      assessments: {
+        info: [],
+        conflicts: [],
+        errors: [],
+      },
+      gradStatus: {},
+      notes: [],
+    },
   }),
   actions: {
     async adoptStudent(studentData) {
@@ -175,11 +194,14 @@ export const useStudentStore = defineStore("student", {
           this.setStudentXmlReport(response.data);
         })
         .catch((error) => {
-          if (error.response.status == 404) {
-            // eslint-disable-next-line
-            console.log(error);
-          } else {
-            this.snackbarStore.showSnackbar(error.response, "error", 5000);
+          if (error.response.status != "404") {
+            this.snackbarStore.showSnackbar(
+              !!error.response?.status
+                ? `${error.response.status} Error getting student XML`
+                : "Something went wrong getting student XML",
+              "error",
+              5000
+            );
           }
         });
     },
@@ -189,24 +211,14 @@ export const useStudentStore = defineStore("student", {
           this.setStudentCertificates(response.data);
         })
         .catch((error) => {
-          if (error?.response?.data?.code == "404") {
-            // eslint-disable-next-line
-            console.log(error);
-          } else {
-            if (error?.response?.status) {
-              // this.$bvToast.toast("ERROR " + error.response.statusText, {
-              //   title: "ERROR" + error.response.status,
-              //   variant: "danger",
-              //   noAutoHide: true,
-              // });
-              this.snackbarStore.showSnackbar(
-                "ERROR " + error?.response?.statusText,
-                "error",
-                10000,
-                "ERROR" + error?.response?.status
-              );
-            }
-          }
+          this.snackbarStore.showSnackbar(
+            !!error.response?.status
+              ? `${error.response.status} Error getting student certificate`
+              : "Something went wrong getting student certificate",
+            "error",
+            10000,
+            "ERROR" + error?.response?.status
+          );
         });
     },
     loadStudentReports(id) {
@@ -215,24 +227,14 @@ export const useStudentStore = defineStore("student", {
           this.setStudentReports(response.data);
         })
         .catch((error) => {
-          if (error?.response?.data?.code == "404") {
-            // eslint-disable-next-line
-            console.log(error);
-          } else {
-            if (error?.response?.status) {
-              // this.$bvToast.toast("ERROR " + error.response.statusText, {
-              //   title: "ERROR" + error.response.status,
-              //   variant: "danger",
-              //   noAutoHide: true,
-              // });
-              this.snackbarStore.showSnackbar(
-                "ERROR " + error?.response?.statusText,
-                "error",
-                10000,
-                "ERROR" + error?.response?.status
-              );
-            }
-          }
+          this.snackbarStore.showSnackbar(
+            !!error.response?.status
+              ? `${error.response.status} Error getting student TVR`
+              : "Something went wrong getting student TVR",
+            "error",
+            10000,
+            "ERROR" + error?.response?.status
+          );
         });
     },
     loadStudentTranscripts(id) {
@@ -241,13 +243,12 @@ export const useStudentStore = defineStore("student", {
           this.setStudentTranscripts(response.data);
         })
         .catch((error) => {
-          if (error?.response?.data?.code == "404") {
-            // eslint-disable-next-line
-            console.log(error);
-          } else {
+          if (error?.response?.data?.code != "404") {
             if (error?.response?.status) {
               this.snackbarStore.showSnackbar(
-                "There was a problem with the web service",
+                !!error.response?.status
+                  ? `${error.response.status} Error getting student transcript`
+                  : "Something went wrong getting student transcript",
                 "error",
                 10000,
                 "ERROR" + error?.response?.status
@@ -322,21 +323,23 @@ export const useStudentStore = defineStore("student", {
         });
     },
     loadStudentAssessmentHistory(studentId) {
-      StudentAssessmentService.getStudentAssessmentHistoryBySearchCriteria(studentId)
-          .then((response) => {
-            this.setStudentCourseAuditHistory(response.data);
-          })
-          .catch((error) => {
-            if (error?.response?.status) {
-              this.snackbarStore.showSnackbar(
-                  "ERROR " + error?.response?.statusText,
-                  "error",
-                  10000,
-                  "There was an error with the Student Service (getting the Student Course History): " +
-                  error?.response?.status
-              );
-            }
-          });
+      StudentAssessmentService.getStudentAssessmentHistoryBySearchCriteria(
+        studentId
+      )
+        .then((response) => {
+          this.setStudentCourseAuditHistory(response.data);
+        })
+        .catch((error) => {
+          if (error?.response?.status) {
+            this.snackbarStore.showSnackbar(
+              "ERROR " + error?.response?.statusText,
+              "error",
+              10000,
+              "There was an error with the Student Service (getting the Student Course History): " +
+                error?.response?.status
+            );
+          }
+        });
     },
     unsetStudent() {
       this.student.profile = {};
@@ -635,10 +638,13 @@ export const useStudentStore = defineStore("student", {
     },
     async updateStudentCourse(course) {
       try {
-        const response = await StudentService.updateStudentCourse(this.id, course);
+        const response = await StudentService.updateStudentCourse(
+          this.id,
+          course
+        );
         this.getStudentCourses(this.id);
         this.loadStudentGradStatus(this.id);
-        return response
+        return response;
       } catch (error) {
         console.error("Error updating student courses:", error);
         throw error;
@@ -650,7 +656,10 @@ export const useStudentStore = defineStore("student", {
     // delete student courses
     async deleteStudentCourses(courses) {
       try {
-        const response = await StudentService.deleteStudentCourses(this.id, courses);
+        const response = await StudentService.deleteStudentCourses(
+          this.id,
+          courses
+        );
         this.getStudentCourses(this.id);
         this.loadStudentGradStatus(this.id);
         return response;
@@ -681,9 +690,55 @@ export const useStudentStore = defineStore("student", {
     clearCoursesToTransfer() {
       this.transfer.courses = [];
     },
+    clearExaminableCoursesToMerge() {
+      this.merge.examinableCourses.info = [];
+      this.merge.examinableCourses.conflicts = [];
+    },
+    clearNonExaminableCoursesToMerge() {
+      this.merge.nonExaminableCourses.info = [];
+      this.merge.nonExaminableCourses.conflicts = [];
+    },
+    clearAssessmentsToMerge() {
+      this.merge.assessments.info = [];
+      this.merge.assessments.conflicts = [];
+    },
+    clearGradStatusToMerge() {
+      this.merge.gradStatus = {};
+    },
+    clearNotesToMerge() {
+      this.merge.notes = [];
+    },
+    clearStudentMerge() {
+      this.clearExaminableCoursesToMerge();
+      this.clearNonExaminableCoursesToMerge();
+      this.clearAssessmentsToMerge();
+      this.clearGradStatusToMerge();
+      this.clearNotesToMerge();
+    },
+    // Merge student courses
+    async mergeStudentCourses(
+      sourceStudentID,
+      targetStudentID,
+      studentCourses
+    ) {
+      try {
+        return await StudentService.mergeStudentCourses(
+          sourceStudentID,
+          targetStudentID,
+          studentCourses
+        );
+      } catch (error) {
+        console.error("Error merging student courses: ", error);
+        return error;
+      }
+    },
     removeCourseFromTransfer(courseID, courseSession) {
       this.transfer.courses = this.transfer.courses.filter(
-        (course) => !(course.courseID === courseID && course.courseSession === courseSession)
+        (course) =>
+          !(
+            course.courseID === courseID &&
+            course.courseSession === courseSession
+          )
       );
     },
   },

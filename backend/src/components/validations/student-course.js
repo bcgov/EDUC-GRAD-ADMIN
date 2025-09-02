@@ -2,29 +2,29 @@ const { object, string, number, boolean, array } = require('yup');
 const { uuidGeneric } = require('./custom-validations');
 const { baseRequestSchema } = require('./base');
 
-const studentCourseExamSchema = object({    
-    schoolPercentage: number().min(0).max(100).nullable(),
-    bestSchoolPercentage: number().min(0).max(100).nullable(),
-    bestExamPercentage: number().min(0).max(100).nullable(),
-    specialCase:string().max(1).nullable(),
-    examPercentage: number().min(0).max(100).nullable().notRequired(),
-    toWriteFlag: string().max(1).nullable().notRequired(),
-    wroteFlag: string().max(1).nullable().notRequired(),
+const studentCourseExamSchema = object({
+  schoolPercentage: number().min(0).max(100).nullable(),
+  bestSchoolPercentage: number().min(0).max(100).nullable(),
+  bestExamPercentage: number().min(0).max(100).nullable(),
+  specialCase: string().max(1).nullable(),
+  examPercentage: number().min(0).max(100).nullable().notRequired(),
+  toWriteFlag: string().max(1).nullable().notRequired(),
+  wroteFlag: string().max(1).nullable().notRequired(),
 });
 
 const studentCourseSchema = object({
-    courseID: string().max(12).required(),
-    courseSession: string().max(6).required(),
-    interimPercent:  number().min(0).max(100).nullable(),
-    interimLetterGrade: string().max(2).nullable(),
-    finalPercent:  number().min(0).max(100).nullable(),
-    finalLetterGrade: string().max(2).nullable(),
-    credits:  number().min(0).max(4).nullable(),
-    equivOrChallenge:string().max(1).nullable(),
-    fineArtsAppliedSkills: string().max(1).nullable(),
-    customizedCourseName: string().max(40).nullable(),
-    relatedCourseId: string().max(12).nullable(),
-    courseExam: studentCourseExamSchema.nullable().notRequired(),
+  courseID: string().max(12).required(),
+  courseSession: string().max(6).required(),
+  interimPercent: number().min(0).max(100).nullable(),
+  interimLetterGrade: string().max(2).nullable(),
+  finalPercent: number().min(0).max(100).nullable(),
+  finalLetterGrade: string().max(2).nullable(),
+  credits: number().min(0).max(4).nullable(),
+  equivOrChallenge: string().max(1).nullable(),
+  fineArtsAppliedSkills: string().max(1).nullable(),
+  customizedCourseName: string().max(40).nullable(),
+  relatedCourseId: string().max(12).nullable(),
+  courseExam: studentCourseExamSchema.nullable().notRequired(),
 });
 
 const putStudentCourseSchema = object({
@@ -39,9 +39,9 @@ const putStudentCourseSchema = object({
 }).noUnknown();
 
 const postStudentCourseSchema = object({
-   body: array().of(studentCourseSchema.shape({
+  body: array().of(studentCourseSchema.shape({
     isExaminable: boolean().required(), 
-}).noUnknown()),
+  }).noUnknown()),
   params: object({
     studentID: uuidGeneric().required()
   }),
@@ -49,9 +49,42 @@ const postStudentCourseSchema = object({
 }).noUnknown();
 
 const postTransferStudentCourseSchema = object({
-   body: array().of(studentCourseSchema.shape({
+  body: array().of(studentCourseSchema.shape({
     id: uuidGeneric().required(), 
-}).noUnknown()),
+  }).noUnknown()),
+  params: object({
+    sourceStudentID: uuidGeneric().required(),
+    targetStudentID: uuidGeneric().required()
+  }),
+  query: object().noUnknown(),
+}).noUnknown();
+
+function markAllFieldsOptional(schema) {
+  const fields = schema.fields;
+  const optionalShape = Object.fromEntries(
+    Object.entries(fields).map(([key, fieldSchema]) => [
+      key,
+      fieldSchema.optional(),
+    ])
+  );
+  return object().shape(optionalShape);
+}
+
+const mergeStudentCourseSchema = object({
+  source: studentCourseSchema.shape({
+    id: uuidGeneric().required(),
+  }).noUnknown(),
+  target: markAllFieldsOptional(studentCourseSchema).shape({
+    id: uuidGeneric().optional(),
+  }).optional(),
+});
+
+const postMergeStudentCourseSchema = object({
+  body: object({
+    info: array().of(mergeStudentCourseSchema),
+    conflicts: array().of(mergeStudentCourseSchema),
+    errors: array().of(mergeStudentCourseSchema).optional()
+  }),
   params: object({
     sourceStudentID: uuidGeneric().required(),
     targetStudentID: uuidGeneric().required()
@@ -71,5 +104,6 @@ module.exports = {
   putStudentCourseSchema,
   postStudentCourseSchema,
   deleteStudentCourseSchema,
-  postTransferStudentCourseSchema
+  postTransferStudentCourseSchema,
+  postMergeStudentCourseSchema
 };

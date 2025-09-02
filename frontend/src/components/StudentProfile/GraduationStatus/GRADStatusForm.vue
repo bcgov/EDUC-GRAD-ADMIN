@@ -745,7 +745,7 @@ export default {
       getSchoolsList: "getSchoolsList",
       getSchoolMincodeById: "getSchoolMincodeById",
       getSchoolById: "getSchoolById",
-      getStudentGradeCodes: "getStudentGradeCodes",
+      getStudentGradeCodes: "studentGradeCodes",
     }),
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",

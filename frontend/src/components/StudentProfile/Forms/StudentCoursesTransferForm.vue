@@ -253,7 +253,7 @@ export default {
       return useStudentStore();
     },
     sourceStudent() {
-      return this.studentStore.student.gradStatus.studentGradData?.gradStudent;
+      return this.studentStore.student.profile;
     },  
     ...mapState(useStudentStore, {
       coursesToTransfer: (state) => state.transfer.courses,

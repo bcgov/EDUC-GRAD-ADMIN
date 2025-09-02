@@ -40,10 +40,16 @@
       </v-col>
 
       <v-col class="mr-2" cols="auto">
+        <strong>Interim</strong>&nbsp;
+        <span v-if="course.interimPercent">{{ course.interimPercent }}% </span>
+        <span v-if="course.interimLetterGrade"><i>{{ course.interimLetterGrade }}</i></span> 
+        <span v-else><i>null</i></span>
+      </v-col>
+
+      <v-col class="mr-2" cols="auto">
         <strong>Final</strong>&nbsp;
-        <span v-if="course.finalPercent">
-          {{ course.finalPercent }}% {{ course.finalLetterGrade }}
-        </span>
+        <span v-if="course.finalPercent">{{ course.finalPercent }}% </span>
+        <span v-if="course.finalLetterGrade"><i>{{ course.finalLetterGrade }}</i></span> 
         <span v-else><i>null</i></span>
       </v-col>
 
@@ -58,17 +64,15 @@
     <v-row v-else class="px-0 py-1" :no-gutters="shouldRemoveGutters || true">
       <v-col class="mr-2" cols="auto">
         <strong>Interim</strong>&nbsp;
-        <span v-if="course.interimPercent">
-          {{ course.interimPercent }}% {{ course.interimLetterGrade }}
-        </span>
+        <span v-if="course.interimPercent">{{ course.interimPercent }}% </span>
+        <span v-if="course.interimLetterGrade"><i>{{ course.interimLetterGrade }}</i></span> 
         <span v-else><i>null</i></span>
       </v-col>
 
       <v-col class="mr-2" cols="auto">
         <strong>Final</strong>&nbsp;
-        <span v-if="course.finalPercent">
-          {{ course.finalPercent }}% {{ course.finalLetterGrade }}
-        </span>
+        <span v-if="course.finalPercent">{{ course.finalPercent }}% </span>
+        <span v-if="course.finalLetterGrade"><i>{{ course.finalLetterGrade }}</i></span> 
         <span v-else><i>null</i></span>
       </v-col>
 
