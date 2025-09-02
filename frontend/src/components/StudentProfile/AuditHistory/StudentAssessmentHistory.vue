@@ -11,7 +11,6 @@
         :headers="fields"
         :loading="isLoadingAssessments"
         showFilter="true"
-        hide-default-footer
     >
       <template v-slot:item.assessmentName="{ item }">
         <v-dialog max-width="500">
@@ -67,6 +66,7 @@ import { useSnackbarStore } from "@/store/modules/snackbar";
 import { mapState } from "pinia";
 import {useAccessStore} from "@/store/modules/access";
 import {toRaw} from "vue";
+import {orderBy} from 'lodash';
 import StudentAssessmentService from "@/services/StudentAssessmentService";
 import EditStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/EditStudentAssessment.vue";
 import AddStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/AddStudentAssessment.vue";
@@ -99,6 +99,12 @@ export default {
           sortable: true,
           sortDirection: "desc",
           class: "text-left",
+        },
+        {
+          key: "updateUser",
+          title: "Update User",
+          class: "text-left w-50",
+          value: (item) => item.updateUser
         },
         {
           key: "assessmentTypeCode",
@@ -205,6 +211,7 @@ export default {
       this.isLoadingAssessments = true;
       let sort = {
         'assessmentEntity.assessmentTypeCode': 'ASC',
+        'updateDate': 'DESC'
       };
       let searchParams = {
         studentId: this.studentId
