@@ -3,8 +3,24 @@
     <v-alert v-if="!studentAssessments?.length" class="container">
       This student does not have any assessments.
     </v-alert>
+    <div class="col-12 px-3" v-if="allowUpdateStudentAssessments">
+      <div class="float-left grad-actions">
+        <v-menu offset-y>
+          <template v-slot:activator="{ props }">
+            <v-btn text v-bind="props" :disabled="selected.length === 0" id="actions" right
+                   class="float-right admin-actions text-none" prepend-icon="mdi-select-multiple"
+                   append-icon="mdi-menu-down" color="error">Bulk Actions</v-btn>
+          </template>
+          <v-list>
+            <v-list-item v-if="hasPermissions('STUDENT', 'studentAssessmentUpdate')" :disabled="selected.length === 0"
+                         @click="showAssessmentTransfer">
+              <v-icon color="error">mdi-transfer</v-icon> Transfer Selected Assessments
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+    </div>
     <v-row no-gutters>
-
       <v-spacer />
       <AddStudentAssessment
           v-if="studentStatus !== 'MER'"
@@ -21,8 +37,8 @@
         :loading="isLoadingAssessments"
         showFilter="true"
         hide-default-footer
-        show-select
-        v-model="selectedAssessments"
+        :show-select="allowUpdateStudentAssessments"
+        v-model="selected"
         :item-value="(item) => item"
     >
       <template
@@ -235,6 +251,9 @@ export default {
       assessmentTypeCodesMap: "assessmentTypeCodesMap"}),
     ...mapState(useStudentStore, { studentAssessments: "studentAssessments" }),
     ...mapState(useAccessStore, ["hasPermissions"]),
+    ...mapState(useAccessStore, {
+      allowUpdateStudentAssessments: "allowUpdateStudentAssessments"
+    }),
     processedAssessments() {
       if (!this.studentAssessments) return [];
       return this.studentAssessments.map(assessment => ({
@@ -332,7 +351,7 @@ export default {
   },
   data: function () {
     return {
-      selectedAssessments: [],
+      selected: [],
       showEditDialog: false,
       selectedAssessment: null,
       assessmentSessions: [],
@@ -446,6 +465,9 @@ export default {
     getProvincialSpecialCaseDisplayName(code) {
       const specialCase = this.getStudentAssessmentProvincialSpecialCaseCodes.find(specialCaseCode => specialCaseCode.provincialSpecialCaseCode === code);
       return specialCase ? specialCase.label : '';
+    },
+    showAssessmentTransfer(){
+      console.log("YOU CLICKED A BUTTON!")
     }
   }
 };

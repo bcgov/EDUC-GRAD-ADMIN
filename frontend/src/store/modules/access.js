@@ -73,6 +73,9 @@ export const useAccessStore = defineStore("access", {
     allowStudentMerge:  (state) => {
       return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
     },
+    allowUpdateStudentAssessments: (state) => {
+      return state.roles.includes(Roles.GRAD_SYSTEM_COORDINATOR);
+    },
     hasPermissions: (state) => {
       return (section, permission) => {
         // Check if the specified section and permission exist

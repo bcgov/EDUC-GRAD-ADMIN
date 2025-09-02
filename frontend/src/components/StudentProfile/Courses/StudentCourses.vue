@@ -43,8 +43,15 @@
           <v-spacer />
           <StudentCoursesCreateForm type="all" />
         </v-row>
-        <v-data-table v-if="courses" v-model="selected" :items="courses" :headers="fields" :item-value="(item) => item"
-          :items-per-page="'-1'" title="studentCourse" :show-select="allowUpdateStudentCourseExam">
+        <v-data-table
+            v-if="courses"
+            v-model="selected"
+            :items="courses"
+            :headers="fields"
+            :item-value="(item) => item"
+            :items-per-page="'-1'"
+            title="studentCourse"
+            :show-select="allowUpdateStudentCourseExam">
           <template v-slot:item.data-table-expand="{
             item,
             internalItem,
