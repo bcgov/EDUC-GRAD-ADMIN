@@ -151,6 +151,8 @@ export const useAppStore = defineStore("app", {
           await this.getStudentGradeCodes();
           await this.getLetterGradeCodes();
           await this.getFAASTypeCodes();
+          //GET & SET ASSESSMENT TYPE CODES
+          await this.getAssessmentTypeCodes()
           // GET & SET INSTITUTE SCHOOL AND DISTRICT LISTS
           await this.getSchools();
           await this.getDistricts();
@@ -158,6 +160,7 @@ export const useAppStore = defineStore("app", {
           await this.getInstituteCategoryCodes();
           await this.getInstituteFacilityCodes();
           await this.getProvincialSpecialCaseCodes();
+
         }
       } catch (e) {
         if (e.response.status) {

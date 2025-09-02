@@ -10,10 +10,15 @@ const {
   fetchCourseDetails,
   addCourseDetails,
   sortCourses,
+  getUser,
+  logApiError,
 } = require("../components/utils");
 const config = require("../config/index");
+const { STUDENT_STATUS_CODE_MAP } = require('./constants/student-status-codes');
 const log = require("../components/logger");
 const auth = require("../components/auth");
+const {postStudentAssessment,
+  deleteStudentAssessmentByID }= require("../components/assessments/student-assessment");
 const { add } = require("lodash");
 
 async function getStudentCourseByStudentID(req, res) {
@@ -167,53 +172,45 @@ async function transferStudentCoursesByStudentID(req, res) {
   }
 }
 
+// async function postMergeStudentAssessment(req, res){
+//   try {
+// console.log("POST MERGE STUDENT ASESSMENT")
+//     const userName = getUser(req).idir_username;
+//     const payload = {
+//       ...req.body,
+//       updateDate: null,
+//       createDate: null
+//     };
+//     const token = auth.getBackendToken(req);
+//     console.log("GET STUDENT DATA")
+//     const url = `${config.get('server:studentAPIURL')}/api/v1/student/stdid/${req.body?.studentID}`
+//     const student = await getData(token, url, req.session?.correlationID);
 
+//     payload.surname = student.legalLastName;
+//     payload.givenName = student.legalFirstName;
+//     payload.schoolOfRecordSchoolID = student.schoolOfRecordId;
+//     payload.pen = student.pen;
+//     payload.studentStatusCode = STUDENT_STATUS_CODE_MAP[student.statusCode];
+//     console.log(payload)
 
-
-
-
-
-  // try {
-  //   const userName = utils.getUser(req).idir_username;
-  //   const payload = {
-  //     ...req.body,
-  //     updateDate: null,
-  //     createDate: null
-  //   };
-  //   const token = auth.getBackendToken(req);
-  //   const student = await utils.getData(token, `${config.get('server:studentAPIURL')}/api/v1/student/stdid/${req.body?.studentID}`, req.session?.correlationID);
-
-  //   payload.surname = student.legalLastName;
-  //   payload.givenName = student.legalFirstName;
-  //   payload.schoolOfRecordSchoolID = student.schoolOfRecordId;
-  //   payload.pen = student.pen;
-  //   payload.studentStatusCode = STUDENT_STATUS_CODE_MAP[student.statusCode];
-
-  //   const allowRuleOverride = req.query.allowRuleOverride === 'true';
-  //   const params = allowRuleOverride ? { params: { allowRuleOverride: true } } : {};
-  //   console.log(payload)
-  //   const result = await utils.postCommonServiceData(
-  //     `${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student`,
-  //     payload,
-  //     userName,
-  //     params
-  //   );
-  //   return res.status(HttpStatus.OK).json(result);
-  // } catch (e) {
-  //   await logApiError(e, 'postStudentAssessment', 'Error occurred while attempting to create the student assessment.');
-  //   if (e.data?.message) {
-  //     return errorResponse(res, e.data.message, e.status);
-  //   } else {
-  //     return errorResponse(res);
-  //   }
-  // }
-
-
-
-
-
-
-
+//     // const allowRuleOverride = req.query.allowRuleOverride === 'true';
+//     // const params = allowRuleOverride ? { params: { allowRuleOverride: true } } : {};
+//     // const result = await utils.postCommonServiceData(
+//     //   `${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student`,
+//     //   payload,
+//     //   userName,
+//     //   params
+//     // );
+//     return res.status(HttpStatus.OK).json(result);
+//   } catch (e) {
+//     await logApiError(e, 'postStudentAssessment', 'Error occurred while attempting to create the student assessment.');
+//     if (e.data?.message) {
+//       return errorResponse(res, e.data.message, e.status);
+//     } else {
+//       return errorResponse(res);
+//     }
+//   }
+// }
 
 async function mergeStudentAssessmentsByStudentID(req, res) {
   try {
@@ -227,7 +224,7 @@ async function mergeStudentAssessmentsByStudentID(req, res) {
     // Prepare data
     let tobeDeleted = localStudentAssessments.conflicts.length > 0
       ? localStudentAssessments.conflicts
-          .map(item => item.target?.assessmentID)
+          .map(item => item.target?.assessmentStudentID)
           .filter(assessmentID => assessmentID !== undefined)
       : [];
 
@@ -235,41 +232,99 @@ async function mergeStudentAssessmentsByStudentID(req, res) {
       ...localStudentAssessments.info.map(item => item.source),
       ...localStudentAssessments.conflicts.map(item => item.source)
     ];
-
-    console.log("DELETE");
+    console.log("DEBUG SOURCE STUDENT");
+    console.log(req.params["sourceStudentID"]);
+    console.log("DEBUG TARGET STUDENT");
+    console.log(req.params["targetStudentID"]);
+    console.log("DEBUG DELETE");
     console.log(tobeDeleted);
-    console.log("ADD");
+    console.log("DEBUG ADD");
     console.log(tobeAdded);
+    
+    const createResponse = {
+      added: [],
+      deleted: [],
+      errors: []
+    };
 
     // Delete assessments
     if (tobeDeleted && tobeDeleted.length > 0) {
-      const baseUrl = `${config.get("server:studentAPIURL")}/api/v1/student/assessments`;
-
       for (const assessmentID of tobeDeleted) {
-        const deleteUrl = `${baseUrl}/${req.params?.targetStudentID}/${assessmentID}`;
+        console.log("DELETING")
         try {
-          // await deleteData(token, deleteUrl, null, req.session?.correlationID);
-          console.log(`DELETE URL: ${deleteUrl}`);
+          console.log(req.query)
+          const clonedReq = {
+            ...req,
+            query:{
+              ...req.query,
+              allowRuleOverride: 'true'
+            },
+            params: { studentAssessmentId: assessmentID },
+            session: req.session
+          };
+          
+          // Assuming deleteStudentAssessmentByID returns a result
+          const deleteResult = await deleteStudentAssessmentByID(clonedReq, {
+            status: () => ({ json: (data) => createResponse.deleted.push(data) })
+          });
+          console.log("DELETING " + assessmentID)
+          console.log(deleteResult)
+
         } catch (err) {
           console.error(`Failed to delete assessment ${assessmentID}:`, err);
+          createResponse.errors.push({
+            type: "delete",
+            assessmentID: assessmentID,
+            error: err.message
+          });
         }
       }
     }
 
     // Add assessments
     if (tobeAdded && tobeAdded.length > 0) {
-      const baseUrl = `${config.get("server:studentAPIURL")}/api/v1/student-assessments/student/`;
-
       for (const assessment of tobeAdded) {
-        const addUrl = `${baseUrl}/${req.params?.targetStudentID}`;
         try {
+          const { assessmentStudentID, ...assessmentFiltered } = assessment;
+          const updatedAssessment = {
+            ...assessmentFiltered,
+            studentID: req.params["targetStudentID"]
+          };
+
+          const clonedReq = {
+            ...req,
+            body: updatedAssessment,
+            query: req.query,
+            params: req.params,
+            session: req.session
+          };
+
+          const postResult = await postStudentAssessment(clonedReq, {
+            status: () => ({ json: (data) => createResponse.added.push(data) })
+          });
+
         } catch (err) {
           console.error(`Failed to add assessment:`, err);
+          createResponse.errors.push({
+            type: "add",
+            assessmentID: assessment.assessmentID,
+            error: err.message
+          });
         }
       }
     }
 
-    return res.status(200).json({ message: "Student assessments merged successfully." });
+    // Final response
+    return res.status(200).json({
+      message: "Assessment reconciliation complete.",
+      ...createResponse
+    });
+
+
+
+    
+
+    
 
   } catch (e) {
     console.error("Error merging student assessments:", e);
@@ -280,10 +335,6 @@ async function mergeStudentAssessmentsByStudentID(req, res) {
     }
   }
 }
-
-
-
-
 
 async function mergeStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);

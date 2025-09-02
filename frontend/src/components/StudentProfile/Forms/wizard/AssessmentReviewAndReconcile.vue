@@ -2,7 +2,6 @@
 
   <v-row no-gutters class="mb-4">
     <v-col cols="12">
-
       <AssessmentMerge :sourceStudentData="sourceStudentData" :targetStudentData="targetStudentData"
         :assessmentReconciliation="assessmentReconciliation" />
     </v-col>
@@ -91,13 +90,12 @@ export default {
         for (const sourceAssessment of this.sourceStudentAssessments) {
           const matchedTarget = this.getMatchedAssessment(sourceAssessment, this.targetStudentAssessments);
 
-
           const truePENHasProficiencyScore = !!matchedTarget?.proficiencyScore;
           if (truePENHasProficiencyScore) {
-            this.assessmentReconciliation.errors.push({ "source": sourceAssessment, "target": matchedTarget, "message": "Course is examinable with exam %" });
+            this.assessmentReconciliation.errors.push({ "source": sourceAssessment, "target": matchedTarget, "message": "Assessment has a proficiency score" });
           } else {
             if (matchedTarget) {
-              this.assessmentReconciliation.conflicts.push({ "source": sourceAssessment, "target": matchedTarget, "message": "Course for this session already exists" });
+              this.assessmentReconciliation.conflicts.push({ "source": sourceAssessment, "target": matchedTarget, "message": "Assessment for this session already exists" });
             } else {
               this.assessmentReconciliation.info.push({ "source": sourceAssessment, "target": matchedTarget, "message": "" });
             }
@@ -108,7 +106,7 @@ export default {
         for (const targetAssessment of this.targetStudentAssessments) {
           const isExaminableWithResult = targetAssessment?.assessmentExam !== null && targetAssessment.assessmentExam.examPercentage && targetAssessment.assessmentExam.examPercentage >= 0;
           if (isExaminableWithResult) {
-            this.assessmentReconciliation.errors.push({ "source": null, "target": targetAssessment, "message": "Assessment is examinable with exam %" });
+            this.assessmentReconciliation.errors.push({ "source": null, "target": targetAssessment, "message": "Assessment has a proficiency score" });
           } else {
             this.assessmentReconciliation.info.push({ "source": null, "target": targetAssessment, "message": "" });
           }
