@@ -135,7 +135,8 @@ const getPaginatedStudentAssessmentSchema = object({
       studentId: uuidGeneric().required()
     }).required().noUnknown(),
     sort: object({
-      'assessmentEntity.assessmentTypeCode': string().oneOf(['ASC', 'DESC']).optional()
+      'assessmentEntity.assessmentTypeCode': string().oneOf(['ASC', 'DESC']).optional(),
+      'updateDate': string().oneOf(['ASC', 'DESC']).optional()
     }).optional().noUnknown()
   }).noUnknown(),
   params: object().noUnknown()
