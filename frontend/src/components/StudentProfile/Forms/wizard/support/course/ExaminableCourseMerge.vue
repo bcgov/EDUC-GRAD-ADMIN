@@ -22,12 +22,12 @@
                             :size="18">mdi-open-in-new</v-icon></router-link>
                 </template>
                 <template v-slot:item.source="{ item }">
-                    <div v-if="item.source != null" style="font-size: 0.875rem;">
+                    <div v-if="item.source != null" style="font-size: 0.875rem;" :class="{ 'text-disabled': !isRowSelectable(item)}" >
                         <CourseReview :course="item.source" />
                     </div>                    
                 </template>
                 <template v-slot:item.target="{ item }">
-                    <span v-if="item.target != null && !isRowSelected(key, item.source)" style="font-size: 0.875rem;">
+                    <span v-if="item.target != null && !isRowSelected(key, item.source)" style="font-size: 0.875rem;" :class="{ 'text-disabled': !isRowSelectable(item)}" >
                         <CourseReview :course="item.target" />
                     </span>
                     <div v-else-if="item.source != null && item.target != null && isRowSelected(key, item.source)"
@@ -165,7 +165,19 @@ export default {
             return false;
         },
         isRowSelectable(item) {
-            return  item.source != null;
+            return  item.source != null && !this.checkIfCoursesAreSame(item.source, item.target);
+        },
+        checkIfCoursesAreSame(source, target) {
+            if (source && target && source.courseExam !== null && target.courseExam !== null) {
+                const keysToCompare = ["courseExam.schoolPercentage", "courseExam.bestSchoolPercentage", "courseExam.specialCase", "source.courseExam.examPercentage",
+                    "source.courseExam.bestExamPercentage", "interimPercent", "interimLetterGrade", "finalPercent", "finalLetterGrade", "credits"
+                ];
+                return this.areValuesEqual(source,target,keysToCompare);
+            }
+            return false;
+        },
+        areValuesEqual(obj1, obj2, keys) {
+            return keys.every(key => obj1[key] === obj2[key]);
         }
     }
 };
