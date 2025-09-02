@@ -13,6 +13,10 @@
           </template>
           <v-list>
             <v-list-item v-if="hasPermissions('STUDENT', 'studentAssessmentUpdate')" :disabled="selected.length === 0"
+                         @click="showAssessmentDelete">
+              <v-icon color="error">mdi-delete-forever</v-icon> Delete Selected Courses
+            </v-list-item>
+            <v-list-item v-if="hasPermissions('STUDENT', 'studentAssessmentUpdate')" :disabled="selected.length === 0"
                          @click="showAssessmentTransfer">
               <v-icon color="error">mdi-transfer</v-icon> Transfer Selected Assessments
             </v-list-item>
@@ -467,7 +471,10 @@ export default {
       return specialCase ? specialCase.label : '';
     },
     showAssessmentTransfer(){
-      console.log("YOU CLICKED A BUTTON!")
+      console.log("YOU CLICKED A BUTTON! Add transfer section here")
+    },
+    showAssessmentDelete(){
+      console.log("YOU Want to delete some assessments!")
     }
   }
 };
