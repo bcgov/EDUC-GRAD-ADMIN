@@ -17,23 +17,30 @@
         <tbody>
           <!-- Legal Last Name -->
           <tr>
-            <td><strong>Legal Last Name: </strong></td>
+            <td><strong>Usual Surname: </strong></td>
             <td>
-              <span>{{ localStudentData.legalLastName }}</span>
+              <span>{{ localStudentData.usualLastName }}</span>
             </td>
           </tr>
           <!-- Legal First Name -->
           <tr>
-            <td><strong>Legal First Name: </strong></td>
+            <td><strong>Usual Given: </strong></td>
             <td>
-              <span>{{ localStudentData.legalFirstName }}</span>
+              <span>{{ localStudentData.usualFirstName }}</span>
             </td>
           </tr>
           <!-- Legal Middle Name -->
           <tr>
-            <td><strong>Legal Middle Name: </strong></td>
+            <td><strong>Usual Middle: </strong></td>
             <td>
-              <span>{{ localStudentData.legalMiddleNames }}</span>
+              <span>{{ localStudentData.usualMiddleNames }}</span>
+            </td>
+          </tr>
+          <!-- DOB -->
+          <tr>
+            <td><strong>DOB: </strong></td>
+            <td>
+              <span>{{ localStudentData.dob }}</span>
             </td>
           </tr>
           <!--Gender -->
@@ -43,6 +50,13 @@
               <span>{{ localStudentData.sexCode }}</span>
             </td>
           </tr>
+           <!-- Local ID -->
+          <tr>
+            <td><strong>Local ID: </strong></td>
+            <td>
+              <span>{{ localStudentData.localID }}</span>
+            </td>
+          </tr>
           <!-- Postal Code -->
           <tr>
             <td><strong>Postal Code: </strong></td>
@@ -50,12 +64,19 @@
               <span>{{ localStudentData.postalCode }}</span>
             </td>
           </tr>
+          <!-- Student Grade -->
+          <tr>
+            <td class="w-50"><strong>Grade: </strong></td>
+            <td class="w-50">
+              <span>{{ localStudentData.studentGrade }}</span>
+            </td>
+          </tr>
         </tbody>
       </v-table>
     </v-col>
     <v-col cols="6">
       <v-table density="comfortable" aria-label="edit grad status">
-        <tbody>
+        <tbody>          
           <!-- Program -->
           <tr>
             <td class="w-50"><strong>Program: </strong></td>
@@ -92,6 +113,43 @@
               <span>{{ studentGradStatus?.schoolAtGradName }}</span>
             </td>
           </tr>
+          <!--Honours standing -->
+          <tr>
+            <td><strong>Honours standing: </strong></td>
+            <td>
+              <span>{{ studentGradStatus?.honoursStanding }}</span>
+            </td>
+          </tr>
+          <!--Optional Programs -->
+          <tr>
+              <td><strong>Optional Programs:</strong></td>
+              <td>
+                <ul
+                  class="p-0"
+                  v-if="
+                    studentOptionalPrograms[0] &&
+                    studentOptionalPrograms[0].studentOptionalProgramData
+                  "
+                  id="optional-programs"
+                >
+                  <li
+                    v-for="item in studentOptionalPrograms"
+                    :key="item.optionalProgramCode"
+                  >
+                    {{ item.optionalProgramName }}
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          <!-- Adult start date -->
+            <tr>
+              <td><strong>Adult start date: </strong></td>
+              <td>
+                <span v-if="studentGradStatus.adultStartDate">{{
+                  $filters.formatSimpleDate(studentGradStatus.adultStartDate)
+                }}</span>
+              </td>
+            </tr>
         </tbody>
       </v-table>
     </v-col>
@@ -127,6 +185,7 @@ export default {
     return {
       localStudentData: {},
       studentGradStatus: {},
+      studentOptionalPrograms: [],
       snackbarStore: useSnackbarStore(),
       isEnvLocalHost: isEnvLocalHost(),
       penInput: "",
@@ -164,6 +223,7 @@ export default {
             if (response.data.length != 0) {
               this.localStudentData = response.data[0];         
               this.getStudentGradStatus(this.localStudentData.studentID); 
+              this.loadStudentOptionalPrograms(this.localStudentData.studentID);
               this.$emit("update:studentData", this.localStudentData);
             } else {
               console.error("No student found with the provided PEN");              
@@ -190,6 +250,19 @@ export default {
           // eslint-disable-next-line
           console.error(
             "There was an error loading student grad status",
+            error
+          );
+        });
+    },
+    loadStudentOptionalPrograms: function (studentID) {
+      StudentService.getGraduationStatusOptionalPrograms(studentID)
+        .then((response) => {
+          this.studentOptionalPrograms= response.data;
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(
+            "There was an error loading student optional programs",
             error
           );
         });
