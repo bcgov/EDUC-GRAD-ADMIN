@@ -21,7 +21,7 @@
                   append-icon="mdi-menu-down" color="error">Bulk Actions</v-btn>
               </template>
               <v-list>
-                <v-list-item v-if="allowUpdateStudentCourseExam && hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
+                <v-list-item v-if="hasPermissions('STUDENT', 'updateCourseExam') && hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
                   @click="showCourseDelete">
                   <v-icon color="error">mdi-delete-forever</v-icon> Delete Selected Courses
                 </v-list-item>
@@ -121,13 +121,13 @@
             </tr>
           </template>
           <template v-slot:item.edit="{ item }">
-            <div v-if="!item.courseExam || allowUpdateStudentCourseExam">
+            <div v-if="!item.courseExam || hasPermissions('STUDENT', 'updateCourseExam')">
               <StudentCoursesUpdateForm :course="item">
               </StudentCoursesUpdateForm>
             </div>
           </template>
           <template v-slot:item.delete="{ item }">
-            <div v-if="!item.courseExam || allowUpdateStudentCourseExam">
+            <div v-if="!item.courseExam || hasPermissions('STUDENT', 'updateCourseExam')">
               <StudentCoursesDeleteForm :selectedCoursesToDelete="[item]">
               </StudentCoursesDeleteForm>
             </div>
@@ -164,9 +164,6 @@ export default {
     return { studentStore, appStore, accessStore };
   },
   computed: {
-    ...mapState(useAccessStore, {
-      allowUpdateStudentCourseExam: "allowUpdateStudentCourseExam",
-    }),
     ...mapState(useStudentStore, {
       courses: "studentCourses",
       gradStatusCourses: "gradStatusCourses",
