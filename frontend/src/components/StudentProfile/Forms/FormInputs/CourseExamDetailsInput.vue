@@ -27,19 +27,17 @@
             :error="v$.course.courseExam.schoolPercentage.$invalid && v$.course.courseExam.schoolPercentage.$dirty"
             @blur="v$.course.courseExam.schoolPercentage.$touch" />
         </v-col>
-
         <v-col>
           <v-text-field v-model="course.courseExam.bestSchoolPercentage" type="number" min="0" max="100"
             label="Best School %" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
             :error="v$.course.courseExam.bestSchoolPercentage.$invalid && v$.course.courseExam.bestSchoolPercentage.$dirty"
             @blur="v$.course.courseExam.bestSchoolPercentage.$touch" />
         </v-col>
-
         <v-col>
           <v-select v-model="course.courseExam.specialCase" :items="filteredSpecialCaseCodes" label="Special Case"
             item-title="label" item-value="examSpecialCaseCode" variant="outlined" density="compact" class="pa-1"
             clearable persistent-placeholder persistent-hint
-            :disabled="!(create || (update && ['N', null].includes(existingSpecialCaseCode)))" />
+            :disabled="!isPercentageBlank(course.courseExam.examPercentage) || !(create || (update && ['N', null].includes(existingSpecialCaseCode)))" />
         </v-col>
 
         <v-col>
@@ -502,6 +500,10 @@ export default {
         )
         .map((grade) => grade.grade);
     },
-  },
+    isPercentageBlank(value) {
+      return value === null || value === undefined || value === '' ;
+    }
+  }
+  
 };
 </script>
