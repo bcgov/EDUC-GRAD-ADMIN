@@ -66,7 +66,7 @@
             </v-list>
           </v-menu>
           </span>
-          <span v-if="studentGradStatus.studentStatus === 'MER' && allowStudentMerge">
+          <span v-if="enableCRUD() && studentGradStatus.studentStatus === 'MER' && allowStudentMerge">
             <v-btn text class="float-right admin-actions text-none" prepend-icon="mdi-source-merge" color="primary"
               @click="showStudentDataMerge">
               Reconcile Student Data
