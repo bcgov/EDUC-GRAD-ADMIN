@@ -67,6 +67,12 @@
               </v-stepper-window-item>
               <!-- Step 4 -->
               <!-- Step 5 -->
+              <v-stepper-window-item value="5">
+                <div style="max-height: 60vh; overflow-y: auto; padding-right: 0.5rem;">
+                  <StudentMergeConfirmation :sourceStudentData="sourceStudentData"
+                    :targetStudentData="targetStudentData" />
+                </div>
+              </v-stepper-window-item>
             </v-stepper-window>
           </template>
         </v-stepper>
@@ -90,9 +96,10 @@
             class="text-none">ADD
             Assessments</v-btn> -->
           <v-btn v-if="step === 3" @click="step++" color="error" variant="flat" class="text-none">Save</v-btn>
-          <v-btn v-if="step < 4" color="bcGovBlue" variant="flat" class="text-none" @click="step++">Next</v-btn>
-          <v-btn v-if="step === 4" @click="step++" color="error" variant="flat" class="text-none">Complete
-            Reconciliation</v-btn>
+          <v-btn v-if="step < 4" color="bcGovBlue" variant="flat" class="text-none" @click="step++"
+            :disabled="isNextDisabled()">Next</v-btn>
+          <v-btn v-if="step === 4" color="error" variant="flat" class="text-none" @click="completeMerge"
+            :disabled="validationStep || !studentDataToMerge.note.mergeCompleted">Complete Student Merge</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -110,6 +117,7 @@ import useVuelidate from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import CourseReviewAndReconcile from "@/components/StudentProfile/Forms/wizard/CourseReviewAndReconcile.vue";
 import AssessmentReviewAndReconcile from "@/components/StudentProfile/Forms/wizard/AssessmentReviewAndReconcile.vue";
+import StudentMergeConfirmation from "@/components/StudentProfile/Forms/wizard/StudentMergeConfirmation.vue";
 
 export default {
   name: "StudentDataMergeForm",
@@ -121,6 +129,7 @@ export default {
   components: {
     CourseReviewAndReconcile,
     AssessmentReviewAndReconcile,
+    StudentMergeConfirmation
   },
   props: {
   },
@@ -136,14 +145,14 @@ export default {
         nonExaminableCourses: [],
         assessments: [],
         gradStatus: {},
-        notes: [],
+        note: {},
       },
       targetStudentReconcileData: {
         examinableCourses: [],
         nonExaminableCourses: [],
         assessments: [],
         gradStatus: {},
-        notes: [],
+        note: {},
       },
       validationStep: false,
     };
@@ -211,6 +220,8 @@ export default {
       "mergeStudentCourses",
       "getStudentCourses",
       "mergeStudentAssessments",
+      "clearNotesToMerge",
+      "completeStudentDataMerge",
       "loadStudentGradStatus"
     ]),
     close() {
@@ -446,6 +457,25 @@ export default {
       return normalizedCourseData;
     },
 
+    async completeMerge() {
+      this.validationStep = true;
+      const { mergeCompleted, ...restCourseMergeNotes } = this.studentDataToMerge.note;
+      const mergeStudentNotesRequestBody = toRaw(restCourseMergeNotes);
+      try {
+        const response = await this.completeStudentDataMerge(this.sourceStudentData.studentID, this.targetStudentData.studentID, mergeStudentNotesRequestBody);
+        if (response.status === 200) {
+          this.snackbarStore.showSnackbar("Successfully merged student data", "success", 10000, "Student Merge");
+          this.validationStep = false;
+          this.close();
+        } else {
+          this.snackbarStore.showSnackbar("Failed to merge student data", "error", 10000, "Student Merge");
+          this.validationStep = false;
+        }
+      } catch (error) {
+        console.error("Error merging student data:", error);
+        this.snackbarStore.showSnackbar("Failed to merge student data", "error", 10000, "Student Merge");
+      }
+    },
     async persistStudentCourses(isExaminable, studentCourses) {
       this.mergeStudentCourseResultsMessages = [];
       let localStudentCourses = { ...studentCourses };
@@ -498,6 +528,10 @@ export default {
       let studentCourses = await this.fetchStudentCourses(studentID);
       this.targetStudentReconcileData.examinableCourses = studentCourses.filter(course => course.courseExam !== null);
       this.targetStudentReconcileData.nonExaminableCourses = studentCourses.filter(course => course.courseExam === null);
+    },
+    isNextDisabled() {
+      return (this.studentDataToMerge.examinableCourses.info.length > 0 || this.studentDataToMerge.examinableCourses.conflicts.length > 0) ||
+        (this.studentDataToMerge.nonExaminableCourses.info.length > 0 || this.studentDataToMerge.nonExaminableCourses.conflicts.length > 0)
     }
   },
 };
