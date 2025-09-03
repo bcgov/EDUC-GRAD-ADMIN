@@ -17,23 +17,23 @@
         <tbody>
           <!-- Legal Last Name -->
           <tr>
-            <td><strong>Usual Surname: </strong></td>
+            <td><strong>Legal Surname: </strong></td>
             <td>
-              <span>{{ localStudentData.usualLastName }}</span>
+              <span>{{ localStudentData.legalLastName }}</span>
             </td>
           </tr>
           <!-- Legal First Name -->
           <tr>
-            <td><strong>Usual Given: </strong></td>
+            <td><strong>Legal Given: </strong></td>
             <td>
-              <span>{{ localStudentData.usualFirstName }}</span>
+              <span>{{ localStudentData.legalFirstName }}</span>
             </td>
           </tr>
           <!-- Legal Middle Name -->
           <tr>
-            <td><strong>Usual Middle: </strong></td>
+            <td><strong>Legal Middle: </strong></td>
             <td>
-              <span>{{ localStudentData.usualMiddleNames }}</span>
+              <span>{{ localStudentData.legalMiddleNames }}</span>
             </td>
           </tr>
           <!-- DOB -->
