@@ -172,52 +172,8 @@ async function transferStudentCoursesByStudentID(req, res) {
   }
 }
 
-// async function postMergeStudentAssessment(req, res){
-//   try {
-// console.log("POST MERGE STUDENT ASESSMENT")
-//     const userName = getUser(req).idir_username;
-//     const payload = {
-//       ...req.body,
-//       updateDate: null,
-//       createDate: null
-//     };
-//     const token = auth.getBackendToken(req);
-//     console.log("GET STUDENT DATA")
-//     const url = `${config.get('server:studentAPIURL')}/api/v1/student/stdid/${req.body?.studentID}`
-//     const student = await getData(token, url, req.session?.correlationID);
-
-//     payload.surname = student.legalLastName;
-//     payload.givenName = student.legalFirstName;
-//     payload.schoolOfRecordSchoolID = student.schoolOfRecordId;
-//     payload.pen = student.pen;
-//     payload.studentStatusCode = STUDENT_STATUS_CODE_MAP[student.statusCode];
-//     console.log(payload)
-
-//     // const allowRuleOverride = req.query.allowRuleOverride === 'true';
-//     // const params = allowRuleOverride ? { params: { allowRuleOverride: true } } : {};
-//     // const result = await utils.postCommonServiceData(
-//     //   `${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student`,
-//     //   payload,
-//     //   userName,
-//     //   params
-//     // );
-//     return res.status(HttpStatus.OK).json(result);
-//   } catch (e) {
-//     await logApiError(e, 'postStudentAssessment', 'Error occurred while attempting to create the student assessment.');
-//     if (e.data?.message) {
-//       return errorResponse(res, e.data.message, e.status);
-//     } else {
-//       return errorResponse(res);
-//     }
-//   }
-// }
-
 async function mergeStudentAssessmentsByStudentID(req, res) {
   try {
-    
-    console.log("MERGE ASSESSMENTS");
-    console.log(JSON.stringify(req.body, null, 2));
-
     const token = auth.getBackendToken(req);
     let localStudentAssessments = { ...req.body };
 
@@ -232,15 +188,7 @@ async function mergeStudentAssessmentsByStudentID(req, res) {
       ...localStudentAssessments.info.map(item => item.source),
       ...localStudentAssessments.conflicts.map(item => item.source)
     ];
-    console.log("DEBUG SOURCE STUDENT");
-    console.log(req.params["sourceStudentID"]);
-    console.log("DEBUG TARGET STUDENT");
-    console.log(req.params["targetStudentID"]);
-    console.log("DEBUG DELETE");
-    console.log(tobeDeleted);
-    console.log("DEBUG ADD");
-    console.log(tobeAdded);
-    
+
     const createResponse = {
       added: [],
       deleted: [],
@@ -250,9 +198,7 @@ async function mergeStudentAssessmentsByStudentID(req, res) {
     // Delete assessments
     if (tobeDeleted && tobeDeleted.length > 0) {
       for (const assessmentID of tobeDeleted) {
-        console.log("DELETING")
         try {
-          console.log(req.query)
           const clonedReq = {
             ...req,
             query:{
@@ -267,8 +213,6 @@ async function mergeStudentAssessmentsByStudentID(req, res) {
           const deleteResult = await deleteStudentAssessmentByID(clonedReq, {
             status: () => ({ json: (data) => createResponse.deleted.push(data) })
           });
-          console.log("DELETING " + assessmentID)
-          console.log(deleteResult)
 
         } catch (err) {
           console.error(`Failed to delete assessment ${assessmentID}:`, err);
@@ -313,18 +257,11 @@ async function mergeStudentAssessmentsByStudentID(req, res) {
         }
       }
     }
-
     // Final response
     return res.status(200).json({
       message: "Assessment reconciliation complete.",
       ...createResponse
     });
-
-
-
-    
-
-    
 
   } catch (e) {
     console.error("Error merging student assessments:", e);
@@ -380,9 +317,6 @@ async function mergeStudentCoursesByStudentID(req, res) {
   }
 }
 
-<<<<<<< HEAD
-
-=======
 async function completeStudentMergeByStudentID(req, res) {
   const token = auth.getBackendToken(req);  
   const noteUrl = `${config.get("server:studentAPIURL")}/api/v1/student/studentnotes`;
@@ -427,8 +361,6 @@ async function completeStudentMergeByStudentID(req, res) {
     }
   }
 }
->>>>>>> 44bdce102e957572103edce846e236e720df885a
-
 
 async function getStudentCourseHistory(req, res) {
   const token = auth.getBackendToken(req);

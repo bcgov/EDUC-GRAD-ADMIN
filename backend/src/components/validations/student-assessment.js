@@ -8,36 +8,24 @@ const studentAssessmentSchema = object({
   assessmentFormID: uuidGeneric().notRequired(),
   assessmentID: uuidGeneric().required(),
   assessmentStudentID: uuidGeneric().required(),
-  // assessmentStudentValidationIssues: string().notRequired(), 
   assessmentTypeCode: string().max(10).notRequired(),
   courseMonth: string().max(2).notRequired(),
   courseStatusCode: string().max(1).notRequired(),
   courseYear: string().max(4).notRequired(),
-  // createDate: string().notRequired(),
-  // createUser: string().notRequired(),
   downloadDate: string().notRequired(),
-  // givenName: string().max(25).required(),
   gradeAtRegistration: string().max(3).notRequired(),
   irtScore: string().max(7).notRequired(),
   localAssessmentID: string().max(20).notRequired(),
   localID: string().max(12).notRequired(),
   markingSession: string().notRequired(),
   numberOfAttempts: number().notRequired(),
-  // pen: string().max(9).required(),
   proficiencyScore: number().notRequired(),
   provincialSpecialCaseCode: string().max(1).notRequired(),
   schoolAtWriteSchoolID: uuidGeneric().notRequired(),
   schoolOfRecordSchoolID: uuidGeneric().required(),
   sessionID: uuidGeneric().notRequired(),
-  // studentID: uuidGeneric().required(),
-  // studentStatusCode: string().max(10).required(),
-  // surname: string().max(25).required(),
-  // updateDate: string().notRequired(),
-  // updateUser: string().notRequired(),
   wroteFlag: boolean().notRequired()
 });
-
-
 
 const putStudentAssessmentSchema = object({
   body: object({

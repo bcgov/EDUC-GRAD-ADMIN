@@ -259,7 +259,6 @@ export default {
       }
     },
     async fetchStudentAssessments(studentID) {
-
       if (!studentID) return [];
       try {
         let sort = {
@@ -274,7 +273,6 @@ export default {
           1,
           1000
         );
-        console.log(response)
         if (response.data !== null) {
           return response.data.content;
         } else {
@@ -377,7 +375,6 @@ export default {
     },
     async saveAssessments() {
       this.validationStep = true;
-      console.log(this.studentDataToMerge.assessments)
       const response = await this.persistStudentAssessments(this.studentDataToMerge.assessments);
       if (response.status === 200) {
         this.clearAssessmentsToMerge();
@@ -531,7 +528,8 @@ export default {
     },
     isNextDisabled() {
       return (this.studentDataToMerge.examinableCourses.info.length > 0 || this.studentDataToMerge.examinableCourses.conflicts.length > 0) ||
-        (this.studentDataToMerge.nonExaminableCourses.info.length > 0 || this.studentDataToMerge.nonExaminableCourses.conflicts.length > 0)
+        (this.studentDataToMerge.nonExaminableCourses.info.length > 0 || this.studentDataToMerge.nonExaminableCourses.conflicts.length > 0) ||
+        (this.studentDataToMerge.assessments.info.length > 0 || this.studentDataToMerge.assessments.conflicts.length > 0)
     }
   },
 };

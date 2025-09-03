@@ -85,8 +85,6 @@ export default {
     },
     reconcileForMerge() {
       this.resetAssessmentReconciliation();
-      console.log(this.sourceStudentAssessments)
-      console.log(this.targetStudentAssessments)
       if (this.sourceStudentAssessments.length > 0) {
         //Source not empty & target empty/not empty
         for (const sourceAssessment of this.sourceStudentAssessments) {
@@ -107,14 +105,11 @@ export default {
       //check Source is empty and target is not empty      
       for (const targetAssessment of this.targetStudentAssessments) {
         const matchedTarget = this.getMatchedAssessment(targetAssessment, this.sourceStudentAssessments);
-        console.log(matchedTarget)
         if (!matchedTarget) {
           this.assessmentReconciliation.info.push({ "source": null, "target": targetAssessment, "message": "" });
         }
       }
-
     },
-
     getMatchedAssessment(assessment, studentAssessments) {
       if (assessment && studentAssessments && studentAssessments.length > 0) {
         return studentAssessments.find(item => this.validateAssessment(assessment, item));
