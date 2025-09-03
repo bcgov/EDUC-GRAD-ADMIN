@@ -66,7 +66,7 @@
             </v-list>
           </v-menu>
           </span>
-          <span v-if="studentGradStatus.studentStatus === 'MER' && allowStudentMerge">
+          <span v-if="studentGradStatus.studentStatus === 'MER' && hasPermissions('STUDENT', 'studentMerge')">
             <v-btn text class="float-right admin-actions text-none" prepend-icon="mdi-source-merge" color="primary"
               @click="showStudentDataMerge">
               Reconcile Student Data
@@ -853,7 +853,6 @@ export default {
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
       allowRunGradAlgorithm: "allowRunGradAlgorithm",
-      allowStudentMerge: "allowStudentMerge",
       hasPermissions: "hasPermissions",      
     }),
     ...mapState(useAppStore, {

@@ -25,7 +25,7 @@
                   @click="showCourseDelete">
                   <v-icon color="error">mdi-delete-forever</v-icon> Delete Selected Courses
                 </v-list-item>
-                <v-list-item v-if="allowStudentTransfer && hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
+                <v-list-item v-if="hasPermissions('STUDENT', 'studentTransfer') && hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
                   @click="showCourseTransfer">
                   <v-icon color="error">mdi-transfer</v-icon> Transfer Selected Courses
                 </v-list-item>
@@ -166,7 +166,6 @@ export default {
   computed: {
     ...mapState(useAccessStore, {
       allowUpdateStudentCourseExam: "allowUpdateStudentCourseExam",
-      allowStudentTransfer: "allowStudentTransfer",
     }),
     ...mapState(useStudentStore, {
       courses: "studentCourses",

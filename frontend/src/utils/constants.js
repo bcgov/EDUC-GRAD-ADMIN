@@ -50,7 +50,13 @@ export const RolePermissions = Object.freeze({
     },
     editSchoolAtWrite: {
       allowed: ["GRAD_ASSESSMENTS"]
-    }
+    },
+    studentTransfer: {
+      allowed: ["GRAD_SYSTEM_COORDINATOR", "GRAD_INFO_OFFICER"]
+    },
+    studentMerge: {
+      allowed: ["GRAD_SYSTEM_COORDINATOR"]
+    },
   },
   ADMIN: {
     readPage: {
