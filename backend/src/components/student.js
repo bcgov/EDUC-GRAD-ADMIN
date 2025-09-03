@@ -211,6 +211,52 @@ async function mergeStudentCoursesByStudentID(req, res) {
   }
 }
 
+async function completeStudentMergeByStudentID(req, res) {
+  const token = auth.getBackendToken(req);  
+  const noteUrl = `${config.get("server:studentAPIURL")}/api/v1/student/studentnotes`;
+  const gradStatusUrl = `${config.get("server:studentAPIURL")}/api/v1/student/recalculate/grad-status/${req.params?.targetStudentID}`;
+
+  try {
+    //Add Note to source & target student    
+    const sourceResponse = await postData(
+      token,
+      noteUrl,
+      req.body.source,
+      req.session?.correlationID
+    );
+    if(sourceResponse.code !== 'success') {
+      console.error("Error adding student note to merged pen:", sourceResponse);
+      return res.status(500).json({ error: 'Adding note failed' });
+    }    
+    const targetResponse = await postData(
+      token,
+      noteUrl,
+      req.body.target,
+      req.session?.correlationID
+    );
+    if(targetResponse.code !== 'success') {
+      console.error("Error adding student note to true pen:", targetResponse);
+      return res.status(500).json({ error: 'Adding note failed' });
+    }
+    //Update Grad Status for target student
+    const gradStatusResponse = await putData(
+      token,
+      gradStatusUrl,
+      null,
+      req.session?.correlationID
+    );
+    return res.status(200).json(gradStatusResponse);    
+  } catch (e) {
+    console.error("Error completing student merge process:", e);
+    if (e?.data?.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+
 async function getStudentCourseHistory(req, res) {
   const token = auth.getBackendToken(req);
 
@@ -801,6 +847,7 @@ module.exports = {
   deleteStudentCoursesByStudentID,
   transferStudentCoursesByStudentID,
   mergeStudentCoursesByStudentID,
+  completeStudentMergeByStudentID,
   getStudentCourseHistory,
   // STUDENT OPTIONAL AND CAREER PROGRAMS
   getStudentCareerPrograms,
