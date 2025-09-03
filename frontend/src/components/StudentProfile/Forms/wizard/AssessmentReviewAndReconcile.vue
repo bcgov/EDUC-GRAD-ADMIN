@@ -70,7 +70,7 @@ export default {
     targetStudentAssessments: {
       immediate: true,
       async handler(newVal) {
-        if (this.type === "examinableassessmentmerge" || this.type === "nonexaminableassessmentmerge") {
+        if (this.type === "assessmentMerge") {
           this.reconcileForMerge();
         }
         //No reload on transfer flow
@@ -85,6 +85,8 @@ export default {
     },
     reconcileForMerge() {
       this.resetAssessmentReconciliation();
+      console.log(this.sourceStudentAssessments)
+      console.log(this.targetStudentAssessments)
       if (this.sourceStudentAssessments.length > 0) {
         //Source not empty & target empty/not empty
         for (const sourceAssessment of this.sourceStudentAssessments) {
@@ -101,17 +103,16 @@ export default {
             }
           }
         }
-      } else {
-        //Source is empty and target is not empty
-        for (const targetAssessment of this.targetStudentAssessments) {
-          const isExaminableWithResult = targetAssessment?.assessmentExam !== null && targetAssessment.assessmentExam.examPercentage && targetAssessment.assessmentExam.examPercentage >= 0;
-          if (isExaminableWithResult) {
-            this.assessmentReconciliation.errors.push({ "source": null, "target": targetAssessment, "message": "Assessment has a proficiency score" });
-          } else {
-            this.assessmentReconciliation.info.push({ "source": null, "target": targetAssessment, "message": "" });
-          }
+      }
+      //check Source is empty and target is not empty      
+      for (const targetAssessment of this.targetStudentAssessments) {
+        const matchedTarget = this.getMatchedAssessment(targetAssessment, this.sourceStudentAssessments);
+        console.log(matchedTarget)
+        if (!matchedTarget) {
+          this.assessmentReconciliation.info.push({ "source": null, "target": targetAssessment, "message": "" });
         }
       }
+
     },
 
     getMatchedAssessment(assessment, studentAssessments) {

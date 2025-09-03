@@ -82,12 +82,13 @@
             @click="saveNonExaminableStudentCourses"
             :disabled="validationStep || !(studentDataToMerge.nonExaminableCourses.info.length > 0 || studentDataToMerge.nonExaminableCourses.conflicts.length > 0)">Save
             Non-Examinable Courses</v-btn>
-          <v-btn v-if="step === 2" @click="saveAssessments" :disabled="validationStep" color="error" variant="flat"
-            class="text-none">Save
+          <v-btn v-if="step === 2" @click="saveAssessments"
+            :disabled="validationStep || !(studentDataToMerge.assessments.info.length > 0 || studentDataToMerge.assessments.conflicts.length > 0)"
+            color="error" variant="flat" class="text-none">Save
             Assessments</v-btn>
-          <v-btn v-if="step === 2" @click="addAssessments" :disabled="validationStep" color="error" variant="flat"
+          <!-- <v-btn v-if="step === 2" @click="addAssessments" :disabled="validationStep" color="error" variant="flat"
             class="text-none">ADD
-            Assessments</v-btn>
+            Assessments</v-btn> -->
           <v-btn v-if="step === 3" @click="step++" color="error" variant="flat" class="text-none">Save</v-btn>
           <v-btn v-if="step < 4" color="bcGovBlue" variant="flat" class="text-none" @click="step++">Next</v-btn>
           <v-btn v-if="step === 4" @click="step++" color="error" variant="flat" class="text-none">Complete
@@ -298,43 +299,43 @@ export default {
       }
     },
 
-    async addAssessments() {
+    // async addAssessments() {
 
-      const newAssessment = {
-        info: [
-          {
-            source: {
-              assessmentStudentID: "fd2927c8-9e1f-e2ca-1f23-95f8c569f779",
-              assessmentID: "1ab44942-0631-7fef-74ec-f4e8da59382a",
-              schoolAtWriteSchoolID: null,
-              assessmentCenterSchoolID: null,
-              schoolOfRecordSchoolID: "a873442f-6939-852c-003b-e96ff476cd9d",
-              localID: null,
-              gradeAtRegistration: null,
-              proficiencyScore: 3,
-              assessmentFormID: null,
-              adaptedAssessmentCode: null,
-              irtScore: "0",
-              provincialSpecialCaseCode: null,
-              numberOfAttempts: null,
-              localAssessmentID: "ASM00000Dsgl0r",
-              markingSession: null,
-              courseStatusCode: null,
-              downloadDate: null,
-              wroteFlag: false,
-              sessionID: "1ab44942-0631-7fef-74ec-f4e8da59382a",
-              assessmentTypeCode: "LTE10",
-              courseMonth: "01",
-              courseYear: "2022"
-            }
-          }
-        ],
-        conflicts: []
-      };
+    //   const newAssessment = {
+    //     info: [
+    //       {
+    //         source: {
+    //           assessmentStudentID: "fd2927c8-9e1f-e2ca-1f23-95f8c569f779",
+    //           assessmentID: "1ab44942-0631-7fef-74ec-f4e8da59382a",
+    //           schoolAtWriteSchoolID: null,
+    //           assessmentCenterSchoolID: null,
+    //           schoolOfRecordSchoolID: "a873442f-6939-852c-003b-e96ff476cd9d",
+    //           localID: null,
+    //           gradeAtRegistration: null,
+    //           proficiencyScore: 3,
+    //           assessmentFormID: null,
+    //           adaptedAssessmentCode: null,
+    //           irtScore: "0",
+    //           provincialSpecialCaseCode: null,
+    //           numberOfAttempts: null,
+    //           localAssessmentID: "ASM00000Dsgl0r",
+    //           markingSession: null,
+    //           courseStatusCode: null,
+    //           downloadDate: null,
+    //           wroteFlag: false,
+    //           sessionID: "1ab44942-0631-7fef-74ec-f4e8da59382a",
+    //           assessmentTypeCode: "LTE10",
+    //           courseMonth: "01",
+    //           courseYear: "2022"
+    //         }
+    //       }
+    //     ],
+    //     conflicts: []
+    //   };
 
-      const response = await this.addToSourceStudentAssessments(newAssessment);
+    //   const response = await this.addToTargetStudentAssessments(newAssessment);
 
-    },
+    // },
     async addToTargetStudentAssessments(studentAssessments) {
       this.mergeStudentAssessmentsResultsMessages = [];
       let localStudentAssessments = { ...studentAssessments };
