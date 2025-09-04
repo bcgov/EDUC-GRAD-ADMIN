@@ -350,7 +350,6 @@ export default {
                     const assessmentChoice = choices.find(ac => ac.assessmentChoiceID === studentChoiceRecord.assessmentChoiceID)
                     if (assessmentChoice && assessmentChoice.chosenQuestionNumber) {
                       chosenQuestion = itemQuestions.find(q => q.questionNumber === assessmentChoice.chosenQuestionNumber)
-                      console.log(`Found student choice record for item ${itemNumber}, chosen question: ${assessmentChoice.chosenQuestionNumber}`)
                     }
                   }
 
@@ -364,9 +363,6 @@ export default {
                         chosenQuestion = question
                       }
                     })
-                    if (chosenQuestion) {
-                      console.log(`Chose question ${chosenQuestion.questionNumber} for item ${itemNumber} based on highest score: ${maxScore}`)
-                    }
                   }
 
                   // Strategy 3: If still no chosen question, pick the first answered question
@@ -378,15 +374,11 @@ export default {
                       )
                     })
                     chosenQuestion = answeredQuestions[0]
-                    if (chosenQuestion) {
-                      console.log(`Chose first answered question ${chosenQuestion.questionNumber} for item ${itemNumber}`)
-                    }
                   }
 
                   // Strategy 4: If still no chosen question, pick the first question in the item
                   if (!chosenQuestion) {
                     chosenQuestion = itemQuestions[0]
-                    console.log(`Chose first question ${chosenQuestion.questionNumber} for item ${itemNumber} as fallback`)
                   }
 
                   // For choice scenarios, we need to add TWO rows:
@@ -408,9 +400,6 @@ export default {
                     answer.assessmentQuestionID === chosenQuestion.assessmentQuestionID
                   )
 
-                  console.log(`Adding choice item ${itemNumber}, question ${chosenQuestion.questionNumber}`)
-                  console.log(`Adding mark item ${itemNumber}, question ${chosenQuestion.questionNumber}, answer:`, studentAnswer)
-
                   targetArray.push({
                     uniqueKey: `question-${itemNumber}-${chosenQuestion.questionNumber}`,
                     itemNumber: itemNumber,
@@ -429,8 +418,6 @@ export default {
                   const studentAnswer = studentAnswers.find(answer =>
                     answer.assessmentQuestionID === question.assessmentQuestionID
                   )
-
-                  console.log(`Adding single item ${itemNumber}, question ${question.questionNumber}, answer:`, studentAnswer)
 
                   targetArray.push({
                     uniqueKey: `question-${itemNumber}-${question.questionNumber}`,
@@ -475,9 +462,6 @@ export default {
             }
           })
         })
-
-        console.log('Final written items:', writtenItems)
-        console.log('Final oral items:', oralItems)
 
         return {
           written: writtenItems.sort((a, b) => {

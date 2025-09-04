@@ -321,7 +321,6 @@ export default {
         StudentAssessmentService.getAssessmentStudentDetails(assessmentStudent.assessmentStudentID, assessmentStudent.assessmentID)
           .then((response) => {
             this.studentDetail = response.data;
-            console.log(response.data);
             resolve(response.data);
           })
           .catch((error) => {
