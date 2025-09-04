@@ -24,6 +24,9 @@ export default {
           },
         })
   },
+    getAssessmentStudentDetails(assessmentStudentId, assessmentID) {
+        return ApiService.apiAxios.get(`/api/student-assessment/student/${assessmentStudentId}/assessment/${assessmentID}`)
+    },
   getAssessmentTypeCodes() {
     return ApiService.apiAxios.get('/api/student-assessment/assessment-type-codes')
   },
