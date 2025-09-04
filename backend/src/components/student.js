@@ -215,7 +215,7 @@ async function mergeStudentAssessmentsByStudentID(req, res) {
           });
 
         } catch (err) {
-          console.error(`Failed to delete assessment ${assessmentID}:`, err);
+          console.error(`Failed to delete assessment:`, err);
           createResponse.errors.push({
             type: "delete",
             assessmentID: assessmentID,

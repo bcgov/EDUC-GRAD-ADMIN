@@ -728,8 +728,6 @@ export const useStudentStore = defineStore("student", {
       studentAssessments
     ) {
       try {
-console.log(studentAssessments)
-
         return await StudentService.mergeStudentAssessments(
           sourceStudentID,
           targetStudentID,
