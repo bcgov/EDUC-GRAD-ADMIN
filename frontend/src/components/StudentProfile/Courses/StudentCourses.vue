@@ -12,21 +12,23 @@
         <v-alert v-if="!courses" class="container">
           This student does not have any courses.
         </v-alert>
-        <div class="col-12 px-3" v-if="allowUpdateStudentCourseExam">
+        <div class="col-12 px-3">
           <div class="float-left grad-actions">
-            <v-menu offset-y>
+            <v-menu offset-y v-if="studentStatus !== 'MER' && enableCRUD()">
               <template v-slot:activator="{ props }">
                 <v-btn text v-bind="props" :disabled="selected.length === 0" id="actions" right
                   class="float-right admin-actions text-none" prepend-icon="mdi-select-multiple"
                   append-icon="mdi-menu-down" color="error">Bulk Actions</v-btn>
               </template>
               <v-list>
-                <v-list-item v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
-                  @click="showCourseDelete">
+                <v-list-item
+                  v-if="hasPermissions('STUDENT', 'updateCourseExam') && hasPermissions('STUDENT', 'courseUpdate')"
+                  :disabled="selected.length === 0" @click="showCourseDelete">
                   <v-icon color="error">mdi-delete-forever</v-icon> Delete Selected Courses
                 </v-list-item>
-                <v-list-item v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
-                  @click="showCourseTransfer">
+                <v-list-item
+                  v-if="hasPermissions('STUDENT', 'studentTransfer') && hasPermissions('STUDENT', 'courseUpdate')"
+                  :disabled="selected.length === 0" @click="showCourseTransfer">
                   <v-icon color="error">mdi-transfer</v-icon> Transfer Selected Courses
                 </v-list-item>
               </v-list>
@@ -43,15 +45,8 @@
           <v-spacer />
           <StudentCoursesCreateForm type="all" />
         </v-row>
-        <v-data-table
-            v-if="courses"
-            v-model="selected"
-            :items="courses"
-            :headers="fields"
-            :item-value="(item) => item"
-            :items-per-page="'-1'"
-            title="studentCourse"
-            :show-select="allowUpdateStudentCourseExam">
+        <v-data-table v-if="courses" v-model="selected" :items="courses" :headers="fields" :item-value="(item) => item"
+          :items-per-page="'-1'" title="studentCourse" :show-select="studentStatus !== 'MER' && enableCRUD()">
           <template v-slot:item.data-table-expand="{
             item,
             internalItem,
@@ -128,13 +123,13 @@
             </tr>
           </template>
           <template v-slot:item.edit="{ item }">
-            <div v-if="!item.courseExam || allowUpdateStudentCourseExam">
+            <div v-if="!item.courseExam || hasPermissions('STUDENT', 'updateCourseExam')">
               <StudentCoursesUpdateForm :course="item">
               </StudentCoursesUpdateForm>
             </div>
           </template>
           <template v-slot:item.delete="{ item }">
-            <div v-if="!item.courseExam || allowUpdateStudentCourseExam">
+            <div v-if="!item.courseExam || hasPermissions('STUDENT', 'updateCourseExam')">
               <StudentCoursesDeleteForm :selectedCoursesToDelete="[item]">
               </StudentCoursesDeleteForm>
             </div>
@@ -164,10 +159,13 @@ export default {
     StudentCoursesTransferForm: StudentCoursesTransferForm,
     CourseDetails: CourseDetails,
   },
+  setup() {
+    const studentStore = useStudentStore();
+    const appStore = useAppStore();
+    const accessStore = useAccessStore();
+    return { studentStore, appStore, accessStore };
+  },
   computed: {
-    ...mapState(useAccessStore, {
-      allowUpdateStudentCourseExam: "allowUpdateStudentCourseExam",
-    }),
     ...mapState(useStudentStore, {
       courses: "studentCourses",
       gradStatusCourses: "gradStatusCourses",
@@ -177,6 +175,9 @@ export default {
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useAppStore, { environment: "appEnvironment" }),
+    studentStatus() {
+      return this.studentStore.student.profile.studentStatus;
+    },
   },
   data: function () {
     return {

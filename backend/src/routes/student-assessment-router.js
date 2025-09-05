@@ -20,6 +20,7 @@ const {
   getAllAssessmentSessions,
   getProvincialSpecialCaseCodes,
   getStudentAssessmentHistoryPaginated,
+  getStudentAssessmentByIdAndAssessmentId
 } = require("../components/assessments/student-assessment");
 
 const isValidUiTokenWithStaffEditRoles = auth.isValidUiTokenWithRoles(
@@ -76,6 +77,13 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getStudentAssessmentById
+);
+
+router.get(
+  "/student/:studentAssessmentId/assessment/:assessmentId",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getStudentAssessmentByIdAndAssessmentId
 );
 
 router.put(

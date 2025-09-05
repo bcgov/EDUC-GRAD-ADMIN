@@ -135,7 +135,6 @@ import NonExaminableCourseMerge from "./support/course/NonExaminableCourseMerge.
     reconcileForTransfer() {
       this.resetCourseReconciliation();
       if (this.sourceStudentCourses?.length > 0) {
-        if (this.targetStudentCourses && this.targetStudentCourses?.length > 0) {
           for (const sourceCourse of this.sourceStudentCourses) {
             if (sourceCourse?.courseExam !== null) {
               this.courseReconciliation.errors.push({ "source": sourceCourse, "target": null, "message": "Course is examinable" });
@@ -148,8 +147,7 @@ import NonExaminableCourseMerge from "./support/course/NonExaminableCourseMerge.
               }
             }
           }
-        }
-      } else if (this.sourceStudentCourses.length === 0 && this.targetStudentCourses.length > 0) {
+      } else {
         for (const course of this.targetStudentCourses) {
           if (course.courseExam !== null && course.courseExam.examPercentage !== null) {
             this.courseReconciliation.errors.push({ "source": null, "target": course, "message": "" });

@@ -9,7 +9,7 @@
   </div>
   <div class="col-12 px-3 py-3">
     <BlendingRules />
-    <div class="col-12 px-3 py-3 float-right grad-actions" v-if="allowUpdateStudentCourseExam">
+    <div class="col-12 px-3 py-3 float-right grad-actions" v-if="hasPermissions('STUDENT', 'updateCourseExam')">
       <v-row no-gutters justify="end">
         <StudentCoursesCreateForm type="examinable" />
       </v-row>
@@ -65,11 +65,11 @@
       <template v-slot:item.courseSession="{ item }">
         {{ $filters.formatYYYYMMStringDate(item.courseSession) }}
       </template>
-      <template v-slot:item.edit="{ item }" v-if="allowUpdateStudentCourseExam">
+      <template v-slot:item.edit="{ item }" v-if="hasPermissions('STUDENT', 'updateCourseExam')">
         <StudentCoursesExamUpdateForm :course="item">
         </StudentCoursesExamUpdateForm>
       </template>
-      <template v-slot:item.delete="{ item }" v-if="allowUpdateStudentCourseExam">
+      <template v-slot:item.delete="{ item }" v-if="hasPermissions('STUDENT', 'updateCourseExam')">
         <StudentCoursesDeleteForm :selectedCoursesToDelete="[item]">
         </StudentCoursesDeleteForm>
       </template>
@@ -93,13 +93,11 @@ export default {
   name: "StudentExams",
   props: {},
   computed: {
-    ...mapState(useAccessStore, {
-      allowUpdateStudentCourseExam: "allowUpdateStudentCourseExam",
-    }),
     ...mapState(useStudentStore, {
       studentExamCourses: "studentExamCourses",
     }),
     ...mapState(useAppStore, { environment: "appEnvironment" }),
+    ...mapState(useAccessStore, ["hasPermissions"])
   },
   components: {
     BlendingRules: BlendingRules,
@@ -194,7 +192,7 @@ export default {
       "enableCRUD",
     ]),
     courseExamHeaders() {
-      if (this.allowUpdateStudentCourseExam) {
+      if (this.hasPermissions('STUDENT', 'updateCourseExam')) {
         return this.studentExamsHeaders.concat(this.studentExamsActionHeaders);
       }
       return this.studentExamsHeaders;
