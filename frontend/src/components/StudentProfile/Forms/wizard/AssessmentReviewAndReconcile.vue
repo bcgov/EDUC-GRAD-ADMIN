@@ -1,13 +1,18 @@
 <template>
-
   <v-row no-gutters class="mb-4">
     <v-col cols="12" v-if="type === 'assessmentMerge'">
-      <AssessmentMerge :sourceStudentData="sourceStudentData" :targetStudentData="targetStudentData"
-        :assessmentReconciliation="assessmentReconciliation" />
+      <AssessmentMerge
+        :sourceStudentData="sourceStudentData"
+        :targetStudentData="targetStudentData"
+        :assessmentReconciliation="assessmentReconciliation"
+      />
     </v-col>
     <v-col cols="12" v-if="type === 'assessmentTransfer'">
-      <AssessmentTransfer :sourceStudentData="sourceStudentData" :targetStudentData="targetStudentData"
-        :assessmentReconciliation="assessmentReconciliation" />
+      <AssessmentTransfer
+        :sourceStudentData="sourceStudentData"
+        :targetStudentData="targetStudentData"
+        :assessmentReconciliation="assessmentReconciliation"
+      />
     </v-col>
   </v-row>
 </template>
@@ -21,49 +26,46 @@ export default {
   name: "AssessmentReviewAndReconcile",
   components: {
     AssessmentMerge,
-    AssessmentTransfer
+    AssessmentTransfer,
   },
   setup() {
     return { v$: useVuelidate() };
   },
-  computed: {
-  },
+  computed: {},
   props: {
     sourceStudentData: {
       type: Object,
-      required: true
+      required: true,
     },
     targetStudentData: {
       type: Object,
-      required: true
+      required: true,
     },
     sourceStudentAssessments: {
       type: Array,
-      required: true
+      required: true,
     },
     targetStudentAssessments: {
       type: Array,
-      required: true
+      required: true,
     },
     type: {
       type: String,
-      default: '', // 'transfer' or 'merge'
-      required: true
-    }
+      default: "", // 'transfer' or 'merge'
+      required: true,
+    },
   },
   data() {
     return {
       assessmentReconciliation: {
         conflicts: [], //matched but different details and cannot be transferred
-        info: [], // not matched and can be transferred      
+        info: [], // not matched and can be transferred
         errors: [], //rule check if cannot be transferred
-      }
+      },
     };
   },
-  mounted() {
-  },
-  validations() {
-  },
+  mounted() {},
+  validations() {},
   watch: {
     type: {
       immediate: true,
@@ -74,7 +76,7 @@ export default {
         if (newVal === "assessmentTransfer") {
           this.reconcileForTransfer();
         }
-      }
+      },
     },
     targetStudentAssessments: {
       immediate: true,
@@ -85,7 +87,7 @@ export default {
         if (this.type === "assessmentTransfer") {
           this.reconcileForTransfer();
         }
-      }
+      },
     },
   },
   methods: {
@@ -99,73 +101,98 @@ export default {
       if (this.sourceStudentAssessments.length > 0) {
         //Source not empty & target empty/not empty
         for (const sourceAssessment of this.sourceStudentAssessments) {
-          const matchedTarget = this.getMatchedAssessment(sourceAssessment, this.targetStudentAssessments);
+          const matchedTarget = this.getMatchedAssessment(
+            sourceAssessment,
+            this.targetStudentAssessments
+          );
 
           const truePENHasProficiencyScore = !!matchedTarget?.proficiencyScore;
           if (truePENHasProficiencyScore) {
-            this.assessmentReconciliation.errors.push({ "source": sourceAssessment, "target": matchedTarget, "message": "Assessment has a proficiency score" });
+            this.assessmentReconciliation.errors.push({
+              source: sourceAssessment,
+              target: matchedTarget,
+              message: "Assessment has a proficiency score",
+            });
           } else {
             if (matchedTarget) {
-              this.assessmentReconciliation.conflicts.push({ "source": sourceAssessment, "target": matchedTarget, "message": "Assessment for this session already exists" });
+              this.assessmentReconciliation.conflicts.push({
+                source: sourceAssessment,
+                target: matchedTarget,
+                message: "Assessment for this session already exists",
+              });
             } else {
-              this.assessmentReconciliation.info.push({ "source": sourceAssessment, "target": matchedTarget, "message": "" });
+              this.assessmentReconciliation.info.push({
+                source: sourceAssessment,
+                target: matchedTarget,
+                message: "",
+              });
             }
           }
         }
       }
-      //check Source is empty and target is not empty      
+      //check Source is empty and target is not empty
       for (const targetAssessment of this.targetStudentAssessments) {
-        const matchedTarget = this.getMatchedAssessment(targetAssessment, this.sourceStudentAssessments);
+        const matchedTarget = this.getMatchedAssessment(
+          targetAssessment,
+          this.sourceStudentAssessments
+        );
         if (!matchedTarget) {
-          this.assessmentReconciliation.info.push({ "source": null, "target": targetAssessment, "message": "" });
+          this.assessmentReconciliation.info.push({
+            source: null,
+            target: targetAssessment,
+            message: "",
+          });
         }
       }
     },
     reconcileForTransfer() {
-      console.log("TRANSFER RECONCILE")
       this.resetAssessmentReconciliation();
       if (this.sourceStudentAssessments.length > 0) {
         //Source not empty & target empty/not empty
         for (const sourceAssessment of this.sourceStudentAssessments) {
-          console.log("SOURCE")
-          console.log(sourceAssessment)
-          console.log("TARGET")
-          console.log(this.targetStudentAssessments)
-          const matchedTarget = this.getMatchedAssessment(sourceAssessment, this.targetStudentAssessments);
-          console.log(matchedTarget)
-
+          const matchedTarget = this.getMatchedAssessment(
+            sourceAssessment,
+            this.targetStudentAssessments
+          );
           const truePENHasProficiencyScore = !!matchedTarget?.proficiencyScore;
           if (truePENHasProficiencyScore) {
-            this.assessmentReconciliation.errors.push({ "source": sourceAssessment, "target": matchedTarget, "message": "Assessment has a proficiency score" });
+            this.assessmentReconciliation.errors.push({
+              source: sourceAssessment,
+              target: matchedTarget,
+              message: "Assessment has a proficiency score",
+            });
           } else {
             if (matchedTarget) {
-              console.log("CONFLICT")
-              this.assessmentReconciliation.conflicts.push({ "source": sourceAssessment, "target": matchedTarget, "message": "Assessment for this session already exists" });
+              this.assessmentReconciliation.conflicts.push({
+                source: sourceAssessment,
+                target: matchedTarget,
+                message: "Assessment for this session already exists",
+              });
             } else {
-              console.log("INFO")
-              this.assessmentReconciliation.info.push({ "source": sourceAssessment, "target": matchedTarget, "message": "" });
+              this.assessmentReconciliation.info.push({
+                source: sourceAssessment,
+                target: null,
+                message: "",
+              });
             }
           }
-        }
-      }
-      //check Source is empty and target is not empty      
-      for (const targetAssessment of this.targetStudentAssessments) {
-        const matchedTarget = this.getMatchedAssessment(targetAssessment, this.sourceStudentAssessments);
-        if (!matchedTarget) {
-          this.assessmentReconciliation.info.push({ "source": null, "target": targetAssessment, "message": "" });
         }
       }
     },
     getMatchedAssessment(assessment, studentAssessments) {
       if (assessment && studentAssessments && studentAssessments.length > 0) {
-        return studentAssessments.find(item => this.validateAssessment(assessment, item));
+        return studentAssessments.find((item) =>
+          this.validateAssessment(assessment, item)
+        );
       }
       return null;
     },
     validateAssessment(sourceAssessment, targetAssessment) {
-      return sourceAssessment.assessmentID === targetAssessment.assessmentID &&
-        sourceAssessment.sessionID === targetAssessment.sessionID;
-    }
+      return (
+        sourceAssessment.assessmentID === targetAssessment.assessmentID &&
+        sourceAssessment.sessionID === targetAssessment.sessionID
+      );
+    },
   },
 };
 </script>

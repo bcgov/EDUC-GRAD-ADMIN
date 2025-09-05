@@ -42,7 +42,6 @@
               </v-stepper-window-item>
               <v-stepper-window-item value="2">
                 <div style="max-height: 60vh; overflow-y: auto; padding-right: 0.5rem;">
-                  ASSES {{ targetStudentAssessments }} MENTS
                   <AssessmentReviewAndReconcile :sourceStudentData="sourceStudentData"
                     :targetStudentData="targetStudentData" :sourceStudentAssessments="selectedAssessmentsToTransfer"
                     :targetStudentAssessments="targetStudentAssessments" type="assessmentTransfer" />
