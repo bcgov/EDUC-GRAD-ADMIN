@@ -14,7 +14,7 @@
           <v-list>
             <v-list-item v-if="hasPermissions('STUDENT', 'studentAssessmentUpdate')" :disabled="selected.length === 0"
                          @click="showAssessmentDelete">
-              <v-icon color="error">mdi-delete-forever</v-icon> Delete Selected Courses
+              <v-icon color="error">mdi-delete-forever</v-icon> Delete Selected Assessments
             </v-list-item>
             <v-list-item v-if="hasPermissions('STUDENT', 'studentAssessmentUpdate')" :disabled="selected.length === 0"
                          @click="showAssessmentTransfer">
@@ -33,6 +33,10 @@
           :is-loading-sessions="isLoadingSessions"
           @saved="loadStudentAssessments"
       />
+      <StudentAssessmentsDeleteForm @close="clearSelected"
+                                    ref="assessmentDeleteFormRef"
+                                    :selected-assessments-to-delete="selected">
+      </StudentAssessmentsDeleteForm>
     </v-row>
     <v-data-table
         v-if="processedAssessments"
@@ -216,7 +220,6 @@
               density="default"
               text="Delete"
               :loading="isDeleting"
-              :disabled="!canDeleteStudentAssessment"
               @click="confirmDelete(true)"/>
         </v-card-actions>
       </v-card>
@@ -233,9 +236,10 @@ import {toRaw} from "vue";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
 import EditStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/EditStudentAssessment.vue";
 import AddStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/AddStudentAssessment.vue";
+import StudentAssessmentsDeleteForm from "@/components/StudentProfile/StudentAssessment/Forms/StudentAssessmentsDeleteForm.vue";
 export default {
   name: "StudentAssessments",
-  components: { AddStudentAssessment, EditStudentAssessment},
+  components: {StudentAssessmentsDeleteForm, AddStudentAssessment, EditStudentAssessment},
   setup() {
     const studentStore = useStudentStore();
     const appStore = useAppStore();
@@ -471,10 +475,11 @@ export default {
       return specialCase ? specialCase.label : '';
     },
     showAssessmentTransfer(){
-      console.log("YOU CLICKED A BUTTON! Add transfer section here")
+      console.log("YOU CLICKED A BUTTON! Add transfer section here");
     },
     showAssessmentDelete(){
-      console.log("YOU Want to delete some assessments!")
+      console.log("YOU Want to delete some assessments!");
+      this.$refs.assessmentDeleteFormRef.openDeleteStudentAssessmentDialog();
     }
   }
 };

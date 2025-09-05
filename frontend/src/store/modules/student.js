@@ -653,6 +653,10 @@ export const useStudentStore = defineStore("student", {
     clearCoursesToCreate(course) {
       this.create.courses = [];
     },
+    // delete student assessments
+    async deleteStudentAssessments(assessments) {
+      console.info("Deleting student assessments")
+    },
     // delete student courses
     async deleteStudentCourses(courses) {
       try {
