@@ -32,6 +32,9 @@
       <StudentAssessmentsDeleteForm @close="clearSelected" ref="assessmentDeleteFormRef"
         :selected-assessments-to-delete="selected">
       </StudentAssessmentsDeleteForm>
+      <StudentAssessmentsTransferForm @close="clearSelected" :selectedAssessmentsToTransfer="selected"
+        ref="assessmentTransferFormRef">
+      </StudentAssessmentsTransferForm>
     </v-row>
     <v-data-table v-if="processedAssessments" :items="processedAssessments" :headers="fields"
       :loading="isLoadingAssessments" showFilter="true" hide-default-footer :show-select="allowUpdateStudentAssessments"
@@ -144,11 +147,12 @@ import StudentAssessmentService from "@/services/StudentAssessmentService";
 import EditStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/EditStudentAssessment.vue";
 import AddStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/AddStudentAssessment.vue";
 import StudentAssessmentsDeleteForm from "@/components/StudentProfile/StudentAssessment/Forms/StudentAssessmentsDeleteForm.vue";
+import StudentAssessmentsTransferForm from "@/components/StudentProfile/StudentAssessment/Forms/StudentAssessmentsTransferForm.vue";
 import AssessmentDetailsDialog from "@/components/StudentProfile/StudentAssessment/AssessmentDetailsDialog.vue";
 
 export default {
   name: "StudentAssessments",
-  components: { AddStudentAssessment, EditStudentAssessment, AssessmentDetailsDialog, StudentAssessmentsDeleteForm, AddStudentAssessment, EditStudentAssessment },
+  components: { StudentAssessmentsTransferForm, AddStudentAssessment, EditStudentAssessment, AssessmentDetailsDialog, StudentAssessmentsDeleteForm, AddStudentAssessment, EditStudentAssessment },
   setup() {
     const studentStore = useStudentStore();
     const appStore = useAppStore();
@@ -407,7 +411,7 @@ export default {
       return specialCase ? specialCase.label : '';
     },
     showAssessmentTransfer() {
-      this.$refs.courseTransferFormRef.openTransferStudentCoursesDialog();
+      this.$refs.courseTransferFormRef.openTransferStudentAssessmentsDialog();
     },
     showAssessmentDelete() {
       console.log("YOU Want to delete some assessments!");
