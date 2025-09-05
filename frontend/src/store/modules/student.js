@@ -78,6 +78,7 @@ export const useStudentStore = defineStore("student", {
     },
     transfer: {
       courses: [],
+      assessments: []
     },
     merge: {
       examinableCourses: {
@@ -698,12 +699,12 @@ export const useStudentStore = defineStore("student", {
     clearAssessmentsToTransfer() {
       this.transfer.assessments = [];
     },
-    removeAssessmentFromTransfer(assessmentID, assessmentSession) {
-      this.transfer.assessment = this.transfer.assessment.filter(
+    removeAssessmentFromTransfer(assessmentID, sessionID) {
+      this.transfer.assessments = this.transfer.assessments.filter(
         (assessment) =>
           !(
             assessment.assessmentID === assessmentID &&
-            assessment.assessmentSession === assessmentSession
+            assessment.sessionID === sessionID
           )
       );
     },

@@ -6,8 +6,6 @@
         :assessmentReconciliation="assessmentReconciliation" />
     </v-col>
     <v-col cols="12" v-if="type === 'assessmentTransfer'">
-
-      TRANSFER
       <AssessmentTransfer :sourceStudentData="sourceStudentData" :targetStudentData="targetStudentData"
         :assessmentReconciliation="assessmentReconciliation" />
     </v-col>
@@ -84,7 +82,9 @@ export default {
         if (this.type === "assessmentMerge") {
           this.reconcileForMerge();
         }
-        //No reload on transfer flow
+        if (this.type === "assessmentTransfer") {
+          this.reconcileForTransfer();
+        }
       }
     },
   },
@@ -122,19 +122,27 @@ export default {
       }
     },
     reconcileForTransfer() {
+      console.log("TRANSFER RECONCILE")
       this.resetAssessmentReconciliation();
       if (this.sourceStudentAssessments.length > 0) {
         //Source not empty & target empty/not empty
         for (const sourceAssessment of this.sourceStudentAssessments) {
+          console.log("SOURCE")
+          console.log(sourceAssessment)
+          console.log("TARGET")
+          console.log(this.targetStudentAssessments)
           const matchedTarget = this.getMatchedAssessment(sourceAssessment, this.targetStudentAssessments);
+          console.log(matchedTarget)
 
           const truePENHasProficiencyScore = !!matchedTarget?.proficiencyScore;
           if (truePENHasProficiencyScore) {
             this.assessmentReconciliation.errors.push({ "source": sourceAssessment, "target": matchedTarget, "message": "Assessment has a proficiency score" });
           } else {
             if (matchedTarget) {
+              console.log("CONFLICT")
               this.assessmentReconciliation.conflicts.push({ "source": sourceAssessment, "target": matchedTarget, "message": "Assessment for this session already exists" });
             } else {
+              console.log("INFO")
               this.assessmentReconciliation.info.push({ "source": sourceAssessment, "target": matchedTarget, "message": "" });
             }
           }
