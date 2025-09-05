@@ -174,11 +174,11 @@ export default {
     },
 
     getMarkingSession() {
-      const markingSession = this.studentAssessmentData.markingSession
+      const markingSession = this.studentAssessmentData.sessionDate
       if (markingSession) {
         try {
           const date = new Date(markingSession)
-          return date.toLocaleDateString()
+          return date.toLocaleString(undefined, { month: 'long', year: 'numeric' })
         } catch {
           return markingSession
         }
