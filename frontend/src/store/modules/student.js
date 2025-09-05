@@ -676,6 +676,37 @@ export const useStudentStore = defineStore("student", {
         throw error;
       }
     },
+ // Transfer student assessments
+    async transferStudentAssessments(sourceStudentID, targetStudentID, assessments) {
+      try {
+        const response = await StudentService.transferStudentAssesments(
+          sourceStudentID,
+          targetStudentID,
+          assessments
+        );
+        this.studentAssessments();
+        this.loadStudentGradStatus(sourceStudentID);
+        return response.data;
+      } catch (error) {
+        console.error("Error transferring student assessments: ", error);
+        return error;
+      }
+    },
+    addAssessmentsToTransfer(assessment) {
+      this.transfer.assessments.push(assessment);
+    },
+    clearAssessmentsToTransfer() {
+      this.transfer.assessments = [];
+    },
+    removeAssessmentFromTransfer(assessmentID, assessmentSession) {
+      this.transfer.assessment = this.transfer.assessment.filter(
+        (assessment) =>
+          !(
+            assessment.assessmentID === assessmentID &&
+            assessment.assessmentSession === assessmentSession
+          )
+      );
+    },
     // Transfer student courses
     async transferStudentCourses(sourceStudentID, targetStudentID, courses) {
       try {
@@ -724,6 +755,23 @@ export const useStudentStore = defineStore("student", {
       this.clearAssessmentsToMerge();
       this.clearGradStatusToMerge();
       this.clearNotesToMerge();
+    },
+    //Merge student assessments
+    async mergeStudentAssessments(
+      sourceStudentID,
+      targetStudentID,
+      studentAssessments
+    ) {
+      try {
+        return await StudentService.mergeStudentAssessments(
+          sourceStudentID,
+          targetStudentID,
+          studentAssessments
+        );
+      } catch (error) {
+        console.error("Error merging student assessments: ", error);
+        return error;
+      }
     },
     // Merge student courses
     async mergeStudentCourses(

@@ -37,6 +37,13 @@ export default {
   getStudentCourseHistory(studentID) {
     return ApiService.apiAxios.get(`/api/student/${studentID}/history/courses`);
   },
+  // STUDENT ASSESSMENTS
+  mergeStudentAssessments(sourceStudentID, targetStudentID, json) {
+    return ApiService.apiAxios.post(
+      `/api/student/${sourceStudentID}/assessments/merge/${targetStudentID}`,
+      json
+    );
+  },
   // OPTIONAL STUDENT GRADUATION STATUS
   getStudentCareerPrograms(studentID) {
     return ApiService.apiAxios.get(`/api/student/${studentID}/careerPrograms`);

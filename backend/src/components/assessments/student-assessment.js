@@ -173,7 +173,6 @@ async function postStudentAssessment(req, res){
 
     const allowRuleOverride = req.query.allowRuleOverride === 'true';
     const params = allowRuleOverride ? { params: { allowRuleOverride: true } } : {};
-
     const result = await utils.postCommonServiceData(
       `${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student`,
       payload,

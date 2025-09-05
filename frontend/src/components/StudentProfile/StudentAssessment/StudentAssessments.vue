@@ -13,10 +13,6 @@
           </template>
           <v-list>
             <v-list-item v-if="hasPermissions('STUDENT', 'studentAssessmentUpdate')" :disabled="selected.length === 0"
-              @click="showAssessmentDelete">
-              <v-icon color="error">mdi-delete-forever</v-icon> Delete Selected Assessments
-            </v-list-item>
-            <v-list-item v-if="hasPermissions('STUDENT', 'studentAssessmentUpdate')" :disabled="selected.length === 0"
               @click="showAssessmentTransfer">
               <v-icon color="error">mdi-transfer</v-icon> Transfer Selected Assessments
             </v-list-item>
@@ -29,13 +25,11 @@
       <AddStudentAssessment v-if="studentStatus !== 'MER'" :student-id="studentId"
         :assessment-sessions="assessmentSessions" :is-loading-sessions="isLoadingSessions"
         @saved="loadStudentAssessments" />
-      <StudentAssessmentsDeleteForm @close="clearSelected" ref="assessmentDeleteFormRef"
-        :selected-assessments-to-delete="selected">
-      </StudentAssessmentsDeleteForm>
       <StudentAssessmentsTransferForm @close="clearSelected" :selectedAssessmentsToTransfer="selected"
         ref="assessmentTransferFormRef">
       </StudentAssessmentsTransferForm>
     </v-row>
+
     <v-data-table v-if="processedAssessments" :items="processedAssessments" :headers="fields"
       :loading="isLoadingAssessments" showFilter="true" hide-default-footer :show-select="allowUpdateStudentAssessments"
       v-model="selected" :item-value="(item) => item">
@@ -55,6 +49,44 @@
         </td>
       </template>
       <template v-slot:item.assessmentName="{ item }">
+        <v-dialog max-width="500">
+          <template v-slot:activator="{ props: activatorProps }">
+            <v-btn v-bind="activatorProps" color="surface-variant"
+              :text="item.assessmentType?.label || item.assessmentTypeCode" variant="plain"
+              class="m-1 p-1 text-left v-btn-link">
+            </v-btn>
+          </template>
+          <template v-slot:default="{ isActive }">
+            <v-card :title="item.assessmentType?.label || item.assessmentTypeCode">
+              <v-card-text>
+                <div class="row py-1">
+                  <div class="col">
+                    <strong>Language:</strong>
+                  </div>
+                  <div class="col">
+                    {{ item.assessmentType?.language }}
+                  </div>
+                </div>
+                <div class="row py-1">
+                  <div class="col"><strong>Start Date:</strong></div>
+                  <div class="col">
+                    {{ $filters.formatSimpleDate(item.assessmentType?.effectiveDate) }}
+                  </div>
+                </div>
+                <div class="row py-1">
+                  <div class="col"><strong>End Date:</strong></div>
+                  <div class="col">
+                    {{ $filters.formatSimpleDate(item.assessmentType?.expiryDate) }}
+                  </div>
+                </div>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn text="Close" @click="isActive.value = false"></v-btn>
+              </v-card-actions>
+            </v-card>
+          </template>
+        </v-dialog>
         <v-btn color="primary" @click="openAssessmentDetails(item)"
           :text="item.assessmentType?.label || item.assessmentTypeCode" variant="text"
           class="text-left v-btn-link assessment-name-btn" :disabled="!isAssessmentSelectable(item)" />
@@ -127,7 +159,7 @@
             @click="showDeleteDialog = false" />
           <v-spacer></v-spacer>
           <v-btn color="error" variant="flat" class="text-none" density="default" text="Delete" :loading="isDeleting"
-            @click="confirmDelete(true)" />
+            :disabled="!canDeleteStudentAssessment" @click="confirmDelete(true)" />
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -146,13 +178,11 @@ import { toRaw } from "vue";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
 import EditStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/EditStudentAssessment.vue";
 import AddStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/AddStudentAssessment.vue";
-import StudentAssessmentsDeleteForm from "@/components/StudentProfile/StudentAssessment/Forms/StudentAssessmentsDeleteForm.vue";
-import StudentAssessmentsTransferForm from "@/components/StudentProfile/StudentAssessment/Forms/StudentAssessmentsTransferForm.vue";
 import AssessmentDetailsDialog from "@/components/StudentProfile/StudentAssessment/AssessmentDetailsDialog.vue";
-
+import StudentAssessmentsTransferForm from "@/components/StudentProfile/StudentAssessment/Forms/StudentAssessmentsTransferForm.vue";
 export default {
   name: "StudentAssessments",
-  components: { StudentAssessmentsTransferForm, AddStudentAssessment, EditStudentAssessment, AssessmentDetailsDialog, StudentAssessmentsDeleteForm, AddStudentAssessment, EditStudentAssessment },
+  components: { AddStudentAssessment, EditStudentAssessment, AssessmentDetailsDialog, StudentAssessmentsTransferForm },
   setup() {
     const studentStore = useStudentStore();
     const appStore = useAppStore();
@@ -172,10 +202,8 @@ export default {
       assessmentTypeCodesMap: "assessmentTypeCodesMap"
     }),
     ...mapState(useStudentStore, { studentAssessments: "studentAssessments" }),
-    ...mapState(useAccessStore, ["hasPermissions"]),
-    ...mapState(useAccessStore, {
-      allowUpdateStudentAssessments: "allowUpdateStudentAssessments"
-    }),
+    ...mapState(useAccessStore, ["hasPermissions", "allowUpdateStudentAssessments"]),
+
     processedAssessments() {
       if (!this.studentAssessments) return [];
       return this.studentAssessments.map(assessment => ({
@@ -264,8 +292,9 @@ export default {
           return studentAssessment?.provincialSpecialCaseCode === gradAllowedCode;
         }
       }
-    }
+    },
   },
+
   async mounted() {
     this.appStore.getProvincialSpecialCaseCodes(false);
     this.appStore.getAssessmentTypeCodes(false);
@@ -288,6 +317,9 @@ export default {
     };
   },
   methods: {
+    clearSelected() {
+      this.selected = []
+    },
     getStudentDetails(assessmentStudent) {
       return new Promise((resolve, reject) => {
         StudentAssessmentService.getAssessmentStudentDetails(assessmentStudent.assessmentStudentID, assessmentStudent.assessmentID)
@@ -411,11 +443,7 @@ export default {
       return specialCase ? specialCase.label : '';
     },
     showAssessmentTransfer() {
-      this.$refs.courseTransferFormRef.openTransferStudentAssessmentsDialog();
-    },
-    showAssessmentDelete() {
-      console.log("YOU Want to delete some assessments!");
-      this.$refs.assessmentDeleteFormRef.openDeleteStudentAssessmentDialog();
+      this.$refs.assessmentTransferFormRef.openTransferStudentAssessmentsDialog();
     },
     isAssessmentSelectable(item) {
       if (!item) return false;
@@ -428,26 +456,26 @@ export default {
       }
 
       return specialCase === 'NC';
-    }
-  },
-  async openAssessmentDetails(item) {
-    try {
-      await this.getStudentDetails(item);
 
-      this.selectedAssessmentForDetails = item;
-      this.showAssessmentDetails = true;
+    },
+    async openAssessmentDetails(item) {
+      try {
+        await this.getStudentDetails(item);
 
-    } catch (error) {
-      console.error('Failed to fetch assessment details:', error);
-      this.snackbarStore.showSnackbar(
-        "Failed to fetch assessment details",
-        "error",
-        5000
-      );
+        this.selectedAssessmentForDetails = item;
+        this.showAssessmentDetails = true;
+
+      } catch (error) {
+        console.error('Failed to fetch assessment details:', error);
+        this.snackbarStore.showSnackbar(
+          "Failed to fetch assessment details",
+          "error",
+          5000
+        );
+      }
     }
   }
-}
-
+};
 </script>
 
 <style scoped>
