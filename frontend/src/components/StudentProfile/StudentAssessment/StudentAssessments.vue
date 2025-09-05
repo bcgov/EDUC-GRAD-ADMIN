@@ -65,6 +65,9 @@
             </v-card>
           </template>
         </v-dialog>
+        <v-btn color="primary" @click="openAssessmentDetails(item)"
+          :text="item.assessmentType?.label || item.assessmentTypeCode" variant="text"
+          class="text-left v-btn-link assessment-name-btn" :disabled="!isAssessmentSelectable(item)" />
       </template>
       <template v-slot:expanded-row="{ columns, item }">
         <tr>
@@ -138,6 +141,9 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <AssessmentDetailsDialog v-model="showAssessmentDetails" :assessment-data="selectedAssessmentForDetails"
+      :student-detail="studentDetail" />
   </div>
 </template>
 <script>
@@ -150,9 +156,10 @@ import { toRaw } from "vue";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
 import EditStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/EditStudentAssessment.vue";
 import AddStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/AddStudentAssessment.vue";
+import AssessmentDetailsDialog from "@/components/StudentProfile/StudentAssessment/AssessmentDetailsDialog.vue";
 export default {
   name: "StudentAssessments",
-  components: { AddStudentAssessment, EditStudentAssessment },
+  components: { AddStudentAssessment, EditStudentAssessment, AssessmentDetailsDialog },
   setup() {
     const studentStore = useStudentStore();
     const appStore = useAppStore();
@@ -278,9 +285,31 @@ export default {
       isDeleting: false,
       isLoadingSessions: true,
       isLoadingAssessments: false,
+      studentDetail: null,
+      showAssessmentDetails: false,
+      selectedAssessmentForDetails: null,
     };
   },
   methods: {
+    getStudentDetails(assessmentStudent) {
+      return new Promise((resolve, reject) => {
+        StudentAssessmentService.getAssessmentStudentDetails(assessmentStudent.assessmentStudentID, assessmentStudent.assessmentID)
+          .then((response) => {
+            this.studentDetail = response.data;
+            resolve(response.data);
+          })
+          .catch((error) => {
+            if (error.response?.status) {
+              this.snackbarStore.showSnackbar(
+                "Failed to fetch assessment details",
+                "error",
+                5000
+              );
+            }
+            reject(error);
+          });
+      });
+    },
     remove(assessmentStudent) {
       this.studentToDelete = assessmentStudent;
       this.showDeleteDialog = true;
@@ -383,7 +412,44 @@ export default {
     getProvincialSpecialCaseDisplayName(code) {
       const specialCase = this.getStudentAssessmentProvincialSpecialCaseCodes.find(specialCaseCode => specialCaseCode.provincialSpecialCaseCode === code);
       return specialCase ? specialCase.label : '';
+    },
+    isAssessmentSelectable(item) {
+      if (!item) return false;
+
+      const proficiencyScore = parseInt(item.proficiencyScore);
+      const specialCase = item.provincialSpecialCaseCode;
+
+      if (!isNaN(proficiencyScore) && proficiencyScore >= 1 && proficiencyScore <= 4) {
+        return true;
+      }
+
+      return specialCase === 'NC';
+    },
+    async openAssessmentDetails(item) {
+      try {
+        await this.getStudentDetails(item);
+
+        this.selectedAssessmentForDetails = item;
+        this.showAssessmentDetails = true;
+
+      } catch (error) {
+        console.error('Failed to fetch assessment details:', error);
+        this.snackbarStore.showSnackbar(
+          "Failed to fetch assessment details",
+          "error",
+          5000
+        );
+      }
     }
   }
 };
 </script>
+
+<style scoped>
+.v-btn.v-btn-link.text-left.assessment-name-btn:disabled {
+  opacity: 0.6 !important;
+  text-decoration: none !important;
+  pointer-events: none !important;
+  color: black !important;
+}
+</style>
