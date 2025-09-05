@@ -10,10 +10,15 @@ const {
   fetchCourseDetails,
   addCourseDetails,
   sortCourses,
+  getUser,
+  logApiError,
 } = require("../components/utils");
 const config = require("../config/index");
+const { STUDENT_STATUS_CODE_MAP } = require('./constants/student-status-codes');
 const log = require("../components/logger");
 const auth = require("../components/auth");
+const {postStudentAssessment,
+  deleteStudentAssessmentByID }= require("../components/assessments/student-assessment");
 const { add } = require("lodash");
 
 async function getStudentCourseByStudentID(req, res) {
@@ -167,6 +172,107 @@ async function transferStudentCoursesByStudentID(req, res) {
   }
 }
 
+async function mergeStudentAssessmentsByStudentID(req, res) {
+  try {
+    const token = auth.getBackendToken(req);
+    let localStudentAssessments = { ...req.body };
+
+    // Prepare data
+    let tobeDeleted = localStudentAssessments.conflicts.length > 0
+      ? localStudentAssessments.conflicts
+          .map(item => item.target?.assessmentStudentID)
+          .filter(assessmentID => assessmentID !== undefined)
+      : [];
+
+    let tobeAdded = [
+      ...localStudentAssessments.info.map(item => item.source),
+      ...localStudentAssessments.conflicts.map(item => item.source)
+    ];
+
+    const createResponse = {
+      added: [],
+      deleted: [],
+      errors: []
+    };
+
+    // Delete assessments
+    if (tobeDeleted && tobeDeleted.length > 0) {
+      for (const assessmentID of tobeDeleted) {
+        try {
+          const clonedReq = {
+            ...req,
+            query:{
+              ...req.query,
+              allowRuleOverride: 'true'
+            },
+            params: { studentAssessmentId: assessmentID },
+            session: req.session
+          };
+          
+          // Assuming deleteStudentAssessmentByID returns a result
+          const deleteResult = await deleteStudentAssessmentByID(clonedReq, {
+            status: () => ({ json: (data) => createResponse.deleted.push(data) })
+          });
+
+        } catch (err) {
+          console.error(`Failed to delete assessment:`, err);
+          createResponse.errors.push({
+            type: "delete",
+            assessmentID: assessmentID,
+            error: err.message
+          });
+        }
+      }
+    }
+
+    // Add assessments
+    if (tobeAdded && tobeAdded.length > 0) {
+      for (const assessment of tobeAdded) {
+        try {
+          const { assessmentStudentID, ...assessmentFiltered } = assessment;
+          const updatedAssessment = {
+            ...assessmentFiltered,
+            studentID: req.params["targetStudentID"]
+          };
+
+          const clonedReq = {
+            ...req,
+            body: updatedAssessment,
+            query: req.query,
+            params: req.params,
+            session: req.session
+          };
+
+          const postResult = await postStudentAssessment(clonedReq, {
+            status: () => ({ json: (data) => createResponse.added.push(data) })
+          });
+
+        } catch (err) {
+          console.error(`Failed to add assessment:`, err);
+          createResponse.errors.push({
+            type: "add",
+            assessmentID: assessment.assessmentID,
+            error: err.message
+          });
+        }
+      }
+    }
+    // Final response
+    return res.status(200).json({
+      message: "Assessment reconciliation complete.",
+      ...createResponse
+    });
+
+  } catch (e) {
+    console.error("Error merging student assessments:", e);
+    if (e?.data?.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 async function mergeStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);
   let localStudentCourses = { ...req.body };
@@ -255,7 +361,6 @@ async function completeStudentMergeByStudentID(req, res) {
     }
   }
 }
-
 
 async function getStudentCourseHistory(req, res) {
   const token = auth.getBackendToken(req);
@@ -849,6 +954,8 @@ module.exports = {
   mergeStudentCoursesByStudentID,
   completeStudentMergeByStudentID,
   getStudentCourseHistory,
+  // STUDENT ASSESSMENTS
+  mergeStudentAssessmentsByStudentID,
   // STUDENT OPTIONAL AND CAREER PROGRAMS
   getStudentCareerPrograms,
   postStudentCareerProgram,

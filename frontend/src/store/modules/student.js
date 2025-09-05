@@ -721,6 +721,23 @@ export const useStudentStore = defineStore("student", {
       this.clearGradStatusToMerge();
       this.clearNotesToMerge();
     },
+    //Merge student assessments
+    async mergeStudentAssessments(
+      sourceStudentID,
+      targetStudentID,
+      studentAssessments
+    ) {
+      try {
+        return await StudentService.mergeStudentAssessments(
+          sourceStudentID,
+          targetStudentID,
+          studentAssessments
+        );
+      } catch (error) {
+        console.error("Error merging student assessments: ", error);
+        return error;
+      }
+    },
     // Merge student courses
     async mergeStudentCourses(
       sourceStudentID,

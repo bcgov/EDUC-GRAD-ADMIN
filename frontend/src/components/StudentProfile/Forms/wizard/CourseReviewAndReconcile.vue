@@ -1,17 +1,20 @@
 <template>
   <v-row no-gutters class="mb-4" v-if="type === 'transfer'">
     <v-col cols="12">
-      <CourseTransfer :sourceStudentData="sourceStudentData" :targetStudentData="targetStudentData" :courseReconciliation="courseReconciliation" />
+      <CourseTransfer :sourceStudentData="sourceStudentData" :targetStudentData="targetStudentData"
+        :courseReconciliation="courseReconciliation" />
     </v-col>
   </v-row>
   <v-row no-gutters class="mb-4" v-if="type === 'examinablecoursemerge'">
     <v-col cols="12">
-      <ExaminableCourseMerge :sourceStudentData="sourceStudentData" :targetStudentData="targetStudentData" :courseReconciliation="courseReconciliation" />
+      <ExaminableCourseMerge :sourceStudentData="sourceStudentData" :targetStudentData="targetStudentData"
+        :courseReconciliation="courseReconciliation" />
     </v-col>
   </v-row>
   <v-row no-gutters class="mb-4" v-if="type === 'nonexaminablecoursemerge'">
     <v-col cols="12">
-      <NonExaminableCourseMerge :sourceStudentData="sourceStudentData" :targetStudentData="targetStudentData" :courseReconciliation="courseReconciliation" />
+      <NonExaminableCourseMerge :sourceStudentData="sourceStudentData" :targetStudentData="targetStudentData"
+        :courseReconciliation="courseReconciliation" />
     </v-col>
   </v-row>
 </template>
@@ -21,7 +24,7 @@ import CourseTransfer from "./support/course/CourseTransfer.vue";
 import ExaminableCourseMerge from "./support/course/ExaminableCourseMerge.vue";
 import NonExaminableCourseMerge from "./support/course/NonExaminableCourseMerge.vue";
 
-  export default {
+export default {
   name: "CourseReviewAndReconcile",
   components: {
     CourseTransfer,
@@ -31,25 +34,25 @@ import NonExaminableCourseMerge from "./support/course/NonExaminableCourseMerge.
   setup() {
     return { v$: useVuelidate() };
   },
-  computed: {    
+  computed: {
   },
   props: {
     sourceStudentData: {
-        type: Object,
-        required: true
+      type: Object,
+      required: true
     },
     targetStudentData: {
-        type: Object,
-        required: true
-    },   
+      type: Object,
+      required: true
+    },
     sourceStudentCourses: {
-        type: Array,
-        required: true
+      type: Array,
+      required: true
     },
     targetStudentCourses: {
-        type: Array,
-        required: true
-    }, 
+      type: Array,
+      required: true
+    },
     type: {
       type: String,
       default: '', // 'transfer' or 'merge'
@@ -58,7 +61,7 @@ import NonExaminableCourseMerge from "./support/course/NonExaminableCourseMerge.
   },
   data() {
     return {
-      courseReconciliation: {                
+      courseReconciliation: {
         conflicts: [], //matched but different details and cannot be transferred
         info: [], // not matched and can be transferred      
         errors: [], //rule check (examinable) cannot be transferred
@@ -67,7 +70,7 @@ import NonExaminableCourseMerge from "./support/course/NonExaminableCourseMerge.
   },
   mounted() {
   },
-  validations() {    
+  validations() {
   },
   watch: {
     type: {
@@ -96,7 +99,7 @@ import NonExaminableCourseMerge from "./support/course/NonExaminableCourseMerge.
       this.courseReconciliation.conflicts = [];
       this.courseReconciliation.info = [];
       this.courseReconciliation.errors = [];
-    },  
+    },
     reconcileForMerge() {
       this.resetCourseReconciliation();
       if (this.sourceStudentCourses.length > 0) {
@@ -156,7 +159,7 @@ import NonExaminableCourseMerge from "./support/course/NonExaminableCourseMerge.
           }
         }
       }
-    },    
+    },
     getMatchedCourse(course, studentCourses) {
       if (course && studentCourses && studentCourses.length > 0) {
         return studentCourses.find(item => this.validateCourse(course, item));
