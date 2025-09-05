@@ -163,7 +163,7 @@ export default {
             });
           } else {
             if (matchedTarget) {
-              this.assessmentReconciliation.conflicts.push({
+              this.assessmentReconciliation.errors.push({
                 source: sourceAssessment,
                 target: matchedTarget,
                 message: "Assessment for this session already exists",

@@ -78,7 +78,7 @@ export const useStudentStore = defineStore("student", {
     },
     transfer: {
       courses: [],
-      assessments: []
+      assessments: [],
     },
     merge: {
       examinableCourses: {
@@ -100,9 +100,9 @@ export const useStudentStore = defineStore("student", {
       note: {
         mergeCompleted: false,
         source: {},
-        target: {}
+        target: {},
       },
-    }
+    },
   }),
   actions: {
     async adoptStudent(studentData) {
@@ -660,7 +660,7 @@ export const useStudentStore = defineStore("student", {
     },
     // delete student assessments
     async deleteStudentAssessments(assessments) {
-      console.info("Deleting student assessments")
+      console.info("Deleting student assessments");
     },
     // delete student courses
     async deleteStudentCourses(courses) {
@@ -677,15 +677,20 @@ export const useStudentStore = defineStore("student", {
         throw error;
       }
     },
- // Transfer student assessments
-    async transferStudentAssessments(sourceStudentID, targetStudentID, assessments) {
+    // Transfer student assessments
+    async transferStudentAssessments(
+      sourceStudentID,
+      targetStudentID,
+      assessments
+    ) {
       try {
         const response = await StudentService.transferStudentAssesments(
           sourceStudentID,
           targetStudentID,
           assessments
         );
-        this.studentAssessments();
+        // get student assessments for source student after transfer
+        // this.getStudentAssessments(sourceStudentID);
         this.loadStudentGradStatus(sourceStudentID);
         return response.data;
       } catch (error) {
@@ -790,9 +795,13 @@ export const useStudentStore = defineStore("student", {
         console.error("Error merging student courses: ", error);
         return error;
       }
-    },    
+    },
     //Complete merge
-    async completeStudentDataMerge(sourceStudentID, targetStudentID, completeMergeNotes) {
+    async completeStudentDataMerge(
+      sourceStudentID,
+      targetStudentID,
+      completeMergeNotes
+    ) {
       try {
         return await StudentService.completeStudentDataMerge(
           sourceStudentID,
@@ -803,7 +812,7 @@ export const useStudentStore = defineStore("student", {
         console.error("Error completing merging student : ", error);
         return error;
       }
-    }, 
+    },
     removeCourseFromTransfer(courseID, courseSession) {
       this.transfer.courses = this.transfer.courses.filter(
         (course) =>
