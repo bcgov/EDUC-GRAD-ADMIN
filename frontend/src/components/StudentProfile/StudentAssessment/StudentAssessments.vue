@@ -407,7 +407,7 @@ export default {
       return specialCase ? specialCase.label : '';
     },
     showAssessmentTransfer() {
-      console.log("YOU CLICKED A BUTTON! Add transfer section here");
+      this.$refs.courseTransferFormRef.openTransferStudentCoursesDialog();
     },
     showAssessmentDelete() {
       console.log("YOU Want to delete some assessments!");
