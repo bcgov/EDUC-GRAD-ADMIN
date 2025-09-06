@@ -128,7 +128,7 @@
                     density="default"
                     text="Save"
                     :loading="isSaving"
-                    :disabled="(isSaving || !isValidForm)"
+                    :disabled="(isSaving || !isValidForm || updateStudentAssessment?.assessmentStudentValidationIssues?.length > 0)"
                     @click="save(false)"/>
               </v-card-actions>
             </v-card>
