@@ -4,6 +4,8 @@ import CodesService from "@/services/CodesService.js";
 import StudentService from "@/services/StudentService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
+import sharedMethods from "@/sharedMethods.js";
+
 export const useStudentStore = defineStore("student", {
   namespaced: true,
   state: () => ({
@@ -478,10 +480,28 @@ export const useStudentStore = defineStore("student", {
     setFormattedGradStatusAssessments(item) {
       this.formattedGradStatusAssessments = item;
     },
-    // setFormattedGradStatusCourses(item) {
-    //   this.formattedGradStatusCourses = item;
-    // },
 
+    /*****************************
+     * STUDENT GRAD STATUS
+     *****************************/
+
+    // merge student grad status
+    async mergeStudentGradStatus(
+      sourceStudentId,
+      targetStudentId,
+      studentGradStatusPayload
+    ) {
+      try {
+        return await StudentService.mergeStudentGradStatus(
+          sourceStudentId,
+          targetStudentId,
+          studentGradStatusPayload
+        );
+      } catch (error) {
+        console.error("Error merging student grad status: ", error);
+        return error;
+      }
+    },
     /*****************************
      * STUDENT OPTIONAL PROGRAMS
      *****************************/
@@ -937,21 +957,24 @@ export const useStudentStore = defineStore("student", {
      * variable, so it makes to rename our getters in the store too since the get is already implied by being
      * in the getter section */
 
-    formattedStudentName(showPEN = true, showMiddle = true) {
-      let profile = this.student?.profile;
-      if (profile) {
-        let formattedName = `${profile.legalLastName}, ${profile.legalFirstName}`;
-        if (showPEN) {
-          formattedName = `${profile.pen} - ` + formattedName;
-        }
-        if (showMiddle && profile.legalMiddleNames) {
-          formattedName = formattedName + ` ${profile.legalMiddleNames}`;
-        }
-        return formattedName;
-      } else {
-        //return "error occurred getting student name, refresh or try again later";
-        return "";
+    formattedStudentName() {
+      if (!!this.student?.profile) {
+        return sharedMethods.formatStudentName(this.student.profile);
       }
+      // let profile = this.student?.profile;
+      // if (profile) {
+      //   let formattedName = `${profile.legalLastName}, ${profile.legalFirstName}`;
+      //   if (showPEN) {
+      //     formattedName = `${profile.pen} - ` + formattedName;
+      //   }
+      //   if (showMiddle && profile.legalMiddleNames) {
+      //     formattedName = formattedName + ` ${profile.legalMiddleNames}`;
+      //   }
+      //   return formattedName;
+      // } else {
+      //   //return "error occurred getting student name, refresh or try again later";
+      //   return "";
+      // }
     },
     studentAssessments() {
       return this.student.assessmentStudents;

@@ -99,12 +99,17 @@ export function generateRequestPayload(batchRequest, template) {
     if (batchRequest[field] !== undefined) {
       acc[field] = batchRequest[field];
       //covert districts ["all"] to empty array
-      if (field == "districtIds" && Array.isArray(acc[field]) && acc[field].length === 1 && acc[field][0].toLowerCase() === "all") {
+      if (
+        field == "districtIds" &&
+        Array.isArray(acc[field]) &&
+        acc[field].length === 1 &&
+        acc[field][0].toLowerCase() === "all"
+      ) {
         // If the condition is true, set districts to an empty array
-        acc[field] = []; 
+        acc[field] = [];
       }
     }
-    
+
     return acc;
   }, {});
 }

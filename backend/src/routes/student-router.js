@@ -7,7 +7,7 @@ const {
   putStudentCourseSchema,
   deleteStudentCourseSchema,
   postTransferStudentCourseSchema,
-  postMergeStudentCourseSchema
+  postMergeStudentCourseSchema,
 } = require("../components/validations/student-course");
 const {
   postAdoptStudentSchema,
@@ -39,6 +39,7 @@ const {
   getRunPreviewFinalMarks,
   getRunTranscriptVerification,
   getRunUpdateTranscript,
+  mergeStudentGradStatus,
   getStudentTranscript,
   getStudentTVR,
   getStudentCertificate,
@@ -106,7 +107,6 @@ router.post(
   validate(postMergeStudentCourseSchema),
   mergeStudentCoursesByStudentID
 );
-
 
 router.delete(
   "/:studentID/courses",
@@ -243,6 +243,13 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getRunUpdateTranscript
+);
+
+router.post(
+  "/:studentID/gradStatus/merge/:trueStudentID",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  mergeStudentGradStatus
 );
 
 // STUDENT REPORTS

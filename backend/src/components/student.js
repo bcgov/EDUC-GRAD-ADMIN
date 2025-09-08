@@ -158,7 +158,7 @@ async function transferStudentCoursesByStudentID(req, res) {
     }
     return res.status(200).json(createTransferResponse);
   } catch (e) {
-    console.error("Error transferring student courses:", e);
+    log.error("Error transferring student courses:", e);
     if (e?.data?.messages) {
       return errorResponse(res, e.data.messages[0].message, e.status);
     } else {
@@ -170,30 +170,47 @@ async function transferStudentCoursesByStudentID(req, res) {
 async function mergeStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);
   let localStudentCourses = { ...req.body };
-  let tobeDeleted = localStudentCourses.conflicts.length > 0 ? localStudentCourses.conflicts.map(item => item.target?.id).filter(id => id !== undefined) : [];
-  let tobeAdded = [...localStudentCourses.info.map(item => item.source), ...localStudentCourses.conflicts.map(item => item.source)];
+  let tobeDeleted =
+    localStudentCourses.conflicts.length > 0
+      ? localStudentCourses.conflicts
+          .map((item) => item.target?.id)
+          .filter((id) => id !== undefined)
+      : [];
+  let tobeAdded = [
+    ...localStudentCourses.info.map((item) => item.source),
+    ...localStudentCourses.conflicts.map((item) => item.source),
+  ];
   const courseWithoutID = tobeAdded.map(({ id, ...rest }) => ({ ...rest }));
   try {
     //Remove courses if any
     if (tobeDeleted && tobeDeleted.length > 0) {
-      const deletUrl = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.targetStudentID}`;
+      const deletUrl = `${config.get(
+        "server:studentAPIURL"
+      )}/api/v1/student/courses/${req.params?.targetStudentID}`;
       const deleteResponse = await deleteData(
         token,
         deletUrl,
         tobeDeleted,
         req.session?.correlationID
       );
-      const notDeleted = deleteResponse.filter((course) =>
-        course.validationIssues?.some(
-          (issue) => issue.validationIssueSeverityCode === "ERROR"
+      const notDeleted = deleteResponse
+        .filter((course) =>
+          course.validationIssues?.some(
+            (issue) => issue.validationIssueSeverityCode === "ERROR"
+          )
         )
-      ).map((course) => course.id);
+        .map((course) => course.id);
       if (notDeleted.length > 0) {
-        console.error( "Error removing student courses during merge process", notDeleted);
+        console.error(
+          "Error removing student courses during merge process",
+          notDeleted
+        );
       }
     }
     //Add courses
-    const addUrl = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${req.params?.targetStudentID}`;
+    const addUrl = `${config.get(
+      "server:studentAPIURL"
+    )}/api/v1/student/courses/${req.params?.targetStudentID}`;
     const createResponse = await postData(
       token,
       addUrl,
@@ -582,6 +599,37 @@ async function getRunUpdateTranscript(req, res) {
   }
 }
 
+async function mergeStudentGradStatus(req, res) {
+  const token = auth.getBackendToken(req);
+
+  const gradStatusPayload = Object.fromEntries(
+    Object.entries(req.body).filter(
+      ([key]) => !["optionalPrograms", "careerPrograms"].includes(key)
+    )
+  );
+
+  try {
+    const gradStatusUrl = `${config.get(
+      "server:studentAPIURL"
+    )}/api/v1/student/gradstudent/studentid/${req.params?.trueStudentID}`;
+    const gradStatusResponse = await postData(
+      token,
+      gradStatusUrl,
+      gradStatusPayload,
+      req.session?.correlationID
+    );
+
+    return res.status(200).json(gradStatusResponse);
+  } catch (e) {
+    log.error("Error merging student Grad Status: ", e);
+    if (e?.data?.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 async function getStudentTranscript(req, res) {
   const token = auth.getBackendToken(req);
 
@@ -822,6 +870,7 @@ module.exports = {
   getRunPreviewFinalMarks,
   getRunTranscriptVerification,
   getRunUpdateTranscript,
+  mergeStudentGradStatus,
   // STUDENT REPORTS
   getStudentTranscript,
   getStudentTVR,
