@@ -172,12 +172,13 @@ async function postStudentAssessment(req, res){
     payload.studentStatusCode = STUDENT_STATUS_CODE_MAP[student.statusCode];
 
     const allowRuleOverride = req.query.allowRuleOverride === 'true';
-    const params = allowRuleOverride ? { params: { allowRuleOverride: true } } : {};
+    const defaultParams = { source: 'GRAD' } ;
+    const params = allowRuleOverride ? { ...defaultParams, allowRuleOverride: true } : defaultParams;
     const result = await utils.postCommonServiceData(
       `${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student`,
       payload,
       userName,
-      params
+      {params: params}
     );
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
@@ -208,7 +209,7 @@ async function updateStudentAssessmentById(req, res) {
       `${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/student/${req.params.studentAssessmentId}`,
       payload,
       userName,
-      { params: { allowRuleOverride: true } });
+      { params: { allowRuleOverride: true, source: 'GRAD' } });
 
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
@@ -224,13 +225,14 @@ async function updateStudentAssessmentById(req, res) {
 async function deleteStudentAssessmentByID(req, res) {
   try {
     const allowRuleOverride = req.query.allowRuleOverride === 'true';
-    const params = allowRuleOverride ? { params: { allowRuleOverride: true } } : {};
+    const defaultParams = { source: 'GRAD' } ;
+    const params = allowRuleOverride ? { ...defaultParams, allowRuleOverride: true } : defaultParams;
 
     const result = await utils.postCommonServiceData(
       `${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/student/delete-students`,
       [req.params.studentAssessmentId],
       null,
-      params
+      {params: params}
     );
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
