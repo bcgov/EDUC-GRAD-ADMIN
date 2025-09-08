@@ -63,6 +63,24 @@ async function getStudentAssessmentById(req, res) {
   }
 }
 
+async function getStudentAssessmentByIdAndAssessmentId(req, res) {
+  try {
+    let data = await getCommonServiceData(`${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/student/${req.params.studentAssessmentId}/assessment/${req.params.assessmentId}`);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e?.status === 404) {
+      res.status(HttpStatus.OK).json(null);
+    } else {
+      await logApiError(e, 'Error getting student assessment');
+      if (e.data.message) {
+        return errorResponse(res, e.data.message, e.status);
+      } else {
+        return errorResponse(res);
+      }
+    }
+  }
+}
+
 async function getStudentAssessmentPaginated(req, res) {
   try {
     const search = [];
@@ -155,7 +173,6 @@ async function postStudentAssessment(req, res){
 
     const allowRuleOverride = req.query.allowRuleOverride === 'true';
     const params = allowRuleOverride ? { params: { allowRuleOverride: true } } : {};
-
     const result = await utils.postCommonServiceData(
       `${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student`,
       payload,
@@ -250,5 +267,6 @@ module.exports = {
   deleteStudentAssessmentByID,
   getAllAssessmentSessions,
   getProvincialSpecialCaseCodes,
-  getStudentAssessmentHistoryPaginated
+  getStudentAssessmentHistoryPaginated,
+  getStudentAssessmentByIdAndAssessmentId
 };

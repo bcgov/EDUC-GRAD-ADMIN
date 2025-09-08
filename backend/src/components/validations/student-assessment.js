@@ -1,6 +1,31 @@
-const { object, string, number } = require('yup');
+const { object, string, number, array, boolean } = require('yup');
 const { uuidGeneric } = require('./custom-validations');
 const { baseRequestSchema } = require('./base');
+
+const studentAssessmentSchema = object({
+  adaptedAssessmentCode: string().max(10).notRequired(),
+  assessmentCenterSchoolID: string().notRequired(),
+  assessmentFormID: uuidGeneric().notRequired(),
+  assessmentID: uuidGeneric().required(),
+  assessmentStudentID: uuidGeneric().required(),
+  assessmentTypeCode: string().max(10).notRequired(),
+  courseMonth: string().max(2).notRequired(),
+  courseStatusCode: string().max(1).notRequired(),
+  courseYear: string().max(4).notRequired(),
+  downloadDate: string().notRequired(),
+  gradeAtRegistration: string().max(3).notRequired(),
+  irtScore: string().max(7).notRequired(),
+  localAssessmentID: string().max(20).notRequired(),
+  localID: string().max(12).notRequired(),
+  markingSession: string().notRequired(),
+  numberOfAttempts: number().notRequired(),
+  proficiencyScore: number().notRequired(),
+  provincialSpecialCaseCode: string().max(1).notRequired(),
+  schoolAtWriteSchoolID: uuidGeneric().notRequired(),
+  schoolOfRecordSchoolID: uuidGeneric().required(),
+  sessionID: uuidGeneric().notRequired(),
+  wroteFlag: boolean().notRequired()
+});
 
 const putStudentAssessmentSchema = object({
   body: object({
@@ -57,6 +82,38 @@ const deleteStudentAssessmentSchema = object({
   }).noUnknown()
 }).noUnknown();
 
+function markAllFieldsOptional(schema) {
+  const fields = schema.fields;
+  const optionalShape = Object.fromEntries(
+    Object.entries(fields).map(([key, fieldSchema]) => [
+      key,
+      fieldSchema.optional(),
+    ])
+  );
+  return object().shape(optionalShape);
+}
+const mergeStudentAssessmentSchema = object({
+  source: studentAssessmentSchema.shape({
+    assessmentID: uuidGeneric().required(),
+  }).noUnknown(),
+  target: markAllFieldsOptional(studentAssessmentSchema).shape({
+    assessmentID: uuidGeneric().optional(),
+  }).optional(),
+});
+const postMergeStudentAssessmentSchema = object({
+  body: object({
+    info: array().of(mergeStudentAssessmentSchema),
+    conflicts: array().of(mergeStudentAssessmentSchema),
+    errors: array().of(mergeStudentAssessmentSchema).optional()
+  }),
+  params: object({
+    sourceStudentID: uuidGeneric().required(),
+    targetStudentID: uuidGeneric().required()
+  }),
+  query: object().noUnknown(),
+}).noUnknown();
+
+
 const getPaginatedStudentAssessmentSchema = object({
   body: object().noUnknown(),
   query: object({
@@ -66,13 +123,15 @@ const getPaginatedStudentAssessmentSchema = object({
       studentId: uuidGeneric().required()
     }).required().noUnknown(),
     sort: object({
-      'assessmentEntity.assessmentTypeCode': string().oneOf(['ASC', 'DESC']).optional()
+      'assessmentEntity.assessmentTypeCode': string().oneOf(['ASC', 'DESC']).optional(),
+      'updateDate': string().oneOf(['ASC', 'DESC']).optional()
     }).optional().noUnknown()
   }).noUnknown(),
   params: object().noUnknown()
 }).noUnknown();
 
 module.exports = {
+  postMergeStudentAssessmentSchema,
   putStudentAssessmentSchema,
   postStudentAssessmentSchema,
   deleteStudentAssessmentSchema,

@@ -98,8 +98,12 @@ export const useStudentStore = defineStore("student", {
         errors: [],
       },
       gradStatus: {},
-      notes: [],
-    },
+      note: {
+        mergeCompleted: false,
+        source: {},
+        target: {}
+      },
+    }
   }),
   actions: {
     async adoptStudent(studentData) {
@@ -726,7 +730,9 @@ export const useStudentStore = defineStore("student", {
       this.merge.gradStatus = {};
     },
     clearNotesToMerge() {
-      this.merge.notes = [];
+      this.merge.note.mergeCompleted = false;
+      this.merge.note.source = {};
+      this.merge.note.target = {};
     },
     clearStudentMerge() {
       this.clearExaminableCoursesToMerge();
@@ -734,6 +740,23 @@ export const useStudentStore = defineStore("student", {
       this.clearAssessmentsToMerge();
       this.clearGradStatusToMerge();
       this.clearNotesToMerge();
+    },
+    //Merge student assessments
+    async mergeStudentAssessments(
+      sourceStudentID,
+      targetStudentID,
+      studentAssessments
+    ) {
+      try {
+        return await StudentService.mergeStudentAssessments(
+          sourceStudentID,
+          targetStudentID,
+          studentAssessments
+        );
+      } catch (error) {
+        console.error("Error merging student assessments: ", error);
+        return error;
+      }
     },
     // Merge student courses
     async mergeStudentCourses(
@@ -751,7 +774,20 @@ export const useStudentStore = defineStore("student", {
         console.error("Error merging student courses: ", error);
         return error;
       }
-    },
+    },    
+    //Complete merge
+    async completeStudentDataMerge(sourceStudentID, targetStudentID, completeMergeNotes) {
+      try {
+        return await StudentService.completeStudentDataMerge(
+          sourceStudentID,
+          targetStudentID,
+          completeMergeNotes
+        );
+      } catch (error) {
+        console.error("Error completing merging student : ", error);
+        return error;
+      }
+    }, 
     removeCourseFromTransfer(courseID, courseSession) {
       this.transfer.courses = this.transfer.courses.filter(
         (course) =>

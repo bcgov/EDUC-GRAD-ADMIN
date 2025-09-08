@@ -32,8 +32,8 @@ export default {
       groupData: [],
     };
   },
-  mounted() {},
-  created() {},
+  mounted() { },
+  created() { },
 
   methods: {
     async validateForm(event) {
@@ -43,9 +43,6 @@ export default {
       }
     },
     runbatch() {
-      console.log("run batch");
-      console.log(payload);
-      console.log(groupData);
     },
     clearGroupData() {
       this.districts = [];
@@ -66,6 +63,7 @@ export default {
 input {
   border-radius: 0px;
 }
+
 .input-errors {
   color: red;
 }

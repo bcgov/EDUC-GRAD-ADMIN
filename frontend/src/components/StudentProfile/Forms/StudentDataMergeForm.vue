@@ -100,6 +100,7 @@
                   />
                 </div>
               </v-stepper-window-item>
+
               <!-- Step 3 -->
               <v-stepper-window-item value="3">
                 <div
@@ -108,7 +109,20 @@
                     overflow-y: auto;
                     padding-right: 0.5rem;
                   "
-                ></div>
+                >
+                  <AssessmentReviewAndReconcile
+                    :sourceStudentData="sourceStudentData"
+                    :targetStudentData="targetStudentData"
+                    :sourceStudentAssessments="
+                      sourceStudentReconcileData.assessments
+                    "
+                    :targetStudentAssessments="
+                      targetStudentReconcileData.assessments
+                    "
+                    type="assessmentMerge"
+                  />
+                  <pre> {{ targetStudentReconcileData.assessments }}</pre>
+                </div>
               </v-stepper-window-item>
               <!-- Step 4 -->
               <v-stepper-window-item value="4">
@@ -132,6 +146,20 @@
                 </div>
               </v-stepper-window-item>
               <!-- Step 5 -->
+              <v-stepper-window-item value="5">
+                <div
+                  style="
+                    max-height: 60vh;
+                    overflow-y: auto;
+                    padding-right: 0.5rem;
+                  "
+                >
+                  <StudentMergeConfirmation
+                    :sourceStudentData="sourceStudentData"
+                    :targetStudentData="targetStudentData"
+                  />
+                </div>
+              </v-stepper-window-item>
             </v-stepper-window>
           </template>
         </v-stepper>
@@ -185,12 +213,22 @@
           >
           <v-btn
             v-if="step === 2"
-            @click="step++"
+            @click="saveAssessments"
+            :disabled="
+              validationStep ||
+              !(
+                studentDataToMerge.assessments.info.length > 0 ||
+                studentDataToMerge.assessments.conflicts.length > 0
+              )
+            "
             color="error"
             variant="flat"
             class="text-none"
-            >Save</v-btn
+            >Save Assessments</v-btn
           >
+          <!-- <v-btn v-if="step === 2" @click="addAssessments" :disabled="validationStep" color="error" variant="flat"
+            class="text-none">ADD
+            Assessments</v-btn> -->
           <v-btn
             v-if="step === 3"
             @click="step++"
@@ -205,15 +243,19 @@
             variant="flat"
             class="text-none"
             @click="step++"
+            :disabled="isNextDisabled()"
             >Next</v-btn
           >
           <v-btn
             v-if="step === 4"
-            @click="step++"
             color="error"
             variant="flat"
             class="text-none"
-            >Complete Reconciliation</v-btn
+            @click="completeMerge"
+            :disabled="
+              validationStep || !studentDataToMerge.note.mergeCompleted
+            "
+            >Complete Student Merge</v-btn
           >
         </v-card-actions>
       </v-card>
@@ -225,12 +267,15 @@
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "@/store/modules/student";
 import StudentService from "@/services/StudentService.js";
+import StudentAssessmentService from "@/services/StudentAssessmentService.js";
 import { mapState, mapActions } from "pinia";
 import { toRaw } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import CourseReviewAndReconcile from "@/components/StudentProfile/Forms/wizard/CourseReviewAndReconcile.vue";
 import GRADStatusReviewAndReconcile from "@/components/StudentProfile/Forms/wizard/GRADStatusReviewAndReconcile.vue";
+import AssessmentReviewAndReconcile from "@/components/StudentProfile/Forms/wizard/AssessmentReviewAndReconcile.vue";
+import StudentMergeConfirmation from "@/components/StudentProfile/Forms/wizard/StudentMergeConfirmation.vue";
 
 export default {
   name: "StudentDataMergeForm",
@@ -242,6 +287,8 @@ export default {
   components: {
     CourseReviewAndReconcile,
     GRADStatusReviewAndReconcile,
+    AssessmentReviewAndReconcile,
+    StudentMergeConfirmation,
   },
   props: {},
   data() {
@@ -256,14 +303,14 @@ export default {
         nonExaminableCourses: [],
         assessments: [],
         gradStatus: {},
-        notes: [],
+        note: {},
       },
       targetStudentReconcileData: {
         examinableCourses: [],
         nonExaminableCourses: [],
         assessments: [],
         gradStatus: {},
-        notes: [],
+        note: {},
       },
       validationStep: false,
     };
@@ -296,11 +343,14 @@ export default {
               studentCourses.filter((course) => course.courseExam !== null);
             this.sourceStudentReconcileData.nonExaminableCourses =
               studentCourses.filter((course) => course.courseExam === null);
-
-            this.sourceStudentReconcileData.gradStatus =
-              await this.fetchStudentGradStatus(
-                this.sourceStudentData.studentID
-              );
+            let studentAssessments = await this.fetchStudentAssessments(
+              this.sourceStudentData.studentID
+            );
+            this.sourceStudentReconcileData.assessments = studentAssessments;
+            let studentGradStatus = await this.fetchStudentGradStatus(
+              this.sourceStudentData.studentID
+            );
+            this.sourceStudentReconcileData.gradStatus = studentGradStatus;
           }
         }
       },
@@ -340,6 +390,10 @@ export default {
       "mergeStudentCourses",
       "getStudentCourses",
       "loadStudentGradStatus",
+      "mergeStudentAssessments",
+      "clearNotesToMerge",
+      "completeStudentDataMerge",
+      "loadStudentGradStatus",
     ]),
     close() {
       this.dialog = false;
@@ -375,6 +429,41 @@ export default {
           });
       }
     },
+    async fetchStudentAssessments(studentID) {
+      if (!studentID) return [];
+      try {
+        let sort = {
+          "assessmentEntity.assessmentTypeCode": "ASC",
+        };
+        let searchParams = {
+          studentId: studentID,
+        };
+        const response =
+          await StudentAssessmentService.getStudentAssessmentsBySearchCriteria(
+            searchParams,
+            sort,
+            1,
+            1000
+          );
+        if (response.data !== null) {
+          return response.data.content;
+        } else {
+          console.error(
+            "No student assessments found with the provided ID",
+            studentID
+          );
+          return [];
+        }
+      } catch (err) {
+        this.snackbarStore.showSnackbar(
+          "There was an error fetching assessments: " +
+            (err?.response?.status || "Unknown"),
+          "error",
+          5000
+        );
+        return [];
+      }
+    },
     async fetchStudentCourses(studentID) {
       if (!studentID) return [];
       try {
@@ -396,6 +485,136 @@ export default {
           5000
         );
         return [];
+      }
+    },
+
+    // async addAssessments() {
+
+    //   const newAssessment = {
+    //     info: [
+    //       {
+    //         source: {
+    //           assessmentStudentID: "fd2927c8-9e1f-e2ca-1f23-95f8c569f779",
+    //           assessmentID: "1ab44942-0631-7fef-74ec-f4e8da59382a",
+    //           schoolAtWriteSchoolID: null,
+    //           assessmentCenterSchoolID: null,
+    //           schoolOfRecordSchoolID: "a873442f-6939-852c-003b-e96ff476cd9d",
+    //           localID: null,
+    //           gradeAtRegistration: null,
+    //           proficiencyScore: 3,
+    //           assessmentFormID: null,
+    //           adaptedAssessmentCode: null,
+    //           irtScore: "0",
+    //           provincialSpecialCaseCode: null,
+    //           numberOfAttempts: null,
+    //           localAssessmentID: "ASM00000Dsgl0r",
+    //           markingSession: null,
+    //           courseStatusCode: null,
+    //           downloadDate: null,
+    //           wroteFlag: false,
+    //           sessionID: "1ab44942-0631-7fef-74ec-f4e8da59382a",
+    //           assessmentTypeCode: "LTE10",
+    //           courseMonth: "01",
+    //           courseYear: "2022"
+    //         }
+    //       }
+    //     ],
+    //     conflicts: []
+    //   };
+
+    //   const response = await this.addToTargetStudentAssessments(newAssessment);
+
+    // },
+    async addToTargetStudentAssessments(studentAssessments) {
+      this.mergeStudentAssessmentsResultsMessages = [];
+      let localStudentAssessments = { ...studentAssessments };
+      localStudentAssessments.info =
+        localStudentAssessments.info.length > 0
+          ? this.normalizedAssessmentMergeData(localStudentAssessments.info)
+          : [];
+      localStudentAssessments.conflicts =
+        localStudentAssessments.conflicts.length > 0
+          ? this.normalizedAssessmentMergeData(
+              localStudentAssessments.conflicts
+            )
+          : [];
+      const { errors, ...mergeStudentAssessments } = localStudentAssessments;
+      const mergeStudentAssessmentsRequestBody = toRaw(mergeStudentAssessments);
+      try {
+        return await this.mergeStudentAssessments(
+          this.sourceStudentData.studentID,
+          this.targetStudentData.studentID,
+          mergeStudentAssessmentsRequestBody
+        );
+      } catch (error) {
+        console.error("Error merging student assessments:", error);
+        this.snackbarStore.showSnackbar(
+          "Failed to merge student assessments",
+          "error",
+          10000,
+          "Student course"
+        );
+      }
+    },
+    async addToSourceStudentAssessments(studentAssessments) {
+      this.mergeStudentAssessmentsResultsMessages = [];
+      let localStudentAssessments = { ...studentAssessments };
+      localStudentAssessments.info =
+        localStudentAssessments.info.length > 0
+          ? this.normalizedAssessmentMergeData(localStudentAssessments.info)
+          : [];
+      localStudentAssessments.conflicts =
+        localStudentAssessments.conflicts.length > 0
+          ? this.normalizedAssessmentMergeData(
+              localStudentAssessments.conflicts
+            )
+          : [];
+      const { errors, ...mergeStudentAssessments } = localStudentAssessments;
+      const mergeStudentAssessmentsRequestBody = toRaw(mergeStudentAssessments);
+      try {
+        return await this.mergeStudentAssessments(
+          this.targetStudentData.studentID,
+          this.sourceStudentData.studentID,
+          mergeStudentAssessmentsRequestBody
+        );
+      } catch (error) {
+        console.error("Error merging student assessments:", error);
+        this.snackbarStore.showSnackbar(
+          "Failed to merge student assessments",
+          "error",
+          10000,
+          "Student course"
+        );
+      }
+    },
+    async saveAssessments() {
+      this.validationStep = true;
+      const response = await this.persistStudentAssessments(
+        this.studentDataToMerge.assessments
+      );
+      if (response.status === 200) {
+        this.clearAssessmentsToMerge();
+
+        let studentAssessments = await this.fetchStudentAssessments(
+          this.targetStudentData.studentID
+        );
+        this.targetStudentReconcileData.assessments = studentAssessments;
+        this.snackbarStore.showSnackbar(
+          "Successfully merged student assessments",
+          "success",
+          10000,
+          "Student assessments"
+        );
+        this.validationStep = false;
+        //this.step++; Enable this option if needed to save and continue to next tab.
+      } else {
+        this.snackbarStore.showSnackbar(
+          "Failed to merge assessments",
+          "error",
+          10000,
+          "Student assessments"
+        );
+        this.validationStep = false;
       }
     },
     async saveExaminableStudentCourses() {
@@ -458,6 +677,124 @@ export default {
           "Student course"
         );
         this.validationStep = false;
+      }
+    },
+    async persistStudentAssessments(studentAssessments) {
+      this.mergeStudentAssessmentsResultsMessages = [];
+      let localStudentAssessments = { ...studentAssessments };
+      localStudentAssessments.info =
+        localStudentAssessments.info.length > 0
+          ? this.normalizedAssessmentMergeData(localStudentAssessments.info)
+          : [];
+      localStudentAssessments.conflicts =
+        localStudentAssessments.conflicts.length > 0
+          ? this.normalizedAssessmentMergeData(
+              localStudentAssessments.conflicts
+            )
+          : [];
+      const { errors, ...mergeStudentAssessments } = localStudentAssessments;
+      const mergeStudentAssessmentsRequestBody = toRaw(mergeStudentAssessments);
+      try {
+        return await this.mergeStudentAssessments(
+          this.sourceStudentData.studentID,
+          this.targetStudentData.studentID,
+          mergeStudentAssessmentsRequestBody
+        );
+      } catch (error) {
+        console.error("Error merging student assessments:", error);
+        this.snackbarStore.showSnackbar(
+          "Failed to merge student assessments",
+          "error",
+          10000,
+          "Student course"
+        );
+      }
+    },
+
+    normalizedAssessmentMergeData(studentAssessmentsData) {
+      const studentAssessmentsDataWithoutMessage = studentAssessmentsData.map(
+        ({ message, ...rest }) => rest
+      );
+      const normalizedCourseData = studentAssessmentsDataWithoutMessage.map(
+        (item) => {
+          const {
+            createUser,
+            createDate,
+            updateUser,
+            updateDate,
+            studentID,
+            studentStatusCode,
+            assessmentStudentValidationIssues,
+            givenName,
+            surname,
+            pen,
+            ...normalizedSource
+          } = item.source;
+
+          let normalizedTarget;
+          if (item.target) {
+            const {
+              createUser,
+              createDate,
+              updateUser,
+              updateDate,
+              studentID,
+              studentStatusCode,
+              assessmentStudentValidationIssues,
+              givenName,
+              surname,
+              pen,
+              ...restTarget
+            } = item.target;
+            normalizedTarget = restTarget;
+          }
+          return {
+            ...item,
+            source: normalizedSource,
+            target: normalizedTarget,
+          };
+        }
+      );
+      return normalizedCourseData;
+    },
+
+    async completeMerge() {
+      this.validationStep = true;
+      const { mergeCompleted, ...restCourseMergeNotes } =
+        this.studentDataToMerge.note;
+      const mergeStudentNotesRequestBody = toRaw(restCourseMergeNotes);
+      try {
+        const response = await this.completeStudentDataMerge(
+          this.sourceStudentData.studentID,
+          this.targetStudentData.studentID,
+          mergeStudentNotesRequestBody
+        );
+        if (response.status === 200) {
+          this.snackbarStore.showSnackbar(
+            "Successfully merged student data",
+            "success",
+            10000,
+            "Student Merge"
+          );
+          this.validationStep = false;
+          this.close();
+        } else {
+          this.snackbarStore.showSnackbar(
+            "Failed to merge student data",
+            "error",
+            10000,
+            "Student Merge"
+          );
+          this.validationStep = false;
+        }
+      } catch (error) {
+        console.error("Error merging student data:", error);
+        this.snackbarStore.showSnackbar(
+          "Failed to merge student data",
+          "error",
+          10000,
+          "Student Merge"
+        );
       }
     },
     async persistStudentCourses(isExaminable, studentCourses) {
@@ -559,7 +896,11 @@ export default {
     },
     async refreshTargetStudentData(studentID) {
       await this.refreshTargetStudentCourses(studentID);
-      await this.refreshTargetStudentGradStatus(studentID);
+      await this.refreshTargetStudentAssessments(studentID);
+    },
+    async refreshTargetStudentAssessments(studentID) {
+      let studentAssessments = await this.fetchStudentAssessments(studentID);
+      this.targetStudentReconcileData.assessments = studentAssessments;
     },
     async refreshTargetStudentCourses(studentID) {
       let studentCourses = await this.fetchStudentCourses(studentID);
@@ -569,7 +910,6 @@ export default {
       this.targetStudentReconcileData.nonExaminableCourses =
         studentCourses.filter((course) => course.courseExam === null);
     },
-
     async fetchStudentGradStatus(studentID) {
       try {
         let response = await StudentService.getGraduationStatus(studentID);
@@ -591,6 +931,16 @@ export default {
       this.studentDataToMerge.gradStatus =
         this.targetStudentReconcileData.gradStatus;
       console.log(this.studentDataToMerge);
+    },
+    isNextDisabled() {
+      return (
+        this.studentDataToMerge.examinableCourses.info.length > 0 ||
+        this.studentDataToMerge.examinableCourses.conflicts.length > 0 ||
+        this.studentDataToMerge.nonExaminableCourses.info.length > 0 ||
+        this.studentDataToMerge.nonExaminableCourses.conflicts.length > 0 ||
+        this.studentDataToMerge.assessments.info.length > 0 ||
+        this.studentDataToMerge.assessments.conflicts.length > 0
+      );
     },
   },
 };
