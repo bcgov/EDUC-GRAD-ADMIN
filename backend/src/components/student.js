@@ -174,34 +174,22 @@ async function transferStudentCoursesByStudentID(req, res) {
   }
 }
 async function transferStudentAssessmentsByStudentID(req, res) {
-  console.log("Hello from transferStudentAssessmentsByStudentID");
   try {
-    const token = auth.getBackendToken(req);
-    let localStudentAssessments = { ...req.body };
-    console.log(
-      "req: " +
-        req.params["sourceStudentID"] +
-        " to " +
-        req.params["targetStudentID"]
-    );
-    // Prepare data
-    let tobeDeleted =
-      localStudentAssessments.conflicts.length > 0
-        ? localStudentAssessments.conflicts
-            .map((item) => item.target?.assessmentStudentID)
-            .filter((assessmentID) => assessmentID !== undefined)
-        : [];
-
-    let tobeAdded = [
-      ...localStudentAssessments.info.map((item) => item.source),
-      ...localStudentAssessments.conflicts.map((item) => item.source),
-    ];
-
     const createResponse = {
       added: [],
       deleted: [],
       errors: [],
     };
+
+    let localStudentAssessments = { ...req.body };
+
+    const tobeDeleted = Object.values(localStudentAssessments)
+      .map((assessment) => assessment.assessmentStudentID)
+      .filter(Boolean);
+    console.log("tobeDeleted: " + JSON.stringify(tobeDeleted));
+
+    const tobeAdded = Object.values(localStudentAssessments);
+    console.log("tobeAdded: " + JSON.stringify(tobeAdded));
 
     // Delete assessments
     if (tobeDeleted && tobeDeleted.length > 0) {
@@ -216,14 +204,14 @@ async function transferStudentAssessmentsByStudentID(req, res) {
             params: { studentAssessmentId: assessmentID },
             session: req.session,
           };
-
-          // Assuming deleteStudentAssessmentByID returns a result
-          // const deleteResult = await deleteStudentAssessmentByID(clonedReq, {
-          //   status: () => ({
-          //     json: (data) => createResponse.deleted.push(data),
-          //   }),
-          // });
           console.log("clonedReq " + clonedReq);
+          // Assuming deleteStudentAssessmentByID returns a result
+          const deleteResult = await deleteStudentAssessmentByID(clonedReq, {
+            status: () => ({
+              json: (data) => createResponse.deleted.push(data),
+            }),
+          });
+          console.log("deleteResult " + deleteResult);
         } catch (err) {
           console.error(`Failed to delete assessment:`, err);
           createResponse.errors.push({
@@ -253,9 +241,10 @@ async function transferStudentAssessmentsByStudentID(req, res) {
             session: req.session,
           };
           console.log("clonedReq " + clonedReq);
-          // const postResult = await postStudentAssessment(clonedReq, {
-          //   status: () => ({ json: (data) => createResponse.added.push(data) }),
-          // });
+          const postResult = await postStudentAssessment(clonedReq, {
+            status: () => ({ json: (data) => createResponse.added.push(data) }),
+          });
+          console.log("postResult " + postResult);
         } catch (err) {
           console.error(`Failed to add assessment:`, err);
           createResponse.errors.push({
@@ -280,6 +269,8 @@ async function transferStudentAssessmentsByStudentID(req, res) {
     }
   }
 }
+// end of transferStudentAssessmentsByStudentID
+
 async function mergeStudentAssessmentsByStudentID(req, res) {
   try {
     const token = auth.getBackendToken(req);
