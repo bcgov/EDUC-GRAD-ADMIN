@@ -3,7 +3,7 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-prod
-  REPLICAS: 6
+  REPLICAS: 4
 on:
   workflow_dispatch:
 jobs:
