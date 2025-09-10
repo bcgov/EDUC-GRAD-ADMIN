@@ -769,6 +769,7 @@ async function mergeStudentGradStatus(req, res) {
 
   const mergeResponse = {
     updated: [],
+    deleted: [],
     errors: [],
   };
 
@@ -800,7 +801,7 @@ async function mergeStudentGradStatus(req, res) {
             `${baseURL}/api/v1/student/${req.params?.trueStudentID}/careerPrograms/${careerProgram.careerProgramCode}`
           );
 
-          mergeResponse.updated.push(response.data);
+          mergeResponse.updated.push(response);
         }
       }
       if (!!gradStatusResponse.optionalPrograms) {
@@ -811,13 +812,12 @@ async function mergeStudentGradStatus(req, res) {
             token,
             `${baseURL}/api/v1/student/${req.params?.trueStudentID}/optionalPrograms/${optionalProgram.optionalProgramID}`
           );
-          mergeResponse.updated.push(response.data);
+          mergeResponse.updated.push(response);
         }
       }
     }
 
     // add careerPrograms and optionalPrograms
-    console.log(careerProgramsPayload);
     if (careerProgramsPayload.length > 0) {
       let response = await postData(
         token,
