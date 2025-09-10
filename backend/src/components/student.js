@@ -801,7 +801,7 @@ async function mergeStudentGradStatus(req, res) {
             `${baseURL}/api/v1/student/${req.params?.trueStudentID}/careerPrograms/${careerProgram.careerProgramCode}`
           );
 
-          mergeResponse.updated.push(response);
+          mergeResponse.deleted.push(response);
         }
       }
       if (!!gradStatusResponse.optionalPrograms) {
@@ -812,7 +812,7 @@ async function mergeStudentGradStatus(req, res) {
             token,
             `${baseURL}/api/v1/student/${req.params?.trueStudentID}/optionalPrograms/${optionalProgram.optionalProgramID}`
           );
-          mergeResponse.updated.push(response);
+          mergeResponse.deleted.push(response);
         }
       }
     }
