@@ -44,6 +44,7 @@
               <v-stepper-item title="Confirmation" value="3"></v-stepper-item>
             </v-stepper-header>
             <v-stepper-window>
+              <!-- Select Student -->
               <v-stepper-window-item value="1">
                 <StudentLookupByPen v-model:studentData="targetStudentData" />
                 <v-row
@@ -60,6 +61,7 @@
                   </v-col>
                 </v-row>
               </v-stepper-window-item>
+              <!-- Review -->
               <v-stepper-window-item value="2">
                 <div
                   style="
@@ -77,7 +79,7 @@
                   />
                 </div>
               </v-stepper-window-item>
-              <!-- Step 2 -->
+              <!-- Confirmation -->
               <v-stepper-window-item value="3">
                 <div
                   style="
@@ -86,10 +88,10 @@
                     padding-right: 0.5rem;
                   "
                 >
-                  <v-expansion-panels multiple>
+                  <v-expansion-panels>
                     <v-expansion-panel
                       v-for="(
-                        assessment, index
+                        item, index
                       ) in transferStudentAssessmentResultsMessages"
                       :key="index"
                       elevation="0"
@@ -97,13 +99,7 @@
                       style="background-color: transparent; border: none"
                     >
                       <v-alert
-                        :type="
-                          assessment.validationIssues.some(
-                            (i) => i.validationIssueSeverityCode === 'ERROR'
-                          )
-                            ? 'error'
-                            : 'success'
-                        "
+                        :type="item.type === 'success' ? 'success' : 'error'"
                         border="start"
                         variant="tonal"
                         density="compact"
@@ -112,20 +108,14 @@
                         <template #prepend>
                           <v-icon
                             :color="
-                              assessment.validationIssues.some(
-                                (i) => i.validationIssueSeverityCode === 'ERROR'
-                              )
-                                ? 'error'
-                                : 'success'
+                              item.type === 'success' ? 'success' : 'error'
                             "
                             style="margin-top: 0.94rem"
                           >
                             {{
-                              assessment.validationIssues.some(
-                                (i) => i.validationIssueSeverityCode === "ERROR"
-                              )
-                                ? "mdi-close-circle"
-                                : "mdi-check-circle"
+                              item.type === "success"
+                                ? "mdi-check-circle"
+                                : "mdi-close-circle"
                             }}
                           </v-icon>
                         </template>
@@ -135,96 +125,36 @@
                         >
                           <div class="d-flex align-center flex-grow-1">
                             <span>
+                              Assessment ID: {{ item.assessmentId }} -
                               {{
-                                assessment.originalAssessment.assessmentDetails
-                                  .assessmentCode
-                              }}
-                              {{
-                                assessment.originalAssessment.assessmentDetails
-                                  .assessmentLevel
-                              }}
-                              –
-                              {{
-                                assessment.originalAssessment.assessmentSession
-                              }}
-                              {{
-                                assessment.validationIssues.some(
-                                  (i) =>
-                                    i.validationIssueSeverityCode === "ERROR"
-                                )
-                                  ? " failed to add assessment"
-                                  : ` transferred from student ${sourceStudentData.pen}`
-                              }}
-                            </span>
-
-                            <v-spacer />
-
-                            <span class="text-caption text-grey-darken-1">
-                              {{
-                                (() => {
-                                  const errors =
-                                    assessment.validationIssues.filter(
-                                      (i) =>
-                                        i.validationIssueSeverityCode ===
-                                        "ERROR"
-                                    ).length;
-                                  const warnings =
-                                    assessment.validationIssues.filter(
-                                      (i) =>
-                                        i.validationIssueSeverityCode ===
-                                        "WARNING"
-                                    ).length;
-
-                                  const parts = [];
-                                  if (errors > 0)
-                                    parts.push(`${errors} error(s)`);
-                                  if (warnings > 0)
-                                    parts.push(`${warnings} warning(s)`);
-                                  return parts.join(", ");
-                                })()
+                                item.type === "success"
+                                  ? "Transferred Successfully"
+                                  : "Failed to Transfer"
                               }}
                             </span>
                           </div>
-
-                          <template #actions>
-                            <v-icon>mdi-chevron-down</v-icon>
+                          <template #actions="{ open }">
+                            <v-icon
+                              :icon="
+                                open ? 'mdi-chevron-up' : 'mdi-chevron-down'
+                              "
+                            ></v-icon>
                           </template>
                         </v-expansion-panel-title>
 
                         <v-expansion-panel-text>
-                          <div v-if="assessment.validationIssues.length">
-                            <div
-                              v-for="(issue, i) in assessment.validationIssues"
-                              :key="i"
-                              class="pl-3 d-flex align-center mb-2"
-                            >
-                              <v-icon
-                                :color="
-                                  issue.validationIssueSeverityCode === 'ERROR'
-                                    ? 'error'
-                                    : 'warning'
-                                "
-                                class="me-2"
-                                size="18"
-                              >
-                                {{
-                                  issue.validationIssueSeverityCode === "ERROR"
-                                    ? "mdi-alert-circle"
-                                    : "mdi-alert"
-                                }} </v-icon
-                              >{{
-                                issue.validationIssueSeverityCode === "ERROR"
-                                  ? "Error"
-                                  : "Warning: "
-                              }}
-                              {{ issue.validationIssueMessage }}
-                            </div>
+                          <div
+                            v-for="(message, msgIndex) in item.messages"
+                            :key="msgIndex"
+                            class="pl-3"
+                          >
+                            {{ message }}
                           </div>
-                          <div v-else>No validation issues.</div>
                         </v-expansion-panel-text>
                       </v-alert>
                     </v-expansion-panel>
                   </v-expansion-panels>
+
                   <v-alert
                     v-if="assessmentsToTransfer.length > 0"
                     type="info"
@@ -491,17 +421,76 @@ export default {
           this.targetStudentData.studentID,
           transferStudentAssessmentsRequestBody
         ).then((response) => {
-          // Enrich response with entire original assessment object
-          const enrichedResults = response.map((result) => {
-            const original = this.assessmentsToTransfer.find(
-              (assessment) => assessment.assessmentID === result.assessmentID
+          console.log("assessmentsToTransfer: ", this.assessmentsToTransfer);
+          console.log("response: ", response.added);
+
+          const added = response.added || [];
+          const deleted = response.deleted || [];
+
+          this.transferStudentAssessmentResultsMessages = [];
+
+          this.assessmentsToTransfer.forEach((record) => {
+            const wasDeleted = deleted.find(
+              (item) => item.studentAssessmentId === record.assessmentStudentID
             );
-            return {
-              ...result,
-              originalAssessment: original || {},
-            };
+
+            const wasAdded = added.find(
+              (item) =>
+                item.assessmentID === record.assessmentID &&
+                item.studentID === this.targetStudentData.studentID
+              // && item.sessionID === record.sessionID // Uncomment if needed
+            );
+
+            const messages = [];
+
+            if (wasDeleted && wasAdded) {
+              messages.push(
+                `Assessment ${record.assessmentTypeCode} was transferred to ${this.targetStudentData.legalFirstName} ${this.targetStudentData.legalLastName} - ${this.targetStudentData.pen}.`
+              );
+            } else {
+              if (wasDeleted) {
+                messages.push(
+                  `Assessment ${record.assessmentStudentID} was deleted.`
+                );
+              }
+
+              if (wasAdded) {
+                messages.push(
+                  `Assessment ${record.assessmentStudentID} was added for student ${this.targetStudentData.studentID}.`
+                );
+              }
+            }
+
+            if (messages.length > 0) {
+              this.transferStudentAssessmentResultsMessages.push({
+                assessmentId: record.assessmentID,
+                messages: messages,
+                type: wasAdded && wasDeleted ? "success" : "error",
+              });
+            }
           });
-          this.transferStudentAssessmentResultsMessages = enrichedResults;
+
+          const successMessages =
+            this.transferStudentAssessmentResultsMessages.filter(
+              (item) => item.type === "success"
+            );
+
+          const errorMessages =
+            this.transferStudentAssessmentResultsMessages.filter(
+              (item) => item.type === "error"
+            );
+
+          // Combine them: success first, then error
+          this.transferStudentAssessmentResultsMessages = [
+            ...successMessages,
+            ...errorMessages,
+          ];
+
+          console.log(
+            "transferStudentAssessmentResultsMessages: ",
+            this.transferStudentAssessmentResultsMessages
+          );
+
           this.clearAssessmentsToTransfer(); // optional
         });
       } catch (error) {

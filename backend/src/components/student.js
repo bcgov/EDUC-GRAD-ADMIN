@@ -193,7 +193,7 @@ async function transferStudentAssessmentsByStudentID(req, res) {
 
     // Delete assessments
     if (tobeDeleted && tobeDeleted.length > 0) {
-      for (const assessmentID of tobeDeleted) {
+      for (const studentAssessmentId of tobeDeleted) {
         try {
           const clonedReq = {
             ...req,
@@ -201,14 +201,19 @@ async function transferStudentAssessmentsByStudentID(req, res) {
               ...req.query,
               allowRuleOverride: "true",
             },
-            params: { studentAssessmentId: assessmentID },
+            params: { studentAssessmentId: studentAssessmentId },
             session: req.session,
           };
           console.log("clonedReq " + clonedReq);
           // Assuming deleteStudentAssessmentByID returns a result
+          // delete :[{assessmntID: assessmentID, result: data }]
           const deleteResult = await deleteStudentAssessmentByID(clonedReq, {
             status: () => ({
-              json: (data) => createResponse.deleted.push(data),
+              json: (data) =>
+                createResponse.deleted.push({
+                  studentAssessmentId: studentAssessmentId,
+                  result: data,
+                }),
             }),
           });
           console.log("deleteResult " + deleteResult);
@@ -216,7 +221,7 @@ async function transferStudentAssessmentsByStudentID(req, res) {
           console.error(`Failed to delete assessment:`, err);
           createResponse.errors.push({
             type: "delete",
-            assessmentID: assessmentID,
+            studentAssessmentId: studentAssessmentId,
             error: err.message,
           });
         }
@@ -255,6 +260,7 @@ async function transferStudentAssessmentsByStudentID(req, res) {
         }
       }
     }
+    console.log("createResponse " + createResponse);
     // Final response
     return res.status(200).json({
       message: "Assessment reconciliation complete.",
