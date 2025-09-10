@@ -134,7 +134,7 @@ export default {
   },
   mergeStudentGradStatus(mergeStudentID, trueStudentID, json) {
     return ApiService.apiAxios.post(
-      `/api/student/${mergeStudentID}/merge/${trueStudentID}`,
+      `/api/student/${mergeStudentID}/gradStatus/merge/${trueStudentID}`,
       json
     );
   },

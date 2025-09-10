@@ -1,6 +1,5 @@
 <template>
-  <pre>{{ gradStatusToMerge }}</pre>
-  <!-- <v-data-table></v-data-table> -->
+  <!-- <pre>{{ gradStatusToMerge }}</pre> -->
   <v-col>
     <v-row no-gutters
       ><v-col cols="4"></v-col>
@@ -16,7 +15,7 @@
       </v-col>
       <v-col cols="4"
         ><router-link
-          :to="'/student-profile/' + sourceStudentData.studentID"
+          :to="'/student-profile/' + targetStudentData.studentID"
           target="_blank"
           >{{ targetStudentName
           }}<v-icon color="info" :size="18" class="ml-1 mb-1"
@@ -31,6 +30,7 @@
           v-model="keysToOverride.program"
           label="Program"
           hide-details
+          @change="updateGradStatusToMerge"
       /></v-col>
       <v-col cols="4">{{ sourceStudentGradStatus.program }}</v-col>
       <v-col v-if="keysToOverride.program" cols="4"
@@ -44,6 +44,7 @@
           v-model="keysToOverride.programCompletionDate"
           label="Program Completion Date"
           hide-details
+          @change="updateGradStatusToMerge"
       /></v-col>
       <v-col cols="4">{{
         $filters.formatYYYYMMDate(sourceStudentGradStatus.programCompletionDate)
@@ -65,6 +66,7 @@
           v-model="keysToOverride.studentGrade"
           label="Student Grade"
           hide-details
+          @change="updateGradStatusToMerge"
       /></v-col>
       <v-col cols="4">{{ sourceStudentGradStatus.studentGrade }}</v-col>
       <v-col v-if="keysToOverride.studentGrade" cols="4"
@@ -78,6 +80,7 @@
           v-model="keysToOverride.schoolOfRecord"
           label="School of Record"
           hide-details
+          @change="updateGradStatusToMerge"
       /></v-col>
       <v-col cols="4">{{
         formatSchoolName(sourceStudentSchoolOfRecord)
@@ -97,6 +100,7 @@
           v-model="keysToOverride.schoolAtGrad"
           label="School at Graduation"
           hide-details
+          @change="updateGradStatusToMerge"
       /></v-col>
       <v-col cols="4">{{ formatSchoolName(sourceStudentSchoolAtGrad) }}</v-col>
       <v-col v-if="keysToOverride.schoolAtGrad" cols="4"
@@ -114,6 +118,7 @@
           v-model="keysToOverride.honoursStanding"
           label="Honours Standing"
           hide-details
+          @change="updateGradStatusToMerge"
       /></v-col>
       <v-col cols="4">{{ sourceStudentGradStatus.honoursStanding }}</v-col>
       <v-col v-if="keysToOverride.honoursStanding" cols="4"
@@ -129,6 +134,7 @@
           v-model="keysToOverride.adultStartDate"
           label="Adult Start Date"
           hide-details
+          @change="updateGradStatusToMerge"
       /></v-col>
       <v-col cols="4">{{
         $filters.formatSimpleDate(sourceStudentGradStatus.adultStartDate)
@@ -148,6 +154,7 @@
           v-model="keysToOverride.optionalPrograms"
           label="Optional Programs"
           hide-details
+          @change="updateGradStatusToMerge"
       /></v-col>
       <v-col cols="4">
         <ul
@@ -197,7 +204,7 @@
 import { useStudentStore } from "@/store/modules/student";
 import { useAppStore } from "@/store/modules/app";
 import sharedMethods from "@/sharedMethods.js";
-import { mapState } from "pinia";
+import { mapState, mapActions } from "pinia";
 
 export default {
   name: "GRADStatusReviewAndReconcile",
@@ -260,8 +267,57 @@ export default {
     };
   },
   methods: {
+    ...mapActions(useStudentStore, [
+      "setGradStatusToMerge",
+      "clearGradStatusToMerge",
+    ]),
     formatSchoolName(school) {
       return !!school ? `${school.mincode} - ${school.displayName}` : "";
+    },
+
+    updateGradStatusToMerge() {
+      if (Object.values(this.keysToOverride).every((val) => val === false)) {
+        this.clearGradStatusToMerge();
+      } else {
+        const merged = {
+          studentID: this.targetStudentData.studentID,
+          program: this.keysToOverride.program
+            ? this.sourceStudentGradStatus.program
+            : this.targetStudentGradStatus.program,
+
+          studentStatus: this.targetStudentGradStatus.studentStatus,
+
+          programCompletionDate: this.keysToOverride.programCompletionDate
+            ? this.sourceStudentGradStatus.programCompletionDate
+            : this.targetStudentGradStatus.programCompletionDate,
+
+          studentGrade: this.keysToOverride.studentGrade
+            ? this.sourceStudentGradStatus.studentGrade
+            : this.targetStudentGradStatus.studentGrade,
+
+          schoolOfRecordId: this.keysToOverride.schoolOfRecord
+            ? this.sourceStudentGradStatus.schoolOfRecordId
+            : this.targetStudentGradStatus.schoolOfRecordId,
+
+          schoolAtGradId: this.keysToOverride.schoolAtGrad
+            ? this.sourceStudentGradStatus.schoolAtGradId
+            : this.targetStudentGradStatus.schoolAtGradId,
+
+          honoursStanding: this.keysToOverride.honoursStanding
+            ? this.sourceStudentGradStatus.honoursStanding
+            : this.targetStudentGradStatus.honoursStanding,
+
+          adultStartDate: this.keysToOverride.adultStartDate
+            ? this.sourceStudentGradStatus.adultStartDate
+            : this.targetStudentGradStatus.adultStartDate,
+
+          optionalPrograms: this.keysToOverride.optionalPrograms
+            ? this.sourceStudentGradStatus.optionalPrograms
+            : this.targetStudentGradStatus.optionalPrograms,
+        };
+
+        this.setGradStatusToMerge(merged);
+      }
     },
   },
 };
