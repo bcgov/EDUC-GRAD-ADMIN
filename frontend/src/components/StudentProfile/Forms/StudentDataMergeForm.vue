@@ -949,8 +949,8 @@ export default {
         this.studentDataToMerge.nonExaminableCourses.info.length > 0 ||
         this.studentDataToMerge.nonExaminableCourses.conflicts.length > 0 ||
         this.studentDataToMerge.assessments.info.length > 0 ||
-        this.studentDataToMerge.assessments.conflicts.length > 0 ||
-        Object.keys(this.studentDataToMerge.gradStatus).length > 0
+        this.studentDataToMerge.assessments.conflicts.length > 0
+        //Object.keys(this.studentDataToMerge.gradStatus).length > 0
       );
     },
   },
