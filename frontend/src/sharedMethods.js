@@ -253,4 +253,19 @@ export default {
     );
     return difference.toISOString().slice(11, 19);
   },
+  formatStudentName(profile, showPEN = true, showMiddle = true) {
+    if (profile) {
+      let formattedName = `${profile.legalLastName}, ${profile.legalFirstName}`;
+      if (showPEN) {
+        formattedName = `${profile.pen} - ` + formattedName;
+      }
+      if (showMiddle && profile.legalMiddleNames) {
+        formattedName = formattedName + ` ${profile.legalMiddleNames}`;
+      }
+      return formattedName;
+    } else {
+      //return "error occurred getting student name, refresh or try again later";
+      return "";
+    }
+  },
 };

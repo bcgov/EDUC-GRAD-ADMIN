@@ -47,6 +47,7 @@ const {
   getRunPreviewFinalMarks,
   getRunTranscriptVerification,
   getRunUpdateTranscript,
+  mergeStudentGradStatus,
   getStudentTranscript,
   getStudentTVR,
   getStudentCertificate,
@@ -129,7 +130,6 @@ router.post(
   validate(postMergeCompleteStudentSchema),
   completeStudentMergeByStudentID
 );
-
 
 router.delete(
   "/:studentID/courses",
@@ -266,6 +266,13 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getRunUpdateTranscript
+);
+
+router.post(
+  "/:studentID/gradStatus/merge/:trueStudentID",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  mergeStudentGradStatus
 );
 
 // STUDENT REPORTS
