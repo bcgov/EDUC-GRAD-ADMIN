@@ -172,13 +172,71 @@
                         {{ targetStudentData.legalFirstName }}</strong
                       >:
                     </div>
-                    <pre>{{ assessmentsToTransfer }}</pre>
-                    <v-row
+                    <!-- <pre>{{ assessmentsToTransfer }}</pre> -->
+                    <div
                       no-gutters
                       v-for="assessment in assessmentsToTransfer"
                       :key="assessment.assessmentID + assessment.sessionDate"
-                      >{{ assessment.assessmentID }}
-                    </v-row>
+                    >
+                      <v-col cols="12">
+                        <v-row style="font-size: 1rem">
+                          <v-col>
+                            <strong>
+                              {{
+                                assessment.assessmentType?.label ||
+                                assessment.assessmentTypeCode
+                              }}
+                              {{ assessment.sessionDate }}</strong
+                            >
+                            ({{ assessment.assessmentType.label }})
+                          </v-col>
+                        </v-row>
+                        <v-row no-gutters style="font-size: 1rem">
+                          <v-col class="mr-2" cols="auto">
+                            <strong>Proficiency Score: </strong>
+                            <span v-if="assessment.proficiencyScore">{{
+                              assessment.proficiencyScore
+                            }}</span>
+                            <span v-else><i>null</i></span>
+                          </v-col>
+                          <v-col class="mr-2" cols="auto">
+                            <strong>Special Case: </strong>
+                            <span v-if="assessment.provincialSpecialCaseCode">
+                              {{
+                                getProvincialSpecialCaseDisplayName(
+                                  assessment.provincialSpecialCaseCode
+                                )
+                              }}
+                            </span>
+                            <span v-else><i>null</i></span>
+                          </v-col>
+                          <v-col class="mr-2" cols="auto">
+                            <strong>Wrote Flag: </strong>
+                            <span v-if="assessment.wroteFlag">{{
+                              assessment.wroteFlag ? "Y" : "N"
+                            }}</span>
+                            <span v-else><i>null</i></span>
+                          </v-col>
+                          <v-col class="mr-2" cols="auto">
+                            <strong>Exceeds Writes: </strong>
+                            <span>{{
+                              assessment.numberOfAttempts >= 3 ? "Y" : "N"
+                            }}</span>
+                          </v-col>
+                          <v-col class="mr-2" cols="auto">
+                            <strong>Assessment Center: </strong>
+                            <span v-if="assessment.assessmentCenterSchoolID">
+                              {{
+                                getAssessmentCenterSchoolDisplayName(
+                                  assessment.assessmentCenterSchoolID
+                                )
+                              }}
+                            </span>
+                            <span v-else><i>null</i></span>
+                          </v-col>
+                        </v-row>
+                      </v-col>
+                    </div>
                   </v-alert>
                 </div>
               </v-stepper-window-item>
@@ -247,11 +305,11 @@
 </template>
 
 <script>
+import { useAppStore } from "@/store/modules/app";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "@/store/modules/student";
 import StudentLookupByPen from "@/components/StudentProfile/Forms/FormInputs/StudentLookupByPen.vue";
 import AssessmentReviewAndReconcile from "@/components/StudentProfile/Forms/wizard/AssessmentReviewAndReconcile.vue";
-import StudentService from "@/services/StudentService.js";
 import StudentAssessmentService from "@/services/StudentAssessmentService.js";
 import { mapState, mapActions } from "pinia";
 import { toRaw } from "vue";
@@ -298,6 +356,12 @@ export default {
     ...mapState(useStudentStore, {
       assessmentsToTransfer: (state) => state.transfer.assessments,
     }),
+    ...mapState(useAppStore, {
+      getSchoolsList: "getSchoolsList",
+      getStudentAssessmentProvincialSpecialCaseCodes:
+        "getStudentAssessmentProvincialSpecialCaseCodes",
+      assessmentTypeCodesMap: "assessmentTypeCodesMap",
+    }),
   },
   watch: {
     targetStudentData: {
@@ -341,6 +405,20 @@ export default {
       "clearAssessmentsToTransfer",
       "transferStudentAssessments",
     ]),
+    getAssessmentCenterSchoolDisplayName(schoolId) {
+      const school = this.getSchoolsList.find(
+        (school) => school.schoolId === schoolId
+      );
+      return school ? `${school.mincode} - ${school.displayName}` : "";
+    },
+    getProvincialSpecialCaseDisplayName(code) {
+      const specialCase =
+        this.getStudentAssessmentProvincialSpecialCaseCodes.find(
+          (specialCaseCode) =>
+            specialCaseCode.provincialSpecialCaseCode === code
+        );
+      return specialCase ? specialCase.label : "";
+    },
     close() {
       this.dialog = false;
       this.clearForm();
