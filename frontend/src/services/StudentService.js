@@ -140,6 +140,12 @@ export default {
       `/api/student/${studentID}/updateTranscript`
     );
   },
+  mergeStudentGradStatus(mergeStudentID, trueStudentID, json) {
+    return ApiService.apiAxios.post(
+      `/api/student/${mergeStudentID}/gradStatus/merge/${trueStudentID}`,
+      json
+    );
+  },
   // STUDENT REPORTS
   getStudentTranscript(studentID) {
     return ApiService.apiAxios.get(

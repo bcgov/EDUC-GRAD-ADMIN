@@ -86,56 +86,6 @@
         </td>
       </template>
       <template v-slot:item.assessmentName="{ item }">
-        <v-dialog max-width="500">
-          <template v-slot:activator="{ props: activatorProps }">
-            <v-btn
-              v-bind="activatorProps"
-              color="surface-variant"
-              :text="item.assessmentType?.label || item.assessmentTypeCode"
-              variant="plain"
-              class="m-1 p-1 text-left v-btn-link"
-            >
-            </v-btn>
-          </template>
-          <template v-slot:default="{ isActive }">
-            <v-card
-              :title="item.assessmentType?.label || item.assessmentTypeCode"
-            >
-              <v-card-text>
-                <div class="row py-1">
-                  <div class="col">
-                    <strong>Language:</strong>
-                  </div>
-                  <div class="col">
-                    {{ item.assessmentType?.language }}
-                  </div>
-                </div>
-                <div class="row py-1">
-                  <div class="col"><strong>Start Date:</strong></div>
-                  <div class="col">
-                    {{
-                      $filters.formatSimpleDate(
-                        item.assessmentType?.effectiveDate
-                      )
-                    }}
-                  </div>
-                </div>
-                <div class="row py-1">
-                  <div class="col"><strong>End Date:</strong></div>
-                  <div class="col">
-                    {{
-                      $filters.formatSimpleDate(item.assessmentType?.expiryDate)
-                    }}
-                  </div>
-                </div>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn text="Close" @click="isActive.value = false"></v-btn>
-              </v-card-actions>
-            </v-card>
-          </template>
-        </v-dialog>
         <v-btn
           color="primary"
           @click="openAssessmentDetails(item)"

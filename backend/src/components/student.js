@@ -165,7 +165,7 @@ async function transferStudentCoursesByStudentID(req, res) {
     }
     return res.status(200).json(createTransferResponse);
   } catch (e) {
-    console.error("Error transferring student courses:", e);
+    log.error("Error transferring student courses:", e);
     if (e?.data?.messages) {
       return errorResponse(res, e.data.messages[0].message, e.status);
     } else {
@@ -201,10 +201,10 @@ async function transferStudentAssessmentsByStudentID(req, res) {
               ...req.query,
               allowRuleOverride: "true",
             },
-            params: { studentAssessmentId: studentAssessmentId },
+            params: { studentAssessmentId: assessmentID },
             session: req.session,
           };
-          console.log("clonedReq " + clonedReq);
+
           // Assuming deleteStudentAssessmentByID returns a result
           // delete :[{assessmntID: assessmentID, result: data }]
           const deleteResult = await deleteStudentAssessmentByID(clonedReq, {
@@ -216,7 +216,6 @@ async function transferStudentAssessmentsByStudentID(req, res) {
                 }),
             }),
           });
-          console.log("deleteResult " + deleteResult);
         } catch (err) {
           console.error(`Failed to delete assessment:`, err);
           createResponse.errors.push({
@@ -245,11 +244,9 @@ async function transferStudentAssessmentsByStudentID(req, res) {
             params: req.params,
             session: req.session,
           };
-          console.log("clonedReq " + clonedReq);
           const postResult = await postStudentAssessment(clonedReq, {
             status: () => ({ json: (data) => createResponse.added.push(data) }),
           });
-          console.log("postResult " + postResult);
         } catch (err) {
           console.error(`Failed to add assessment:`, err);
           createResponse.errors.push({
@@ -260,7 +257,6 @@ async function transferStudentAssessmentsByStudentID(req, res) {
         }
       }
     }
-    console.log("createResponse " + createResponse);
     // Final response
     return res.status(200).json({
       message: "Assessment reconciliation complete.",
@@ -859,6 +855,99 @@ async function getRunUpdateTranscript(req, res) {
   }
 }
 
+async function mergeStudentGradStatus(req, res) {
+  const token = auth.getBackendToken(req);
+
+  const baseURL = config.get("server:studentAPIURL");
+
+  const gradStatusPayload = Object.fromEntries(
+    Object.entries(req.body).filter(
+      ([key]) => !["optionalPrograms", "careerPrograms"].includes(key)
+    )
+  );
+
+  const mergeResponse = {
+    updated: [],
+    deleted: [],
+    errors: [],
+  };
+
+  const optionalProgramsPayload = req.body.optionalPrograms;
+  const careerProgramsPayload = {
+    careerProgramCodes:
+      req.body.careerPrograms?.map(
+        (careerProgram) => careerProgram.careerProgramCode
+      ) || [],
+  };
+
+  try {
+    const gradStatusUrl = `${baseURL}/api/v1/student/gradstudent/studentid/${req.params?.trueStudentID}`;
+    const gradStatusResponse = await postData(
+      token,
+      gradStatusUrl,
+      gradStatusPayload,
+      req.session?.correlationID
+    );
+
+    mergeResponse.updated.push(gradStatusResponse);
+
+    if (!!optionalProgramsPayload && optionalProgramsPayload.length > 0) {
+      if (!!gradStatusResponse.careerPrograms) {
+        // delete career programs on target
+        for (careerProgram of gradStatusResponse.careerPrograms) {
+          let response = await deleteData(
+            token,
+            `${baseURL}/api/v1/student/${req.params?.trueStudentID}/careerPrograms/${careerProgram.careerProgramCode}`
+          );
+
+          mergeResponse.deleted.push(response);
+        }
+      }
+      if (!!gradStatusResponse.optionalPrograms) {
+        // delete opt programs on target
+
+        for (optionalProgram of gradStatusResponse.optionalPrograms) {
+          let response = await deleteData(
+            token,
+            `${baseURL}/api/v1/student/${req.params?.trueStudentID}/optionalPrograms/${optionalProgram.optionalProgramID}`
+          );
+          mergeResponse.deleted.push(response);
+        }
+      }
+    }
+
+    // add careerPrograms and optionalPrograms
+    if (careerProgramsPayload.length > 0) {
+      let response = await postData(
+        token,
+        `${baseURL}/api/v1/student/${req.params?.trueStudentID}/careerPrograms`,
+        careerProgramsPayload,
+        req.session?.correlationID
+      );
+
+      mergeResponse.updated.push(response.data);
+    }
+    for (optionalProgram of optionalProgramsPayload) {
+      if (optionalProgram.optionalProgramCode != "CP") {
+        let response = await postData(
+          token,
+          `${baseURL}/api/v1/student/${req.params?.trueStudentID}/optionalPrograms/${optionalProgram.optionalProgramID}`
+        );
+        mergeResponse.updated.push(response.data);
+      }
+    }
+
+    return res.status(200).json(mergeResponse);
+  } catch (e) {
+    log.error("Error merging student Grad Status: ", e);
+    if (e?.data?.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 async function getStudentTranscript(req, res) {
   const token = auth.getBackendToken(req);
 
@@ -1103,6 +1192,7 @@ module.exports = {
   getRunPreviewFinalMarks,
   getRunTranscriptVerification,
   getRunUpdateTranscript,
+  mergeStudentGradStatus,
   // STUDENT REPORTS
   getStudentTranscript,
   getStudentTVR,
