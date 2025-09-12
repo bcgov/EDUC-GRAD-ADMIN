@@ -141,6 +141,7 @@
                     :targetStudentGradStatus="
                       targetStudentReconcileData.gradStatus
                     "
+                    :keysToOverride.sync="gradStatusKeysToMerge"
                   />
                 </div>
               </v-stepper-window-item>
@@ -236,7 +237,9 @@
             class="text-none"
             :disabled="
               validationStep ||
-              Object.keys(studentDataToMerge.gradStatus).length === 0
+              Object.values(this.gradStatusKeysToMerge).every(
+                (val) => val === false
+              )
             "
             >Save GRAD Status</v-btn
           >
@@ -316,6 +319,16 @@ export default {
         note: {},
       },
       validationStep: false,
+      gradStatusKeysToMerge: {
+        program: false,
+        programCompletionDate: false,
+        studentGrade: false,
+        schoolOfRecord: false,
+        schoolAtGrad: false,
+        honoursStanding: false,
+        adultStartDate: false,
+        optionalPrograms: false,
+      },
     };
   },
   computed: {
@@ -413,6 +426,20 @@ export default {
     openStudentDataMergeDialog() {
       this.clearForm();
       this.dialog = true;
+    },
+    resetStudentGradStatusForm() {
+      this.gradStatusKeysToMerge = {
+        program: false,
+        programCompletionDate: false,
+        studentGrade: false,
+        schoolOfRecord: false,
+        schoolAtGrad: false,
+        honoursStanding: false,
+        adultStartDate: false,
+        optionalPrograms: false,
+      };
+
+      this.clearGradStatusToMerge();
     },
     async populateTargetStudentData(truePen) {
       if (truePen) {
@@ -669,7 +696,7 @@ export default {
         );
 
         if (response.status === 200) {
-          this.clearGradStatusToMerge();
+          this.resetStudentGradStatusForm();
           await this.refreshTargetStudentGradStatus(
             this.targetStudentData.studentID
           );
@@ -699,11 +726,6 @@ export default {
         this.validationStep = false;
       }
     },
-    // async persistGradStatus(studentGradStatus) {
-    // do I need this?
-    // this.mergeStudentGradStatusResult = "";
-    // let localStudentGradStatus = studentGradStatus;
-    // },
     async persistStudentAssessments(studentAssessments) {
       this.mergeStudentAssessmentsResultsMessages = [];
       let localStudentAssessments = { ...studentAssessments };
@@ -899,9 +921,6 @@ export default {
     async refreshTargetStudentGradStatus(studentID) {
       this.targetStudentReconcileData.gradStatus =
         await this.fetchStudentGradStatus(studentID);
-      // initialize to target student GRAD status
-      this.studentDataToMerge.gradStatus =
-        this.targetStudentReconcileData.gradStatus;
     },
     async completeMerge() {
       this.validationStep = true;
@@ -949,8 +968,8 @@ export default {
         this.studentDataToMerge.nonExaminableCourses.info.length > 0 ||
         this.studentDataToMerge.nonExaminableCourses.conflicts.length > 0 ||
         this.studentDataToMerge.assessments.info.length > 0 ||
-        this.studentDataToMerge.assessments.conflicts.length > 0
-        //Object.keys(this.studentDataToMerge.gradStatus).length > 0
+        this.studentDataToMerge.assessments.conflicts.length > 0 ||
+        Object.values(this.gradStatusKeysToMerge).some((val) => val === true)
       );
     },
   },
