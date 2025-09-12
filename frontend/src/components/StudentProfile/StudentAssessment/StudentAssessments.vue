@@ -26,11 +26,25 @@
           </v-btn>
         </td>
       </template>
+
+
       <template v-slot:item.assessmentName="{ item }">
-        <v-btn color="primary" @click="openAssessmentDetails(item)"
-          :text="item.assessmentType?.label || item.assessmentTypeCode" variant="text"
-          class="text-left v-btn-link assessment-name-btn" :disabled="!isAssessmentSelectable(item)" />
+        <div v-if="isAssessmentSelectable(item)">
+          <v-btn color="primary" @click="openAssessmentDetails(item)"
+            :text="item.assessmentType?.label || item.assessmentTypeCode" variant="text"
+            class="text-left v-btn-link assessment-name-btn" />
+        </div>
+        <div v-else>
+          <v-btn variant="text">
+            <span class="black-disabled-label">
+              {{ item.assessmentType?.label || item.assessmentTypeCode }}
+            </span>
+          </v-btn>
+
+        </div>
       </template>
+
+
       <template v-slot:expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length">
