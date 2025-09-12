@@ -43,6 +43,7 @@
         @saved="loadStudentAssessments"
       />
       <StudentAssessmentsTransferForm
+        @refresh-sessions="loadStudentAssessments"
         @close="clearSelected"
         :selectedAssessmentsToTransfer="selected"
         ref="assessmentTransferFormRef"

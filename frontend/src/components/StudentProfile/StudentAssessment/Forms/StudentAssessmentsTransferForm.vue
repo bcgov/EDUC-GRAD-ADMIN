@@ -570,6 +570,7 @@ export default {
           );
 
           this.clearAssessmentsToTransfer(); // optional
+          this.$emit("refresh-sessions"); // Notify parent to refresh sessions
         });
       } catch (error) {
         console.error("Error transferring student assessments:", error);

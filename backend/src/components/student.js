@@ -182,15 +182,10 @@ async function transferStudentAssessmentsByStudentID(req, res) {
     };
 
     let localStudentAssessments = { ...req.body };
-
     const tobeDeleted = Object.values(localStudentAssessments)
       .map((assessment) => assessment.assessmentStudentID)
       .filter(Boolean);
-    console.log("tobeDeleted: " + JSON.stringify(tobeDeleted));
-
     const tobeAdded = Object.values(localStudentAssessments);
-    console.log("tobeAdded: " + JSON.stringify(tobeAdded));
-
     // Delete assessments
     if (tobeDeleted && tobeDeleted.length > 0) {
       for (const studentAssessmentId of tobeDeleted) {
@@ -201,7 +196,7 @@ async function transferStudentAssessmentsByStudentID(req, res) {
               ...req.query,
               allowRuleOverride: "true",
             },
-            params: { studentAssessmentId: assessmentID },
+            params: { studentAssessmentId: studentAssessmentId },
             session: req.session,
           };
 
