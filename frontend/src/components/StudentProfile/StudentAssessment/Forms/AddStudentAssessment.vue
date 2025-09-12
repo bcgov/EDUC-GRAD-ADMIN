@@ -16,7 +16,6 @@
           </v-row>
         </v-card-title>
         <v-card-text class="py-1">
-
           <v-expand-transition>
             <v-row>
               <v-col v-if="updateStudentAssessment.assessmentStudentValidationIssues">
@@ -120,29 +119,30 @@ export default defineComponent({
           assessment =>
             assessment.assessmentID === this.updateStudentAssessment?.assessmentID
         );
-      // Get exclusion rules for the matched assessment type
-      const exclusionRule = this.specialCaseCodesToExcludeFromAssessments[match?.assessmentTypeCode];
 
       // Work on a copy of the codes to avoid mutating the original array
-      let allowedCodes = [...this.provincialSpecialCaseCodes];
+      let allowedCodes = ["A", "E", "Q"];
+      let defaultAllowedCodes = ["E"];
 
-      // Apply exclusion if rules exist
-      if (exclusionRule?.excludeCodes?.length) {
-        allowedCodes = allowedCodes.filter(
-          code => !exclusionRule.excludeCodes.includes(code.provincialSpecialCaseCode)
-        );
-      }
+      // Get exclusion rules for the matched assessment type
+      const excludeConfig = this.specialCaseCodesToExcludeFromAssessments?.[match?.assessmentTypeCode];
+      const excludeCodes = excludeConfig?.excludeCodes || [];
+
+      // Filter out excluded codes
+      allowedCodes = allowedCodes.filter(code => !excludeCodes.includes(code));
+      defaultAllowedCodes = defaultAllowedCodes.filter(code => !excludeCodes.includes(code));
 
       // Return the dropdown configuration
       return usePermissionBasedDropdown({
-        items: allowedCodes,
+        items: this.provincialSpecialCaseCodes,
         currentValue: this.updateStudentAssessment?.provincialSpecialCaseCode,
         itemValueKey: "provincialSpecialCaseCode",
         permissionKey: "editAllSpecialCases",
-        allowedCodes: ["A", "E", "Q"],
-        defaultAllowedCodes: ["E"],
+        allowedCodes: allowedCodes,
+        defaultAllowedCodes: defaultAllowedCodes,
       });
     },
+
 
 
     wasWritten() {
@@ -169,7 +169,6 @@ export default defineComponent({
         NMF: { excludeCodes: ["E"] },
         NME: { excludeCodes: ["E"] },
       }
-
     };
   },
   watch: {
