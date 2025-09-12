@@ -21,12 +21,14 @@
                   append-icon="mdi-menu-down" color="error">Bulk Actions</v-btn>
               </template>
               <v-list>
-                <v-list-item v-if="hasPermissions('STUDENT', 'updateCourseExam') && hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
-                  @click="showCourseDelete">
+                <v-list-item
+                  v-if="hasPermissions('STUDENT', 'updateCourseExam') && hasPermissions('STUDENT', 'courseUpdate')"
+                  :disabled="selected.length === 0" @click="showCourseDelete">
                   <v-icon color="error">mdi-delete-forever</v-icon> Delete Selected Courses
                 </v-list-item>
-                <v-list-item v-if="hasPermissions('STUDENT', 'studentTransfer') && hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
-                  @click="showCourseTransfer">
+                <v-list-item
+                  v-if="hasPermissions('STUDENT', 'studentTransfer') && hasPermissions('STUDENT', 'courseUpdate')"
+                  :disabled="selected.length === 0" @click="showCourseTransfer">
                   <v-icon color="error">mdi-transfer</v-icon> Transfer Selected Courses
                 </v-list-item>
               </v-list>
@@ -172,7 +174,7 @@ export default {
       hasGradStatusPendingUpdates: "getHasGradStatusPendingUpdates",
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
-    ...mapState(useAppStore, { environment: "appEnvironment" }),    
+    ...mapState(useAppStore, { environment: "appEnvironment" }),
     studentStatus() {
       return this.studentStore.student.profile.studentStatus;
     },
