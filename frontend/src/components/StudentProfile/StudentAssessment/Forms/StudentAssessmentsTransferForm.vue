@@ -172,7 +172,6 @@
                         {{ targetStudentData.legalFirstName }}</strong
                       >:
                     </div>
-                    <!-- <pre>{{ assessmentsToTransfer }}</pre> -->
                     <div
                       no-gutters
                       v-for="assessment in assessmentsToTransfer"
@@ -369,8 +368,6 @@ export default {
       async handler(newTargetStudentData) {
         if (newTargetStudentData && newTargetStudentData.studentID) {
           this.validationStep = true;
-
-          console.log("ID " + newTargetStudentData.studentID);
           let response = await this.getStudentAssessments(
             newTargetStudentData.studentID
           );
@@ -459,6 +456,7 @@ export default {
         if (response.data !== null) {
           return response.data.content;
         } else {
+          // eslint-disable-next-line
           console.error(
             "No student assessments found with the provided ID",
             studentID
@@ -477,7 +475,6 @@ export default {
     },
     async submitForm() {
       this.transferStudentAssessmentResultsMessages = [];
-
       const assessmentWithoutAssessmentDetailsAndUserInfo =
         this.assessmentsToTransfer.map(
           ({
@@ -499,28 +496,20 @@ export default {
           this.targetStudentData.studentID,
           transferStudentAssessmentsRequestBody
         ).then((response) => {
-          console.log("assessmentsToTransfer: ", this.assessmentsToTransfer);
-          console.log("response: ", response.added);
-
           const added = response.added || [];
           const deleted = response.deleted || [];
-
           this.transferStudentAssessmentResultsMessages = [];
-
           this.assessmentsToTransfer.forEach((record) => {
             const wasDeleted = deleted.find(
               (item) => item.studentAssessmentId === record.assessmentStudentID
             );
-
             const wasAdded = added.find(
               (item) =>
                 item.assessmentID === record.assessmentID &&
-                item.studentID === this.targetStudentData.studentID
-              // && item.sessionID === record.sessionID // Uncomment if needed
+                item.studentID === this.targetStudentData.studentID &&
+                item.sessionID === record.sessionID
             );
-
             const messages = [];
-
             if (wasDeleted && wasAdded) {
               messages.push(
                 `Assessment ${record.assessmentTypeCode} was transferred to ${this.targetStudentData.legalFirstName} ${this.targetStudentData.legalLastName} - ${this.targetStudentData.pen}.`
@@ -531,14 +520,12 @@ export default {
                   `Assessment ${record.assessmentStudentID} was deleted.`
                 );
               }
-
               if (wasAdded) {
                 messages.push(
                   `Assessment ${record.assessmentStudentID} was added for student ${this.targetStudentData.studentID}.`
                 );
               }
             }
-
             if (messages.length > 0) {
               this.transferStudentAssessmentResultsMessages.push({
                 assessmentId: record.assessmentID,
@@ -563,16 +550,11 @@ export default {
             ...successMessages,
             ...errorMessages,
           ];
-
-          console.log(
-            "transferStudentAssessmentResultsMessages: ",
-            this.transferStudentAssessmentResultsMessages
-          );
-
           this.clearAssessmentsToTransfer(); // optional
           this.$emit("refresh-sessions"); // Notify parent to refresh sessions
         });
       } catch (error) {
+        // eslint-disable-next-line
         console.error("Error transferring student assessments:", error);
         this.snackbarStore.showSnackbar(
           "Failed to transfer student assessments",

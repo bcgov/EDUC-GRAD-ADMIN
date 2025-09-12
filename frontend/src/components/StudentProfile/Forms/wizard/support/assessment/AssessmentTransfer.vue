@@ -59,12 +59,6 @@
             <v-icon small class="mr-1">mdi-plus-circle-outline</v-icon>
             <AssessmentReview :assessment="item.source" />
           </div>
-          <!-- <span
-            v-else
-            :class="getProperty(key, 'style')"
-            style="font-size: 1rem"
-            >{{ item.message }}</span
-          > -->
         </template>
         <template v-if="key === 'info'" v-slot:item.delete="{ item }">
           <v-btn
