@@ -440,10 +440,6 @@ export default {
         this.warnings.push('Course session is in the past. Enter a final mark.');
       }
       
-      if ((!this.course.relatedCourseId && this.course.courseDetails.courseCode !== 'IDS') || (this.course.relatedCourseDetails?.courseID === this.course.relatedCourseId)) {
-        this.warnings.push('Related Courses must be a valid course');
-      }
-      
     },
     getGradesForPercent(percent) {
       const isGTorGTF = this.course.courseDetails.courseCode === 'GT' || this.course.courseDetails.courseCode === 'GTF';
