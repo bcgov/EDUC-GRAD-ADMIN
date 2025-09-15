@@ -494,16 +494,12 @@ export default {
           validationIssues: assessment.assessmentStudentValidationIssues,
         }));
 
-        console.log(assessmentsValidationIssues)
-        console.log(this.sourceStudentReconcileData.assessments)
         this.sourceStudentReconcileData.assessments = this.sourceStudentReconcileData.assessments.map(sa => {
           const match = assessmentsValidationIssues.find(
             vi =>
               vi.assessmentID === sa.assessmentID &&
               vi.sessionID === sa.sessionID
           );
-          console.log(match)
-
           return {
             ...sa,
             assessmentStudentValidationIssues: match
@@ -511,14 +507,6 @@ export default {
               : sa.assessmentStudentValidationIssues ?? null,
           };
         });
-
-        console.log(this.sourceStudentReconcileData.assessments)
-
-
-
-
-
-
         this.snackbarStore.showSnackbar(
           "Successfully merged student assessments",
           "success",
