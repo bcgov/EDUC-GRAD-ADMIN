@@ -276,20 +276,6 @@ export default {
               typeof value === 'string'
           ),
         },
-
-
-        relatedCourseId: {
-          validCourseID: helpers.withMessage(
-            'Related Courses must be a valid course',
-            (value, vm) => {
-              const noRelatedCourse = (value == '');
-              const validCourse = (!this.course.relatedCourseId && this.course.courseDetails.courseCode != "IDS") || (this.course.relatedCourseDetails.courseID == this.course.relatedCourseId);
-              return validCourse || noRelatedCourse;
-            }
-          )
-        }
-
-
       },
     }
   },
@@ -453,6 +439,11 @@ export default {
       if (this.course.courseSession < this.maxSession && !this.course.finalPercent && (this.course.finalLetterGrade === '' || this.course.finalLetterGrade === null || this.course.finalLetterGrade === undefined)) {
         this.warnings.push('Course session is in the past. Enter a final mark.');
       }
+      
+      if ((!this.course.relatedCourseId && this.course.courseDetails.courseCode !== 'IDS') || (this.course.relatedCourseDetails?.courseID === this.course.relatedCourseId)) {
+        this.warnings.push('Related Courses must be a valid course');
+      }
+      
     },
     getGradesForPercent(percent) {
       const isGTorGTF = this.course.courseDetails.courseCode === 'GT' || this.course.courseDetails.courseCode === 'GTF';
