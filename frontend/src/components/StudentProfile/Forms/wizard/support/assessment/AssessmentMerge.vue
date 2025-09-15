@@ -28,6 +28,9 @@
                     </div>
                 </template>
                 <template v-slot:item.target="{ item }">
+
+
+
                     <span v-if="item.target != null && !isRowSelected(key, item.source)" style="font-size: 0.875rem;"
                         :class="{ 'text-disabled': !isRowSelectable(item) }">
                         <AssessmentReview :assessment="item.target" />
@@ -41,6 +44,7 @@
                         <div class="d-flex align-center text-success">
                             <v-icon small class="mr-1">mdi-plus-circle-outline</v-icon>
                             <AssessmentReview :assessment="item.source" />
+
                         </div>
                     </div>
                     <div v-else-if="item.source != null && isRowSelected(key, item.source)" class="d-flex"
@@ -50,6 +54,15 @@
                             <AssessmentReview :assessment="item.source" />
                         </div>
                     </div>
+
+                    <div class="d-flex">
+                        <div v-if="item?.source?.assessmentStudentValidationIssues?.length"
+                            v-for="(issue, index) in item.source.assessmentStudentValidationIssues" :key="index"
+                            class="d-flex align-center">
+                            <v-icon small class="mr-3">mdi-information</v-icon> {{ issue.validationMessage }}
+                        </div>
+                    </div>
+
                 </template>
             </v-data-table>
         </v-row>
