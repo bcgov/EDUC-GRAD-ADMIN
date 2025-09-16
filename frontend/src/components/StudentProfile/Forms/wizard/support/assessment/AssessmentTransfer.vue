@@ -1,7 +1,9 @@
 <template>
   <div v-for="(value, key) in assessmentReconciliation" :key="key">
     <v-row no-gutters v-if="value.length >= 0">
+      <!-- took out conflicts alert as there wont be any for assessments transfer -->
       <v-alert
+        v-if="key !== 'conflicts'"
         :type="getProperty(key, 'type')"
         class="mb-4"
         border="start"
