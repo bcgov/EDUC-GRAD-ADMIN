@@ -326,7 +326,7 @@ export default {
         const response = await StudentAssessmentService.getAssessmentSessions();
         this.assessmentSessions = response.data.map(session => ({
           sessionID: session.sessionID,
-          sessionDate: `${session.courseYear}-${session.courseMonth}`,
+          sessionDate: `${session.courseYear}/${session.courseMonth}`,
           assessments: session.assessments.map(assessment => ({
             assessmentID: assessment.assessmentID,
             assessmentTypeCode: assessment.assessmentTypeCode
