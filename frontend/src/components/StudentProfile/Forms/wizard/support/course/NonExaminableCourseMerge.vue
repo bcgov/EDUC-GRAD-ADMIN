@@ -1,77 +1,43 @@
 <template>
   <div v-for="(value, key) in courseReconciliation" :key="key">
     <v-row no-gutters v-if="value.length >= 0 && key !== 'errors'">
-      <v-alert
-        :type="getProperty(key, 'type')"
-        :icon="getProperty(key, 'icon')"
-        class="mb-4"
-        border="start"
-        elevation="2"
-        variant="tonal"
-      >
+      <v-alert :type="getProperty(key, 'type')" :icon="getProperty(key, 'icon')" class="mb-4" border="start"
+        elevation="2" variant="tonal">
         <div class="mb-2">
           {{ nonExaminableCoursesToMerge[key].length }} / {{ value.length }}
           {{ getProperty(key, "headerSuffix") }}
         </div>
       </v-alert>
-      <v-data-table
-        v-if="value.length > 0"
-        v-model="nonExaminableCoursesToMerge[key]"
-        :items="value"
-        :item-value="(item) => item"
-        class="mb-4"
-        hide-default-footer
-        :headers="courseMergeHeaders()"
-        :show-select="key !== 'errors'"
-        :item-selectable="isRowSelectable"
-        :items-per-page="-1"
-      >
+      <v-data-table v-if="value.length > 0" v-model="nonExaminableCoursesToMerge[key]" :items="value"
+        :item-value="(item) => item" class="mb-4" hide-default-footer :headers="courseMergeHeaders()"
+        :show-select="key !== 'errors'" :item-selectable="isRowSelectable" :items-per-page="-1">
         <template v-slot:header.source="{ header }">
-          <router-link
-            :to="'/student-profile/' + sourceStudentData.studentID"
-            target="_blank"
-            >{{ getFormattedStudentInfo(sourceStudentData)
-            }}<v-icon color="info" :size="18"
-              >mdi-open-in-new</v-icon
-            ></router-link
-          >
+          <router-link :to="'/student-profile/' + sourceStudentData.studentID" target="_blank">{{
+            getFormattedStudentInfo(sourceStudentData)
+          }}<v-icon color="info" :size="18">mdi-open-in-new</v-icon></router-link>
         </template>
         <template v-slot:header.target="{ header }">
-          <router-link
-            :to="'/student-profile/' + targetStudentData.studentID"
-            target="_blank"
-            append-icon="mdi-open-in-new"
-            >{{ getFormattedStudentInfo(targetStudentData)
-            }}<v-icon color="info" :size="18"
-              >mdi-open-in-new</v-icon
-            ></router-link
-          >
+          <router-link :to="'/student-profile/' + targetStudentData.studentID" target="_blank"
+            append-icon="mdi-open-in-new">{{ getFormattedStudentInfo(targetStudentData)
+            }}<v-icon color="info" :size="18">mdi-open-in-new</v-icon></router-link>
         </template>
         <template v-slot:item.source="{ item }">
-          <div
-            v-if="item.source != null"
-            style="font-size: 0.875rem"
-            :class="{ 'text-disabled': !isRowSelectable(item) }"
-          >
+          <div v-if="item.source != null" style="font-size: 0.875rem"
+            :class="{ 'text-disabled': !isRowSelectable(item) }">
             <CourseReview :course="item.source" />
           </div>
         </template>
         <template v-slot:item.target="{ item }">
-          <span
-            v-if="item.target != null && !isRowSelected(key, item.source)"
-            style="font-size: 0.875rem"
-            :class="{ 'text-disabled': !isRowSelectable(item) }"
-          >
+
+          <span v-if="item.target != null && !isRowSelected(key, item.source)" style="font-size: 0.875rem"
+            :class="{ 'text-disabled': !isRowSelectable(item) }">
             <CourseReview :course="item.target" />
           </span>
-          <div
-            v-else-if="
-              item.source != null &&
-              item.target != null &&
-              isRowSelected(key, item.source)
-            "
-            style="font-size: 0.875rem"
-          >
+          <div v-else-if="
+            item.source != null &&
+            item.target != null &&
+            isRowSelected(key, item.source)
+          " style="font-size: 0.875rem">
             <div class="d-flex align-center text-disabled">
               <v-icon small class="mr-1">mdi-minus-circle-outline</v-icon>
               <CourseReview :course="item.target" />
@@ -81,16 +47,27 @@
               <CourseReview :course="item.source" />
             </div>
           </div>
-          <div
-            v-else-if="item.source != null && isRowSelected(key, item.source)"
-            class="d-flex"
-            style="font-size: 0.875rem"
-          >
+          <div v-else-if="item.source != null && isRowSelected(key, item.source)" class="d-flex"
+            style="font-size: 0.875rem">
             <div class="d-flex align-center text-success">
               <v-icon small class="mr-1">mdi-plus-circle-outline</v-icon>
               <CourseReview :course="item.source" />
             </div>
           </div>
+
+          <v-row>
+            <v-col v-for="(issue, index) in item.source.courseStudentValidationIssues" :key="index" cols="12"
+              class="d-flex align-center">
+              <v-icon :color="issue.validationIssueSeverityCode === 'ERROR' ? 'red' : 'orange'" class="mr-2" small>
+                {{ issue.validationIssueSeverityCode === 'ERROR' ? 'mdi-alert-circle' : 'mdi-alert' }}
+              </v-icon>
+
+              <div>
+                <strong>{{ issue.validationFieldName }}:</strong>
+                {{ issue.validationIssueMessage }}
+              </div>
+            </v-col>
+          </v-row>
         </template>
       </v-data-table>
     </v-row>
@@ -156,8 +133,8 @@ export default {
       },
     };
   },
-  mounted() {},
-  validations() {},
+  mounted() { },
+  validations() { },
   watch: {},
   methods: {
     courseMergeHeaders(key) {
