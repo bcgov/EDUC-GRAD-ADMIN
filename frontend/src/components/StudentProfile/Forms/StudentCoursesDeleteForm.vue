@@ -81,8 +81,8 @@
             {{ hasCoursesToDelete ? 'Cancel' : 'Close' }}
           </v-btn>
           <v-spacer />
-          <v-btn v-if="hasCoursesToDelete" color="error" variant="flat" class="text-none" density="default" :disabled="validationStep"
-            @click="confirmDelete">
+          <v-btn v-if="hasCoursesToDelete" color="error" variant="flat" class="text-none" density="default"
+            :disabled="validationStep" @click="confirmDelete">
             Delete Course<span v-if="selectedCoursesToDelete.length > 1">s</span>
           </v-btn>
 

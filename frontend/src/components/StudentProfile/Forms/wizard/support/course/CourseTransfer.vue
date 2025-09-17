@@ -1,46 +1,23 @@
 <template>
   <div v-for="(value, key) in courseReconciliation" :key="key">
     <v-row no-gutters v-if="value.length >= 0">
-      <v-alert
-        :type="getProperty(key, 'type')"
-        class="mb-4"
-        border="start"
-        elevation="2"
-        variant="tonal"
-      >
+      <v-alert :type="getProperty(key, 'type')" class="mb-4" border="start" elevation="2" variant="tonal">
         <div class="mb-2">
           {{ value.length }} / {{ totalNoOfCourses }}
           {{ getProperty(key, "headerSuffix") }}
         </div>
       </v-alert>
-      <v-data-table
-        v-if="value.length > 0"
-        :items="value"
-        class="mb-4"
-        hide-default-footer
-        :headers="courseTransferHeaders(key)"
-        :items-per-page="-1"
-      >
+      <v-data-table v-if="value.length > 0" :items="value" class="mb-4" hide-default-footer
+        :headers="courseTransferHeaders(key)" :items-per-page="-1">
         <template v-slot:header.source="{ header }">
-          <router-link
-            :to="'/student-profile/' + sourceStudentData.studentID"
-            target="_blank"
-            >{{ getFormattedStudentInfo(sourceStudentData)
-            }}<v-icon color="info" :size="18"
-              >mdi-open-in-new</v-icon
-            ></router-link
-          >
+          <router-link :to="'/student-profile/' + sourceStudentData.studentID" target="_blank">{{
+            getFormattedStudentInfo(sourceStudentData)
+          }}<v-icon color="info" :size="18">mdi-open-in-new</v-icon></router-link>
         </template>
         <template v-slot:header.target="{ header }">
-          <router-link
-            :to="'/student-profile/' + targetStudentData.studentID"
-            target="_blank"
-            append-icon="mdi-open-in-new"
-            >{{ getFormattedStudentInfo(targetStudentData)
-            }}<v-icon color="info" :size="18"
-              >mdi-open-in-new</v-icon
-            ></router-link
-          >
+          <router-link :to="'/student-profile/' + targetStudentData.studentID" target="_blank"
+            append-icon="mdi-open-in-new">{{ getFormattedStudentInfo(targetStudentData)
+            }}<v-icon color="info" :size="18">mdi-open-in-new</v-icon></router-link>
         </template>
         <template v-slot:item.source="{ item }">
           <div style="max-width: 98%; font-size: 0.875rem">
@@ -48,24 +25,18 @@
           </div>
         </template>
         <template v-slot:item.target="{ item }">
-          <span v-if="item.target" style="max-width: 98%; font-size: 0.875rem">
+          <div v-if="item.target" class="d-flex align-center text-disabled">
             <CourseReview :course="item.target" />
-          </span>
-          <span
-            v-else
-            :class="getProperty(key, 'style')"
-            style="font-size: 1rem"
-            >{{ item.message }}</span
-          >
+          </div>
+          <div v-else class="d-flex align-center text-success">
+            <CourseReview :course="item.source" />
+
+          </div>
+          <v-col cols="12">{{ item.message }}</v-col>
         </template>
         <template v-if="key === 'info'" v-slot:item.delete="{ item }">
-          <v-btn
-            @click="removeCourseInfo(item.source)"
-            color="error"
-            icon="mdi-close-circle"
-            variant="text"
-            class="float-center"
-          >
+          <v-btn @click="removeCourseInfo(item.source)" color="error" icon="mdi-close-circle" variant="text"
+            class="float-center">
           </v-btn>
         </template>
       </v-data-table>
@@ -93,8 +64,8 @@ export default {
     totalNoOfCourses() {
       return (
         this.courseReconciliation.info.length +
-          this.courseReconciliation.conflicts.length +
-          this.courseReconciliation.errors.length || 0
+        this.courseReconciliation.conflicts.length +
+        this.courseReconciliation.errors.length || 0
       );
     },
   },
@@ -143,7 +114,7 @@ export default {
       });
     }
   },
-  validations() {},
+  validations() { },
   watch: {},
   methods: {
     ...mapActions(useStudentStore, [
