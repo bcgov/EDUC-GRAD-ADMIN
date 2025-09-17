@@ -84,7 +84,6 @@ jobs:
     environment: dev
     env:
       OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-dev
-      HOST_ROUTE: "educ-grad-admin-${{ secrets.UI_NAMESPACE }}-dev.apps.silver.devops.gov.bc.ca"
       TARGET_ENV: "dev"
       MIN_CPU: "60m"
       MAX_CPU: "120m"
@@ -116,7 +115,6 @@ jobs:
 
           # Process template
           oc process -f tools/openshift/frontend-dc.yaml \
-          -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
           -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
           -p APP_NAME=${{ env.APP_NAME }} \
           -p TAG=${{ env.TAG }} \
@@ -145,7 +143,6 @@ jobs:
     environment: test
     env:
       OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-test
-      HOST_ROUTE: "educ-grad-admin-${{ secrets.UI_NAMESPACE }}-test.apps.silver.devops.gov.bc.ca"
       TARGET_ENV: "test"
       MIN_CPU: "50m"
       MAX_CPU: "100m"
@@ -178,7 +175,6 @@ jobs:
           
           # Process template
           oc process -f tools/openshift/frontend-dc.yaml \
-          -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
           -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
           -p APP_NAME=${{ env.APP_NAME }} \
           -p TAG=latest \
