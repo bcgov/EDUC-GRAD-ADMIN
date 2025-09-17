@@ -77,13 +77,20 @@
           </div>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="error" variant="outlined" class="text-none" density="default" @click="close">
-            {{ hasCoursesToDelete ? 'Cancel' : 'Close' }}
+          <v-btn v-if="hasCoursesToDelete" color="error" variant="outlined" class="text-none" density="default"
+            @click="close">
+            Cancel
           </v-btn>
           <v-spacer />
           <v-btn v-if="hasCoursesToDelete" color="error" variant="flat" class="text-none" density="default"
-            :disabled="validationStep" @click="confirmDelete">
+            :disabled="isLoading" @click="confirmDelete">
+            <v-progress-circular v-if="isLoading" indeterminate color="white" size="20"
+              class="mr-2"></v-progress-circular>
             Delete Course<span v-if="selectedCoursesToDelete.length > 1">s</span>
+          </v-btn>
+          <v-btn v-if="!hasCoursesToDelete" color="error" variant="outlined" class="text-none" density="default"
+            @click="close">
+            Close
           </v-btn>
 
         </v-card-actions>
@@ -130,6 +137,7 @@ export default {
       snackbarStore: useSnackbarStore(),
       hasExam: false,
       validationStep: false,
+      isLoading: false, // NEW variable for spinner
     };
   },
   computed: {
@@ -209,8 +217,6 @@ export default {
 
       return grouped;
     }
-
-
   },
   methods: {
     close() {
@@ -220,10 +226,11 @@ export default {
     },
     async confirmDelete() {
       try {
-        this.validationStep = true;
+        this.isLoading = true; // show spinner
+        this.validationStep = true; // keep your existing logic
+
         const request = this.selectedCoursesToDelete.map((item) => item.id);
         const response = await this.studentStore.deleteStudentCourses(request);
-        console.log(response.data)
 
         const notDeleted = response.data
           .filter(course =>
@@ -234,7 +241,6 @@ export default {
               .filter(issue => issue.validationIssueSeverityCode === "ERROR")
               .map(issue => issue.validationIssueMessage)
               .join("; ");
-
             return `${course.courseCode} ${course.courseLevel} (${course.courseSession}): ${errorMessages}`;
           })
           .join("\n");
@@ -246,27 +252,19 @@ export default {
           .map(course => `${course.courseCode} ${course.courseLevel} (${course.courseSession})`)
           .join(", ");
 
-        // Format snackbar message
         let message = "";
-        if (deleted) {
-          message += `Deleted: ${deleted}`;
-        }
+        if (deleted) message += `Deleted: ${deleted}`;
         if (notDeleted) {
-          if (deleted) message += "\n\n"; // spacing between groups
+          if (deleted) message += "\n\n";
           message += `Not Deleted:\n${notDeleted}`;
         }
 
-        this.snackbarStore.showSnackbar(
-          message,
-          "success",
-          10000,
-          "Student course"
-        );
-
+        this.snackbarStore.showSnackbar(message, "success", 10000, "Student course");
         this.close();
       } catch (error) {
         console.error("Failed to delete student courses:", error);
       } finally {
+        this.isLoading = false; // hide spinner
         this.validationStep = false;
       }
     },
