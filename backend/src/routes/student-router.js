@@ -12,6 +12,7 @@ const {
 
 const {
   postMergeStudentAssessmentSchema,
+  postTransferStudentAssessmentSchema,
 } = require("../components/validations/student-assessment");
 
 const {
@@ -113,7 +114,7 @@ router.post(
   "/:sourceStudentID/assessments/transfer/:targetStudentID",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithEditStaffRoles,
-  // validate(postTransferStudentAssessmentSchema),
+  validate(postTransferStudentAssessmentSchema),
   transferStudentAssessmentsByStudentID
 );
 

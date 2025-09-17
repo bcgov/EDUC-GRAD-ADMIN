@@ -469,7 +469,6 @@ export default {
           2000
         );
       } catch (error) {
-        console.log(error.response);
         if (error?.response?.status === 409) {
           let message = error?.response?.data?.message
             ? error.response.data.message.includes("Reason:")

@@ -240,7 +240,6 @@ async function postStudentAssessment(req, res) {
       userName,
       { params: params }
     );
-    console.log("postStudentAssessment result: ", result);
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
     await logApiError(
