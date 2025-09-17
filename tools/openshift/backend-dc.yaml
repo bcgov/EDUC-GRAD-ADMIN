@@ -136,27 +136,6 @@ objects:
         insecureEdgeTerminationPolicy: Redirect
         key: "${PRIVATE_KEY}"
         termination: edge
-  - apiVersion: v1
-    kind: Route
-    metadata:
-      labels:
-        app: "${APP_NAME}-backend"
-      name: "${APP_NAME}-backend"
-      annotations:
-        haproxy.router.openshift.io/timeout: 600s
-    spec:
-      host: "${HOST_ROUTE}"
-      path: "${HOST_PATH}"
-      port:
-        targetPort: ${CONTAINER_PORT}-tcp
-      tls:
-        insecureEdgeTerminationPolicy: Redirect
-        termination: edge
-      to:
-        kind: Service
-        name: "${APP_NAME}-backend"
-        weight: 100
-      wildcardPolicy: None
   - apiVersion: autoscaling/v2
     kind: HorizontalPodAutoscaler
     metadata:
@@ -193,17 +172,10 @@ parameters:
     description: Imagestream tag name
     required: false
     value: latest
-  - name: HOST_ROUTE
-    description: The host the route will use to expose service outside cluster
-    required: true
   - name: CONTAINER_PORT
     description: The port on which the application will be accessible
     required: false
     value: "8080"
-  - name: HOST_PATH
-    description: The path appended to the HOST_ROUTE where the root of this project will be served
-    required: false
-    value: "/api"
   - name: MIN_REPLICAS
     description: The minimum amount of replicas
     required: true
