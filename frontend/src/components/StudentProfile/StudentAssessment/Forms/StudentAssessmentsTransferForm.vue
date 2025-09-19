@@ -125,10 +125,9 @@
                         >
                           <div class="d-flex align-center flex-grow-1">
                             <span>
-                              Assessment ID: {{ item.assessmentId }} -
                               {{
                                 item.type === "success"
-                                  ? "Transferred Successfully"
+                                  ? "Transferred Successful"
                                   : "Failed to Transfer"
                               }}
                             </span>
