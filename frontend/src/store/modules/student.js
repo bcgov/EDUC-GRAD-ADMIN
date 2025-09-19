@@ -704,7 +704,10 @@ export const useStudentStore = defineStore("student", {
           targetStudentID,
           courses
         );
+        //reload student course
         this.getStudentCourses(sourceStudentID);
+        //load course audit history
+        this.loadStudentCourseHistory(sourceStudentID);
         this.loadStudentGradStatus(sourceStudentID);
         return response.data;
       } catch (error) {
