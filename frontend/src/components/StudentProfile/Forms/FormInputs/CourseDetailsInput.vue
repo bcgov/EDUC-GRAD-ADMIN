@@ -41,8 +41,8 @@
         </v-col>
         <v-col>
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
-            variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint            
-           :disabled="courseSessionGreaterThanReportingPeriod" />
+            variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint
+            :disabled="courseSessionGreaterThanReportingPeriod" />
         </v-col>
 
         <v-col>
@@ -313,6 +313,7 @@ export default {
       const warnings = [];
       this.updateWarnings();
       if (
+        newVal &&
         (courseType === "Locally Developed" || courseType === "Career Program") &&
         (trimmedProgram !== "1996-EN" && trimmedProgram !== "1996-PF")
       ) {

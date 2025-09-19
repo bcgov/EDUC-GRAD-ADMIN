@@ -29,9 +29,6 @@ env:
   MIN_REPLICAS: "3"
   MAX_REPLICAS: "5"
 
-  # SITE_URL should have no scheme or port. It will be prepended with https://
-  HOST_ROUTE: "educ-grad-admin-${{ secrets.UI_NAMESPACE }}-test.apps.silver.devops.gov.bc.ca"
-
 on:
   workflow_dispatch:
 
@@ -70,7 +67,6 @@ jobs:
           -p IS_NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
           -p TAG_NAME=latest \
           -p APP_NAME=${{ env.APP_NAME }} \
-          -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
           -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
           -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
           -p MIN_CPU=${{ env.MIN_CPU }} \
