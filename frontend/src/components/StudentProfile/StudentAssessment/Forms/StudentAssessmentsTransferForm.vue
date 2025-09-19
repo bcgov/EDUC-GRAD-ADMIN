@@ -127,7 +127,7 @@
                             <span>
                               {{
                                 item.type === "success"
-                                  ? "Transferred Successful"
+                                  ? "Transfer Successful"
                                   : "Failed to Transfer"
                               }}
                             </span>
