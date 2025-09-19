@@ -129,9 +129,6 @@
               studentDataToMerge.assessments.conflicts.length > 0
             )
             " color="error" variant="flat" class="text-none">Save Assessments</v-btn>
-          <!-- <v-btn v-if="step === 2" @click="addAssessments" :disabled="validationStep" color="error" variant="flat"
-            class="text-none">ADD
-            Assessments</v-btn> -->
           <v-btn v-if="step === 3" @click="saveGradStatus" color="error" variant="flat" class="text-none" :disabled="validationStep ||
             Object.values(this.gradStatusKeysToMerge).every(
               (val) => val === false
@@ -555,6 +552,7 @@ export default {
               : examinableCourse.courseValidationIssues ?? null,
           };
         });
+
         console.log(this.sourceStudentReconcileData.examinableCourses)
         this.snackbarStore.showSnackbar(
           "Successfully merged examinable courses",

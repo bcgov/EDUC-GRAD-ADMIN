@@ -55,7 +55,7 @@
             </div>
           </div>
 
-          <v-row>
+          <v-row v-if="item?.source?.courseStudentValidationIssues">
             <v-col v-for="(issue, index) in item.source.courseStudentValidationIssues" :key="index" cols="12"
               class="d-flex align-center">
               <v-icon :color="issue.validationIssueSeverityCode === 'ERROR' ? 'red' : 'orange'" class="mr-2" small>
