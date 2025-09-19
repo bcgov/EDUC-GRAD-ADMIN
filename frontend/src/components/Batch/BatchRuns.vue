@@ -385,6 +385,7 @@ export default {
             );
         }
       } else {
+        // eslint-disable-next-line
         console.log(`Batch run with jobExecutionId ${id} not found.`);
       }
     },

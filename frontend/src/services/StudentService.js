@@ -22,6 +22,12 @@ export default {
       json
     );
   },
+  transferStudentAssesments(sourceStudentID, targetStudentID, json) {
+    return ApiService.apiAxios.post(
+      `/api/student/${sourceStudentID}/assessments/transfer/${targetStudentID}`,
+      json
+    );
+  },
   mergeStudentCourses(sourceStudentID, targetStudentID, json) {
     return ApiService.apiAxios.post(
       `/api/student/${sourceStudentID}/courses/merge/${targetStudentID}`,

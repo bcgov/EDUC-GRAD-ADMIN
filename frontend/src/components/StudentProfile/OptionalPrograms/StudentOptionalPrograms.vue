@@ -539,7 +539,6 @@ export default {
       ifStudentStatusMerged: helpers.withMessage(
         'This student is showing as merged. Student GRAD Optional Program data cannot be updated for students with a status of "MER" merged.',
         (value) => {
-          console.log(this.studentGradStatus.studentStatus);
           return !(this.studentGradStatus.studentStatus == "MER");
         }
       ),
