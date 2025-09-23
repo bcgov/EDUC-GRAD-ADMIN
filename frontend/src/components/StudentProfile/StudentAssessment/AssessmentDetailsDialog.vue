@@ -757,12 +757,12 @@ export default {
 
     getScaleFactor(scaleFactor) {
       if (scaleFactor === null || scaleFactor === undefined || scaleFactor === '') {
-        return 1
+        return 0
       }
 
       const numericValue = parseFloat(scaleFactor)
       if (isNaN(numericValue)) {
-        return 1
+        return 0
       }
 
       return numericValue / 100
