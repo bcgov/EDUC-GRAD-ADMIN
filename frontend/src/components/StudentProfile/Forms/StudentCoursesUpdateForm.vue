@@ -24,7 +24,7 @@
         </v-card-title>
 
         <v-col>
-          <StudentCourseAlert :studentStatus="studentStatus" />
+          <StudentStatusAlert :studentStatus="studentStatus" />
         </v-col>
         <v-stepper show-actions v-model="step">
           <template v-slot:default>
@@ -232,7 +232,7 @@ import { useSnackbarStore } from "@/store/modules/snackbar";
 import { required, helpers } from '@vuelidate/validators';
 import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
 import CourseExamDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseExamDetailsInput.vue";
-import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue";
+import StudentStatusAlert from "@/components/StudentProfile/Forms/StudentStatusAlert.vue";
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
 import { mapState, mapActions } from "pinia";
@@ -245,7 +245,7 @@ export default {
       v$: useVuelidate(),
     };
   },
-  components: { CourseDetailsInput, CourseExamDetailsInput, StudentCourseAlert },
+  components: { CourseDetailsInput, CourseExamDetailsInput, StudentStatusAlert },
 
   props: {
     course: {
