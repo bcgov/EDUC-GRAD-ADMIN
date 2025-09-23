@@ -86,7 +86,6 @@ jobs:
       GRAD_NAMESPACE: ${{ secrets.GRAD_NAMESPACE }}
       KEYCLOAK_URL: ${{ secrets.KEYCLOAK_URL }}
       KEYCLOAK_REALM: ${{ secrets.KEYCLOAK_REALM }}
-      HOST_ROUTE: "educ-grad-admin-${{ secrets.UI_NAMESPACE }}-dev.apps.silver.devops.gov.bc.ca"
       TARGET_ENV: "dev"
       MIN_CPU: "60m"
       MAX_CPU: "120m"
@@ -136,7 +135,6 @@ jobs:
           oc process -f tools/openshift/backend-dc.yaml \
           -p IS_NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
           -p APP_NAME=${{ env.APP_NAME }} \
-          -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
           -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
           -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
           -p MIN_CPU=${{ env.MIN_CPU }} \
@@ -178,7 +176,6 @@ jobs:
       GRAD_NAMESPACE: ${{ secrets.GRAD_NAMESPACE }}
       KEYCLOAK_URL: ${{ secrets.KEYCLOAK_URL }}
       KEYCLOAK_REALM: ${{ secrets.KEYCLOAK_REALM }}
-      HOST_ROUTE: "educ-grad-admin-${{ secrets.UI_NAMESPACE }}-test.apps.silver.devops.gov.bc.ca"
       TARGET_ENV: "test"
       MIN_CPU: "60m"
       MAX_CPU: "120m"
@@ -230,7 +227,6 @@ jobs:
           -p IS_NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
           -p TAG_NAME=${{ env.TAG }} \
           -p APP_NAME=${{ env.APP_NAME }} \
-          -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
           -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
           -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
           -p MIN_CPU=${{ env.MIN_CPU }} \

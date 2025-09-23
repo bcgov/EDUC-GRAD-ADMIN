@@ -1,23 +1,35 @@
-'use strict';
-const { logApiError, getCommonServiceData, errorResponse, cachedApiCall } = require('../utils');
-const HttpStatus = require('http-status-codes');
-const utils = require('../utils');
+"use strict";
+const {
+  logApiError,
+  getCommonServiceData,
+  errorResponse,
+  cachedApiCall,
+} = require("../utils");
+const HttpStatus = require("http-status-codes");
+const utils = require("../utils");
 
-const config = require('../../config');
-const { createMoreFiltersSearchCriteria } = require('./studentFilters');
-const { STUDENT_STATUS_CODE_MAP } = require('../constants/student-status-codes');
-const API_BASE_ROUTE = '/api/v1/student-assessment';
-const auth = require('../auth');
+const config = require("../../config");
+const { createMoreFiltersSearchCriteria } = require("./studentFilters");
+const {
+  STUDENT_STATUS_CODE_MAP,
+} = require("../constants/student-status-codes");
+const API_BASE_ROUTE = "/api/v1/student-assessment";
+const auth = require("../auth");
 
 async function getAssessmentTypeCodes(req, res) {
   try {
-    let data = await cachedApiCall('assessment-type-codes', `${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/assessment-types`);
+    let data = await cachedApiCall(
+      "assessment-type-codes",
+      `${
+        config.get("server:studentAssessmentAPIURL") + API_BASE_ROUTE
+      }/assessment-types`
+    );
     return res.status(200).json(data);
   } catch (e) {
     if (e?.status === 404) {
       res.status(HttpStatus.OK).json(null);
     } else {
-      await logApiError(e, 'Error getting student assessment type codes');
+      await logApiError(e, "Error getting student assessment type codes");
       if (e.data.message) {
         return errorResponse(res, e.data.message, e.status);
       } else {
@@ -29,13 +41,18 @@ async function getAssessmentTypeCodes(req, res) {
 
 async function getProvincialSpecialCaseCodes(req, res) {
   try {
-    let data = await cachedApiCall('provincial-special-case-codes', `${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/assessment-specialcase-types`);
+    let data = await cachedApiCall(
+      "provincial-special-case-codes",
+      `${
+        config.get("server:studentAssessmentAPIURL") + API_BASE_ROUTE
+      }/assessment-specialcase-types`
+    );
     return res.status(200).json(data);
   } catch (e) {
     if (e?.status === 404) {
       res.status(HttpStatus.OK).json(null);
     } else {
-      await logApiError(e, 'Error getting provincial special case codes');
+      await logApiError(e, "Error getting provincial special case codes");
       if (e.data.message) {
         return errorResponse(res, e.data.message, e.status);
       } else {
@@ -47,13 +64,17 @@ async function getProvincialSpecialCaseCodes(req, res) {
 
 async function getStudentAssessmentById(req, res) {
   try {
-    let data = await getCommonServiceData(`${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/student/${req.params.studentAssessmentId}`);
+    let data = await getCommonServiceData(
+      `${
+        config.get("server:studentAssessmentAPIURL") + API_BASE_ROUTE
+      }/student/${req.params.studentAssessmentId}`
+    );
     return res.status(200).json(data);
   } catch (e) {
     if (e?.status === 404) {
       res.status(HttpStatus.OK).json(null);
     } else {
-      await logApiError(e, 'Error getting student assessment');
+      await logApiError(e, "Error getting student assessment");
       if (e.data.message) {
         return errorResponse(res, e.data.message, e.status);
       } else {
@@ -65,13 +86,19 @@ async function getStudentAssessmentById(req, res) {
 
 async function getStudentAssessmentByIdAndAssessmentId(req, res) {
   try {
-    let data = await getCommonServiceData(`${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/student/${req.params.studentAssessmentId}/assessment/${req.params.assessmentId}`);
+    let data = await getCommonServiceData(
+      `${
+        config.get("server:studentAssessmentAPIURL") + API_BASE_ROUTE
+      }/student/${req.params.studentAssessmentId}/assessment/${
+        req.params.assessmentId
+      }`
+    );
     return res.status(200).json(data);
   } catch (e) {
     if (e?.status === 404) {
       res.status(HttpStatus.OK).json(null);
     } else {
-      await logApiError(e, 'Error getting student assessment');
+      await logApiError(e, "Error getting student assessment");
       if (e.data.message) {
         return errorResponse(res, e.data.message, e.status);
       } else {
@@ -85,8 +112,10 @@ async function getStudentAssessmentPaginated(req, res) {
   try {
     const search = [];
     if (req.query?.searchParams) {
-      let criteriaArray = createMoreFiltersSearchCriteria(req.query.searchParams);
-      criteriaArray.forEach(criteria => {
+      let criteriaArray = createMoreFiltersSearchCriteria(
+        req.query.searchParams
+      );
+      criteriaArray.forEach((criteria) => {
         search.push(criteria);
       });
     }
@@ -96,16 +125,23 @@ async function getStudentAssessmentPaginated(req, res) {
         pageSize: req.query.pageSize,
         sort: JSON.stringify(req.query.sort),
         searchCriteriaList: JSON.stringify(search),
-      }
+      },
     };
-    let data =  await getCommonServiceData(`${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student/paginated`, params);
+    let data = await getCommonServiceData(
+      `${
+        config.get("server:studentAssessmentAPIURL") + API_BASE_ROUTE
+      }/student/paginated`,
+      params
+    );
     if (req?.query?.returnKey) {
-      let result = data?.content.map((student) => student[req?.query?.returnKey]);
+      let result = data?.content.map(
+        (student) => student[req?.query?.returnKey]
+      );
       return res.status(HttpStatus.OK).json(result);
     }
     return res.status(200).json(data);
   } catch (e) {
-    await logApiError(e, 'Error getting student assessment paginated list');
+    await logApiError(e, "Error getting student assessment paginated list");
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);
     } else {
@@ -118,8 +154,10 @@ async function getStudentAssessmentHistoryPaginated(req, res) {
   try {
     const search = [];
     if (req.query?.searchParams) {
-      let criteriaArray = createMoreFiltersSearchCriteria(req.query.searchParams);
-      criteriaArray.forEach(criteria => {
+      let criteriaArray = createMoreFiltersSearchCriteria(
+        req.query.searchParams
+      );
+      criteriaArray.forEach((criteria) => {
         search.push(criteria);
       });
     }
@@ -129,23 +167,35 @@ async function getStudentAssessmentHistoryPaginated(req, res) {
         pageSize: req.query.pageSize,
         sort: JSON.stringify(req.query.sort),
         searchCriteriaList: JSON.stringify(search),
-      }
+      },
     };
-    let data =  await getCommonServiceData(`${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student-history/paginated`, params);
-    
-    if(data?.content){
+    let data = await getCommonServiceData(
+      `${
+        config.get("server:studentAssessmentAPIURL") + API_BASE_ROUTE
+      }/student-history/paginated`,
+      params
+    );
+
+    if (data?.content) {
       data.content.forEach((assessment) => {
-        assessment.historyDate = assessment.createDate.substring(0, 19).replace('T', ' ');
+        assessment.historyDate = assessment.createDate
+          .substring(0, 19)
+          .replace("T", " ");
       });
     }
-    
+
     if (req?.query?.returnKey) {
-      let result = data?.content.map((student) => student[req?.query?.returnKey]);
+      let result = data?.content.map(
+        (student) => student[req?.query?.returnKey]
+      );
       return res.status(HttpStatus.OK).json(result);
     }
     return res.status(200).json(data);
   } catch (e) {
-    await logApiError(e, 'Error getting student assessment history paginated list: ' + e.message);
+    await logApiError(
+      e,
+      "Error getting student assessment history paginated list: " + e.message
+    );
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);
     } else {
@@ -154,16 +204,22 @@ async function getStudentAssessmentHistoryPaginated(req, res) {
   }
 }
 
-async function postStudentAssessment(req, res){
+async function postStudentAssessment(req, res) {
   try {
     const userName = utils.getUser(req).idir_username;
     const payload = {
       ...req.body,
       updateDate: null,
-      createDate: null
+      createDate: null,
     };
     const token = auth.getBackendToken(req);
-    const student = await utils.getData(token, `${config.get('server:studentAPIURL')}/api/v1/student/stdid/${req.body?.studentID}`, req.session?.correlationID);
+    const student = await utils.getData(
+      token,
+      `${config.get("server:studentAPIURL")}/api/v1/student/stdid/${
+        req.body?.studentID
+      }`,
+      req.session?.correlationID
+    );
 
     payload.surname = student.legalLastName;
     payload.givenName = student.legalFirstName;
@@ -171,17 +227,26 @@ async function postStudentAssessment(req, res){
     payload.pen = student.pen;
     payload.studentStatusCode = STUDENT_STATUS_CODE_MAP[student.statusCode];
 
-    const allowRuleOverride = req.query.allowRuleOverride === 'true';
-    const params = allowRuleOverride ? { params: { allowRuleOverride: true } } : {};
+    const allowRuleOverride = req.query.allowRuleOverride === "true";
+    const defaultParams = { source: "GRAD" };
+    const params = allowRuleOverride
+      ? { ...defaultParams, allowRuleOverride: true }
+      : defaultParams;
     const result = await utils.postCommonServiceData(
-      `${config.get('server:studentAssessmentAPIURL')+ API_BASE_ROUTE}/student`,
+      `${
+        config.get("server:studentAssessmentAPIURL") + API_BASE_ROUTE
+      }/student`,
       payload,
       userName,
-      params
+      { params: params }
     );
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
-    await logApiError(e, 'postStudentAssessment', 'Error occurred while attempting to create the student assessment.');
+    await logApiError(
+      e,
+      "postStudentAssessment",
+      "Error occurred while attempting to create the student assessment."
+    );
     if (e.data?.message) {
       return errorResponse(res, e.data.message, e.status);
     } else {
@@ -193,7 +258,8 @@ async function postStudentAssessment(req, res){
 async function updateStudentAssessmentById(req, res) {
   if (req.params.studentAssessmentId !== req.body.assessmentStudentID) {
     return res.status(HttpStatus.BAD_REQUEST).json({
-      message: 'The studentAssessmentId in the URL did not match the studentAssessmentId in the request body.'
+      message:
+        "The studentAssessmentId in the URL did not match the studentAssessmentId in the request body.",
     });
   }
   try {
@@ -201,18 +267,25 @@ async function updateStudentAssessmentById(req, res) {
     const payload = {
       ...req.body,
       updateDate: null,
-      createDate: null
+      createDate: null,
     };
 
     const result = await utils.putCommonServiceData(
-      `${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/student/${req.params.studentAssessmentId}`,
+      `${
+        config.get("server:studentAssessmentAPIURL") + API_BASE_ROUTE
+      }/student/${req.params.studentAssessmentId}`,
       payload,
       userName,
-      { params: { allowRuleOverride: true } });
+      { params: { allowRuleOverride: true, source: "GRAD" } }
+    );
 
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
-    logApiError(e, 'updateStudentAssessmentById', 'Error occurred while attempting to save the changes to the student assessment registration.');
+    logApiError(
+      e,
+      "updateStudentAssessmentById",
+      "Error occurred while attempting to save the changes to the student assessment registration."
+    );
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);
     } else {
@@ -223,18 +296,27 @@ async function updateStudentAssessmentById(req, res) {
 
 async function deleteStudentAssessmentByID(req, res) {
   try {
-    const allowRuleOverride = req.query.allowRuleOverride === 'true';
-    const params = allowRuleOverride ? { params: { allowRuleOverride: true } } : {};
+    const allowRuleOverride = req.query.allowRuleOverride === "true";
+    const defaultParams = { source: "GRAD" };
+    const params = allowRuleOverride
+      ? { ...defaultParams, allowRuleOverride: true }
+      : defaultParams;
 
     const result = await utils.postCommonServiceData(
-      `${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/student/delete-students`,
+      `${
+        config.get("server:studentAssessmentAPIURL") + API_BASE_ROUTE
+      }/student/delete-students`,
       [req.params.studentAssessmentId],
       null,
-      params
+      { params: params }
     );
     return res.status(HttpStatus.OK).json(result);
   } catch (e) {
-    logApiError(e, 'deleteStudentAssessmentById', 'Error occurred while attempting to delete the student assessment.');
+    logApiError(
+      e,
+      "deleteStudentAssessmentById",
+      "Error occurred while attempting to delete the student assessment."
+    );
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);
     } else {
@@ -245,11 +327,17 @@ async function deleteStudentAssessmentByID(req, res) {
 
 async function getAllAssessmentSessions(req, res) {
   try {
-    const url = `${config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE}/sessions`;
+    const url = `${
+      config.get("server:studentAssessmentAPIURL") + API_BASE_ROUTE
+    }/sessions`;
     const data = await getCommonServiceData(url);
     return res.status(200).json(data);
   } catch (e) {
-    logApiError(e, 'getAssessmentSessions', 'Error occurred while attempting to GET assessment sessions.');
+    logApiError(
+      e,
+      "getAssessmentSessions",
+      "Error occurred while attempting to GET assessment sessions."
+    );
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);
     } else {
@@ -268,5 +356,5 @@ module.exports = {
   getAllAssessmentSessions,
   getProvincialSpecialCaseCodes,
   getStudentAssessmentHistoryPaginated,
-  getStudentAssessmentByIdAndAssessmentId
+  getStudentAssessmentByIdAndAssessmentId,
 };
