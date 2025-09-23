@@ -9,66 +9,77 @@
           <v-progress-circular v-if="tabLoading" indeterminate color="green">
           </v-progress-circular>
           <span v-if="studentGradStatus.studentStatus !== 'MER'">
-          <v-menu offset-y>
-            <template v-slot:activator="{ props }">
-              <v-btn
-                text
-                v-bind="props"
-                :disabled="tabLoading || !hasGradStatus"
-                id="actions"
-                right
-                class="float-right admin-actions text-none"
-                prepend-icon="mdi-school"
-                append-icon="mdi-menu-down"
-                color="primary"
-              >
-                Transcripts & TVRs</v-btn
-              >
-            </template>
-            <v-list>
-              <v-list-item
-                :disabled="studentGradStatus.studentStatus === 'MER'"
-                v-on:click="projectedGradStatusWithFinalMarks"
-                >Preview Final Marks</v-list-item
-              >
-              <v-list-item
-                :disabled="studentGradStatus.studentStatus === 'MER'"
-                v-on:click="projectedGradStatusWithFinalAndReg"
-                >Update TVR</v-list-item
-              >
-              <v-list-item
-                :disabled="
-                  studentGradStatus.studentStatus === 'MER' ||
-                  isProgramComplete(
-                    studentGradStatus.programCompletionDate,
-                    studentGradStatus.program
-                  )
-                "
-                v-on:click="graduateStudent"
-                >Update Grad Status</v-list-item
-              >
-              <v-list-item
-                :disabled="
-                  studentGradStatus.studentStatus === 'MER' ||
-                  !studentGradStatus.programCompletionDate
-                "
-                v-on:click="updateStudentReports"
-                >Update Transcript</v-list-item
-              >
-              <v-list-item
-                :disabled="
-                  studentGradStatus.studentStatus === 'MER' ||
-                  !studentGradStatus.programCompletionDate
-                "
-                v-on:click="showUndoCompletionDialog = true"
-                >Undo Completion</v-list-item
-              >
-            </v-list>
-          </v-menu>
+            <v-menu offset-y>
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  text
+                  v-bind="props"
+                  :disabled="tabLoading || !hasGradStatus"
+                  id="actions"
+                  right
+                  class="float-right admin-actions text-none"
+                  prepend-icon="mdi-school"
+                  append-icon="mdi-menu-down"
+                  color="primary"
+                >
+                  Transcripts & TVRs</v-btn
+                >
+              </template>
+              <v-list>
+                <v-list-item
+                  :disabled="studentGradStatus.studentStatus === 'MER'"
+                  v-on:click="projectedGradStatusWithFinalMarks"
+                  >Preview Final Marks</v-list-item
+                >
+                <v-list-item
+                  :disabled="studentGradStatus.studentStatus === 'MER'"
+                  v-on:click="projectedGradStatusWithFinalAndReg"
+                  >Update TVR</v-list-item
+                >
+                <v-list-item
+                  :disabled="
+                    studentGradStatus.studentStatus === 'MER' ||
+                    isProgramComplete(
+                      studentGradStatus.programCompletionDate,
+                      studentGradStatus.program
+                    )
+                  "
+                  v-on:click="graduateStudent"
+                  >Update Grad Status</v-list-item
+                >
+                <v-list-item
+                  :disabled="
+                    studentGradStatus.studentStatus === 'MER' ||
+                    !studentGradStatus.programCompletionDate
+                  "
+                  v-on:click="updateStudentReports"
+                  >Update Transcript</v-list-item
+                >
+                <v-list-item
+                  :disabled="
+                    studentGradStatus.studentStatus === 'MER' ||
+                    !studentGradStatus.programCompletionDate
+                  "
+                  v-on:click="showUndoCompletionDialog = true"
+                  >Undo Completion</v-list-item
+                >
+              </v-list>
+            </v-menu>
           </span>
-          <span v-if="enableCRUD() && studentGradStatus.studentStatus === 'MER' && hasPermissions('STUDENT', 'studentMerge')">
-            <v-btn text class="float-right admin-actions text-none" prepend-icon="mdi-source-merge" color="primary"
-              @click="showStudentDataMerge">
+          <span
+            v-if="
+              enableCRUD() &&
+              studentGradStatus.studentStatus === 'MER' &&
+              hasPermissions('STUDENT', 'studentMerge')
+            "
+          >
+            <v-btn
+              text
+              class="float-right admin-actions text-none"
+              prepend-icon="mdi-source-merge"
+              color="primary"
+              @click="showStudentDataMerge"
+            >
               Reconcile Student Data
             </v-btn>
             <v-row no-gutters>
@@ -775,7 +786,7 @@ export default {
     StudentAuditHistory: StudentAuditHistory,
     StudentNotes: StudentNotes,
     DisplayTable: DisplayTable,
-    StudentDataMergeForm : StudentDataMergeForm,
+    StudentDataMergeForm: StudentDataMergeForm,
   },
   props: {},
   data() {
@@ -853,7 +864,7 @@ export default {
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
       allowRunGradAlgorithm: "allowRunGradAlgorithm",
-      hasPermissions: "hasPermissions",      
+      hasPermissions: "hasPermissions",
     }),
     ...mapState(useAppStore, {
       ungradReasons: "ungradReasons",
@@ -1166,11 +1177,11 @@ export default {
     },
     loadStudent(studentIdFromURL) {
       this.loadStudentProfile();
+      this.loadAssessmentsLegacy();
       if (
         this.hasPermissions("STUDENT", "studentAssessmentUpdate") &&
-        this.enableCRUD
+        this.enableCRUD()
       ) {
-        this.loadAssessmentsLegacy();
         this.loadStudentAssessments(studentIdFromURL);
       }
       this.loadGraduationStatus(studentIdFromURL);
