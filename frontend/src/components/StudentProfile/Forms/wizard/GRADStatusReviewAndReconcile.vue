@@ -205,6 +205,7 @@ export default {
     }),
     ...mapState(useAppStore, {
       getSchoolById: "getSchoolById",
+      optionalProgramsByGradProgram: "optionalProgramsByGradProgram",
     }),
     sourceStudentName() {
       return sharedMethods.formatStudentName(this.sourceStudentData);
@@ -299,12 +300,32 @@ export default {
             : this.targetStudentGradStatus.adultStartDate,
 
           optionalPrograms: this.keysToOverride.optionalPrograms
-            ? this.sourceStudentGradStatus.optionalPrograms
+            ? this.setOptionalProgramsToOverride(
+                this.sourceStudentGradStatus.optionalPrograms
+              )
             : this.targetStudentGradStatus.optionalPrograms,
+
+          careerPrograms: this.keysToOverride.optionalPrograms
+            ? this.sourceStudentGradStatus.careerPrograms
+            : this.targetStudentGradStatus.careerPrograms,
         };
 
         this.setGradStatusToMerge(merged);
       }
+    },
+    setOptionalProgramsToOverride(mergedOptionalPrograms) {
+      let gradProgramOptionalPrograms = this.optionalProgramsByGradProgram(
+        this.targetStudentGradStatus.program
+      );
+      return mergedOptionalPrograms
+        .map((sourceOptProgram) => {
+          return gradProgramOptionalPrograms.find(
+            (targetOptProgram) =>
+              targetOptProgram.optProgramCode ===
+              sourceOptProgram.optProgramCode
+          );
+        })
+        .filter(Boolean); // the Boolean will filter out undefined if no match is found
     },
   },
   watch: {

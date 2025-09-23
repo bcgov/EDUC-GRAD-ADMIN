@@ -828,6 +828,7 @@ async function mergeStudentGradStatus(req, res) {
 
       mergeResponse.updated.push(response.data);
     }
+
     for (optionalProgram of optionalProgramsPayload) {
       if (optionalProgram.optionalProgramCode != "CP") {
         let response = await postData(
