@@ -259,7 +259,7 @@ export default {
                 if (canonical) {
                   // Max scores: only count the canonical question
                   const qv = parseFloat(canonical.questionValue) || 0
-                  const sf = parseFloat(canonical.scaleFactor) || 1
+                  const sf = this.getScaleFactor(canonical.scaleFactor)
 
                   comp.maxRawScore += qv
                   comp.maxScaledScore += qv * sf
@@ -330,7 +330,7 @@ export default {
                 rawScore: this.formatRawScore(studentAnswer),
                 maxRawScore: this.formatNumber(question.questionValue),
                 scaledScore: this.formatScaledScore(studentAnswer, question),
-                maxScaledScore: this.formatNumber(question.questionValue * (question.scaleFactor || 1)),
+                maxScaledScore: this.formatNumber(question.questionValue * this.getScaleFactor(question.scaleFactor)),
                 originalQuestion: question,
                 originalAnswer: studentAnswer
               })
@@ -444,7 +444,7 @@ export default {
                     rawScore: this.formatRawScore(studentAnswer),
                     maxRawScore: this.formatNumber(chosenQuestion.questionValue || 0),
                     scaledScore: this.formatScaledScore(studentAnswer, chosenQuestion),
-                    maxScaledScore: this.formatNumber((chosenQuestion.questionValue || 0) * (chosenQuestion.scaleFactor || 1)),
+                    maxScaledScore: this.formatNumber((chosenQuestion.questionValue || 0) * this.getScaleFactor(chosenQuestion.scaleFactor)),
                     originalQuestion: chosenQuestion,
                     originalAnswer: studentAnswer
                   })
@@ -463,7 +463,7 @@ export default {
                     rawScore: this.formatRawScore(studentAnswer),
                     maxRawScore: this.formatNumber(question.questionValue || 0),
                     scaledScore: this.formatScaledScore(studentAnswer, question),
-                    maxScaledScore: this.formatNumber((question.questionValue || 0) * (question.scaleFactor || 1)),
+                    maxScaledScore: this.formatNumber((question.questionValue || 0) * this.getScaleFactor(question.scaleFactor)),
                     originalQuestion: question,
                     originalAnswer: studentAnswer
                   })
@@ -653,7 +653,7 @@ export default {
       if (!studentAnswer || studentAnswer.score === null || studentAnswer.score === undefined) {
         return 'NR'
       }
-      const scaleFactor = question.scaleFactor || 1
+      const scaleFactor = this.getScaleFactor(question.scaleFactor)
       const scaledScore = studentAnswer.score * scaleFactor
       return this.formatNumber(scaledScore)
     },
@@ -730,7 +730,7 @@ export default {
 
         const q = canonical.originalQuestion || {}
         const qv = parseFloat(q.questionValue) || 0
-        const sf = parseFloat(q.scaleFactor) || 1
+        const sf = this.getScaleFactor(q.scaleFactor)
 
         // Max from canonical only
         totals.totalMaxRawScore += qv
@@ -753,6 +753,19 @@ export default {
       totals.totalMaxScaledScore = this.formatNumber(totals.totalMaxScaledScore)
 
       return totals
+    },
+
+    getScaleFactor(scaleFactor) {
+      if (scaleFactor === null || scaleFactor === undefined || scaleFactor === '') {
+        return 1
+      }
+
+      const numericValue = parseFloat(scaleFactor)
+      if (isNaN(numericValue)) {
+        return 1
+      }
+
+      return numericValue / 100
     }
   }
 }
