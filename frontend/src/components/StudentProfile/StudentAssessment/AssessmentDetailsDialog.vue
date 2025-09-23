@@ -9,61 +9,91 @@
         </v-btn>
       </v-card-title>
 
-      <v-card-text class="assessment-details-content">
-        <div class="mb-4">
-          <h3 class="text-h6 mb-2">
-            {{ assessmentHeaderText }}
-          </h3>
+
+      <v-card-text class="assessment-details-content" :class="{ 'no-scroll': isLoading }">
+        <div v-if="isLoading" class="skeleton-container">
+          <v-skeleton-loader
+            type="heading"
+            class="mb-4"
+            height="32"
+          ></v-skeleton-loader>
+
+          <v-skeleton-loader
+            type="chip, chip, chip, chip"
+            class="mb-4"
+            height="48"
+          ></v-skeleton-loader>
+
+          <div class="skeleton-content-area">
+            <v-skeleton-loader
+              type="table-heading"
+              class="mb-2"
+              height="40"
+            ></v-skeleton-loader>
+            <v-skeleton-loader
+              type="table-tbody"
+              class="mb-4"
+              height="400"
+            ></v-skeleton-loader>
+          </div>
         </div>
 
-        <v-tabs v-model="activeTab" color="primary" class="assessment-tabs">
-          <v-tab value="summary">Summary</v-tab>
-          <v-tab value="selected-response">Selected Response</v-tab>
-          <v-tab value="constructed-written">Constructed Response - Written</v-tab>
-          <v-tab v-if="hasOralComponent" value="constructed-oral">Constructed Response - Oral</v-tab>
-        </v-tabs>
+        <div v-else>
+          <div class="mb-4">
+            <h3 class="text-h6 mb-2">
+              {{ assessmentHeaderText }}
+            </h3>
+          </div>
 
-        <v-window v-model="activeTab" class="mt-4 assessment-window">
-          <v-window-item value="summary" class="assessment-window-item">
-            <AssessmentSummaryTab
-              :student-assessment-data="assessmentData"
-              :student-detail="studentDetail"
-              :component-scores="componentScores"
-            />
-          </v-window-item>
+          <v-tabs v-model="activeTab" color="primary" class="assessment-tabs">
+            <v-tab value="summary">Summary</v-tab>
+            <v-tab value="selected-response">Selected Response</v-tab>
+            <v-tab value="constructed-written">Constructed Response - Written</v-tab>
+            <v-tab v-if="hasOralComponent" value="constructed-oral">Constructed Response - Oral</v-tab>
+          </v-tabs>
 
-          <v-window-item value="selected-response" class="assessment-window-item">
-            <SelectedResponseTab
-              :assessment-data="assessmentData"
-              :student-detail="studentDetail"
-              :selected-response-items="selectedResponseItems"
-              :computed-totals="getSelectedResponseTotals()"
-            />
-          </v-window-item>
+          <v-window v-model="activeTab" class="mt-4 assessment-window">
+            <v-window-item value="summary" class="assessment-window-item">
+              <AssessmentSummaryTab
+                :student-assessment-data="assessmentData"
+                :student-detail="studentDetail"
+                :component-scores="componentScores"
+              />
+            </v-window-item>
 
-          <v-window-item value="constructed-written" class="assessment-window-item">
-            <ConstructedResponseTab
-              :assessment-data="assessmentData"
-              :student-detail="studentDetail"
-              :constructed-response-items="constructedResponseItems.written"
-              :computed-totals="getConstructedResponseTotals('written')"
-              type="written"
-            />
-          </v-window-item>
+            <v-window-item value="selected-response" class="assessment-window-item">
+              <SelectedResponseTab
+                :assessment-data="assessmentData"
+                :student-detail="studentDetail"
+                :selected-response-items="selectedResponseItems"
+                :computed-totals="getSelectedResponseTotals()"
+              />
+            </v-window-item>
 
-          <v-window-item v-if="hasOralComponent" value="constructed-oral" class="assessment-window-item">
-            <ConstructedResponseTab
-              :assessment-data="assessmentData"
-              :student-detail="studentDetail"
-              :constructed-response-items="constructedResponseItems.oral"
-              :computed-totals="getConstructedResponseTotals('oral')"
-              type="oral"
-            />
-          </v-window-item>
-        </v-window>
+            <v-window-item value="constructed-written" class="assessment-window-item">
+              <ConstructedResponseTab
+                :assessment-data="assessmentData"
+                :student-detail="studentDetail"
+                :constructed-response-items="constructedResponseItems.written"
+                :computed-totals="getConstructedResponseTotals('written')"
+                type="written"
+              />
+            </v-window-item>
+
+            <v-window-item v-if="hasOralComponent" value="constructed-oral" class="assessment-window-item">
+              <ConstructedResponseTab
+                :assessment-data="assessmentData"
+                :student-detail="studentDetail"
+                :constructed-response-items="constructedResponseItems.oral"
+                :computed-totals="getConstructedResponseTotals('oral')"
+                type="oral"
+              />
+            </v-window-item>
+          </v-window>
+        </div>
       </v-card-text>
 
-      <v-card-actions>
+      <v-card-actions v-if="!isLoading">
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="closeDialog">Close</v-btn>
       </v-card-actions>
@@ -102,7 +132,9 @@ export default {
   emits: ['update:modelValue'],
   data() {
     return {
-      activeTab: 'summary'
+      activeTab: 'summary',
+      isLoading: true,
+      assessmentDetailsLoaded: false
     }
   },
   computed: {
@@ -116,6 +148,10 @@ export default {
       },
       set(value) {
         this.$emit('update:modelValue', value)
+        if (!value) {
+          this.isLoading = true
+          this.assessmentDetailsLoaded = false
+        }
       }
     },
 
@@ -495,7 +531,34 @@ export default {
     }
   },
 
+  watch: {
+    modelValue(newVal) {
+      if (newVal && !this.assessmentDetailsLoaded) {
+        this.loadAssessmentDetails()
+      }
+    },
+
+    studentDetail: {
+      handler(newVal) {
+        if (newVal && this.modelValue) {
+          this.assessmentDetailsLoaded = true
+          this.isLoading = false
+        }
+      },
+      immediate: true
+    }
+  },
+
   methods: {
+    async loadAssessmentDetails() {
+      this.isLoading = true
+
+      if (this.studentDetail && Object.keys(this.studentDetail).length > 0) {
+        this.assessmentDetailsLoaded = true
+        this.isLoading = false
+      }
+    },
+
     getStudentAnswersForComponent(assessmentComponentID) {
       if (!this.studentDetail || !this.studentDetail.assessmentStudentComponents) return null
       const comp = this.studentDetail.assessmentStudentComponents.find(c => c.assessmentComponentID === assessmentComponentID)
@@ -774,5 +837,20 @@ export default {
 
 .assessment-window-item .v-col {
   padding: 8px;
+}
+
+/* Skeleton loader styles */
+.skeleton-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+.skeleton-content-area {
+  width: 100%;
+  max-width: 100%;
+}
+
+.no-scroll {
+  overflow: hidden !important;
 }
 </style>
