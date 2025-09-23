@@ -579,11 +579,12 @@ export default {
       return specialCase === "NC";
     },
     async openAssessmentDetails(item) {
+      this.selectedAssessmentForDetails = item;
+      this.studentDetail = null; // Clear previous data
+      this.showAssessmentDetails = true;
+
       try {
         await this.getStudentDetails(item);
-
-        this.selectedAssessmentForDetails = item;
-        this.showAssessmentDetails = true;
       } catch (error) {
         console.error("Failed to fetch assessment details:", error);
         this.snackbarStore.showSnackbar(

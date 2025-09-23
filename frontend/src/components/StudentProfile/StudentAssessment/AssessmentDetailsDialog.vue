@@ -149,7 +149,6 @@ export default {
       set(value) {
         this.$emit('update:modelValue', value)
         if (!value) {
-          this.isLoading = true
           this.assessmentDetailsLoaded = false
         }
       }
@@ -533,8 +532,11 @@ export default {
 
   watch: {
     modelValue(newVal) {
-      if (newVal && !this.assessmentDetailsLoaded) {
-        this.loadAssessmentDetails()
+      if (newVal) {
+        this.isLoading = true
+        this.assessmentDetailsLoaded = false
+      } else {
+        this.assessmentDetailsLoaded = false
       }
     },
 
@@ -543,6 +545,9 @@ export default {
         if (newVal && this.modelValue) {
           this.assessmentDetailsLoaded = true
           this.isLoading = false
+        } else if (this.modelValue) {
+          this.isLoading = true
+          this.assessmentDetailsLoaded = false
         }
       },
       immediate: true
@@ -550,15 +555,6 @@ export default {
   },
 
   methods: {
-    async loadAssessmentDetails() {
-      this.isLoading = true
-
-      if (this.studentDetail && Object.keys(this.studentDetail).length > 0) {
-        this.assessmentDetailsLoaded = true
-        this.isLoading = false
-      }
-    },
-
     getStudentAnswersForComponent(assessmentComponentID) {
       if (!this.studentDetail || !this.studentDetail.assessmentStudentComponents) return null
       const comp = this.studentDetail.assessmentStudentComponents.find(c => c.assessmentComponentID === assessmentComponentID)
