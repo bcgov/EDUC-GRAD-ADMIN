@@ -188,6 +188,7 @@ export default {
             this.showEditForm = false;
           })
           .catch((error) => {
+            // eslint-disable-next-line
             console.log("There was an error:" + error);
             this.snackbarStore.showSnackbar(
               "There was an error:" + error.message,
@@ -235,6 +236,7 @@ export default {
             }
           })
           .catch((error) => {
+            // eslint-disable-next-line
             console.log("There was an error:" + error);
             this.snackbarStore.showSnackbar(
               "There was an error with the web service.",

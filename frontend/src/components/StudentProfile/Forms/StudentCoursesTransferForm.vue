@@ -15,6 +15,10 @@
               {{ targetStudentData.legalMiddleNames }}
             </span>
           </v-card-subtitle>
+          <v-alert v-if="alertAlreadyGraduated" density="compact" style="font-size: smaller"  type="warning" variant="tonal" border="start">
+            <p><strong>WARNING</strong></p>
+            <p>Graduated Student - please ensure these courses can be transferred without any impacts to the student's graduation or optional program requirements.</p>
+          </v-alert>
         </v-card-title>
         <div class="progress-container" v-if="validationStep">
           <v-progress-circular indeterminate color="primary"></v-progress-circular>
@@ -247,6 +251,7 @@ export default {
       targetStudentData:{},      
       sourceStudentCourses: this.selectedCoursesToTransfer || [],
       targetStudentCourses: [],
+      alertAlreadyGraduated: false,
       transferStudentCourseResultsMessages: [],
       validationStep: false,
     };
@@ -313,7 +318,9 @@ export default {
       this.transferStudentCourseResultsMessages = [];
       this.validationStep = false;
     },    
-    openTransferStudentCoursesDialog() {    
+    openTransferStudentCoursesDialog() {
+      this.alertAlreadyGraduated = this.studentStore.student.gradStatus?.program !== 'SCCP' && this.studentStore.student.gradStatus?.programCompletionDate;
+      
       this.transferStudentCourseResultsMessages = [];
       this.clearCoursesToTransfer();
       this.clearForm();

@@ -54,7 +54,7 @@ export async function validateAndFetchCourse({
             return { error: `Course session date is before the course start date (${courseData.startDate})` };
         }
         if (sessionDate > endDate) {
-            return { error: `Course session date is after the course completion date (${courseData.completionEndDate})` };
+            return { error: `Course is closed. Session date must be before the course completion end date (${courseData.completionEndDate})` };
         }
         
         let isExaminable= false;
