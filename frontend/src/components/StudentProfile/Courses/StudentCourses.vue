@@ -1,8 +1,14 @@
 <template>
   <div>
     <v-card>
-      <v-alert v-if="enableCRUD()" color="debug" variant="tonal" icon="mdi-progress-wrench" border="start"
-        class="mt-6 mb-0 ml-1 py-3 width-fit-content">
+      <v-alert
+        v-if="enableCRUD()"
+        color="debug"
+        variant="tonal"
+        icon="mdi-progress-wrench"
+        border="start"
+        class="mt-6 mb-0 ml-1 py-3 width-fit-content"
+      >
         Until student course CRUD is live, student courses will not be kept in
         sync via ongoing updates. Instead there will be a gradual data
         migration.
@@ -12,51 +18,98 @@
         <v-alert v-if="!courses" class="container">
           This student does not have any courses.
         </v-alert>
-        <div class="col-12 px-3" v-if="allowUpdateStudentCourseExam">
+        <div class="col-12 px-3">
           <div class="float-left grad-actions">
-            <v-menu offset-y>
+            <v-menu offset-y v-if="studentStatus !== 'MER' && enableCRUD()">
               <template v-slot:activator="{ props }">
-                <v-btn text v-bind="props" :disabled="selected.length === 0" id="actions" right
-                  class="float-right admin-actions text-none" prepend-icon="mdi-select-multiple"
-                  append-icon="mdi-menu-down" color="error">Bulk Actions</v-btn>
+                <v-btn
+                  text
+                  v-bind="props"
+                  :disabled="selected.length === 0"
+                  id="actions"
+                  right
+                  class="float-right admin-actions text-none"
+                  prepend-icon="mdi-select-multiple"
+                  append-icon="mdi-menu-down"
+                  color="error"
+                  >Bulk Actions</v-btn
+                >
               </template>
               <v-list>
-                <v-list-item v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
-                  @click="showCourseDelete">
-                  <v-icon color="error">mdi-delete-forever</v-icon> Delete Selected Courses
+                <v-list-item
+                  v-if="
+                    hasPermissions('STUDENT', 'updateCourseExam') &&
+                    hasPermissions('STUDENT', 'courseUpdate')
+                  "
+                  :disabled="selected.length === 0"
+                  @click="showCourseDelete"
+                >
+                  <v-icon color="error">mdi-delete-forever</v-icon> Delete
+                  Selected Courses
                 </v-list-item>
-                <v-list-item v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="selected.length === 0"
-                  @click="showCourseTransfer">
-                  <v-icon color="error">mdi-transfer</v-icon> Transfer Selected Courses
+                <v-list-item
+                  v-if="
+                    hasPermissions('STUDENT', 'studentTransfer') &&
+                    hasPermissions('STUDENT', 'courseUpdate')
+                  "
+                  :disabled="selected.length === 0"
+                  @click="showCourseTransfer"
+                >
+                  <v-icon color="error">mdi-transfer</v-icon> Transfer Selected
+                  Courses
                 </v-list-item>
               </v-list>
             </v-menu>
           </div>
         </div>
         <v-row no-gutters>
-          <StudentCoursesDeleteForm @close="clearSelected" courseBatchDelete :selectedCoursesToDelete="selected"
-            ref="courseDeleteFormRef">
+          <StudentCoursesDeleteForm
+            @close="clearSelected"
+            courseBatchDelete
+            :selectedCoursesToDelete="selected"
+            ref="courseDeleteFormRef"
+          >
           </StudentCoursesDeleteForm>
-          <StudentCoursesTransferForm @close="clearSelected" :selectedCoursesToTransfer="selected"
-            ref="courseTransferFormRef">
+          <StudentCoursesTransferForm
+            @close="clearSelected"
+            :selectedCoursesToTransfer="selected"
+            ref="courseTransferFormRef"
+          >
           </StudentCoursesTransferForm>
           <v-spacer />
           <StudentCoursesCreateForm type="all" />
         </v-row>
-        <v-data-table v-if="courses" v-model="selected" :items="courses" :headers="fields" :item-value="(item) => item"
-          :items-per-page="'-1'" title="studentCourse" :show-select="allowUpdateStudentCourseExam">
-          <template v-slot:item.data-table-expand="{
-            item,
-            internalItem,
-            toggleExpand,
-            isExpanded,
-          }">
+        <v-data-table
+          v-if="courses"
+          v-model="selected"
+          :items="courses"
+          :headers="fields"
+          :item-value="(item) => item"
+          :items-per-page="'-1'"
+          title="studentCourse"
+          :show-select="studentStatus !== 'MER' && enableCRUD()"
+        >
+          <template
+            v-slot:item.data-table-expand="{
+              item,
+              internalItem,
+              toggleExpand,
+              isExpanded,
+            }"
+          >
             <td v-if="hasCourseInfo(item)">
-              <v-btn variant="text" density="comfortable" @click="toggleExpand(internalItem)"
-                class="v-data-table__expand-icon" :class="{ 'v-data-table__expand-icon--active': isExpanded }" :icon="isExpanded(internalItem)
-                  ? 'mdi-chevron-down'
-                  : 'mdi-chevron-right'
-                  ">
+              <v-btn
+                variant="text"
+                density="comfortable"
+                @click="toggleExpand(internalItem)"
+                class="v-data-table__expand-icon"
+                :class="{ 'v-data-table__expand-icon--active': isExpanded }"
+                :icon="
+                  isExpanded(internalItem)
+                    ? 'mdi-chevron-down'
+                    : 'mdi-chevron-right'
+                "
+              >
               </v-btn>
             </td>
           </template>
@@ -76,42 +129,52 @@
                   <!-- Customized Course Name -->
                   <div v-if="item.customizedCourseName">
                     <strong>Customized Course&nbsp;</strong>
-                    <span v-if="item.customizedCourseName">{{ item.customizedCourseName
+                    <span v-if="item.customizedCourseName">{{
+                      item.customizedCourseName
                     }}</span>
                     <span v-else> <i>null</i> </span>
                   </div>
 
                   <!-- Related Course Details -->
                   <div v-if="item.relatedCourseDetails">
-
                     <strong>Related Course:</strong>
                     <CourseDetails :course="item.relatedCourseDetails" />
                   </div>
 
                   <!-- Course Exam Details -->
                   <v-row no-gutters v-if="item.courseExam">
-                    <v-col><strong>Exam %&nbsp;</strong>
-                      <span v-if="item.courseExam.examPercentage">{{ item.courseExam.examPercentage
+                    <v-col
+                      ><strong>Exam %&nbsp;</strong>
+                      <span v-if="item.courseExam.examPercentage">{{
+                        item.courseExam.examPercentage
                       }}</span>
                       <span v-else> <i>null</i> </span>
                     </v-col>
-                    <v-col><strong>Best Exam %&nbsp;</strong>
-                      <span v-if="item.courseExam.bestExamPercentage">{{ item.courseExam.bestExamPercentage
+                    <v-col
+                      ><strong>Best Exam %&nbsp;</strong>
+                      <span v-if="item.courseExam.bestExamPercentage">{{
+                        item.courseExam.bestExamPercentage
                       }}</span>
                       <span v-else> <i>null</i> </span>
                     </v-col>
-                    <v-col><strong>School %&nbsp;</strong>
-                      <span v-if="item.courseExam.schoolPercentage">{{ item.courseExam.schoolPercentage
+                    <v-col
+                      ><strong>School %&nbsp;</strong>
+                      <span v-if="item.courseExam.schoolPercentage">{{
+                        item.courseExam.schoolPercentage
                       }}</span>
                       <span v-else> <i>null</i> </span>
                     </v-col>
-                    <v-col><strong>Best School %&nbsp;</strong>
-                      <span v-if="item.courseExam.bestSchoolPercentage">{{ item.courseExam.bestSchoolPercentage
+                    <v-col
+                      ><strong>Best School %&nbsp;</strong>
+                      <span v-if="item.courseExam.bestSchoolPercentage">{{
+                        item.courseExam.bestSchoolPercentage
                       }}</span>
                       <span v-else> <i>null</i> </span>
                     </v-col>
-                    <v-col><strong>Special Case&nbsp;</strong>
-                      <span v-if="item.courseExam.specialCase">{{ item.courseExam.specialCase
+                    <v-col
+                      ><strong>Special Case&nbsp;</strong>
+                      <span v-if="item.courseExam.specialCase">{{
+                        item.courseExam.specialCase
                       }}</span>
                       <span v-else> <i>null</i> </span>
                     </v-col>
@@ -121,13 +184,23 @@
             </tr>
           </template>
           <template v-slot:item.edit="{ item }">
-            <div v-if="!item.courseExam || allowUpdateStudentCourseExam">
+            <div
+              v-if="
+                !item.courseExam ||
+                hasPermissions('STUDENT', 'updateCourseExam')
+              "
+            >
               <StudentCoursesUpdateForm :course="item">
               </StudentCoursesUpdateForm>
             </div>
           </template>
           <template v-slot:item.delete="{ item }">
-            <div v-if="!item.courseExam || allowUpdateStudentCourseExam">
+            <div
+              v-if="
+                !item.courseExam ||
+                hasPermissions('STUDENT', 'updateCourseExam')
+              "
+            >
               <StudentCoursesDeleteForm :selectedCoursesToDelete="[item]">
               </StudentCoursesDeleteForm>
             </div>
@@ -157,10 +230,13 @@ export default {
     StudentCoursesTransferForm: StudentCoursesTransferForm,
     CourseDetails: CourseDetails,
   },
+  setup() {
+    const studentStore = useStudentStore();
+    const appStore = useAppStore();
+    const accessStore = useAccessStore();
+    return { studentStore, appStore, accessStore };
+  },
   computed: {
-    ...mapState(useAccessStore, {
-      allowUpdateStudentCourseExam: "allowUpdateStudentCourseExam",
-    }),
     ...mapState(useStudentStore, {
       courses: "studentCourses",
       gradStatusCourses: "gradStatusCourses",
@@ -170,6 +246,9 @@ export default {
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useAppStore, { environment: "appEnvironment" }),
+    studentStatus() {
+      return this.studentStore.student.profile.studentStatus;
+    },
   },
   data: function () {
     return {
@@ -295,9 +374,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(useAppStore, [
-      "enableCRUD",
-    ]),
+    ...mapActions(useAppStore, ["enableCRUD"]),
     ...mapActions(useStudentStore, [
       "setHasGradStatusPendingUpdates",
       "deleteStudentCourses",
@@ -309,7 +386,7 @@ export default {
       this.$refs.courseTransferFormRef.openTransferStudentCoursesDialog();
     },
     clearSelected() {
-      this.selected = []
+      this.selected = [];
     },
     hasCourseInfo(item) {
       return !!(
@@ -322,7 +399,6 @@ export default {
       this.editDialog[modalKey] = false;
     },
     saveStudentCourse(modalKey) {
-      console.log("TODO: Submit edits for student course");
       this.closeEditModal(modalKey);
     },
     compareCourses(course1, course2) {
@@ -359,7 +435,7 @@ export default {
   min-width: fit-content;
 }
 
-.popover-body>div>div:nth-child(2) {
+.popover-body > div > div:nth-child(2) {
   text-align: right;
 }
 </style>

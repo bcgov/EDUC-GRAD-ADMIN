@@ -186,7 +186,6 @@
                   <v-tooltip max-width="500">
                     {{ item.description }}
                     <template v-slot:activator="{ props }">
-                      
                       <v-icon v-bind="props" color="bcGovBlue" small size="18"
                         >mdi-information-outline</v-icon
                       >
@@ -254,8 +253,8 @@
 </template>
 
 <script>
+import CodesService from "@/services/CodesService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
-import DistributionService from "@/services/DistributionService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
 import ScheduledBatchRuns from "@/components/Batch/ScheduledBatchRuns.vue";
 import DistrunUserForm from "@/components/Batch/Forms/DistrunUserForm.vue";
@@ -421,7 +420,7 @@ export default {
   },
   created() {
     this.updateAllDashboards();
-    BatchProcessingService.getBatchJobTypes()
+    CodesService.getBatchJobTypes()
       .then((response) => {
         this.batchTypes = response.data;
         this.batchRunGradOptions = this.filterBatchTypes(this.batchTypes, [
@@ -511,20 +510,17 @@ export default {
     ]),
 
     downloadDISTRUNUSER(bid, transmissionMode = null) {
-      DistributionService.downloadDISTRUNUSER(bid, transmissionMode).then(
-        (response) => {
-          sharedMethods.base64ToFileTypeAndDownload(
-            response.data,
-            "application/zip",
-            bid
-          );
-          this.snackbarStore.showSnackbar(
-            "Download completed",
-            "success",
-            5000
-          );
-        }
-      );
+      BatchProcessingService.downloadUserDistribution(
+        bid,
+        transmissionMode
+      ).then((response) => {
+        sharedMethods.base64ToFileTypeAndDownload(
+          response.data,
+          "application/zip",
+          bid
+        );
+        this.snackbarStore.showSnackbar("Download completed", "success", 5000);
+      });
     },
     removeEmpty(obj) {
       Object.keys(obj).forEach(

@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import ProgramManagementService from "@/services/ProgramManagementService.js";
+import CodesService from "@/services/CodesService.js";
 import DisplayTable from "../DisplayTable.vue";
 
 export default {
@@ -108,7 +108,7 @@ export default {
     };
   },
   created() {
-    ProgramManagementService.getTranscriptMessage()
+    CodesService.getTranscriptMessageCodes()
       .then((response) => {
         this.transcriptMessages = response.data;
         this.isLoading = false;

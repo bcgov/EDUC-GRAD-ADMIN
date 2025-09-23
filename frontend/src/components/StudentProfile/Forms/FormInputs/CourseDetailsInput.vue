@@ -41,8 +41,8 @@
         </v-col>
         <v-col>
           <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
-            variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint            
-           :disabled="courseSessionGreaterThanReportingPeriod" />
+            variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint
+            :disabled="courseSessionGreaterThanReportingPeriod" />
         </v-col>
 
         <v-col>
@@ -276,20 +276,6 @@ export default {
               typeof value === 'string'
           ),
         },
-
-
-        relatedCourseId: {
-          validCourseID: helpers.withMessage(
-            'Related Courses must be a valid course',
-            (value, vm) => {
-              const noRelatedCourse = (value == '');
-              const validCourse = (!this.course.relatedCourseId && this.course.courseDetails.courseCode != "IDS") || (this.course.relatedCourseDetails.courseID == this.course.relatedCourseId);
-              return validCourse || noRelatedCourse;
-            }
-          )
-        }
-
-
       },
     }
   },
@@ -327,6 +313,7 @@ export default {
       const warnings = [];
       this.updateWarnings();
       if (
+        newVal &&
         (courseType === "Locally Developed" || courseType === "Career Program") &&
         (trimmedProgram !== "1996-EN" && trimmedProgram !== "1996-PF")
       ) {
@@ -453,6 +440,7 @@ export default {
       if (this.course.courseSession < this.maxSession && !this.course.finalPercent && (this.course.finalLetterGrade === '' || this.course.finalLetterGrade === null || this.course.finalLetterGrade === undefined)) {
         this.warnings.push('Course session is in the past. Enter a final mark.');
       }
+      
     },
     getGradesForPercent(percent) {
       const isGTorGTF = this.course.courseDetails.courseCode === 'GT' || this.course.courseDetails.courseCode === 'GTF';

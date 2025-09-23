@@ -1,11 +1,8 @@
 import { defineStore } from "pinia";
 
 import CommonService from "@/services/CommonService.js";
-import InstituteService from "@/services/InstituteService.js";
+import SchoolsService from "@/services/SchoolsService.js";
 import CodesService from "@/services/CodesService.js";
-import StudentGraduationService from "@/services/StudentGraduationService.js";
-import ProgramManagementService from "@/services/ProgramManagementService.js";
-import GraduationReportService from "@/services/GraduationReportService.js";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
 
 import { useSnackbarStore } from "../../store/modules/snackbar";
@@ -33,7 +30,7 @@ export const useAppStore = defineStore("app", {
     FAASTypeCodes: [],
     provincialSpecialCaseCodes: [],
     assessmentTypeCodesMap: new Map(),
-    assessmentTypeCodes: []
+    assessmentTypeCodes: [],
   }),
   getters: {
     appEnvironment: (state) =>
@@ -50,7 +47,7 @@ export const useAppStore = defineStore("app", {
     schoolByMincode: (state) => {
       return (mincode) =>
         state.schoolsList.find((school) => mincode === school.mincode);
-    },     
+    },
     getSchoolMincodeById: (state) => {
       return (schoolId) => {
         if (schoolId === "00000000-0000-0000-0000-000000000000") {
@@ -115,25 +112,19 @@ export const useAppStore = defineStore("app", {
 
       return categoryCode?.legacyCode + " - " + categoryCode?.label;
     },
-    getStudentAssessmentProvincialSpecialCaseCodes: (state) => state.provincialSpecialCaseCodes,
+    getStudentAssessmentProvincialSpecialCaseCodes: (state) =>
+      state.provincialSpecialCaseCodes,
     getProvincialSpecialCaseCode: (state) => {
       return (code) =>
-          state.provincialSpecialCaseCodes.find(
-              (specialCase) => code === specialCase.provincialSpecialCaseCode
-          );
+        state.provincialSpecialCaseCodes.find(
+          (specialCase) => code === specialCase.provincialSpecialCaseCode
+        );
     },
     getFacilityCodes: (state) => state.instituteFacilityCodes,
     getFacilityCode: (state) => {
       return (code) =>
         state.instituteFacilityCodes.find(
           (facilityCode) => code === facilityCode.facilityTypeCode
-        );
-    },
-    getGradeCodes: (state) => state.studentGradeCodes,
-    getGradeCode: (state) => {
-      return (code) =>
-        state.studentGradeCodes.find(
-          (gradeCode) => code === gradeCode.schoolGradeCode
         );
     },
     getTranscriptTypes: (state) => state.transcriptTypes,
@@ -160,6 +151,8 @@ export const useAppStore = defineStore("app", {
           await this.getStudentGradeCodes();
           await this.getLetterGradeCodes();
           await this.getFAASTypeCodes();
+          //GET & SET ASSESSMENT TYPE CODES
+          await this.getAssessmentTypeCodes()
           // GET & SET INSTITUTE SCHOOL AND DISTRICT LISTS
           await this.getSchools();
           await this.getDistricts();
@@ -167,6 +160,7 @@ export const useAppStore = defineStore("app", {
           await this.getInstituteCategoryCodes();
           await this.getInstituteFacilityCodes();
           await this.getProvincialSpecialCaseCodes();
+
         }
       } catch (e) {
         if (e.response.status) {
@@ -187,7 +181,7 @@ export const useAppStore = defineStore("app", {
     },
     async getProgramOptionCodes(getNewData = true) {
       if (getNewData || !sharedMethods.dataArrayExists(this.programOptions)) {
-        let response = await ProgramManagementService.getGraduationPrograms();
+        let response = await CodesService.getGradProgramCodes();
         await this.setProgramOptions(response.data);
       }
     },
@@ -214,7 +208,7 @@ export const useAppStore = defineStore("app", {
     },
     async getUndoCompletionReasonCodes(getNewData = true) {
       if (getNewData || !sharedMethods.applyDisplayOrder(this.ungradReasons)) {
-        let response = await StudentGraduationService.getUngradReasons();
+        let response = await CodesService.getUndoCompletionReasonCodes();
         await this.setUndoCompletionReasons(response.data);
       }
     },
@@ -223,7 +217,7 @@ export const useAppStore = defineStore("app", {
     },
     async getBatchJobTypeCodes(getNewData = true) {
       if (getNewData || !sharedMethods.dataArrayExists(this.batchTypeCodes)) {
-        let response = await BatchProcessingService.getBatchJobTypes();
+        let response = await CodesService.getBatchJobTypes();
         await this.setBatchJobTypes(response.data);
       }
     },
@@ -232,7 +226,7 @@ export const useAppStore = defineStore("app", {
     },
     async getTranscriptTypeCodes(getNewData = true) {
       if (getNewData || !sharedMethods.dataArrayExists(this.transcriptTypes)) {
-        let response = await GraduationReportService.getTranscriptTypes();
+        let response = await CodesService.getTranscriptTypeCodes();
         await this.setTranscriptTypes(response.data);
       }
     },
@@ -245,7 +239,7 @@ export const useAppStore = defineStore("app", {
         getNewData ||
         !sharedMethods.dataArrayExists(this.certificationTypes)
       ) {
-        let response = await GraduationReportService.getCertificateTypes();
+        let response = await CodesService.getCertificateTypeCodes();
         await this.setCertificateTypes(response.data);
       }
     },
@@ -256,7 +250,7 @@ export const useAppStore = defineStore("app", {
     // GET DATA FROM INSTITUTE
     async getSchools(getNewData = true) {
       if (getNewData || !sharedMethods.dataArrayExists(this.schoolsList)) {
-        let response = await InstituteService.getSchoolsList();
+        let response = await SchoolsService.getSchoolsList();
         await this.setSchoolsList(response.data);
         //await this.setSchoolsMap(response.data);
       }
@@ -272,7 +266,7 @@ export const useAppStore = defineStore("app", {
     },
     async getDistricts(getNewData = true) {
       if (getNewData || !sharedMethods.dataArrayExists(this.districtsList)) {
-        let response = await InstituteService.getDistrictsList();
+        let response = await SchoolsService.getDistrictsList();
         await this.setDistrictsList(response.data);
       }
     },
@@ -285,7 +279,7 @@ export const useAppStore = defineStore("app", {
         getNewData ||
         !sharedMethods.dataArrayExists(this.instituteCategoryCodes)
       ) {
-        let response = await InstituteService.getSchoolCategoryCodes();
+        let response = await CodesService.getSchoolCategoryCodes();
         await this.setInstituteCategoryCodes(response.data);
       }
     },
@@ -298,7 +292,7 @@ export const useAppStore = defineStore("app", {
         getNewData ||
         !sharedMethods.dataArrayExists(this.instituteFacilityCodes)
       ) {
-        let response = await InstituteService.getFacilityCodes();
+        let response = await CodesService.getFacilityCodes();
         await this.setInstituteFacilityCodes(response.data);
       }
     },
@@ -325,7 +319,7 @@ export const useAppStore = defineStore("app", {
     },
     async getLetterGradeCodes(getNewData = true) {
       if (getNewData || !sharedMethods.dataArrayExists(this.letterGradeCodes)) {
-        let response = await ProgramManagementService.getLetterGrades();
+        let response = await CodesService.getLetterGradeCodes();
         await this.setLetterGrades(response.data);
       }
     },
@@ -339,9 +333,10 @@ export const useAppStore = defineStore("app", {
       }
     },
     async setAssessmentTypeCodes(assessmentTypeCodes) {
-      this.assessmentTypeCodes = sharedMethods.applyDisplayOrder(assessmentTypeCodes);
+      this.assessmentTypeCodes =
+        sharedMethods.applyDisplayOrder(assessmentTypeCodes);
       this.assessmentTypeCodesMap = new Map(
-        this.assessmentTypeCodes.map(type => [type.assessmentTypeCode, type])
+        this.assessmentTypeCodes.map((type) => [type.assessmentTypeCode, type])
       );
     },
     async getAssessmentTypeCodes(getNewData = true) {
@@ -353,13 +348,19 @@ export const useAppStore = defineStore("app", {
       }
     },
     async getProvincialSpecialCaseCodes(getNewData = true) {
-      if (getNewData || !sharedMethods.dataArrayExists(this.provincialSpecialCaseCodes)) {
-        let response = await StudentAssessmentService.getProvincialSpecialCaseCodes();
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.provincialSpecialCaseCodes)
+      ) {
+        let response =
+          await StudentAssessmentService.getProvincialSpecialCaseCodes();
         await this.setProvincialSpecialCaseCodes(response.data);
       }
     },
     setProvincialSpecialCaseCodes(provincialSpecialCaseCodes) {
-      this.provincialSpecialCaseCodes = sharedMethods.applyDisplayOrder(provincialSpecialCaseCodes);
-    }
+      this.provincialSpecialCaseCodes = sharedMethods.applyDisplayOrder(
+        provincialSpecialCaseCodes
+      );
+    },
   },
 });

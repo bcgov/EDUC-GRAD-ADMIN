@@ -1,9 +1,7 @@
-import ApiService from '../common/apiService';
+import ApiService from "../common/apiService";
 
 export default {
-
-    getConfig() {
-        return ApiService.apiAxios.get("/api/v1/config")
-    }
+  getConfig() {
+    return ApiService.apiAxios.get("/api/config");
+  },
 };
-

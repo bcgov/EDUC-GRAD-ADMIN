@@ -8,6 +8,7 @@
         <div class="float-right grad-actions" v-if="allowRunGradAlgorithm">
           <v-progress-circular v-if="tabLoading" indeterminate color="green">
           </v-progress-circular>
+          <span v-if="studentGradStatus.studentStatus !== 'MER'">
           <v-menu offset-y>
             <template v-slot:activator="{ props }">
               <v-btn
@@ -64,6 +65,18 @@
               >
             </v-list>
           </v-menu>
+          </span>
+          <span v-if="enableCRUD() && studentGradStatus.studentStatus === 'MER' && hasPermissions('STUDENT', 'studentMerge')">
+            <v-btn text class="float-right admin-actions text-none" prepend-icon="mdi-source-merge" color="primary"
+              @click="showStudentDataMerge">
+              Reconcile Student Data
+            </v-btn>
+            <v-row no-gutters>
+              <StudentDataMergeForm ref="studentDataMergeFormRef">
+              </StudentDataMergeForm>
+              <v-spacer />
+            </v-row>
+          </span>
         </div>
       </div>
     </div>
@@ -646,8 +659,6 @@ import AssessmentService from "@/services/AssessmentService.js";
 import CourseService from "@/services/CourseService.js";
 import StudentAssessmentService from "@/services/StudentAssessmentService.js";
 import StudentService from "@/services/StudentService.js";
-import StudentGraduationService from "@/services/StudentGraduationService.js";
-import GraduationService from "@/services/GraduationService.js";
 
 // import components
 import GRADRequirementDetails from "@/components/StudentProfile/GRADRequirementDetails.vue";
@@ -664,6 +675,7 @@ import StudentAuditHistory from "@/components/StudentProfile/AuditHistory/Studen
 import StudentUndoCompletionReasons from "@/components/StudentProfile/StudentUndoCompletionReasons.vue";
 import StudentNotes from "@/components/StudentProfile/AuditHistory/StudentNotes.vue";
 import DisplayTable from "@/components/DisplayTable.vue";
+import StudentDataMergeForm from "@/components/StudentProfile/Forms/StudentDataMergeForm.vue";
 
 // shared functions
 import { isProgramComplete } from "../utils/common";
@@ -763,6 +775,7 @@ export default {
     StudentAuditHistory: StudentAuditHistory,
     StudentNotes: StudentNotes,
     DisplayTable: DisplayTable,
+    StudentDataMergeForm : StudentDataMergeForm,
   },
   props: {},
   data() {
@@ -840,7 +853,7 @@ export default {
     ...mapState(useAccessStore, {
       allowUpdateGradStatus: "allowUpdateGradStatus",
       allowRunGradAlgorithm: "allowRunGradAlgorithm",
-      hasPermissions: "hasPermissions",
+      hasPermissions: "hasPermissions",      
     }),
     ...mapState(useAppStore, {
       ungradReasons: "ungradReasons",
@@ -948,9 +961,13 @@ export default {
         });
         ungradDesc = ungradDesc[0].description;
       }
-      StudentService.ungradStudent(this.studentId, ungradCode, ungradDesc)
+      StudentService.undoStudentProgramCompletion(
+        this.studentId,
+        ungradCode,
+        ungradDesc
+      )
         .then(() => {
-          StudentGraduationService.getStudentUngradReasons(this.studentId)
+          StudentService.getStudentUndoCompletionReasons(this.studentId)
             .then((response) => {
               this.setStudentUngradReasons(response.data);
             })
@@ -1017,7 +1034,7 @@ export default {
     graduateStudent() {
       this.selectedTab = "GRAD";
       this.tabLoading = true;
-      GraduationService.graduateStudent(this.studentId)
+      StudentService.graduateStudent(this.studentId)
         .then(() => {
           this.loadStudent(this.studentId);
         })
@@ -1036,7 +1053,7 @@ export default {
       this.disableScreen = true;
       this.selectedTab = "GRAD";
       this.tabLoading = true;
-      GraduationService.updateStudentReports(this.studentId)
+      StudentService.updateStudentReports(this.studentId)
         .then(() => {
           this.loadStudentOptionalPrograms(this.studentId);
           this.loadStudentHistory(this.studentId);
@@ -1072,7 +1089,7 @@ export default {
     },
     projectedGradStatusWithFinalMarks() {
       this.tabLoading = true;
-      GraduationService.projectedGradFinalMarks(this.studentId)
+      StudentService.projectedGradFinalMarks(this.studentId)
         .then((response) => {
           this.projectedGradStatus = JSON.parse(
             response.data.graduationStudentRecord.studentGradData
@@ -1103,7 +1120,7 @@ export default {
       this.nonGradReasons =
         this.studentGradStatus.studentGradData.nonGradReasons;
       this.tabLoading = true;
-      GraduationService.projectedGradStatusWithFinalAndReg(this.studentId)
+      StudentService.projectedGradStatusWithFinalAndReg(this.studentId)
         .then((response) => {
           this.projectedGradStatusWithRegistrations = response.data;
           this.projectedGradStatusWithRegistrations = JSON.parse(
@@ -1322,7 +1339,7 @@ export default {
         });
     },
     loadStudentUngradReasons(studentIdFromURL) {
-      StudentGraduationService.getStudentUngradReasons(studentIdFromURL)
+      StudentService.getStudentUndoCompletionReasons(studentIdFromURL)
         .then((response) => {
           this.setStudentUngradReasons(response.data);
         })
@@ -1338,6 +1355,10 @@ export default {
     },
     isProgramComplete(date, program) {
       return isProgramComplete(date, program);
+    },
+    //Open Student Merge Form
+    showStudentDataMerge() {
+      this.$refs.studentDataMergeFormRef.openStudentDataMergeDialog();
     },
   },
 };

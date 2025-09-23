@@ -1,17 +1,16 @@
 const passport = require("passport");
 const express = require("express");
 const router = express.Router();
-const config = require("../config/index");
 const auth = require("../components/auth");
 const roles = require("../components/roles");
 const {
-  errorResponse,
-  getData,
-  postData,
-  putData,
-  deleteData,
-} = require("../components/utils");
-const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
+  getGradProgramRules,
+  getGradProgramRulesByCode,
+  getGradProgramByCode,
+  getOptionalProgramRules,
+  getAlgorithmRules,
+} = require("../components/programs");
+const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
     roles.Admin.StaffInfoOfficer,
@@ -21,30 +20,39 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
   ]
 );
 
-//Program Routes
 router.get(
-  "/*",
+  "/gradProgram/rules",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
-  getProgramAPI
+  isValidUiTokenWithReadStaffRoles,
+  getGradProgramRules
 );
 
-async function getProgramAPI(req, res) {
-  const token = auth.getBackendToken(req);
-  const version = req.version;
-  try {
-    const url = `${config.get("server:programAPIURL")}/api/${version}/program${
-      req.url
-    }`;
-    const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data);
-  } catch (e) {
-    if (e.data.message) {
-      return errorResponse(res, e.data.message, e.status);
-    } else {
-      return errorResponse(res);
-    }
-  }
-}
+router.get(
+  "/gradProgram/rules/:programCode",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getGradProgramRulesByCode
+);
+
+router.get(
+  "/gradProgram/:programCode",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getGradProgramByCode
+);
+
+router.get(
+  "/optionalProgram/rules",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getOptionalProgramRules
+);
+
+router.get(
+  "/algorithm/rules",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getAlgorithmRules
+);
 
 module.exports = router;

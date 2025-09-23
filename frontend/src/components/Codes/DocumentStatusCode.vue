@@ -30,7 +30,7 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
-import GraduationReportService from "@/services/GraduationReportService.js";
+import CodesService from "@/services/CodesService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 export default {
   name: "DocumentStatusCode",
@@ -38,7 +38,7 @@ export default {
     DisplayTable: DisplayTable,
   },
   created() {
-    GraduationReportService.getDocumentStatusCodes()
+    CodesService.getDocumentStatusCodes()
       .then((response) => {
         this.documentStatusCodes = response.data;
       })

@@ -107,26 +107,6 @@ objects:
         insecureEdgeTerminationPolicy: Redirect
         key: "${PRIVATE_KEY}"
         termination: edge
-  - apiVersion: v1
-    kind: Route
-    metadata:
-      annotations:
-        openshift.io/host.generated: 'true'
-      labels:
-        app: "${APP_NAME}-frontend"
-      name: "${APP_NAME}-frontend"
-    spec:
-      host: "${HOST_ROUTE}"
-      port:
-        targetPort: 2015-tcp
-      tls:
-        insecureEdgeTerminationPolicy: Redirect
-        termination: edge
-      to:
-        kind: Service
-        name: "${APP_NAME}-frontend"
-        weight: 100
-      wildcardPolicy: None
   - apiVersion: autoscaling/v2
     kind: HorizontalPodAutoscaler
     metadata:
@@ -158,9 +138,6 @@ parameters:
     required: true
   - name: APP_NAME
     description: Application name
-    required: true
-  - name: HOST_ROUTE
-    description: The host the route will use to expose service outside cluster
     required: true
   - name: TAG
     description: The identifying tag for this specific deployment

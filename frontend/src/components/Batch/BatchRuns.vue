@@ -228,7 +228,6 @@ import DisplayTable from "@/components/DisplayTable.vue";
 import BatchJobSearchResults from "@/components/Batch/BatchJobSearchResults.vue";
 import BatchJobErrorResults from "@/components/Batch/BatchJobErrorResults.vue";
 import BatchProcessingService from "@/services/BatchProcessingService.js";
-import DistributionService from "@/services/DistributionService.js";
 import sharedMethods from "../../sharedMethods.js";
 import { useBatchProcessingStore } from "../../store/modules/batchprocessing";
 import { mapState, mapActions } from "pinia";
@@ -386,6 +385,7 @@ export default {
             );
         }
       } else {
+        // eslint-disable-next-line
         console.log(`Batch run with jobExecutionId ${id} not found.`);
       }
     },
@@ -403,7 +403,7 @@ export default {
       });
     },
     downloadDISTRUNUSER(bid, transmissionMode = null) {
-      DistributionService.downloadDISTRUNUSER(bid, transmissionMode)
+      BatchProcessingService.downloadUserDistribution(bid, transmissionMode)
         .then((response) => {
           if (!response.data || response.data.length === 0) {
             this.snackbarStore.showSnackbar(

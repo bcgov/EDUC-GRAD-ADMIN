@@ -79,7 +79,7 @@ import ProgramInput from "@/components/Batch/Forms/FormInputs/ProgramInput.vue";
 import ScheduleInput from "@/components/Batch/Forms/FormInputs/ScheduleInput.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import GraduationReportService from "@/services/GraduationReportService.js";
+import CodesService from "@/services/CodesService.js";
 import DistributionInput from "@/components/Batch/Forms/FormInputs/DistributionInput.vue";
 
 import { mapActions, mapState } from "pinia";
@@ -248,7 +248,7 @@ export default {
       "updateDashboards",
     ]),
     getTranscriptTypes() {
-      GraduationReportService.getTranscriptTypes()
+      CodesService.getTranscriptTypeCodes()
         .then((response) => {
           this.transcriptTypes = response.data;
         })
@@ -268,7 +268,7 @@ export default {
         });
     },
     getCertificateTypes() {
-      GraduationReportService.getCertificateTypes()
+      CodesService.getCertificateTypeCodes()
         .then((response) => {
           this.certificateTypes = response.data;
         })

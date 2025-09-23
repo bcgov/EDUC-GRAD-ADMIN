@@ -6,7 +6,7 @@ const log = require("./components/logger");
 const morgan = require("morgan");
 const session = require("express-session");
 const express = require("express");
-const {rateLimit}  = require('express-rate-limit');
+const { rateLimit } = require("express-rate-limit");
 const passport = require("passport");
 const helmet = require("helmet");
 const cors = require("cors");
@@ -25,34 +25,16 @@ const apiRouter = express.Router();
 const authRouter = require("./routes/auth");
 const promMid = require("express-prometheus-middleware");
 
-function addVersionToReq(req, res, next) {
-  const { version } = req.params;
-  // Check if the version is supported
-  const supportedVersions = ["v1", "v2"];
-  if (!supportedVersions.includes(version)) {
-    return res.status(404).json({ error: "Invalid API version" });
-  }
-  // Add version to req object
-  req.version = version;
-  // Proceed to the next middleware or route handler
-  next();
-}
-
 //GRAD Routers
-const TRAXRouter = require("./routes/trax-router");
+const schoolsRouter = require("./routes/schools-router");
 const programsRouter = require("./routes/programs-router");
 const assessmentsRouter = require("./routes/assessments-router");
 const studentAssessmentRouter = require("./routes/student-assessment-router");
 const coursesRouter = require("./routes/courses-router");
-const studentGraduationRouter = require("./routes/student-graduation-router");
 const studentRouter = require("./routes/student-router");
 const codesRouter = require("./routes/codes-router");
-const graduationReportsRouter = require("./routes/graduation-reports-router");
 const batchRouter = require("./routes/batch-router");
-const distributionRouter = require("./routes/distribution-router");
-const graduationRouter = require("./routes/graduation-router");
 const reportsRouter = require("./routes/reports-router");
-const instituteRouter = require("./routes/institute-router");
 const configRouter = require("./routes/config-router");
 
 //initialize app
@@ -84,16 +66,18 @@ const logStream = {
   },
 };
 
-if (config.get('rateLimit:enabled')) {
+if (config.get("rateLimit:enabled")) {
   const limiter = rateLimit({
-    windowMs: config.get('rateLimit:windowInSec') * 1000,
-    limit: config.get('rateLimit:limit'),
+    windowMs: config.get("rateLimit:windowInSec") * 1000,
+    limit: config.get("rateLimit:limit"),
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers,
     skipSuccessfulRequests: false, // Do not count successful responses
     message: async () => {
-      return `You can only make ${config.get('rateLimit:limit')} requests every ${config.get('rateLimit:windowMs')} seconds.`;
-    }
+      return `You can only make ${config.get(
+        "rateLimit:limit"
+      )} requests every ${config.get("rateLimit:windowMs")} seconds.`;
+    },
   });
   app.use(limiter);
 }
@@ -242,29 +226,16 @@ app.use(/(\/api)?/, apiRouter);
 
 //:version routes
 apiRouter.use("/auth", authRouter);
-apiRouter.use("/:version/batch", addVersionToReq, batchRouter);
-apiRouter.use("/:version/distribute", addVersionToReq, distributionRouter);
-apiRouter.use("/:version/program", addVersionToReq, programsRouter);
+apiRouter.use("/batch", batchRouter);
+apiRouter.use("/program", programsRouter);
 apiRouter.use("/course", coursesRouter);
-apiRouter.use(
-  "/:version/studentgraduation",
-  addVersionToReq,
-  studentGraduationRouter
-);
-apiRouter.use("/:version/assessment", addVersionToReq, assessmentsRouter);
+apiRouter.use("/assessment", assessmentsRouter);
+apiRouter.use("/schools", schoolsRouter);
 apiRouter.use("/student-assessment", studentAssessmentRouter);
-apiRouter.use("/:version/trax", addVersionToReq, TRAXRouter);
 apiRouter.use("/student", studentRouter);
 apiRouter.use("/codes", codesRouter);
-apiRouter.use(
-  "/:version/graduationreports",
-  addVersionToReq,
-  graduationReportsRouter
-);
-apiRouter.use("/:version/graduate", addVersionToReq, graduationRouter);
-apiRouter.use("/:version/reports", addVersionToReq, reportsRouter);
-apiRouter.use("/:version/institute", addVersionToReq, instituteRouter);
-apiRouter.use("/:version/config", addVersionToReq, configRouter);
+apiRouter.use("/reports", reportsRouter);
+apiRouter.use("/config", configRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

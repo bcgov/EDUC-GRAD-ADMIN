@@ -15,7 +15,14 @@
               {{ targetStudentData.legalMiddleNames }}
             </span>
           </v-card-subtitle>
+          <v-alert v-if="alertAlreadyGraduated" density="compact" style="font-size: smaller"  type="warning" variant="tonal" border="start">
+            <p><strong>WARNING</strong></p>
+            <p>Graduated Student - please ensure these courses can be transferred without any impacts to the student's graduation or optional program requirements.</p>
+          </v-alert>
         </v-card-title>
+        <div class="progress-container" v-if="validationStep">
+          <v-progress-circular indeterminate color="primary"></v-progress-circular>
+        </div>
         <v-stepper alt-labels show-actions v-model="step">
           <template v-slot:default>
             <v-stepper-header>
@@ -194,7 +201,7 @@
           <v-spacer />
           <v-btn v-if="step === 0 || (step === 1 && coursesToTransfer.length > 0)" @click="step++" color="bcGovBlue"
             variant="outlined"
-            :disabled="(step === 1 && coursesToTransfer.length === 0) || (step === 0 && v$.$invalid) || (sourceStudentData.pen === targetStudentData.pen)">Next</v-btn>
+            :disabled="validationStep || (step === 1 && coursesToTransfer.length === 0) || (step === 0 && v$.$invalid) || (sourceStudentData.pen === targetStudentData.pen)">Next</v-btn>
           <v-btn v-else-if="step == 2 && coursesToTransfer.length > 0" :disabled="validationStep" color="error" variant="flat" class="text-none"
             @click="submitForm">
             Transfer Student Courses
@@ -244,6 +251,7 @@ export default {
       targetStudentData:{},      
       sourceStudentCourses: this.selectedCoursesToTransfer || [],
       targetStudentCourses: [],
+      alertAlreadyGraduated: false,
       transferStudentCourseResultsMessages: [],
       validationStep: false,
     };
@@ -253,7 +261,7 @@ export default {
       return useStudentStore();
     },
     sourceStudent() {
-      return this.studentStore.student.gradStatus.studentGradData?.gradStudent;
+      return this.studentStore.student.profile;
     },  
     ...mapState(useStudentStore, {
       coursesToTransfer: (state) => state.transfer.courses,
@@ -264,8 +272,10 @@ export default {
       immediate: true,
       async handler(newTargetStudentData) {
         if(newTargetStudentData && newTargetStudentData.studentID) {
+            this.validationStep = true;            
             let response = await StudentService.getStudentCourses(newTargetStudentData.studentID);
             this.targetStudentCourses = response.data || [];
+            this.validationStep = false;       
         }        
       }
     }, 
@@ -308,14 +318,15 @@ export default {
       this.transferStudentCourseResultsMessages = [];
       this.validationStep = false;
     },    
-    openTransferStudentCoursesDialog() {      
+    openTransferStudentCoursesDialog() {
+      this.alertAlreadyGraduated = this.studentStore.student.gradStatus?.program !== 'SCCP' && this.studentStore.student.gradStatus?.programCompletionDate;
+      
       this.transferStudentCourseResultsMessages = [];
       this.clearCoursesToTransfer();
       this.clearForm();
       this.dialog = true;
     },
     async submitForm() {
-      this.validationStep = true;
       this.transferStudentCourseResultsMessages = [];
 
       const courseWithoutCourseDetailsAndUserInfo = this.coursesToTransfer.map(({ courseDetails, relatedCourseDetails, createUser, createDate, updateUser, updateDate, ...rest }) => ({ ...rest }));
@@ -334,7 +345,6 @@ export default {
           });
           this.transferStudentCourseResultsMessages = enrichedResults;
           this.clearCoursesToTransfer(); // optional
-          this.validationStep = false;
         });
       } catch (error) {
         console.error("Error transferring student courses:", error);
@@ -344,3 +354,12 @@ export default {
   },
 };
 </script>
+<style scoped>
+.progress-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999999999 !important;
+}
+</style>

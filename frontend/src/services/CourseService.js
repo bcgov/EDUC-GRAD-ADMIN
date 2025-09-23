@@ -52,4 +52,16 @@ export default {
       "/api/course/legacy/studentExamDetails/" + pen
     );
   },
+  getCourseEventHistory(params) {
+    const encodedSortParams = encodeURIComponent(JSON.stringify(params.sort));
+    const encodedSearchParams = encodeURIComponent(
+        JSON.stringify(params.searchParams)
+    );
+    return ApiService.apiAxios.get(
+        `/api/course/eventHistory?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&sort=${encodedSortParams}&searchParams=${encodedSearchParams}`
+    );
+  },
+  putCourseEventHistory(json) {
+    return ApiService.apiAxios.put("/api/course/eventHistory", json);
+  },
 };

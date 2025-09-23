@@ -1,5 +1,5 @@
 import StudentService from "@/services/StudentService.js";
-import InstituteService from "./services/InstituteService";
+
 export default {
   applyDisplayOrder(unsorted) {
     return unsorted.sort((a, b) => a.displayOrder - b.displayOrder);
@@ -96,6 +96,7 @@ export default {
     link.click();
     URL.revokeObjectURL(link.href);
   },
+  // IMPROVEMENT: Should not be doing callouts from shared methods, these should be used via the student store
   getStudentID: function (pen) {
     StudentService.getStudentByPen(pen)
       .then((response) => {
@@ -106,6 +107,7 @@ export default {
         console.log(error);
       });
   },
+  // IMPROVEMENT: Same as above
   getStudentPen: function (studentID) {
     StudentService.getStudentByID(studentID)
       .then((response) => {
@@ -250,5 +252,20 @@ export default {
       (endDateTime.getTime() - startDateTime.getTime()) / 1000
     );
     return difference.toISOString().slice(11, 19);
+  },
+  formatStudentName(profile, showPEN = true, showMiddle = true) {
+    if (profile) {
+      let formattedName = `${profile.legalLastName}, ${profile.legalFirstName}`;
+      if (showPEN) {
+        formattedName = `${profile.pen} - ` + formattedName;
+      }
+      if (showMiddle && profile.legalMiddleNames) {
+        formattedName = formattedName + ` ${profile.legalMiddleNames}`;
+      }
+      return formattedName;
+    } else {
+      //return "error occurred getting student name, refresh or try again later";
+      return "";
+    }
   },
 };

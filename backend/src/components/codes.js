@@ -1,4 +1,8 @@
-const { errorResponse, getData } = require("../components/utils");
+const {
+  errorResponse,
+  getData,
+  getCommonServiceData,
+} = require("../components/utils");
 const config = require("../config/index");
 const log = require("../components/logger");
 const auth = require("../components/auth");
@@ -50,6 +54,76 @@ async function getStudentGradeCodes(req, res) {
     const url = `${config.get(
       "server:studentAPIURL"
     )}/api/v1/student/grade-codes`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getGradProgramCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get("server:programAPIURL")}/api/v1/program/programs`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getOptionalProgramCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:programAPIURL"
+    )}/api/v1/program/optionalprograms`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getCareerProgramCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:programAPIURL"
+    )}/api/v1/program/careerprogram`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getRequirementTypeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:programAPIURL"
+    )}/api/v1/program/gradrequirementtype`;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -115,11 +189,273 @@ async function getExamSpecialCaseCodes(req, res) {
   }
 }
 
+async function getInstituteSchoolCategoryCodes(_req, res) {
+  try {
+    const url = `${config.get(
+      "server:instituteAPIURL"
+    )}/api/v1/institute/category-codes`;
+    const data = await getCommonServiceData(url);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+async function getInstituteFacilityCodes(_req, res) {
+  try {
+    const url = `${config.get(
+      "server:instituteAPIURL"
+    )}/api/v1/institute/facility-codes`;
+    const data = await getCommonServiceData(url);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getAssessmentSpecialCaseCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:studentGraduationAPIURL"
+    )}/api/v1/studentgraduation/lgSc/specialcase`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getCourseLetterGradeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:studentGraduationAPIURL"
+    )}/api/v1/studentgraduation/lgSc/lettergrade`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getTranscriptMessagingCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:studentGraduationAPIURL"
+    )}/api/v1/studentgraduation/transcript/gradmessages`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getStudentUndoCompletionReasonCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:studentGraduationAPIURL"
+    )}/api/v1/studentgraduation/undocompletion/undocompletionreason`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getTranscriptTypeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/transcripttype`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getCertificateTypeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/certificatetype`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getCertificateTypeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/certificatetype`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getProgramCertificateTranscriptCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/allprogramcertificates`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getReportTypeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/reporttype`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getDocumentStatusCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:graduationReportAPIURL"
+    )}/api/v1/graduationreports/documentstatus`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getDigitalSignatureBlockTypeCodes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get(
+      "server:reportAPIURL"
+    )}/api/v1/reports/signatures/getSignatureBlockTypeCodes`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function getBatchJobTypes(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get("server:batchAPIURL")}/api/v1/batch/batchjobtype`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 module.exports = {
   getStudentStatusCodes,
   getHistoryActivityCodes,
   getStudentGradeCodes,
+  getGradProgramCodes,
+  getOptionalProgramCodes,
+  getCareerProgramCodes,
+  getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
   getExamSpecialCaseCodes,
+  getInstituteSchoolCategoryCodes,
+  getInstituteFacilityCodes,
+  getAssessmentSpecialCaseCodes,
+  getCourseLetterGradeCodes,
+  getTranscriptMessagingCodes,
+  getStudentUndoCompletionReasonCodes,
+  getTranscriptTypeCodes,
+  getCertificateTypeCodes,
+  getProgramCertificateTranscriptCodes,
+  getReportTypeCodes,
+  getDocumentStatusCodes,
+  getDigitalSignatureBlockTypeCodes,
+  getBatchJobTypes,
 };

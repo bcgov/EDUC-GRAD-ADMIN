@@ -132,7 +132,7 @@
 
 <script>
 // API service
-import ProgramManagementService from "@/services/ProgramManagementService.js";
+import CodesService from "@/services/CodesService.js";
 
 // Shared functions & validations
 import { isProgramComplete, applyDisplayOrder } from "@/utils/common.js";
@@ -174,7 +174,6 @@ export default {
         },
       },
       ifStudentStatusMerged: helpers.withMessage('This student is showing as merged. Student GRAD Optional Program data cannot be updated for students with a status of "MER" merged.', (value) => {
-        console.log(this.studentGradStatus.studentStatus)
         return !(this.studentGradStatus.studentStatus == "MER");
       }),
       ifStudentStatusDeceased: helpers.withMessage('This student is showing as deceased.', (value) => {
@@ -285,15 +284,16 @@ export default {
       }
     },
     ...mapActions(useStudentStore, ["addStudentOptionalProgram", "addStudentCareerPrograms"]),
+    // IMPROVEMENT: Set & get these from app store
     async fetchPrograms() {
       try {
-        const response = await ProgramManagementService.getOptionalPrograms();
+        const response = await CodesService.getOptionalProgramCodes();
         this.optionalProgramList = response.data;
       } catch (error) {
         console.error("Error fetching optional programs:", error);
       }
       try {
-        const response = await ProgramManagementService.getCareerPrograms();
+        const response = await CodesService.getCareerProgramCodes();
         this.careerProgramList = response.data;
       } catch (error) {
         console.error("Error fetching optional programs:", error);

@@ -1,17 +1,14 @@
 const passport = require("passport");
 const express = require("express");
 const router = express.Router();
-const config = require("../config/index");
 const auth = require("../components/auth");
 const roles = require("../components/roles");
 const {
-  errorResponse,
-  getData,
-  postData,
-  putData,
-  deleteData,
-} = require("../components/utils");
-const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
+  getSchoolReport,
+  getDistrictReport,
+  getDigitalSignatures,
+} = require("../components/reports");
+const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
     roles.Admin.StaffInfoOfficer,
@@ -21,30 +18,25 @@ const isValidUiTokenWithStaffRoles = auth.isValidUiTokenWithRoles(
   ]
 );
 
-//Program Routes
 router.get(
-  "/*",
+  "/schoolReports/school/:schoolID",
   passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithStaffRoles,
-  getReportsAPI
+  isValidUiTokenWithReadStaffRoles,
+  getSchoolReport
 );
 
-async function getReportsAPI(req, res) {
-  const token = auth.getBackendToken(req);
-  const version = req.version;
-  try {
-    const url = `${config.get("server:reportAPIURL")}/api/${version}/reports${
-      req.url
-    }`;
-    const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data);
-  } catch (e) {
-    if (e.data.message) {
-      return errorResponse(res, e.data.message, e.status);
-    } else {
-      return errorResponse(res);
-    }
-  }
-}
+router.get(
+  "/schoolReports/district/:districtID",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getDistrictReport
+);
+
+router.get(
+  "/signatures",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getDigitalSignatures
+);
 
 module.exports = router;

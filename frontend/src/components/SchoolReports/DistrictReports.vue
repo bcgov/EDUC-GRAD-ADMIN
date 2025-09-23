@@ -104,7 +104,7 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
-import GraduationReportService from "@/services/GraduationReportService.js";
+import ReportService from "@/services/ReportService.js";
 import sharedMethods from "../../sharedMethods";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { mapState } from "pinia";
@@ -202,7 +202,7 @@ export default {
         this.searchLoading = false;
         this.searchMessage = "Select a district to view reports.";
       } else {
-        GraduationReportService.getAllReportsForDistrict(this.searchDistrictId)
+        ReportService.getReportsByDistrictId(this.searchDistrictId)
           .then((response) => {
             this.reports = response.data;
             this.searchLoading = false;
