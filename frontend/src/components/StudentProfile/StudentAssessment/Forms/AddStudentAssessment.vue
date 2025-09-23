@@ -21,8 +21,8 @@
         <v-card-text class="py-1">
           <v-row no-gutters>
             <v-col cols="12" class="mb-5">
-              <!-- <StudentStatusAlert :student-status="studentStatus"></StudentStatusAlert> -->
-              <StudentStatusAlert student-status="DEC"></StudentStatusAlert>
+              <StudentStatusAlert :student-status="studentStatus"></StudentStatusAlert>
+
             </v-col>
           </v-row>
           <v-expand-transition>
