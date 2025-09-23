@@ -24,7 +24,7 @@
 
         </v-card-title>
         <v-card-text>
-          <StudentCourseAlert :studentStatus="studentStatus" />
+          <StudentStatusAlert :studentStatus="studentStatus" />
           <!-- Warnings & Info: These will be deleted -->
           <div v-if="selectedCoursesWithValidations.warning.length || selectedCoursesWithValidations.info.length">
             <h4 class="font-weight-bold my-2">The following courses will be deleted</h4>
@@ -103,13 +103,13 @@
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
-import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue";
+import StudentStatusAlert from "@/components/StudentProfile/Forms/StudentStatusAlert.vue";
 import CourseReview from "@/components/StudentProfile/Forms/wizard/common/CourseReview.vue";
 
 export default {
   name: "StudentCoursesDeleteForm",
   components: {
-    StudentCourseAlert,
+    StudentStatusAlert,
     CourseReview
   },
   props: {
