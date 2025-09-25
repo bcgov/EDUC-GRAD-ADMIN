@@ -46,7 +46,7 @@
       <v-col cols="4">{{
         $filters.formatYYYYMMDate(sourceStudentGradStatus.programCompletionDate)
       }}</v-col>
-      <v-col v-if="keysToOverride.program" cols="4"
+      <v-col v-if="keysToOverride.programCompletionDate" cols="4"
         ><strong>{{
           $filters.formatYYYYMMDate(
             sourceStudentGradStatus.programCompletionDate
@@ -138,6 +138,25 @@
       >
       <v-col v-else cols="4">{{
         $filters.formatSimpleDate(targetStudentGradStatus.adultStartDate)
+      }}</v-col>
+    </v-row>
+    <v-row no-gutters
+      ><v-col cols="4"
+        ><v-checkbox
+          v-model="keysToOverride.consumerEducationRequirementMet"
+          label="Consumer Education Requirement Met"
+          hide-details
+      /></v-col>
+      <v-col cols="4">{{
+        sourceStudentGradStatus.consumerEducationRequirementMet
+      }}</v-col>
+      <v-col v-if="keysToOverride.consumerEducationRequirementMet" cols="4"
+        ><strong>{{
+          sourceStudentGradStatus.consumerEducationRequirementMet
+        }}</strong></v-col
+      >
+      <v-col v-else cols="4">{{
+        targetStudentGradStatus.consumerEducationRequirementMet
       }}</v-col>
     </v-row>
     <v-row no-gutters
@@ -299,6 +318,11 @@ export default {
             ? this.sourceStudentGradStatus.adultStartDate
             : this.targetStudentGradStatus.adultStartDate,
 
+          consumerEducationRequirementMet: this.keysToOverride
+            .consumerEducationRequirementMet
+            ? this.sourceStudentGradStatus.consumerEducationRequirementMet
+            : this.targetStudentGradStatus.consumerEducationRequirementMet,
+
           optionalPrograms: this.keysToOverride.optionalPrograms
             ? this.setOptionalProgramsToOverride(
                 this.sourceStudentGradStatus.optionalPrograms
@@ -313,16 +337,16 @@ export default {
         this.setGradStatusToMerge(merged);
       }
     },
-    setOptionalProgramsToOverride(mergedOptionalPrograms) {
+    setOptionalProgramsToOverride(sourceOptionalPrograms) {
       let gradProgramOptionalPrograms = this.optionalProgramsByGradProgram(
-        this.targetStudentGradStatus.program
+        this.gradStatusToMerge.program
       );
-      return mergedOptionalPrograms
+      return sourceOptionalPrograms
         .map((sourceOptProgram) => {
           return gradProgramOptionalPrograms.find(
             (targetOptProgram) =>
               targetOptProgram.optProgramCode ===
-              sourceOptProgram.optProgramCode
+              sourceOptProgram.optionalProgramCode
           );
         })
         .filter(Boolean); // the Boolean will filter out undefined if no match is found
