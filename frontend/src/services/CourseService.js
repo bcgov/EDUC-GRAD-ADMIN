@@ -9,9 +9,6 @@ export default {
   getCourseByID(courseID) {
     return ApiService.apiAxios.get(`api/course/courseID/${courseID}`);
   },
-  getAllCourseRequirements() {
-    return ApiService.apiAxios.get("/api/course/courseRequirements");
-  },
   getCourseRestrictions() {
     return ApiService.apiAxios.get("/api/course/courseRestrictions");
   },
@@ -21,9 +18,9 @@ export default {
   getCourseRestriction(mainCourseLevel, mainCourseCode) {
     return ApiService.apiAxios.get(
       "/api/course/courseRestriction?mainCourseLevel=" +
-      mainCourseLevel +
-      "&mainCourseCode=" +
-      mainCourseCode
+        mainCourseLevel +
+        "&mainCourseCode=" +
+        mainCourseCode
     );
   },
   createCourseRestriction(json) {
@@ -55,10 +52,10 @@ export default {
   getCourseEventHistory(params) {
     const encodedSortParams = encodeURIComponent(JSON.stringify(params.sort));
     const encodedSearchParams = encodeURIComponent(
-        JSON.stringify(params.searchParams)
+      JSON.stringify(params.searchParams)
     );
     return ApiService.apiAxios.get(
-        `/api/course/eventHistory?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&sort=${encodedSortParams}&searchParams=${encodedSearchParams}`
+      `/api/course/eventHistory?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&sort=${encodedSortParams}&searchParams=${encodedSearchParams}`
     );
   },
   putCourseEventHistory(json) {

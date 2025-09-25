@@ -14,6 +14,8 @@ export const useAppStore = defineStore("app", {
     snackbarStore: useSnackbarStore(),
     pageTitle: "GRAD",
     programOptions: [],
+    optionalProgramOptions: [],
+    careerProgramOptions: [],
     studentStatusOptions: [],
     ungradReasons: [],
     batchTypeCodes: [],
@@ -87,6 +89,17 @@ export const useAppStore = defineStore("app", {
     },
     // We should move to rename these to drop the "get" part to align with student admin and avoid naming conflicts
     schoolCategoryCodes: (state) => state.instituteCategoryCodes,
+    optionalProgramsByGradProgram: (state) => (gradProgram) =>
+      state.optionalProgramOptions?.filter(
+        (optProgram) => optProgram.graduationProgramCode == gradProgram
+      ),
+    optionalProgramByID: (state) => {
+      return (optionalProgramID) =>
+        state.optionalProgramOptions?.find(
+          (optionalProgram) =>
+            optionalProgram.optionalProgramID === optionalProgramID
+        );
+    },
     getBatchSchoolCategoryCodes: (state) => {
       const includedCategories = [
         "PUBLIC",
@@ -143,6 +156,8 @@ export const useAppStore = defineStore("app", {
           await this.getConfig();
           // GET & SET GRAD CODES
           await this.getProgramOptionCodes();
+          await this.getOptionalProgramCodes();
+          await this.getCareerProgramCodes();
           await this.getStudentStatusOptionCodes();
           await this.getUndoCompletionReasonCodes();
           await this.getBatchJobTypeCodes();
@@ -152,7 +167,7 @@ export const useAppStore = defineStore("app", {
           await this.getLetterGradeCodes();
           await this.getFAASTypeCodes();
           //GET & SET ASSESSMENT TYPE CODES
-          await this.getAssessmentTypeCodes()
+          await this.getAssessmentTypeCodes();
           // GET & SET INSTITUTE SCHOOL AND DISTRICT LISTS
           await this.getSchools();
           await this.getDistricts();
@@ -160,7 +175,6 @@ export const useAppStore = defineStore("app", {
           await this.getInstituteCategoryCodes();
           await this.getInstituteFacilityCodes();
           await this.getProvincialSpecialCaseCodes();
-
         }
       } catch (e) {
         if (e.response.status) {
@@ -206,8 +220,34 @@ export const useAppStore = defineStore("app", {
       this.studentStatusOptions =
         sharedMethods.applyDisplayOrder(studentStatusCodes);
     },
+    async getOptionalProgramCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.optionalProgramOptions)
+      ) {
+        let response = await CodesService.getOptionalProgramCodes();
+        await this.setOptionalProgramCodes(response.data); // why does this line throw error
+      }
+    },
+    async setOptionalProgramCodes(optionalProgramCodes) {
+      this.optionalProgramOptions =
+        sharedMethods.applyDisplayOrder(optionalProgramCodes);
+    },
+    async getCareerProgramCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.careerProgramOptions)
+      ) {
+        let response = await CodesService.getCareerProgramCodes();
+        await this.setCareerProgramCodes(response.data); // why does this line throw error
+      }
+    },
+    async setCareerProgramCodes(careerProgramCodes) {
+      this.careerProgramOptions =
+        sharedMethods.applyDisplayOrder(careerProgramCodes);
+    },
     async getUndoCompletionReasonCodes(getNewData = true) {
-      if (getNewData || !sharedMethods.applyDisplayOrder(this.ungradReasons)) {
+      if (getNewData || !sharedMethods.dataArrayExists(this.ungradReasons)) {
         let response = await CodesService.getUndoCompletionReasonCodes();
         await this.setUndoCompletionReasons(response.data);
       }
