@@ -202,6 +202,7 @@ export default {
         schoolAtGrad: false,
         honoursStanding: false,
         adultStartDate: false,
+        consumerEducationRequirementMet: false,
         optionalPrograms: false,
       },
     };
