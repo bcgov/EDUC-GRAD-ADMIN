@@ -2,16 +2,10 @@
   <div>
     <v-dialog v-model="dialog" persistent max-width="80%">
       <v-card>
-        <v-card-title
-          ><v-row no-gutters>
+        <v-card-title><v-row no-gutters>
             <div class="v-card-title">Student Merge</div>
             <v-spacer />
-            <v-btn
-              icon="mdi-close"
-              density="compact"
-              rounded="sm"
-              @click="close"
-            />
+            <v-btn icon="mdi-close" density="compact" rounded="sm" @click="close" />
           </v-row>
           <v-card-subtitle>
             {{ sourceStudentData.pen }} - {{ sourceStudentData.legalLastName }},
@@ -27,242 +21,123 @@
           </v-card-subtitle>
         </v-card-title>
         <div class="progress-container" v-if="validationStep">
-          <v-progress-circular
-            indeterminate
-            color="primary"
-          ></v-progress-circular>
+          <v-progress-circular indeterminate color="primary"></v-progress-circular>
         </div>
         <v-stepper alt-labels show-actions v-model="step">
           <template v-slot:default>
             <v-stepper-header>
-              <v-stepper-item
-                title="Examinable&nbsp;Courses"
-                value="1"
-              ></v-stepper-item>
+              <v-stepper-item title="Examinable&nbsp;Courses" value="1"></v-stepper-item>
               <v-stepper-item value="2">
                 <template #title>
                   <span class="text-no-wrap">Non-Examinable&nbsp;Courses</span>
                 </template>
               </v-stepper-item>
-              <v-stepper-item
-                title="Assessment&nbsp;Data"
-                value="3"
-              ></v-stepper-item>
-              <v-stepper-item
-                title="Grad&nbsp;Status"
-                value="4"
-                no-wrap
-              ></v-stepper-item>
+              <v-stepper-item title="Assessment&nbsp;Data" value="3"></v-stepper-item>
+              <v-stepper-item title="Grad&nbsp;Status" value="4" no-wrap></v-stepper-item>
               <v-stepper-item title="Confirmation" value="5"></v-stepper-item>
             </v-stepper-header>
             <v-stepper-window>
               <!-- Step 1 -->
               <v-stepper-window-item value="1">
-                <div
-                  style="
+                <div style="
                     max-height: 60vh;
                     overflow-y: auto;
                     padding-right: 0.5rem;
-                  "
-                >
-                  <CourseReviewAndReconcile
-                    :sourceStudentData="sourceStudentData"
-                    :targetStudentData="targetStudentData"
-                    :sourceStudentCourses="
-                      sourceStudentReconcileData.examinableCourses
-                    "
-                    :targetStudentCourses="
-                      targetStudentReconcileData.examinableCourses
-                    "
-                    type="examinablecoursemerge"
-                  />
+                  ">
+                  <CourseReviewAndReconcile :sourceStudentData="sourceStudentData"
+                    :targetStudentData="targetStudentData" :sourceStudentCourses="sourceStudentReconcileData.examinableCourses
+                      " :targetStudentCourses="targetStudentReconcileData.examinableCourses
+                        " type="examinablecoursemerge" />
                 </div>
               </v-stepper-window-item>
               <!-- Step 2 -->
               <v-stepper-window-item value="2">
-                <div
-                  style="
+                <div style="
                     max-height: 60vh;
                     overflow-y: auto;
                     padding-right: 0.5rem;
-                  "
-                >
-                  <CourseReviewAndReconcile
-                    :sourceStudentData="sourceStudentData"
-                    :targetStudentData="targetStudentData"
-                    :sourceStudentCourses="
-                      sourceStudentReconcileData.nonExaminableCourses
-                    "
-                    :targetStudentCourses="
-                      targetStudentReconcileData.nonExaminableCourses
-                    "
-                    type="nonexaminablecoursemerge"
-                  />
+                  ">
+                  <CourseReviewAndReconcile :sourceStudentData="sourceStudentData"
+                    :targetStudentData="targetStudentData" :sourceStudentCourses="sourceStudentReconcileData.nonExaminableCourses
+                      " :targetStudentCourses="targetStudentReconcileData.nonExaminableCourses
+                        " type="nonexaminablecoursemerge" />
                 </div>
               </v-stepper-window-item>
 
               <!-- Step 3 -->
               <v-stepper-window-item value="3">
-                <div
-                  style="
+                <div style="
                     max-height: 60vh;
                     overflow-y: auto;
                     padding-right: 0.5rem;
-                  "
-                >
-                  <AssessmentReviewAndReconcile
-                    :sourceStudentData="sourceStudentData"
-                    :targetStudentData="targetStudentData"
-                    :sourceStudentAssessments="
-                      sourceStudentReconcileData.assessments
-                    "
-                    :targetStudentAssessments="
-                      targetStudentReconcileData.assessments
-                    "
-                    type="assessmentMerge"
-                  />
+                  ">
+                  <AssessmentReviewAndReconcile :sourceStudentData="sourceStudentData"
+                    :targetStudentData="targetStudentData" :sourceStudentAssessments="sourceStudentReconcileData.assessments
+                      " :targetStudentAssessments="targetStudentReconcileData.assessments
+                        " type="assessmentMerge" />
                 </div>
               </v-stepper-window-item>
               <!-- Step 4 -->
               <v-stepper-window-item value="4">
-                <div
-                  style="
+                <div style="
                     max-height: 60vh;
                     overflow-y: auto;
                     padding-right: 0.5rem;
-                  "
-                >
-                  <GRADStatusReviewAndReconcile
-                    :sourceStudentData="sourceStudentData"
-                    :targetStudentData="targetStudentData"
-                    :sourceStudentGradStatus="
-                      sourceStudentReconcileData.gradStatus
-                    "
-                    :targetStudentGradStatus="
-                      targetStudentReconcileData.gradStatus
-                    "
-                    :keysToOverride.sync="gradStatusKeysToMerge"
-                  />
+                  ">
+                  <GRADStatusReviewAndReconcile :sourceStudentData="sourceStudentData"
+                    :targetStudentData="targetStudentData" :sourceStudentGradStatus="sourceStudentReconcileData.gradStatus
+                      " :targetStudentGradStatus="targetStudentReconcileData.gradStatus
+                        " :keysToOverride.sync="gradStatusKeysToMerge" />
                 </div>
               </v-stepper-window-item>
               <!-- Step 5 -->
               <v-stepper-window-item value="5">
-                <div
-                  style="
+                <div style="
                     max-height: 60vh;
                     overflow-y: auto;
                     padding-right: 0.5rem;
-                  "
-                >
-                  <StudentMergeConfirmation
-                    :sourceStudentData="sourceStudentData"
-                    :targetStudentData="targetStudentData"
-                  />
+                  ">
+                  <StudentMergeConfirmation :sourceStudentData="sourceStudentData"
+                    :targetStudentData="targetStudentData" />
                 </div>
               </v-stepper-window-item>
             </v-stepper-window>
           </template>
         </v-stepper>
         <v-card-actions>
-          <v-btn
-            v-if="step == 0"
-            color="error"
-            variant="outlined"
-            class="text-none"
-            @click="close"
-            >Cancel</v-btn
-          >
-          <v-btn
-            v-else-if="step >= 1 && step <= 4"
-            @click="step--"
-            color="bcGovBlue"
-            variant="outlined"
-            :disabled="validationStep"
-            >Back</v-btn
-          >
+          <v-btn v-if="step == 0" color="error" variant="outlined" class="text-none" @click="close">Cancel</v-btn>
+          <v-btn v-else-if="step >= 1 && step <= 4" @click="step--" color="bcGovBlue" variant="outlined"
+            :disabled="validationStep">Back</v-btn>
           <v-spacer />
-          <v-btn
-            v-if="step === 0"
-            color="error"
-            variant="flat"
-            class="text-none"
-            @click="saveExaminableStudentCourses"
-            :disabled="
-              validationStep ||
+          <v-btn v-if="step === 0" color="error" variant="flat" class="text-none" @click="saveExaminableStudentCourses"
+            :disabled="validationStep ||
               !(
                 studentDataToMerge.examinableCourses.info.length > 0 ||
                 studentDataToMerge.examinableCourses.conflicts.length > 0
               )
-            "
-            >Save Examinable Courses</v-btn
-          >
-          <v-btn
-            v-if="step === 1"
-            color="error"
-            variant="flat"
-            class="text-none"
-            @click="saveNonExaminableStudentCourses"
-            :disabled="
-              validationStep ||
+              ">Save Examinable Courses</v-btn>
+          <v-btn v-if="step === 1" color="error" variant="flat" class="text-none"
+            @click="saveNonExaminableStudentCourses" :disabled="validationStep ||
               !(
                 studentDataToMerge.nonExaminableCourses.info.length > 0 ||
                 studentDataToMerge.nonExaminableCourses.conflicts.length > 0
               )
-            "
-            >Save Non-Examinable Courses</v-btn
-          >
-          <v-btn
-            v-if="step === 2"
-            @click="saveAssessments"
-            :disabled="
-              validationStep ||
-              !(
-                studentDataToMerge.assessments.info.length > 0 ||
-                studentDataToMerge.assessments.conflicts.length > 0
-              )
-            "
-            color="error"
-            variant="flat"
-            class="text-none"
-            >Save Assessments</v-btn
-          >
-          <!-- <v-btn v-if="step === 2" @click="addAssessments" :disabled="validationStep" color="error" variant="flat"
-            class="text-none">ADD
-            Assessments</v-btn> -->
-          <v-btn
-            v-if="step === 3"
-            @click="saveGradStatus"
-            color="error"
-            variant="flat"
-            class="text-none"
-            :disabled="
-              validationStep ||
-              Object.values(this.gradStatusKeysToMerge).every(
-                (val) => val === false
-              )
-            "
-            >Save GRAD Status</v-btn
-          >
-          <v-btn
-            v-if="step < 4"
-            color="bcGovBlue"
-            variant="flat"
-            class="text-none"
-            @click="step++"
-            :disabled="isNextDisabled()"
-            >Next</v-btn
-          >
-          <v-btn
-            v-if="step === 4"
-            color="error"
-            variant="flat"
-            class="text-none"
-            @click="completeMerge"
-            :disabled="
-              validationStep || !studentDataToMerge.note.mergeCompleted
-            "
-            >Complete Student Merge</v-btn
-          >
+              ">Save Non-Examinable Courses</v-btn>
+          <v-btn v-if="step === 2" @click="saveAssessments" :disabled="validationStep ||
+            !(
+              studentDataToMerge.assessments.info.length > 0 ||
+              studentDataToMerge.assessments.conflicts.length > 0
+            )
+            " color="error" variant="flat" class="text-none">Save Assessments</v-btn>
+          <v-btn v-if="step === 3" @click="saveGradStatus" color="error" variant="flat" class="text-none" :disabled="validationStep ||
+            Object.values(this.gradStatusKeysToMerge).every(
+              (val) => val === false
+            )
+            ">Save GRAD Status</v-btn>
+          <v-btn v-if="step < 4" color="bcGovBlue" variant="flat" class="text-none" @click="step++"
+            :disabled="isNextDisabled()">Next</v-btn>
+          <v-btn v-if="step === 4" color="error" variant="flat" class="text-none" @click="completeMerge" :disabled="validationStep || !studentDataToMerge.note.mergeCompleted
+            ">Complete Student Merge</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -488,7 +363,7 @@ export default {
       } catch (err) {
         this.snackbarStore.showSnackbar(
           "There was an error fetching assessments: " +
-            (err?.response?.status || "Unknown"),
+          (err?.response?.status || "Unknown"),
           "error",
           5000
         );
@@ -511,7 +386,7 @@ export default {
       } catch (err) {
         this.snackbarStore.showSnackbar(
           "There was an error fetching courses: " +
-            (err?.response?.status || "Unknown"),
+          (err?.response?.status || "Unknown"),
           "error",
           5000
         );
@@ -540,8 +415,8 @@ export default {
       localStudentAssessments.conflicts =
         localStudentAssessments.conflicts.length > 0
           ? this.normalizedAssessmentMergeData(
-              localStudentAssessments.conflicts
-            )
+            localStudentAssessments.conflicts
+          )
           : [];
       const { errors, ...mergeStudentAssessments } = localStudentAssessments;
       const mergeStudentAssessmentsRequestBody = toRaw(mergeStudentAssessments);
@@ -571,8 +446,8 @@ export default {
       localStudentAssessments.conflicts =
         localStudentAssessments.conflicts.length > 0
           ? this.normalizedAssessmentMergeData(
-              localStudentAssessments.conflicts
-            )
+            localStudentAssessments.conflicts
+          )
           : [];
       const { errors, ...mergeStudentAssessments } = localStudentAssessments;
       const mergeStudentAssessmentsRequestBody = toRaw(mergeStudentAssessments);
@@ -600,10 +475,32 @@ export default {
       if (response.status === 200) {
         this.clearAssessmentsToMerge();
 
+        //refresh target student assessments
         let studentAssessments = await this.fetchStudentAssessments(
           this.targetStudentData.studentID
         );
         this.targetStudentReconcileData.assessments = studentAssessments;
+        //update source student assessmnets with validation errors and warnings
+
+        const assessmentsValidationIssues = response.data.added.map(assessment => ({
+          assessmentID: assessment.assessmentID,
+          sessionID: assessment.sessionID,
+          validationIssues: assessment.assessmentStudentValidationIssues,
+        }));
+
+        this.sourceStudentReconcileData.assessments = this.sourceStudentReconcileData.assessments.map(sa => {
+          const match = assessmentsValidationIssues.find(
+            vi =>
+              vi.assessmentID === sa.assessmentID &&
+              vi.sessionID === sa.sessionID
+          );
+          return {
+            ...sa,
+            assessmentStudentValidationIssues: match
+              ? match.validationIssues
+              : sa.assessmentStudentValidationIssues ?? null,
+          };
+        });
         this.snackbarStore.showSnackbar(
           "Successfully merged student assessments",
           "success",
@@ -635,6 +532,28 @@ export default {
         );
         this.targetStudentReconcileData.examinableCourses =
           studentCourses.filter((course) => course.courseExam !== null);
+
+        const courseValidationIssues = response.data.map(course => ({
+          courseID: course.courseID,
+          courseSession: course.courseSession,
+          validationIssues: course.validationIssues,
+        }));
+
+        this.sourceStudentReconcileData.examinableCourses = this.sourceStudentReconcileData.examinableCourses.map(examinableCourse => {
+          const match = courseValidationIssues.find(
+            vi =>
+              vi.courseID === examinableCourse.courseID &&
+              vi.sessionID === examinableCourse.sessionID
+          );
+          return {
+            ...examinableCourse,
+            courseStudentValidationIssues: match
+              ? match.validationIssues
+              : examinableCourse.courseValidationIssues ?? null,
+          };
+        });
+
+        console.log(this.sourceStudentReconcileData.examinableCourses)
         this.snackbarStore.showSnackbar(
           "Successfully merged examinable courses",
           "success",
@@ -666,6 +585,28 @@ export default {
         );
         this.targetStudentReconcileData.nonExaminableCourses =
           studentCourses.filter((course) => course.courseExam === null);
+
+        //update source student courses with validation errors and warnings
+
+        const courseValidationIssues = response.data.map(course => ({
+          courseID: course.courseID,
+          courseSession: course.courseSession,
+          validationIssues: course.validationIssues,
+        }));
+
+        this.sourceStudentReconcileData.nonExaminableCourses = this.sourceStudentReconcileData.nonExaminableCourses.map(nonExaminableCourse => {
+          const match = courseValidationIssues.find(
+            vi =>
+              vi.courseID === nonExaminableCourse.courseID &&
+              vi.sessionID === nonExaminableCourse.sessionID
+          );
+          return {
+            ...nonExaminableCourse,
+            courseStudentValidationIssues: match
+              ? match.validationIssues
+              : nonExaminableCourse.courseValidationIssues ?? null,
+          };
+        });
         this.snackbarStore.showSnackbar(
           "Successfully merged non-examinable courses",
           "success",
@@ -736,8 +677,8 @@ export default {
       localStudentAssessments.conflicts =
         localStudentAssessments.conflicts.length > 0
           ? this.normalizedAssessmentMergeData(
-              localStudentAssessments.conflicts
-            )
+            localStudentAssessments.conflicts
+          )
           : [];
       const { errors, ...mergeStudentAssessments } = localStudentAssessments;
       const mergeStudentAssessmentsRequestBody = toRaw(mergeStudentAssessments);
@@ -810,16 +751,16 @@ export default {
       localStudentCourses.info =
         localStudentCourses.info.length > 0
           ? this.normalizedCourseMergeData(
-              localStudentCourses.info,
-              isExaminable
-            )
+            localStudentCourses.info,
+            isExaminable
+          )
           : [];
       localStudentCourses.conflicts =
         localStudentCourses.conflicts.length > 0
           ? this.normalizedCourseMergeData(
-              localStudentCourses.conflicts,
-              isExaminable
-            )
+            localStudentCourses.conflicts,
+            isExaminable
+          )
           : [];
       const { errors, ...mergeStudentCourses } = localStudentCourses;
       const mergeStudentCoursesRequestBody = toRaw(mergeStudentCourses);

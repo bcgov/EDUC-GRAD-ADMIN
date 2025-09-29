@@ -7,8 +7,7 @@
             processedAssessment.assessmentType?.label ||
             processedAssessment.assessmentTypeCode
           }}
-          {{ processedAssessment.sessionDate }}</strong
-        >
+          {{ processedAssessment.sessionDate }}</strong>
         ({{ processedAssessment.assessmentDetails.label }})
       </v-col>
     </v-row>
@@ -106,8 +105,8 @@ export default {
   data() {
     return {};
   },
-  mounted() {},
-  validations() {},
+  mounted() { },
+  validations() { },
   watch: {},
   methods: {
     getAssessmentCenterSchoolDisplayName(schoolId) {
