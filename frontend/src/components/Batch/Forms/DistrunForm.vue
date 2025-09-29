@@ -2,67 +2,41 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn
-          v-if="
-            hasPermissions(
-              'BATCH',
-              'runCredentialsandTranscriptDistributionRun'
-            )
-          "
-          color="primary"
-          v-bind="props"
-          class="mr-2"
-          @click="setCredentialForForm()"
-        >
+        <v-btn v-if="
+          hasPermissions(
+            'BATCH',
+            'runCredentialsandTranscriptDistributionRun'
+          )
+        " color="primary" v-bind="props" class="mr-2" @click="setCredentialForForm()">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </template>
       <v-card>
         <div class="d-flex justify-space-between align-center">
-          <v-card-title
-            >Credentials and Transcript Distribution Run</v-card-title
-          >
-          <v-btn
-            @click="closeDialogAndResetForm()"
-            color="error"
-            variant="outlined"
-            class="m-4"
-            :loading="batchLoading"
-            >Cancel</v-btn
-          >
+          <v-card-title>Credentials and Transcript Distribution Run</v-card-title>
+          <v-btn icon="mdi-close" density="compact" rounded="sm" @click="closeDialogAndResetForm()" color="error"
+            variant="outlined" class="m-4" :loading="batchLoading" />
         </div>
         <v-card-text>
           <ScheduleInput hideGroup>
             <template #batchDetails>
-              <v-data-table
-                :items="[
-                  {
-                    label: 'Run Type',
-                    value: 'Credentials and Transcript Distribution Run',
-                  },
-                  {
-                    label: 'Where',
-                    value: getDistribution,
-                  },
-                ]"
-                hide-default-header
-                hide-default-footer
-              >
+              <v-data-table :items="[
+                {
+                  label: 'Run Type',
+                  value: 'Credentials and Transcript Distribution Run',
+                },
+                {
+                  label: 'Where',
+                  value: getDistribution,
+                },
+              ]" hide-default-header hide-default-footer>
               </v-data-table>
             </template>
           </ScheduleInput>
 
           <div class="row mx-6 mb-6 justify-end">
-            <v-btn
-              color="error"
-              variant="flat"
-              class="text-none"
-              density="default"
-              @click="submit"
-              :loading="batchLoading"
-              :disabled="v$.$invalid || batchLoading"
-              >Submit</v-btn
-            >
+            <v-btn color="error" variant="flat" class="text-none" density="default" @click="submit"
+              :loading="batchLoading" :disabled="v$.$invalid || batchLoading">Submit</v-btn>
           </div>
         </v-card-text>
       </v-card>
@@ -336,8 +310,8 @@ export default {
           } else {
             this.snackbarStore.showSnackbar(
               "Batch " +
-                response.data.batchId +
-                "- Credentials and Transcript Distribution Run request submitted",
+              response.data.batchId +
+              "- Credentials and Transcript Distribution Run request submitted",
               "success",
               10000
             );

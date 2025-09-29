@@ -169,7 +169,7 @@
                   <v-row no-gutters v-for="course in coursesToCreate" :key="course.courseID + course.sessionDate"
                     class="mb-2">
                     <v-col cols="12"><strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel
-                    }} -
+                        }} -
                         {{
                           $filters.formatYYYYMMStringDate(course.courseSession)
                         }}</strong>

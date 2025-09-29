@@ -2,77 +2,50 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn
-          v-if="hasPermissions('BATCH', 'runArchiveStudents')"
-          color="primary"
-          v-bind="props"
-          class="mr-2"
-        >
+        <v-btn v-if="hasPermissions('BATCH', 'runArchiveStudents')" color="primary" v-bind="props" class="mr-2">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </template>
       <v-card>
         <div class="d-flex justify-space-between align-center">
           <v-card-title>Archive Student Batch Process</v-card-title>
-          <v-btn
-            @click="closeDialogAndResetForm()"
-            color="error"
-            variant="outlined"
-            class="m-4"
-            :loading="batchLoading"
-            >Cancel</v-btn
-          >
+          <v-btn icon="mdi-close" density="compact" rounded="sm" @click="closeDialogAndResetForm()" color="error"
+            variant="outlined" class="m-4" :loading="batchLoading" />
         </div>
 
         <v-card-text>
           <v-stepper show-actions v-model="step">
             <template v-slot:default="{ prev, next }">
               <v-stepper-header>
-                <v-stepper-item
-                  :rules="[
-                    () => !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
-                  ]"
-                  complete
-                  editable
-                  title="Group"
-                  value="0"
-                ></v-stepper-item>
+                <v-stepper-item :rules="[
+                  () => !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid,
+                ]" complete editable title="Group" value="0"></v-stepper-item>
 
                 <v-divider></v-divider>
 
-                <v-stepper-item
-                  :rules="[() => !v$.getBatchRequest.batchRunTimeSet.$invalid]"
-                  complete
-                  editable
-                  title="Run/Schedule"
-                  value="1"
-                ></v-stepper-item>
+                <v-stepper-item :rules="[() => !v$.getBatchRequest.batchRunTimeSet.$invalid]" complete editable
+                  title="Run/Schedule" value="1"></v-stepper-item>
               </v-stepper-header>
 
               <v-stepper-window>
                 <v-stepper-window-item value="0">
                   <v-row>
                     <v-col>
-                      <v-select
-                        class="mt-2"
-                        v-model="group"
-                        :items="['School', 'All Students']"
-                        label="Select a group"
-                        variant="outlined"
-                      ></v-select>
+                      <v-select class="mt-2" v-model="group" :items="['School', 'All Students']" label="Select a group"
+                        variant="outlined"></v-select>
                     </v-col>
                   </v-row>
                   <v-row v-if="group == 'School'">
-                      <SchoolInput>
-                        <template #inputWarning>
-                          <p>
-                            All students with a School of Record matching the
-                            entered school and with a student status of CUR or a
-                            student status of TER will have their status changed
-                            to ARC
-                          </p>
-                        </template>
-                      </SchoolInput>
+                    <SchoolInput>
+                      <template #inputWarning>
+                        <p>
+                          All students with a School of Record matching the
+                          entered school and with a student status of CUR or a
+                          student status of TER will have their status changed
+                          to ARC
+                        </p>
+                      </template>
+                    </SchoolInput>
                   </v-row>
                   <v-row v-if="group == 'All Students'">
                     <v-alert>
@@ -88,12 +61,9 @@
                     <div v-if="group === 'School Category'">
                       Districts:
                       <v-list>
-                        <v-list-item
-                          v-for="(
-                            district, index
-                          ) in getBatchRequest.districtIds"
-                          :key="index"
-                        >
+                        <v-list-item v-for="(
+district, index
+                          ) in getBatchRequest.districtIds" :key="index">
                           <v-list-item-content>
                             <v-list-item-title>{{
                               district
@@ -114,20 +84,16 @@
                     </v-card>
                     <ScheduleInput>
                       <template #batchDetails>
-                        <v-data-table
-                          :items="[
-                            {
-                              label: 'Run Type',
-                              value: 'Archive Student Batch Process',
-                            },
-                            {
-                              label: 'Select Students',
-                              value: 'Current and Terminated Students',
-                            },
-                          ]"
-                          hide-default-header
-                          hide-default-footer
-                        >
+                        <v-data-table :items="[
+                          {
+                            label: 'Run Type',
+                            value: 'Archive Student Batch Process',
+                          },
+                          {
+                            label: 'Select Students',
+                            value: 'Current and Terminated Students',
+                          },
+                        ]" hide-default-header hide-default-footer>
                         </v-data-table>
                       </template>
                       <template #confirmations>
@@ -151,11 +117,8 @@
                                   cycle
                                 </td>
                                 <td>
-                                  <v-checkbox
-                                    v-model="selectedConfirmations"
-                                    value="REQUIRED_CONFIRMATION_1"
-                                    hide-details
-                                  ></v-checkbox>
+                                  <v-checkbox v-model="selectedConfirmations" value="REQUIRED_CONFIRMATION_1"
+                                    hide-details></v-checkbox>
                                 </td>
                               </tr>
 
@@ -167,11 +130,8 @@
                                   updates
                                 </td>
                                 <td>
-                                  <v-checkbox
-                                    v-model="selectedConfirmations"
-                                    value="REQUIRED_CONFIRMATION_2"
-                                    hide-details
-                                  ></v-checkbox>
+                                  <v-checkbox v-model="selectedConfirmations" value="REQUIRED_CONFIRMATION_2"
+                                    hide-details></v-checkbox>
                                 </td>
                               </tr>
 
@@ -182,11 +142,8 @@
                                   completed
                                 </td>
                                 <td>
-                                  <v-checkbox
-                                    v-model="selectedConfirmations"
-                                    value="REQUIRED_CONFIRMATION_3"
-                                    hide-details
-                                  ></v-checkbox>
+                                  <v-checkbox v-model="selectedConfirmations" value="REQUIRED_CONFIRMATION_3"
+                                    hide-details></v-checkbox>
                                 </td>
                               </tr>
                             </tbody>
@@ -201,31 +158,17 @@
             <template v-slot:actions>
               <div class="row mx-6 mb-6">
                 <!-- Left Action Button -->
-                <v-btn
-                  @click="step--"
-                  color="bcGovBlue"
-                  :disabled="step == 0"
-                  variant="outlined">
+                <v-btn @click="step--" color="bcGovBlue" :disabled="step == 0" variant="outlined">
                   Back
                 </v-btn>
                 <v-spacer />
                 <!-- Right Action Button -->
-                <v-btn
-                  v-if="step < 1" 
-                  @click="step++" 
-                  :disabled="v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid" 
+                <v-btn v-if="step < 1" @click="step++" :disabled="v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid"
                   color="bcGovBlue">
                   Next
                 </v-btn>
-                <v-btn
-                  v-else
-                  color="error"
-                  variant="flat"
-                  class="text-none"
-                  density="default"
-                  @click="submit"
-                  :loading="batchLoading"
-                  :disabled="v$.$invalid || batchLoading">
+                <v-btn v-else color="error" variant="flat" class="text-none" density="default" @click="submit"
+                  :loading="batchLoading" :disabled="v$.$invalid || batchLoading">
                   Submit
                 </v-btn>
               </div>
@@ -268,7 +211,7 @@ export default {
       v$: useVuelidate(),
     };
   },
-  created() {},
+  created() { },
   validations() {
     return {
       selectedConfirmations: {
@@ -405,8 +348,8 @@ export default {
         } else {
           this.snackbarStore.showSnackbar(
             "Batch " +
-              response.data.batchId +
-              "- Archive student batch process submitted",
+            response.data.batchId +
+            "- Archive student batch process submitted",
             "success",
             10000
           );
