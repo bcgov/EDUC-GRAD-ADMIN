@@ -2,86 +2,61 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn
-          v-if="hasPermissions('BATCH', 'runPSIBatch')"
-          color="primary"
-          v-bind="props"
-          class="mr-2"
-          @click="setGroup('Psi')"
-        >
+        <v-btn v-if="hasPermissions('BATCH', 'runPSIBatch')" color="primary" v-bind="props" class="mr-2"
+          @click="setGroup('Psi')">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </template>
       <v-card>
         <div class="d-flex justify-space-between align-center">
           <v-card-title>PSI Run FTP / Paper</v-card-title>
-          <v-btn
-            @click="closeDialogAndResetForm()"
-            color="error"
-            variant="outlined"
-            class="m-4"
-            :loading="batchLoading"
-            >Cancel</v-btn
-          >
+          <v-btn icon="mdi-close" density="compact" rounded="sm" @click="closeDialogAndResetForm()" color="error"
+            variant="outlined" class="m-4" :loading="batchLoading" />
         </div>
         <v-card-text>
           <v-stepper show-actions v-model="step">
             <template v-slot:default="{ prev, next }">
               <v-stepper-header>
-                <v-stepper-item
-                  :rules="[
-                    () => !v$.getBatchRequest.hasAtLeastOnePSiValue.$invalid,
-                  ]"
-                  complete
-                  editable
-                  title="Group"
-                  value="0"
-                ></v-stepper-item>
+                <v-stepper-item :rules="[
+                  () => !v$.getBatchRequest.hasAtLeastOnePSiValue.$invalid,
+                ]" complete editable title="Group" value="0"></v-stepper-item>
 
                 <v-divider></v-divider>
 
-                <v-stepper-item
-                  :rules="[() => !v$.getBatchRequest.batchRunTimeSet.$invalid]"
-                  complete
-                  editable
-                  title="Run/Schedule"
-                  value="1"
-                ></v-stepper-item>
+                <v-stepper-item :rules="[() => !v$.getBatchRequest.batchRunTimeSet.$invalid]" complete editable
+                  title="Run/Schedule" value="1"></v-stepper-item>
               </v-stepper-header>
 
               <v-stepper-window>
                 <v-stepper-window-item value="0">
                   <v-row>
-                    <v-col> <PSIInput></PSIInput> </v-col
-                  ></v-row>
+                    <v-col>
+                      <PSIInput></PSIInput>
+                    </v-col></v-row>
                 </v-stepper-window-item>
 
                 <v-stepper-window-item value="1">
                   <v-card flat>
                     <ScheduleInput>
                       <template #batchDetails>
-                        <v-data-table
-                          :items="[
-                            {
-                              label: 'Run Type',
-                              value: 'PSI Run FTP / PAPER',
-                            },
-                            {
-                              label: 'Transmission Mode',
-                              value: getBatchRequest.psiTransmissionMode,
-                            },
-                            {
-                              label: 'PSI Year',
-                              value: getBatchRequest.psiYear,
-                            },
-                            {
-                              label: 'Where',
-                              value: 'BC Mail',
-                            },
-                          ]"
-                          hide-default-header
-                          hide-default-footer
-                        >
+                        <v-data-table :items="[
+                          {
+                            label: 'Run Type',
+                            value: 'PSI Run FTP / PAPER',
+                          },
+                          {
+                            label: 'Transmission Mode',
+                            value: getBatchRequest.psiTransmissionMode,
+                          },
+                          {
+                            label: 'PSI Year',
+                            value: getBatchRequest.psiYear,
+                          },
+                          {
+                            label: 'Where',
+                            value: 'BC Mail',
+                          },
+                        ]" hide-default-header hide-default-footer>
                         </v-data-table>
                       </template>
                     </ScheduleInput>
@@ -92,31 +67,17 @@
             <template v-slot:actions>
               <div class="row mx-6 mb-6">
                 <!-- Left Action Button -->
-                <v-btn
-                  @click="step--"
-                  color="bcGovBlue"
-                  :disabled="step == 0"
-                  variant="outlined">
+                <v-btn @click="step--" color="bcGovBlue" :disabled="step == 0" variant="outlined">
                   Back
                 </v-btn>
                 <v-spacer />
                 <!-- Right Action Button -->
-                <v-btn
-                  v-if="step < 1" 
-                  @click="step++" 
-                  :disabled="v$.getBatchRequest.hasAtLeastOnePSiValue.$invalid" 
+                <v-btn v-if="step < 1" @click="step++" :disabled="v$.getBatchRequest.hasAtLeastOnePSiValue.$invalid"
                   color="bcGovBlue">
                   Next
                 </v-btn>
-                <v-btn
-                  v-else
-                  color="error"
-                  variant="flat"
-                  class="text-none"
-                  density="default"
-                  @click="submit"
-                  :loading="batchLoading"
-                  :disabled="v$.$invalid || batchLoading">
+                <v-btn v-else color="error" variant="flat" class="text-none" density="default" @click="submit"
+                  :loading="batchLoading" :disabled="v$.$invalid || batchLoading">
                   Submit
                 </v-btn>
               </div>
@@ -171,7 +132,7 @@ export default {
       v$: useVuelidate(),
     };
   },
-  created() {},
+  created() { },
   validations() {
     return {
       getBatchRequest: {
@@ -284,8 +245,8 @@ export default {
         } else {
           this.snackbarStore.showSnackbar(
             "Batch " +
-              response.data.batchId +
-              "- PSI Run FTP / Paper submitted",
+            response.data.batchId +
+            "- PSI Run FTP / Paper submitted",
             "success",
             10000
           );

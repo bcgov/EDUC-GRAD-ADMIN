@@ -2,56 +2,35 @@
   <v-row justify="center">
     <v-dialog v-model="dialog" persistent width="1024">
       <template v-slot:activator="{ props }">
-        <v-btn
-          v-if="hasPermissions('BATCH', 'runArchiveSchoolReports')"
-          color="primary"
-          v-bind="props"
-          class="mr-2"
-          ><v-icon>mdi-plus</v-icon></v-btn
-        >
+        <v-btn v-if="hasPermissions('BATCH', 'runArchiveSchoolReports')" color="primary" v-bind="props"
+          class="mr-2"><v-icon>mdi-plus</v-icon></v-btn>
       </template>
       <v-card>
         <div class="d-flex justify-space-between align-center">
           <v-card-title>Archive School Reports Process</v-card-title>
-          <v-btn
-            @click="closeDialogAndResetForm()"
-            color="error"
-            variant="outlined"
-            class="m-4"
-            :loading="batchLoading"
-            >Cancel</v-btn
-          >
+
+
+          <v-btn icon="mdi-close" density="compact" rounded="sm" @click="closeDialogAndResetForm()" color="error"
+            variant="outlined" class="m-4" :loading="batchLoading" />
         </div>
         <v-card-text>
           <v-stepper show-actions v-model="step">
             <template v-slot:default="{ prev, next }">
               <v-stepper-header>
-                <v-stepper-item
-                  :rules="[
-                    () =>
-                      !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid &&
-                      !v$.getBatchRequest.reportTypeRequired.$invalid,
-                  ]"
-                  complete
-                  editable
-                  title="Group"
-                  value="0"
-                ></v-stepper-item>
+                <v-stepper-item :rules="[
+                  () =>
+                    !v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid &&
+                    !v$.getBatchRequest.reportTypeRequired.$invalid,
+                ]" complete editable title="Group" value="0"></v-stepper-item>
 
                 <v-divider></v-divider>
 
-                <v-stepper-item
-                  :rules="[
-                    () =>
-                      !v$.getBatchRequest.batchRunTimeSet.$invalid &&
-                      !v$.selectedConfirmations.allConfirmationsSelected
-                        .$invalid,
-                  ]"
-                  complete
-                  editable
-                  title="Run/Schedule"
-                  value="1"
-                ></v-stepper-item>
+                <v-stepper-item :rules="[
+                  () =>
+                    !v$.getBatchRequest.batchRunTimeSet.$invalid &&
+                    !v$.selectedConfirmations.allConfirmationsSelected
+                      .$invalid,
+                ]" complete editable title="Run/Schedule" value="1"></v-stepper-item>
               </v-stepper-header>
 
               <v-stepper-window>
@@ -59,39 +38,27 @@
                   <v-row>
                     <v-col sm="2">Report Type </v-col>
                     <v-col sm="10">
-                      <v-select
-                        v-model="reportType"
-                        :items="[
-                          {
-                            text: 'NONGRADPRJ - Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)',
-                            value: 'NONGRADPRJ',
-                          },
-                          {
-                            text: 'GRADREG - Graduated Students (MM YYYY to MM YYYY) Report',
-                            value: 'GRADREG',
-                          },
-                          {
-                            text: 'NONGRADREG - Not-Yet Graduated Students (MM YYYY to MM YYYY) Report',
-                            value: 'NONGRADREG',
-                          },
-                        ]"
-                        item-title="text"
-                        item-value="value"
-                        label="Select a report type"
-                        variant="outlined"
-                        class="mt-2"
-                      ></v-select>
+                      <v-select v-model="reportType" :items="[
+                        {
+                          text: 'NONGRADPRJ - Projected Non-Graduates - Summary Report (MM YYYY to MM YYYY)',
+                          value: 'NONGRADPRJ',
+                        },
+                        {
+                          text: 'GRADREG - Graduated Students (MM YYYY to MM YYYY) Report',
+                          value: 'GRADREG',
+                        },
+                        {
+                          text: 'NONGRADREG - Not-Yet Graduated Students (MM YYYY to MM YYYY) Report',
+                          value: 'NONGRADREG',
+                        },
+                      ]" item-title="text" item-value="value" label="Select a report type" variant="outlined"
+                        class="mt-2"></v-select>
                     </v-col>
                   </v-row>
                   <v-row>
                     <v-col>
-                      <v-select
-                        class="mt-2"
-                        v-model="group"
-                        :items="['School', 'All Schools']"
-                        label="Select a group"
-                        variant="outlined"
-                      ></v-select>
+                      <v-select class="mt-2" v-model="group" :items="['School', 'All Schools']" label="Select a group"
+                        variant="outlined"></v-select>
                     </v-col>
                   </v-row>
                   <v-row v-if="group == 'School'">
@@ -127,10 +94,8 @@
                             <thead>
                               <tr>
                                 <th>
-                                  <strong
-                                    >Batch Confirmation: please read and accept
-                                    before submitting</strong
-                                  >
+                                  <strong>Batch Confirmation: please read and accept
+                                    before submitting</strong>
                                 </th>
                                 <th>Confirm</th>
                               </tr>
@@ -144,11 +109,8 @@
                                   cycle
                                 </td>
                                 <td>
-                                  <v-checkbox
-                                    v-model="selectedConfirmations"
-                                    value="REQUIRED_CONFIRMATION_1"
-                                    hide-details
-                                  ></v-checkbox>
+                                  <v-checkbox v-model="selectedConfirmations" value="REQUIRED_CONFIRMATION_1"
+                                    hide-details></v-checkbox>
                                 </td>
                               </tr>
 
@@ -159,11 +121,8 @@
                                   any schools that require final updates
                                 </td>
                                 <td>
-                                  <v-checkbox
-                                    v-model="selectedConfirmations"
-                                    value="REQUIRED_CONFIRMATION_2"
-                                    hide-details
-                                  ></v-checkbox>
+                                  <v-checkbox v-model="selectedConfirmations" value="REQUIRED_CONFIRMATION_2"
+                                    hide-details></v-checkbox>
                                 </td>
                               </tr>
                             </tbody>
@@ -171,16 +130,12 @@
                         </v-card>
                       </template>
                       <template #batchDetails>
-                        <v-data-table
-                          :items="[
-                            {
-                              label: 'Run Type',
-                              value: 'Archive School Reports Process',
-                            },
-                          ]"
-                          hide-default-header
-                          hide-default-footer
-                        >
+                        <v-data-table :items="[
+                          {
+                            label: 'Run Type',
+                            value: 'Archive School Reports Process',
+                          },
+                        ]" hide-default-header hide-default-footer>
                         </v-data-table>
                       </template>
                     </ScheduleInput>
@@ -191,37 +146,16 @@
             <template v-slot:actions>
               <div class="row mx-6 mb-6">
                 <!-- Left Action Button -->
-                <v-btn
-                  @click="step--"
-                  color="bcGovBlue"
-                  :disabled="step == 0"
-                  variant="outlined"
-                  >Back</v-btn
-                >
+                <v-btn @click="step--" color="bcGovBlue" :disabled="step == 0" variant="outlined">Back</v-btn>
                 <v-spacer />
                 <!-- Right Action Button -->
-                <v-btn
-                  v-if="step < 1"
-                  @click="step++"
-                  :disabled="
-                    v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid ||
-                    v$.getBatchRequest.reportTypeRequired.$invalid
-                  "
-                  color="bcGovBlue"
-                >
+                <v-btn v-if="step < 1" @click="step++" :disabled="v$.getBatchRequest.hasAtLeastOneGroupValue.$invalid ||
+                  v$.getBatchRequest.reportTypeRequired.$invalid
+                  " color="bcGovBlue">
                   Next
                 </v-btn>
-                <v-btn
-                  v-else
-                  color="error"
-                  variant="flat"
-                  class="text-none"
-                  density="default"
-                  @click="submit"
-                  :loading="batchLoading"
-                  :disabled="v$.$invalid || batchLoading"
-                  >Submit</v-btn
-                >
+                <v-btn v-else color="error" variant="flat" class="text-none" density="default" @click="submit"
+                  :loading="batchLoading" :disabled="v$.$invalid || batchLoading">Submit</v-btn>
               </div>
             </template>
           </v-stepper>
@@ -266,7 +200,7 @@ export default {
       v$: useVuelidate(),
     };
   },
-  created() {},
+  created() { },
   validations() {
     return {
       selectedConfirmations: {
@@ -416,8 +350,8 @@ export default {
         } else {
           this.snackbarStore.showSnackbar(
             "Batch " +
-              response.data.batchId +
-              "- Archive School Reports Process submitted",
+            response.data.batchId +
+            "- Archive School Reports Process submitted",
             "success",
             10000
           );
