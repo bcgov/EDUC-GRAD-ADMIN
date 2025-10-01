@@ -148,33 +148,27 @@ export default {
     reconcileForTransfer() {
       this.resetAssessmentReconciliation();
       if (this.sourceStudentAssessments.length > 0) {
-        //Source not empty & target empty/not empty
         for (const sourceAssessment of this.sourceStudentAssessments) {
           const matchedTarget = this.getMatchedAssessment(
             sourceAssessment,
             this.targetStudentAssessments
           );
-          const truePENHasProficiencyScore = !!matchedTarget?.proficiencyScore;
-          if (truePENHasProficiencyScore) {
+
+          // If a match is found for any reason, it's an error.
+          if (matchedTarget) {
             this.assessmentReconciliation.errors.push({
               source: sourceAssessment,
               target: matchedTarget,
-              message: "Assessment has a proficiency score",
+              message:
+                "Assessment for this session already exists on the target student.",
             });
           } else {
-            if (matchedTarget) {
-              this.assessmentReconciliation.errors.push({
-                source: sourceAssessment,
-                target: matchedTarget,
-                message: "Assessment for this session already exists",
-              });
-            } else {
-              this.assessmentReconciliation.info.push({
-                source: sourceAssessment,
-                target: null,
-                message: "",
-              });
-            }
+            // Only assessments with NO match are considered for transfer.
+            this.assessmentReconciliation.info.push({
+              source: sourceAssessment,
+              target: null,
+              message: "Ready for transfer.",
+            });
           }
         }
       }
