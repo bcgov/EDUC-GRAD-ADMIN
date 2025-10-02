@@ -1272,7 +1272,6 @@ export default {
     },
     saveGraduationStatus(id) {
       let gradStatusPayload = this.editedGradStatus;
-      console.log(gradStatusPayload);
       //add the user info
       gradStatusPayload.updatedBy = this.username;
       //this.editedGradStatus.studentID = id;
