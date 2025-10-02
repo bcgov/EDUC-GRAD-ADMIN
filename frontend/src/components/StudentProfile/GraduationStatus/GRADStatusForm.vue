@@ -1271,43 +1271,32 @@ export default {
       this.blockSave = validationChecks.some((check) => check.$invalid);
     },
     saveGraduationStatus(id) {
+      let gradStatusPayload = this.editedGradStatus;
       //add the user info
-      this.editedGradStatus.updatedBy = this.username;
-      this.editedGradStatus.studentID = id;
-      this.editedGradStatus.pen = this.studentPen;
+      gradStatusPayload.updatedBy = this.username;
+      //this.editedGradStatus.studentID = id;
+      gradStatusPayload.pen = this.studentPen;
       //process the program completion date
-      if (this.editedGradStatus?.programCompletionDate == "") {
-        this.editedGradStatus.programCompletionDate = null;
-      }
-      if (this.editedGradStatus?.programCompletionDate != null) {
-        this.editedGradStatus.programCompletionDate =
-          this.editedGradStatus.programCompletionDate.replace("/", "-");
-        let date;
-        try {
-          date = new Date(this.editedGradStatus.programCompletionDate);
-          this.editedGradStatus.programCompletionDate = date
-            .toISOString()
-            .split("T")[0];
-        } catch (error) {
-          // eslint-disable-next-line
-          console.log(error);
-          this.snackbarStore.showSnackbar(error, "error", 5000);
-        }
+      if (!this.editedGradStatus?.programCompletionDate) {
+        gradStatusPayload.programCompletionDate = null;
+      } else {
+        gradStatusPayload.programCompletionDate =
+          this.editedGradStatus?.programCompletionDate.replace("-", "/");
       }
       if (this.editedGradStatus?.schoolOfRecord == "") {
-        this.editedGradStatus.schoolOfRecord = null;
+        gradStatusPayload.schoolOfRecord = null;
       }
       if (this.editedGradStatus?.schoolAtGradId == "") {
-        this.editedGradStatus.schoolAtGradId = null;
+        gradStatusPayload.schoolAtGradId = null;
       }
       if (
         this.studentGradStatus?.program == "1950" &&
         this.editedGradStatus?.program != "1950"
       ) {
-        this.editedGradStatus.adultStartDate = "";
+        gradStatusPayload.adultStartDate = "";
         this.studentGradStatus.adultStartDate = "";
       }
-      StudentService.editGraduationStatus(id, this.editedGradStatus)
+      StudentService.editGraduationStatus(id, gradStatusPayload)
         .then((response) => {
           this.dialog = false;
           this.updateStatus = response.data;
@@ -1324,12 +1313,6 @@ export default {
           this.snackbarStore.showSnackbar("GRAD Status Saved", "success", 5000);
         })
         .catch((error) => {
-          if (this.editedGradStatus.programCompletionDate != null) {
-            this.editedGradStatus.programCompletionDate =
-              this.editedGradStatus.programCompletionDate
-                .replace("-", "/")
-                .substring(0, 7);
-          }
           //eslint-disable-next-line
           console.log(error?.response?.data);
           this.snackbarStore.showSnackbar(
