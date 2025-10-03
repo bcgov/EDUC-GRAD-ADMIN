@@ -51,7 +51,12 @@
                 <v-list-item
                   :disabled="
                     studentGradStatus.studentStatus === 'MER' ||
-                    !studentGradStatus.programCompletionDate
+                    !(
+                      isProgramComplete(
+                        studentGradStatus.programCompletionDate,
+                        studentGradStatus.program
+                      ) && !!studentGradStatus.schoolAtGradId
+                    )
                   "
                   v-on:click="updateStudentReports"
                   >Update Transcript</v-list-item
@@ -59,7 +64,12 @@
                 <v-list-item
                   :disabled="
                     studentGradStatus.studentStatus === 'MER' ||
-                    !studentGradStatus.programCompletionDate
+                    !(
+                      isProgramComplete(
+                        studentGradStatus.programCompletionDate,
+                        studentGradStatus.program
+                      ) && !!studentGradStatus.schoolAtGradId
+                    )
                   "
                   v-on:click="showUndoCompletionDialog = true"
                   >Undo Completion</v-list-item
