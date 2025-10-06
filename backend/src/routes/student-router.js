@@ -18,6 +18,7 @@ const {
 const {
   postAdoptStudentSchema,
   postMergeCompleteStudentSchema,
+  getHistoricActivitySchema,
 } = require("../components/validations/grad-student");
 const auth = require("../components/auth");
 const roles = require("../components/roles");
@@ -61,6 +62,7 @@ const {
   getStudentByPen,
   getStudentByID,
   postAdoptPENStudent,
+  getStudentHistoricActivityByID
 } = require("../components/student");
 
 const isValidUiTokenWithEditStaffRoles = auth.isValidUiTokenWithRoles(
@@ -365,6 +367,15 @@ router.post(
   isValidUiTokenWithEditStaffRoles,
   validate(postAdoptStudentSchema),
   postAdoptPENStudent
+);
+
+// HISTORIC ACTIVITY
+router.get(
+  "/:studentID/historicActivity",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  validate(getHistoricActivitySchema),
+  getStudentHistoricActivityByID
 );
 
 module.exports = router;

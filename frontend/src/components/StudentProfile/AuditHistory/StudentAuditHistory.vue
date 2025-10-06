@@ -37,6 +37,15 @@
           Student Assessment History
         </v-chip>
       </v-tab>
+      <v-tab value="historicActivity">
+        <v-chip
+            class="text-none"
+            color="primary"
+            :variant="selectedTab === 'historicActivity' ? 'flat' : 'outlined'"
+        >
+          TRAX Change History
+        </v-chip>
+      </v-tab>
     </v-tabs>
     <v-card-text class="px-0">
       <v-window v-model="selectedTab">
@@ -282,6 +291,9 @@
         <v-window-item value="studentAssessmentHistory">
           <StudentAssessmentHistory />
         </v-window-item>
+        <v-window-item value="historicActivity">
+          <HistoricActivity />
+        </v-window-item>
       </v-window>
     </v-card-text>
   </v-card>
@@ -294,10 +306,12 @@ import DisplayTable from "@/components/DisplayTable.vue";
 import { useAppStore } from "@/store/modules/app";
 import CourseChangeHistory from "@/components/StudentProfile/AuditHistory/CourseChangeHistory.vue";
 import StudentAssessmentHistory from "@/components/StudentProfile/AuditHistory/StudentAssessmentHistory.vue";
+import HistoricActivity from "@/components/StudentProfile/AuditHistory/HistoricActivity.vue";
 
 export default {
   name: "StudentAuditHistory",
   components: {
+    HistoricActivity,
     StudentAssessmentHistory,
     CourseChangeHistory,
     DisplayTable: DisplayTable,
