@@ -15,7 +15,7 @@
         <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
       </v-card-title>
       <v-col>
-        <StudentStatusAlert :studentStatus="DEC" />
+        <StudentStatusAlert :student-status="studentStatus"></StudentStatusAlert>
       </v-col>
 
 
