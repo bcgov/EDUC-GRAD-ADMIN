@@ -77,6 +77,7 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=GRAD_PROGRAM_AREA_BA=GRAD_PROGRAM_AREA_BA \
   --from-literal=GRAD_ROLE_INFO_OFFICER=GRAD_INFO_OFFICER \
   --from-literal=GRAD_ROLE_ASSESSMENTS=GRAD_ASSESSMENTS \
+  --from-literal=SCHOLARSHIP_ADMIN=SCHOLARSHIP_ADMIN \
   --from-literal=REDIS_HOST=redis-ha \
   --from-literal=REDIS_PORT=6379 \
   --from-literal=BATCH_API_URL="http://educ-grad-batch-graduation-api.$GRAD_NAMESPACE-$ENV.svc.cluster.local:8080" \
