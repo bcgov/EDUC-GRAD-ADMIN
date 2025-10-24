@@ -3,7 +3,12 @@ const router = express.Router();
 const auth = require("../components/auth");
 const roles = require("../components/roles");
 const passport = require("passport");
+const validate = require("../components/validator");
 const {getStudentAddress, updateStudentAddress, getCitizenshipCodes, getCountryCodes, getProvinceCodes} = require("../components/scholarships");
+const {
+  getStudentAddressSchema,
+  putStudentAddressSchema,
+} = require("../components/validations/scholarships");
 const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
@@ -39,6 +44,7 @@ router.get(
   "/student/:studentID/address/",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
+  validate(getStudentAddressSchema),
   getStudentAddress
 );
 
@@ -46,6 +52,7 @@ router.put(
   "/student/:studentID/address/:studentAddressID",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
+  validate(putStudentAddressSchema),
   updateStudentAddress
 );
 
