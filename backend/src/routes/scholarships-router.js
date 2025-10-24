@@ -12,10 +12,7 @@ const {
 const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
   [
-    roles.Admin.StaffAdministration,
-    roles.Admin.StaffInfoOfficer,
-    roles.Admin.StaffGradAssessments,
-    roles.Admin.StaffGradProgramBA,
+    roles.Admin.ScholarshipAdmin
   ]
 );
 

@@ -155,7 +155,7 @@
                     studentUngradReasons.length
                   }})</v-tab
                 >
-                <v-tab value="scholarships" class="text-none"
+                <v-tab v-if="hasPermissions('SCHOLARSHIP', 'scholarshipViewAndEdit')" value="scholarships" class="text-none"
                   >Scholarships
                 </v-tab>
               </v-tabs>

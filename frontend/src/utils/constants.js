@@ -59,7 +59,7 @@ export const RolePermissions = Object.freeze({
     },
     studentMerge: {
       allowed: ["GRAD_SYSTEM_COORDINATOR"]
-    },
+    }
   },
   ADMIN: {
     readPage: {
@@ -141,6 +141,11 @@ export const RolePermissions = Object.freeze({
       allowed: ["GRAD_SYSTEM_COORDINATOR"],
     }
   },
+  SCHOLARSHIP: {
+    scholarshipViewAndEdit: {
+      allowed: ["SCHOLARSHIP_ADMIN"]
+    }
+  }
 });
 
 //role access
