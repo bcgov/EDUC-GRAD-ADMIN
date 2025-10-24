@@ -10,6 +10,7 @@ const {
   putStudentAddressSchema,
 } = require("../components/validations/scholarships");
 const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
+  "GRAD_SYSTEM_COORDINATOR",
   [
     roles.Admin.ScholarshipAdmin
   ]
