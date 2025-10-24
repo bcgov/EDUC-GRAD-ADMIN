@@ -155,6 +155,9 @@
                     studentUngradReasons.length
                   }})</v-tab
                 >
+                <v-tab value="scholarships" class="text-none"
+                  >Scholarships
+                </v-tab>
               </v-tabs>
               <v-card-text>
                 <v-window v-model="selectedTab">
@@ -328,6 +331,13 @@
                     </v-progress-circular>
 
                     <StudentUndoCompletionReasons></StudentUndoCompletionReasons>
+                  </v-window-item>
+                  <v-window-item
+                    value="scholarships"
+                  >
+                    <Scholarships 
+                      :student-ID="studentId"
+                    />
                   </v-window-item>
                 </v-window>
               </v-card-text>
@@ -698,6 +708,7 @@ import StudentUndoCompletionReasons from "@/components/StudentProfile/StudentUnd
 import StudentNotes from "@/components/StudentProfile/AuditHistory/StudentNotes.vue";
 import DisplayTable from "@/components/DisplayTable.vue";
 import StudentDataMergeForm from "@/components/StudentProfile/Forms/StudentDataMergeForm.vue";
+import Scholarships from "@/components/StudentProfile/Scholarship/Scholarships.vue";
 
 // shared functions
 import { isProgramComplete } from "../utils/common";
@@ -798,6 +809,7 @@ export default {
     StudentNotes: StudentNotes,
     DisplayTable: DisplayTable,
     StudentDataMergeForm: StudentDataMergeForm,
+    Scholarships: Scholarships
   },
   props: {},
   data() {

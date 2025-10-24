@@ -60,6 +60,7 @@ nconf.defaults({
     distributionAPIURL: process.env.DISTRIBUTION_API_URL,
     instituteAPIURL: process.env.INSTITUTE_API_URL,
     studentAssessmentAPIURL: process.env.STUDENT_ASSESSMENT_API_URL,
+    scholarshipAPIURL: process.env.SCHOLARSHIP_API_ENDPOINT
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,
