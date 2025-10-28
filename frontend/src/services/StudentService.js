@@ -202,4 +202,8 @@ export default {
   adoptPENStudent(studentID) {
     return ApiService.apiAxios.post(`/api/student/adopt/${studentID}`, null);
   },
+  // HISTORIC ACTIVITIES
+  getHistoricActivityByID(studentID) {
+    return ApiService.apiAxios.get(`/api/student/${studentID}/historicActivity`);
+  },
 };

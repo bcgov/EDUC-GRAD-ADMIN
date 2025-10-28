@@ -59,7 +59,7 @@ export const RolePermissions = Object.freeze({
     },
     studentMerge: {
       allowed: ["GRAD_SYSTEM_COORDINATOR"]
-    },
+    }
   },
   ADMIN: {
     readPage: {
@@ -141,6 +141,11 @@ export const RolePermissions = Object.freeze({
       allowed: ["GRAD_SYSTEM_COORDINATOR"],
     }
   },
+  SCHOLARSHIP: {
+    scholarshipViewAndEdit: {
+      allowed: ["SCHOLARSHIP_ADMIN"]
+    }
+  }
 });
 
 //role access
@@ -148,6 +153,7 @@ export const Roles = Object.freeze({
   GRAD_PROGRAM_AREA_BA: "GRAD_PROGRAM_AREA_BA",
   GRAD_INFO_OFFICER: "GRAD_INFO_OFFICER",
   GRAD_SYSTEM_COORDINATOR: "GRAD_SYSTEM_COORDINATOR",
+  SCHOLARSHIP_ADMIN: "SCHOLARSHIP_ADMIN"
 });
 
 export const MinistryAddress = Object.freeze({
