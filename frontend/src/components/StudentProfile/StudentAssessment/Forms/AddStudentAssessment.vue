@@ -1,8 +1,14 @@
 <template>
   <v-dialog v-model="dialog" max-width="80%" @after-leave="closeDialog">
     <template v-slot:activator="{ props }">
-      <v-btn v-if="hasPermissions('STUDENT', 'studentAssessmentUpdate')" color="bcGovBlue" prepend-icon="mdi-plus"
-        class="text-none" @click="openCreateStudentAssessmentDialog" text="Add Assessment" />
+      <v-btn
+        v-if="hasPermissions('STUDENT', 'studentAssessmentUpdate')"
+        color="bcGovBlue"
+        prepend-icon="mdi-plus"
+        class="text-none"
+        @click="openCreateStudentAssessmentDialog"
+        text="Add Assessment"
+      />
     </template>
     <v-form ref="newStudentAssessmentForm" v-model="isValidForm">
       <v-card>
@@ -10,36 +16,61 @@
           <v-row no-gutters>
             <div class="v-card-title">Add Assessment</div>
             <v-spacer />
-            <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
-              @click="closeDialog" />
+            <v-btn
+              icon="mdi-close"
+              density="compact"
+              rounded="sm"
+              variant="outlined"
+              color="error"
+              class="mt-2"
+              @click="closeDialog"
+            />
           </v-row>
           <v-row no-gutters>
             <v-card-subtitle class="mb-1">{{
               studentPenAndName
-            }}</v-card-subtitle></v-row>
+            }}</v-card-subtitle></v-row
+          >
         </v-card-title>
         <v-card-text class="py-1">
           <v-row no-gutters>
             <v-col cols="12" class="mb-5">
-              <StudentStatusAlert :student-status="studentStatus"></StudentStatusAlert>
-
+              <StudentStatusAlert
+                :student-status="studentStatus"
+              ></StudentStatusAlert>
             </v-col>
           </v-row>
           <v-expand-transition>
             <v-row>
-              <v-col v-if="updateStudentAssessment.assessmentStudentValidationIssues">
-                <v-alert v-for="(
-issue, i
-                  ) in updateStudentAssessment.assessmentStudentValidationIssues" :key="i" :type="issue.validationIssueCode === 'COURSE_SESSION_EXCEED'
-                    ? 'warning'
-                    : 'error'
-                    " border="start" variant="tonal" density="compact">
-                  {{ issue.validationMessage }}
-                  <span v-if="
-                    updateStudentAssessment.assessmentStudentValidationIssues
-                      .length === 1 &&
+              <v-col
+                v-if="updateStudentAssessment.assessmentStudentValidationIssues"
+              >
+                <v-alert
+                  v-for="(
+                    issue, i
+                  ) in updateStudentAssessment.assessmentStudentValidationIssues"
+                  :key="i"
+                  :type="
                     issue.validationIssueCode === 'COURSE_SESSION_EXCEED'
-                  " @click="save(true)" class="text-decoration-underline cursor-pointer" role="button" tabindex="0">
+                      ? 'warning'
+                      : 'error'
+                  "
+                  border="start"
+                  variant="tonal"
+                  density="compact"
+                >
+                  {{ issue.validationMessage }}
+                  <span
+                    v-if="
+                      updateStudentAssessment.assessmentStudentValidationIssues
+                        .length === 1 &&
+                      issue.validationIssueCode === 'COURSE_SESSION_EXCEED'
+                    "
+                    @click="save(true)"
+                    class="text-decoration-underline cursor-pointer"
+                    role="button"
+                    tabindex="0"
+                  >
                     Update anyways
                   </span>
                 </v-alert>
@@ -48,51 +79,110 @@ issue, i
           </v-expand-transition>
           <v-row no-gutters class="pt-3">
             <v-col class="pr-1">
-              <v-autocomplete v-model="updateStudentAssessment.sessionID" item-title="sessionDate"
-                item-value="sessionID" :items="assessmentSessions" label="Session" :loading="isLoadingSessions"
-                :rules="requiredRules" clearable @update:model-value="updateAssessmentTypeDropdown" variant="outlined"
-                density="compact"></v-autocomplete></v-col>
+              <v-autocomplete
+                v-model="updateStudentAssessment.sessionID"
+                item-title="sessionDate"
+                item-value="sessionID"
+                :items="assessmentSessions"
+                label="Session"
+                :loading="isLoadingSessions"
+                :rules="requiredRules"
+                clearable
+                @update:model-value="updateAssessmentTypeDropdown"
+                variant="outlined"
+                density="compact"
+              ></v-autocomplete
+            ></v-col>
             <v-col class="pr-1">
-              <v-autocomplete v-model="updateStudentAssessment.assessmentID" label="Assessment Code"
-                :items="assessmentsInSession" item-title="assessmentTypeCode" item-value="assessmentID"
-                :loading="isLoadingAssessments" :rules="requiredRules" clearable :no-data-text="updateStudentAssessment.sessionID === null
-                  ? 'Select a Session'
-                  : 'No data available'
-                  " variant="outlined" density="compact"></v-autocomplete></v-col>
+              <v-autocomplete
+                v-model="updateStudentAssessment.assessmentID"
+                label="Assessment Code"
+                :items="assessmentsInSession"
+                item-title="assessmentTypeCode"
+                item-value="assessmentID"
+                :loading="isLoadingAssessments"
+                :rules="requiredRules"
+                clearable
+                :no-data-text="
+                  updateStudentAssessment.sessionID === null
+                    ? 'Select a Session'
+                    : 'No data available'
+                "
+                variant="outlined"
+                density="compact"
+              ></v-autocomplete
+            ></v-col>
             <v-col class="pr-1">
-              <v-select v-model="updateStudentAssessment.provincialSpecialCaseCode" label="Provincial Special Case Code"
-                :items="provincialSpecialCaseDropdown.displayItems()" item-title="label"
-                item-value="provincialSpecialCaseCode" :clearable="provincialSpecialCaseDropdown.canClear()"
-                variant="outlined" density="compact">
+              <v-select
+                v-model="updateStudentAssessment.provincialSpecialCaseCode"
+                label="Provincial Special Case Code"
+                :items="provincialSpecialCaseDropdown.displayItems()"
+                item-title="label"
+                item-value="provincialSpecialCaseCode"
+                :clearable="provincialSpecialCaseDropdown.canClear()"
+                variant="outlined"
+                density="compact"
+              >
                 <template v-slot:item="{ props, item }">
-                  <v-list-item v-bind="props" :disabled="provincialSpecialCaseDropdown.isOptionDisabled(item.raw)
-                    " :class="{
+                  <v-list-item
+                    v-bind="props"
+                    :disabled="
+                      provincialSpecialCaseDropdown.isOptionDisabled(item.raw)
+                    "
+                    :class="{
                       'text-disabled':
                         provincialSpecialCaseDropdown.isOptionDisabled(
                           item.raw
                         ),
-                    }">
+                    }"
+                  >
                   </v-list-item>
                 </template>
               </v-select>
             </v-col>
-            <SchoolDropdown v-model="updateStudentAssessment.assessmentCenterSchoolID" label="Assessment Center"
-              variant="outlined" density="compact" class="pr-1" />
-            <SchoolDropdown v-if="hasPermissions('STUDENT', 'editSchoolAtWrite')"
-              v-model="updateStudentAssessment.schoolAtWriteSchoolID" label="School of Record At Write"
-              :required="wasWritten" variant="outlined" density="compact" class="pr-1" />
+            <SchoolDropdown
+              v-model="updateStudentAssessment.assessmentCenterSchoolID"
+              label="Assessment Center"
+              variant="outlined"
+              density="compact"
+              class="pr-1"
+            />
+            <SchoolDropdown
+              v-if="hasPermissions('STUDENT', 'editSchoolAtWrite')"
+              v-model="updateStudentAssessment.schoolAtWriteSchoolID"
+              label="School of Record At Write"
+              :required="wasWritten"
+              variant="outlined"
+              density="compact"
+              class="pr-1"
+            />
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="error" variant="outlined" class="text-none" density="default" text="Cancel"
-            @click="dialog = false" />
+          <v-btn
+            color="error"
+            variant="outlined"
+            class="text-none"
+            density="default"
+            text="Cancel"
+            @click="dialog = false"
+          />
           <v-spacer></v-spacer>
-          <v-btn color="bcGovBlue" variant="flat" class="text-none" density="default" text="Save" :loading="isSaving"
-            :disabled="isSaving ||
+          <v-btn
+            color="bcGovBlue"
+            variant="flat"
+            class="text-none"
+            density="default"
+            text="Save"
+            :loading="isSaving"
+            :disabled="
+              isSaving ||
               !isValidForm ||
               updateStudentAssessment?.assessmentStudentValidationIssues
                 ?.length > 0
-              " @click="save(false)" />
+            "
+            @click="save(false)"
+          />
         </v-card-actions>
       </v-card>
     </v-form>
@@ -106,7 +196,7 @@ import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "@/store/modules/student";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
 import { defineComponent } from "vue";
-import { mapState } from "pinia";
+import { mapState, mapActions } from "pinia";
 import { omit } from "lodash";
 import SchoolDropdown from "@/components/Common/SchoolDropdown.vue";
 import StudentStatusAlert from "../../Forms/StudentStatusAlert.vue";
@@ -142,10 +232,10 @@ export default defineComponent({
     ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useStudentStore, {
       studentPen: "getStudentPen",
+      studentStoreId: "getStudentId",
       studentCourses: "studentCourses",
       studentPenAndName: "formattedStudentName",
       studentStatus: (state) => state.student.profile.studentStatus,
-
     }),
     provincialSpecialCaseDropdown() {
       // Find the matching assessment for the current student
@@ -164,7 +254,7 @@ export default defineComponent({
       // Get exclusion rules for the matched assessment type
       const excludeConfig =
         this.specialCaseCodesToExcludeFromAssessments?.[
-        match?.assessmentTypeCode
+          match?.assessmentTypeCode
         ];
       const excludeCodes = excludeConfig?.excludeCodes || [];
 
@@ -235,7 +325,7 @@ export default defineComponent({
       if (
         selectedAssessment &&
         this.specialCaseCodesToExcludeFromAssessments[
-        selectedAssessment.assessmentTypeCode
+          selectedAssessment.assessmentTypeCode
         ]
       ) {
         this.updateStudentAssessment.provincialSpecialCaseCode = null;
@@ -244,6 +334,7 @@ export default defineComponent({
   },
 
   methods: {
+    ...mapActions(useStudentStore, ["loadStudentAssessmentHistory"]),
     closeDialog() {
       this.updateStudentAssessment = {
         sessionID: null,
@@ -278,6 +369,7 @@ export default defineComponent({
         ) {
           this.dialog = false;
           this.$emit("saved");
+          this.loadStudentAssessmentHistory(this.studentStoreId);
           this.snackbarStore.showSnackbar(
             "Success! Student assessment saved",
             "success",
