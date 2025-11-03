@@ -85,7 +85,7 @@ jobs:
     env:
       OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-dev
       TARGET_ENV: "dev"
-      MIN_CPU: "300m"
+      MIN_CPU: "250m"
       MAX_CPU: "500m"
       MIN_MEM: "500Mi"
       MAX_MEM: "750Mi"
