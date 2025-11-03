@@ -1,6 +1,6 @@
-const { object, string, number, boolean, array } = require('yup');
-const { uuidGeneric } = require('./custom-validations');
-const { baseRequestSchema } = require('./base');
+const { object, string, number, boolean, array } = require("yup");
+const { uuidGeneric } = require("./custom-validations");
+const { baseRequestSchema } = require("./base");
 
 const studentCourseExamSchema = object({
   schoolPercentage: number().min(0).max(100).nullable(),
@@ -25,36 +25,48 @@ const studentCourseSchema = object({
   customizedCourseName: string().max(40).nullable(),
   relatedCourseId: string().max(12).nullable(),
   courseExam: studentCourseExamSchema.nullable().notRequired(),
+  studentID: uuidGeneric().notRequired(),
 });
 
 const putStudentCourseSchema = object({
-  body: studentCourseSchema.concat(baseRequestSchema).shape({
-    id: uuidGeneric().required(),
-    isExaminable: boolean().required(), 
-}).noUnknown(),
+  body: studentCourseSchema
+    .concat(baseRequestSchema)
+    .shape({
+      id: uuidGeneric().required(),
+      isExaminable: boolean().required(),
+    })
+    .noUnknown(),
   params: object({
-    studentID: uuidGeneric().required()
+    studentID: uuidGeneric().required(),
   }),
   query: object().noUnknown(),
 }).noUnknown();
 
 const postStudentCourseSchema = object({
-  body: array().of(studentCourseSchema.shape({
-    isExaminable: boolean().required(), 
-  }).noUnknown()),
+  body: array().of(
+    studentCourseSchema
+      .shape({
+        isExaminable: boolean().required(),
+      })
+      .noUnknown()
+  ),
   params: object({
-    studentID: uuidGeneric().required()
+    studentID: uuidGeneric().required(),
   }),
   query: object().noUnknown(),
 }).noUnknown();
 
 const postTransferStudentCourseSchema = object({
-  body: array().of(studentCourseSchema.shape({
-    id: uuidGeneric().required(), 
-  }).noUnknown()),
+  body: array().of(
+    studentCourseSchema
+      .shape({
+        id: uuidGeneric().required(),
+      })
+      .noUnknown()
+  ),
   params: object({
     sourceStudentID: uuidGeneric().required(),
-    targetStudentID: uuidGeneric().required()
+    targetStudentID: uuidGeneric().required(),
   }),
   query: object().noUnknown(),
 }).noUnknown();
@@ -71,33 +83,37 @@ function markAllFieldsOptional(schema) {
 }
 
 const mergeStudentCourseSchema = object({
-  source: studentCourseSchema.shape({
-    id: uuidGeneric().required(),
-  }).noUnknown(),
-  target: markAllFieldsOptional(studentCourseSchema).shape({
-    id: uuidGeneric().optional(),
-  }).optional(),
+  source: studentCourseSchema
+    .shape({
+      id: uuidGeneric().required(),
+    })
+    .noUnknown(),
+  target: markAllFieldsOptional(studentCourseSchema)
+    .shape({
+      id: uuidGeneric().optional(),
+    })
+    .optional(),
 });
 
 const postMergeStudentCourseSchema = object({
   body: object({
     info: array().of(mergeStudentCourseSchema),
     conflicts: array().of(mergeStudentCourseSchema),
-    errors: array().of(mergeStudentCourseSchema).optional()
+    errors: array().of(mergeStudentCourseSchema).optional(),
   }),
   params: object({
     sourceStudentID: uuidGeneric().required(),
-    targetStudentID: uuidGeneric().required()
+    targetStudentID: uuidGeneric().required(),
   }),
   query: object().noUnknown(),
 }).noUnknown();
 
 const deleteStudentCourseSchema = object({
-  body:array().of(uuidGeneric().required()),
+  body: array().of(uuidGeneric().required()),
   query: object().noUnknown(),
   params: object({
-    studentID: uuidGeneric().required()
-  }).noUnknown()
+    studentID: uuidGeneric().required(),
+  }).noUnknown(),
 }).noUnknown();
 
 module.exports = {
@@ -105,5 +121,5 @@ module.exports = {
   postStudentCourseSchema,
   deleteStudentCourseSchema,
   postTransferStudentCourseSchema,
-  postMergeStudentCourseSchema
+  postMergeStudentCourseSchema,
 };
