@@ -87,10 +87,10 @@ jobs:
       KEYCLOAK_URL: ${{ secrets.KEYCLOAK_URL }}
       KEYCLOAK_REALM: ${{ secrets.KEYCLOAK_REALM }}
       TARGET_ENV: "dev"
-      MIN_CPU: "60m"
-      MAX_CPU: "120m"
-      MIN_MEM: "250Mi"
-      MAX_MEM: "400Mi"
+      MIN_CPU: "300m"
+      MAX_CPU: "500m"
+      MIN_MEM: "500Mi"
+      MAX_MEM: "750Mi"
       MIN_REPLICAS: "1"
       MAX_REPLICAS: "2"
     steps:
