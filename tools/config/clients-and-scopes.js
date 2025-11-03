@@ -5,8 +5,10 @@ const https = require('https');
 const mustache = require('mustache');
 
 // Load config
-const configPath = path.resolve(__dirname, 'clients-config.json');
-const clients = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+const clientsConfigPath = path.resolve(__dirname, 'clients-config.json');
+const rolesConfigPath = path.resolve(__dirname, 'keycloak-roles.json');
+const clients = JSON.parse(fs.readFileSync(clientsConfigPath, 'utf8'));
+const roles = JSON.parse(fs.readFileSync(rolesConfigPath, 'utf8'));
 const httpsAgent = new https.Agent();
 
 const keycloakUrl = process.env.KEYCLOAK_URL;
@@ -18,7 +20,6 @@ const env = process.env.TARGET_ENV;
 
 async function getOpenShiftSecret(openshiftApi, openshiftToken, namespace, secretName) {
   const url = `${openshiftApi}/api/v1/namespaces/${namespace}/secrets/${secretName}`;
-
   try {
     const resp = await axios.get(url, {
       headers: { Authorization: `Bearer ${openshiftToken}` },
@@ -100,6 +101,24 @@ async function deleteClient(token, targetClientId) {
   }
 }
 
+async function doesRoleExist(token, roleName) {
+  const url = `${keycloakUrl}/auth/admin/realms/${realm}/roles/${encodeURIComponent(roleName)}`;
+  const headers = { Authorization: `Bearer ${token}` };
+  const res = await axios.get(url, { headers, validateStatus: () => true });
+  if (res.status === 200) return true;
+  if (res.status === 404) return false;
+  throw new Error(`Unexpected ${res.status}: ${JSON.stringify(res.data)}`);
+}
+
+async function createRealmRole(token, roleName) {
+  const url = `${keycloakUrl}/auth/admin/realms/${realm}/roles`;
+  const headers = { Authorization: `Bearer ${token}` };
+  const res = await axios.post(url, {
+    name: roleName
+  }, { headers });
+  if (res.status === 201) console.log(`Created role: "${roleName}"`);
+}
+
 async function ensureScopeExists(token, scopeName) {
   const headers = { Authorization: `Bearer ${token}` };
   const scopesUrl = `${keycloakUrl}/auth/admin/realms/${realm}/client-scopes`;
@@ -153,6 +172,7 @@ async function assignScopes(token, clientId, scopeNames) {
     const url = 'grad.gov.bc.ca'
     const rootUrl = (env !== 'prod') ?`${env}.${url}` : url;
 
+    // set up clients
     for (let client of clients) {
       console.log(`🚀 Processing client "${client.clientId}"...`);
       client = JSON.parse(mustache.render(JSON.stringify(client), {rootUrl: rootUrl}));
@@ -178,6 +198,17 @@ async function assignScopes(token, clientId, scopeNames) {
     }
 
     console.log(`✅ All clients processed.`);
+
+    // roles processing
+    for(let role of roles){
+      const roleExists = await doesRoleExist(token, role);
+      if(roleExists){
+        console.log(`Role: "${role}" already exists. Skipping... `);
+      } else {
+        await createRealmRole(token, role);
+      }
+    }
+    console.log(`✅ All roles processed.`);
   } catch (err) {
     console.error('❌ Error:', err.response?.data || err.message);
     process.exit(1);
