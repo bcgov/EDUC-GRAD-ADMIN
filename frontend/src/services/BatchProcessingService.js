@@ -101,7 +101,7 @@ export default {
       scheduledRequest.payload = request;
       this.addScheduledJob(scheduledRequest);
     } else {
-      return ApiService.apiAxios.get("/api/batch/run/graduation/distribution");
+      return ApiService.apiAxios.post("/api/batch/run/graduation/distribution");
     }
   },
   runSCHL_RPT_REGEN(request, cronTime = "") {
