@@ -167,10 +167,8 @@ async function assignScopes(token, clientId, scopeNames) {
 
 (async () => {
   try {
-    console.log("Getting kcCredentials")
     const kcCredentials = await getOpenShiftSecret(openshiftApi, openshiftToken, gradNamespace, 'grad-kc-admin');
     const token = await getAccessToken(kcCredentials);
-    console.log("Obtained token")
     const url = 'grad.gov.bc.ca'
     const rootUrl = (env !== 'prod') ?`${env}.${url}` : url;
 
@@ -201,7 +199,7 @@ async function assignScopes(token, clientId, scopeNames) {
 
     console.log(`✅ All clients processed.`);
 
-    // add any missing roles
+    // roles processing
     for(let role of roles){
       const roleExists = await doesRoleExist(token, role);
       if(roleExists){
