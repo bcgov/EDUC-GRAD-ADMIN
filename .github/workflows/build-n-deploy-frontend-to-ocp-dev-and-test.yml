@@ -85,10 +85,10 @@ jobs:
     env:
       OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-dev
       TARGET_ENV: "dev"
-      MIN_CPU: "60m"
-      MAX_CPU: "120m"
-      MIN_MEM: "250Mi"
-      MAX_MEM: "400Mi"
+      MIN_CPU: "400m"
+      MAX_CPU: "600m"
+      MIN_MEM: "500Mi"
+      MAX_MEM: "750Mi"
       MIN_REPLICAS: "1"
       MAX_REPLICAS: "2"
     steps:
@@ -144,12 +144,12 @@ jobs:
     env:
       OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-test
       TARGET_ENV: "test"
-      MIN_CPU: "50m"
-      MAX_CPU: "100m"
-      MIN_MEM: "200Mi"
-      MAX_MEM: "250Mi"
-      MIN_REPLICAS: "3"
-      MAX_REPLICAS: "5"
+      MIN_CPU: "400m"
+      MAX_CPU: "600m"
+      MIN_MEM: "500Mi"
+      MAX_MEM: "750Mi"
+      MIN_REPLICAS: "2"
+      MAX_REPLICAS: "3"
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
