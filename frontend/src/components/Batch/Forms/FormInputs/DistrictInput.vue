@@ -10,17 +10,9 @@
             <label class="font-weight-bold">Category</label>
           </v-col>
           <v-col md="10">
-            <v-select
-              v-model="schoolCategory"
-              :items="getBatchSchoolCategoryCodes"
-              item-title="label"
-              item-value="schoolCategoryCode"
-              label="School Category"
-              class="my-2"
-              variant="outlined"
-              outlined
-              hide-details
-            ></v-select>
+            <v-select v-model="schoolCategory" :items="getBatchSchoolCategoryCodes" item-title="label"
+              item-value="schoolCategoryCode" label="School Category" class="my-2" variant="outlined" outlined
+              hide-details></v-select>
           </v-col>
         </v-row>
         <v-row v-if="!disableSelectStudents">
@@ -28,40 +20,23 @@
             <DateRangeInput></DateRangeInput>
           </v-col>
         </v-row>
-        <v-row
-          v-if="
-            schoolCategory !== 'YUKON' &&
-            schoolCategory !== 'OFFSHORE' &&
-            !disableSelectDistrict
-          "
-        >
+        <v-row v-if="
+          schoolCategory !== 'YUKON' &&
+          schoolCategory !== 'OFFSHORE' &&
+          !disableSelectDistrict
+        ">
           <v-col md="2">
             <label class="font-weight-bold">District</label>
           </v-col>
           <v-col sm="5" lg="8">
-            <v-autocomplete
-              v-model="district"
-              v-if="!selectAllDistricts"
-              :items="getDistrictList"
-              label="District"
-              variant="outlined"
-              :item-title="districtTitle"
-              item-value="districtNumber"
-            ></v-autocomplete>
-            <v-checkbox
-              :disabled="!schoolCategory"
-              v-model="selectAllDistricts"
-              @change="selectAllDistrictsCheckbox($event)"
-              label="Select all districts"
-            ></v-checkbox>
+            <v-autocomplete v-model="district" v-if="!selectAllDistricts" :items="getDistrictList" label="District"
+              variant="outlined" :item-title="districtTitle" item-value="districtNumber"></v-autocomplete>
+            <v-checkbox :disabled="!schoolCategory" v-model="selectAllDistricts" class="pa-0 ma-0"
+              @change="selectAllDistrictsCheckbox($event)" label="Select all districts"></v-checkbox>
           </v-col>
           <v-col sm="5" lg="2">
-            <v-btn
-              :disabled="!district || selectAllDistricts"
-              @click="addDistrict()"
-              class="float-left bg-primary"
-              >Add District</v-btn
-            >
+            <v-btn :disabled="!district || selectAllDistricts" @click="addDistrict()" class="float-left bg-primary">Add
+              District</v-btn>
           </v-col>
         </v-row>
 
@@ -84,10 +59,7 @@
                   </v-overlay>
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn
-                    @click="addDistrict()"
-                    :disabled="validationMessage !== ''"
-                  >
+                  <v-btn @click="addDistrict()" :disabled="validationMessage !== ''">
                     <v-icon>mdi-plus</v-icon>
                   </v-btn>
                 </v-card-actions>
@@ -96,18 +68,10 @@
           </v-col>
         </v-row>
 
-        <v-data-table
-          v-if="districts.length > 0"
-          :items="districts"
-          :headers="districtInputFields"
-          striped
-        >
+        <v-data-table v-if="districts.length > 0" :items="districts" :headers="districtInputFields" striped>
           <template v-slot:item.remove="{ item }">
-            <v-btn
-              v-if="schoolCategory != 'YUKON' && schoolCategory != 'OFFSHORE'"
-              @click="removeDistrict(item.district)"
-              color="primary"
-            >
+            <v-btn v-if="schoolCategory != 'YUKON' && schoolCategory != 'OFFSHORE'"
+              @click="removeDistrict(item.district)" color="primary">
               Remove
             </v-btn>
           </template>
@@ -240,8 +204,8 @@ export default {
       ],
     };
   },
-  mounted() {},
-  created() {},
+  mounted() { },
+  created() { },
   methods: {
     districtTitle(item) {
       if (item) {
