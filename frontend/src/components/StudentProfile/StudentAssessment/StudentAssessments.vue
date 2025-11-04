@@ -7,25 +7,13 @@
       <div class="float-left grad-actions">
         <v-menu offset-y>
           <template v-slot:activator="{ props }">
-            <v-btn
-              text
-              v-bind="props"
-              :disabled="selected.length === 0"
-              id="actions"
-              right
-              class="float-right admin-actions text-none"
-              prepend-icon="mdi-select-multiple"
-              append-icon="mdi-menu-down"
-              color="error"
-              >Bulk Actions</v-btn
-            >
+            <v-btn text v-bind="props" :disabled="selected.length === 0" id="actions" right
+              class="float-right admin-actions text-none" prepend-icon="mdi-select-multiple" append-icon="mdi-menu-down"
+              color="error">Bulk Actions</v-btn>
           </template>
           <v-list>
-            <v-list-item
-              v-if="hasPermissions('STUDENT', 'studentAssessmentUpdate')"
-              :disabled="selected.length === 0"
-              @click="showAssessmentTransfer"
-            >
+            <v-list-item v-if="hasPermissions('STUDENT', 'studentAssessmentUpdate')" :disabled="selected.length === 0"
+              @click="showAssessmentTransfer">
               <v-icon color="error">mdi-transfer</v-icon> Transfer Selected
               Assessments
             </v-list-item>
@@ -35,67 +23,38 @@
     </div>
     <v-row no-gutters>
       <v-spacer />
-      <AddStudentAssessment
-        v-if="studentStatus !== 'MER'"
-        :student-id="studentId"
-        :assessment-sessions="assessmentSessions"
-        :is-loading-sessions="isLoadingSessions"
-        @saved="loadStudentAssessments"
-      />
-      <StudentAssessmentsTransferForm
-        @refresh-sessions="loadStudentAssessments"
-        @close="clearSelected"
-        :selectedAssessmentsToTransfer="selected"
-        ref="assessmentTransferFormRef"
-      >
+      <AddStudentAssessment v-if="studentStatus !== 'MER'" :student-id="studentId"
+        :assessment-sessions="assessmentSessions" :is-loading-sessions="isLoadingSessions"
+        @saved="loadStudentAssessments" />
+      <StudentAssessmentsTransferForm @refresh-sessions="loadStudentAssessments" @close="clearSelected"
+        :selectedAssessmentsToTransfer="selected" ref="assessmentTransferFormRef">
       </StudentAssessmentsTransferForm>
     </v-row>
 
-    <v-data-table
-      v-if="processedAssessments"
-      :items="processedAssessments"
-      :headers="fields"
-      :loading="isLoadingAssessments"
-      showFilter="true"
-      hide-default-footer
-      :show-select="allowUpdateStudentAssessments"
-      v-model="selected"
-      :item-value="(item) => item"
-    >
-      <template
-        v-slot:item.data-table-expand="{
-          item,
-          internalItem,
-          toggleExpand,
-          isExpanded,
-        }"
-      >
+    <v-data-table v-if="processedAssessments" :items="processedAssessments" :headers="fields"
+      :loading="isLoadingAssessments" showFilter="true" hide-default-footer :show-select="allowUpdateStudentAssessments"
+      v-model="selected" :item-value="(item) => item">
+      <template v-slot:item.data-table-expand="{
+        item,
+        internalItem,
+        toggleExpand,
+        isExpanded,
+      }">
         <td v-if="item.hasMoreInfo === 'Y'">
-          <v-btn
-            variant="text"
-            density="comfortable"
-            @click="toggleExpand(internalItem)"
-            class="v-data-table__expand-icon"
-            :class="{ 'v-data-table__expand-icon--active': isExpanded }"
-            :icon="
-              isExpanded(internalItem)
+          <v-btn variant="text" density="comfortable" @click="toggleExpand(internalItem)"
+            class="v-data-table__expand-icon" :class="{ 'v-data-table__expand-icon--active': isExpanded }" :icon="isExpanded(internalItem)
                 ? 'mdi-chevron-down'
                 : 'mdi-chevron-right'
-            "
-          >
+              ">
           </v-btn>
         </td>
       </template>
 
       <template v-slot:item.assessmentName="{ item }">
         <div v-if="isAssessmentSelectable(item)">
-          <v-btn
-            color="primary"
-            @click="openAssessmentDetails(item)"
-            :text="item.assessmentType?.label || item.assessmentTypeCode"
-            variant="text"
-            class="text-left v-btn-link assessment-name-btn"
-          />
+          <v-btn color="primary" @click="openAssessmentDetails(item)"
+            :text="item.assessmentType?.label || item.assessmentTypeCode" variant="text"
+            class="text-left v-btn-link assessment-name-btn" />
         </div>
         <div v-else>
           <v-btn variant="text">
@@ -123,80 +82,48 @@
         </tr>
       </template>
       <template v-slot:item.edit="{ item }">
-        <v-tooltip
-          v-if="!canDeleteStudentAssessment(item)"
-          text="You do not have permission to edit this provincial specialty code"
-        >
+        <v-tooltip v-if="!canDeleteStudentAssessment(item)"
+          text="You do not have permission to edit this provincial specialty code">
           <template v-slot:activator="{ props }">
             <div v-bind="props">
-              <v-btn
-                variant="text"
-                icon="mdi-pencil"
-                :disabled="!canDeleteStudentAssessment(item)"
-                @click="remove(item)"
-              >
+              <v-btn variant="text" icon="mdi-pencil" :disabled="!canDeleteStudentAssessment(item)"
+                @click="remove(item)">
               </v-btn>
             </div>
           </template>
         </v-tooltip>
-        <v-btn
-          v-else
-          color="success"
-          variant="text"
-          icon="mdi-pencil"
-          @click="edit(item)"
-        >
+        <v-btn v-else color="success" variant="text" icon="mdi-pencil" @click="edit(item)">
         </v-btn>
       </template>
       <template v-slot:item.delete="{ item }">
-        <v-tooltip
-          v-if="!canDeleteStudentAssessment(item)"
-          text="You do not have permission to delete this provincial specialty code"
-        >
+        <v-tooltip v-if="!canDeleteStudentAssessment(item)"
+          text="You do not have permission to delete this provincial specialty code">
           <template v-slot:activator="{ props }">
             <div v-bind="props">
-              <v-btn
-                variant="text"
-                color="error"
-                icon="mdi-delete-forever"
-                :disabled="!canDeleteStudentAssessment(item)"
-                @click="remove(item)"
-              >
+              <v-btn variant="text" color="error" icon="mdi-delete-forever"
+                :disabled="!canDeleteStudentAssessment(item)" @click="remove(item)">
               </v-btn>
             </div>
           </template>
         </v-tooltip>
-        <v-btn
-          v-else
-          variant="text"
-          color="error"
-          icon="mdi-delete-forever"
-          :disabled="!canDeleteStudentAssessment(item)"
-          @click="remove(item)"
-        >
+        <v-btn v-else variant="text" color="error" icon="mdi-delete-forever"
+          :disabled="!canDeleteStudentAssessment(item)" @click="remove(item)">
         </v-btn>
       </template>
     </v-data-table>
-    <EditStudentAssessment
-      v-model="showEditDialog"
-      :assessment-item="selectedAssessment"
-      :assessment-sessions="assessmentSessions"
-      @saved="loadStudentAssessments"
-    />
+    <EditStudentAssessment v-model="showEditDialog" :assessment-item="selectedAssessment"
+      :assessment-sessions="assessmentSessions" @saved="loadStudentAssessments" />
     <v-dialog v-model="showDeleteDialog" max-width="600">
       <v-card>
-        <v-card-title>Confirm Delete</v-card-title>
+        <v-card-title>Delete Student Assessment</v-card-title>
+        <v-card-subtitle>{{
+          studentStore.formattedStudentName
+        }}</v-card-subtitle>
         <v-card-text>
-          <v-alert
-            v-if="
-              studentToDelete?.provincialSpecialCaseCode &&
-              canDeleteStudentAssessment(studentToDelete)
-            "
-            type="warning"
-            border="start"
-            variant="tonal"
-            density="compact"
-          >
+          <v-alert v-if="
+            studentToDelete?.provincialSpecialCaseCode &&
+            canDeleteStudentAssessment(studentToDelete)
+          " type="warning" border="start" variant="tonal" density="compact">
             This student assessment has the provincial special case code
             <i>{{
               this.getProvincialSpecialCaseDisplayName(
@@ -210,43 +137,23 @@
             </v-col>
           </v-row>
           Are you sure you want to delete this assessment?
-          <div
-            v-if="studentToDelete"
-            class="mt-2 text-body-2 text-medium-emphasis"
-          >
+          <div v-if="studentToDelete" class="mt-2 text-body-2 text-medium-emphasis">
             Assessment: {{ studentToDelete.assessmentTypeCode }} -
             {{ studentToDelete.sessionDate }}
           </div>
         </v-card-text>
         <v-card-actions>
-          <v-btn
-            color="error"
-            variant="outlined"
-            class="text-none"
-            density="default"
-            text="Cancel"
-            @click="showDeleteDialog = false"
-          />
+          <v-btn color="error" variant="outlined" class="text-none" density="default" text="Cancel"
+            @click="showDeleteDialog = false" />
           <v-spacer></v-spacer>
-          <v-btn
-            color="error"
-            variant="flat"
-            class="text-none"
-            density="default"
-            text="Delete"
-            :loading="isDeleting"
-            :disabled="!canDeleteStudentAssessment"
-            @click="confirmDelete(true)"
-          />
+          <v-btn color="error" variant="flat" class="text-none" density="default" text="Delete" :loading="isDeleting"
+            :disabled="!canDeleteStudentAssessment" @click="confirmDelete(true)" />
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <AssessmentDetailsDialog
-      v-model="showAssessmentDetails"
-      :assessment-data="selectedAssessmentForDetails"
-      :student-detail="studentDetail"
-    />
+    <AssessmentDetailsDialog v-model="showAssessmentDetails" :assessment-data="selectedAssessmentForDetails"
+      :student-detail="studentDetail" />
   </div>
 </template>
 <script>
@@ -480,7 +387,7 @@ export default {
           let message = error?.response?.data?.message
             ? error.response.data.message.includes("Reason:")
               ? "Cannot delete assessment record. Reason:" +
-                error.response.data.message.split("Reason:")[1]
+              error.response.data.message.split("Reason:")[1]
               : error.response.data.message
             : "Cannot delete assessment record. It has a proficiency score, or session is closed.";
           this.snackbarStore.showSnackbar(message, "error", 5000);
