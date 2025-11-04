@@ -30,18 +30,20 @@
       </v-tab>
       <v-tab value="studentAssessmentHistory" v-if="enableCRUD()">
         <v-chip
-            class="text-none"
-            color="primary"
-            :variant="selectedTab === 'studentAssessmentHistory' ? 'flat' : 'outlined'"
+          class="text-none"
+          color="primary"
+          :variant="
+            selectedTab === 'studentAssessmentHistory' ? 'flat' : 'outlined'
+          "
         >
           Student Assessment History
         </v-chip>
       </v-tab>
       <v-tab value="historicActivity">
         <v-chip
-            class="text-none"
-            color="primary"
-            :variant="selectedTab === 'historicActivity' ? 'flat' : 'outlined'"
+          class="text-none"
+          color="primary"
+          :variant="selectedTab === 'historicActivity' ? 'flat' : 'outlined'"
         >
           TRAX Change History
         </v-chip>
@@ -286,13 +288,13 @@
           </v-data-table>
         </v-window-item>
         <v-window-item value="courseChangeHistory">
-          <CourseChangeHistory />
+          <CourseChangeHistory ref="courseChangeHistoryRef" />
         </v-window-item>
         <v-window-item value="studentAssessmentHistory">
-          <StudentAssessmentHistory />
+          <StudentAssessmentHistory ref="studentAssessmentHistoryRef" />
         </v-window-item>
         <v-window-item value="historicActivity">
-          <HistoricActivity />
+          <HistoricActivity ref="historicActivityRef" />
         </v-window-item>
       </v-window>
     </v-card-text>
@@ -317,6 +319,19 @@ export default {
     DisplayTable: DisplayTable,
   },
   props: {},
+  watch: {
+    selectedTab(newVal) {
+      if (newVal === "studentAssessmentHistory") {
+        this.$refs.studentAssessmentHistoryRef?.loadStudentAssessmentHistory?.();
+      } else if (newVal === "courseChangeHistory") {
+        this.$refs.courseChangeHistoryRef?.loadStudentCourseHistory?.(
+          this.studentId
+        );
+      } else if (newVal === "historicActivity") {
+        this.$refs.historicActivityRef?.loadStudentHistoricActivity?.();
+      }
+    },
+  },
   computed: {
     ...mapState(useStudentStore, {
       studentId: "getStudentId",
