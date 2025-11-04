@@ -125,31 +125,18 @@ async function generateTokens(req, res) {
   }
 }
 router.post("/renew-token", [body("refreshToken").exists()], async (req, res) => {
-  console.log("IS RENEWABLE!!!!!")
   const jwt = require("jsonwebtoken");
-
-
   const decoded = jwt.decode(req.user.refreshToken);
   if (decoded?.iat && decoded?.exp) {
     const issuedAt = new Date(decoded.iat * 1000).toLocaleString("en-CA", { timeZone: "America/Vancouver" });
     const expiresAt = new Date(decoded.exp * 1000).toLocaleString("en-CA", { timeZone: "America/Vancouver" });
 
-    console.log("Issued At:", issuedAt);
-    console.log("Expires At:", expiresAt);
   } else {
-    console.log("Token missing iat or exp");
+
   }
 
-
-
-
-
-
-  if (req?.user?.refreshToken && auth.isRenewable(req.user.refreshToken)) {
-
-    
+  if (req?.user?.refreshToken && auth.isRenewable(req.user.refreshToken)) {    
     const response = generateTokens(req, res);
-    console.log(response);
     return response;
   } else {
     res.status(HttpStatus.UNAUTHORIZED).json();
@@ -172,26 +159,18 @@ router.post("/refresh", [body("refreshToken").exists()], async (req, res) => {
     if (decoded) {
       const issuedAt = new Date(decoded.iat * 1000).toLocaleString("en-CA", { timeZone: "America/Vancouver" });
       const expiresAt = new Date(decoded.exp * 1000).toLocaleString("en-CA", { timeZone: "America/Vancouver" });
-
-      console.log("Issued At:", issuedAt);
-      console.log("Expires At:", expiresAt);
     }
-
   if (!req["user"] || !req["user"].refreshToken || !req?.user?.jwt) {
     res.status(HttpStatus.UNAUTHORIZED).json();
   } else {
-
-
     if (auth.isTokenExpired(req.user.jwt)) {
       if (req?.user?.refreshToken && auth.isRenewable(req.user.refreshToken)) {
         const response = generateTokens(req, res);
-        console.log(response);
         return response;
       } else {
         res.status(HttpStatus.UNAUTHORIZED).json();
       }
     } else {
-      console.log("DEBUG: REFereshing jwt" )
       const isAuthorizedUser = isValidStaffUserWithRoles(req);
       const responseJson = {
         jwtFrontend: req.user.jwtFrontend,
@@ -293,7 +272,6 @@ router.get("/silent_idir_login", async function (req, res, next) {
     res.status(401).json(UnauthorizedRsp);
   }
   let idir_guid = req.query.idir_guid;
-  console.log("idir_guid", idir_guid);
   if (req.query.studentDetails && req.query.studentID) {
     let studentID = req.query.studentID;
     if (!validate(studentID)) {
