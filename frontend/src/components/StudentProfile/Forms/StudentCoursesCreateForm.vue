@@ -755,7 +755,7 @@ export default {
 
       const enrichedResults = response.map((result) => {
         const original = this.coursesToCreate.find(
-          (course) => course.courseID === result.courseID
+          (course) => course.courseID === result.courseID && course.courseSession === result.courseSession
         );
         return {
           ...result,
