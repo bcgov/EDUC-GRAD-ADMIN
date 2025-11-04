@@ -3,10 +3,22 @@
     <v-dialog v-model="dialog" persistent max-width="80%">
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
-          <v-btn v-if="!courseBatchDelete && hasPermissions('STUDENT', 'courseUpdate') &&
-            (!hasExam || hasPermissions('STUDENT', 'updateExaminableCourse'))"
-            :disabled="!hasPermissions('STUDENT', 'courseUpdate') || studentStatus == 'MER'" v-bind="props"
-            color="error" icon="mdi-delete-forever" density="compact" variant="text" />
+          <v-btn
+            v-if="
+              !courseBatchDelete &&
+              hasPermissions('STUDENT', 'courseUpdate') &&
+              (!hasExam || hasPermissions('STUDENT', 'updateExaminableCourse'))
+            "
+            :disabled="
+              !hasPermissions('STUDENT', 'courseUpdate') ||
+              studentStatus == 'MER'
+            "
+            v-bind="props"
+            color="error"
+            icon="mdi-delete-forever"
+            density="compact"
+            variant="text"
+          />
         </slot>
       </template>
 
@@ -15,25 +27,48 @@
           <v-row no-gutters>
             <div class="v-card-title">Delete Student Course</div>
             <v-spacer />
-            <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
-              @click="close" />
+            <v-btn
+              icon="mdi-close"
+              density="compact"
+              rounded="sm"
+              variant="outlined"
+              color="error"
+              class="mt-2"
+              @click="close"
+            />
           </v-row>
           <v-card-subtitle>{{
             studentStore.formattedStudentName
           }}</v-card-subtitle>
-
         </v-card-title>
         <v-card-text>
-          <StudentCourseAlert :studentStatus="studentStatus" />
+          <StudentStatusAlert :studentStatus="studentStatus" />
           <!-- Warnings & Info: These will be deleted -->
-          <div v-if="selectedCoursesWithValidations.warning.length || selectedCoursesWithValidations.info.length">
-            <h4 class="font-weight-bold my-2">The following courses will be deleted</h4>
+          <div
+            v-if="
+              selectedCoursesWithValidations.warning.length ||
+              selectedCoursesWithValidations.info.length
+            "
+          >
+            <h4 class="font-weight-bold my-2">
+              The following courses will be deleted
+            </h4>
 
             <div
-              v-for="(course, index) in [...selectedCoursesWithValidations.warning, ...selectedCoursesWithValidations.info]"
-              :key="'deletable-' + index" class="mb-3">
-              <v-alert :type="course.validationType" border="start" variant="tonal" density="compact"
-                icon="mdi-alert-circle">
+              v-for="(course, index) in [
+                ...selectedCoursesWithValidations.warning,
+                ...selectedCoursesWithValidations.info,
+              ]"
+              :key="'deletable-' + index"
+              class="mb-3"
+            >
+              <v-alert
+                :type="course.validationType"
+                border="start"
+                variant="tonal"
+                density="compact"
+                icon="mdi-alert-circle"
+              >
                 <v-row no-gutters compact>
                   <v-col cols="12" v-if="course.validationMessage">
                     <div class="d-flex align-center mb-1">
@@ -43,21 +78,35 @@
                 </v-row>
                 <v-row class="px-3 py-3" no-gutters>
                   <v-col cols="12">
-                    <div style="font-size: 1rem;">
-                      <CourseReview :shouldRemoveGutters="false" :course="course" />
+                    <div style="font-size: 1rem">
+                      <CourseReview
+                        :shouldRemoveGutters="false"
+                        :course="course"
+                      />
                     </div>
                   </v-col>
                 </v-row>
-
               </v-alert>
             </div>
           </div>
 
           <!-- Errors: These will NOT be deleted -->
           <div v-if="selectedCoursesWithValidations.error.length">
-            <h4 class="font-weight-bold my-2">The following courses will NOT be deleted</h4>
-            <div v-for="(course, index) in selectedCoursesWithValidations.error" :key="'error-' + index" class="mb-3">
-              <v-alert type="error" border="start" variant="tonal" density="compact" icon="mdi-alert-circle">
+            <h4 class="font-weight-bold my-2">
+              The following courses will NOT be deleted
+            </h4>
+            <div
+              v-for="(course, index) in selectedCoursesWithValidations.error"
+              :key="'error-' + index"
+              class="mb-3"
+            >
+              <v-alert
+                type="error"
+                border="start"
+                variant="tonal"
+                density="compact"
+                icon="mdi-alert-circle"
+              >
                 <v-row no-gutters compact>
                   <v-col cols="12">
                     <div class="d-flex align-center mb-1">
@@ -67,8 +116,11 @@
                 </v-row>
                 <v-row class="px-3 py-3" no-gutters>
                   <v-col cols="12">
-                    <div style="font-size: 1rem;">
-                      <CourseReview :shouldRemoveGutters="false" :course="course" />
+                    <div style="font-size: 1rem">
+                      <CourseReview
+                        :shouldRemoveGutters="false"
+                        :course="course"
+                      />
                     </div>
                   </v-col>
                 </v-row>
@@ -77,22 +129,47 @@
           </div>
         </v-card-text>
         <v-card-actions>
-          <v-btn v-if="hasCoursesToDelete" color="error" variant="outlined" class="text-none" density="default"
-            @click="close">
+          <v-btn
+            v-if="hasCoursesToDelete"
+            color="error"
+            variant="outlined"
+            class="text-none"
+            density="default"
+            @click="close"
+          >
             Cancel
           </v-btn>
           <v-spacer />
-          <v-btn v-if="hasCoursesToDelete" color="error" variant="flat" class="text-none" density="default"
-            :disabled="isLoading" @click="confirmDelete">
-            <v-progress-circular v-if="isLoading" indeterminate color="white" size="20"
-              class="mr-2"></v-progress-circular>
-            Delete Course<span v-if="selectedCoursesToDelete.length > 1">s</span>
+          <v-btn
+            v-if="hasCoursesToDelete"
+            color="error"
+            variant="flat"
+            class="text-none"
+            density="default"
+            :disabled="isLoading"
+            @click="confirmDelete"
+          >
+            <v-progress-circular
+              v-if="isLoading"
+              indeterminate
+              color="white"
+              size="20"
+              class="mr-2"
+            ></v-progress-circular>
+            Delete Course<span v-if="selectedCoursesToDelete.length > 1"
+              >s</span
+            >
           </v-btn>
-          <v-btn v-if="!hasCoursesToDelete" color="error" variant="outlined" class="text-none" density="default"
-            @click="close">
+          <v-btn
+            v-if="!hasCoursesToDelete"
+            color="error"
+            variant="outlined"
+            class="text-none"
+            density="default"
+            @click="close"
+          >
             Close
           </v-btn>
-
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -103,14 +180,14 @@
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
-import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue";
+import StudentStatusAlert from "@/components/StudentProfile/Forms/StudentStatusAlert.vue";
 import CourseReview from "@/components/StudentProfile/Forms/wizard/common/CourseReview.vue";
-
+import { mapState, mapActions } from "pinia";
 export default {
   name: "StudentCoursesDeleteForm",
   components: {
-    StudentCourseAlert,
-    CourseReview
+    StudentStatusAlert,
+    CourseReview,
   },
   props: {
     selectedCoursesToDelete: {
@@ -128,7 +205,7 @@ export default {
   },
   created() {
     if (!this.courseBatchDelete) {
-      this.hasExam = this.selectedCoursesToDelete[0].courseExam ? true : false
+      this.hasExam = this.selectedCoursesToDelete[0].courseExam ? true : false;
     }
   },
   data() {
@@ -141,6 +218,9 @@ export default {
     };
   },
   computed: {
+    ...mapState(useStudentStore, {
+      studentStoreId: "getStudentId",
+    }),
     studentStore() {
       return useStudentStore();
     },
@@ -159,18 +239,19 @@ export default {
     },
 
     selectedCoursesWithWarnings() {
-      return this.selectedCoursesWithValidations.filter(course =>
-        (!course.validationIssues || course.validationIssues.length === 0) ||
-        (
-          course.validationIssues.some(issue => issue.type === 'warning') &&
-          !course.validationIssues.some(issue => issue.type === 'error')
-        )
+      return this.selectedCoursesWithValidations.filter(
+        (course) =>
+          !course.validationIssues ||
+          course.validationIssues.length === 0 ||
+          (course.validationIssues.some((issue) => issue.type === "warning") &&
+            !course.validationIssues.some((issue) => issue.type === "error"))
       );
     },
 
     coursesWithNoErrorsOrWarnings() {
-      return this.selectedCoursesWithValidations.filter(course =>
-        !course.validationIssues || course.validationIssues.length === 0
+      return this.selectedCoursesWithValidations.filter(
+        (course) =>
+          !course.validationIssues || course.validationIssues.length === 0
       );
     },
 
@@ -179,50 +260,54 @@ export default {
       return info.length > 0 || warning.length > 0;
     },
     hasCourseExam() {
-      return this.selectedCoursesToDelete[0]?.courseExam || false
+      return this.selectedCoursesToDelete[0]?.courseExam || false;
     },
     selectedCoursesWithValidations() {
       const grouped = {
         error: [],
         warning: [],
-        info: []
+        info: [],
       };
 
       this.selectedCoursesToDelete.forEach((course) => {
         const hasExam =
           course?.courseExam &&
-          (
-            course.courseExam.examPercentage != null ||
-            (course.courseExam.specialCase != null && course.courseExam.specialCase !== "N")
-          );
-        const studentIsGraduatedAndNotOnSCCP = this.studentStore.student.gradStatus?.program != "SCCP" && this.studentStore.student.gradStatus?.programCompletionDate
+          (course.courseExam.examPercentage != null ||
+            (course.courseExam.specialCase != null &&
+              course.courseExam.specialCase !== "N"));
+        const studentIsGraduatedAndNotOnSCCP =
+          this.studentStore.student.gradStatus?.program != "SCCP" &&
+          this.studentStore.student.gradStatus?.programCompletionDate;
 
         let validationType = "info";
         let validationMessage = "";
 
         if (hasExam) {
           validationType = "error";
-          validationMessage = "Associated Exam Record - This course has an exam result and cannot be deleted";
+          validationMessage =
+            "Associated Exam Record - This course has an exam result and cannot be deleted";
         } else if (studentIsGraduatedAndNotOnSCCP) {
           validationType = "warning";
-          validationMessage = "Graduated Student - ensure this course can be deleted without removing any graduation or optional program requirements.";
+          validationMessage =
+            "Graduated Student - ensure this course can be deleted without removing any graduation or optional program requirements.";
         }
 
         grouped[validationType].push({
           ...course,
           validationType,
-          validationMessage
+          validationMessage,
         });
       });
 
       return grouped;
-    }
+    },
   },
   methods: {
+    ...mapActions(useStudentStore, ["loadStudentCourseHistory"]),
     close() {
       this.dialog = false;
       this.validationStep = false;
-      this.$emit('close');
+      this.$emit("close");
     },
     async confirmDelete() {
       try {
@@ -233,23 +318,31 @@ export default {
         const response = await this.studentStore.deleteStudentCourses(request);
 
         const notDeleted = response.data
-          .filter(course =>
-            course.validationIssues?.some(issue => issue.validationIssueSeverityCode === "ERROR")
+          .filter((course) =>
+            course.validationIssues?.some(
+              (issue) => issue.validationIssueSeverityCode === "ERROR"
+            )
           )
-          .map(course => {
+          .map((course) => {
             const errorMessages = course.validationIssues
-              .filter(issue => issue.validationIssueSeverityCode === "ERROR")
-              .map(issue => issue.validationIssueMessage)
+              .filter((issue) => issue.validationIssueSeverityCode === "ERROR")
+              .map((issue) => issue.validationIssueMessage)
               .join("; ");
             return `${course.courseCode} ${course.courseLevel} (${course.courseSession}): ${errorMessages}`;
           })
           .join("\n");
 
         const deleted = response.data
-          .filter(course =>
-            !course.validationIssues?.some(issue => issue.validationIssueSeverityCode === "ERROR")
+          .filter(
+            (course) =>
+              !course.validationIssues?.some(
+                (issue) => issue.validationIssueSeverityCode === "ERROR"
+              )
           )
-          .map(course => `${course.courseCode} ${course.courseLevel} (${course.courseSession})`)
+          .map(
+            (course) =>
+              `${course.courseCode} ${course.courseLevel} (${course.courseSession})`
+          )
           .join(", ");
 
         let message = "";
@@ -258,8 +351,13 @@ export default {
           if (deleted) message += "\n\n";
           message += `Not Deleted:\n${notDeleted}`;
         }
-
-        this.snackbarStore.showSnackbar(message, "success", 10000, "Student course");
+        this.loadStudentCourseHistory(this.studentStoreId);
+        this.snackbarStore.showSnackbar(
+          message,
+          "success",
+          10000,
+          "Student course"
+        );
         this.close();
       } catch (error) {
         console.error("Failed to delete student courses:", error);
@@ -269,7 +367,7 @@ export default {
       }
     },
     hasPermissions(group, permission) {
-      return this.accessStore.hasPermissions(group, permission)
+      return this.accessStore.hasPermissions(group, permission);
     },
     openDeleteStudentCoursesDialog() {
       this.step = 0;

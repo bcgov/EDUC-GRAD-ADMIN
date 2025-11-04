@@ -330,8 +330,18 @@ export const useStudentStore = defineStore("student", {
         });
     },
     loadStudentAssessmentHistory(studentId) {
+      let sort = {
+        "assessmentEntity.assessmentTypeCode": "ASC",
+        updateDate: "DESC",
+      };
+      let searchParams = {
+        studentId: studentId,
+      };
       StudentAssessmentService.getStudentAssessmentHistoryBySearchCriteria(
-        studentId
+        searchParams,
+        sort,
+        1,
+        1000
       )
         .then((response) => {
           this.setStudentCourseAuditHistory(response.data);
@@ -745,7 +755,10 @@ export const useStudentStore = defineStore("student", {
           targetStudentID,
           courses
         );
+        //reload student course
         this.getStudentCourses(sourceStudentID);
+        //load course audit history
+        this.loadStudentCourseHistory(sourceStudentID);
         this.loadStudentGradStatus(sourceStudentID);
         return response.data;
       } catch (error) {

@@ -22,6 +22,11 @@
             }}</v-card-subtitle></v-row
           >
         </v-card-title>
+        <v-row no-gutters>
+          <v-col cols="12" class="mb-5 mx-2 pr-4">
+            <StudentStatusAlert :student-status="studentStatus"></StudentStatusAlert>
+          </v-col>
+        </v-row>
         <v-card-text v-if="updateStudentAssessment" class="py-1">
           <v-expand-transition>
             <v-row>
@@ -138,10 +143,11 @@ import StudentAssessmentService from "@/services/StudentAssessmentService";
 import { useAccessStore } from "@/store/modules/access";
 import { usePermissionBasedDropdown } from "@/composables/usePermissionBasedDropdown";
 import SchoolDropdown from "@/components/Common/SchoolDropdown.vue";
+import StudentStatusAlert from "@/components/StudentProfile/Forms/StudentStatusAlert.vue";
 
 export default {
   name: "EditStudentAssessment",
-  components: { SchoolDropdown },
+  components: {StudentStatusAlert, SchoolDropdown },
   props: {
     modelValue: {
       type: Boolean,
@@ -165,6 +171,7 @@ export default {
     ...mapState(useStudentStore, {
       studentPen: "getStudentPen",
       studentPenAndName: "formattedStudentName",
+      studentStatus: (state) => state.student.profile.studentStatus
     }),
     ...mapState(useAppStore, {
       provincialSpecialCaseCodes: "provincialSpecialCaseCodes",

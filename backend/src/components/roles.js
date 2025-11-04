@@ -16,7 +16,8 @@ const roles = {
       StaffAdministration: config.get('server:administration:roleAdmin'),
       StaffInfoOfficer: config.get('server:administration:roleInfoOfficer'),
       StaffGradProgramBA: config.get('server:administration:roleGradProgramAreaBA'),
-      StaffGradAssessments: config.get('server:administration:roleGradAssessments')
+      StaffGradAssessments: config.get('server:administration:roleGradAssessments'),
+      ScholarshipAdmin: config.get('server:administration:roleScholarshipAdmin')
   }
 };
 

@@ -204,6 +204,11 @@
               )
             }}</i>
           </v-alert>
+          <v-row no-gutters>
+            <v-col cols="12" class="mb-5 pr-2">
+              <StudentStatusAlert :student-status="studentStatus"></StudentStatusAlert>
+            </v-col>
+          </v-row>
           Are you sure you want to delete this assessment?
           <div
             v-if="studentToDelete"
@@ -256,9 +261,11 @@ import EditStudentAssessment from "@/components/StudentProfile/StudentAssessment
 import AddStudentAssessment from "@/components/StudentProfile/StudentAssessment/Forms/AddStudentAssessment.vue";
 import AssessmentDetailsDialog from "@/components/StudentProfile/StudentAssessment/AssessmentDetailsDialog.vue";
 import StudentAssessmentsTransferForm from "@/components/StudentProfile/StudentAssessment/Forms/StudentAssessmentsTransferForm.vue";
+import StudentStatusAlert from "@/components/StudentProfile/Forms/StudentStatusAlert.vue";
 export default {
   name: "StudentAssessments",
   components: {
+    StudentStatusAlert,
     AddStudentAssessment,
     EditStudentAssessment,
     AssessmentDetailsDialog,
@@ -579,11 +586,12 @@ export default {
       return specialCase === "NC";
     },
     async openAssessmentDetails(item) {
+      this.selectedAssessmentForDetails = item;
+      this.studentDetail = null; // Clear previous data
+      this.showAssessmentDetails = true;
+
       try {
         await this.getStudentDetails(item);
-
-        this.selectedAssessmentForDetails = item;
-        this.showAssessmentDetails = true;
       } catch (error) {
         console.error("Failed to fetch assessment details:", error);
         this.snackbarStore.showSnackbar(

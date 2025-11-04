@@ -922,6 +922,7 @@ async function mergeStudentGradStatus(req, res) {
 
       mergeResponse.updated.push(response.data);
     }
+
     for (optionalProgram of optionalProgramsPayload) {
       if (optionalProgram.optionalProgramCode != "CP") {
         let response = await postData(
@@ -1154,6 +1155,24 @@ async function postAdoptPENStudent(req, res) {
   }
 }
 
+async function getStudentHistoricActivityByID(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/historic-activity/${
+      req.params?.studentID
+    }`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 module.exports = {
   // STUDENT COURSES
   getStudentCourseByStudentID,
@@ -1203,4 +1222,6 @@ module.exports = {
   getStudentByID,
   // STUDENT ADOPT
   postAdoptPENStudent,
+  // HISTORIC ACTIVITY
+  getStudentHistoricActivityByID
 };

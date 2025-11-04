@@ -21,7 +21,7 @@
           }}</v-card-subtitle>
         </v-card-title>
         <v-col>
-          <StudentCourseAlert :studentStatus="studentStatus" />
+          <StudentStatusAlert :studentStatus="studentStatus" />
         </v-col>
         <v-stepper alt-labels show-actions v-model="step">
           <template v-slot:default>
@@ -170,7 +170,7 @@ import CourseExamDetailsInput from "@/components/StudentProfile/Forms/FormInputs
 import { useStudentStore } from "@/store/modules/student";
 import { mapState, mapActions } from "pinia";
 import { validateAndFetchCourse } from '@/components/StudentProfile/Forms/utils/validateCourse.js';
-import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue";
+import StudentStatusAlert from "@/components/StudentProfile/Forms/StudentStatusAlert.vue";
 
 export default {
   name: "StudentCoursesExamUpdateForm",
@@ -179,7 +179,7 @@ export default {
       v$: useVuelidate(),
     };
   },
-  components: { CourseExamDetailsInput, StudentCourseAlert },
+  components: { CourseExamDetailsInput, StudentStatusAlert },
 
   props: {
     course: {

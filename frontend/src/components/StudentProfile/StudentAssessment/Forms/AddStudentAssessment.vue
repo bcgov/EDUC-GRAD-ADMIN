@@ -10,7 +10,6 @@
         text="Add Assessment"
       />
     </template>
-
     <v-form ref="newStudentAssessmentForm" v-model="isValidForm">
       <v-card>
         <v-card-title>
@@ -28,12 +27,19 @@
             />
           </v-row>
           <v-row no-gutters>
-            <v-card-subtitle class="mb-7">{{
+            <v-card-subtitle class="mb-1">{{
               studentPenAndName
             }}</v-card-subtitle></v-row
           >
         </v-card-title>
         <v-card-text class="py-1">
+          <v-row no-gutters>
+            <v-col cols="12" class="mb-5">
+              <StudentStatusAlert
+                :student-status="studentStatus"
+              ></StudentStatusAlert>
+            </v-col>
+          </v-row>
           <v-expand-transition>
             <v-row>
               <v-col
@@ -71,7 +77,7 @@
               </v-col>
             </v-row>
           </v-expand-transition>
-          <v-row no-gutters class="px-3 pt-3">
+          <v-row no-gutters class="pt-3">
             <v-col class="pr-1">
               <v-autocomplete
                 v-model="updateStudentAssessment.sessionID"
@@ -190,14 +196,15 @@ import { useSnackbarStore } from "@/store/modules/snackbar";
 import { useStudentStore } from "@/store/modules/student";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
 import { defineComponent } from "vue";
-import { mapState } from "pinia";
+import { mapState, mapActions } from "pinia";
 import { omit } from "lodash";
 import SchoolDropdown from "@/components/Common/SchoolDropdown.vue";
+import StudentStatusAlert from "../../Forms/StudentStatusAlert.vue";
 import { usePermissionBasedDropdown } from "@/composables/usePermissionBasedDropdown";
 
 export default defineComponent({
   name: "AddStudentAssessment",
-  components: { SchoolDropdown },
+  components: { SchoolDropdown, StudentStatusAlert },
   emits: ["update:modelValue", "saved"],
   setup() {
     const snackbarStore = useSnackbarStore();
@@ -225,8 +232,10 @@ export default defineComponent({
     ...mapState(useAccessStore, ["hasPermissions"]),
     ...mapState(useStudentStore, {
       studentPen: "getStudentPen",
+      studentStoreId: "getStudentId",
       studentCourses: "studentCourses",
       studentPenAndName: "formattedStudentName",
+      studentStatus: (state) => state.student.profile.studentStatus,
     }),
     provincialSpecialCaseDropdown() {
       // Find the matching assessment for the current student
@@ -325,6 +334,7 @@ export default defineComponent({
   },
 
   methods: {
+    ...mapActions(useStudentStore, ["loadStudentAssessmentHistory"]),
     closeDialog() {
       this.updateStudentAssessment = {
         sessionID: null,
@@ -359,6 +369,7 @@ export default defineComponent({
         ) {
           this.dialog = false;
           this.$emit("saved");
+          this.loadStudentAssessmentHistory(this.studentStoreId);
           this.snackbarStore.showSnackbar(
             "Success! Student assessment saved",
             "success",
