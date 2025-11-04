@@ -1,12 +1,10 @@
 <template>
   <div>
-    <v-alert v-if="!historicActivities?.length" class="container">
+    <v-alert v-if="!historicActivities?.length && !isLoadingHistoricActivities" class="container">
       This student does not have any historic activities.
     </v-alert>
-    <v-row no-gutters>
-    </v-row>
     <v-data-table
-        v-if="historicActivities"
+        v-else
         :items="historicActivities"
         :headers="columns"
         :loading="isLoadingHistoricActivities"
