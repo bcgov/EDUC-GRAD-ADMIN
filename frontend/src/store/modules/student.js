@@ -80,6 +80,7 @@ export const useStudentStore = defineStore("student", {
     },
     transfer: {
       courses: [],
+      assessments: [],
     },
     merge: {
       examinableCourses: {
@@ -681,6 +682,10 @@ export const useStudentStore = defineStore("student", {
     clearCoursesToCreate(course) {
       this.create.courses = [];
     },
+    // delete student assessments
+    async deleteStudentAssessments(assessments) {
+      console.info("Deleting student assessments");
+    },
     // delete student courses
     async deleteStudentCourses(courses) {
       try {
@@ -696,6 +701,42 @@ export const useStudentStore = defineStore("student", {
         throw error;
       }
     },
+    // Transfer student assessments
+    async transferStudentAssessments(
+      sourceStudentID,
+      targetStudentID,
+      assessments
+    ) {
+      try {
+        const response = await StudentService.transferStudentAssesments(
+          sourceStudentID,
+          targetStudentID,
+          assessments
+        );
+        // get student assessments for source student after transfer
+        // this.getStudentAssessments(sourceStudentID);
+        this.loadStudentGradStatus(sourceStudentID);
+        return response.data;
+      } catch (error) {
+        console.error("Error transferring student assessments: ", error);
+        return error;
+      }
+    },
+    addAssessmentsToTransfer(assessment) {
+      this.transfer.assessments.push(assessment);
+    },
+    clearAssessmentsToTransfer() {
+      this.transfer.assessments = [];
+    },
+    removeAssessmentFromTransfer(assessmentID, sessionID) {
+      this.transfer.assessments = this.transfer.assessments.filter(
+        (assessment) =>
+          !(
+            assessment.assessmentID === assessmentID &&
+            assessment.sessionID === sessionID
+          )
+      );
+    },
     // Transfer student courses
     async transferStudentCourses(sourceStudentID, targetStudentID, courses) {
       try {
@@ -704,7 +745,10 @@ export const useStudentStore = defineStore("student", {
           targetStudentID,
           courses
         );
+        //reload student course
         this.getStudentCourses(sourceStudentID);
+        //load course audit history
+        this.loadStudentCourseHistory(sourceStudentID);
         this.loadStudentGradStatus(sourceStudentID);
         return response.data;
       } catch (error) {

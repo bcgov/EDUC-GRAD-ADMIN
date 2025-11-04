@@ -32,6 +32,8 @@ const {
   postArchiveStudents,
   postArchiveSchoolReports,
   getUserDistributionDownload,
+  getUserRequestRegenCertificate,
+
 } = require("../components/batch");
 const { request } = require("../app");
 const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
@@ -197,6 +199,13 @@ router.post(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithStaffUpdateRoles,
   postUserRequestRegenCertificate
+);
+//endpoint for regenerate all certificates
+router.get(
+  "/run/regeneration/certificate",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffUpdateRoles,
+  getUserRequestRegenCertificate
 );
 
 router.post(

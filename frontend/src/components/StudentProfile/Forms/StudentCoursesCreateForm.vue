@@ -15,7 +15,7 @@
         <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
       </v-card-title>
       <v-col>
-        <StudentCourseAlert :studentStatus="studentStatus" />
+        <StudentStatusAlert :student-status="studentStatus"></StudentStatusAlert>
       </v-col>
 
 
@@ -169,7 +169,7 @@
                   <v-row no-gutters v-for="course in coursesToCreate" :key="course.courseID + course.sessionDate"
                     class="mb-2">
                     <v-col cols="12"><strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel
-                    }} -
+                        }} -
                         {{
                           $filters.formatYYYYMMStringDate(course.courseSession)
                         }}</strong>
@@ -324,7 +324,7 @@
 <script>
 import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
 import CourseExamDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseExamDetailsInput.vue";
-import StudentCourseAlert from "@/components/StudentProfile/Forms/StudentCourseAlert.vue"
+import StudentStatusAlert from "@/components/StudentProfile/Forms/StudentStatusAlert.vue"
 import { toRaw } from "vue";
 import useVuelidate from '@vuelidate/core';
 import { required, helpers } from '@vuelidate/validators';
@@ -343,7 +343,7 @@ export default {
   components: {
     CourseDetailsInput,
     CourseExamDetailsInput,
-    StudentCourseAlert,
+    StudentStatusAlert,
   },
   props: {
     type: {

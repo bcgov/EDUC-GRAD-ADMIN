@@ -173,6 +173,100 @@ async function transferStudentCoursesByStudentID(req, res) {
     }
   }
 }
+async function transferStudentAssessmentsByStudentID(req, res) {
+  try {
+    const createResponse = {
+      added: [],
+      deleted: [],
+      errors: [],
+    };
+
+    let localStudentAssessments = { ...req.body };
+    const tobeDeleted = Object.values(localStudentAssessments)
+      .map((assessment) => assessment.assessmentStudentID)
+      .filter(Boolean);
+    const tobeAdded = Object.values(localStudentAssessments);
+    // Delete assessments
+    if (tobeDeleted && tobeDeleted.length > 0) {
+      for (const studentAssessmentId of tobeDeleted) {
+        try {
+          const clonedReq = {
+            ...req,
+            query: {
+              ...req.query,
+              allowRuleOverride: "true",
+            },
+            params: { studentAssessmentId: studentAssessmentId },
+            session: req.session,
+          };
+
+          // Assuming deleteStudentAssessmentByID returns a result
+          // delete :[{assessmntID: assessmentID, result: data }]
+          const deleteResult = await deleteStudentAssessmentByID(clonedReq, {
+            status: () => ({
+              json: (data) =>
+                createResponse.deleted.push({
+                  studentAssessmentId: studentAssessmentId,
+                  result: data,
+                }),
+            }),
+          });
+        } catch (err) {
+          console.error(`Failed to delete assessment:`, err);
+          createResponse.errors.push({
+            type: "delete",
+            studentAssessmentId: studentAssessmentId,
+            error: err.message,
+          });
+        }
+      }
+    }
+
+    // Add assessments
+    if (tobeAdded && tobeAdded.length > 0) {
+      for (const assessment of tobeAdded) {
+        try {
+          const { assessmentStudentID, ...assessmentFiltered } = assessment;
+          const updatedAssessment = {
+            ...assessmentFiltered,
+            studentID: req.params["targetStudentID"],
+          };
+
+          const clonedReq = {
+            ...req,
+            body: updatedAssessment,
+            query: req.query,
+            params: req.params,
+            session: req.session,
+          };
+          const postResult = await postStudentAssessment(clonedReq, {
+            status: () => ({ json: (data) => createResponse.added.push(data) }),
+          });
+        } catch (err) {
+          console.error(`Failed to add assessment:`, err);
+          createResponse.errors.push({
+            type: "add",
+            assessmentID: assessment.assessmentID,
+            error: err.message,
+          });
+        }
+      }
+    }
+    // Final response
+    return res.status(200).json({
+      message: "Assessment reconciliation complete.",
+      ...createResponse,
+    });
+  } catch (e) {
+    console.error("Error merging student assessments:", e);
+    if (e?.data?.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+// end of transferStudentAssessmentsByStudentID
 
 async function mergeStudentAssessmentsByStudentID(req, res) {
   try {
@@ -828,6 +922,7 @@ async function mergeStudentGradStatus(req, res) {
 
       mergeResponse.updated.push(response.data);
     }
+
     for (optionalProgram of optionalProgramsPayload) {
       if (optionalProgram.optionalProgramCode != "CP") {
         let response = await postData(
@@ -1060,6 +1155,24 @@ async function postAdoptPENStudent(req, res) {
   }
 }
 
+async function getStudentHistoricActivityByID(req, res) {
+  const token = auth.getBackendToken(req);
+
+  try {
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/historic-activity/${
+      req.params?.studentID
+    }`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 module.exports = {
   // STUDENT COURSES
   getStudentCourseByStudentID,
@@ -1072,6 +1185,7 @@ module.exports = {
   getStudentCourseHistory,
   // STUDENT ASSESSMENTS
   mergeStudentAssessmentsByStudentID,
+  transferStudentAssessmentsByStudentID,
   // STUDENT OPTIONAL AND CAREER PROGRAMS
   getStudentCareerPrograms,
   postStudentCareerProgram,
@@ -1108,4 +1222,6 @@ module.exports = {
   getStudentByID,
   // STUDENT ADOPT
   postAdoptPENStudent,
+  // HISTORIC ACTIVITY
+  getStudentHistoricActivityByID
 };

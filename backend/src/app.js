@@ -36,6 +36,7 @@ const codesRouter = require("./routes/codes-router");
 const batchRouter = require("./routes/batch-router");
 const reportsRouter = require("./routes/reports-router");
 const configRouter = require("./routes/config-router");
+const scholarshipRouter = require("./routes/scholarships-router");
 
 //initialize app
 const app = express();
@@ -236,6 +237,7 @@ apiRouter.use("/student", studentRouter);
 apiRouter.use("/codes", codesRouter);
 apiRouter.use("/reports", reportsRouter);
 apiRouter.use("/config", configRouter);
+apiRouter.use("/scholarship", scholarshipRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

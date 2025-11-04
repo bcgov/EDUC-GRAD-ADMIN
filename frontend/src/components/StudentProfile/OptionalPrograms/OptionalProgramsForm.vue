@@ -140,6 +140,7 @@ import { isProgramComplete, applyDisplayOrder } from "@/utils/common.js";
 // Pinia store
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
+import { useAppStore } from "@/store/modules/app";
 import { mapActions, mapState } from "pinia";
 
 // vuelidate
@@ -160,9 +161,6 @@ export default {
       }
     },
   },
-  mounted() {
-    this.fetchPrograms();
-  },
   validations() {
     return {
       form: {
@@ -174,7 +172,6 @@ export default {
         },
       },
       ifStudentStatusMerged: helpers.withMessage('This student is showing as merged. Student GRAD Optional Program data cannot be updated for students with a status of "MER" merged.', (value) => {
-        console.log(this.studentGradStatus.studentStatus)
         return !(this.studentGradStatus.studentStatus == "MER");
       }),
       ifStudentStatusDeceased: helpers.withMessage('This student is showing as deceased.', (value) => {
@@ -198,6 +195,11 @@ export default {
       studentGradStatus: "getStudentGradStatus",
       studentPenAndName: "formattedStudentName",
     }),
+    ...mapState(useAppStore, { 
+      optionalProgramList: (state) => state.optionalProgramOptions, 
+      careerProgramList: (state) => state.careerProgramOptions,
+      optionalProgramsByGradProgram: "optionalProgramsByGradProgram",
+    }),
     ...mapState(useAccessStore, ["hasPermissions"]),
     optionalProgramChange() {
       return this.form.selectedOptionalProgram;
@@ -206,15 +208,9 @@ export default {
       return this.form.selectedCareerProgram;
     },
     activeOptionalPrograms() {
-      const studentProgramId = this.studentGradStatus.program;
+      const studentGradProgramCode = this.studentGradStatus.program;
 
-      const currentDate = new Date().toISOString().split("T")[0];
-      return applyDisplayOrder(
-        this.optionalProgramList
-          ?.filter((item) => {
-            return item.graduationProgramCode === studentProgramId;
-          })
-          ?.filter((activeOptionalProgram) => {
+      return  this.optionalProgramsByGradProgram(studentGradProgramCode)?.filter((activeOptionalProgram) => {
             // If student optional programs exist, filter out existing programs. Otherwise returns all possible opt programs for grad program
             if (
               !!this.studentOptionalPrograms &&
@@ -230,7 +226,6 @@ export default {
               return true;
             }
           })
-      );
     },
     activeCareerPrograms() {
       return applyDisplayOrder(
@@ -249,8 +244,6 @@ export default {
     return {
       step: 0,
       dialog: false,
-      optionalProgramList: [],
-      careerProgramList: [],
       form: {
         selectedOptionalProgram: null,
         selectedCareerPrograms: null,
@@ -285,21 +278,6 @@ export default {
       }
     },
     ...mapActions(useStudentStore, ["addStudentOptionalProgram", "addStudentCareerPrograms"]),
-    // IMPROVEMENT: Set & get these from app store
-    async fetchPrograms() {
-      try {
-        const response = await CodesService.getOptionalProgramCodes();
-        this.optionalProgramList = response.data;
-      } catch (error) {
-        console.error("Error fetching optional programs:", error);
-      }
-      try {
-        const response = await CodesService.getCareerProgramCodes();
-        this.careerProgramList = response.data;
-      } catch (error) {
-        console.error("Error fetching optional programs:", error);
-      }
-    },
     // getters
     getOptionalProgramByID(selectedID) {
       return this.optionalProgramList.find(

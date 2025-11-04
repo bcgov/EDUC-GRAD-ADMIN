@@ -24,16 +24,13 @@ env:
   NAMESPACE_TOOLS: ${{ secrets.UI_NAMESPACE }}-tools
   COMMON_NAMESPACE: ${{ secrets.COMMON_NAMESPACE }}
   TARGET_ENV: "test"
-
-  MIN_CPU: "50m"
-  MAX_CPU: "100m"
-  MIN_MEM: "200Mi"
-  MAX_MEM: "250Mi"
+    
+  MIN_CPU: "300m"
+  MAX_CPU: "600m"
+  MIN_MEM: "500Mi"
+  MAX_MEM: "750Mi"
   MIN_REPLICAS: "3"
   MAX_REPLICAS: "5"
-
-  # SITE_URL should have no scheme or port. It will be prepended with https://
-  HOST_ROUTE: "educ-grad-admin-${{ secrets.UI_NAMESPACE }}-test.apps.silver.devops.gov.bc.ca"
 
 on:
   workflow_dispatch:
@@ -75,7 +72,6 @@ jobs:
           
           # Process template
           oc process -f tools/openshift/frontend-dc.yaml \
-          -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
           -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
           -p APP_NAME=${{ env.APP_NAME }} \
           -p TAG=${{ steps.get-latest-tag.outputs.tag }} \

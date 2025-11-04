@@ -22,6 +22,12 @@ export default {
       json
     );
   },
+  transferStudentAssesments(sourceStudentID, targetStudentID, json) {
+    return ApiService.apiAxios.post(
+      `/api/student/${sourceStudentID}/assessments/transfer/${targetStudentID}`,
+      json
+    );
+  },
   mergeStudentCourses(sourceStudentID, targetStudentID, json) {
     return ApiService.apiAxios.post(
       `/api/student/${sourceStudentID}/courses/merge/${targetStudentID}`,
@@ -195,5 +201,9 @@ export default {
   },
   adoptPENStudent(studentID) {
     return ApiService.apiAxios.post(`/api/student/adopt/${studentID}`, null);
+  },
+  // HISTORIC ACTIVITIES
+  getHistoricActivityByID(studentID) {
+    return ApiService.apiAxios.get(`/api/student/${studentID}/historicActivity`);
   },
 };
