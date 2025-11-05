@@ -259,6 +259,7 @@ export default {
           "schoolCategoryCodes",
           "schoolIds",
           "validateInput",
+          "activityCode"
         ];
         const requestPayload = generateRequestPayload(
           this.getBatchRequest,
