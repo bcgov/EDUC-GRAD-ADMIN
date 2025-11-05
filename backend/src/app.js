@@ -13,6 +13,7 @@ const cors = require("cors");
 //const utils = require("./components/utils");
 const auth = require("./components/auth");
 const bodyParser = require("body-parser");
+const lusca = require('lusca');
 const connectRedis = require("connect-redis");
 dotenv.config();
 
@@ -109,7 +110,16 @@ app.use(
     store: dbSession,
   })
 );
-// app.use(require('./routes/health-check').router);
+app.use(lusca({
+  csrf: {
+    cookie: {name: '_csrf'}
+  },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+  nosniff: true,
+  referrerPolicy: 'same-origin',
+  xframe: 'SAMEORIGIN',
+  xssProtection: true,
+}));
 //initialize routing and session. Cookies are now only reachable via requests (not js)
 app.use(passport.initialize());
 app.use(passport.session());
@@ -240,12 +250,17 @@ apiRouter.use("/config", configRouter);
 apiRouter.use("/scholarship", scholarshipRouter);
 
 //Handle 500 error
-app.use((err, _req, res, next) => {
+app.use((err, req, res, next) => {
   log.error(err?.stack);
-  res?.redirect(
-    config?.get("server:frontend") + "/error?message=500_internal_error"
-  );
-  next();
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  if (err.message && err.message.includes('CSRF token')) {
+    return res.status(403).send('Forbidden - invalid CSRF token');
+  }
+
+  res.redirect(config.get("server:frontend") + "/error?message=500_internal_error");
 });
 
 // Handle 404 error

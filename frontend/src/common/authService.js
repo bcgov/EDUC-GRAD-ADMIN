@@ -5,19 +5,29 @@ export default {
   //Retrieves an auth token from the API endpoint
   async getAuthToken() {
     try {
-      const response = await axios.get(Routes.TOKEN);
+      const response = await  this.getAxios().get(Routes.TOKEN);
       return response.data;
     } catch (e) {
       console.log(`Failed to acquire JWT token - ${e}`); // eslint-disable-line no-console
       throw e;
     }
   },
-  
+   axiosInstance: null,
+    getAxios(){
+      if(this.axiosInstance === null){
+        this.axiosInstance = axios;
+        this.axiosInstance.defaults.withXSRFToken = true;
+        this.axiosInstance.defaults.withCredentials = true;
+        this.axiosInstance.defaults.xsrfCookieName = '_csrf';
+        this.axiosInstance.defaults.xsrfHeaderName = 'X-CSRF-TOKEN';
+      }
+      return this.axiosInstance;
+    },
 
   async sessionTimeRemaining(){
     try {
     
-      const response = await axios.get("/api/auth/user-session-remaining-time");
+      const response = await this.getAxios().get("/api/auth/user-session-remaining-time");
 
       if (response.data.error) {
         return { error: response.data.error_description };
@@ -33,7 +43,7 @@ export default {
   async extendInactiveSession(token){
     try {
     
-      const response = await axios.post("/api/auth/renew-token", {
+      const response = await this.getAxios().post("/api/auth/renew-token", {
         refreshToken: token,
       });
 
@@ -52,7 +62,7 @@ export default {
   async refreshAuthToken(token) {
     try {
     
-      const response = await axios.post(Routes.REFRESH, {
+      const response = await this.getAxios().post(Routes.REFRESH, {
         refreshToken: token,
       });
 
