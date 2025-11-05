@@ -6,7 +6,6 @@
       <div v-if="isAuthenticatedGet && dataReady">
         <v-btn @click="dialog = true">{{ userInfoGet.userName }}</v-btn>
 
-
         <!-- Dialog component -->
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on, attrs }">
@@ -136,43 +135,12 @@ export default {
       const secs = seconds % 60;
       return `${mins} minute(s) and ${secs} second(s)`;
     },
-
-    decodedJwtPayload() {
-      if (!this.jwtTokenGet) return null;
-
-      const [header, payload, signature] = this.jwtTokenGet.split('.');
-
-      const decodeBase64 = (str) => {
-        const padded = str.padEnd(str.length + (4 - str.length % 4) % 4, '=');
-        return JSON.parse(atob(padded));
-      };
-
-      try {
-
-        const decodedPayload = decodeBase64(payload);
-
-        // Convert timestamps to readable dates
-        const iatReadable = new Date(decodedPayload.iat * 1000).toLocaleString();
-        const expReadable = new Date(decodedPayload.exp * 1000).toLocaleString();
-
-        // Replace the original timestamps
-        decodedPayload.iat = iatReadable;
-        decodedPayload.exp = expReadable;
-        return decodedPayload;
-
-      } catch (e) {
-        console.error("Failed to decode JWT:", e);
-        return null;
-      }
-    },
     jwtTokenTrimmed() {
       if (this.jwtTokenGet) {
         const last10 = this.jwtTokenGet.slice(-10)
         return last10;
       } else return ""
-
     }
-
   },
   methods: {
     ...mapActions(useAuthStore, [
