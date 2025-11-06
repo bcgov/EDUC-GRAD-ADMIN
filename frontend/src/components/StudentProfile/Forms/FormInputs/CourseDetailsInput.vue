@@ -268,7 +268,7 @@ export default {
       course: {
         interimPercent: {
           isValidPercent: helpers.withMessage(
-            "Interim % must be a valid number between 1 and 100",
+            "Interim % must be a valid number between 0 and 100",
             (value) => {
               if (value === "" || value === null || value === undefined)
                 return true; // allow empty if needed
