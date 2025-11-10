@@ -460,7 +460,7 @@ async function postNonGraduateTranscriptDistributionRun(req, res) {
   try {
     const url = `${config.get(
       "server:batchAPIURL"
-    )}/api/v1/batch/regenerate/school-report`;
+    )}/api/v1/batch/executenongraddisrunbatchjob`;
     const data = await postData(
       token,
       url,
