@@ -67,6 +67,7 @@ function logout(req) {
 
 //removes tokens and destroys session
 router.get("/logout", async (req, res, next) => {
+  console.log("logout")
   let primaryURL =
     config.get("logoutEndpoint") +
     "?post_logout_redirect_uri=" +
@@ -124,6 +125,24 @@ async function generateTokens(req, res) {
     res.status(HttpStatus.UNAUTHORIZED).json();
   }
 }
+router.post("/renew-token", [body("refreshToken").exists()], async (req, res) => {
+  const jwt = require("jsonwebtoken");
+  const decoded = jwt.decode(req.user.refreshToken);
+  if (decoded?.iat && decoded?.exp) {
+    const issuedAt = new Date(decoded.iat * 1000).toLocaleString("en-CA", { timeZone: "America/Vancouver" });
+    const expiresAt = new Date(decoded.exp * 1000).toLocaleString("en-CA", { timeZone: "America/Vancouver" });
+
+  } else {
+
+  }
+
+  if (req?.user?.refreshToken && auth.isRenewable(req.user.refreshToken)) {    
+    const response = generateTokens(req, res);
+    return response;
+  } else {
+    res.status(HttpStatus.UNAUTHORIZED).json();
+  }
+});
 
 //refreshes jwt on refresh if refreshToken is valid
 router.post("/refresh", [body("refreshToken").exists()], async (req, res) => {
@@ -133,12 +152,14 @@ router.post("/refresh", [body("refreshToken").exists()], async (req, res) => {
       errors: errors.array(),
     });
   }
+
   if (!req["user"] || !req["user"].refreshToken || !req?.user?.jwt) {
     res.status(HttpStatus.UNAUTHORIZED).json();
   } else {
     if (auth.isTokenExpired(req.user.jwt)) {
       if (req?.user?.refreshToken && auth.isRenewable(req.user.refreshToken)) {
-        return generateTokens(req, res);
+        const response = generateTokens(req, res);
+        return response;
       } else {
         res.status(HttpStatus.UNAUTHORIZED).json();
       }
@@ -152,6 +173,9 @@ router.post("/refresh", [body("refreshToken").exists()], async (req, res) => {
     }
   }
 });
+
+
+
 
 //provides a jwt to authenticated users
 router.get("/token", auth.refreshJWT, (req, res) => {
@@ -170,6 +194,7 @@ router.get("/token", auth.refreshJWT, (req, res) => {
       jwtFrontend: req["user"].jwtFrontend,
       isAuthorizedUser: isAuthorizedUser,
     };
+    
     res.status(HttpStatus.OK).json(responseJson);
   } else {
     res.status(HttpStatus.UNAUTHORIZED).json({
@@ -240,7 +265,6 @@ router.get("/silent_idir_login", async function (req, res, next) {
     res.status(401).json(UnauthorizedRsp);
   }
   let idir_guid = req.query.idir_guid;
-  console.log("idir_guid", idir_guid);
   if (req.query.studentDetails && req.query.studentID) {
     let studentID = req.query.studentID;
     if (!validate(studentID)) {

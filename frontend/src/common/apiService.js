@@ -19,6 +19,10 @@ function processQueue(error, token = null) {
 
 // Create new non-global axios instance and intercept strategy
 const apiAxios = axios.create();
+apiAxios.defaults.withXSRFToken = true;
+apiAxios.defaults.withCredentials = true;
+apiAxios.defaults.xsrfCookieName = '_csrf';
+apiAxios.defaults.xsrfHeaderName = 'X-CSRF-TOKEN';
 const intercept = apiAxios.interceptors.response.use(config => config, error => {
   const originalRequest = error.config;
   if (error.response.status !== 401) {
@@ -39,7 +43,6 @@ const intercept = apiAxios.interceptors.response.use(config => config, error => 
       .catch(e => {
         processQueue(e, null);
         localStorage.removeItem('jwtToken');
-        //window.location = '/token-expired';
         reject(e);
       });
   });
