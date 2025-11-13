@@ -120,7 +120,7 @@ export default {
                     type: "error",
                     style: "text-error",
                     icon: "mdi-close-circle", //mdi-block-helper
-                    headerSuffix: "Student Assessment(s) cannot be copied over if the TRUE PEN has an a proficiency score"
+                    headerSuffix: "Student Assessment(s) cannot be copied over if the True Student has an a proficiency score"
                 }
             },
         };
