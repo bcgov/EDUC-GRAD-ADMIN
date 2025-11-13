@@ -1242,7 +1242,7 @@ export default {
       this.showEdit = true;
       if (this.studentGradStatus?.programCompletionDate) {
         this.editedGradStatus.programCompletionDate =
-          this.studentGradStatus.programCompletionDate;
+          this.studentGradStatus.programCompletionDate.replace("/", "-");;
       } else {
         this.editedGradStatus.programCompletionDate = null;
       }
