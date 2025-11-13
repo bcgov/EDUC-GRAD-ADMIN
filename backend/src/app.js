@@ -110,16 +110,31 @@ app.use(
     store: dbSession,
   })
 );
-app.use(lusca({
-  csrf: {
-    cookie: {name: '_csrf'}
-  },
-  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
-  nosniff: true,
-  referrerPolicy: 'same-origin',
-  xframe: 'SAMEORIGIN',
-  xssProtection: true,
-}));
+app.use((req, res, next) => {
+  // Debug log: see which routes are being checked
+  console.log(`[CSRF Check] ${req.method} ${req.path}`);
+
+  // Skip Lusca CSRF for logout and auth callback routes
+  if (
+    req.path === '/auth/logout' ||
+    req.path === '/auth/refresh' ||
+    /^\/auth\/callback/.test(req.path)
+  ) {
+    console.log(`[CSRF Skip] Skipping Lusca for ${req.path}`);
+    return next();
+  }
+
+  // Apply Lusca CSRF and security headers for all other routes
+  console.log(`[CSRF Apply] Applying Lusca for ${req.path}`);
+  return lusca({
+    csrf: { cookie: { name: '_csrf' } },
+    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+    nosniff: true,
+    referrerPolicy: 'same-origin',
+    xframe: 'SAMEORIGIN',
+    xssProtection: true,
+  })(req, res, next);
+});
 //initialize routing and session. Cookies are now only reachable via requests (not js)
 app.use(passport.initialize());
 app.use(passport.session());

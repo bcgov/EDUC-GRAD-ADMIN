@@ -67,6 +67,7 @@ function logout(req) {
 
 //removes tokens and destroys session
 router.get("/logout", async (req, res, next) => {
+  console.log("logout")
   let primaryURL =
     config.get("logoutEndpoint") +
     "?post_logout_redirect_uri=" +
@@ -152,14 +153,6 @@ router.post("/refresh", [body("refreshToken").exists()], async (req, res) => {
     });
   }
 
-
-
-    const decoded = jsonwebtoken.decode(req["user"].refreshToken);
-
-    if (decoded) {
-      const issuedAt = new Date(decoded.iat * 1000).toLocaleString("en-CA", { timeZone: "America/Vancouver" });
-      const expiresAt = new Date(decoded.exp * 1000).toLocaleString("en-CA", { timeZone: "America/Vancouver" });
-    }
   if (!req["user"] || !req["user"].refreshToken || !req?.user?.jwt) {
     res.status(HttpStatus.UNAUTHORIZED).json();
   } else {
