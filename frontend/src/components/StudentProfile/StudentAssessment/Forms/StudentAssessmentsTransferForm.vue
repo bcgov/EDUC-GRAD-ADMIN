@@ -99,57 +99,15 @@
                       style="background-color: transparent; border: none"
                     >
                       <v-alert
-                        :type="item.type === 'success' ? 'success' : 'error'"
+                        type="error"
                         border="start"
                         variant="tonal"
                         density="compact"
                         class="my-1"
                       >
-                        <template #prepend>
-                          <v-icon
-                            :color="
-                              item.type === 'success' ? 'success' : 'error'
-                            "
-                            style="margin-top: 0.94rem"
-                          >
-                            {{
-                              item.type === "success"
-                                ? "mdi-check-circle"
-                                : "mdi-close-circle"
-                            }}
-                          </v-icon>
-                        </template>
-
-                        <v-expansion-panel-title
-                          class="d-flex align-center justify-space-between"
-                        >
-                          <div class="d-flex align-center flex-grow-1">
-                            <span>
-                              {{
-                                item.type === "success"
-                                  ? "Transfer Successful"
-                                  : "Failed to Transfer"
-                              }}
-                            </span>
-                          </div>
-                          <template #actions="{ open }">
-                            <v-icon
-                              :icon="
-                                open ? 'mdi-chevron-up' : 'mdi-chevron-down'
-                              "
-                            ></v-icon>
-                          </template>
-                        </v-expansion-panel-title>
-
-                        <v-expansion-panel-text>
-                          <div
-                            v-for="(message, msgIndex) in item.messages"
-                            :key="msgIndex"
-                            class="pl-3"
-                          >
-                            {{ message }}
-                          </div>
-                        </v-expansion-panel-text>
+                        <span>Error transferring </span>
+                        <span class="font-weight-bold">{{ getAssessmentDisplay(item.assessmentStudentID) }}: </span>
+                        <span>{{ item.validationMessage }}</span>
                       </v-alert>
                     </v-expansion-panel>
                   </v-expansion-panels>
@@ -310,7 +268,6 @@ import StudentLookupByPen from "@/components/StudentProfile/Forms/FormInputs/Stu
 import AssessmentReviewAndReconcile from "@/components/StudentProfile/Forms/wizard/AssessmentReviewAndReconcile.vue";
 import StudentAssessmentService from "@/services/StudentAssessmentService.js";
 import { mapState, mapActions } from "pinia";
-import { toRaw } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 
@@ -474,83 +431,24 @@ export default {
     },
     async submitForm() {
       this.transferStudentAssessmentResultsMessages = [];
-      const assessmentWithoutAssessmentDetailsAndUserInfo =
-        this.assessmentsToTransfer.map(
-          ({
-            assessmentDetails,
-            relatedAssessmentDetails,
-            createUser,
-            createDate,
-            updateUser,
-            updateDate,
-            ...rest
-          }) => ({ ...rest })
-        );
-      const transferStudentAssessmentsRequestBody = toRaw(
-        assessmentWithoutAssessmentDetailsAndUserInfo
-      );
+      const studentAssessmentIDs = this.assessmentsToTransfer.map(x => x.assessmentStudentID);
+
       try {
         await this.transferStudentAssessments(
           this.sourceStudentData.studentID,
           this.targetStudentData.studentID,
-          transferStudentAssessmentsRequestBody
+            studentAssessmentIDs
         ).then((response) => {
-          const added = response.added || [];
-          const deleted = response.deleted || [];
-          this.transferStudentAssessmentResultsMessages = [];
-          this.assessmentsToTransfer.forEach((record) => {
-            const wasDeleted = deleted.find(
-              (item) => item.studentAssessmentId === record.assessmentStudentID
-            );
-            const wasAdded = added.find(
-              (item) =>
-                item.assessmentID === record.assessmentID &&
-                item.studentID === this.targetStudentData.studentID &&
-                item.sessionID === record.sessionID
-            );
-            const messages = [];
-            if (wasDeleted && wasAdded) {
-              messages.push(
-                `Assessment ${record.assessmentTypeCode} was transferred to ${this.targetStudentData.legalFirstName} ${this.targetStudentData.legalLastName} - ${this.targetStudentData.pen}.`
-              );
-            } else {
-              if (wasDeleted) {
-                messages.push(
-                  `Assessment ${record.assessmentStudentID} was deleted.`
-                );
-              }
-              if (wasAdded) {
-                messages.push(
-                  `Assessment ${record.assessmentStudentID} was added for student ${this.targetStudentData.studentID}.`
-                );
-              }
-            }
-            if (messages.length > 0) {
-              this.transferStudentAssessmentResultsMessages.push({
-                assessmentId: record.assessmentID,
-                messages: messages,
-                type: wasAdded && wasDeleted ? "success" : "error",
-              });
-            }
-          });
-
-          const successMessages =
-            this.transferStudentAssessmentResultsMessages.filter(
-              (item) => item.type === "success"
-            );
-
-          const errorMessages =
-            this.transferStudentAssessmentResultsMessages.filter(
-              (item) => item.type === "error"
-            );
-
-          // Combine them: success first, then error
-          this.transferStudentAssessmentResultsMessages = [
-            ...successMessages,
-            ...errorMessages,
-          ];
-          this.clearAssessmentsToTransfer(); // optional
-          this.$emit("refresh-sessions"); // Notify parent to refresh sessions
+          if(!response?.length) {
+            this.snackbarStore.showSnackbar(
+                "Successfully transferred assessments",
+                "success",
+                5000);
+            this.$emit("refresh-sessions"); // Notify parent to refresh sessions
+            this.close();
+          } else {
+            this.transferStudentAssessmentResultsMessages = response;
+          }
         });
       } catch (error) {
         // eslint-disable-next-line
@@ -562,6 +460,10 @@ export default {
         );
       }
     },
+    getAssessmentDisplay(assessmentStudentID) {
+      const assessmentStudent = this.assessmentsToTransfer.find(x => x.assessmentStudentID === assessmentStudentID);
+      return assessmentStudent.assessmentType?.label + " " + assessmentStudent.sessionDate;
+    }
   },
 };
 </script>

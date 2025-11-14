@@ -87,63 +87,12 @@ const deleteStudentAssessmentSchema = object({
 }).noUnknown();
 
 const postTransferStudentAssessmentSchema = object({
-  body: array(
-    // The schema for a single item in the array
-    object({
-      assessmentStudentID: uuidGeneric().required(),
-      assessmentID: uuidGeneric().required(),
-      schoolAtWriteSchoolID: uuidGeneric().nullable().notRequired(), // Added .nullable() and updated to notRequired
-      assessmentCenterSchoolID: string().nullable().notRequired(), // Added .nullable()
-      schoolOfRecordSchoolID: uuidGeneric().required(),
-      studentID: uuidGeneric().required(),
-      givenName: string().max(25).required(),
-      surname: string().max(25).required(),
-      pen: string().max(9).required(),
-      localID: string().max(12).nullable().notRequired(), // Added .nullable()
-      gradeAtRegistration: string().max(3).nullable().notRequired(), // Added .nullable()
-      proficiencyScore: number().nullable().notRequired(), // Added .nullable()
-      assessmentFormID: uuidGeneric().nullable().notRequired(), // Added .nullable()
-      adaptedAssessmentCode: string().max(10).nullable().notRequired(), // Added .nullable()
-      studentStatusCode: string().max(10).required(),
-      irtScore: string().max(7).nullable().notRequired(), // Added .nullable()
-      provincialSpecialCaseCode: string().max(1).nullable().notRequired(), // Added .nullable()
-      numberOfAttempts: number().nullable().notRequired(), // Corrected from string max to number, and added .nullable()
-      localAssessmentID: string().max(20).nullable().notRequired(), // Added .nullable()
-      courseStatusCode: string().max(1).nullable().notRequired(), // Added .nullable()
-      downloadDate: string().nullable().notRequired(), // Added .nullable()
-      markingSession: string().nullable().notRequired(), // Added .nullable()
-      assessmentStudentValidationIssues: string().nullable().notRequired(),
-      wroteFlag: boolean().nullable().notRequired(),
-      sessionID: uuidGeneric().nullable().notRequired(),
-      assessmentTypeCode: string().nullable().notRequired(),
-      courseMonth: string().nullable().notRequired(),
-      courseYear: string().nullable().notRequired(),
-      assessmentType: object({
-        createUser: string().required(),
-        updateUser: string().required(),
-        createDate: string().required(),
-        updateDate: string().required(),
-        assessmentTypeCode: string().required(),
-        label: string().required(),
-        displayOrder: number().required(),
-        language: string().required(),
-        effectiveDate: string().required(),
-        expiryDate: string().required(),
-      })
-        .nullable()
-        .notRequired(),
-      sessionDate: string().nullable().notRequired(),
-    })
-      .concat(baseRequestSchema)
-      .noUnknown()
-  ).required(), // The array itself is required
-
-  params: object({
+  body: array().of(uuidGeneric().required()),
+  params: object().noUnknown(),
+  query: object({
     sourceStudentID: uuidGeneric().required(),
     targetStudentID: uuidGeneric().required(),
   }).noUnknown(),
-
-  query: object().noUnknown(),
 }).noUnknown();
 
 function markAllFieldsOptional(schema) {
