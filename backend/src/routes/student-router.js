@@ -113,14 +113,6 @@ router.post(
 );
 
 router.post(
-  "/:sourceStudentID/assessments/transfer/:targetStudentID",
-  passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithEditStaffRoles,
-  validate(postTransferStudentAssessmentSchema),
-  transferStudentAssessmentsByStudentID
-);
-
-router.post(
   "/:sourceStudentID/courses/merge/:targetStudentID",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithEditStaffRoles,
