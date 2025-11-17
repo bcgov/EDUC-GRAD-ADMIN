@@ -24,7 +24,7 @@ export default {
   },
   transferStudentAssesments(sourceStudentID, targetStudentID, json) {
     return ApiService.apiAxios.post(
-      `/api/student/${sourceStudentID}/assessments/transfer/${targetStudentID}`,
+      `/api/student-assessment/transfer?sourceStudentID=${sourceStudentID}&targetStudentID=${targetStudentID}`,
       json
     );
   },

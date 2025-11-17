@@ -123,47 +123,19 @@ async function deleteStudentCoursesByStudentID(req, res) {
 
 async function transferStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);
-  const courseWithoutID = req.body.map(({ id, ...rest }) => ({ ...rest }));
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/${
-      req.params?.targetStudentID
-    }`;
-    const createTransferResponse = await postData(
+    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/transfer`;
+    const response = await postData(
       token,
       url,
-      courseWithoutID,
+      {
+        targetStudentId: req.params?.targetStudentID,
+        sourceStudentId: req.params?.sourceStudentID,
+        studentCourseIdsToMove: req.body },
       req.session?.correlationID
     );
-    if (
-      Array.isArray(createTransferResponse) &&
-      createTransferResponse.length > 0
-    ) {
-      // Collect IDs of successfully transferred courses to delete from source student
-      const courseIDsToDelete = createTransferResponse
-        .filter((course) => course.hasPersisted)
-        .map((course) => {
-          const match = req.body.find(
-            (reqItem) =>
-              reqItem.courseID === course.courseID &&
-              reqItem.courseSession === course.courseSession
-          );
-          return match?.id;
-        })
-        .filter(Boolean);
-      if (courseIDsToDelete.length > 0) {
-        const deleteUrl = `${config.get(
-          "server:studentAPIURL"
-        )}/api/v1/student/courses/${req.params?.sourceStudentID}`;
-        await deleteData(
-          token,
-          deleteUrl,
-          courseIDsToDelete,
-          req.session?.correlationID
-        );
-      }
-    }
-    return res.status(200).json(createTransferResponse);
+    return res.status(200).json(response);
   } catch (e) {
     log.error("Error transferring student courses:", e);
     if (e?.data?.messages) {
@@ -173,100 +145,6 @@ async function transferStudentCoursesByStudentID(req, res) {
     }
   }
 }
-async function transferStudentAssessmentsByStudentID(req, res) {
-  try {
-    const createResponse = {
-      added: [],
-      deleted: [],
-      errors: [],
-    };
-
-    let localStudentAssessments = { ...req.body };
-    const tobeDeleted = Object.values(localStudentAssessments)
-      .map((assessment) => assessment.assessmentStudentID)
-      .filter(Boolean);
-    const tobeAdded = Object.values(localStudentAssessments);
-    // Delete assessments
-    if (tobeDeleted && tobeDeleted.length > 0) {
-      for (const studentAssessmentId of tobeDeleted) {
-        try {
-          const clonedReq = {
-            ...req,
-            query: {
-              ...req.query,
-              allowRuleOverride: "true",
-            },
-            params: { studentAssessmentId: studentAssessmentId },
-            session: req.session,
-          };
-
-          // Assuming deleteStudentAssessmentByID returns a result
-          // delete :[{assessmntID: assessmentID, result: data }]
-          const deleteResult = await deleteStudentAssessmentByID(clonedReq, {
-            status: () => ({
-              json: (data) =>
-                createResponse.deleted.push({
-                  studentAssessmentId: studentAssessmentId,
-                  result: data,
-                }),
-            }),
-          });
-        } catch (err) {
-          console.error(`Failed to delete assessment:`, err);
-          createResponse.errors.push({
-            type: "delete",
-            studentAssessmentId: studentAssessmentId,
-            error: err.message,
-          });
-        }
-      }
-    }
-
-    // Add assessments
-    if (tobeAdded && tobeAdded.length > 0) {
-      for (const assessment of tobeAdded) {
-        try {
-          const { assessmentStudentID, ...assessmentFiltered } = assessment;
-          const updatedAssessment = {
-            ...assessmentFiltered,
-            studentID: req.params["targetStudentID"],
-          };
-
-          const clonedReq = {
-            ...req,
-            body: updatedAssessment,
-            query: req.query,
-            params: req.params,
-            session: req.session,
-          };
-          const postResult = await postStudentAssessment(clonedReq, {
-            status: () => ({ json: (data) => createResponse.added.push(data) }),
-          });
-        } catch (err) {
-          console.error(`Failed to add assessment:`, err);
-          createResponse.errors.push({
-            type: "add",
-            assessmentID: assessment.assessmentID,
-            error: err.message,
-          });
-        }
-      }
-    }
-    // Final response
-    return res.status(200).json({
-      message: "Assessment reconciliation complete.",
-      ...createResponse,
-    });
-  } catch (e) {
-    console.error("Error merging student assessments:", e);
-    if (e?.data?.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
-    } else {
-      return errorResponse(res);
-    }
-  }
-}
-// end of transferStudentAssessmentsByStudentID
 
 async function mergeStudentAssessmentsByStudentID(req, res) {
   try {
@@ -1185,7 +1063,6 @@ module.exports = {
   getStudentCourseHistory,
   // STUDENT ASSESSMENTS
   mergeStudentAssessmentsByStudentID,
-  transferStudentAssessmentsByStudentID,
   // STUDENT OPTIONAL AND CAREER PROGRAMS
   getStudentCareerPrograms,
   postStudentCareerProgram,
