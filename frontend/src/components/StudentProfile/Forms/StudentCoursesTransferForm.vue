@@ -203,6 +203,7 @@
           <v-btn
             v-else-if="step == 2 && coursesToTransfer.length > 0"
             :disabled="validationStep"
+            :loading="loadingTransfer"
             color="error"
             variant="flat"
             class="text-none"
@@ -263,6 +264,7 @@ export default {
       alertAlreadyGraduated: false,
       transferStudentCourseResultsMessages: [],
       validationStep: false,
+      loadingTransfer: false
     };
   },
   computed: {
@@ -343,7 +345,7 @@ export default {
     async submitForm() {
       this.transferStudentCourseResultsMessages = [];
       const studentCourseIDs = this.coursesToTransfer.map(x => x.id);
-
+      this.loadingTransfer = true
       try {
         await this.transferStudentCourses(this.sourceStudentData.studentID, this.targetStudentData.studentID, studentCourseIDs).then((response) => {
           if(!response?.length) {
@@ -357,8 +359,10 @@ export default {
           } else {
             this.transferStudentCourseResultsMessages = response;
           }
+          this.loadingTransfer = false;
         });
       } catch (error) {
+        this.loadingTransfer = false;
         console.error("Error transferring student courses:", error);
         this.snackbarStore.showSnackbar(
           "Failed to transfer student courses",
@@ -369,6 +373,9 @@ export default {
     },
     getCourseDisplay(studentCourseID) {
       const course = this.coursesToTransfer.find(x => x.id === studentCourseID);
+      if(!course) {
+        return null;
+      }
       return course?.courseDetails?.courseName + " - " + course?.courseSession;
     }
   },

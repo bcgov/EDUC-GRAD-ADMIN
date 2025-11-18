@@ -744,22 +744,17 @@ export const useStudentStore = defineStore("student", {
     },
     // Transfer student courses
     async transferStudentCourses(sourceStudentID, targetStudentID, courses) {
-      try {
-        const response = await StudentService.transferStudentCourses(
-          sourceStudentID,
-          targetStudentID,
-          courses
-        );
-        //reload student course
-        this.getStudentCourses(sourceStudentID);
-        //load course audit history
-        this.loadStudentCourseHistory(sourceStudentID);
-        this.loadStudentGradStatus(sourceStudentID);
-        return response.data;
-      } catch (error) {
-        console.error("Error transferring student courses: ", error);
-        return error;
-      }
+      const response = await StudentService.transferStudentCourses(
+        sourceStudentID,
+        targetStudentID,
+        courses
+      );
+      //reload student course
+      this.getStudentCourses(sourceStudentID);
+      //load course audit history
+      this.loadStudentCourseHistory(sourceStudentID);
+      this.loadStudentGradStatus(sourceStudentID);
+      return response.data;
     },
     addCoursesToTransfer(course) {
       this.transfer.courses.push(course);
