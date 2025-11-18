@@ -717,20 +717,15 @@ export const useStudentStore = defineStore("student", {
       targetStudentID,
       assessments
     ) {
-      try {
-        const response = await StudentService.transferStudentAssesments(
-          sourceStudentID,
-          targetStudentID,
-          assessments
-        );
-        // get student assessments for source student after transfer
-        // this.getStudentAssessments(sourceStudentID);
-        this.loadStudentGradStatus(sourceStudentID);
-        return response.data;
-      } catch (error) {
-        console.error("Error transferring student assessments: ", error);
-        return error;
-      }
+      const response = await StudentService.transferStudentAssesments(
+        sourceStudentID,
+        targetStudentID,
+        assessments
+      );
+      // get student assessments for source student after transfer
+      // this.getStudentAssessments(sourceStudentID);
+      this.loadStudentGradStatus(sourceStudentID);
+      return response.data;
     },
     addAssessmentsToTransfer(assessment) {
       this.transfer.assessments.push(assessment);
