@@ -143,9 +143,7 @@ export const useAppStore = defineStore("app", {
     getTranscriptTypes: (state) => state.transcriptTypes,
     getCertificateTypes: (state) => state.certificationTypes,
     enableCRUD: (state) => {
-      // defaults to local, dev, and test but can be overridden as needed for reuse
-      return (enabledEnvironments = ["local", "dev", "test"]) =>
-        enabledEnvironments.includes(state.config?.ENVIRONMENT);
+      return state.config?.CRUD_ENABLED;
     },
   },
   actions: {

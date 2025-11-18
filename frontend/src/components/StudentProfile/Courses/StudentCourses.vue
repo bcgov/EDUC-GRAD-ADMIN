@@ -2,7 +2,7 @@
   <div>
     <v-card>
       <v-alert
-        v-if="enableCRUD()"
+        v-if="enableCRUD"
         color="debug"
         variant="tonal"
         icon="mdi-progress-wrench"
@@ -20,7 +20,7 @@
         </v-alert>
         <div class="col-12 px-3">
           <div class="float-left grad-actions">
-            <v-menu offset-y v-if="studentStatus !== 'MER' && enableCRUD()">
+            <v-menu offset-y v-if="studentStatus !== 'MER' && enableCRUD">
               <template v-slot:activator="{ props }">
                 <v-btn
                   text
@@ -87,7 +87,7 @@
           :item-value="(item) => item"
           :items-per-page="'-1'"
           title="studentCourse"
-          :show-select="studentStatus !== 'MER' && enableCRUD()"
+          :show-select="studentStatus !== 'MER' && enableCRUD"
         >
           <template
             v-slot:item.data-table-expand="{
