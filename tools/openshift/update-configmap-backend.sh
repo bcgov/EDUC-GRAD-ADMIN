@@ -63,7 +63,7 @@ rm tempPenBackendkey.pub
 echo Creating config map "$APP_NAME"-backend-config-map
 oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=NODE_ENV="$ENV" \
-  --from-literal=CRUD_ENABLED= $crudEnabled \
+  --from-literal=CRUD_ENABLED=$crudEnabled \
   --from-literal=LOG_LEVEL=info \
   --from-literal=SERVER_FRONTEND="https://$BASE_URL" \
   --from-literal=SOAM_PUBLIC_KEY="$formattedPublicKey" \
