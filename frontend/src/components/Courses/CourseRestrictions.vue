@@ -37,7 +37,7 @@
         v-if="courseRestrictions.length > 0"
         v-model="selected"
         :items="courseRestrictions"
-        :headers="courseRestrictionFields"
+        :headers="courseRestrictionHeaders"
         :item-value="(item) => item"
         :items-per-page="defaultItemsPerPage"
         title="courseRestriction"
@@ -76,14 +76,9 @@ export default {
       courseRestrictions: "getCourseRestrictions",
     }),
     ...mapState(useAppStore, ["enableCRUD"]),
-  },
-  created() {
-    this.loadCourseRestrictions();
-  },
-  data() {
-    return {
-      defaultItemsPerPage: 20,
-      courseRestrictionFields: [
+
+    courseRestrictionHeaders() {
+      const tableHeaders = [
         {
           key: "mainCourse",
           title: "Course Code Main",
@@ -120,19 +115,28 @@ export default {
           sortable: true,
           class: "text-left",
         },
-        ...(this.enableCRUD
-          ? [
-              {
-                key: "edit",
-                title: "Edit",
-                cellProps: {
-                  style: "vertical-align: baseline;",
-                  class: "pt-5 pb-5",
-                },
-              },
-            ]
-          : []),
-      ],
+      ];
+
+      if (this.enableCRUD) {
+        tableHeaders.push({
+          key: "edit",
+          title: "Edit",
+          cellProps: {
+            style: "vertical-align: baseline;",
+            class: "pt-5 pb-5",
+          },
+        });
+      }
+
+      return tableHeaders;
+    },
+  },
+  created() {
+    this.loadCourseRestrictions();
+  },
+  data() {
+    return {
+      defaultItemsPerPage: 20,
       rawSearchInput: "",
       search: "",
       selected: [],
