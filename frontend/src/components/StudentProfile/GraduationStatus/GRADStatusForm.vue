@@ -853,10 +853,10 @@ export default {
     return {
       editedGradStatus: {
         ifProgramIs1950studentGradeMustbeADorAN: helpers.withMessage(
-          "Student grade should be one of AD or AN if the student program is 1950",
+          "Student grade should be one of AD, AN or GA if the student program is 1950",
           (value) => {
             let { program, studentGrade } = this.editedGradStatus;
-            return program !== "1950" || ["AD", "AN"].includes(studentGrade);
+            return program !== "1950" || ["AD", "AN", "GA"].includes(studentGrade);
           }
         ),
         ifEditedGradStatusProgramHasChangedWarning: helpers.withMessage(
