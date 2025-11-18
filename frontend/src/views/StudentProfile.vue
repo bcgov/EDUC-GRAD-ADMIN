@@ -155,7 +155,10 @@
                     studentUngradReasons.length
                   }})</v-tab
                 >
-                <v-tab v-if="hasPermissions('SCHOLARSHIP', 'scholarshipViewAndEdit')" value="scholarships" class="text-none"
+                <v-tab
+                  v-if="hasPermissions('SCHOLARSHIP', 'scholarshipViewAndEdit')"
+                  value="scholarships"
+                  class="text-none"
                   >Scholarships
                 </v-tab>
               </v-tabs>
@@ -332,12 +335,8 @@
 
                     <StudentUndoCompletionReasons></StudentUndoCompletionReasons>
                   </v-window-item>
-                  <v-window-item
-                    value="scholarships"
-                  >
-                    <Scholarships 
-                      :student-ID="studentId"
-                    />
+                  <v-window-item value="scholarships">
+                    <Scholarships :student-ID="studentId" />
                   </v-window-item>
                 </v-window>
               </v-card-text>
@@ -809,7 +808,7 @@ export default {
     StudentNotes: StudentNotes,
     DisplayTable: DisplayTable,
     StudentDataMergeForm: StudentDataMergeForm,
-    Scholarships: Scholarships
+    Scholarships: Scholarships,
   },
   props: {},
   data() {
@@ -1363,6 +1362,12 @@ export default {
           this.setStudentNotes(response.data);
         })
         .catch((error) => {
+          if (error.handledByInterceptor) {
+            console.warn(
+              "Error already handled by interceptor, skipping component snackbar."
+            );
+            return; // <--- STOP EXECUTION
+          }
           if (error.response.status) {
             this.snackbarStore.showSnackbar(
               "There was an error: " + error.response.status,

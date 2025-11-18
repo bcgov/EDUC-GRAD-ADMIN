@@ -1025,21 +1025,25 @@ async function getStudentXMLReport(req, res) {
 }
 
 async function getStudentNotes(req, res) {
-  const token = auth.getBackendToken(req);
+  // --- ADD THIS LINE FOR AN UNCONDITIONAL 403 ---
+  return res.status(403).json({
+    message: "Forbidden: You do not have permission to access this resource.",
+  });
+  // const token = auth.getBackendToken(req);
 
-  try {
-    const url = `${config.get(
-      "server:studentAPIURL"
-    )}/api/v1/student/studentnotes/studentid/${req.params?.studentID}`;
-    const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data);
-  } catch (e) {
-    if (e.data.message) {
-      return errorResponse(res, e.data.message, e.status);
-    } else {
-      return errorResponse(res);
-    }
-  }
+  // try {
+  //   const url = `${config.get(
+  //     "server:studentAPIURL"
+  //   )}/api/v1/student/studentnotes/studentid/${req.params?.studentID}`;
+  //   const data = await getData(token, url, req.session?.correlationID);
+  //   return res.status(200).json(data);
+  // } catch (e) {
+  //   if (e.data.message) {
+  //     return errorResponse(res, e.data.message, e.status);
+  //   } else {
+  //     return errorResponse(res);
+  //   }
+  // }
 }
 
 async function postStudentNotes(req, res) {
@@ -1159,9 +1163,9 @@ async function getStudentHistoricActivityByID(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/historic-activity/${
-      req.params?.studentID
-    }`;
+    const url = `${config.get(
+      "server:studentAPIURL"
+    )}/api/v1/student/historic-activity/${req.params?.studentID}`;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -1223,5 +1227,5 @@ module.exports = {
   // STUDENT ADOPT
   postAdoptPENStudent,
   // HISTORIC ACTIVITY
-  getStudentHistoricActivityByID
+  getStudentHistoricActivityByID,
 };
