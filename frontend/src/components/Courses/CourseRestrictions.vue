@@ -1,15 +1,15 @@
 <template>
-  <div>   
+  <div>
     <v-row>
       <h3 class="ml-4 mt-5">Course Restrictions</h3>
-      <v-spacer />   
-      <span v-if="enableCRUD()">   
-        <CourseRestrictionsCreateForm  />
+      <v-spacer />
+      <span v-if="enableCRUD">
+        <CourseRestrictionsCreateForm />
       </span>
     </v-row>
     <v-spacer />
     <v-row no-gutters>
-        <v-row id="filter" class="mt-4 ">
+      <v-row id="filter" class="mt-4">
         <v-col lg="8" class="px-0 float-left"></v-col>
         <v-col sm="12" lg="4" class="my-1 pr-3 table-filter p-0">
           <v-row>
@@ -33,20 +33,28 @@
         </v-col>
       </v-row>
 
-      <v-data-table v-if="courseRestrictions.length > 0" v-model="selected" :items="courseRestrictions"
-        :headers="courseRestrictionFields" :item-value="(item) => item" :items-per-page="defaultItemsPerPage"
-        title="courseRestriction" :search="search">
+      <v-data-table
+        v-if="courseRestrictions.length > 0"
+        v-model="selected"
+        :items="courseRestrictions"
+        :headers="courseRestrictionFields"
+        :item-value="(item) => item"
+        :items-per-page="defaultItemsPerPage"
+        title="courseRestriction"
+        :search="search"
+      >
         <template v-slot:item.restrictionStartDate="{ item }">
-        {{ $filters.formatYYYYMMDate(item.restrictionStartDate) }}
+          {{ $filters.formatYYYYMMDate(item.restrictionStartDate) }}
         </template>
         <template v-slot:item.restrictionEndDate="{ item }">
-        {{ $filters.formatYYYYMMDate(item.restrictionEndDate) }}
+          {{ $filters.formatYYYYMMDate(item.restrictionEndDate) }}
         </template>
-        <template v-slot:item.edit="{ item }" v-if="enableCRUD()">
-          <CourseRestrictionsUpdateForm :selectedCourseRestrictionToUpdate="item">
+        <template v-slot:item.edit="{ item }" v-if="enableCRUD">
+          <CourseRestrictionsUpdateForm
+            :selectedCourseRestrictionToUpdate="item"
+          >
           </CourseRestrictionsUpdateForm>
         </template>
-
       </v-data-table>
     </v-row>
   </div>
@@ -61,12 +69,13 @@ export default {
   name: "CourseRestrictions",
   components: {
     CourseRestrictionsCreateForm: CourseRestrictionsCreateForm,
-    CourseRestrictionsUpdateForm: CourseRestrictionsUpdateForm
+    CourseRestrictionsUpdateForm: CourseRestrictionsUpdateForm,
   },
   computed: {
     ...mapState(useCourseStore, {
       courseRestrictions: "getCourseRestrictions",
     }),
+    ...mapState(useAppStore, ["enableCRUD"]),
   },
   created() {
     this.loadCourseRestrictions();
@@ -111,38 +120,33 @@ export default {
           sortable: true,
           class: "text-left",
         },
-        ...(this.enableCRUD()
-    ? [
-        {
-          key: "edit",
-          title: "Edit",
-          cellProps: {
-            style: "vertical-align: baseline;",
-            class: "pt-5 pb-5",
-          },
-        },
-      ]
-    : []),    
+        ...(this.enableCRUD
+          ? [
+              {
+                key: "edit",
+                title: "Edit",
+                cellProps: {
+                  style: "vertical-align: baseline;",
+                  class: "pt-5 pb-5",
+                },
+              },
+            ]
+          : []),
       ],
-      rawSearchInput: '', 
-      search: '',
-      selected: []
+      rawSearchInput: "",
+      search: "",
+      selected: [],
     };
   },
   methods: {
-    ...mapActions(useCourseStore, [
-      "loadCourseRestrictions",
-    ]),
-    ...mapActions(useAppStore, [
-      "enableCRUD",
-    ]),
+    ...mapActions(useCourseStore, ["loadCourseRestrictions"]),
     onSearchInput(value) {
-      this.search = value?.replace("-","/");
+      this.search = value?.replace("-", "/");
     },
     clearSearchInput() {
-      this.search = '';
-      this.rawSearchInput= ''; 
-    }
+      this.search = "";
+      this.rawSearchInput = "";
+    },
   },
 };
 </script>

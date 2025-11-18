@@ -19,7 +19,7 @@
           >Optional Program Change History</v-chip
         ></v-tab
       >
-      <v-tab value="courseChangeHistory" v-if="enableCRUD()">
+      <v-tab value="courseChangeHistory" v-if="enableCRUD">
         <v-chip
           class="text-none"
           color="primary"
@@ -28,7 +28,7 @@
           Course Change History
         </v-chip>
       </v-tab>
-      <v-tab value="studentAssessmentHistory" v-if="enableCRUD()">
+      <v-tab value="studentAssessmentHistory" v-if="enableCRUD">
         <v-chip
           class="text-none"
           color="primary"
