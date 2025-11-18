@@ -12,7 +12,6 @@ GRAD_BUSINESS_NAMESPACE=$8
 STUDENT_ADMIN_NAMESPACE=$9
 STUDENT_ASSESSMENT_NAMESPACE=${10}
 SCHOLARSHIP_NAMESPACE=${11}
-CRUD_ENABLED=${12}
 
 SOAM_KC_REALM_ID="master"
 SOAM_KC=soam-$ENV.apps.silver.devops.gov.bc.ca
@@ -23,8 +22,10 @@ siteMinderLogoutUrl=""
 if [ "$ENV" != "prod" ]
 then
   siteMinderLogoutUrl="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl="
+  crudEnabled=true
 else
   siteMinderLogoutUrl="https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl="
+  crudEnabled=false
 fi
 
 echo Fetching SOAM token
@@ -62,7 +63,7 @@ rm tempPenBackendkey.pub
 echo Creating config map "$APP_NAME"-backend-config-map
 oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=NODE_ENV="$ENV" \
-  --from-literal=CRUD_ENABLED="$CRUD_ENABLED" \
+  --from-literal=CRUD_ENABLED= $crudEnabled \
   --from-literal=LOG_LEVEL=info \
   --from-literal=SERVER_FRONTEND="https://$BASE_URL" \
   --from-literal=SOAM_PUBLIC_KEY="$formattedPublicKey" \
