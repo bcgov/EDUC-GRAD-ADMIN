@@ -16,9 +16,9 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'main'
+      - "main"
     paths:
-      - 'backend/**'
+      - "backend/**"
 
 jobs:
   build:
@@ -102,7 +102,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Install dependencies
         run: |
@@ -147,7 +147,7 @@ jobs:
           -p CA_CERT="${{ secrets.CA_CERT }}" \
           -p PRIVATE_KEY="${{ secrets.PRIVATE_KEY }}" \
           | oc apply -n ${{ env.OPENSHIFT_NAMESPACE }} -f -
-          
+
           # update configmap
           bash tools/openshift/update-configmap-backend.sh \
           ${{ env.TARGET_ENV }} \
@@ -160,8 +160,9 @@ jobs:
           ${{ secrets.GRAD_BUSINESS_NAMESPACE }} \
           ${{ secrets.STUDENT_ADMIN_NAMESPACE }} \
           ${{ secrets.STUDENT_ASSESSMENT_NAMESPACE }} \
-          ${{ secrets.SCHOLARSHIP_NAMESPACE}}
-          
+          ${{ secrets.SCHOLARSHIP_NAMESPACE}} \
+          true
+
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.APP_NAME_BACKEND }} 
 
@@ -193,7 +194,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Install dependencies
         run: |
@@ -271,4 +272,4 @@ jobs:
       - name: Zap Scan
         uses: zaproxy/action-full-scan@v0.12.0
         with:
-          target: 'https://educ-grad-admin-${{ env.OPENSHIFT_NAMESPACE }}.apps.silver.devops.gov.bc.ca'
+          target: "https://educ-grad-admin-${{ env.OPENSHIFT_NAMESPACE }}.apps.silver.devops.gov.bc.ca"

@@ -32,13 +32,15 @@ router.get(
       console.error("Error retrieving version file:", error);
     }
 
+    const crudEnabled = config.get("enableCRUD");
+
     const frontendConfig = config.get("frontendConfig");
 
     const configMap = {
       STUDENT_ADMIN_URL: frontendConfig.studentAdminURL,
       ENVIRONMENT: config.get("environment"),
       VERSION: version,
-      CRUD_ENABLED: config.get("enableCRUD"),
+      CRUD_ENABLED: crudEnabled || crudEnabled === "true",
     };
 
     return res.status(HttpStatus.OK).json(configMap);
