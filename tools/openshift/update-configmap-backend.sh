@@ -22,8 +22,10 @@ siteMinderLogoutUrl=""
 if [ "$ENV" != "prod" ]
 then
   siteMinderLogoutUrl="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl="
+  crudEnabled=true
 else
   siteMinderLogoutUrl="https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl="
+  crudEnabled=false
 fi
 
 echo Fetching SOAM token
@@ -61,6 +63,7 @@ rm tempPenBackendkey.pub
 echo Creating config map "$APP_NAME"-backend-config-map
 oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=NODE_ENV="$ENV" \
+  --from-literal=CRUD_ENABLED= $crudEnabled \
   --from-literal=LOG_LEVEL=info \
   --from-literal=SERVER_FRONTEND="https://$BASE_URL" \
   --from-literal=SOAM_PUBLIC_KEY="$formattedPublicKey" \
