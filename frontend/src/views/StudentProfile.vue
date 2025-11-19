@@ -64,11 +64,9 @@
                 <v-list-item
                   :disabled="
                     studentGradStatus.studentStatus === 'MER' ||
-                    !(
-                      isProgramComplete(
-                        studentGradStatus.programCompletionDate,
-                        studentGradStatus.program
-                      ) && !!studentGradStatus.schoolAtGradId
+                    !isProgramComplete(
+                      studentGradStatus.programCompletionDate,
+                      studentGradStatus.program
                     )
                   "
                   v-on:click="showUndoCompletionDialog = true"
