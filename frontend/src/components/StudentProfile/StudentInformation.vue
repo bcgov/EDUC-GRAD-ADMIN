@@ -119,7 +119,7 @@
                   <strong>Gender:</strong> {{ studentInfo.genderCode }}
                 </td>
                 <td class="px-2">
-                  <strong>True student ID: </strong>
+                  <strong>True student PEN: </strong>
                   <span v-if="studentInfo.trueStudentPen">
                     {{ studentInfo.trueStudentPen }}</span>
                 </td>

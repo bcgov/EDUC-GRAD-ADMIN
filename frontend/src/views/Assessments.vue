@@ -5,11 +5,9 @@
       <v-card no-body>
         <v-tabs v-model="tab" bg-color="bcGovLightGrey">
           <v-tab value="assessmentLegacyTab" class="text-none" size="large">Assessments</v-tab>
-          <v-tab v-if="enableCRUD()" value="assessmentTab" class="text-none" size="large">
+          <v-tab v-if="enableCRUD" value="assessmentTab" class="text-none" size="large">
             Assessments
-            <p class="text-caption font-weight-bold text-bcGovGold">
-              BETA
-            </p>
+            <p class="text-caption font-weight-bold text-bcGovGold">BETA</p>
           </v-tab>
           <v-tab value="assessmentRequirementsTab" class="text-none" size="large">Assessment Requirements</v-tab>
         </v-tabs>
@@ -18,7 +16,7 @@
             <v-window-item value="assessmentLegacyTab">
               <AssessmentsLegacy />
             </v-window-item>
-            <v-window-item v-if="enableCRUD()" value="assessmentTab">
+            <v-window-item v-if="enableCRUD" value="assessmentTab">
               <Assessments />
             </v-window-item>
             <v-window-item value="assessmentRequirementsTab">

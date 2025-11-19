@@ -9,6 +9,7 @@ const {
   postStudentAssessmentSchema,
   deleteStudentAssessmentSchema,
   getPaginatedStudentAssessmentSchema,
+  postTransferStudentAssessmentSchema
 } = require("../components/validations/student-assessment");
 const {
   getStudentAssessmentById,
@@ -20,7 +21,8 @@ const {
   getAllAssessmentSessions,
   getProvincialSpecialCaseCodes,
   getStudentAssessmentHistoryPaginated,
-  getStudentAssessmentByIdAndAssessmentId
+  getStudentAssessmentByIdAndAssessmentId,
+  transferStudentAssessments
 } = require("../components/assessments/student-assessment");
 
 const isValidUiTokenWithStaffEditRoles = auth.isValidUiTokenWithRoles(
@@ -115,6 +117,14 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getAllAssessmentSessions
+);
+
+router.post(
+  "/transfer",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffEditRoles,
+  validate(postTransferStudentAssessmentSchema),
+  transferStudentAssessments
 );
 
 module.exports = router;

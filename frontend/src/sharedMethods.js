@@ -268,7 +268,7 @@ export default {
   },
   formatStudentName(profile, showPEN = true, showMiddle = true) {
     if (profile) {
-      let formattedName = `${profile.legalLastName}, ${profile.legalFirstName}`;
+      let formattedName = `${profile.legalLastName ?? ''}${!!profile.legalLastName && !!profile.legalFirstName ? ',' : ''} ${profile.legalFirstName ?? ''}`;
       if (showPEN) {
         formattedName = `${profile.pen} - ` + formattedName;
       }

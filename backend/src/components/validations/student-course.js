@@ -57,13 +57,7 @@ const postStudentCourseSchema = object({
 }).noUnknown();
 
 const postTransferStudentCourseSchema = object({
-  body: array().of(
-    studentCourseSchema
-      .shape({
-        id: uuidGeneric().required(),
-      })
-      .noUnknown()
-  ),
+  body: array().of(uuidGeneric().required()),
   params: object({
     sourceStudentID: uuidGeneric().required(),
     targetStudentID: uuidGeneric().required(),
