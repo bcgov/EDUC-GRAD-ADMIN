@@ -1,8 +1,8 @@
 <template>
   <v-row no-gutters class="mb-4" style="overflow-x: hidden">
     <v-col v-if="create" cols="2" class="d-flex flex-column justify-start">
-
-      <strong>{{ course.courseDetails.courseCode }}
+      <strong
+        >{{ course.courseDetails.courseCode }}
         {{ course.courseDetails.courseLevel }} -
         {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
@@ -10,7 +10,8 @@
       <slot name="remove-button"></slot>
     </v-col>
     <v-col v-if="update" cols="2" class="d-flex flex-column justify-start">
-      <strong>{{ course.courseDetails.courseCode }}
+      <strong
+        >{{ course.courseDetails.courseCode }}
         {{ course.courseDetails.courseLevel }} -
         {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
@@ -20,66 +21,160 @@
       <v-row no-gutters class="my-2">
         <!-- Editable fields bound directly to the course object -->
         <v-col>
-          <v-text-field v-model="course.interimPercent" type="number" min="0" max="100" label="Interim %"
-            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder :disabled="course.courseSession < 199409 ||
+          <v-text-field
+            v-model="course.interimPercent"
+            type="number"
+            min="0"
+            max="100"
+            label="Interim %"
+            variant="outlined"
+            density="compact"
+            class="pa-1"
+            clearable
+            persistent-placeholder
+            :disabled="
+              course.courseSession < 199409 ||
               courseSessionLessThanReportingPeriod
-              " persistent-hint :error="v$.course.interimPercent.$invalid &&
-                v$.course.interimPercent.$dirty
-                " @blur="v$.course.interimPercent.$touch" />
+            "
+            persistent-hint
+            :error="
+              v$.course.interimPercent.$invalid &&
+              v$.course.interimPercent.$dirty
+            "
+            @blur="v$.course.interimPercent.$touch"
+          />
         </v-col>
 
         <v-col>
-          <v-select v-model="course.interimLetterGrade" :items="filteredInterimLetterGrades"
-            :disabled="courseSessionLessThanReportingPeriod" label="Interim LG" variant="outlined" density="compact"
-            class="pa-1" clearable persistent-placeholder persistent-hint />
+          <v-select
+            v-model="course.interimLetterGrade"
+            :items="filteredInterimLetterGrades"
+            :disabled="courseSessionLessThanReportingPeriod"
+            label="Interim LG"
+            variant="outlined"
+            density="compact"
+            class="pa-1"
+            clearable
+            persistent-placeholder
+            persistent-hint
+          />
         </v-col>
 
         <v-col>
-          <v-text-field v-model="course.finalPercent" type="number" min="0" max="100" label="Final %" variant="outlined"
-            density="compact" class="pa-1" clearable :disabled="course.courseSession < 199409 ||
+          <v-text-field
+            v-model="course.finalPercent"
+            type="number"
+            min="0"
+            max="100"
+            label="Final %"
+            variant="outlined"
+            density="compact"
+            class="pa-1"
+            clearable
+            :disabled="
+              course.courseSession < 199409 ||
               courseSessionGreaterThanReportingPeriod
-              " persistent-placeholder persistent-hint :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty
-                " @blur="v$.course.finalPercent.$touch" />
+            "
+            persistent-placeholder
+            persistent-hint
+            :error="
+              v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty
+            "
+            @blur="v$.course.finalPercent.$touch"
+          />
         </v-col>
         <v-col>
-          <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
-            variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint
-            :disabled="courseSessionGreaterThanReportingPeriod" />
+          <v-select
+            v-model="course.finalLetterGrade"
+            :items="filteredFinalLetterGrades"
+            label="Final LG"
+            variant="outlined"
+            density="compact"
+            class="pa-1"
+            persistent-placeholder
+            persistent-hint
+            :disabled="courseSessionGreaterThanReportingPeriod"
+          />
         </v-col>
 
         <v-col>
-          <v-select v-model="course.credits" :items="creditsAvailableForCourseSession" item-title="creditValue"
-            item-value="creditValue" label="Credits" variant="outlined" density="compact" class="pa-1"
-            persistent-placeholder persistent-hint :disabled="disableCreditsInputIfNoAllowableCredits"
-            :placeholder="disableCreditsInputIfNoAllowableCredits ? 'N/A' : ''" />
+          <v-select
+            v-model="course.credits"
+            :items="creditsAvailableForCourseSession"
+            item-title="creditValue"
+            item-value="creditValue"
+            label="Credits"
+            variant="outlined"
+            density="compact"
+            class="pa-1"
+            persistent-placeholder
+            persistent-hint
+            :disabled="disableCreditsInputIfNoAllowableCredits"
+            :placeholder="disableCreditsInputIfNoAllowableCredits ? 'N/A' : ''"
+          />
         </v-col>
 
         <v-col>
-          <v-select v-model="course.fineArtsAppliedSkills" :items="fineArtsAndAppliedSkillsOptions"
-            item-value="fineArtsAppliedSkillsCode" item-title="label" label="FA/AS" variant="outlined" density="compact"
-            class="pa-1" clearable :disabled="shouldDisableFAAS" persistent-placeholder persistent-hint />
+          <v-select
+            v-model="course.fineArtsAppliedSkills"
+            :items="fineArtsAndAppliedSkillsOptions"
+            item-value="fineArtsAppliedSkillsCode"
+            item-title="label"
+            label="FA/AS"
+            variant="outlined"
+            density="compact"
+            class="pa-1"
+            clearable
+            :disabled="shouldDisableFAAS"
+            persistent-placeholder
+            persistent-hint
+          />
         </v-col>
 
         <v-col>
-          <v-select v-model="course.equivOrChallenge" :items="[
-            { title: 'Equivalency', value: 'E' },
-            { title: 'Challenge', value: 'C' },
-          ]" label="Eq / Ch" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
-            persistent-hint />
+          <v-select
+            v-model="course.equivOrChallenge"
+            :items="[
+              { title: 'Equivalency', value: 'E' },
+              { title: 'Challenge', value: 'C' },
+            ]"
+            label="Eq / Ch"
+            variant="outlined"
+            density="compact"
+            class="pa-1"
+            clearable
+            persistent-placeholder
+            persistent-hint
+          />
         </v-col>
       </v-row>
       <v-row v-if="course?.courseDetails.genericCourseType == 'G'">
         <v-col cols="12">
-          <v-text-field v-model="course.customizedCourseName" label="Customized Course Title" variant="outlined"
-            density="compact" class="pa-1" clearable hide-details persistent-placeholder persistent-hint />
+          <v-text-field
+            v-model="course.customizedCourseName"
+            label="Customized Course Title"
+            variant="outlined"
+            density="compact"
+            class="pa-1"
+            clearable
+            hide-details
+            persistent-placeholder
+            persistent-hint
+          />
         </v-col>
       </v-row>
 
       <v-row no-gutters v-if="v$.$errors.length" class="my-2">
         <v-col cols="12">
-          <v-row v-for="(error, index) in v$.$errors" :key="index" class="align-center">
+          <v-row
+            v-for="(error, index) in v$.$errors"
+            :key="index"
+            class="align-center"
+          >
             <v-col class="py-1 m-0 d-flex text-red-darken-4 text-caption">
-              <v-icon color="red-darken-2" size="18" class="me-1">mdi-alert-circle</v-icon>
+              <v-icon color="red-darken-2" size="18" class="me-1"
+                >mdi-alert-circle</v-icon
+              >
               {{ error.$message }}
             </v-col>
           </v-row>
@@ -87,7 +182,12 @@
       </v-row>
       <!-- Display courseWarnings -->
 
-      <v-row no-gutters v-for="(warning, index) in warnings" :key="index" class="align-center">
+      <v-row
+        no-gutters
+        v-for="(warning, index) in warnings"
+        :key="index"
+        class="align-center"
+      >
         <v-col class="py-1 m-0 d-flex align-center text-caption">
           <v-icon color="orange" size="18" class="me-1">mdi-alert</v-icon>
           {{ warning }}
@@ -98,8 +198,12 @@
         <v-col cols="12" class="pt-2">
           <strong>Select Related Course</strong>
 
-          <CourseInput v-model:courseFoundID="course.relatedCourseId" v-model:courseFound="course.relatedCourseDetails"
-            :code="course?.relatedCourseDetails?.courseCode" :level="course?.relatedCourseDetails?.courseLevel">
+          <CourseInput
+            v-model:courseFoundID="course.relatedCourseId"
+            v-model:courseFound="course.relatedCourseDetails"
+            :code="course?.relatedCourseDetails?.courseCode"
+            :level="course?.relatedCourseDetails?.courseLevel"
+          >
           </CourseInput>
         </v-col>
       </v-row>
@@ -378,11 +482,11 @@ export default {
 
       const isBAAorLocallyDevelopedOrCP =
         this.course.courseDetails.courseCategory.description ===
-        "Board Authority Authorized" ||
+          "Board Authority Authorized" ||
         this.course.courseDetails.courseCategory.description ===
-        "Locally Developed" ||
+          "Locally Developed" ||
         this.course.courseDetails.courseCategory.description ===
-        "Career Program";
+          "Career Program";
 
       return !isGrade11 || !isBAAorLocallyDevelopedOrCP;
     },
@@ -486,10 +590,12 @@ export default {
       // 0-based months: Oct = 9, Sep = 8
       let startYear, endYear;
 
-      if (currentMonth >= 9) { // Oct or later
+      if (currentMonth >= 9) {
+        // Oct or later
         startYear = currentYear;
         endYear = currentYear + 1;
-      } else { // Jan → Sep
+      } else {
+        // Jan → Sep
         startYear = currentYear - 1;
         endYear = currentYear;
       }
