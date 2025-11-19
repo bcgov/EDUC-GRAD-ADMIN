@@ -133,7 +133,6 @@ export async function validateAndFetchCourse({
         error: "Error connecting to the course web service",
       };
     } else {
-      console.log(err);
       return {
         error:
           "Invalid Course code/level - course code/level does not exist in the ministry course registry",
