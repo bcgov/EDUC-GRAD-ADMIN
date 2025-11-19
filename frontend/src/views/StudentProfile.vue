@@ -1224,6 +1224,7 @@ export default {
       this.loadStudentUngradReasons(studentIdFromURL);
       this.loadStudentHistory(studentIdFromURL);
       this.loadStudentOptionalProgramHistory(studentIdFromURL);
+      this.getStudentCourses(studentIdFromURL);
       this.tabLoading = false;
     },
 
