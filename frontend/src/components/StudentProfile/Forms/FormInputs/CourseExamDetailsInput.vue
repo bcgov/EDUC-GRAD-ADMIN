@@ -156,9 +156,8 @@ export default {
       this.course.credits = this.creditsAvailableForCourseSession[0];
     }
 
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1; // JS months are 0-based
+    const currentYear = this.currentYear;
+    const currentMonth = this.currentMonth
 
     // Reporting period: Oct (10) to Sep (09)
     let startYear, endYear;
@@ -371,6 +370,9 @@ export default {
   computed: {
     ...mapState(useAppStore, {
       allLetterGrades: (state) => state.letterGradeCodes,
+      currentDate: (state) => state.currentDate,
+      currentMonth: (state) => state.currentMonth,
+      currentYear: (state) => state.currentYear,
     }),
     ...mapState(useStudentStore, {
       studentProgram: (state) => state.getStudentProgram,
@@ -382,10 +384,9 @@ export default {
 
       const year = session.slice(0, 4);
       const month = session.slice(4, 6);
-      const sessionDate = new Date(`${year}-${month}-01`);
+      const sessionDate = `${year}-${month}-01`;
 
-      const today = new Date();
-      today.setDate(1); // Set to first of month to match format
+      const today = this.currentDate;
       return sessionDate < today;
     },
 
@@ -395,10 +396,9 @@ export default {
 
       const year = session.slice(0, 4);
       const month = session.slice(4, 6);
-      const sessionDate = new Date(`${year}-${month}-01`);
+      const sessionDate = `${year}-${month}-01`;
 
-      const today = new Date();
-      today.setDate(1); // Set to first of month to match format
+      const today = this.currentDate;
       return sessionDate > today;
     },
 
@@ -453,6 +453,20 @@ export default {
       const trimmedProgram = this.studentProgram?.trim();
 
       const warnings = [];
+
+      const startDate = this.course.courseDetails.startDate;
+      const endDate = this.course.courseDetails.completionEndDate
+        ? this.course.courseDetails.completionEndDate
+        : "9999-11-31";
+
+      if (isNaN(startDate)) return { error: "Course start date is invalid." };
+      if (isNaN(endDate)) return { error: "Course completion date is invalid." };
+
+      if (sessionDate < startDate) {
+
+        this.warnings.push(`Course session date is before the course start date (${startDate})`)
+      }
+
       if (this.course.courseSession < 198401 || this.course.courseSession > this.maxSession) {
         warnings.push("Course session cannot be after the current reporting period or prior to 198401")
       }
@@ -501,9 +515,9 @@ export default {
         .map((grade) => grade.grade);
     },
     isPercentageBlank(value) {
-      return value === null || value === undefined || value === '' ;
+      return value === null || value === undefined || value === '';
     }
   }
-  
+
 };
 </script>

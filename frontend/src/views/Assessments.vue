@@ -4,21 +4,14 @@
     <div>
       <v-card no-body>
         <v-tabs v-model="tab" bg-color="bcGovLightGrey">
-          <v-tab value="assessmentLegacyTab" class="text-none" size="large"
-            >Assessments</v-tab
-          >
+          <v-tab value="assessmentLegacyTab" class="text-none" size="large">Assessments</v-tab>
           <v-tab v-if="enableCRUD()" value="assessmentTab" class="text-none" size="large">
             Assessments
             <p class="text-caption font-weight-bold text-bcGovGold">
               BETA
             </p>
           </v-tab>
-          <v-tab
-            value="assessmentRequirementsTab"
-            class="text-none"
-            size="large"
-            >Assessment Requirements</v-tab
-          >
+          <v-tab value="assessmentRequirementsTab" class="text-none" size="large">Assessment Requirements</v-tab>
         </v-tabs>
         <v-card-text>
           <v-window v-model="tab">
@@ -42,8 +35,8 @@
 import AssessmentRequirements from "@/components/Assessments/AssessmentRequirements.vue";
 import AssessmentsLegacy from "@/components/Assessments/AssessmentsLegacy.vue";
 import Assessments from "@/components/Assessments/Assessments.vue";
-import {mapState} from "pinia";
-import {useAppStore} from "@/store/modules/app";
+import { mapState } from "pinia";
+import { useAppStore } from "@/store/modules/app";
 export default {
   name: "assessments",
   components: {
@@ -67,6 +60,7 @@ export default {
   padding-left: 25px;
   padding-right: 25px;
 }
+
 .close-record {
   float: right;
 }

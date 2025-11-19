@@ -1,8 +1,8 @@
 <template>
   <v-row no-gutters class="mb-4" style="overflow-x: hidden">
     <v-col v-if="create" cols="2" class="d-flex flex-column justify-start">
-      <strong
-        >{{ course.courseDetails.courseCode }}
+
+      <strong>{{ course.courseDetails.courseCode }}
         {{ course.courseDetails.courseLevel }} -
         {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
@@ -10,8 +10,7 @@
       <slot name="remove-button"></slot>
     </v-col>
     <v-col v-if="update" cols="2" class="d-flex flex-column justify-start">
-      <strong
-        >{{ course.courseDetails.courseCode }}
+      <strong>{{ course.courseDetails.courseCode }}
         {{ course.courseDetails.courseLevel }} -
         {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
@@ -21,160 +20,66 @@
       <v-row no-gutters class="my-2">
         <!-- Editable fields bound directly to the course object -->
         <v-col>
-          <v-text-field
-            v-model="course.interimPercent"
-            type="number"
-            min="0"
-            max="100"
-            label="Interim %"
-            variant="outlined"
-            density="compact"
-            class="pa-1"
-            clearable
-            persistent-placeholder
-            :disabled="
-              course.courseSession < 199409 ||
+          <v-text-field v-model="course.interimPercent" type="number" min="0" max="100" label="Interim %"
+            variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder :disabled="course.courseSession < 199409 ||
               courseSessionLessThanReportingPeriod
-            "
-            persistent-hint
-            :error="
-              v$.course.interimPercent.$invalid &&
-              v$.course.interimPercent.$dirty
-            "
-            @blur="v$.course.interimPercent.$touch"
-          />
+              " persistent-hint :error="v$.course.interimPercent.$invalid &&
+                v$.course.interimPercent.$dirty
+                " @blur="v$.course.interimPercent.$touch" />
         </v-col>
 
         <v-col>
-          <v-select
-            v-model="course.interimLetterGrade"
-            :items="filteredInterimLetterGrades"
-            :disabled="courseSessionLessThanReportingPeriod"
-            label="Interim LG"
-            variant="outlined"
-            density="compact"
-            class="pa-1"
-            clearable
-            persistent-placeholder
-            persistent-hint
-          />
+          <v-select v-model="course.interimLetterGrade" :items="filteredInterimLetterGrades"
+            :disabled="courseSessionLessThanReportingPeriod" label="Interim LG" variant="outlined" density="compact"
+            class="pa-1" clearable persistent-placeholder persistent-hint />
         </v-col>
 
         <v-col>
-          <v-text-field
-            v-model="course.finalPercent"
-            type="number"
-            min="0"
-            max="100"
-            label="Final %"
-            variant="outlined"
-            density="compact"
-            class="pa-1"
-            clearable
-            :disabled="
-              course.courseSession < 199409 ||
+          <v-text-field v-model="course.finalPercent" type="number" min="0" max="100" label="Final %" variant="outlined"
+            density="compact" class="pa-1" clearable :disabled="course.courseSession < 199409 ||
               courseSessionGreaterThanReportingPeriod
-            "
-            persistent-placeholder
-            persistent-hint
-            :error="
-              v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty
-            "
-            @blur="v$.course.finalPercent.$touch"
-          />
+              " persistent-placeholder persistent-hint :error="v$.course.finalPercent.$invalid && v$.course.finalPercent.$dirty
+                " @blur="v$.course.finalPercent.$touch" />
         </v-col>
         <v-col>
-          <v-select
-            v-model="course.finalLetterGrade"
-            :items="filteredFinalLetterGrades"
-            label="Final LG"
-            variant="outlined"
-            density="compact"
-            class="pa-1"
-            persistent-placeholder
-            persistent-hint
-            :disabled="courseSessionGreaterThanReportingPeriod"
-          />
+          <v-select v-model="course.finalLetterGrade" :items="filteredFinalLetterGrades" label="Final LG"
+            variant="outlined" density="compact" class="pa-1" persistent-placeholder persistent-hint
+            :disabled="courseSessionGreaterThanReportingPeriod" />
         </v-col>
 
         <v-col>
-          <v-select
-            v-model="course.credits"
-            :items="creditsAvailableForCourseSession"
-            item-title="creditValue"
-            item-value="creditValue"
-            label="Credits"
-            variant="outlined"
-            density="compact"
-            class="pa-1"
-            persistent-placeholder
-            persistent-hint
-            :disabled="disableCreditsInputIfNoAllowableCredits"
-            :placeholder="disableCreditsInputIfNoAllowableCredits ? 'N/A' : ''"
-          />
+          <v-select v-model="course.credits" :items="creditsAvailableForCourseSession" item-title="creditValue"
+            item-value="creditValue" label="Credits" variant="outlined" density="compact" class="pa-1"
+            persistent-placeholder persistent-hint :disabled="disableCreditsInputIfNoAllowableCredits"
+            :placeholder="disableCreditsInputIfNoAllowableCredits ? 'N/A' : ''" />
         </v-col>
 
         <v-col>
-          <v-select
-            v-model="course.fineArtsAppliedSkills"
-            :items="fineArtsAndAppliedSkillsOptions"
-            item-value="fineArtsAppliedSkillsCode"
-            item-title="label"
-            label="FA/AS"
-            variant="outlined"
-            density="compact"
-            class="pa-1"
-            clearable
-            :disabled="shouldDisableFAAS"
-            persistent-placeholder
-            persistent-hint
-          />
+          <v-select v-model="course.fineArtsAppliedSkills" :items="fineArtsAndAppliedSkillsOptions"
+            item-value="fineArtsAppliedSkillsCode" item-title="label" label="FA/AS" variant="outlined" density="compact"
+            class="pa-1" clearable :disabled="shouldDisableFAAS" persistent-placeholder persistent-hint />
         </v-col>
 
         <v-col>
-          <v-select
-            v-model="course.equivOrChallenge"
-            :items="[
-              { title: 'Equivalency', value: 'E' },
-              { title: 'Challenge', value: 'C' },
-            ]"
-            label="Eq / Ch"
-            variant="outlined"
-            density="compact"
-            class="pa-1"
-            clearable
-            persistent-placeholder
-            persistent-hint
-          />
+          <v-select v-model="course.equivOrChallenge" :items="[
+            { title: 'Equivalency', value: 'E' },
+            { title: 'Challenge', value: 'C' },
+          ]" label="Eq / Ch" variant="outlined" density="compact" class="pa-1" clearable persistent-placeholder
+            persistent-hint />
         </v-col>
       </v-row>
       <v-row v-if="course?.courseDetails.genericCourseType == 'G'">
         <v-col cols="12">
-          <v-text-field
-            v-model="course.customizedCourseName"
-            label="Customized Course Title"
-            variant="outlined"
-            density="compact"
-            class="pa-1"
-            clearable
-            hide-details
-            persistent-placeholder
-            persistent-hint
-          />
+          <v-text-field v-model="course.customizedCourseName" label="Customized Course Title" variant="outlined"
+            density="compact" class="pa-1" clearable hide-details persistent-placeholder persistent-hint />
         </v-col>
       </v-row>
 
       <v-row no-gutters v-if="v$.$errors.length" class="my-2">
         <v-col cols="12">
-          <v-row
-            v-for="(error, index) in v$.$errors"
-            :key="index"
-            class="align-center"
-          >
+          <v-row v-for="(error, index) in v$.$errors" :key="index" class="align-center">
             <v-col class="py-1 m-0 d-flex text-red-darken-4 text-caption">
-              <v-icon color="red-darken-2" size="18" class="me-1"
-                >mdi-alert-circle</v-icon
-              >
+              <v-icon color="red-darken-2" size="18" class="me-1">mdi-alert-circle</v-icon>
               {{ error.$message }}
             </v-col>
           </v-row>
@@ -182,12 +87,7 @@
       </v-row>
       <!-- Display courseWarnings -->
 
-      <v-row
-        no-gutters
-        v-for="(warning, index) in warnings"
-        :key="index"
-        class="align-center"
-      >
+      <v-row no-gutters v-for="(warning, index) in warnings" :key="index" class="align-center">
         <v-col class="py-1 m-0 d-flex align-center text-caption">
           <v-icon color="orange" size="18" class="me-1">mdi-alert</v-icon>
           {{ warning }}
@@ -198,12 +98,8 @@
         <v-col cols="12" class="pt-2">
           <strong>Select Related Course</strong>
 
-          <CourseInput
-            v-model:courseFoundID="course.relatedCourseId"
-            v-model:courseFound="course.relatedCourseDetails"
-            :code="course?.relatedCourseDetails?.courseCode"
-            :level="course?.relatedCourseDetails?.courseLevel"
-          >
+          <CourseInput v-model:courseFoundID="course.relatedCourseId" v-model:courseFound="course.relatedCourseDetails"
+            :code="course?.relatedCourseDetails?.courseCode" :level="course?.relatedCourseDetails?.courseLevel">
           </CourseInput>
         </v-col>
       </v-row>
@@ -445,6 +341,9 @@ export default {
     ...mapState(useAppStore, {
       allLetterGrades: (state) => state.letterGradeCodes,
       fineArtsAndAppliedSkillsOptions: (state) => state.FAASTypeCodes,
+      currentDate: (state) => state.currentDate,
+      currentMonth: (state) => state.currentMonth,
+      currentYear: (state) => state.currentYear,
     }),
     ...mapState(useStudentStore, {
       studentProgram: (state) => state.getStudentProgram,
@@ -456,10 +355,9 @@ export default {
 
       const year = session.slice(0, 4);
       const month = session.slice(4, 6);
-      const sessionDate = new Date(`${year}-${month}-01`);
+      const sessionDate = `${year}-${month}-01`;
 
-      const today = new Date();
-      today.setDate(1); // Set to first of month to match format
+      const today = this.currentDate;
       return sessionDate < today;
     },
 
@@ -469,10 +367,9 @@ export default {
 
       const year = session.slice(0, 4);
       const month = session.slice(4, 6);
-      const sessionDate = new Date(`${year}-${month}-01`);
+      const sessionDate = `${year}-${month}-01`;
 
-      const today = new Date();
-      today.setDate(1); // Set to first of month to match format
+      const today = this.currentDate;
       return sessionDate > today;
     },
     shouldDisableFAAS() {
@@ -481,11 +378,11 @@ export default {
 
       const isBAAorLocallyDevelopedOrCP =
         this.course.courseDetails.courseCategory.description ===
-          "Board Authority Authorized" ||
+        "Board Authority Authorized" ||
         this.course.courseDetails.courseCategory.description ===
-          "Locally Developed" ||
+        "Locally Developed" ||
         this.course.courseDetails.courseCategory.description ===
-          "Career Program";
+        "Career Program";
 
       return !isGrade11 || !isBAAorLocallyDevelopedOrCP;
     },
@@ -540,6 +437,37 @@ export default {
   methods: {
     updateWarnings() {
       this.warnings = [];
+
+      const session = this.course.courseSession;
+      if (!session || session.length !== 6) {
+        return { error: "Course session is invalid." };
+      }
+
+      // Convert session to "YYYY-MM-DD" string for comparison (first day of session month)
+      const sessionDateStr = `${session.slice(0, 4)}-${session.slice(4, 6)}-01`;
+
+      // Ensure course start date is valid string
+      const startDateStr = this.course.courseDetails.startDate;
+      if (!startDateStr || startDateStr.length !== 10) {
+        return { error: "Course start date is invalid." };
+      }
+
+      // Use completionEndDate or a far-future default
+      const endDateStr = this.course.courseDetails.completionEndDate
+        ? this.course.courseDetails.completionEndDate
+        : "9999-12-31";
+
+      if (sessionDateStr < startDateStr) {
+        this.warnings.push(
+          `Course session date is before the course start date (${startDateStr})`
+        );
+      }
+
+      if (sessionDateStr > endDateStr) {
+        this.warnings.push(
+          `Course session date is after the course completion date (${endDateStr})`
+        );
+      }
       // Check for Q course
       if ((this.course?.courseDetails.courseCode).startsWith("Q")) {
         this.warnings.push(
@@ -551,21 +479,20 @@ export default {
           "This course required an exam at the time of the course session date"
         );
       }
-      const now = new Date();
-      const currentYear = now.getFullYear();
-      const currentMonth = now.getMonth() + 1; // JS months are 0-based
+      const currentYear = Number(this.currentYear); // convert string to number
+      const currentMonth = Number(this.currentMonth); // ensure month is a number
 
-      // Reporting period: Oct (10) to Sep (09)
+      // Reporting period: Oct (10) → Sep (09)
+      // 0-based months: Oct = 9, Sep = 8
       let startYear, endYear;
 
-      if (currentMonth >= 10) {
+      if (currentMonth >= 9) { // Oct or later
         startYear = currentYear;
         endYear = currentYear + 1;
-      } else {
+      } else { // Jan → Sep
         startYear = currentYear - 1;
         endYear = currentYear;
       }
-
       this.minSession = `${startYear}09`;
       this.maxSession = `${endYear}09`;
       this.currentReportingPeriod = `${currentYear}09`;
@@ -574,7 +501,7 @@ export default {
         this.course.courseSession > this.maxSession
       ) {
         this.warnings.push(
-          "Course session cannot be after the current reporting period or prior to 198401"
+          "Course session cannot be after the current reporting period or prior to 1984-01"
         );
       }
 

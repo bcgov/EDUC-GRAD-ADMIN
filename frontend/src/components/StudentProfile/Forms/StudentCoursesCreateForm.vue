@@ -1,30 +1,16 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="80%">
     <template v-slot:activator="{ props }">
-      <v-btn
-        v-if="hasPermissions('STUDENT', 'courseUpdate')"
-        :disabled="studentStatus == 'MER'"
-        color="bcGovBlue"
-        prepend-icon="mdi-plus"
-        class="text-none"
-        @click="openCreateStudentCoursesDialog"
-        text="Add Student Courses"
-      />
+      <v-btn v-if="hasPermissions('STUDENT', 'courseUpdate')" :disabled="studentStatus == 'MER'" color="bcGovBlue"
+        prepend-icon="mdi-plus" class="text-none" @click="openCreateStudentCoursesDialog" text="Add Student Courses" />
     </template>
     <v-card>
       <v-card-title>
         <v-row no-gutters>
           <div class="v-card-title">Add Student Courses</div>
           <v-spacer />
-          <v-btn
-            icon="mdi-close"
-            density="compact"
-            rounded="sm"
-            variant="outlined"
-            color="error"
-            class="mt-2"
-            @click="closeCreateStudentCourseDialog"
-          />
+          <v-btn icon="mdi-close" density="compact" rounded="sm" variant="outlined" color="error" class="mt-2"
+            @click="closeCreateStudentCourseDialog" />
         </v-row>
         <v-card-subtitle>{{ studentPenAndName }}</v-card-subtitle>
       </v-card-title>
@@ -40,8 +26,7 @@
             </v-stepper-item>
 
             <v-stepper-item title="Confirmation" value="1">
-              <template #icon> 2 </template></v-stepper-item
-            >
+              <template #icon> 2 </template></v-stepper-item>
           </v-stepper-header>
 
           <v-stepper-window>
@@ -51,53 +36,34 @@
                 <!-- TODO- change this to match the text for validations in the validation ticket -->
                 <div v-if="coursesToCreate.length > 0">
                   <div>
-                    <template
-                      v-for="(course, index) in coursesToCreate"
-                      :key="course.courseID || index"
-                    >
+                    <template v-for="(course, index) in coursesToCreate" :key="course.courseID || index">
                       <div v-if="course.isExaminable">
                         <CourseExamDetailsInput :course="course" create>
                           <template #remove-button>
-                            <v-btn
-                              variant="outlined"
-                              color="bcGovBlue"
-                              class="mb-4 text-none"
-                              style="min-width: auto; width: 80px"
-                              @click="
+                            <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none"
+                              style="min-width: auto; width: 80px" @click="
                                 removeCourse(
                                   course.courseID,
                                   course.courseSession
                                 )
-                              "
-                              >Remove</v-btn
-                            >
+                                ">Remove</v-btn>
                           </template>
                         </CourseExamDetailsInput>
                       </div>
                       <div v-else>
                         <CourseDetailsInput :course="course" create>
                           <template #remove-button>
-                            <v-btn
-                              variant="outlined"
-                              color="bcGovBlue"
-                              class="mb-4 text-none"
-                              style="min-width: auto; width: 80px"
-                              @click="
+                            <v-btn variant="outlined" color="bcGovBlue" class="mb-4 text-none"
+                              style="min-width: auto; width: 80px" @click="
                                 removeCourse(
                                   course.courseID,
                                   course.courseSession
                                 )
-                              "
-                              >Remove</v-btn
-                            >
+                                ">Remove</v-btn>
                           </template>
                         </CourseDetailsInput>
                       </div>
-                      <v-divider
-                        v-if="index < coursesToCreate.length - 1"
-                        class="my-4"
-                        color="grey-darken-3"
-                      />
+                      <v-divider v-if="index < coursesToCreate.length - 1" class="my-4" color="grey-darken-3" />
                     </template>
                   </div>
                 </div>
@@ -106,37 +72,21 @@
               <!-- Step 2 -->
               <v-stepper-window-item value="1">
                 <v-expansion-panels multiple>
-                  <v-expansion-panel
-                    v-for="(course, index) in createStudentResultsMessages"
-                    :key="index"
-                    elevation="0"
-                    rounded="0"
-                    style="background-color: transparent; border: none"
-                  >
-                    <v-alert
-                      :type="
-                        course.validationIssues.some(
+                  <v-expansion-panel v-for="(course, index) in createStudentResultsMessages" :key="index" elevation="0"
+                    rounded="0" style="background-color: transparent; border: none">
+                    <v-alert :type="course.validationIssues.some(
+                      (i) => i.validationIssueSeverityCode === 'ERROR'
+                    )
+                      ? 'error'
+                      : 'success'
+                      " border="start" variant="tonal" density="compact" class="my-1">
+                      <template #prepend>
+                        <v-icon :color="course.validationIssues.some(
                           (i) => i.validationIssueSeverityCode === 'ERROR'
                         )
                           ? 'error'
                           : 'success'
-                      "
-                      border="start"
-                      variant="tonal"
-                      density="compact"
-                      class="my-1"
-                    >
-                      <template #prepend>
-                        <v-icon
-                          :color="
-                            course.validationIssues.some(
-                              (i) => i.validationIssueSeverityCode === 'ERROR'
-                            )
-                              ? 'error'
-                              : 'success'
-                          "
-                          style="margin-top: 15px"
-                        >
+                          " style="margin-top: 15px">
                           {{
                             course.validationIssues.some(
                               (i) => i.validationIssueSeverityCode === "ERROR"
@@ -147,9 +97,7 @@
                         </v-icon>
                       </template>
 
-                      <v-expansion-panel-title
-                        class="d-flex align-center justify-space-between"
-                      >
+                      <v-expansion-panel-title class="d-flex align-center justify-space-between">
                         <div class="d-flex align-center flex-grow-1">
                           <span>
                             {{ course.originalCourse.courseDetails.courseCode }}
@@ -199,30 +147,21 @@
 
                       <v-expansion-panel-text>
                         <div v-if="course.validationIssues.length">
-                          <div
-                            v-for="(issue, i) in course.validationIssues"
-                            :key="i"
-                            class="pl-3 d-flex align-center mb-2"
-                          >
-                            <v-icon
-                              :color="
-                                issue.validationIssueSeverityCode === 'ERROR'
-                                  ? 'error'
-                                  : 'warning'
-                              "
-                              class="me-2"
-                              size="18"
-                            >
+                          <div v-for="(issue, i) in course.validationIssues" :key="i"
+                            class="pl-3 d-flex align-center mb-2">
+                            <v-icon :color="issue.validationIssueSeverityCode === 'ERROR'
+                              ? 'error'
+                              : 'warning'
+                              " class="me-2" size="18">
                               {{
                                 issue.validationIssueSeverityCode === "ERROR"
                                   ? "mdi-alert-circle"
                                   : "mdi-alert"
-                              }} </v-icon
-                            >{{
-                              issue.validationIssueSeverityCode === "ERROR"
-                                ? "Error"
-                                : "Warning: "
-                            }}
+                              }} </v-icon>{{
+                                issue.validationIssueSeverityCode === "ERROR"
+                                  ? "Error"
+                                  : "Warning: "
+                              }}
 
                             {{ issue.validationIssueMessage }}
                           </div>
@@ -233,138 +172,90 @@
                   </v-expansion-panel>
                 </v-expansion-panels>
 
-                <v-alert
-                  v-if="coursesToCreate.length > 0"
-                  type="info"
-                  class="mb-4"
-                  border="start"
-                  elevation="2"
-                  variant="tonal"
-                >
+                <v-alert v-if="coursesToCreate.length > 0" type="info" class="mb-4" border="start" elevation="2"
+                  variant="tonal">
                   <div class="mb-2">
                     You are about to add the following courses to student
-                    <strong>{{ studentPenAndName }}</strong
-                    >:
+                    <strong>{{ studentPenAndName }}</strong>:
                   </div>
-                  <v-row
-                    no-gutters
-                    v-for="course in coursesToCreate"
-                    :key="course.courseID + course.sessionDate"
-                    class="mb-2"
-                  >
-                    <v-col cols="12"
-                      ><strong
-                        >{{ course.courseDetails.courseCode }}
+                  <v-row no-gutters v-for="course in coursesToCreate" :key="course.courseID + course.sessionDate"
+                    class="mb-2">
+                    <v-col cols="12"><strong>{{ course.courseDetails.courseCode }}
                         {{ course.courseDetails.courseLevel }} -
                         {{
                           $filters.formatYYYYMMStringDate(course.courseSession)
-                        }}</strong
-                      >
+                        }}</strong>
                     </v-col>
                     <v-col cols="12" class="ml-3">
                       {{ course.courseDetails.courseName }}
                     </v-col>
                     <v-row v-if="course.isExaminable">
-                      <v-col class="ml-2"
-                        ><strong>School %</strong>&nbsp;
+                      <v-col class="ml-2"><strong>School %</strong>&nbsp;
                         <span v-if="course.courseExam.schoolPercentage">{{
                           course.courseExam.schoolPercentage
                         }}</span>
                         <span v-else> <i>null</i> </span>
                       </v-col>
-                      <v-col class="ml-2"
-                        ><strong>Best School %</strong>&nbsp;
+                      <v-col class="ml-2"><strong>Best School %</strong>&nbsp;
                         <span v-if="course.courseExam.bestSchoolPercentage">{{
                           course.courseExam.bestSchoolPercentage
                         }}</span>
                         <span v-else> <i>null</i> </span>
                       </v-col>
-                      <v-col class="ml-2"
-                        ><strong>Special Case</strong>
-                        {{ course.courseExam.specialCase }}</v-col
-                      >
-                      <v-col class="ml-2"
-                        ><strong>Exam Best %</strong>&nbsp;
+                      <v-col class="ml-2"><strong>Special Case</strong>
+                        {{ course.courseExam.specialCase }}</v-col>
+                      <v-col class="ml-2"><strong>Exam Best %</strong>&nbsp;
                         <span v-if="course.courseExam.bestExamPercentage">{{
                           course.courseExam.bestExamPercentage
                         }}</span>
                         <span v-else> <i>null</i> </span>
                       </v-col>
-                      <v-col class="ml-2"
-                        ><strong>Final %</strong>&nbsp;
+                      <v-col class="ml-2"><strong>Final %</strong>&nbsp;
                         <span v-if="course.finalPercent">{{
                           course.finalPercent
                         }}</span>
                         <span v-else> <i>null</i> </span>
                       </v-col>
-                      <v-col class="ml-2"
-                        ><strong>Final LG</strong>
-                        {{ course.finalLetterGrade }}</v-col
-                      >
-                      <v-col
-                        ><strong>Credits</strong> {{ course.credits }}</v-col
-                      >
+                      <v-col class="ml-2"><strong>Final LG</strong>
+                        {{ course.finalLetterGrade }}</v-col>
+                      <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
                     </v-row>
                     <v-row v-else>
-                      <v-col class="ml-3"
-                        ><strong>Interim</strong>&nbsp;
-                        <span v-if="course.interimPercent"
-                          >{{ course.interimPercent }}%
+                      <v-col class="ml-3"><strong>Interim</strong>&nbsp;
+                        <span v-if="course.interimPercent">{{ course.interimPercent }}%
                         </span>
-                        <span v-if="course.interimLetterGrade"
-                          >{{ course.interimLetterGrade }}
+                        <span v-if="course.interimLetterGrade">{{ course.interimLetterGrade }}
                         </span>
-                        <span
-                          v-if="
-                            !course.interimPercent && !course.interimLetterGrade
-                          "
-                          ><i>null</i></span
-                        >
+                        <span v-if="
+                          !course.interimPercent && !course.interimLetterGrade
+                        "><i>null</i></span>
                       </v-col>
-                      <v-col
-                        ><strong>Final</strong>&nbsp;
+                      <v-col><strong>Final</strong>&nbsp;
                         <span v-if="course.finalPercent">
-                          {{ course.finalPercent }}%&nbsp;</span
-                        >
+                          {{ course.finalPercent }}%&nbsp;</span>
                         <span v-if="course.finalLetterGrade">
-                          {{ course.finalLetterGrade }}</span
-                        >
-                        <span
-                          v-if="
-                            !course.finalPercent && !course.finalLetterGrade
-                          "
-                          ><i>null</i></span
-                        >
+                          {{ course.finalLetterGrade }}</span>
+                        <span v-if="
+                          !course.finalPercent && !course.finalLetterGrade
+                        "><i>null</i></span>
                       </v-col>
-                      <v-col
-                        ><strong>Credits</strong> {{ course.credits }}</v-col
-                      >
-                      <v-col
-                        ><strong>FA/AS</strong>&nbsp;
+                      <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
+                      <v-col><strong>FA/AS</strong>&nbsp;
                         <span v-if="course.fineArtsAppliedSkills">
                           {{ course.fineArtsAppliedSkills }}
                         </span>
                         <span v-else><i>null</i></span>
                       </v-col>
-                      <v-col
-                        ><strong>Eq/Ch</strong>&nbsp;
+                      <v-col><strong>Eq/Ch</strong>&nbsp;
                         <span v-if="course.equivOrChallenge">
                           {{ course.equivOrChallenge }}
                         </span>
                         <span v-else><i>null</i></span>
                       </v-col>
-                      <v-col
-                        cols="12"
-                        class="ml-3"
-                        v-if="course.customizedCourseName"
-                        ><strong>Custom Course Title:</strong>
-                        {{ course.customizedCourseName }}</v-col
-                      >
-                      <v-col
-                        cols="12"
-                        class="ml-3"
-                        v-if="course.relatedCourseId"
-                        ><strong>Related Course:</strong>
+                      <v-col cols="12" class="ml-3" v-if="course.customizedCourseName"><strong>Custom Course
+                          Title:</strong>
+                        {{ course.customizedCourseName }}</v-col>
+                      <v-col cols="12" class="ml-3" v-if="course.relatedCourseId"><strong>Related Course:</strong>
                         {{ course.relatedCourseDetails.courseName }}
                       </v-col>
                     </v-row>
@@ -380,152 +271,71 @@
           <v-col cols="1" class="pr-1"> Select Course </v-col>
 
           <v-col class="pr-1">
-            <v-text-field
-              v-model="courseAdd.code"
-              label="Course Code"
-              :error="!!courseValidationMessage"
-              variant="outlined"
-              density="compact"
-              clearable
-              persistent-placeholder
-              persistent-hint
-              :disabled="isLoading"
-            />
+            <v-text-field v-model="courseAdd.code" label="Course Code" :error="!!courseValidationMessage"
+              variant="outlined" density="compact" clearable persistent-placeholder persistent-hint
+              :disabled="isLoading" />
           </v-col>
 
           <v-col class="pr-1">
-            <v-text-field
-              v-model="courseAdd.level"
-              label="Course Level"
-              :error="!!courseValidationMessage"
-              variant="outlined"
-              density="compact"
-              clearable
-              persistent-placeholder
-              persistent-hint
-              :disabled="isLoading"
-            />
+            <v-text-field v-model="courseAdd.level" label="Course Level" :error="!!courseValidationMessage"
+              variant="outlined" density="compact" clearable persistent-placeholder persistent-hint
+              :disabled="isLoading" />
           </v-col>
 
           <v-col class="pr-1">
-            <v-text-field
-              v-model="courseAdd.courseSession"
-              label="Session Date (YYYYMM)"
-              :error="v$.courseAdd.courseSession.$error"
-              :error-messages="
-                v$.courseAdd.courseSession.$errors.map((e) => e.$message)
-              "
-              @blur="v$.courseAdd.courseSession.$touch()"
-              variant="outlined"
-              density="compact"
-              clearable
-              persistent-placeholder
-              persistent-hint
-              :disabled="isLoading"
-            />
+            <v-text-field v-model="courseAdd.courseSession" label="Session Date (YYYYMM)"
+              :error="v$.courseAdd.courseSession.$error" :error-messages="v$.courseAdd.courseSession.$errors.map((e) => e.$message)
+                " @blur="v$.courseAdd.courseSession.$touch()" variant="outlined" density="compact" clearable
+              persistent-placeholder persistent-hint :disabled="isLoading" />
           </v-col>
 
           <v-col>
-            <v-btn
-              :disabled="v$?.courseAdd?.$invalid || isLoading"
-              variant="flat"
-              color="bcGovBlue"
-              class="text-none"
-              @click="addCourse"
-            >
-              <v-progress-circular
-                v-if="isLoading"
-                indeterminate
-                color="white"
-                size="20"
-                class="mr-2"
-              />
+            <v-btn :disabled="v$?.courseAdd?.$invalid || isLoading" variant="flat" color="bcGovBlue" class="text-none"
+              @click="addCourse">
+              <v-progress-circular v-if="isLoading" indeterminate color="white" size="20" class="mr-2" />
               <span>Get Course</span>
             </v-btn>
-            <v-btn
-              :disabled="coursesToCreate.length == 0"
-              color="error"
-              @click="closeCourseInput"
-            >
+            <v-btn :disabled="coursesToCreate.length == 0" color="error" @click="closeCourseInput">
               <v-icon size="28">mdi-close-circle</v-icon>
             </v-btn>
           </v-col>
           <v-col cols="12" class="pb-2 m-2" v-if="courseValidationMessage">
             <v-alert type="error" variant="tonal" border="start">{{
               courseValidationMessage
-            }}</v-alert></v-col
-          >
+            }}</v-alert></v-col>
         </v-row>
       </v-card-actions>
       <v-card-actions>
-        <v-btn
-          v-if="step === 0"
-          @click="closeCreateStudentCourseDialog"
-          color="error"
-          variant="outlined"
-          class="text-none"
-        >
+        <v-btn v-if="step === 0" @click="closeCreateStudentCourseDialog" color="error" variant="outlined"
+          class="text-none">
           Cancel
         </v-btn>
         <v-spacer v-if="step === 0" />
-        <v-btn
-          variant="outlined"
-          color="bcGovBlue"
-          class="text-none"
-          v-if="!showCourseInputs && step === 0"
-          @click="showCourseInputs = !showCourseInputs && step === 0"
-        >
+        <v-btn variant="outlined" color="bcGovBlue" class="text-none" v-if="!showCourseInputs && step === 0"
+          @click="showCourseInputs = !showCourseInputs && step === 0">
           + Add Another Course
         </v-btn>
 
-        <v-btn
-          v-else-if="step > 0"
-          @click="step--"
-          color="bcGovBlue"
-          variant="outlined"
-          :disabled="step == 0 || validationStep"
-        >
+        <v-btn v-else-if="step > 0" @click="step--" color="bcGovBlue" variant="outlined"
+          :disabled="step == 0 || validationStep">
           Back
         </v-btn>
 
         <v-spacer />
-        <v-btn
-          v-if="step < 1"
-          @click="step++"
-          color="bcGovBlue"
-          variant="outlined"
-          :disabled="coursesToCreate.length == 0 || v$.$invalid"
-        >
+        <v-btn v-if="step < 1" @click="step++" color="bcGovBlue" variant="outlined"
+          :disabled="coursesToCreate.length == 0 || v$.$invalid">
           Next
         </v-btn>
 
-        <v-btn
-          v-else-if="step == 1 && !validationStep"
-          :disabled="isLoading"
-          @click="submitForm"
-          color="error"
-          variant="flat"
-          class="text-none"
-        >
-          <span v-if="isLoading"
-            ><v-progress-circular
-              v-if="isLoading"
-              indeterminate
-              color="white"
-              size="20"
-              class="mr-2"
-            />
-            Add Student Courses</span
-          >
+        <v-btn v-else-if="step == 1 && !validationStep" :disabled="isLoading" @click="submitForm" color="error"
+          variant="flat" class="text-none">
+          <span v-if="isLoading"><v-progress-circular v-if="isLoading" indeterminate color="white" size="20"
+              class="mr-2" />
+            Add Student Courses</span>
           <span v-else> Add Student Courses</span>
         </v-btn>
-        <v-btn
-          v-else-if="step == 1 && validationStep"
-          @click="closeCreateStudentCourseDialog"
-          color="error"
-          variant="flat"
-          class="text-none"
-        >
+        <v-btn v-else-if="step == 1 && validationStep" @click="closeCreateStudentCourseDialog" color="error"
+          variant="flat" class="text-none">
           Close
         </v-btn>
       </v-card-actions>
@@ -669,9 +479,9 @@ export default {
       const isCourseDuplicate = this.coursesToCreate.some(
         (course) =>
           course.courseDetails.courseCode?.toUpperCase() ===
-            code?.toUpperCase() &&
+          code?.toUpperCase() &&
           course.courseDetails.courseLevel?.toUpperCase() ===
-            level?.toUpperCase() &&
+          level?.toUpperCase() &&
           course.courseSession === courseSession
       );
 
@@ -704,6 +514,8 @@ export default {
         this.courseValidationMessage = result.error;
         this.isLoading = false;
         return;
+      }
+      if (result.warnings) {
       }
       this.addCoursesToCreate({
         courseID: result.courseID,
