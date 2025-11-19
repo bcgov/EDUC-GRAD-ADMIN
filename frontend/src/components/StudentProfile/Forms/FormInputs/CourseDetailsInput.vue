@@ -445,6 +445,9 @@ export default {
     ...mapState(useAppStore, {
       allLetterGrades: (state) => state.letterGradeCodes,
       fineArtsAndAppliedSkillsOptions: (state) => state.FAASTypeCodes,
+      currentDate: (state) => state.currentDate,
+      currentMonth: (state) => state.currentMonth,
+      currentYear: (state) => state.currentYear,
     }),
     ...mapState(useStudentStore, {
       studentProgram: (state) => state.getStudentProgram,
@@ -456,10 +459,9 @@ export default {
 
       const year = session.slice(0, 4);
       const month = session.slice(4, 6);
-      const sessionDate = new Date(`${year}-${month}-01`);
+      const sessionDate = `${year}-${month}-01`;
 
-      const today = new Date();
-      today.setDate(1); // Set to first of month to match format
+      const today = this.currentDate;
       return sessionDate < today;
     },
 
@@ -469,10 +471,9 @@ export default {
 
       const year = session.slice(0, 4);
       const month = session.slice(4, 6);
-      const sessionDate = new Date(`${year}-${month}-01`);
+      const sessionDate = `${year}-${month}-01`;
 
-      const today = new Date();
-      today.setDate(1); // Set to first of month to match format
+      const today = this.currentDate;
       return sessionDate > today;
     },
     shouldDisableFAAS() {
@@ -540,6 +541,37 @@ export default {
   methods: {
     updateWarnings() {
       this.warnings = [];
+
+      const session = this.course.courseSession;
+      if (!session || session.length !== 6) {
+        return { error: "Course session is invalid." };
+      }
+
+      // Convert session to "YYYY-MM-DD" string for comparison (first day of session month)
+      const sessionDateStr = `${session.slice(0, 4)}-${session.slice(4, 6)}-01`;
+
+      // Ensure course start date is valid string
+      const startDateStr = this.course.courseDetails.startDate;
+      if (!startDateStr || startDateStr.length !== 10) {
+        return { error: "Course start date is invalid." };
+      }
+
+      // Use completionEndDate or a far-future default
+      const endDateStr = this.course.courseDetails.completionEndDate
+        ? this.course.courseDetails.completionEndDate
+        : "9999-12-31";
+
+      if (sessionDateStr < startDateStr) {
+        this.warnings.push(
+          `Course session date is before the course start date (${startDateStr})`
+        );
+      }
+
+      if (sessionDateStr > endDateStr) {
+        this.warnings.push(
+          `Course session date is after the course completion date (${endDateStr})`
+        );
+      }
       // Check for Q course
       if ((this.course?.courseDetails.courseCode).startsWith("Q")) {
         this.warnings.push(
@@ -551,21 +583,22 @@ export default {
           "This course required an exam at the time of the course session date"
         );
       }
-      const now = new Date();
-      const currentYear = now.getFullYear();
-      const currentMonth = now.getMonth() + 1; // JS months are 0-based
+      const currentYear = Number(this.currentYear); // convert string to number
+      const currentMonth = Number(this.currentMonth); // ensure month is a number
 
-      // Reporting period: Oct (10) to Sep (09)
+      // Reporting period: Oct (10) → Sep (09)
+      // 0-based months: Oct = 9, Sep = 8
       let startYear, endYear;
 
-      if (currentMonth >= 10) {
+      if (currentMonth >= 9) {
+        // Oct or later
         startYear = currentYear;
         endYear = currentYear + 1;
       } else {
+        // Jan → Sep
         startYear = currentYear - 1;
         endYear = currentYear;
       }
-
       this.minSession = `${startYear}09`;
       this.maxSession = `${endYear}09`;
       this.currentReportingPeriod = `${currentYear}09`;
@@ -574,7 +607,7 @@ export default {
         this.course.courseSession > this.maxSession
       ) {
         this.warnings.push(
-          "Course session cannot be after the current reporting period or prior to 198401"
+          "Course session cannot be after the current reporting period or prior to 1984-01"
         );
       }
 

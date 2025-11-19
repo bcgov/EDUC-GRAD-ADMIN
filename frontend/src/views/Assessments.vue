@@ -70,6 +70,7 @@ export default {
   padding-left: 25px;
   padding-right: 25px;
 }
+
 .close-record {
   float: right;
 }
