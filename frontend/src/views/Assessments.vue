@@ -16,7 +16,12 @@
             Assessments
             <p class="text-caption font-weight-bold text-bcGovGold">BETA</p>
           </v-tab>
-          <v-tab value="assessmentRequirementsTab" class="text-none" size="large">Assessment Requirements</v-tab>
+          <v-tab
+            value="assessmentRequirementsTab"
+            class="text-none"
+            size="large"
+            >Assessment Requirements</v-tab
+          >
         </v-tabs>
         <v-card-text>
           <v-window v-model="tab">

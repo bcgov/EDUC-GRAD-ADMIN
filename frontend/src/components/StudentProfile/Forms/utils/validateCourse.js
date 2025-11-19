@@ -24,7 +24,6 @@ export async function validateAndFetchCourse({
       upperLevel
     );
     const courseData = response?.data;
-   
 
     if (!courseData?.courseID) {
       return {
@@ -43,23 +42,24 @@ export async function validateAndFetchCourse({
         error: `The course session is a duplicate of an existing course session for this student`,
       };
     }
-    const year = courseSession.slice(0, 4);   // "2024"
-    const month = courseSession.slice(4, 6);  // "01"
+    const year = courseSession.slice(0, 4); // "2024"
+    const month = courseSession.slice(4, 6); // "01"
     const sessionDate = `${year}-${month}-01`;
     const startDate = courseData.startDate;
-    const endDate = (courseData.completionEndDate
+    const endDate = courseData.completionEndDate
       ? courseData.completionEndDate
-      : "9999-11-31");
+      : "9999-11-31";
 
     if (!startDate) return { error: "Course start date is invalid." };
     if (!endDate) return { error: "Course completion date is invalid." };
     if (sessionDate < startDate) {
-      warnings.push(`Course session date is before the course start date (${courseData.startDate})`)
+      warnings.push(
+        `Course session date is before the course start date (${courseData.startDate})`
+      );
     }
     if (sessionDate > endDate) {
       return {
-        error:
-          `Course is closed. Session date must be before the course completion end date (${courseData.completionEndDate})  ${sessionDate}`,
+        error: `Course is closed. Session date must be before the course completion end date (${courseData.completionEndDate})  ${sessionDate}`,
       };
     }
     let isExaminable = false;
@@ -133,7 +133,7 @@ export async function validateAndFetchCourse({
         error: "Error connecting to the course web service",
       };
     } else {
-      console.log(err)
+      console.log(err);
       return {
         error:
           "Invalid Course code/level - course code/level does not exist in the ministry course registry",
