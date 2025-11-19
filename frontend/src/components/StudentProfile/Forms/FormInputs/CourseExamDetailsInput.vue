@@ -10,7 +10,6 @@
     </v-col>
 
     <v-col v-if="update" cols="2" class="d-flex flex-column justify-start">
-
       <strong>{{ course.courseDetails.courseCode }} {{ course.courseDetails.courseLevel }} -
         {{ $filters.formatYYYYMMStringDate(course.courseSession) }}
       </strong>
@@ -137,11 +136,6 @@ export default {
       })
       // eslint-disable-next-line
       .catch((error) => {
-        // this.$bvToast.toast("ERROR " + error.response.statusText, {
-        //   title: "ERROR" + error.response.status,
-        //   variant: "danger",
-        //   noAutoHide: true,
-        // });
         this.snackbarStore.showSnackbar(
           "ERROR " + error.response.statusText,
           "error",

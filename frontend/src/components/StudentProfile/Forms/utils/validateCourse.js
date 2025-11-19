@@ -50,9 +50,6 @@ export async function validateAndFetchCourse({
     const endDate = (courseData.completionEndDate
       ? courseData.completionEndDate
       : "9999-11-31");
-      console.log(sessionDate)
-      console.log(startDate)
-      console.log(endDate)
 
     if (!startDate) return { error: "Course start date is invalid." };
     if (!endDate) return { error: "Course completion date is invalid." };
@@ -65,7 +62,6 @@ export async function validateAndFetchCourse({
           `Course is closed. Session date must be before the course completion end date (${courseData.completionEndDate})  ${sessionDate}`,
       };
     }
-
     let isExaminable = false;
     if (checkExaminable) {
       const { data: examinableCourses } =
