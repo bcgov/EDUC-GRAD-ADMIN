@@ -4,8 +4,15 @@
     <div>
       <v-card no-body>
         <v-tabs v-model="tab" bg-color="bcGovLightGrey">
-          <v-tab value="assessmentLegacyTab" class="text-none" size="large">Assessments</v-tab>
-          <v-tab v-if="enableCRUD" value="assessmentTab" class="text-none" size="large">
+          <v-tab value="assessmentLegacyTab" class="text-none" size="large"
+            >Assessments</v-tab
+          >
+          <v-tab
+            v-if="enableCRUD"
+            value="assessmentTab"
+            class="text-none"
+            size="large"
+          >
             Assessments
             <p class="text-caption font-weight-bold text-bcGovGold">BETA</p>
           </v-tab>
