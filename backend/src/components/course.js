@@ -225,18 +225,31 @@ async function getCourseEventHistory(req, res) {
   const token = auth.getBackendToken(req);
 
   const sort =
-    typeof req.query?.sort === "string"
+    typeof req.query?.sort === 'string'
       ? JSON.parse(req.query.sort)
       : req.query.sort;
 
   const searchParams =
-    typeof req.query?.searchParams === "string"
+    typeof req.query?.searchParams === 'string'
       ? JSON.parse(req.query.searchParams)
       : req.query.searchParams;
 
+  searchParams.push({
+    condition: 'AND',
+    searchCriteriaList: [
+      {
+        key: 'event.affectedTable',
+        operation: 'eq',
+        value: 'CRSE_COURSES',
+        valueType: 'STRING',
+        condition: 'AND',
+      },
+    ]
+  });
+  
   try {
     const url = `${config.get(
-      "server:courseAPIURL"
+      'server:courseAPIURL'
     )}/api/v1/course/event/history/paginated?pageNumber=${
       req.query?.pageNumber
     }&pageSize=${req.query?.pageSize}&sort=${encodeURIComponent(
@@ -247,8 +260,8 @@ async function getCourseEventHistory(req, res) {
   } catch (e) {
     log.error(
       e,
-      "eventHistoryError",
-      "Error occurred while attempting to get institute events"
+      'eventHistoryError',
+      'Error occurred while attempting to get institute events'
     );
     if (e.data.message) {
       return errorResponse(res, e.data.message, e.status);
