@@ -3,6 +3,7 @@ import router from "@/router";
 import CodesService from "@/services/CodesService.js";
 import StudentService from "@/services/StudentService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import { useAppStore } from "@/store/modules/app";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
 import sharedMethods from "@/sharedMethods.js";
 
@@ -190,7 +191,9 @@ export const useStudentStore = defineStore("student", {
       });
     },
     loadStudentReportsAndCertificates() {
-      this.loadStudentXmlReport(this.pen);
+      if(useAppStore().getSchoolById(this.student?.gradStatus?.schoolOfRecordId)?.canIssueTranscripts) {
+        this.loadStudentXmlReport(this.pen);
+      }
       this.loadStudentTranscripts(this.id);
       this.loadStudentCertificates(this.id);
       this.loadStudentReports(this.id);
