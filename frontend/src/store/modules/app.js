@@ -145,6 +145,9 @@ export const useAppStore = defineStore("app", {
     enableCRUD: (state) => {
       return state.config?.CRUD_ENABLED;
     },
+    showLegacy: (state) => {
+      return state.config?.SHOW_LEGACY; // used to flip pre-crud flags on/off
+    },
   },
   actions: {
     async setApplicationVariables() {

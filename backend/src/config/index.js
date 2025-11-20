@@ -26,7 +26,6 @@ nconf.defaults({
   logoutEndpoint:
     process.env.SOAM_URL + "/auth/realms/master/protocol/openid-connect/logout",
   siteMinder_logout_endpoint: process.env.SITEMINDER_LOGOUT_ENDPOINT,
-  enableCRUD: process.env.CRUD_ENABLED,
   server: {
     frontend: process.env.SERVER_FRONTEND,
     backend: process.env.SERVER_FRONTEND + "/api",
@@ -85,6 +84,8 @@ nconf.defaults({
   },
   frontendConfig: {
     studentAdminURL: process.env.STUDENT_ADMIN_URL,
+    enableCRUD: process.env.CRUD_ENABLED,
+    showLegacy: process.env.SHOW_LEGACY,
   },
 });
 module.exports = nconf;
