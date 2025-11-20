@@ -129,6 +129,18 @@ export default {
     timeRemaining: function () {
       return Math.floor(this.timerValue);
     },
+    timeRemainingFormatted: function () {
+      const seconds = this.timerValue
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins} minute(s) and ${secs} second(s)`;
+    },
+    jwtTokenTrimmed() {
+      if (this.jwtTokenGet) {
+        const last10 = this.jwtTokenGet.slice(-10)
+        return last10;
+      } else return ""
+    }
   },
   methods: {
     ...mapActions(useAuthStore, [
@@ -150,19 +162,29 @@ export default {
       }
     },
     setupTimer() {
+      //initialize currentToken on app load
+      let currentToken = localStorage.getItem("jwtToken");
       setInterval(async () => {
+        const browserTokenWasUpdated = currentToken !== localStorage.getItem("jwtToken")
+        if (browserTokenWasUpdated) {
+          currentToken = localStorage.getItem("jwtToken")
+          this.setJwtToken(currentToken)
+        }
         if (this.jwtTokenGet) {
           this.timerValue = await this.getTokenRemainingTime();
-          if (this.timerValue < 300) this.tokenExpiring = true;
+          this.tokenExpiring = this.timerValue < 180;
           this.tokenExpired = await this.checkJWTTokenExpired();
         }
       }, 30000); // Update every 10000 milliseconds (30 seconds)
     },
-    async resumeSession() {
+    async getuserSessionRemainingTime() {
+      const maxAge = await authService.sessionTimeRemaining();
+    },
+    async resumeSession() { //change to extend
       // Handle the logic to resume the session
       // For example, refresh the token or perform any necessary actions
 
-      const updatedJwtToken = await authService.refreshAuthToken(
+      const updatedJwtToken = await authService.extendInactiveSession(
         this.jwtTokenGet
       );
       this.setJwtToken(updatedJwtToken.jwtFrontend);
@@ -173,6 +195,7 @@ export default {
       await this.logout();
       window.location.href = this.authRoutes.LOGIN;
     },
+
   },
 };
 </script>

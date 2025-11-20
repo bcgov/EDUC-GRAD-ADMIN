@@ -3,22 +3,11 @@
     <v-row>
       <v-col sm="2"><strong>Personal Education Number</strong></v-col>
       <v-col cols="7">
-        <v-text-field
-          label="Personal Education Number"
-          v-model="pen"
-          @input="validateStudent"
-          type="number"
-          variant="outlined"
-          class="mr-2 mt-2"
-        ></v-text-field>
+        <v-text-field label="Personal Education Number" v-model="pen" @input="validateStudent" type="number"
+          variant="outlined" class="mr-2"></v-text-field>
       </v-col>
       <v-col md="3">
-        <v-btn
-          color="bcGovBlue"
-          @click="addStudent()"
-          :disabled="v$.pen.$invalid || pen == ''"
-          :loading="penLoading"
-        >
+        <v-btn color="bcGovBlue" @click="addStudent()" :disabled="v$.pen.$invalid || pen == ''" :loading="penLoading">
           Add Student
         </v-btn>
         <!-- <v-btn @click="clearPen" text> Clear </v-btn> -->
@@ -31,12 +20,7 @@
     </v-row>
     <v-row>
       <v-col>
-        <v-data-table
-          v-if="students.length"
-          :items="students"
-          :headers="studentInputFields"
-          striped
-        >
+        <v-data-table v-if="students.length" :items="students" :headers="studentInputFields" striped>
           <template v-slot:item.remove="{ item }">
             <v-btn @click="removeStudent(item.pen)" color="primary">
               Remove
@@ -132,8 +116,8 @@ export default {
       ],
     };
   },
-  mounted() {},
-  created() {},
+  mounted() { },
+  created() { },
   methods: {
     ...mapActions(useBatchRequestFormStore, [
       "clearBatchDetails",
