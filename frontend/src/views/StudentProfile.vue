@@ -64,11 +64,9 @@
                 <v-list-item
                   :disabled="
                     studentGradStatus.studentStatus === 'MER' ||
-                    !(
-                      isProgramComplete(
-                        studentGradStatus.programCompletionDate,
-                        studentGradStatus.program
-                      ) && !!studentGradStatus.schoolAtGradId
+                    !isProgramComplete(
+                      studentGradStatus.programCompletionDate,
+                      studentGradStatus.program
                     )
                   "
                   v-on:click="showUndoCompletionDialog = true"
@@ -79,7 +77,7 @@
           </span>
           <span
             v-if="
-              enableCRUD() &&
+              enableCRUD &&
               studentGradStatus.studentStatus === 'MER' &&
               hasPermissions('STUDENT', 'studentMerge')
             "
@@ -110,35 +108,41 @@
             <v-window-item value="gradStatusTab">
               <v-tabs v-model="selectedTab" bg-color="bcGovLightGrey">
                 <v-tab value="GRAD" class="text-none">GRAD</v-tab>
-                <v-tab value="CoursesLegacy" class="text-none"
-                  >Courses ({{ courses.length }})</v-tab
+                <v-tab
+                  value="CoursesLegacy"
+                  class="text-none"
+                  v-if="!enableCRUD"
+                  >Courses ({{ coursesLegacy.length }})</v-tab
                 >
-                <v-tab value="Courses" class="text-none" v-if="enableCRUD()"
-                  >Course CRUD
+                <v-tab value="Courses" class="text-none" v-else-if="enableCRUD"
+                  >Courses ({{ courses.length }})
                   <p class="text-caption font-weight-bold text-bcGovGold">
                     BETA
                   </p></v-tab
                 >
-                <v-tab value="AssessmentsLegacy" class="text-none"
+                <v-tab
+                  value="AssessmentsLegacy"
+                  class="text-none"
+                  v-if="!enableCRUD"
                   >Assessments ({{ assessmentsLegacy.length }})</v-tab
                 >
                 <v-tab
                   value="Assessments"
                   class="text-none"
-                  v-if="
+                  v-else-if="
                     hasPermissions('STUDENT', 'studentAssessmentUpdate') &&
-                    enableCRUD()
+                    enableCRUD
                   "
                   >Assessments ({{ assessments?.length }})
                   <p class="text-caption font-weight-bold text-bcGovGold">
                     BETA
                   </p>
                 </v-tab>
-                <v-tab value="ExamsLegacy" class="text-none"
+                <v-tab value="ExamsLegacy" class="text-none" v-if="!enableCRUD"
                   >Exams Details ({{ examsLegacy.length }})</v-tab
                 >
-                <v-tab value="Exams" class="text-none" v-if="enableCRUD()"
-                  >Exam CRUD
+                <v-tab value="Exams" class="text-none" v-else-if="enableCRUD"
+                  >Exams ({{ exams.length }})
                   <p class="text-caption font-weight-bold text-bcGovGold">
                     BETA
                   </p></v-tab
@@ -155,7 +159,10 @@
                     studentUngradReasons.length
                   }})</v-tab
                 >
-                <v-tab v-if="hasPermissions('SCHOLARSHIP', 'scholarshipViewAndEdit')" value="scholarships" class="text-none"
+                <v-tab
+                  v-if="hasPermissions('SCHOLARSHIP', 'scholarshipViewAndEdit')"
+                  value="scholarships"
+                  class="text-none"
                   >Scholarships
                 </v-tab>
               </v-tabs>
@@ -254,7 +261,7 @@
                   <v-window-item
                     v-if="
                       hasPermissions('STUDENT', 'studentAssessmentUpdate') &&
-                      enableCRUD()
+                      enableCRUD
                     "
                     value="Assessments"
                     data-cy="assessments-window-item"
@@ -332,12 +339,8 @@
 
                     <StudentUndoCompletionReasons></StudentUndoCompletionReasons>
                   </v-window-item>
-                  <v-window-item
-                    value="scholarships"
-                  >
-                    <Scholarships 
-                      :student-ID="studentId"
-                    />
+                  <v-window-item value="scholarships">
+                    <Scholarships :student-ID="studentId" />
                   </v-window-item>
                 </v-window>
               </v-card-text>
@@ -809,7 +812,7 @@ export default {
     StudentNotes: StudentNotes,
     DisplayTable: DisplayTable,
     StudentDataMergeForm: StudentDataMergeForm,
-    Scholarships: Scholarships
+    Scholarships: Scholarships,
   },
   props: {},
   data() {
@@ -895,10 +898,12 @@ export default {
     }),
     ...mapState(useStudentStore, {
       profile: "getStudentProfile",
-      courses: "getStudentCoursesLegacy",
+      coursesLegacy: "getStudentCoursesLegacy",
+      courses: "studentCourses",
       assessmentsLegacy: "getStudentAssessmentsLegacy",
       assessments: "studentAssessments",
       examsLegacy: "getStudentExamsLegacy",
+      exams: "studentExamCourses",
       gradInfo: "getStudentGraduationCreationAndUpdate",
       hasGradStatus: "studentHasGradStatus",
       studentGradStatus: "getStudentGradStatus",
@@ -1203,7 +1208,7 @@ export default {
       this.loadAssessmentsLegacy();
       if (
         this.hasPermissions("STUDENT", "studentAssessmentUpdate") &&
-        this.enableCRUD()
+        this.enableCRUD
       ) {
         this.loadStudentAssessments(studentIdFromURL);
       }
@@ -1217,6 +1222,7 @@ export default {
       this.loadStudentUngradReasons(studentIdFromURL);
       this.loadStudentHistory(studentIdFromURL);
       this.loadStudentOptionalProgramHistory(studentIdFromURL);
+      this.getStudentCourses(studentIdFromURL);
       this.tabLoading = false;
     },
 

@@ -33,6 +33,9 @@ export const useAppStore = defineStore("app", {
     provincialSpecialCaseCodes: [],
     assessmentTypeCodesMap: new Map(),
     assessmentTypeCodes: [],
+    currentDate: "",
+    currentMonth: "",
+    currentYear: "",
   }),
   getters: {
     appEnvironment: (state) =>
@@ -143,15 +146,21 @@ export const useAppStore = defineStore("app", {
     getTranscriptTypes: (state) => state.transcriptTypes,
     getCertificateTypes: (state) => state.certificationTypes,
     enableCRUD: (state) => {
-      // defaults to local, dev, and test but can be overridden as needed for reuse
-      return (enabledEnvironments = ["local", "dev", "test"]) =>
-        enabledEnvironments.includes(state.config?.ENVIRONMENT);
+      return state.config?.CRUD_ENABLED;
     },
+    getCurrentDate: (state) => state.currentDate,
   },
   actions: {
+    async setCurrentDate() {
+      const currentDateObject = sharedMethods.getTodaysDate();
+      this.currentDate = currentDateObject.currentDate;
+      this.currentMonth = currentDateObject.currentMonth;
+      this.currentYear = currentDateObject.currentYear;
+    },
     async setApplicationVariables() {
       try {
         if (localStorage.getItem("jwtToken")) {
+          await this.setCurrentDate();
           // GET & SET CONFIG
           await this.getConfig();
           // GET & SET GRAD CODES
@@ -175,6 +184,7 @@ export const useAppStore = defineStore("app", {
           await this.getInstituteCategoryCodes();
           await this.getInstituteFacilityCodes();
           await this.getProvincialSpecialCaseCodes();
+          // set current date string
         }
       } catch (e) {
         if (e.response.status) {

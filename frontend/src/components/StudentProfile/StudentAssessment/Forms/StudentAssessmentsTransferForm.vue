@@ -239,6 +239,7 @@
           <v-btn
             v-else-if="step == 2 && assessmentsToTransfer.length > 0"
             :disabled="validationStep"
+            :loading="loadingTransfer"
             color="error"
             variant="flat"
             class="text-none"
@@ -299,6 +300,7 @@ export default {
       targetStudentAssessments: [],
       transferStudentAssessmentResultsMessages: [],
       validationStep: false,
+      loadingTransfer: false
     };
   },
   computed: {
@@ -432,6 +434,7 @@ export default {
     async submitForm() {
       this.transferStudentAssessmentResultsMessages = [];
       const studentAssessmentIDs = this.assessmentsToTransfer.map(x => x.assessmentStudentID);
+      this.loadingTransfer = true;
 
       try {
         await this.transferStudentAssessments(
@@ -449,9 +452,10 @@ export default {
           } else {
             this.transferStudentAssessmentResultsMessages = response;
           }
+          this.loadingTransfer = false;
         });
       } catch (error) {
-        // eslint-disable-next-line
+        this.loadingTransfer = false;
         console.error("Error transferring student assessments:", error);
         this.snackbarStore.showSnackbar(
           "Failed to transfer student assessments",
@@ -462,6 +466,9 @@ export default {
     },
     getAssessmentDisplay(assessmentStudentID) {
       const assessmentStudent = this.assessmentsToTransfer.find(x => x.assessmentStudentID === assessmentStudentID);
+      if(!assessmentStudent) {
+        return null;
+      }
       return assessmentStudent.assessmentType?.label + " " + assessmentStudent.sessionDate;
     }
   },

@@ -243,6 +243,19 @@ export default {
   dataArrayExists(array) {
     return !!array && array.length > 0;
   },
+  getTodaysDate(){
+    const now = new Date()
+    const options = { timeZone: 'America/Vancouver', year: 'numeric', month: '2-digit', day: '2-digit' }
+    const formatter = new Intl.DateTimeFormat('en-CA', options)
+    const [{ value: year },,{ value: month },,{ value: day }] = formatter.formatToParts(now)
+    const todayPST = `${year}-${month}-${day}`
+    return {
+      currentDate: todayPST,
+      currentMonth: month,
+      currentYear: year,
+
+    }
+  },
   getTimeDifference(startTime, endTime) {
     let startDateTime = new Date(startTime);
     let endDateTime = new Date(endTime);
@@ -255,7 +268,7 @@ export default {
   },
   formatStudentName(profile, showPEN = true, showMiddle = true) {
     if (profile) {
-      let formattedName = `${profile.legalLastName}, ${profile.legalFirstName}`;
+      let formattedName = `${profile.legalLastName ?? ''}${!!profile.legalLastName && !!profile.legalFirstName ? ',' : ''} ${profile.legalFirstName ?? ''}`;
       if (showPEN) {
         formattedName = `${profile.pen} - ` + formattedName;
       }
