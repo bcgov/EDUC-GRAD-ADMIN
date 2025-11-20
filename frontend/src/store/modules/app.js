@@ -148,7 +148,7 @@ export const useAppStore = defineStore("app", {
       return state.config?.CRUD_ENABLED;
     },
     showLegacy: (state) => {
-      return state.config?.SHOW_LEGACY; // used to flip pre-crud flags on/off
+      return state.config?.SHOW_LEGACY; // used to flip pre-crud components on/off
     },
     getCurrentDate: (state) => state.currentDate,
   },
