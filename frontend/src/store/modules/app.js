@@ -3,7 +3,6 @@ import { defineStore } from "pinia";
 import CommonService from "@/services/CommonService.js";
 import SchoolsService from "@/services/SchoolsService.js";
 import CodesService from "@/services/CodesService.js";
-import BatchProcessingService from "@/services/BatchProcessingService.js";
 
 import { useSnackbarStore } from "../../store/modules/snackbar";
 
@@ -33,6 +32,9 @@ export const useAppStore = defineStore("app", {
     provincialSpecialCaseCodes: [],
     assessmentTypeCodesMap: new Map(),
     assessmentTypeCodes: [],
+    currentDate: "",
+    currentMonth: "",
+    currentYear: "",
   }),
   getters: {
     appEnvironment: (state) =>
@@ -148,11 +150,19 @@ export const useAppStore = defineStore("app", {
     showLegacy: (state) => {
       return state.config?.SHOW_LEGACY; // used to flip pre-crud flags on/off
     },
+    getCurrentDate: (state) => state.currentDate,
   },
   actions: {
+    async setCurrentDate() {
+      const currentDateObject = sharedMethods.getTodaysDate();
+      this.currentDate = currentDateObject.currentDate;
+      this.currentMonth = currentDateObject.currentMonth;
+      this.currentYear = currentDateObject.currentYear;
+    },
     async setApplicationVariables() {
       try {
         if (localStorage.getItem("jwtToken")) {
+          await this.setCurrentDate();
           // GET & SET CONFIG
           await this.getConfig();
           // GET & SET GRAD CODES
@@ -176,6 +186,7 @@ export const useAppStore = defineStore("app", {
           await this.getInstituteCategoryCodes();
           await this.getInstituteFacilityCodes();
           await this.getProvincialSpecialCaseCodes();
+          // set current date string
         }
       } catch (e) {
         if (e.response.status) {
