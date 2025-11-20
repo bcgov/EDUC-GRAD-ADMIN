@@ -3,7 +3,6 @@ import { defineStore } from "pinia";
 import CommonService from "@/services/CommonService.js";
 import SchoolsService from "@/services/SchoolsService.js";
 import CodesService from "@/services/CodesService.js";
-import BatchProcessingService from "@/services/BatchProcessingService.js";
 
 import { useSnackbarStore } from "../../store/modules/snackbar";
 
@@ -147,6 +146,9 @@ export const useAppStore = defineStore("app", {
     getCertificateTypes: (state) => state.certificationTypes,
     enableCRUD: (state) => {
       return state.config?.CRUD_ENABLED;
+    },
+    showLegacy: (state) => {
+      return state.config?.SHOW_LEGACY; // used to flip pre-crud components on/off
     },
     getCurrentDate: (state) => state.currentDate,
   },

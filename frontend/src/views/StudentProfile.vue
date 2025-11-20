@@ -108,13 +108,10 @@
             <v-window-item value="gradStatusTab">
               <v-tabs v-model="selectedTab" bg-color="bcGovLightGrey">
                 <v-tab value="GRAD" class="text-none">GRAD</v-tab>
-                <v-tab
-                  value="CoursesLegacy"
-                  class="text-none"
-                  v-if="!enableCRUD"
+                <v-tab value="CoursesLegacy" class="text-none" v-if="showLegacy"
                   >Courses ({{ coursesLegacy.length }})</v-tab
                 >
-                <v-tab value="Courses" class="text-none" v-else-if="enableCRUD"
+                <v-tab value="Courses" class="text-none" v-if="enableCRUD"
                   >Courses ({{ courses.length }})
                   <p class="text-caption font-weight-bold text-bcGovGold">
                     BETA
@@ -123,13 +120,13 @@
                 <v-tab
                   value="AssessmentsLegacy"
                   class="text-none"
-                  v-if="!enableCRUD"
+                  v-if="showLegacy"
                   >Assessments ({{ assessmentsLegacy.length }})</v-tab
                 >
                 <v-tab
                   value="Assessments"
                   class="text-none"
-                  v-else-if="
+                  v-if="
                     hasPermissions('STUDENT', 'studentAssessmentUpdate') &&
                     enableCRUD
                   "
@@ -138,10 +135,10 @@
                     BETA
                   </p>
                 </v-tab>
-                <v-tab value="ExamsLegacy" class="text-none" v-if="!enableCRUD"
+                <v-tab value="ExamsLegacy" class="text-none" v-if="showLegacy"
                   >Exams Details ({{ examsLegacy.length }})</v-tab
                 >
-                <v-tab value="Exams" class="text-none" v-else-if="enableCRUD"
+                <v-tab value="Exams" class="text-none" v-if="enableCRUD"
                   >Exams ({{ exams.length }})
                   <p class="text-caption font-weight-bold text-bcGovGold">
                     BETA
@@ -895,6 +892,7 @@ export default {
     ...mapState(useAppStore, {
       ungradReasons: "ungradReasons",
       enableCRUD: "enableCRUD",
+      showLegacy: "showLegacy",
     }),
     ...mapState(useStudentStore, {
       profile: "getStudentProfile",
