@@ -224,6 +224,7 @@ export default {
     },
     clearInput: function () {
       this.searchResults = [];
+      assessmentSearchStore().clearSearchParams();
     },
     isEmpty(obj) {
       let isEmpty = true;
