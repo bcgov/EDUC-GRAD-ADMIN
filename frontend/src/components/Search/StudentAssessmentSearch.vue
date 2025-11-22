@@ -19,7 +19,7 @@
           <v-btn
             prepend-icon="mdi-magnify"
             id="adv-search-submit"
-            v-on:click=""
+            v-on:click="search"
             :loading="advancedSearchLoading"
             :disabled="advancedSearchLoading"
             variant="flat"
@@ -198,6 +198,17 @@ export default {
     }),
   },
   methods: {
+    search() {
+      const searchKeys = Object.keys(this.searchParams).filter(k => (this.searchParams[k] && this.searchParams[k].length !== 0));
+      let searchFilters;
+      if (searchKeys?.length > 0) {
+        searchFilters = {};
+        searchKeys.forEach(element => {
+          searchFilters[element] = this.searchParams[element];
+        });
+      console.log(`You want to search on... ${JSON.stringify(searchFilters)}`);
+      }
+    },
     convertToInstituteSchools: function () {
       // Create a map from schoolRecords for faster lookup
       const schoolIdMap = new Map(
