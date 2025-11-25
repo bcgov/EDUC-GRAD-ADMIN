@@ -1,21 +1,5 @@
 import {defineStore} from 'pinia';
 
-const getDefaultAdvancedSearchCriteria = () => {
-    return {
-        startDate: {
-            year: null,
-            month: null,
-            day: null
-        },
-        endDate: {
-            year: null,
-            month: null,
-            day: null
-        },
-        useDateRange: false,
-    };
-};
-
 export const assessmentSearchStore = defineStore('assessmentSearch', {
     namespaced: true,
     state: () => ({
@@ -26,28 +10,34 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
             currentSortAsc: true
         },
         selectedRecords: [],
-        advancedSearchCriteria: getDefaultAdvancedSearchCriteria(),
         searchParams: {
-            assessmentCode: null,
+            assessmentTypeCode: null,
             assessmentSession: {
-                from: null,
-                to: null
+                startDate: {
+                    year: null,
+                    month: null,
+                    day: null
+                },
+                endDate: {
+                    year: null,
+                    month: null,
+                    day: null
+                },
+                useDateRange: false,
             },
             schoolOfRecord: null,
             schoolOfRecordAtWrite: null,
             grade: null,
             proficiencyScore: null,
             specialCase: null,
-            wroteFlag: null
+            wroteFlag: null,
+            pen: null
         },
         assessmentSearchResponse: null
     }),
     getters: {
     },
     actions: {
-        async setIsAdvancedSearch(isAdvancedSearch) {
-            this.isAdvancedSearch = isAdvancedSearch;
-        },
         async setPageNumber(pageNumber) {
             this.pageNumber = pageNumber;
         },
@@ -56,9 +46,6 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
         },
         async setAssessmentSearchResponse(assessmentSearchResponse){
             this.assessmentSearchResponse = assessmentSearchResponse;
-        },
-        async setAdvancedSearchCriteria(advancedSearchCriteria) {
-            this.advancedSearchCriteria = advancedSearchCriteria;
         },
         async setSearchParams(searchParams) {
             this.searchParams = searchParams;
@@ -72,19 +59,28 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
             }
         },
         async clearSearchParams() {
-            this.advancedSearchCriteria = getDefaultAdvancedSearchCriteria();
             this.searchParams = {
-                assessmentCode: null,
+                assessmentTypeCode: null,
                 assessmentSession: {
-                    from: null,
-                    to: null
+                    startDate: {
+                        year: null,
+                        month: null,
+                        day: null
+                    },
+                    endDate: {
+                        year: null,
+                        month: null,
+                        day: null
+                    },
+                    useDateRange: false,
                 },
                 schoolOfRecord: null,
                 schoolOfRecordAtWrite: null,
                 grade: null,
                 proficiencyScore: null,
                 specialCase: null,
-                wroteFlag: null
+                wroteFlag: null,
+                pen: null
             };
         },
         async clearSearchResults() {
