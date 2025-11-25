@@ -4,13 +4,105 @@
       <v-row class="mt-1">
         <div class="assessment-search-field col-12 col-md-2">
           <v-text-field id="assessment-code"
-            label="Pen"
+            label="Assessment Code"
             variant="outlined"
             density="compact"
             class="form__input"
-            v-model.trim="searchParams.pen"
+            v-model.trim="searchParams.assessmentTypeCode"
             v-on:keyup="keyHandler"
             tabindex="0"
+          />
+        </div>
+        <div class="assessment-search-field col-12 col-md-2">
+          <v-text-field id="assessment-session-from"
+                        label="Assessment Session From"
+                        variant="outlined"
+                        density="compact"
+                        class="form__input"
+                        v-model.trim="searchParams.assessmentSession.startDate"
+                        v-on:keyup="keyHandler"
+                        tabindex="1"
+          />
+        </div>
+          <div class="assessment-search-field col-12 col-md-2">
+            <v-text-field id="assessment-session-to"
+                          label="Assessment Session To"
+                          variant="outlined"
+                          density="compact"
+                          class="form__input"
+                          v-model.trim="searchParams.assessmentSession.endDate"
+                          v-on:keyup="keyHandler"
+                          tabindex="2"
+            />
+        </div>
+      </v-row>
+      <v-row class="mt-1">
+        <div class="assessment-search-field col-12 col-md-2">
+          <v-text-field id="school-of-record"
+                        label="School of Record"
+                        variant="outlined"
+                        density="compact"
+                        class="form__input"
+                        v-model.trim="searchParams.schoolOfRecordSchoolID"
+                        v-on:keyup="keyHandler"
+                        tabindex="0"
+          />
+        </div>
+        <div class="assessment-search-field col-12 col-md-2">
+          <v-text-field id="school-of-record-at-write"
+                        label="School of Record at Write"
+                        variant="outlined"
+                        density="compact"
+                        class="form__input"
+                        v-model.trim="searchParams.schoolAtWriteSchoolID"
+                        v-on:keyup="keyHandler"
+                        tabindex="0"
+          />
+        </div>
+        <div class="assessment-search-field col-12 col-md-2">
+          <v-text-field id="grade"
+                        label="Grade"
+                        variant="outlined"
+                        density="compact"
+                        class="form__input"
+                        v-model.trim="searchParams.gradeAtRegistration"
+                        v-on:keyup="keyHandler"
+                        tabindex="0"
+          />
+        </div>
+      </v-row>
+      <v-row class="mt-1">
+        <div class="assessment-search-field col-12 col-md-2">
+          <v-text-field id="proficiency-score"
+                        label="Proficiency Score"
+                        variant="outlined"
+                        density="compact"
+                        class="form__input"
+                        v-model.trim="searchParams.proficiencyScore"
+                        v-on:keyup="keyHandler"
+                        tabindex="0"
+          />
+        </div>
+        <div class="assessment-search-field col-12 col-md-2">
+          <v-text-field id="special-case"
+                        label="Spencial Case"
+                        variant="outlined"
+                        density="compact"
+                        class="form__input"
+                        v-model.trim="searchParams.provincialSpecialCaseCode"
+                        v-on:keyup="keyHandler"
+                        tabindex="0"
+          />
+        </div>
+        <div class="assessment-search-field col-12 col-md-2">
+          <v-text-field id="wrote-flag"
+                        label="Wrote Flag"
+                        variant="outlined"
+                        density="compact"
+                        class="form__input"
+                        v-model.trim="searchParams.wroteFlag"
+                        v-on:keyup="keyHandler"
+                        tabindex="0"
           />
         </div>
       </v-row>

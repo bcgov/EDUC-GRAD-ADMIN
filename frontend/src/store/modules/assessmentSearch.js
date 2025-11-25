@@ -25,13 +25,12 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
                 },
                 useDateRange: false,
             },
-            schoolOfRecord: null,
-            schoolOfRecordAtWrite: null,
-            grade: null,
+            schoolOfRecordSchoolID: null,
+            schoolAtWriteSchoolID: null,
+            gradeAtRegistration: null,
             proficiencyScore: null,
-            specialCase: null,
-            wroteFlag: null,
-            pen: null
+            provincialSpecialCaseCode: null,
+            wroteFlag: null
         },
         assessmentSearchResponse: null
     }),
@@ -74,13 +73,12 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
                     },
                     useDateRange: false,
                 },
-                schoolOfRecord: null,
-                schoolOfRecordAtWrite: null,
-                grade: null,
+                schoolOfRecordSchoolID: null,
+                schoolAtWriteSchoolID: null,
+                gradeAtRegistration: null,
                 proficiencyScore: null,
-                specialCase: null,
-                wroteFlag: null,
-                pen: null
+                provincialSpecialCaseCode: null,
+                wroteFlag: null
             };
         },
         async clearSearchResults() {
