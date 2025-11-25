@@ -127,6 +127,8 @@ async function getStudentAssessmentPaginated(req, res) {
         searchCriteriaList: JSON.stringify(search),
       },
     };
+    // TODO: remove console log
+    console.log(`Params=${JSON.stringify(params)}`);
     let data = await getCommonServiceData(
       `${
         config.get("server:studentAssessmentAPIURL") + API_BASE_ROUTE
