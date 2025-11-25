@@ -137,7 +137,8 @@ const getPaginatedStudentAssessmentSchema = object({
     pageNumber: number().integer().required(),
     pageSize: number().integer().required(),
     searchParams: object({
-      studentId: uuidGeneric().required(),
+      studentId: uuidGeneric().optional(),
+      pen: string().optional()
     })
       .required()
       .noUnknown(),

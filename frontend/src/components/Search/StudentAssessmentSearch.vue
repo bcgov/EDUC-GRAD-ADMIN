@@ -4,11 +4,11 @@
       <v-row class="mt-1">
         <div class="assessment-search-field col-12 col-md-2">
           <v-text-field id="assessment-code"
-            label="Assessment Code"
+            label="Pen"
             variant="outlined"
             density="compact"
             class="form__input"
-            v-model.trim="searchParams.assessmentCode"
+            v-model.trim="searchParams.pen"
             v-on:keyup="keyHandler"
             tabindex="0"
           />
@@ -88,6 +88,8 @@ import { mapState } from "pinia";
 import { useAppStore } from "@/store/modules/app";
 import DisplayTable from "@/components/DisplayTable.vue";
 import {assessmentSearchStore} from "@/store/modules/assessmentSearch";
+import StudentAssessmentService from "@/services/StudentAssessmentService";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 
 export default {
   name: "StudentAssessmentSearch",
@@ -95,6 +97,8 @@ export default {
     DisplayTable: DisplayTable,
   },
   setup() {
+    const snackbarStore = useSnackbarStore();
+    return { snackbarStore };
   },
   data() {
     return {
@@ -191,7 +195,7 @@ export default {
   validations() {},
   created() {},
   computed: {
-    ...mapState(assessmentSearchStore, ['pageNumber', 'headerSortParams', 'assessmentSearchResponse', 'isAdvancedSearch', 'searchParams', 'advancedSearchCriteria']),
+    ...mapState(assessmentSearchStore, ['pageNumber', 'headerSortParams', 'assessmentSearchResponse', 'searchParams']),
     ...mapState(useAppStore, {
       getSchoolsList: "getSchoolsList",
       displaySchoolCategoryCode: "displaySchoolCategoryCode",
@@ -200,16 +204,44 @@ export default {
   methods: {
     search() {
       const searchKeys = Object.keys(this.searchParams).filter(k => (this.searchParams[k] && this.searchParams[k].length !== 0));
-      let searchFilters;
+      let searchParams;
       if (searchKeys?.length > 0) {
-        searchFilters = {};
+        searchParams = {};
         searchKeys.forEach(element => {
-          searchFilters[element] = this.searchParams[element];
+          if(element === 'assessmentSession'){
+            // TODO expand when we get to this
+            return;
+          }
+          searchParams[element] = this.searchParams[element];
         });
-      console.log(`You want to search on... ${JSON.stringify(searchFilters)}`);
+      console.log(`You want to search on... ${JSON.stringify(searchParams)}`);
+      let sort = {
+        //updateDate: "DESC",
+      };
+      StudentAssessmentService.getStudentAssessmentsBySearchCriteria(
+          searchParams,
+          sort,
+          1,
+          1000
+      )
+          .then((response) => {
+            console.log(response.data);
+          })
+          .catch((error) => {
+            if (error?.response?.status) {
+              this.snackbarStore.showSnackbar(
+                  "ERROR " + error?.response?.statusText,
+                  "error",
+                  10000,
+                  "There was an error with the Student Service (getting the Student Course History): " +
+                  error?.response?.status
+              );
+            }
+          });
       }
     },
     convertToInstituteSchools: function () {
+      // TODO: Move this to a utility
       // Create a map from schoolRecords for faster lookup
       const schoolIdMap = new Map(
         this.getSchoolsList.map((school) => [school.schoolId, school])
