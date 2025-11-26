@@ -204,42 +204,42 @@ export default {
           class: "w-1",
         },
         {
-          key: "legalLastName",
+          key: "surname",
           title: "Surname",
           sortable: true,
           editable: false,
           class: "w-1",
         },
         {
-          key: "legalFirstName",
+          key: "givenName",
           title: "Given Name",
           sortable: true,
           editable: false,
           class: "w-1",
         },
         {
-          key: "grade",
+          key: "gradeAtRegistration",
           title: "Grade",
           sortable: true,
           editable: false,
           class: "w-1",
         },
         {
-          key: "schoolOfRecord",
+          key: "schoolOfRecordSchoolID",
           title: "School of Record",
           sortable: true,
           editable: false,
           class: "w-1",
         },
         {
-          key: "schoolAtWrite",
+          key: "schoolAtWriteSchoolID",
           title: "School at Write",
           sortable: true,
           editable: false,
           class: "w-1",
         },
         {
-          key: "assessmentCode",
+          key: "assessmentTypeCode",
           title: "Assessment Code",
           sortable: true,
           editable: false,
@@ -260,7 +260,7 @@ export default {
           class: "w-1",
         },
         {
-          key: "specialCase",
+          key: "provincialSpecialCaseCode",
           title: "Special Case",
           sortable: true,
           editable: false,
@@ -311,6 +311,14 @@ export default {
           5
       )
           .then((response) => {
+            if(response.data){
+              this.advancedSearchLoading = false;
+              this.responseContent = response.data;
+              this.searchResults =
+                  this.responseContent?.content;
+            }
+
+
             console.log(response.data);
           })
           .catch((error) => {
