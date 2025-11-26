@@ -80,7 +80,7 @@
         </div>
         <div class="assessment-search-field col-12 col-md-2">
           <v-text-field id="special-case"
-            label="Spencial Case"
+            label="Special Case"
             variant="outlined"
             density="compact"
             class="form__input"
@@ -176,6 +176,7 @@ import DisplayTable from "@/components/DisplayTable.vue";
 import {assessmentSearchStore} from "@/store/modules/assessmentSearch";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import schoolsService from "@/services/SchoolsService";
 
 export default {
   name: "StudentAssessmentSearch",
@@ -289,6 +290,7 @@ export default {
   },
   methods: {
     search() {
+      // TODO validate fields
       const searchKeys = Object.keys(this.searchParams).filter(k => (this.searchParams[k] && this.searchParams[k].length !== 0));
       let searchParams;
       if (searchKeys?.length > 0) {
@@ -307,8 +309,8 @@ export default {
       StudentAssessmentService.getStudentAssessmentsBySearchCriteria(
           searchParams,
           sort,
-          1,
-          5
+          this.selectedPage,
+          this.resultsPerPage
       )
           .then((response) => {
             if(response.data){
@@ -316,6 +318,7 @@ export default {
               this.responseContent = response.data;
               this.searchResults =
                   this.responseContent?.content;
+              this.convertSchoolIDsToMincodes();
             }
 
 
@@ -334,24 +337,14 @@ export default {
           });
       }
     },
-    convertToInstituteSchools: function () {
-      // TODO: Move this to a utility
-      // Create a map from schoolRecords for faster lookup
-      const schoolIdMap = new Map(
-        this.getSchoolsList.map((school) => [school.schoolId, school])
-      );
-
-      // Iterate through each student record
+    convertSchoolIDsToMincodes: function () {
       this.searchResults.forEach((student) => {
-        const schoolOfRecordId = student.schoolOfRecordId;
-        if (schoolIdMap.has(schoolOfRecordId)) {
-          const school = schoolIdMap.get(schoolOfRecordId);
-          student.schoolOfRecordName = school.displayName; // Update schoolOfRecordName
-          student.mincode = school.mincode; // Update mincode
-          student.schoolCategoryCode = this.displaySchoolCategoryCode(
-            school.schoolCategoryCode
-          ); // Add schoolCategoryCode
-        }
+        student.schoolOfRecordSchoolID =
+            schoolsService.schoolIdToMincode(student.schoolOfRecordSchoolID)
+            ?? student.schoolOfRecordSchoolID;
+        student.schoolAtWriteSchoolID =
+            schoolsService.schoolIdToMincode(student.schoolAtWriteSchoolID)
+            ?? student.schoolAtWriteSchoolID;
       });
     },
     keyHandler: function (e) {
