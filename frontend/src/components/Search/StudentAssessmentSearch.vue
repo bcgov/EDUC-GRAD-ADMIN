@@ -37,14 +37,53 @@
       </v-row>
       <v-row class="mt-1">
         <div class="assessment-search-field col-12 col-md-2">
-          <v-text-field id="school-of-record"
+          <!--<v-text-field id="school-of-record"
               label="School of Record"
               variant="outlined"
               density="compact"
               class="form__input"
               v-model.trim="searchParams.schoolOfRecordSchoolID"
               v-on:keyup="keyHandler"
-          />
+          />-->
+          <v-autocomplete
+              data-cy="school-of-record-autoselect"
+              v-model="searchParams.schoolOfRecordSchoolID"
+              label="Select a school"
+              :items="getSchoolsList"
+              :item-title="schoolTitle"
+              item-value="schoolId"
+              variant="outlined"
+              density="compact"
+              class="form__input"
+          >
+            <template v-slot:label="label">
+              {{ label.label }}
+            </template>
+            <template v-slot:append-inner>
+              <OpenStatusBadge
+                  v-if="searchParams.schoolOfRecordSchoolID"
+                  :compact="false"
+                  :openedDateString="
+                          getSchoolById(searchParams.schoolOfRecordSchoolID)
+                            ?.openedDate
+                        "
+                  :closedDateString="
+                          getSchoolById(searchParams.schoolOfRecordSchoolID)
+                            ?.closedDate
+                        "
+              />
+            </template>
+            <template v-slot:item="{ props, item }">
+              <v-list-item v-bind="props" :key="item.value">
+                <template v-slot:append>
+                  <OpenStatusBadge
+                      :openedDateString="item.raw.openedDate"
+                      :closedDateString="item.raw.closedDate"
+                  />
+                </template>
+              </v-list-item>
+            </template>
+          </v-autocomplete>
         </div>
         <div class="assessment-search-field col-12 col-md-2">
           <v-text-field id="school-of-record-at-write"
@@ -167,10 +206,12 @@ import {assessmentSearchStore} from "@/store/modules/assessmentSearch";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import schoolsService from "@/services/SchoolsService";
+import OpenStatusBadge from "@/components/Common/OpenStatusBadge.vue";
 
 export default {
   name: "StudentAssessmentSearch",
   components: {
+    OpenStatusBadge,
     DisplayTable: DisplayTable,
   },
   setup() {
@@ -275,6 +316,7 @@ export default {
     ...mapState(useAppStore, {
       getSchoolsList: "getSchoolsList",
       displaySchoolCategoryCode: "displaySchoolCategoryCode",
+      getSchoolById: "getSchoolById",
     }),
   },
   methods: {
@@ -320,8 +362,6 @@ export default {
                 );
               }
             }
-
-
             console.log(response.data);
           })
           .catch((error) => {
@@ -346,6 +386,14 @@ export default {
             schoolsService.schoolIdToMincode(student.schoolAtWriteSchoolID)
             ?? student.schoolAtWriteSchoolID;
       });
+    },
+    schoolTitle(item) {
+      // Customize this method to return the desired format
+      if (item) {
+        return `${item.mincode} - ${item.displayName}`;
+      } else {
+        return null;
+      }
     },
     keyHandler: function (e) {
       if (e.keyCode === 13) {
