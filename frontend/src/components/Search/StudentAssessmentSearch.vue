@@ -106,8 +106,8 @@
             prepend-icon="mdi-magnify"
             id="adv-search-submit"
             v-on:click="search"
-            :loading="advancedSearchLoading"
-            :disabled="advancedSearchLoading"
+            :loading="searchLoading"
+            :disabled="searchLoading"
             variant="flat"
             color="primary"
             class="text-none"
@@ -132,18 +132,8 @@
         variant="tonal"
         border="start"
         class="mt-8 mb-2 ml-1 py-3 width-fit-content"
-        v-if="advancedSearchMessage && advancedSearchAPIMessage"
-        :text="`${advancedSearchMessage}\n${advancedSearchAPIMessage}`"
-      ></v-alert>
-    </div>
-    <div v-else>
-      <v-alert
-        type="error"
-        variant="tonal"
-        border="start"
-        class="mt-8 mb-2 ml-1 py-3 width-fit-content"
-        v-if="advancedSearchAPIMessage"
-        :text="advancedSearchAPIMessage"
+        v-if="searchMessage"
+        :text="`${searchMessage}`"
       ></v-alert>
     </div>
 
@@ -189,7 +179,6 @@ export default {
   },
   data() {
     return {
-      advancedSearchAPIMessage: "",
       searchResults: [],
       searchResultsFields: [
         {
@@ -272,9 +261,9 @@ export default {
       resultsPerPage: 25,
       totalPages: "",
       selectedPage: 1,
-      advancedSearchMessage: "",
+      searchMessage: "",
       errorMessage: "",
-      advancedSearchLoading: false,
+      searchLoading: false,
       showAdvancedSearchForm: false,
     };
   },
@@ -302,7 +291,7 @@ export default {
           }
           searchParams[element] = this.searchParams[element];
         });
-      console.log(`You want to search on... ${JSON.stringify(searchParams)}`);
+      //console.log(`You want to search on... ${JSON.stringify(searchParams)}`);
       let sort = {
         //updateDate: "DESC",
       };
@@ -314,11 +303,22 @@ export default {
       )
           .then((response) => {
             if(response.data){
-              this.advancedSearchLoading = false;
+              this.searchLoading = false;
               this.responseContent = response.data;
               this.searchResults =
                   this.responseContent?.content;
               this.convertSchoolIDsToMincodes();
+              this.totalElements = this.responseContent.totalElements;
+              this.totalPages = this.responseContent.totalPages;
+              if (this.totalElements > 0) {
+                this.searchMessage = (this.responseContent.totalElements === 1) ? "1 student record found. ": this.totalElements + " student records found. ";
+              } else {
+                this.snackbarStore.showSnackbar(
+                    "There are [0] more matches on PEN. Please refine your search criteria",
+                    "error",
+                    5000
+                );
+              }
             }
 
 
