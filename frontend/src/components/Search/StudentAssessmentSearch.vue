@@ -2,7 +2,7 @@
   <div class="assessment-search-form mb-4">
     <v-form v-on:submit.prevent>
       <v-row class="mt-1">
-        <div class="assessment-search-field col-12 col-md-2">
+        <div class="assessment-search-field col-12 col-md-3">
           <v-text-field id="assessment-code"
             label="Assessment Code"
             variant="outlined"
@@ -12,7 +12,7 @@
             v-on:keyup="keyHandler"
           />
         </div>
-        <div class="assessment-search-field col-12 col-md-2">
+        <div class="assessment-search-field col-12 col-md-3">
           <v-text-field id="assessment-session-from"
             label="Assessment Session From"
             variant="outlined"
@@ -23,7 +23,7 @@
             disabled
           />
         </div>
-          <div class="assessment-search-field col-12 col-md-2">
+          <div class="assessment-search-field col-12 col-md-3">
             <v-text-field id="assessment-session-to"
               label="Assessment Session To"
               variant="outlined"
@@ -36,66 +36,25 @@
         </div>
       </v-row>
       <v-row class="mt-1">
-        <div class="assessment-search-field col-12 col-md-2">
-          <!--<v-text-field id="school-of-record"
-              label="School of Record"
-              variant="outlined"
-              density="compact"
-              class="form__input"
-              v-model.trim="searchParams.schoolOfRecordSchoolID"
-              v-on:keyup="keyHandler"
-          />-->
-          <v-autocomplete
-              data-cy="school-of-record-autoselect"
+        <div class="assessment-search-field col-12 col-md-3">
+          <SchoolSelect
               v-model="searchParams.schoolOfRecordSchoolID"
-              label="Select a school"
+              :disabled="false"
+              label="Select school of record"
               :items="getSchoolsList"
               :item-title="schoolTitle"
-              item-value="schoolId"
-              variant="outlined"
-              density="compact"
-              class="form__input"
-          >
-            <template v-slot:label="label">
-              {{ label.label }}
-            </template>
-            <template v-slot:append-inner>
-              <OpenStatusBadge
-                  v-if="searchParams.schoolOfRecordSchoolID"
-                  :compact="false"
-                  :openedDateString="
-                          getSchoolById(searchParams.schoolOfRecordSchoolID)
-                            ?.openedDate
-                        "
-                  :closedDateString="
-                          getSchoolById(searchParams.schoolOfRecordSchoolID)
-                            ?.closedDate
-                        "
-              />
-            </template>
-            <template v-slot:item="{ props, item }">
-              <v-list-item v-bind="props" :key="item.value">
-                <template v-slot:append>
-                  <OpenStatusBadge
-                      :openedDateString="item.raw.openedDate"
-                      :closedDateString="item.raw.closedDate"
-                  />
-                </template>
-              </v-list-item>
-            </template>
-          </v-autocomplete>
-        </div>
-        <div class="assessment-search-field col-12 col-md-2">
-          <v-text-field id="school-of-record-at-write"
-              label="School of Record at Write"
-              variant="outlined"
-              density="compact"
-              class="form__input"
-              v-model.trim="searchParams.schoolAtWriteSchoolID"
-              v-on:keyup="keyHandler"
           />
         </div>
-        <div class="assessment-search-field col-12 col-md-2">
+        <div class="assessment-search-field col-12 col-md-3">
+          <SchoolSelect
+              v-model="searchParams.schoolAtWriteSchoolID"
+              :disabled="false"
+              label="Select school of record"
+              :items="getSchoolsList"
+              :item-title="schoolTitle"
+          />
+        </div>
+        <div class="assessment-search-field col-12 col-md-3">
           <v-text-field id="grade"
               label="Grade"
               variant="outlined"
@@ -107,7 +66,7 @@
         </div>
       </v-row>
       <v-row class="mt-1">
-        <div class="assessment-search-field col-12 col-md-2">
+        <div class="assessment-search-field col-12 col-md-3">
           <v-text-field id="proficiency-score"
             label="Proficiency Score"
             variant="outlined"
@@ -117,7 +76,7 @@
             v-on:keyup="keyHandler"
           />
         </div>
-        <div class="assessment-search-field col-12 col-md-2">
+        <div class="assessment-search-field col-12 col-md-3">
           <v-text-field id="special-case"
             label="Special Case"
             variant="outlined"
@@ -127,7 +86,7 @@
             v-on:keyup="keyHandler"
           />
         </div>
-        <div class="assessment-search-field col-12 col-md-2">
+        <div class="assessment-search-field col-12 col-md-3">
           <v-text-field id="wrote-flag"
               label="Wrote Flag"
               variant="outlined"
@@ -207,10 +166,12 @@ import StudentAssessmentService from "@/services/StudentAssessmentService";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import schoolsService from "@/services/SchoolsService";
 import OpenStatusBadge from "@/components/Common/OpenStatusBadge.vue";
+import SchoolSelect from "@/components/Search/SchoolSelect.vue";
 
 export default {
   name: "StudentAssessmentSearch",
   components: {
+    SchoolSelect,
     OpenStatusBadge,
     DisplayTable: DisplayTable,
   },
