@@ -457,6 +457,7 @@ export default {
         })
         .finally(() => {
           this.isLoadingAssessments = false;
+          this.$emit("loadStudent");
         });
     },
     getAssessmentCenterSchoolDisplayName(schoolId) {

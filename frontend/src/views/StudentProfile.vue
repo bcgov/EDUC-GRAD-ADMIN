@@ -265,7 +265,10 @@
                       color="green"
                     >
                     </v-progress-circular>
-                    <StudentAssessments :student-id="studentId" />
+                    <StudentAssessments
+                        :student-id="studentId"
+                        @load-student="loadGraduationStatus(studentId)"
+                    />
                   </v-window-item>
                   <v-window-item
                     value="ExamsLegacy"
