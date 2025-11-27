@@ -124,7 +124,7 @@
         </div>
       </v-row>
     </v-form>
-    <div v-if="searchResults?.length > 0">
+    <div v-if="searchMessage">
       <v-alert
         type="success"
         variant="tonal"
@@ -136,7 +136,7 @@
     </div>
 
     <transition name="fade">
-      <div v-if="searchResults && hasSearched" class="table-responsive">
+      <div v-if="totalPages > 0 && hasSearched" class="table-responsive">
         <v-data-table-server
             v-model:items-per-page="itemsPerPage"
             :items-per-page-options="itemsPerPageOptions"
@@ -332,15 +332,7 @@ export default {
               this.convertSchoolIDsToMincodes();
               this.totalElements = this.responseContent.totalElements;
               this.totalPages = this.responseContent.totalPages;
-              if (this.totalElements > 0) {
-                this.searchMessage = (this.responseContent.totalElements === 1) ? "1 student record found. ": this.totalElements + " student records found. ";
-              } else {
-                this.snackbarStore.showSnackbar(
-                    "There are [0] more matches on PEN. Please refine your search criteria",
-                    "error",
-                    5000
-                );
-              }
+              this.searchMessage = (this.responseContent.totalElements === 1) ? "1 student record found. ": this.totalElements + " student records found. ";
             }
             console.log(response.data);
           })
@@ -384,6 +376,7 @@ export default {
     },
     clearInput: function () {
       this.searchResults = [];
+      this.searchMessage = "";
       this.hasSearched = false;
       assessmentSearchStore().clearSearchParams();
     },
