@@ -264,7 +264,10 @@
                       color="green"
                     >
                     </v-progress-circular>
-                    <StudentAssessments :student-id="studentId" />
+                    <StudentAssessments
+                        :student-id="studentId"
+                        @load-student="loadGraduationStatus(studentId)"
+                    />
                   </v-window-item>
                   <v-window-item
                     value="ExamsLegacy"
@@ -744,6 +747,7 @@ export default {
     };
   },
   async created() {
+    await this.getSchools(false);
     const studentIdFromURL = this.$route.params.studentId;
     StudentService.getStudentByID(studentIdFromURL)
       .then((response) => {
@@ -773,7 +777,6 @@ export default {
   async beforeMount() {
     // load store with items used in this view
     try {
-      await this.getSchools(false);
       await this.getDistricts(false);
       await this.getProgramOptions(false);
       await this.getUngradReasons(false);
@@ -1196,7 +1199,7 @@ export default {
         this.smallScreen = false;
       }
     },
-    loadStudent(studentIdFromURL) {
+    async loadStudent(studentIdFromURL) {
       this.loadStudentProfile();
       this.loadAssessmentsLegacy();
       if (
@@ -1205,7 +1208,7 @@ export default {
       ) {
         this.loadStudentAssessments(studentIdFromURL);
       }
-      this.loadGraduationStatus(studentIdFromURL);
+      await this.loadGraduationStatus(studentIdFromURL);
       this.loadStudentOptionalPrograms(studentIdFromURL);
       this.loadCareerPrograms(studentIdFromURL);
       this.loadStudentCourseAchievements();
@@ -1297,7 +1300,7 @@ export default {
         });
     },
     loadGraduationStatus(studentIdFromURL) {
-      StudentService.getGraduationStatus(studentIdFromURL)
+      return StudentService.getGraduationStatus(studentIdFromURL)
         .then((response) => {
           this.setStudentGradStatus(response.data);
         })
