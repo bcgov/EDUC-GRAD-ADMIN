@@ -24,7 +24,7 @@ env:
   APP_NAME: "educ-grad-admin"
   APP_NAME_BACKEND: "educ-grad-admin-backend"
   TARGET_ENV: "test"
-    
+
   MIN_CPU: "300m"
   MAX_CPU: "600m"
   MIN_MEM: "500Mi"
@@ -53,7 +53,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Install dependencies
         run: |
@@ -102,7 +102,7 @@ jobs:
           -p CA_CERT="${{ secrets.CA_CERT }}" \
           -p PRIVATE_KEY="${{ secrets.PRIVATE_KEY }}" \
           | oc apply -n ${{ env.OPENSHIFT_NAMESPACE }} -f -
-          
+
           # update configmap
           curl -s https://raw.githubusercontent.com/bcgov/${{ env.APP_NAME }}/refs/heads/main/tools/openshift/update-configmap-backend.sh | bash /dev/stdin \
           ${{ env.TARGET_ENV }} \
@@ -116,7 +116,7 @@ jobs:
           ${{ secrets.STUDENT_ADMIN_NAMESPACE }} \
           ${{ secrets.STUDENT_ASSESSMENT_NAMESPACE }} \
           ${{ secrets.SCHOLARSHIP_NAMESPACE}}
-          
+
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.APP_NAME_BACKEND }} 
 
