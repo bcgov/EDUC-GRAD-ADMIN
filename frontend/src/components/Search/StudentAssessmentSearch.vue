@@ -103,7 +103,7 @@
           <v-btn
             prepend-icon="mdi-magnify"
             id="adv-search-submit"
-            v-on:click="search"
+            v-on:click="onSearchClicked"
             :loading="searchLoading"
             :disabled="searchLoading"
             variant="flat"
@@ -136,22 +136,23 @@
     </div>
 
     <transition name="fade">
-      <div v-if="searchResults" class="table-responsive">
-        <DisplayTable
-          class="mt-12"
-          v-if="searchResults.length"
-          v-bind:items="searchResults"
-          title="Assessment Search Results"
-          v-bind:fields="searchResultsFields"
-          id="pen"
-          v-bind:showFilter="false"
+      <div v-if="searchResults && hasSearched" class="table-responsive">
+        <v-data-table-server
+            v-model:items-per-page="itemsPerPage"
+            :items-per-page-options="itemsPerPageOptions"
+            :headers="searchResultsHeaders"
+            :items="searchResults"
+            :items-length="totalElements"
+            :loading="searchLoading"
+            item-value="id"
+            @update:options="updateDataTable"
         >
           <template v-slot:item.pen="{ item }">
             <router-link :to="'/student-profile/' + item.studentID">
               {{ item.pen }}
             </router-link></template
           >
-        </DisplayTable>
+        </v-data-table-server>
       </div>
     </transition>
   </div>
@@ -182,7 +183,22 @@ export default {
   data() {
     return {
       searchResults: [],
-      searchResultsFields: [
+      currentPage: 1,
+      itemsPerPage: 10,
+      hasSearched: false,
+      itemsPerPageOptions: [
+        { title: "10", value: 10 },
+        { title: "25", value: 25 },
+        { title: "50", value: 50 },
+        { title: "100", value: 100 },
+      ],
+      totalPages: "",
+      searchMessage: "",
+      errorMessage: "",
+      searchLoading: false,
+      showAdvancedSearchForm: false,
+      totalElements: "",
+      searchResultsHeaders: [
         {
           key: "data-table-expand",
           title: "",
@@ -259,14 +275,6 @@ export default {
           class: "w-1",
         },
       ],
-      totalElements: "",
-      resultsPerPage: 25,
-      totalPages: "",
-      selectedPage: 1,
-      searchMessage: "",
-      errorMessage: "",
-      searchLoading: false,
-      showAdvancedSearchForm: false,
     };
   },
   watch: {},
@@ -281,7 +289,19 @@ export default {
     }),
   },
   methods: {
+    updateDataTable({ page }) {
+      this.currentPage = page;
+      this.search();
+    },
+    onSearchClicked(){
+      this.hasSearched = true;
+      this.search();
+    },
     search() {
+      if(!this.hasSearched){
+        return;
+      }
+      this.searchLoading = true;
       // TODO validate fields
       const searchKeys = Object.keys(this.searchParams).filter(k => (this.searchParams[k] && this.searchParams[k].length !== 0));
       let searchParams;
@@ -301,12 +321,11 @@ export default {
       StudentAssessmentService.getStudentAssessmentsBySearchCriteria(
           searchParams,
           sort,
-          this.selectedPage,
-          this.resultsPerPage
+          this.currentPage,
+          this.itemsPerPage
       )
           .then((response) => {
             if(response.data){
-              this.searchLoading = false;
               this.responseContent = response.data;
               this.searchResults =
                   this.responseContent?.content;
@@ -335,7 +354,9 @@ export default {
                   error?.response?.status
               );
             }
-          });
+          }).finally(() => {
+            this.searchLoading = false;
+      });
       }
     },
     convertSchoolIDsToMincodes: function () {
@@ -363,6 +384,7 @@ export default {
     },
     clearInput: function () {
       this.searchResults = [];
+      this.hasSearched = false;
       assessmentSearchStore().clearSearchParams();
     },
     isEmpty(obj) {
