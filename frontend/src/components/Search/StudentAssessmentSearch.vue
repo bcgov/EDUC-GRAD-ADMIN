@@ -10,11 +10,12 @@
             class="form__input"
             v-model.trim="searchParams.assessmentTypeCode"
             v-on:keyup="keyHandler"
+            clearable
           />
         </div>
         <div class="assessment-search-field col-12 col-md-2">
           <v-autocomplete
-              v-model="searchParams.assessmentSession.sessionIdStart"
+              v-model="searchParams.sessionIdStart"
               item-title="sessionDate"
               item-value="sessionID"
               :items="assessmentSessions"
@@ -38,7 +39,7 @@
         />
           <div v-if="searchParams.useSessionRange" class="assessment-search-field col-12 col-md-2">
             <v-autocomplete
-                v-model="searchParams.assessmentSession.sessionIdEnd"
+                v-model="searchParams.sessionIdEnd"
                 item-title="sessionDate"
                 item-value="sessionID"
                 :items="assessmentSessions"
@@ -78,6 +79,7 @@
               class="form__input"
               v-model.trim="searchParams.gradeAtRegistration"
               v-on:keyup="keyHandler"
+              clearable
           />
         </div>
       </v-row>
@@ -90,6 +92,7 @@
             class="form__input"
             v-model.trim="searchParams.proficiencyScore"
             v-on:keyup="keyHandler"
+            clearable
           />
         </div>
         <div class="assessment-search-field col-12 col-md-3">
@@ -100,6 +103,7 @@
             class="form__input"
             v-model.trim="searchParams.provincialSpecialCaseCode"
             v-on:keyup="keyHandler"
+            clearable
           />
         </div>
         <div class="assessment-search-field col-12 col-md-3">
@@ -111,6 +115,7 @@
               v-model.trim="searchParams.wroteFlag"
               v-on:keyup="keyHandler"
               disabled
+              clearable
           />
         </div>
       </v-row>
@@ -270,7 +275,7 @@ export default {
           class: "w-1",
         },
         {
-          key: "assessmentSession",
+          key: "sessionID",
           title: "Assessment Session",
           sortable: true,
           editable: false,
@@ -323,15 +328,20 @@ export default {
       this.searchLoading = true;
       // TODO validate fields
       const searchKeys = Object.keys(this.searchParams).filter(k => (this.searchParams[k] && this.searchParams[k].length !== 0));
+      console.log(JSON.stringify(searchKeys));
       let searchParams;
       if (searchKeys?.length > 0) {
         searchParams = {};
         searchKeys.forEach(element => {
-          if(element === 'assessmentSession'){
+          console.log(JSON.stringify(element));
+          if(element.toLowerCase().includes("session")){
             // TODO expand when we get to this
-            return;
+            if(element === 'sessionIdStart'){
+              searchParams['session'] = this.searchParams[element];
+            } else {
+              searchParams[element] = this.searchParams[element];
+            }
           }
-          searchParams[element] = this.searchParams[element];
         });
       //console.log(`You want to search on... ${JSON.stringify(searchParams)}`);
       let sort = {
@@ -349,6 +359,7 @@ export default {
               this.searchResults =
                   this.responseContent?.content;
               this.convertSchoolIDsToMincodes();
+              this.convertSessionIdsToSessionDates();
               this.totalElements = this.responseContent.totalElements;
               this.totalPages = this.responseContent.totalPages;
               this.searchMessage = (this.responseContent.totalElements === 1) ? "1 student record found. ": this.totalElements + " student records found. ";
@@ -371,6 +382,7 @@ export default {
       });
       }
     },
+
     async loadAssessmentSessions() {
       this.isLoadingSessions = true;
       try {
@@ -399,7 +411,17 @@ export default {
 
     onUseSessionRangeChanged(){
       // TODO add magic here
-      this.searchParams.assessmentSession.sessionIdEnd = null;
+      this.searchParams.sessionIdEnd = null;
+    },
+    convertSessionIdsToSessionDates: function () {
+      this.searchResults.forEach((student) => {
+        const session = this.assessmentSessions.find(
+            s => s.sessionID === student.sessionID
+        );
+        if (session) {
+          student.sessionID = session.sessionDate;
+        }
+      });
     },
     convertSchoolIDsToMincodes: function () {
       this.searchResults.forEach((student) => {

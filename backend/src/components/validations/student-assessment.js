@@ -139,6 +139,7 @@ const getPaginatedStudentAssessmentSchema = object({
     searchParams: object({
       studentId: uuidGeneric().optional(),
       assessmentTypeCode: string().optional(),
+      session: uuidGeneric().optional(),
       schoolOfRecordSchoolID: uuidGeneric().optional(),
       schoolAtWriteSchoolID: uuidGeneric().optional(),
       gradeAtRegistration: string().optional(),

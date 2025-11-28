@@ -12,12 +12,10 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
         selectedRecords: [],
         searchParams: {
             assessmentTypeCode: null,
-            assessmentSession: {
-                sessionIdStart: null,
-                sessionIdEnd: null,
-                sessionIdRange: [],
-                useSessionRange: false,
-            },
+            sessionIdStart: null,
+            sessionIdEnd: null,
+            sessionIdRange: [],
+            useSessionRange: false,
             schoolOfRecordSchoolID: null,
             schoolAtWriteSchoolID: null,
             gradeAtRegistration: null,
@@ -33,12 +31,10 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
         async clearSearchParams() {
             this.searchParams = {
                 assessmentTypeCode: null,
-                assessmentSession: {
-                    sessionIdStart: null,
-                    sessionIdEnd: null,
-                    sessionIdRange: [],
-                    useSessionRange: false,
-                },
+                sessionIdStart: null,
+                sessionIdEnd: null,
+                sessionIdRange: [],
+                useSessionRange: false,
                 schoolOfRecordSchoolID: null,
                 schoolAtWriteSchoolID: null,
                 gradeAtRegistration: null,
@@ -47,9 +43,5 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
                 wroteFlag: null
             };
         },
-        async clearSearchResults() {
-            this.selectedRecords = [];
-            this.assessmentSearchResponse = null;
-        }
     }
 });
