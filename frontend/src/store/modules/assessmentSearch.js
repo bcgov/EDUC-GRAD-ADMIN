@@ -13,17 +13,10 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
         searchParams: {
             assessmentTypeCode: null,
             assessmentSession: {
-                startDate: {
-                    year: null,
-                    month: null,
-                    day: null
-                },
-                endDate: {
-                    year: null,
-                    month: null,
-                    day: null
-                },
-                useDateRange: false,
+                sessionIdStart: null,
+                sessionIdEnd: null,
+                sessionIdRange: [],
+                useSessionRange: false,
             },
             schoolOfRecordSchoolID: null,
             schoolAtWriteSchoolID: null,
@@ -37,41 +30,14 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
     getters: {
     },
     actions: {
-        async setPageNumber(pageNumber) {
-            this.pageNumber = pageNumber;
-        },
-        async setSelectedRecords(selectedRecords) {
-            this.selectedRecords = selectedRecords || [];
-        },
-        async setAssessmentSearchResponse(assessmentSearchResponse){
-            this.assessmentSearchResponse = assessmentSearchResponse;
-        },
-        async setSearchParams(searchParams) {
-            this.searchParams = searchParams;
-        },
-        async updateSortParams(sortHeader){
-            if (sortHeader === this.headerSortParams.currentSort) {
-                this.headerSortParams.currentSortAsc = !this.headerSortParams.currentSortAsc;
-                this.pageNumber = 1;
-            } else {
-                this.headerSortParams.currentSort = sortHeader;
-            }
-        },
         async clearSearchParams() {
             this.searchParams = {
                 assessmentTypeCode: null,
+                sessionIdStart: null,
+                sessionIdEnd: null,
                 assessmentSession: {
-                    startDate: {
-                        year: null,
-                        month: null,
-                        day: null
-                    },
-                    endDate: {
-                        year: null,
-                        month: null,
-                        day: null
-                    },
-                    useDateRange: false,
+                    sessionIdRange: [],
+                    useSessionRange: false,
                 },
                 schoolOfRecordSchoolID: null,
                 schoolAtWriteSchoolID: null,

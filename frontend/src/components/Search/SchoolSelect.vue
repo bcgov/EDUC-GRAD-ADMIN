@@ -10,6 +10,7 @@
       variant="outlined"
       density="compact"
       class="form__input"
+      clearable
   >
 
     <template #label="slotProps">

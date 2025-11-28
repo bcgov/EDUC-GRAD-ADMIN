@@ -12,27 +12,43 @@
             v-on:keyup="keyHandler"
           />
         </div>
-        <div class="assessment-search-field col-12 col-md-3">
-          <v-text-field id="assessment-session-from"
-            label="Assessment Session From"
-            variant="outlined"
-            density="compact"
-            class="form__input"
-            v-model.trim="searchParams.assessmentSession.startDate"
-            v-on:keyup="keyHandler"
-            disabled
-          />
-        </div>
-          <div class="assessment-search-field col-12 col-md-3">
-            <v-text-field id="assessment-session-to"
-              label="Assessment Session To"
+        <div class="assessment-search-field col-12 col-md-2">
+          <v-autocomplete
+              v-model="searchParams.sessionIdStart"
+              item-title="sessionDate"
+              item-value="sessionID"
+              :items="assessmentSessions"
+              label="Session"
+              :loading="isLoadingSessions"
+              clearable
+              @update:model-value="updateAssessmentTypeDropdown"
               variant="outlined"
               density="compact"
-              class="form__input"
-              v-model.trim="searchParams.assessmentSession.endDate"
-              v-on:keyup="keyHandler"
-              disabled
-            />
+          ></v-autocomplete>
+        </div>
+        <v-checkbox
+            id="session-range-checkbox"
+            v-model="searchParams.useSessionRange"
+            class="ma-0 pa-0"
+            height="100%"
+            density="compact"
+            :label="searchParams.useSessionRange ? 'To:' : 'Use Range'"
+            color="#606060"
+            @update:model-value="onUseSessionRangeChanged"
+        />
+          <div v-if="searchParams.useSessionRange" class="assessment-search-field col-12 col-md-2">
+            <v-autocomplete
+                v-model="searchParams.sessionIdStart"
+                item-title="sessionDate"
+                item-value="sessionID"
+                :items="assessmentSessions"
+                label="Session"
+                :loading="isLoadingSessions"
+                clearable
+                @update:model-value="updateAssessmentTypeDropdown"
+                variant="outlined"
+                density="compact"
+            ></v-autocomplete>
         </div>
       </v-row>
       <v-row class="mt-1">
@@ -161,7 +177,6 @@
 <script>
 import { mapState } from "pinia";
 import { useAppStore } from "@/store/modules/app";
-import DisplayTable from "@/components/DisplayTable.vue";
 import {assessmentSearchStore} from "@/store/modules/assessmentSearch";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
 import { useSnackbarStore } from "@/store/modules/snackbar";
@@ -174,7 +189,6 @@ export default {
   components: {
     SchoolSelect,
     OpenStatusBadge,
-    DisplayTable: DisplayTable,
   },
   setup() {
     const snackbarStore = useSnackbarStore();
@@ -183,6 +197,7 @@ export default {
   data() {
     return {
       searchResults: [],
+      assessmentSessions: [],
       currentPage: 1,
       itemsPerPage: 10,
       hasSearched: false,
@@ -196,6 +211,7 @@ export default {
       searchMessage: "",
       errorMessage: "",
       searchLoading: false,
+      isLoadingSessions: true,
       showAdvancedSearchForm: false,
       totalElements: "",
       searchResultsHeaders: [
@@ -288,6 +304,9 @@ export default {
       getSchoolById: "getSchoolById",
     }),
   },
+  async mounted() {
+    await this.loadAssessmentSessions();
+  },
   methods: {
     updateDataTable({ page }) {
       this.currentPage = page;
@@ -342,14 +361,45 @@ export default {
                   "ERROR " + error?.response?.statusText,
                   "error",
                   10000,
-                  "There was an error with the Student Service (getting the Student Course History): " +
+                  "There was an error with the Assessment Service: " +
                   error?.response?.status
               );
             }
-          }).finally(() => {
+          })
+          .finally(() => {
             this.searchLoading = false;
       });
       }
+    },
+    async loadAssessmentSessions() {
+      this.isLoadingSessions = true;
+      try {
+        const response = await StudentAssessmentService.getAssessmentSessions();
+        this.assessmentSessions = response.data.map(session => ({
+          sessionID: session.sessionID,
+          sessionDate: `${session.courseYear}-${session.courseMonth}`,
+          assessments: session.assessments.map(assessment => ({
+            assessmentID: assessment.assessmentID,
+            assessmentTypeCode: assessment.assessmentTypeCode
+          }))
+        }));
+      } catch(error) {
+        this.snackbarStore.showSnackbar(
+            "Failed to fetch assessment sessions",
+            "error",
+            5000
+        );
+      } finally {
+        this.isLoadingSessions = false;
+      }
+    },
+    updateAssessmentTypeDropdown($event) {
+
+    },
+
+    onUseSessionRangeChanged(){
+      // TODO add magic here
+
     },
     convertSchoolIDsToMincodes: function () {
       this.searchResults.forEach((student) => {
