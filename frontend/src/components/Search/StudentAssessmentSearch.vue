@@ -98,15 +98,20 @@
           />
         </div>
         <div class="assessment-search-field col-12 col-md-3">
-          <v-text-field id="special-case"
-            label="Special Case"
-            variant="outlined"
-            density="compact"
-            class="form__input"
-            v-model.trim="searchParams.provincialSpecialCaseCode"
-            v-on:keyup="keyHandler"
-            clearable
-          />
+          <v-autocomplete
+              id="special-case-code"
+              :items="provincialSpecialCaseCodes"
+              item-title="provincialSpecialCaseCode"
+              item-value="provincialSpecialCaseCode"
+              label="Special Case"
+              variant="outlined"
+              density="compact"
+              class="form__input"
+              v-model.trim="searchParams.provincialSpecialCaseCode"
+              v-on:keyup="keyHandler"
+              clearable
+          >
+          </v-autocomplete>
         </div>
         <div class="assessment-search-field col-12 col-md-3">
           <v-text-field id="wrote-flag"
@@ -315,6 +320,7 @@ export default {
     }),
   },
   async mounted() {
+    console.log('PROVINCIAL' + JSON.stringify(this.provincialSpecialCaseCodes));
     await this.loadAssessmentSessions();
   },
   methods: {
