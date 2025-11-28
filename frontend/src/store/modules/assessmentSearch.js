@@ -33,9 +33,9 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
         async clearSearchParams() {
             this.searchParams = {
                 assessmentTypeCode: null,
-                sessionIdStart: null,
-                sessionIdEnd: null,
                 assessmentSession: {
+                    sessionIdStart: null,
+                    sessionIdEnd: null,
                     sessionIdRange: [],
                     useSessionRange: false,
                 },

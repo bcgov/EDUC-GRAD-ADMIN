@@ -14,7 +14,7 @@
         </div>
         <div class="assessment-search-field col-12 col-md-2">
           <v-autocomplete
-              v-model="searchParams.sessionIdStart"
+              v-model="searchParams.assessmentSession.sessionIdStart"
               item-title="sessionDate"
               item-value="sessionID"
               :items="assessmentSessions"
@@ -38,7 +38,7 @@
         />
           <div v-if="searchParams.useSessionRange" class="assessment-search-field col-12 col-md-2">
             <v-autocomplete
-                v-model="searchParams.sessionIdStart"
+                v-model="searchParams.assessmentSession.sessionIdEnd"
                 item-title="sessionDate"
                 item-value="sessionID"
                 :items="assessmentSessions"
@@ -399,7 +399,7 @@ export default {
 
     onUseSessionRangeChanged(){
       // TODO add magic here
-
+      this.searchParams.assessmentSession.sessionIdEnd = null;
     },
     convertSchoolIDsToMincodes: function () {
       this.searchResults.forEach((student) => {
