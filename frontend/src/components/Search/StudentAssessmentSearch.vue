@@ -3,15 +3,17 @@
     <v-form v-on:submit.prevent>
       <v-row class="mt-1">
         <div class="assessment-search-field col-12 col-md-3">
-          <v-text-field id="assessment-code"
-            label="Assessment Code"
-            variant="outlined"
-            density="compact"
-            class="form__input"
-            v-model.trim="searchParams.assessmentTypeCode"
-            v-on:keyup="keyHandler"
-            clearable
-          />
+          <v-autocomplete id="assessment-code"
+              v-model="searchParams.assessmentTypeCode"
+              label="Assessment Code"
+              :items="assessmentTypeCodes"
+              item-title="assessmentTypeCode"
+              item-value="assessmentTypeCode"
+              variant="outlined"
+              clearable
+              density="compact"
+              v-on:keyup="keyHandler"
+          ></v-autocomplete>
         </div>
         <div class="assessment-search-field col-12 col-md-2">
           <v-autocomplete
@@ -66,7 +68,7 @@
           <SchoolSelect
               v-model="searchParams.schoolAtWriteSchoolID"
               :disabled="false"
-              label="Select school of record"
+              label="Select school at write"
               :items="getSchoolsList"
               :item-title="schoolTitle"
           />
@@ -298,7 +300,8 @@ export default {
       ],
     };
   },
-  watch: {},
+  watch: {
+  },
   validations() {},
   created() {},
   computed: {
@@ -307,6 +310,8 @@ export default {
       getSchoolsList: "getSchoolsList",
       displaySchoolCategoryCode: "displaySchoolCategoryCode",
       getSchoolById: "getSchoolById",
+      provincialSpecialCaseCodes: "provincialSpecialCaseCodes",
+      assessmentTypeCodes: "assessmentTypeCodes",
     }),
   },
   async mounted() {
@@ -334,13 +339,11 @@ export default {
         searchParams = {};
         searchKeys.forEach(element => {
           console.log(JSON.stringify(element));
-          if(element.toLowerCase().includes("session")){
-            // TODO expand when we get to this
-            if(element === 'sessionIdStart'){
-              searchParams['session'] = this.searchParams[element];
-            } else {
-              searchParams[element] = this.searchParams[element];
-            }
+          // TODO expand when we get to this
+          if(element === 'sessionIdStart'){
+            searchParams['session'] = this.searchParams[element];
+          } else {
+            searchParams[element] = this.searchParams[element];
           }
         });
       //console.log(`You want to search on... ${JSON.stringify(searchParams)}`);
