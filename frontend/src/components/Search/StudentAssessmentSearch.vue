@@ -24,7 +24,7 @@
               label="Session"
               :loading="isLoadingSessions"
               clearable
-              @update:model-value="updateAssessmentTypeDropdown"
+              @update:model-value="onSessionStartChanged"
               variant="outlined"
               density="compact"
           ></v-autocomplete>
@@ -36,6 +36,7 @@
             height="100%"
             density="compact"
             :label="searchParams.useSessionRange ? 'To:' : 'Use Range'"
+            :disabled="!searchParams.sessionIdStart"
             color="#606060"
             @update:model-value="onUseSessionRangeChanged"
         />
@@ -44,7 +45,7 @@
                 v-model="searchParams.sessionIdEnd"
                 item-title="sessionDate"
                 item-value="sessionID"
-                :items="assessmentSessions"
+                :items="sessionEndOptions"
                 label="Session"
                 :loading="isLoadingSessions"
                 clearable
@@ -318,10 +319,19 @@ export default {
       provincialSpecialCaseCodes: "provincialSpecialCaseCodes",
       assessmentTypeCodes: "assessmentTypeCodes",
     }),
+    sessionEndOptions() {
+      const startId = this.searchParams.sessionIdStart;
+      if (!startId) return [];
+      const startIndex = this.assessmentSessions.findIndex(
+          s => s.sessionID === startId
+      );
+      if (startIndex === -1) return [];
+      return this.assessmentSessions.slice(startIndex + 1);
+    },
   },
   async mounted() {
-    console.log('PROVINCIAL' + JSON.stringify(this.provincialSpecialCaseCodes));
     await this.loadAssessmentSessions();
+    console.log(JSON.stringify(this.assessmentSessions));
   },
   methods: {
     updateDataTable({ page }) {
@@ -396,14 +406,16 @@ export default {
       this.isLoadingSessions = true;
       try {
         const response = await StudentAssessmentService.getAssessmentSessions();
-        this.assessmentSessions = response.data.map(session => ({
+        const mapped = this.assessmentSessions = response.data.map(session => ({
           sessionID: session.sessionID,
-          sessionDate: `${session.courseYear}-${session.courseMonth}`,
+          sessionDate: `${session.courseYear}-${String(session.courseMonth).padStart(2, '0')}`,
           assessments: session.assessments.map(assessment => ({
             assessmentID: assessment.assessmentID,
             assessmentTypeCode: assessment.assessmentTypeCode
           }))
         }));
+        mapped.sort((a, b) => a.sessionDate.localeCompare(b.sessionDate));
+        this.assessmentSessions = mapped;
       } catch(error) {
         this.snackbarStore.showSnackbar(
             "Failed to fetch assessment sessions",
@@ -417,10 +429,15 @@ export default {
     updateAssessmentTypeDropdown($event) {
 
     },
-
-    onUseSessionRangeChanged(){
-      // TODO add magic here
+    onSessionStartChanged() {
       this.searchParams.sessionIdEnd = null;
+    },
+    onUseSessionRangeChanged(checked){
+      if (!checked) {
+        // turning range off → clear end
+        this.searchParams.sessionIdEnd = null;
+        this.searchParams.useSessionRange = false;
+      }
     },
     convertSessionIdsToSessionDates: function () {
       this.searchResults.forEach((student) => {
