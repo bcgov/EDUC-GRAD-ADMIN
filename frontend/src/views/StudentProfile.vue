@@ -265,8 +265,8 @@
                     >
                     </v-progress-circular>
                     <StudentAssessments
-                        :student-id="studentId"
-                        @load-student="loadGraduationStatus(studentId)"
+                      :student-id="studentId"
+                      @load-student="loadGraduationStatus(studentId)"
                     />
                   </v-window-item>
                   <v-window-item
@@ -757,6 +757,13 @@ export default {
         this.loadStudent(studentIdFromURL);
       })
       .catch((error) => {
+        if (error.handledByInterceptor) {
+          // eslint-disable-next-line
+          console.warn(
+            "Error already handled by interceptor, skipping component snackbar."
+          );
+          return; // <--- STOP EXECUTION
+        }
         if (error.response.status) {
           this.snackbarStore.showSnackbar(
             "There was an error: " + error.response.status,
@@ -781,10 +788,17 @@ export default {
       await this.getProgramOptions(false);
       await this.getUngradReasons(false);
       await this.getInstituteCategoryCodes(false);
-    } catch (e) {
-      if (e.response?.status) {
+    } catch (error) {
+      if (error.response?.status) {
+        if (error.handledByInterceptor) {
+          // eslint-disable-next-line
+          console.warn(
+            "Error already handled by interceptor, skipping component snackbar."
+          );
+          return; // <--- STOP EXECUTION
+        }
         this.snackbarStore.showSnackbar(
-          "There was an error: " + e.response.status,
+          "There was an error: " + error.response.status,
           "error",
           5000
         );
@@ -923,7 +937,7 @@ export default {
   destroyed() {
     window.removeEventListener("resize", this.handleResize);
   },
-  beforeRouteUpdate(to, from, next) {
+  beforeRouteUpdate(next) {
     StudentService.getStudentByID(this.quickSearchId)
       .then((response) => {
         this.pen = response.data.pen;
@@ -933,6 +947,7 @@ export default {
       })
       .catch((error) => {
         if (error.handledByInterceptor) {
+          // eslint-disable-next-line
           console.warn(
             "Error already handled by interceptor, skipping component snackbar."
           );
@@ -1014,6 +1029,7 @@ export default {
             })
             .catch((error) => {
               if (error.handledByInterceptor) {
+                // eslint-disable-next-line
                 console.warn(
                   "Error already handled by interceptor, skipping component snackbar."
                 );
@@ -1038,6 +1054,7 @@ export default {
             .catch((error) => {
               this.tabLoading = false;
               if (error.handledByInterceptor) {
+                // eslint-disable-next-line
                 console.warn(
                   "Error already handled by interceptor, skipping component snackbar."
                 );
@@ -1056,6 +1073,7 @@ export default {
         .catch((error) => {
           this.tabLoading = false;
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
@@ -1080,6 +1098,7 @@ export default {
         })
         .catch((error) => {
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
@@ -1106,6 +1125,7 @@ export default {
         .catch((error) => {
           this.tabLoading = false;
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
@@ -1139,6 +1159,7 @@ export default {
             .catch((error) => {
               this.tabLoading = false;
               if (error.handledByInterceptor) {
+                // eslint-disable-next-line
                 console.warn(
                   "Error already handled by interceptor, skipping component snackbar."
                 );
@@ -1155,6 +1176,7 @@ export default {
         })
         .catch((error) => {
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
@@ -1191,6 +1213,7 @@ export default {
         .catch((error) => {
           this.tabLoading = false;
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
@@ -1232,6 +1255,7 @@ export default {
         })
         .catch((error) => {
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
@@ -1296,6 +1320,7 @@ export default {
               })
               .catch((error) => {
                 if (error.handledByInterceptor) {
+                  // eslint-disable-next-line
                   console.warn(
                     "Error already handled by interceptor, skipping component snackbar."
                   );
@@ -1316,6 +1341,7 @@ export default {
         })
         .catch((error) => {
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
@@ -1348,6 +1374,7 @@ export default {
         })
         .catch((error) => {
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
@@ -1369,6 +1396,7 @@ export default {
         })
         .catch((error) => {
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
@@ -1391,6 +1419,7 @@ export default {
         .catch((error) => {
           if (error.response) {
             if (error.handledByInterceptor) {
+              // eslint-disable-next-line
               console.warn(
                 "Error already handled by interceptor, skipping component snackbar."
               );
@@ -1411,6 +1440,7 @@ export default {
         })
         .catch((error) => {
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
@@ -1432,6 +1462,7 @@ export default {
         })
         .catch((error) => {
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
@@ -1453,6 +1484,7 @@ export default {
         })
         .catch((error) => {
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
@@ -1474,6 +1506,7 @@ export default {
         })
         .catch((error) => {
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
@@ -1495,6 +1528,7 @@ export default {
         })
         .catch((error) => {
           if (error.handledByInterceptor) {
+            // eslint-disable-next-line
             console.warn(
               "Error already handled by interceptor, skipping component snackbar."
             );
