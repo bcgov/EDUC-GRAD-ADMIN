@@ -191,7 +191,7 @@ export default {
         currentValue: this.updateStudentAssessment?.provincialSpecialCaseCode,
         itemValueKey: "provincialSpecialCaseCode",
         permissionKey: "editAllSpecialCases",
-        allowedCodes: ["A", "Q"],
+        allowedCodes: ['NME', 'NMF', 'NME10', 'NMF10'].includes(this.updateStudentAssessment?.assessmentTypeCode) ? ["A", "Q"] : ["A", "Q", "E"],
         defaultAllowedCodes: [],
       });
     },
