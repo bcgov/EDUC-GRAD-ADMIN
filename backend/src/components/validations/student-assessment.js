@@ -1,6 +1,6 @@
-const { object, string, number, array, boolean } = require("yup");
-const { uuidGeneric } = require("./custom-validations");
-const { baseRequestSchema } = require("./base");
+const { object, string, number, array, boolean } = require('yup');
+const { uuidGeneric } = require('./custom-validations');
+const { baseRequestSchema } = require('./base');
 
 const studentAssessmentSchema = object({
   adaptedAssessmentCode: string().max(10).notRequired(),
@@ -71,7 +71,7 @@ const postStudentAssessmentSchema = object({
     .concat(baseRequestSchema)
     .noUnknown(),
   query: object({
-    allowRuleOverride: string().oneOf(["true", "false"]).optional(),
+    allowRuleOverride: string().oneOf(['true', 'false']).optional(),
   }).noUnknown(),
   params: object().noUnknown(),
 }).noUnknown();
@@ -79,7 +79,7 @@ const postStudentAssessmentSchema = object({
 const deleteStudentAssessmentSchema = object({
   body: object().noUnknown(),
   query: object({
-    allowRuleOverride: string().oneOf(["true", "false"]).optional(),
+    allowRuleOverride: string().oneOf(['true', 'false']).optional(),
   }).noUnknown(),
   params: object({
     studentAssessmentId: uuidGeneric().required(),
@@ -140,6 +140,7 @@ const getPaginatedStudentAssessmentSchema = object({
       studentId: uuidGeneric().optional(),
       assessmentTypeCode: string().optional(),
       session: uuidGeneric().optional(),
+      sessionIds: string().optional(),
       schoolOfRecordSchoolID: uuidGeneric().optional(),
       schoolAtWriteSchoolID: uuidGeneric().optional(),
       gradeAtRegistration: string().optional(),
@@ -150,10 +151,10 @@ const getPaginatedStudentAssessmentSchema = object({
       .required()
       .noUnknown(),
     sort: object({
-      "assessmentEntity.assessmentTypeCode": string()
-        .oneOf(["ASC", "DESC"])
+      'assessmentEntity.assessmentTypeCode': string()
+        .oneOf(['ASC', 'DESC'])
         .optional(),
-      updateDate: string().oneOf(["ASC", "DESC"]).optional(),
+      updateDate: string().oneOf(['ASC', 'DESC']).optional(),
     })
       .optional()
       .noUnknown(),

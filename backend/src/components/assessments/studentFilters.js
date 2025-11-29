@@ -53,6 +53,10 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
       searchCriteriaList.push({ key: 'studentID', value: value.toString(), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND });
     }
 
+    if (key === 'sessionIds' && value) {
+      searchCriteriaList.push({ key: 'assessmentEntity.assessmentSessionEntity.sessionID', value: value.toString(), operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND });
+    }
+
     if (key === 'session' && value) {
       searchCriteriaList.push({ key: 'assessmentEntity.assessmentSessionEntity.sessionID', value: value.toString(), operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND });
     }

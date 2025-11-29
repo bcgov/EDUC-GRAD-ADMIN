@@ -331,49 +331,143 @@ export default {
   },
   async mounted() {
     await this.loadAssessmentSessions();
-    console.log(JSON.stringify(this.assessmentSessions));
   },
   methods: {
-    updateDataTable({ page }) {
-      this.currentPage = page;
-      this.search();
+    apiSearchParamsBuilder() {
+      const EXCLUDED_KEYS = ['sessionIdStart', 'sessionIdEnd', 'useSessionRange'];
+      const apiSearchParams = {};
+      // Handle session ranges
+      const { sessionIdStart, sessionIdEnd, useSessionRange } = this.searchParams;
+      if (useSessionRange && sessionIdStart && sessionIdEnd) {
+        const sessionIdRange = this.getSessionIdsInRange(sessionIdStart, sessionIdEnd);
+        if (sessionIdRange.length > 0) {
+          apiSearchParams.sessionIds = sessionIdRange.join(',');
+        }
+      } else if (sessionIdStart) {
+        // single session search
+        apiSearchParams.session = sessionIdStart; // or sessionId, etc.
+      }
+      // Default fields
+      const searchKeys = Object.keys(this.searchParams).filter((k) => {
+        if (EXCLUDED_KEYS.includes(k)) return false;
+        const value = this.searchParams[k];
+        if (value === null || value === undefined) return false;
+        if (typeof value === 'string' && value.trim() === '') return false;
+        return !(Array.isArray(value) && value.length === 0);
+      });
+      searchKeys.forEach((key) => {
+        apiSearchParams[key] = this.searchParams[key];
+      });
+      console.log('apiSearchParams:', JSON.stringify(apiSearchParams));
+      return apiSearchParams;
     },
-    onSearchClicked(){
+
+    clearInput: function () {
+      this.searchResults = [];
+      this.searchMessage = "";
+      this.hasSearched = false;
+      assessmentSearchStore().clearSearchParams();
+    },
+    convertSchoolIDsToMincodes: function () {
+      this.searchResults.forEach((student) => {
+        student.schoolOfRecordSchoolID =
+            schoolsService.schoolIdToMincode(student.schoolOfRecordSchoolID)
+            ?? student.schoolOfRecordSchoolID;
+        student.schoolAtWriteSchoolID =
+            schoolsService.schoolIdToMincode(student.schoolAtWriteSchoolID)
+            ?? student.schoolAtWriteSchoolID;
+      });
+    },
+    convertSessionIdsToSessionDates: function () {
+      this.searchResults.forEach((student) => {
+        const session = this.assessmentSessions.find(
+            s => s.sessionID === student.sessionID
+        );
+        if (session) {
+          student.sessionID = session.sessionDate;
+        }
+      });
+    },
+    getSessionIdsInRange(startId, endId) {
+      if (!startId || !endId) return [];
+      const sessions = this.assessmentSessions;
+      const startIndex = sessions.findIndex(s => s.sessionID === startId);
+      const endIndex = sessions.findIndex(s => s.sessionID === endId);
+      if (startIndex === -1 || endIndex === -1) {
+        return [];
+      }
+      const from = Math.min(startIndex, endIndex);
+      const to = Math.max(startIndex, endIndex);
+      return sessions.slice(from, to + 1).map(s => s.sessionID);
+    },
+    keyHandler: function (e) {
+      if (e.keyCode === 13) {
+        //enter key pressed
+      }
+    },
+    async loadAssessmentSessions() {
+      this.isLoadingSessions = true;
+      try {
+        const response = await StudentAssessmentService.getAssessmentSessions();
+        const mapped = this.assessmentSessions = response.data.map(session => ({
+          sessionID: session.sessionID,
+          sessionDate: `${session.courseYear}-${String(session.courseMonth).padStart(2, '0')}`,
+          assessments: session.assessments.map(assessment => ({
+            assessmentID: assessment.assessmentID,
+            assessmentTypeCode: assessment.assessmentTypeCode
+          }))
+        }));
+        mapped.sort((a, b) => a.sessionDate.localeCompare(b.sessionDate));
+        this.assessmentSessions = mapped;
+      } catch (error) {
+        this.snackbarStore.showSnackbar(
+            "Failed to fetch assessment sessions",
+            "error",
+            5000
+        );
+      } finally {
+        this.isLoadingSessions = false;
+      }
+    },
+    onSearchClicked() {
       this.hasSearched = true;
       this.search();
     },
+    onSessionStartChanged() {
+      this.searchParams.sessionIdEnd = null;
+    },
+    onUseSessionRangeChanged(checked) {
+      if (!checked) {
+        // turning range off → clear end
+        this.searchParams.sessionIdEnd = null;
+        this.searchParams.useSessionRange = false;
+      }
+    },
+    schoolTitle(item) {
+      // Customize this method to return the desired format
+      if (item) {
+        return `${item.mincode} - ${item.displayName}`;
+      } else {
+        return null;
+      }
+    },
     search() {
-      if(!this.hasSearched){
+      if (!this.hasSearched) {
         return;
       }
       this.searchLoading = true;
       // TODO validate fields
-      const searchKeys = Object.keys(this.searchParams).filter(k => (this.searchParams[k] && this.searchParams[k].length !== 0));
-      console.log(JSON.stringify(searchKeys));
-      let searchParams;
-      if (searchKeys?.length > 0) {
-        searchParams = {};
-        searchKeys.forEach(element => {
-          console.log(JSON.stringify(element));
-          // TODO expand when we get to this
-          if(element === 'sessionIdStart'){
-            searchParams['session'] = this.searchParams[element];
-          } else {
-            searchParams[element] = this.searchParams[element];
-          }
-        });
-      //console.log(`You want to search on... ${JSON.stringify(searchParams)}`);
       let sort = {
         //updateDate: "DESC",
       };
       StudentAssessmentService.getStudentAssessmentsBySearchCriteria(
-          searchParams,
+          this.apiSearchParamsBuilder(),
           sort,
           this.currentPage,
           this.itemsPerPage
       )
           .then((response) => {
-            if(response.data){
+            if (response.data) {
               this.responseContent = response.data;
               this.searchResults =
                   this.responseContent?.content;
@@ -381,7 +475,7 @@ export default {
               this.convertSessionIdsToSessionDates();
               this.totalElements = this.responseContent.totalElements;
               this.totalPages = this.responseContent.totalPages;
-              this.searchMessage = (this.responseContent.totalElements === 1) ? "1 student record found. ": this.totalElements + " student records found. ";
+              this.searchMessage = (this.responseContent.totalElements === 1) ? "1 student record found. " : this.totalElements + " student records found. ";
             }
             console.log(response.data);
           })
@@ -398,96 +492,14 @@ export default {
           })
           .finally(() => {
             this.searchLoading = false;
-      });
-      }
-    },
-
-    async loadAssessmentSessions() {
-      this.isLoadingSessions = true;
-      try {
-        const response = await StudentAssessmentService.getAssessmentSessions();
-        const mapped = this.assessmentSessions = response.data.map(session => ({
-          sessionID: session.sessionID,
-          sessionDate: `${session.courseYear}-${String(session.courseMonth).padStart(2, '0')}`,
-          assessments: session.assessments.map(assessment => ({
-            assessmentID: assessment.assessmentID,
-            assessmentTypeCode: assessment.assessmentTypeCode
-          }))
-        }));
-        mapped.sort((a, b) => a.sessionDate.localeCompare(b.sessionDate));
-        this.assessmentSessions = mapped;
-      } catch(error) {
-        this.snackbarStore.showSnackbar(
-            "Failed to fetch assessment sessions",
-            "error",
-            5000
-        );
-      } finally {
-        this.isLoadingSessions = false;
-      }
+          });
     },
     updateAssessmentTypeDropdown($event) {
 
     },
-    onSessionStartChanged() {
-      this.searchParams.sessionIdEnd = null;
-    },
-    onUseSessionRangeChanged(checked){
-      if (!checked) {
-        // turning range off → clear end
-        this.searchParams.sessionIdEnd = null;
-        this.searchParams.useSessionRange = false;
-      }
-    },
-    convertSessionIdsToSessionDates: function () {
-      this.searchResults.forEach((student) => {
-        const session = this.assessmentSessions.find(
-            s => s.sessionID === student.sessionID
-        );
-        if (session) {
-          student.sessionID = session.sessionDate;
-        }
-      });
-    },
-    convertSchoolIDsToMincodes: function () {
-      this.searchResults.forEach((student) => {
-        student.schoolOfRecordSchoolID =
-            schoolsService.schoolIdToMincode(student.schoolOfRecordSchoolID)
-            ?? student.schoolOfRecordSchoolID;
-        student.schoolAtWriteSchoolID =
-            schoolsService.schoolIdToMincode(student.schoolAtWriteSchoolID)
-            ?? student.schoolAtWriteSchoolID;
-      });
-    },
-    schoolTitle(item) {
-      // Customize this method to return the desired format
-      if (item) {
-        return `${item.mincode} - ${item.displayName}`;
-      } else {
-        return null;
-      }
-    },
-    keyHandler: function (e) {
-      if (e.keyCode === 13) {
-        //enter key pressed
-      }
-    },
-    clearInput: function () {
-      this.searchResults = [];
-      this.searchMessage = "";
-      this.hasSearched = false;
-      assessmentSearchStore().clearSearchParams();
-    },
-    isEmpty(obj) {
-      let isEmpty = true;
-      for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          if (obj[key] != "") {
-            isEmpty = false;
-          }
-        }
-      }
-      return isEmpty;
+    updateDataTable({page}) {
+      this.currentPage = page;
+      this.search();
     },
   },
 };
@@ -496,11 +508,6 @@ export default {
 <style scoped>
 .table th {
   border-bottom: 2px solid #5475a7;
-}
-
-.assessment-search {
-  float: left;
-  clear: both;
 }
 
 .assessment-search-form {
@@ -526,44 +533,5 @@ export default {
 .assessment-search-button {
   margin-top: 32px;
   padding-left: 15px;
-}
-.wild-card-button:hover {
-  cursor: pointer;
-}
-.wild-card-button {
-  color: #dee2eb;
-  position: absolute;
-  right: 21px;
-  top: 10px;
-  z-index: 10;
-  text-decoration: none;
-}
-
-.wild-card-button:visited {
-  color: #dee2eb;
-  text-decoration: none;
-}
-
-.wild-card-button.active {
-  color: green;
-}
-
-.advanced-loading-spinner {
-  margin-top: 32px;
-}
-
-.results-option-group {
-  text-align: right;
-  margin-top: 10px;
-}
-.results-option {
-  width: 100px;
-  margin-left: 10px;
-}
-.input-group-append {
-  margin-left: -1px;
-  position: absolute;
-  right: 0;
-  z-index: 99;
 }
 </style>
