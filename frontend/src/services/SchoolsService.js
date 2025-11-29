@@ -1,4 +1,5 @@
 import ApiService from "../common/apiService";
+import { useAppStore } from '@/store/modules/app';
 
 export default {
   getSchoolsList() {
@@ -32,5 +33,13 @@ export default {
   },
   putInstituteEventHistory(json) {
     return ApiService.apiAxios.put("/api/schools/eventHistory", json);
+  },
+  // get a mincode from cache based on id
+  schoolIdToMincode(schoolId) {
+      const appStore = useAppStore();
+      const schoolIdMap = new Map(
+          appStore.getSchoolsList.map((school) => [school.schoolId, school])
+      );
+      return schoolIdMap.get(schoolId)?.mincode ?? null;
   },
 };

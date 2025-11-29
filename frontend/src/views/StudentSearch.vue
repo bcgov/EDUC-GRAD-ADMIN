@@ -7,6 +7,7 @@
         <v-tab value="advance" class="text-none" size="large">
           Advanced Search
         </v-tab>
+        <v-tab value="assessment-search" class="text-none" size="large">Assessment Search</v-tab>
       </v-tabs>
       <v-card-text>
         <v-window v-model="tab">
@@ -21,6 +22,9 @@
           <v-window-item value="advance">
             <StudentAdvancedSearch />
           </v-window-item>
+          <v-window-item value="assessment-search">
+            <StudentAssessmentSearch />
+          </v-window-item>
         </v-window>
       </v-card-text>
     </v-card>
@@ -32,6 +36,7 @@ import { useSnackbarStore } from "@/store/modules/snackbar";
 import DisplayTable from "@/components/DisplayTable.vue";
 import PenSearchForm from "@/components/StudentSearch/PenSearchForm.vue";
 import StudentAdvancedSearch from "@/components/StudentSearch/StudentAdvancedSearch.vue";
+import StudentAssessmentSearch from "@/components/Search/StudentAssessmentSearch.vue";
 
 export default {
   name: "studentSearch",
@@ -50,6 +55,7 @@ export default {
     DisplayTable: DisplayTable,
     PenSearchForm: PenSearchForm,
     StudentAdvancedSearch: StudentAdvancedSearch,
+    StudentAssessmentSearch: StudentAssessmentSearch,
   },
 };
 </script>
