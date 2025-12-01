@@ -3,13 +3,6 @@ import {defineStore} from 'pinia';
 export const assessmentSearchStore = defineStore('assessmentSearch', {
     namespaced: true,
     state: () => ({
-        isAdvancedSearch: false,
-        pageNumber: 1,
-        headerSortParams: {
-            currentSort: 'dob',
-            currentSortAsc: true
-        },
-        selectedRecords: [],
         searchParams: {
             assessmentTypeCode: null,
             sessionIdStart: null,
@@ -23,7 +16,10 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
             provincialSpecialCaseCode: null,
             wroteFlag: null
         },
-        assessmentSearchResponse: null
+        wroteFlagOptions: [
+            { title: 'True', value: true },
+            { title: 'False', value: false }
+        ],
     }),
     getters: {
     },

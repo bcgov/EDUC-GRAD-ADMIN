@@ -1,5 +1,6 @@
 import ApiService from '../common/apiService';
 import {isEmpty, omitBy} from "lodash";
+import {isEmptyBooleanAware} from "@/utils/validation";
 
 export default {
   getStudentAssessmentsBySearchCriteria(searchParams, sort, pageNumber, pageSize) {
@@ -8,13 +9,13 @@ export default {
         params: {
           pageNumber: pageNumber - 1,
           pageSize: pageSize,
-          searchParams: omitBy(searchParams, isEmpty),
+          searchParams: omitBy(searchParams, isEmptyBooleanAware),
           sort: sort,
         },
       })
   },
   getStudentAssessmentHistoryBySearchCriteria(searchParams, sort, pageNumber, pageSize) {
-    return ApiService.apiAxios
+      return ApiService.apiAxios
         .get('/api/student-assessment/student-history/paginated', {
           params: {
             pageNumber: pageNumber - 1,

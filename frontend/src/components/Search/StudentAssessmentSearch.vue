@@ -115,14 +115,14 @@
           </v-autocomplete>
         </div>
         <div class="assessment-search-field col-12 col-md-3">
-          <v-text-field id="wrote-flag"
+          <v-select id="wrote-flag"
               label="Wrote Flag"
               variant="outlined"
               density="compact"
               class="form__input"
-              v-model.trim="searchParams.wroteFlag"
+              v-model="searchParams.wroteFlag"
               v-on:keyup="keyHandler"
-              disabled
+              :items="wroteFlagOptions"
               clearable
           />
         </div>
@@ -311,7 +311,7 @@ export default {
   validations() {},
   created() {},
   computed: {
-    ...mapState(assessmentSearchStore, ['pageNumber', 'headerSortParams', 'assessmentSearchResponse', 'searchParams']),
+    ...mapState(assessmentSearchStore, ['searchParams', 'wroteFlagOptions']),
     ...mapState(useAppStore, {
       getSchoolsList: "getSchoolsList",
       displaySchoolCategoryCode: "displaySchoolCategoryCode",

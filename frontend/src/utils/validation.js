@@ -3,7 +3,7 @@ import {
   LocalDate,
   ResolverStyle,
 } from "@js-joda/core";
-import { groupBy, isPlainObject } from "lodash";
+import {groupBy, isEmpty, isPlainObject} from "lodash";
 
 const datePatternWithSlash = new DateTimeFormatterBuilder()
   .appendPattern("uuuu/MM/dd")
@@ -221,4 +221,9 @@ export function getOpenStatus(school) {
   today.setHours(0, 0, 0, 0);
 
   return openedDate < today && !closedDate ? "Open" : "Closed";
+}
+
+export function isEmptyBooleanAware(value) {
+    if (typeof value === 'boolean') return false;
+    return isEmpty(value);
 }

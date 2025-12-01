@@ -81,6 +81,14 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
       searchCriteriaList.push({ key: 'proficiencyScore', value: value.toString(), operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });
     }
 
+    if (key === 'wroteFlag') {
+        if(value === true) {
+            console.log('Wrote flag is true');
+        } else {
+            console.log('Wrote flag is false');
+        }
+    }
+
   }
   const search = [];
   if (searchCriteriaList.length > 0) {
