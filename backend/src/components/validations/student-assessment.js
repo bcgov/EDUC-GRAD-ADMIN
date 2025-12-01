@@ -146,7 +146,7 @@ const getPaginatedStudentAssessmentSchema = object({
       gradeAtRegistration: string().optional(),
       proficiencyScore: number().optional(),
       provincialSpecialCaseCode: string().optional(),
-      wroteFlag: boolean().optional(),
+      wroteFlag: string().optional(),
     })
       .required()
       .noUnknown(),

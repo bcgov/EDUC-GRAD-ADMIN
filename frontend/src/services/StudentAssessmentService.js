@@ -1,6 +1,5 @@
 import ApiService from '../common/apiService';
 import {isEmpty, omitBy} from "lodash";
-import {isEmptyBooleanAware} from "@/utils/validation";
 
 export default {
   getStudentAssessmentsBySearchCriteria(searchParams, sort, pageNumber, pageSize) {
@@ -9,7 +8,7 @@ export default {
         params: {
           pageNumber: pageNumber - 1,
           pageSize: pageSize,
-          searchParams: omitBy(searchParams, isEmptyBooleanAware),
+          searchParams: omitBy(searchParams, isEmpty),
           sort: sort,
         },
       })

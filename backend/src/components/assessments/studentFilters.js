@@ -81,12 +81,14 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
       searchCriteriaList.push({ key: 'proficiencyScore', value: value.toString(), operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });
     }
 
-    if (key === 'wroteFlag') {
-        if(value === true) {
-            console.log('Wrote flag is true');
-        } else {
-            console.log('Wrote flag is false');
-        }
+    if (key === 'wroteFlag' && value) {
+      if(value === 'yes') {
+        searchCriteriaList.push({ key: 'proficiencyScore', value: '1,2,3,4', operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.OR });
+        searchCriteriaList.push({ key: 'provincialSpecialCaseCode', value: 'X,Q', operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+      } else {
+        searchCriteriaList.push({ key: 'proficiencyScore', value: null, operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });
+        searchCriteriaList.push({ key: 'provincialSpecialCaseCode', value: 'X,Q', operation: FILTER_OPERATION.NOT_IN, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+      }
     }
 
   }

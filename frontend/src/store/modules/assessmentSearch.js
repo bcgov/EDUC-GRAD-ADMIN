@@ -17,8 +17,8 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
             wroteFlag: null
         },
         wroteFlagOptions: [
-            { title: 'True', value: true },
-            { title: 'False', value: false }
+            { title: 'Yes', value: 'yes' },
+            { title: 'No', value: 'no' }
         ],
     }),
     getters: {
