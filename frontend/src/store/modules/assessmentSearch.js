@@ -12,7 +12,7 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
             schoolOfRecordSchoolID: null,
             schoolAtWriteSchoolID: null,
             gradeAtRegistration: null,
-            proficiencyScore: null,
+            proficiencyScoreValue: null,
             provincialSpecialCaseCode: [],
             wroteFlag: null
         },
@@ -34,7 +34,7 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
                 schoolOfRecordSchoolID: null,
                 schoolAtWriteSchoolID: null,
                 gradeAtRegistration: null,
-                proficiencyScore: null,
+                proficiencyScoreValue: null,
                 provincialSpecialCaseCode: [],
                 wroteFlag: null
             };

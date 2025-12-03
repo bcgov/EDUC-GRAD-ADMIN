@@ -88,14 +88,16 @@
       </v-row>
       <v-row class="mt-1">
         <div class="assessment-search-field col-12 col-md-3">
-          <v-text-field id="proficiency-score"
+          <v-autocomplete id="proficiency-score"
             label="Proficiency Score"
             variant="outlined"
             density="compact"
             class="form__input"
-            v-model.trim="searchParams.proficiencyScore"
+            :items="proficiencyScores"
+            v-model.trim="searchParams.proficiencyScoreValue"
             v-on:keyup="keyHandler"
             clearable
+            multiple
           />
         </div>
         <div class="assessment-search-field col-12 col-md-3">
@@ -228,6 +230,7 @@ export default {
       isLoadingSessions: true,
       showAdvancedSearchForm: false,
       totalElements: "",
+      proficiencyScores: ['1', '2', '3', '4'],
       searchResultsHeaders: [
         {
           key: "pen",

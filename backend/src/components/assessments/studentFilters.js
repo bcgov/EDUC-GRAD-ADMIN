@@ -71,9 +71,9 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
 
     if (key === 'proficiencyScore' && value) {
       if(JSON.parse(value) === true) {
-        searchCriteriaList.push({ key: 'proficiencyScore', value: value.toString(), operation: FILTER_OPERATION.NOT_EQUAL, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });
+        searchCriteriaList.push({ key: 'proficiencyScore', value: 0, operation: FILTER_OPERATION.NOT_EQUAL, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });
       } else {
-        searchCriteriaList.push({ key: 'proficiencyScore', value:value.toString(), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });
+        searchCriteriaList.push({ key: 'proficiencyScore', value: 0, operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });
       }     
     }
 

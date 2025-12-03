@@ -145,6 +145,7 @@ const getPaginatedStudentAssessmentSchema = object({
       schoolAtWriteSchoolID: uuidGeneric().optional(),
       gradeAtRegistration: string().optional(),
       proficiencyScore: number().optional(),
+      proficiencyScoreValue: string().optional(),
       provincialSpecialCaseCode: string().optional(),
       wroteFlag: string().optional(),
     })
