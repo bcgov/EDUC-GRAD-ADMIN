@@ -25,6 +25,7 @@ const studentAssessmentSchema = object({
   schoolOfRecordSchoolID: uuidGeneric().required(),
   sessionID: uuidGeneric().notRequired(),
   wroteFlag: boolean().notRequired(),
+  didNotAttemptFlag: boolean().notRequired()
 });
 
 const putStudentAssessmentSchema = object({
@@ -51,6 +52,7 @@ const putStudentAssessmentSchema = object({
     courseStatusCode: string().max(1).notRequired(),
     downloadDate: string().notRequired(),
     markingSession: string().notRequired(),
+    didNotAttemptFlag: boolean().notRequired()
   })
     .concat(baseRequestSchema)
     .noUnknown(),

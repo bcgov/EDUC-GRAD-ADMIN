@@ -249,52 +249,19 @@ async function mergeStudentAssessmentsByStudentID(req, res) {
 
 async function mergeStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);
-  let localStudentCourses = { ...req.body };
-  let tobeDeleted =
-    localStudentCourses.conflicts.length > 0
-      ? localStudentCourses.conflicts
-          .map((item) => item.target?.id)
-          .filter((id) => id !== undefined)
-      : [];
-  let tobeAdded = [
-    ...localStudentCourses.info.map((item) => item.source),
-    ...localStudentCourses.conflicts.map((item) => item.source),
-  ];
-  const courseWithoutID = tobeAdded.map(({ id, ...rest }) => ({ ...rest }));
   try {
-    //Remove courses if any
-    if (tobeDeleted && tobeDeleted.length > 0) {
-      const deletUrl = `${config.get(
-        "server:studentAPIURL"
-      )}/api/v1/student/courses/${req.params?.targetStudentID}`;
-      const deleteResponse = await deleteData(
-        token,
-        deletUrl,
-        tobeDeleted,
-        req.session?.correlationID
-      );
-      const notDeleted = deleteResponse
-        .filter((course) =>
-          course.validationIssues?.some(
-            (issue) => issue.validationIssueSeverityCode === "ERROR"
-          )
-        )
-        .map((course) => course.id);
-      if (notDeleted.length > 0) {
-        console.error(
-          "Error removing student courses during merge process",
-          notDeleted
-        );
-      }
-    }
-    //Add courses
+    const body = {
+      sourceStudentId: req.params?.sourceStudentID,
+      targetStudentId: req.params?.targetStudentID,
+      studentCourseIdsToMove: req.body
+    };
     const addUrl = `${config.get(
       "server:studentAPIURL"
-    )}/api/v1/student/courses/${req.params?.targetStudentID}`;
+    )}/api/v1/student/courses/merge`;
     const createResponse = await postData(
       token,
       addUrl,
-      courseWithoutID,
+      body,
       req.session?.correlationID
     );
     return res.status(200).json(createResponse);
