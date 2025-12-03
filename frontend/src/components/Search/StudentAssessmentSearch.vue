@@ -29,17 +29,19 @@
               density="compact"
           ></v-autocomplete>
         </div>
-        <v-checkbox
-            id="session-range-checkbox"
-            v-model="searchParams.useSessionRange"
-            class="ma-0 pa-0"
-            height="100%"
-            density="compact"
-            :label="searchParams.useSessionRange ? 'To:' : 'Use Range'"
-            :disabled="!searchParams.sessionIdStart"
-            color="#606060"
-            @update:model-value="onUseSessionRangeChanged"
-        />
+        <div class="range-check">
+          <v-checkbox
+              id="session-range-checkbox"
+              v-model="searchParams.useSessionRange"
+              class="ma-0 pa-0"
+              height="100%"
+              density="compact"
+              :label="searchParams.useSessionRange ? 'To:' : 'Use Range'"
+              :disabled="!searchParams.sessionIdStart"
+              color="#606060"
+              @update:model-value="onUseSessionRangeChanged"
+          />
+        </div>
           <div v-if="searchParams.useSessionRange" class="assessment-search-field col-12 col-md-2">
             <v-autocomplete
                 v-model="searchParams.sessionIdEnd"
@@ -49,7 +51,6 @@
                 label="Session"
                 :loading="isLoadingSessions"
                 clearable
-                @update:model-value="updateAssessmentTypeDropdown"
                 variant="outlined"
                 density="compact"
             ></v-autocomplete>
@@ -305,12 +306,6 @@ export default {
       ],
     };
   },
-  watch: {
-  },
-  validations() {},
-  created() {
-    console.log(JSON.stringify(this.provincialSpecialCaseCodes));
-  },
   computed: {
     ...mapState(assessmentSearchStore, ['searchParams', 'wroteFlagOptions']),
     ...mapState(useAppStore, {
@@ -359,7 +354,6 @@ export default {
       searchKeys.forEach((key) => {
         apiSearchParams[key] = (Array.isArray(this.searchParams[key])) ? this.searchParams[key].join(',') : this.searchParams[key];
       });
-      console.log('apiSearchParams:', JSON.stringify(apiSearchParams));
       return apiSearchParams;
     },
 
@@ -439,13 +433,11 @@ export default {
     },
     onUseSessionRangeChanged(checked) {
       if (!checked) {
-        // turning range off → clear end
         this.searchParams.sessionIdEnd = null;
         this.searchParams.useSessionRange = false;
       }
     },
     schoolTitle(item) {
-      // Customize this method to return the desired format
       if (item) {
         return `${item.mincode} - ${item.displayName}`;
       } else {
@@ -457,10 +449,7 @@ export default {
         return;
       }
       this.searchLoading = true;
-      // TODO validate fields
-      let sort = {
-        //updateDate: "DESC",
-      };
+      let sort = {};
       StudentAssessmentService.getStudentAssessmentsBySearchCriteria(
           this.apiSearchParamsBuilder(),
           sort,
@@ -478,7 +467,6 @@ export default {
               this.totalPages = this.responseContent.totalPages;
               this.searchMessage = (this.responseContent.totalElements === 1) ? "1 student record found. " : this.totalElements + " student records found. ";
             }
-            console.log(response.data);
           })
           .catch((error) => {
             if (error?.response?.status) {
@@ -495,9 +483,6 @@ export default {
             this.searchLoading = false;
           });
     },
-    updateAssessmentTypeDropdown($event) {
-
-    },
     updateDataTable({page}) {
       this.currentPage = page;
       this.search();
@@ -507,6 +492,13 @@ export default {
 </script>
 
 <style scoped>
+.range-check :deep(.v-label.v-label--clickable) {
+  display: flex;
+  align-items: center;
+  padding-top: .5em;
+  padding-bottom: 0;
+}
+
 .table th {
   border-bottom: 2px solid #5475a7;
 }

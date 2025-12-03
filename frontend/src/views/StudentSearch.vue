@@ -7,7 +7,11 @@
         <v-tab value="advance" class="text-none" size="large">
           Advanced Search
         </v-tab>
-        <v-tab value="assessment-search" class="text-none" size="large">Assessment Search</v-tab>
+        <v-tab value="assessment-search" class="text-none" size="large" v-if="enableCRUD">Assessment Search
+          <p class="text-caption font-weight-bold text-bcGovGold">
+            BETA
+          </p>
+        </v-tab>
       </v-tabs>
       <v-card-text>
         <v-window v-model="tab">
@@ -37,6 +41,8 @@ import DisplayTable from "@/components/DisplayTable.vue";
 import PenSearchForm from "@/components/StudentSearch/PenSearchForm.vue";
 import StudentAdvancedSearch from "@/components/StudentSearch/StudentAdvancedSearch.vue";
 import StudentAssessmentSearch from "@/components/Search/StudentAssessmentSearch.vue";
+import {mapState} from "pinia";
+import {useAppStore} from "@/store/modules/app";
 
 export default {
   name: "studentSearch",
@@ -51,6 +57,11 @@ export default {
       tab: null,
     };
   },
+  computed: {
+    ...mapState(useAppStore, {
+      enableCRUD: "enableCRUD",
+    }),
+  },
   components: {
     DisplayTable: DisplayTable,
     PenSearchForm: PenSearchForm,
@@ -64,34 +75,7 @@ export default {
   padding-left: 25px;
   padding-right: 25px;
 }
-.alert,
-.card,
-.pen-search {
-  width: 100%;
-  margin-right: 9px;
-  float: left;
-}
 h6 {
   font-size: 1.5rem;
-}
-.loading-spinner {
-  float: left;
-  margin-left: 10px;
-}
-.sample-pens {
-  float: left;
-  clear: both;
-  margin-top: 15px;
-}
-
-.fade-enter-active {
-  transition: opacity 0.8s;
-}
-
-.fade-enter,
-  .fade-leave-to
-
-  /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
 }
 </style>
