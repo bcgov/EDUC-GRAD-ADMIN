@@ -58,11 +58,11 @@ const props = defineProps({
   },
   items: {
     type: Array,
-    required: true, // getSchoolsList
+    required: true,
   },
   itemTitle: {
     type: [String, Function],
-    default: 'schoolName', // or whatever your field is
+    default: 'schoolName',
   },
 });
 
@@ -73,7 +73,6 @@ const internalValue = computed({
   set: (val) => emit('update:modelValue', val),
 });
 
-// derive current school from items rather than calling a service
 const currentSchool = computed(() =>
     props.items.find((s) => s.schoolId === props.modelValue)
 );
