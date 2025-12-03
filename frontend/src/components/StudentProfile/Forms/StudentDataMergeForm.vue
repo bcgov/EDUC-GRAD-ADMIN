@@ -763,8 +763,11 @@ export default {
             isExaminable
           )
           : [];
-      const { errors, ...mergeStudentCourses } = localStudentCourses;
-      const mergeStudentCoursesRequestBody = toRaw(mergeStudentCourses);
+      const mergeStudentCoursesRequestBody = [
+        ...localStudentCourses.info.map(item => item.source.id),
+        ...localStudentCourses.conflicts.map(item => item.source.id)
+      ];
+      
       try {
         return await this.mergeStudentCourses(
           this.sourceStudentData.studentID,
