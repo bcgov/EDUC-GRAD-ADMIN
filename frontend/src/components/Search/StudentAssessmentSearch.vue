@@ -102,15 +102,16 @@
           <v-autocomplete
               id="special-case-code"
               :items="provincialSpecialCaseCodes"
-              item-title="provincialSpecialCaseCode"
+              :item-title="item => `${item.provincialSpecialCaseCode} - ${item.label}`"
               item-value="provincialSpecialCaseCode"
               label="Special Case"
               variant="outlined"
               density="compact"
               class="form__input"
-              v-model.trim="searchParams.provincialSpecialCaseCode"
+              v-model="searchParams.provincialSpecialCaseCode"
               v-on:keyup="keyHandler"
               clearable
+              multiple
           >
           </v-autocomplete>
         </div>
@@ -309,7 +310,9 @@ export default {
   watch: {
   },
   validations() {},
-  created() {},
+  created() {
+    console.log(JSON.stringify(this.provincialSpecialCaseCodes));
+  },
   computed: {
     ...mapState(assessmentSearchStore, ['searchParams', 'wroteFlagOptions']),
     ...mapState(useAppStore, {
@@ -345,7 +348,7 @@ export default {
         }
       } else if (sessionIdStart) {
         // single session search
-        apiSearchParams.session = sessionIdStart; // or sessionId, etc.
+        apiSearchParams.session = sessionIdStart;
       }
       // Default fields
       const searchKeys = Object.keys(this.searchParams).filter((k) => {
@@ -356,7 +359,7 @@ export default {
         return !(Array.isArray(value) && value.length === 0);
       });
       searchKeys.forEach((key) => {
-        apiSearchParams[key] = this.searchParams[key];
+        apiSearchParams[key] = (Array.isArray(this.searchParams[key])) ? this.searchParams[key].join(',') : this.searchParams[key];
       });
       console.log('apiSearchParams:', JSON.stringify(apiSearchParams));
       return apiSearchParams;

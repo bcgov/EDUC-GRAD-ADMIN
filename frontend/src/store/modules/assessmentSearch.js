@@ -13,7 +13,7 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
             schoolAtWriteSchoolID: null,
             gradeAtRegistration: null,
             proficiencyScore: null,
-            provincialSpecialCaseCode: null,
+            provincialSpecialCaseCode: [],
             wroteFlag: null
         },
         wroteFlagOptions: [
@@ -35,7 +35,7 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
                 schoolAtWriteSchoolID: null,
                 gradeAtRegistration: null,
                 proficiencyScore: null,
-                provincialSpecialCaseCode: null,
+                provincialSpecialCaseCode: [],
                 wroteFlag: null
             };
         },
