@@ -1,6 +1,6 @@
-const { object, string, number, array, boolean } = require("yup");
-const { uuidGeneric } = require("./custom-validations");
-const { baseRequestSchema } = require("./base");
+const { object, string, number, array, boolean } = require('yup');
+const { uuidGeneric } = require('./custom-validations');
+const { baseRequestSchema } = require('./base');
 
 const studentAssessmentSchema = object({
   adaptedAssessmentCode: string().max(10).notRequired(),
@@ -73,7 +73,7 @@ const postStudentAssessmentSchema = object({
     .concat(baseRequestSchema)
     .noUnknown(),
   query: object({
-    allowRuleOverride: string().oneOf(["true", "false"]).optional(),
+    allowRuleOverride: string().oneOf(['true', 'false']).optional(),
   }).noUnknown(),
   params: object().noUnknown(),
 }).noUnknown();
@@ -81,7 +81,7 @@ const postStudentAssessmentSchema = object({
 const deleteStudentAssessmentSchema = object({
   body: object().noUnknown(),
   query: object({
-    allowRuleOverride: string().oneOf(["true", "false"]).optional(),
+    allowRuleOverride: string().oneOf(['true', 'false']).optional(),
   }).noUnknown(),
   params: object({
     studentAssessmentId: uuidGeneric().required(),
@@ -139,15 +139,25 @@ const getPaginatedStudentAssessmentSchema = object({
     pageNumber: number().integer().required(),
     pageSize: number().integer().required(),
     searchParams: object({
-      studentId: uuidGeneric().required(),
+      studentId: uuidGeneric().optional(),
+      assessmentTypeCode: string().optional(),
+      session: uuidGeneric().optional(),
+      sessionIds: string().optional(),
+      schoolOfRecordSchoolID: uuidGeneric().optional(),
+      schoolAtWriteSchoolID: uuidGeneric().optional(),
+      gradeAtRegistration: string().optional(),
+      proficiencyScore: number().optional(),
+      proficiencyScoreValue: string().optional(),
+      provincialSpecialCaseCode: string().optional(),
+      wroteFlag: string().optional(),
     })
       .required()
       .noUnknown(),
     sort: object({
-      "assessmentEntity.assessmentTypeCode": string()
-        .oneOf(["ASC", "DESC"])
+      'assessmentEntity.assessmentTypeCode': string()
+        .oneOf(['ASC', 'DESC'])
         .optional(),
-      updateDate: string().oneOf(["ASC", "DESC"]).optional(),
+      updateDate: string().oneOf(['ASC', 'DESC']).optional(),
     })
       .optional()
       .noUnknown(),
