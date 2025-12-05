@@ -76,8 +76,10 @@
           />
         </div>
         <div class="assessment-search-field col-12 col-md-3">
-          <v-text-field id="grade"
+          <v-autocomplete id="grade"
               label="Grade"
+              :items="studentGradeCodes.sort((a, b) => a.studentGradeCode.localeCompare(b.studentGradeCode))"
+              item-title="studentGradeCode"
               variant="outlined"
               density="compact"
               class="form__input"
@@ -314,6 +316,7 @@ export default {
       getSchoolById: "getSchoolById",
       provincialSpecialCaseCodes: "provincialSpecialCaseCodes",
       assessmentTypeCodes: "assessmentTypeCodes",
+      studentGradeCodes: "studentGradeCodes",
     }),
     sessionEndOptions() {
       const startId = this.searchParams.sessionIdStart;
@@ -412,7 +415,7 @@ export default {
             assessmentTypeCode: assessment.assessmentTypeCode
           }))
         }));
-        mapped.sort((a, b) => a.sessionDate.localeCompare(b.sessionDate));
+        mapped.sort((a, b) => b.sessionDate.localeCompare(a.sessionDate));
         this.assessmentSessions = mapped;
       } catch (error) {
         this.snackbarStore.showSnackbar(
