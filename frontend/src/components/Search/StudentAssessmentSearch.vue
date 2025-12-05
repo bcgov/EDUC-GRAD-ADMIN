@@ -329,7 +329,6 @@ export default {
     },
   },
   async mounted() {
-    console.log(JSON.stringify(this.studentGradeCodes));
     await this.loadAssessmentSessions();
   },
   methods: {
