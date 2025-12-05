@@ -191,7 +191,7 @@ export default {
         currentValue: this.updateStudentAssessment?.provincialSpecialCaseCode,
         itemValueKey: "provincialSpecialCaseCode",
         permissionKey: "editAllSpecialCases",
-        allowedCodes: ['NME', 'NMF', 'NME10', 'NMF10'].includes(this.updateStudentAssessment?.assessmentTypeCode) ? ["A", "Q"] : ["A", "Q", "E"],
+        allowedCodes: this.getAllowedCodes(),
         defaultAllowedCodes: [],
       });
     },
@@ -228,6 +228,13 @@ export default {
     },
   },
   methods: {
+    getAllowedCodes(){
+      if(this.updateStudentAssessment?.proficiencyScore){
+        return ["Q"];
+      }else{
+        return ['NME', 'NMF', 'NME10', 'NMF10'].includes(this.updateStudentAssessment?.assessmentTypeCode) ? ["A", "Q"] : ["A", "Q", "E"];
+      }
+    },
     closeDialog() {
       this.updateStudentAssessment = null;
       this.isSaving = false;
