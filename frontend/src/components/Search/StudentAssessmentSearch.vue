@@ -412,7 +412,7 @@ export default {
             assessmentTypeCode: assessment.assessmentTypeCode
           }))
         }));
-        mapped.sort((a, b) => a.sessionDate.localeCompare(b.sessionDate));
+        mapped.sort((a, b) => b.sessionDate.localeCompare(a.sessionDate));
         this.assessmentSessions = mapped;
       } catch (error) {
         this.snackbarStore.showSnackbar(
