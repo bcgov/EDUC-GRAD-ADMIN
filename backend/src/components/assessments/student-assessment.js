@@ -369,6 +369,39 @@ async function transferStudentAssessments(req, res) {
   }
 }
 
+async function getAssessmentStudentSearchReport(req, res) {
+  try {
+    const search = [];
+    if (req.query?.searchParams) {
+      let criteriaArray = createMoreFiltersSearchCriteria(
+        req.query.searchParams
+      );
+      criteriaArray.forEach((criteria) => {
+        search.push(criteria);
+      });
+    }
+    const params = {
+      params: {
+        searchCriteriaList: JSON.stringify(search),
+      },
+    };
+    let data = await getCommonServiceData(
+      `${
+        config.get('server:studentAssessmentAPIURL') + API_BASE_ROUTE
+      }/report/assessment-students/search/download`,
+      params
+    );
+    return res.status(200).json(data);
+  } catch (e) {
+    await logApiError(e, 'Error getting student assessment search report');
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 module.exports = {
   getAssessmentTypeCodes,
   getStudentAssessmentById,
@@ -380,5 +413,6 @@ module.exports = {
   getProvincialSpecialCaseCodes,
   getStudentAssessmentHistoryPaginated,
   getStudentAssessmentByIdAndAssessmentId,
-  transferStudentAssessments
+  transferStudentAssessments,
+  getAssessmentStudentSearchReport
 };
