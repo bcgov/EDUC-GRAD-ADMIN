@@ -155,19 +155,37 @@
           >
             Reset
           </v-btn>
-          &nbsp;&nbsp;
         </div>
       </v-row>
     </v-form>
-    <div v-if="searchMessage">
+    <div v-if="searchMessage" class="d-flex align-center mt-8 mb-2">
       <v-alert
         type="success"
         variant="tonal"
         border="start"
-        class="mt-8 mb-2 ml-1 py-3 width-fit-content"
-        v-if="searchMessage"
+        class="ml-1 py-3 width-fit-content"
         :text="`${searchMessage}`"
       ></v-alert>
+      <v-spacer></v-spacer>
+      <div class="export-link-container">
+        <a
+          id="export-results-link"
+          @click="totalElements > 0 && !downloadLoading ? downloadReport() : null"
+          :class="{ 'disabled-link': totalElements === 0, 'loading-link': downloadLoading }"
+          class="export-results-link"
+        >
+          <v-progress-circular
+            v-if="downloadLoading"
+            indeterminate
+            size="16"
+            width="2"
+            color="rgb(56, 89, 138)"
+            class="mr-1"
+          ></v-progress-circular>
+          <v-icon v-else size="small" class="mr-1">mdi-download</v-icon>
+          <span>Export Results</span>
+        </a>
+      </div>
     </div>
 
     <transition name="fade">
@@ -202,6 +220,7 @@ import { useSnackbarStore } from "@/store/modules/snackbar";
 import schoolsService from "@/services/SchoolsService";
 import OpenStatusBadge from "@/components/Common/OpenStatusBadge.vue";
 import SchoolSelect from "@/components/Search/SchoolSelect.vue";
+import sharedMethods from "@/sharedMethods";
 
 export default {
   name: "StudentAssessmentSearch",
@@ -230,6 +249,7 @@ export default {
       searchMessage: "",
       errorMessage: "",
       searchLoading: false,
+      downloadLoading: false,
       isLoadingSessions: true,
       showAdvancedSearchForm: false,
       totalElements: "",
@@ -490,6 +510,54 @@ export default {
       this.currentPage = page;
       this.search();
     },
+    downloadReport() {
+      this.downloadLoading = true;
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const dateStr = `${year}${month}${day}`;
+      const defaultFilename = `StudentAssessmentSearch-${dateStr}.csv`;
+
+      StudentAssessmentService.downloadAssessmentStudentSearchReport(
+          this.apiSearchParamsBuilder()
+      )
+          .then((response) => {
+            if (response.data) {
+              const reportData = response.data;
+              sharedMethods.base64ToFileTypeAndDownload(
+                  reportData.documentData,
+                  'text/csv',
+                  defaultFilename
+              );
+              this.snackbarStore.showSnackbar(
+                  "Report downloaded successfully",
+                  "success",
+                  5000
+              );
+            }
+          })
+          .catch((error) => {
+            if (error?.response?.status) {
+              this.snackbarStore.showSnackbar(
+                  "ERROR " + error?.response?.statusText,
+                  "error",
+                  10000,
+                  "There was an error downloading the report: " +
+                  error?.response?.status
+              );
+            } else {
+              this.snackbarStore.showSnackbar(
+                  "Failed to download report",
+                  "error",
+                  5000
+              );
+            }
+          })
+          .finally(() => {
+            this.downloadLoading = false;
+          });
+    },
   },
 };
 </script>
@@ -529,5 +597,33 @@ export default {
 .assessment-search-button {
   margin-top: 32px;
   padding-left: 15px;
+}
+
+.export-link-container {
+  padding-right: 15px;
+}
+
+.export-results-link {
+  color: rgb(56, 89, 138) !important;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.export-results-link:hover:not(.disabled-link):not(.loading-link) {
+  color: rgb(41, 66, 102);
+}
+
+.export-results-link.disabled-link {
+  color: rgba(0, 0, 0, 0.38) !important;
+  cursor: default;
+  pointer-events: none;
+}
+
+.export-results-link.loading-link {
+  cursor: default;
+  pointer-events: none;
 }
 </style>

@@ -53,5 +53,12 @@ export default {
   async deleteAssessmentStudent(assessmentStudentId, allowRuleOverride) {
     const params = allowRuleOverride ? { allowRuleOverride: 'true' } : {};
     return ApiService.apiAxios.delete('/api/student-assessment/student/' + assessmentStudentId, { params });
+  },
+  downloadAssessmentStudentSearchReport(searchParams) {
+    return ApiService.apiAxios.get('/api/student-assessment/report/assessment-students/search/download', {
+      params: {
+        searchParams: omitBy(searchParams, isEmpty),
+      },
+    });
   }
 };
