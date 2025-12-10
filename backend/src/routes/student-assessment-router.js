@@ -22,7 +22,8 @@ const {
   getProvincialSpecialCaseCodes,
   getStudentAssessmentHistoryPaginated,
   getStudentAssessmentByIdAndAssessmentId,
-  transferStudentAssessments
+  transferStudentAssessments,
+  getAssessmentStudentSearchReport
 } = require("../components/assessments/student-assessment");
 
 const isValidUiTokenWithStaffEditRoles = auth.isValidUiTokenWithRoles(
@@ -125,6 +126,13 @@ router.post(
   isValidUiTokenWithStaffEditRoles,
   validate(postTransferStudentAssessmentSchema),
   transferStudentAssessments
+);
+
+router.get(
+  "/report/assessment-students/search/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getAssessmentStudentSearchReport
 );
 
 module.exports = router;

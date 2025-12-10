@@ -6,6 +6,7 @@
         <v-text-field
           label="Personal Education Number"
           v-model="pen"
+          maxlength="9"
           @input="validateStudent"
           type="number"
           variant="outlined"

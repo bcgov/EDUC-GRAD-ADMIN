@@ -146,12 +146,7 @@ export default {
         .then((response) => {
           this.courseAlerts = [];
           response.data.content.forEach((item) => {
-            if(item.event?.eventPayload){
-              const parsedPayload = JSON.parse(item.event.eventPayload);
-              if(parsedPayload.affectedTable === 'CRSE_COURSES') {
-                this.courseAlerts.push(item);
-              }
-            }
+            this.courseAlerts.push(item);
           });
           this.totalElements = response.data.totalElements;
         })
@@ -169,7 +164,7 @@ export default {
     getPassthroughURLText(activity) {
       if(activity.event?.eventPayload){
         const parsedPayload = JSON.parse(activity.event.eventPayload);
-        if(parsedPayload.affectedTable === 'CRSE_COURSES') {
+        if(parsedPayload.affectedTable === 'CRSE_COURSES' && parsedPayload.courseCode) {
           return parsedPayload.courseCode.padEnd(5,' ') + '' + parsedPayload.courseLevel;
         }
       }

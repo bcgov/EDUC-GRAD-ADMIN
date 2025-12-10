@@ -1,9 +1,9 @@
-'use strict';
-const nconf = require('nconf');
-const dotenv = require('dotenv');
-const path = require('path');
+"use strict";
+const nconf = require("nconf");
+const dotenv = require("dotenv");
+const path = require("path");
 dotenv.config();
-const env = process.env.NODE_ENV || 'local';
+const env = process.env.NODE_ENV || "local";
 
 nconf
   .argv()
@@ -16,7 +16,7 @@ nconf.overrides({
 
   server: {
     logLevel: process.env.LOG_LEVEL,
-    morganFormat: 'dev',
+    morganFormat: "dev",
     port: 8080,
   },
 });
@@ -24,13 +24,13 @@ nconf.overrides({
 nconf.defaults({
   environment: env,
   logoutEndpoint:
-    process.env.SOAM_URL + '/auth/realms/master/protocol/openid-connect/logout',
+    process.env.SOAM_URL + "/auth/realms/master/protocol/openid-connect/logout",
   siteMinder_logout_endpoint: process.env.SITEMINDER_LOGOUT_ENDPOINT,
   server: {
     frontend: process.env.SERVER_FRONTEND,
-    backend: process.env.SERVER_FRONTEND + '/api',
+    backend: process.env.SERVER_FRONTEND + "/api",
     logLevel: process.env.LOG_LEVEL,
-    morganFormat: 'dev',
+    morganFormat: "dev",
     port: 8080,
     session: {
       maxAge: +process.env.SESSION_MAX_AGE,
@@ -45,7 +45,7 @@ nconf.defaults({
       roleInfoOfficer: process.env.GRAD_ROLE_INFO_OFFICER,
       roleGradProgramAreaBA: process.env.GRAD_PROGRAM_AREA_BA,
       roleGradAssessments: process.env.GRAD_ROLE_ASSESSMENTS,
-      roleScholarshipAdmin: process.env.SCHOLARSHIP_ADMIN
+      roleScholarshipAdmin: process.env.SCHOLARSHIP_ADMIN,
     },
     idirIDPHint: process.env.IDIR_IDP_HINT,
     assessmentAPIURL: process.env.ASSESSMENT_API_URL,
@@ -61,7 +61,7 @@ nconf.defaults({
     distributionAPIURL: process.env.DISTRIBUTION_API_URL,
     instituteAPIURL: process.env.INSTITUTE_API_URL,
     studentAssessmentAPIURL: process.env.STUDENT_ASSESSMENT_API_URL,
-    scholarshipAPIURL: process.env.SCHOLARSHIP_API_ENDPOINT
+    scholarshipAPIURL: process.env.SCHOLARSHIP_API_ENDPOINT,
   },
   oidc: {
     publicKey: process.env.SOAM_PUBLIC_KEY,
@@ -83,7 +83,9 @@ nconf.defaults({
     password: process.env.REDIS_PASSWORD,
   },
   frontendConfig: {
-    studentAdminURL: process.env.STUDENT_ADMIN_URL
+    studentAdminURL: process.env.STUDENT_ADMIN_URL,
+    enableCRUD: process.env.CRUD_ENABLED,
+    showLegacy: process.env.SHOW_LEGACY,
   },
 });
 module.exports = nconf;

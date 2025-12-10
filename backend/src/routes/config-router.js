@@ -38,6 +38,8 @@ router.get(
       STUDENT_ADMIN_URL: frontendConfig.studentAdminURL,
       ENVIRONMENT: config.get("environment"),
       VERSION: version,
+      CRUD_ENABLED: frontendConfig.enableCRUD === "true",
+      SHOW_LEGACY: frontendConfig.showLegacy === "true",
     };
 
     return res.status(HttpStatus.OK).json(configMap);
