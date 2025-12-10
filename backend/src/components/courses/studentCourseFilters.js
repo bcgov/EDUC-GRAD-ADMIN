@@ -1,163 +1,209 @@
 "use strict";
+const { FILTER_OPERATION, VALUE_TYPE, CONDITION} = require('../constants/filter-operations');
 
 function createMoreFiltersSearchCriteria(searchFilter) {
-  let criteriaList = [];
+  let searchCriteriaList = [];
 
   Object.keys(searchFilter).forEach(function (key) {
     let pValue = searchFilter[key];
 
-    // SUPPORTED FILTERS (based on StudentCoursePaginationEntity fields)
-
     if (key === "studentStatus" && pValue) {
-      criteriaList.push({
+      searchCriteriaList.push({
         key: "graduationStudentRecordEntity.studentStatus",
-        operation: "eq",
+        operation: FILTER_OPERATION.EQUAL,
         value: pValue,
-        valueType: "STRING",
+        valueType: VALUE_TYPE.STRING,
+        condition: CONDITION.AND
       });
     } else if (key === "schoolOfRecordSchoolID" && pValue) {
-      criteriaList.push({
+      searchCriteriaList.push({
         key: "graduationStudentRecordEntity.schoolOfRecordId",
-        operation: "eq",
+        operation: FILTER_OPERATION.EQUAL,
         value: pValue,
-        valueType: "UUID",
+        valueType: VALUE_TYPE.UUID,
+        condition: CONDITION.AND
       });
     } else if (key === "grade" && pValue) {
-      criteriaList.push({
+      searchCriteriaList.push({
         key: "graduationStudentRecordEntity.studentGrade",
-        operation: "eq",
+        operation: FILTER_OPERATION.EQUAL,
         value: pValue,
-        valueType: "STRING",
+        valueType: VALUE_TYPE.STRING,
+        condition: CONDITION.AND
       });
     } else if (key === "courseSessionFrom" && pValue) {
-      criteriaList.push({
+      searchCriteriaList.push({
         key: "courseSession",
-        operation: "gte",
-        value: pValue.replace("-", ""), // Convert YYYY-MM to YYYYMM
-        valueType: "STRING",
+        operation: FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO,
+        value: pValue.replace("-", ""),
+        valueType: VALUE_TYPE.STRING,
+        condition: CONDITION.AND
       });
     } else if (key === "courseSessionTo" && pValue) {
-      criteriaList.push({
+      searchCriteriaList.push({
         key: "courseSession",
-        operation: "lte",
-        value: pValue.replace("-", ""), // Convert YYYY-MM to YYYYMM
-        valueType: "STRING",
+        operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO,
+        value: pValue.replace("-", ""),
+        valueType: VALUE_TYPE.STRING,
+        condition: CONDITION.AND
       });
     } else if (key === "equivalencyChallenge" && pValue) {
-      criteriaList.push({
-        key: "equivOrChallenge",
-        operation: "eq",
-        value: pValue,
-        valueType: "STRING",
-      });
-    } else if (key === "associatedExam" && pValue) {
-      // Check if studentExamId is not null for "yes", is null for "no"
-      if (pValue === "yes") {
-        criteriaList.push({
-          key: "studentExamId",
-          operation: "not_null",
-          value: "",
-          valueType: "UUID",
-        });
-      } else {
-        criteriaList.push({
-          key: "studentExamId",
-          operation: "is_null",
-          value: "",
-          valueType: "UUID",
-        });
+      let codeValue = "";
+      if (pValue === "equivalency") {
+        codeValue = "E";
+      } else if (pValue === "challenge") {
+        codeValue = "C";
       }
+      searchCriteriaList.push({
+        key: "equivOrChallenge",
+        operation: FILTER_OPERATION.EQUAL,
+        value: codeValue,
+        valueType: VALUE_TYPE.STRING,
+        condition: CONDITION.AND
+      });
+    } else if (key === "schoolAtGraduationSchoolID" && pValue) {
+      searchCriteriaList.push({
+        key: "graduationStudentRecordEntity.schoolAtGraduationId",
+        operation: FILTER_OPERATION.EQUAL,
+        value: pValue,
+        valueType: VALUE_TYPE.UUID,
+        condition: CONDITION.AND
+      });
+    } else if (key === "program" && pValue) {
+      searchCriteriaList.push({
+        key: "graduationStudentRecordEntity.program",
+        operation: FILTER_OPERATION.EQUAL,
+        value: pValue,
+        valueType: VALUE_TYPE.STRING,
+        condition: CONDITION.AND
+      });
+    } else if (key === "finalLetterGrade" && pValue) {
+      if (pValue === "yes") {
+        const criteria = {
+          key: "finalLetterGrade",
+          operation: FILTER_OPERATION.NOT_EQUAL,
+          valueType: VALUE_TYPE.STRING,
+          condition: CONDITION.AND
+        };
+        searchCriteriaList.push(criteria);
+      } else {
+        const criteria = {
+          key: "finalLetterGrade",
+          operation: FILTER_OPERATION.EQUAL,
+          valueType: VALUE_TYPE.STRING,
+          condition: CONDITION.AND
+        };
+        searchCriteriaList.push(criteria);
+      }
+    } else if (key === "fineArtsAppliedSkill" && pValue) {
+      let codeValue = "";
+      if (pValue === "fineArts") {
+        codeValue = "F";
+      } else if (pValue === "appliedSkills") {
+        codeValue = "A";
+      } else if (pValue === "both") {
+        codeValue = "B";
+      }
+      searchCriteriaList.push({
+        key: "fineArtsAppliedSkillsCode",
+        operation: FILTER_OPERATION.EQUAL,
+        value: codeValue,
+        valueType: VALUE_TYPE.STRING,
+        condition: CONDITION.AND
+      });
     }
-
-    // DISABLED FILTERS (fields not available in StudentCoursePaginationEntity):
-    // TODO: Re-enable these filters when entity structure is updated
-
-    // } else if (key === "districtOfRecord" && pValue) {
-    //   criteriaList.push({
-    //     key: key,
-    //     operation: "eq",
-    //     value: pValue,
-    //     valueType: "STRING",
-    //   });
-    // } else if (key === "schoolAtGraduationSchoolID" && pValue) {
-    //   criteriaList.push({
-    //     key: "schoolAtGraduation",
-    //     operation: "eq",
-    //     value: pValue,
-    //     valueType: "UUID",
-    //   });
-    // } else if (key === "program" && pValue) {
-    //   criteriaList.push({
-    //     key: "programCode",
-    //     operation: "eq",
-    //     value: pValue,
-    //     valueType: "STRING",
-    //   });
-    // } else if (key === "programComplete" && pValue) {
-    //   criteriaList.push({
-    //     key: key,
-    //     operation: "eq",
-    //     value: pValue === "yes" ? "true" : "false",
-    //     valueType: "BOOLEAN",
-    //   });
-    // } else if (key === "completionDateFrom" && pValue) {
-    //   criteriaList.push({
-    //     key: "completionDate",
-    //     operation: "gte",
-    //     value: pValue + "-01", // Add day to make it a full date
-    //     valueType: "DATE",
-    //   });
-    // } else if (key === "completionDateTo" && pValue) {
-    //   // Get last day of the month
-    //   const dateParts = pValue.split("-");
-    //   const year = parseInt(dateParts[0]);
-    //   const month = parseInt(dateParts[1]);
-    //   const lastDay = new Date(year, month, 0).getDate();
-    //   criteriaList.push({
-    //     key: "completionDate",
-    //     operation: "lte",
-    //     value: pValue + "-" + lastDay,
-    //     valueType: "DATE",
-    //   });
-    // } else if (key === "courseCode" && pValue) {
-    //   criteriaList.push({
-    //     key: key,
-    //     operation: "eq",
-    //     value: pValue,
-    //     valueType: "STRING",
-    //   });
-    // } else if (key === "courseLevel" && pValue) {
-    //   criteriaList.push({
-    //     key: key,
-    //     operation: "eq",
-    //     value: pValue,
-    //     valueType: "STRING",
-    //   });
-    // } else if (key === "finalLetterGrade" && pValue) {
-    //   criteriaList.push({
-    //     key: "hasFinalLetterGrade",
-    //     operation: "eq",
-    //     value: pValue === "yes" ? "true" : "false",
-    //     valueType: "BOOLEAN",
-    //   });
-    // } else if (key === "fineArtsAppliedSkill" && pValue) {
-    //   criteriaList.push({
-    //     key: key,
-    //     operation: "eq",
-    //     value: pValue,
-    //     valueType: "STRING",
-    //   });
-    // }
   });
 
-  if (criteriaList.length === 0) {
-    return [];
-  }
 
-  return [{
-    condition: "AND",
-    searchCriteriaList: criteriaList
-  }];
+  /*
+   // todo not working filters
+   else if (key === "completionDateFrom" && pValue) {
+      const dateObj = new Date(pValue + "T00:00:00");
+      searchCriteriaList.push({
+        key: "graduationStudentRecordEntity.programCompletionDate",
+        operation: FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO,
+        value: dateObj.getTime().toString(),
+        valueType: VALUE_TYPE.LONG,
+        condition: CONDITION.AND
+      });
+    } else if (key === "completionDateTo" && pValue) {
+      const dateObj = new Date(pValue + "T23:59:59");
+      searchCriteriaList.push({
+        key: "graduationStudentRecordEntity.programCompletionDate",
+        operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO,
+        value: dateObj.getTime().toString(),
+        valueType: VALUE_TYPE.LONG,
+        condition: CONDITION.AND
+      });
+    }  else if (key === "associatedExam" && pValue) {
+      if (pValue === "yes") {
+        const criteria = {
+          key: "studentExamId",
+          operation: FILTER_OPERATION.NOT_EQUAL,
+          valueType: VALUE_TYPE.UUID,
+          condition: CONDITION.AND
+        };
+        searchCriteriaList.push(criteria);
+      } else {
+        const criteria = {
+          key: "studentExamId",
+          operation: FILTER_OPERATION.EQUAL,
+          valueType: VALUE_TYPE.UUID,
+          condition: CONDITION.AND
+        };
+        searchCriteriaList.push(criteria);
+      }  else if (key === "programComplete" && pValue) {
+      if (pValue === "yes") {
+        const criteria = {
+          key: "graduationStudentRecordEntity.programCompletionDate",
+          operation: FILTER_OPERATION.NOT_EQUAL,
+          valueType: VALUE_TYPE.STRING,
+          condition: CONDITION.AND
+        };
+        searchCriteriaList.push(criteria);
+      } else {
+        const criteria = {
+          key: "graduationStudentRecordEntity.programCompletionDate",
+          operation: FILTER_OPERATION.EQUAL,
+          valueType: VALUE_TYPE.STRING,
+          condition: CONDITION.AND
+        };
+        searchCriteriaList.push(criteria);
+      }
+    }
+    }
+
+
+
+
+    todo - we have course id but not course code or level, we need to pull in course code/level cache to course id
+     else if (key === "courseCode" && pValue) {
+      searchCriteriaList.push({
+        key: "courseCode",
+        operation: FILTER_OPERATION.CONTAINS,
+        value: pValue,
+        valueType: VALUE_TYPE.STRING,
+        condition: CONDITION.AND
+      });
+    } else if (key === "courseLevel" && pValue) {
+      searchCriteriaList.push({
+        key: "courseLevel",
+        operation: FILTER_OPERATION.CONTAINS,
+        value: pValue,
+        valueType: VALUE_TYPE.STRING,
+        condition: CONDITION.AND
+      });
+    }
+   */
+
+  const search = [];
+  if (searchCriteriaList.length > 0) {
+    search.push({
+      condition: CONDITION.AND,
+      searchCriteriaList: searchCriteriaList
+    });
+  }
+  return search;
 }
 
 module.exports = {

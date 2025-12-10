@@ -2,7 +2,7 @@
   <div class="course-search-form mb-4">
     <v-form v-on:submit.prevent>
       <v-row class="mt-1">
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-2">
           <v-select
             id="student-status"
             v-model="searchParams.studentStatus"
@@ -14,7 +14,7 @@
             v-on:keyup="keyHandler"
           ></v-select>
         </div>
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-2">
           <SchoolSelect
             v-model="searchParams.schoolOfRecordSchoolID"
             :disabled="false"
@@ -23,7 +23,7 @@
             :item-title="schoolTitle"
           />
         </div>
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-2">
           <v-autocomplete
             id="district-of-record"
             v-model="searchParams.districtOfRecord"
@@ -37,7 +37,7 @@
             v-on:keyup="keyHandler"
           ></v-autocomplete>
         </div>
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-2">
           <SchoolSelect
             v-model="searchParams.schoolAtGraduationSchoolID"
             :disabled="false"
@@ -46,9 +46,7 @@
             :item-title="schoolTitle"
           />
         </div>
-      </v-row>
-      <v-row class="mt-1">
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-2">
           <v-autocomplete
             id="grade"
             label="Grade"
@@ -63,7 +61,7 @@
             clearable
           />
         </div>
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-2">
           <v-autocomplete
             id="program"
             label="Program"
@@ -78,7 +76,9 @@
             clearable
           />
         </div>
-        <div class="course-search-field col-12 col-md-3">
+      </v-row>
+      <v-row class="mt-1">
+        <div class="course-search-field col-12 col-md-2">
           <v-select
             id="program-complete"
             label="Program Complete?"
@@ -91,35 +91,37 @@
             clearable
           />
         </div>
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-auto">
           <v-text-field
             id="completion-date-from"
             label="Completion Date From"
             variant="outlined"
             density="compact"
-            type="month"
+            type="date"
             class="form__input"
             v-model="searchParams.completionDateFrom"
             v-on:keyup="keyHandler"
+            placeholder="YYYY-MM-DD"
+            max="9999-12-30"
             clearable
           />
         </div>
-      </v-row>
-      <v-row class="mt-1">
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-auto">
           <v-text-field
             id="completion-date-to"
             label="Completion Date To"
             variant="outlined"
             density="compact"
-            type="month"
+            type="date"
             class="form__input"
             v-model="searchParams.completionDateTo"
             v-on:keyup="keyHandler"
+            placeholder="YYYY-MM-DD"
+            max="9999-12-30"
             clearable
           />
         </div>
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-2">
           <v-text-field
             id="course-code"
             label="Course Code"
@@ -132,7 +134,7 @@
             clearable
           />
         </div>
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-2">
           <v-text-field
             id="course-level"
             label="Course Level"
@@ -145,7 +147,7 @@
             clearable
           />
         </div>
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-2">
           <v-select
             id="associated-exam"
             label="Associated Exam?"
@@ -160,7 +162,7 @@
         </div>
       </v-row>
       <v-row class="mt-1">
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-2">
           <v-select
             id="final-letter-grade"
             label="Final Letter Grade?"
@@ -173,7 +175,7 @@
             clearable
           />
         </div>
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-auto">
           <v-text-field
             id="course-session-from"
             label="Course Session From"
@@ -183,10 +185,11 @@
             class="form__input"
             v-model="searchParams.courseSessionFrom"
             v-on:keyup="keyHandler"
+            placeholder="YYYY-MM"
             clearable
           />
         </div>
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-auto">
           <v-text-field
             id="course-session-to"
             label="Course Session To"
@@ -196,10 +199,11 @@
             class="form__input"
             v-model="searchParams.courseSessionTo"
             v-on:keyup="keyHandler"
+            placeholder="YYYY-MM"
             clearable
           />
         </div>
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-2">
           <v-select
             id="equivalency-challenge"
             label="Equivalency/Challenge"
@@ -212,9 +216,7 @@
             clearable
           />
         </div>
-      </v-row>
-      <v-row class="mt-1">
-        <div class="course-search-field col-12 col-md-3">
+        <div class="course-search-field col-12 col-md-2">
           <v-select
             id="fine-arts-applied-skill"
             label="Fine Arts/Applied Skill"
@@ -311,7 +313,6 @@ import { mapState } from "pinia";
 import { useAppStore } from "@/store/modules/app";
 import { courseSearchStore } from "@/store/modules/courseSearch";
 import { useSnackbarStore } from "@/store/modules/snackbar";
-import schoolsService from "@/services/SchoolsService";
 import StudentCourseService from "@/services/StudentCourseService";
 import SchoolSelect from "@/components/Search/SchoolSelect.vue";
 import sharedMethods from "@/sharedMethods";
@@ -611,13 +612,16 @@ export default {
         .then((response) => {
           if (response.data) {
             this.responseContent = response.data;
-            this.searchResults = this.responseContent?.content;
+            // Transform the data to match our table structure
+            this.searchResults = this.responseContent?.content?.map(item => this.transformCourseData(item)) || [];
+            // Populate school names after transformation
+            this.populateSchoolNames();
             this.totalElements = this.responseContent.totalElements;
             this.totalPages = this.responseContent.totalPages;
             this.searchMessage =
               this.responseContent.totalElements === 1
-                ? "1 student record found. "
-                : this.totalElements + " student records found. ";
+                ? "1 result found"
+                : this.totalElements + " results found";
           }
         })
         .catch((error) => {
@@ -634,6 +638,76 @@ export default {
         .finally(() => {
           this.searchLoading = false;
         });
+    },
+
+    transformCourseData(item) {
+      // TODO: Implement course cache to look up courseCode and courseLevel from courseID
+      // For now, just show the courseID as placeholders
+      const courseCode = item.courseID ? item.courseID.toString() : '';
+      const courseLevel = '';
+
+      const courseSession = item.courseSession ?
+        `${item.courseSession.substring(0, 4)}-${item.courseSession.substring(4, 6)}` : '';
+
+      const birthdate = item.gradStudent?.dob ?
+        new Date(item.gradStudent.dob).toISOString().split('T')[0] : '';
+
+      const completionDate = item.gradStudent?.programCompletionDate ?
+        new Date(item.gradStudent.programCompletionDate).toISOString().split('T')[0] : '';
+
+      const equivChall = item.equivOrChallenge === 'E' ? 'E' :
+                         item.equivOrChallenge === 'C' ? 'C' : '';
+
+      const fineArtsAppSkill = item.fineArtsAppliedSkillsCode === 'F' ? 'F' :
+                               item.fineArtsAppliedSkillsCode === 'A' ? 'A' :
+                               item.fineArtsAppliedSkillsCode === 'B' ? 'B' : '';
+
+      const hasExam = item.studentExamId ? 'Yes' : 'No';
+
+      return {
+        studentID: item.gradStudent?.studentID,
+        pen: item.gradStudent?.pen,
+        studentStatus: item.gradStudent?.studentStatus,
+        surname: item.gradStudent?.legalLastName,
+        birthdate: birthdate,
+        grade: item.gradStudent?.studentGrade,
+        program: item.gradStudent?.program,
+        completionDate: completionDate,
+        schoolOfRecordCode: item.gradStudent?.schoolOfRecord,
+        schoolOfRecordName: '', // Will be populated by populateSchoolNames()
+        schoolOfGraduationCode: item.gradStudent?.schoolAtGraduation,
+        schoolOfGraduationName: '', // Will be populated by populateSchoolNames()
+        courseCode: courseCode,
+        courseLevel: courseLevel,
+        courseSession: courseSession,
+        interimPercent: item.interimPercent,
+        interimLG: item.interimLetterGrade,
+        finalPercent: item.finalPercent,
+        finalLG: item.finalLetterGrade,
+        credits: item.credits,
+        equivChall: equivChall,
+        fineArtsAppSkill: fineArtsAppSkill,
+        hasExam: hasExam
+      };
+    },
+
+    populateSchoolNames() {
+      // Create a map from school records for faster lookup by mincode
+      const schoolMincodeMap = new Map(
+        this.getSchoolsList.map((school) => [school.mincode, school])
+      );
+
+      this.searchResults.forEach((result) => {
+        if (result.schoolOfRecordCode && schoolMincodeMap.has(result.schoolOfRecordCode)) {
+          const school = schoolMincodeMap.get(result.schoolOfRecordCode);
+          result.schoolOfRecordName = school.displayName;
+        }
+
+        if (result.schoolOfGraduationCode && schoolMincodeMap.has(result.schoolOfGraduationCode)) {
+          const school = schoolMincodeMap.get(result.schoolOfGraduationCode);
+          result.schoolOfGraduationName = school.displayName;
+        }
+      });
     },
 
     updateDataTable({ page }) {
@@ -700,6 +774,8 @@ export default {
 
 .course-search-form {
   background-color: #fff;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .course-search-field {
@@ -720,7 +796,7 @@ export default {
 
 .course-search-button {
   margin-top: 32px;
-  padding-left: 15px;
+  padding-left: 5px;
 }
 
 .export-link-container {
@@ -728,7 +804,7 @@ export default {
 }
 
 .export-results-link {
-  color: rgb(56, 89, 138);
+  color: rgb(56, 89, 138) !important;
   text-decoration: none;
   cursor: pointer;
   display: inline-flex;
@@ -741,7 +817,7 @@ export default {
 }
 
 .export-results-link.disabled-link {
-  color: rgba(0, 0, 0, 0.38);
+  color: rgba(0, 0, 0, 0.38) !important;
   cursor: default;
   pointer-events: none;
 }
