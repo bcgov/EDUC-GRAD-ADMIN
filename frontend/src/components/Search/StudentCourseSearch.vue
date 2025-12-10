@@ -557,7 +557,6 @@ export default {
           }
 
           const districtId = district.districtId;
-          console.log('districtId:', districtId);
 
           // Filter schools by districtId (UUID)
           const schoolsInDistrict = this.getSchoolsList.filter(
