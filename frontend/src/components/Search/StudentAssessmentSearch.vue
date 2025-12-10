@@ -523,33 +523,45 @@ export default {
           this.apiSearchParamsBuilder()
       )
           .then((response) => {
-            if (response.data) {
-              const reportData = response.data;
-              sharedMethods.base64ToFileTypeAndDownload(
-                  reportData.documentData,
-                  'text/csv',
-                  defaultFilename
-              );
-              this.snackbarStore.showSnackbar(
-                  "Report downloaded successfully",
-                  "success",
-                  5000
-              );
+            const blob = response.data;
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+
+            let filename = defaultFilename;
+            const dispo = response.headers['content-disposition'];
+            if (dispo) {
+              const match = dispo.match(/filename="([^"]+)"/);
+              if (match && match[1]) {
+                filename = match[1];
+              }
             }
+
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+            this.snackbarStore.showSnackbar(
+                'Report downloaded successfully',
+                'success',
+                5000
+            );
           })
           .catch((error) => {
             if (error?.response?.status) {
               this.snackbarStore.showSnackbar(
-                  "ERROR " + error?.response?.statusText,
-                  "error",
+                  'ERROR ' + error.response.statusText,
+                  'error',
                   10000,
-                  "There was an error downloading the report: " +
-                  error?.response?.status
+                  'There was an error downloading the report: ' +
+                  error.response.status
               );
             } else {
               this.snackbarStore.showSnackbar(
-                  "Failed to download report",
-                  "error",
+                  'Failed to download report',
+                  'error',
                   5000
               );
             }
@@ -557,7 +569,7 @@ export default {
           .finally(() => {
             this.downloadLoading = false;
           });
-    },
+    }
   },
 };
 </script>
