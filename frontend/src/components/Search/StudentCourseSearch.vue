@@ -368,7 +368,6 @@ export default {
         { title: "Applied Skills", value: "appliedSkills" },
         { title: "Both", value: "both" },
       ],
-      districtsList: [],
       searchResultsHeaders: [
         {
           key: "pen",
@@ -531,12 +530,11 @@ export default {
     ...mapState(courseSearchStore, ["searchParams"]),
     ...mapState(useAppStore, {
       getSchoolsList: "getSchoolsList",
+      schoolByMincode: "schoolByMincode",
+      districtsList: "getDistrictList",
       studentGradeCodes: "studentGradeCodes",
       programOptions: "programOptions",
     }),
-  },
-  async mounted() {
-    await this.loadDistricts();
   },
   methods: {
     apiSearchParamsBuilder() {
@@ -548,9 +546,34 @@ export default {
         return !(Array.isArray(value) && value.length === 0);
       });
       searchKeys.forEach((key) => {
-        apiSearchParams[key] = Array.isArray(this.searchParams[key])
-          ? this.searchParams[key].join(",")
-          : this.searchParams[key];
+        if (key === "districtOfRecord") {
+          const districtNumber = this.searchParams[key];
+
+          // Find the district object to get its districtId
+          const district = this.districtsList.find(d => d.districtNumber === districtNumber);
+
+          if (!district) {
+            return;
+          }
+
+          const districtId = district.districtId;
+          console.log('districtId:', districtId);
+
+          // Filter schools by districtId (UUID)
+          const schoolsInDistrict = this.getSchoolsList.filter(
+            (school) => school.districtId === districtId
+          );
+
+          const schoolIds = schoolsInDistrict.map((school) => school.schoolId).join(",");
+
+          if (schoolIds) {
+            apiSearchParams[key] = schoolIds;
+          }
+        } else {
+          apiSearchParams[key] = Array.isArray(this.searchParams[key])
+            ? this.searchParams[key].join(",")
+            : this.searchParams[key];
+        }
       });
       return apiSearchParams;
     },
@@ -568,11 +591,6 @@ export default {
       }
     },
 
-    async loadDistricts() {
-      // TODO: Load districts from API
-      // For now using placeholder
-      this.districtsList = [];
-    },
 
     onSearchClicked() {
       this.hasSearched = true;
@@ -590,8 +608,8 @@ export default {
 
     districtTitle(item) {
       if (item) {
-        const status = item.closedDate ? "Closed" : "Open";
-        return `${item.districtNumber} - ${item.districtName} (${status})`;
+        const status = item.districtStatusCode === "ACTIVE" ? "Open" : "Closed";
+        return `${item.districtNumber} - ${item.displayName} (${status})`;
       } else {
         return null;
       }
@@ -692,20 +710,19 @@ export default {
     },
 
     populateSchoolNames() {
-      // Create a map from school records for faster lookup by mincode
-      const schoolMincodeMap = new Map(
-        this.getSchoolsList.map((school) => [school.mincode, school])
-      );
-
       this.searchResults.forEach((result) => {
-        if (result.schoolOfRecordCode && schoolMincodeMap.has(result.schoolOfRecordCode)) {
-          const school = schoolMincodeMap.get(result.schoolOfRecordCode);
-          result.schoolOfRecordName = school.displayName;
+        if (result.schoolOfRecordCode) {
+          const school = this.schoolByMincode(result.schoolOfRecordCode);
+          if (school) {
+            result.schoolOfRecordName = school.displayName;
+          }
         }
 
-        if (result.schoolOfGraduationCode && schoolMincodeMap.has(result.schoolOfGraduationCode)) {
-          const school = schoolMincodeMap.get(result.schoolOfGraduationCode);
-          result.schoolOfGraduationName = school.displayName;
+        if (result.schoolOfGraduationCode) {
+          const school = this.schoolByMincode(result.schoolOfGraduationCode);
+          if (school) {
+            result.schoolOfGraduationName = school.displayName;
+          }
         }
       });
     },

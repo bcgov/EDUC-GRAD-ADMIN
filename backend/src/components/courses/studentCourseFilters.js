@@ -15,6 +15,14 @@ function createMoreFiltersSearchCriteria(searchFilter) {
         valueType: VALUE_TYPE.STRING,
         condition: CONDITION.AND
       });
+    } else if (key === "districtOfRecord" && pValue) {
+      searchCriteriaList.push({
+        key: "graduationStudentRecordEntity.schoolOfRecordId",
+        operation: FILTER_OPERATION.IN,
+        value: pValue,
+        valueType: VALUE_TYPE.UUID,
+        condition: CONDITION.AND
+      });
     } else if (key === "schoolOfRecordSchoolID" && pValue) {
       searchCriteriaList.push({
         key: "graduationStudentRecordEntity.schoolOfRecordId",
