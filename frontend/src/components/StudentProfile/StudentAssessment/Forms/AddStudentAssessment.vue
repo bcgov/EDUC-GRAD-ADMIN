@@ -236,6 +236,7 @@ export default defineComponent({
       studentCourses: "studentCourses",
       studentPenAndName: "formattedStudentName",
       studentStatus: (state) => state.student.profile.studentStatus,
+      schoolOfRecordId: (state) => state.student.profile.schoolOfRecordId
     }),
     provincialSpecialCaseDropdown() {
       // Find the matching assessment for the current student
@@ -307,12 +308,10 @@ export default defineComponent({
     };
   },
   watch: {
-    "updateStudentAssessment.provincialSpecialCaseCode"() {
-      this.$nextTick(() => {
-        this.$refs.newStudentAssessmentForm?.validate();
-      });
-    },
-    "updateStudentAssessment.provincialSpecialCaseCode"() {
+    "updateStudentAssessment.provincialSpecialCaseCode"(val) {
+      if(val != null && this.updateStudentAssessment.schoolAtWriteSchoolID == null) {
+        this.updateStudentAssessment.schoolAtWriteSchoolID = this.schoolOfRecordId
+      }
       this.$nextTick(() => {
         this.$refs.newStudentAssessmentForm?.validate();
       });
