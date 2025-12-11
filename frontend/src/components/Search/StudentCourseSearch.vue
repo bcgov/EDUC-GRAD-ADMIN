@@ -121,7 +121,7 @@
             clearable
           />
         </div>
-        <div class="course-search-field col-12 col-md-4">
+        <div class="course-search-field col-12 col-md-2">
           <v-autocomplete
             id="course"
             label="Course"
