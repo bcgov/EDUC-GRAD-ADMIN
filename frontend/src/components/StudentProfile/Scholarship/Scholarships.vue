@@ -7,7 +7,7 @@
                         <v-col class="font-weight-bold d-flex justify-start" cols="4">
                             Citizenship
                         </v-col>
-                        <v-col class="d-flex justify-end" v-if="!isCitizenshipEdit">
+                        <v-col class="d-flex justify-end" v-if="!isCitizenshipEdit && hasPermissions('SCHOLARSHIP', 'scholarshipViewAndEdit')">
                             <v-btn id="edit" color="#003366" text="Edit" variant="outlined" class="mr-1"
                                 prepend-icon="mdi-pencil" @click="editCitizenship" />
                         </v-col>
@@ -54,7 +54,7 @@
                         <v-col class="font-weight-bold d-flex justify-start" cols="4">
                             Address
                         </v-col>
-                        <v-col class="d-flex justify-end" v-if="!isEdit">
+                        <v-col class="d-flex justify-end" v-if="!isEdit && hasPermissions('SCHOLARSHIP', 'scholarshipViewAndEdit')">
                             <v-btn id="edit" color="#003366" text="Edit" variant="outlined" class="mr-1"
                                 prepend-icon="mdi-pencil" @click="edit" />
                         </v-col>
@@ -209,8 +209,10 @@
 
 <script>
 import ApiService from '@/common/apiService';
+import { mapState } from "pinia";
 import { useSnackbarStore } from '@/store/modules/snackbar';
 import { cloneDeep } from 'lodash';
+import { useAccessStore } from "@/store/modules/access";
 
 export default {
     name: 'Scholarships',
@@ -244,7 +246,9 @@ export default {
         };
     },
     computed: {
-
+    ...mapState(useAccessStore, [
+      "hasPermissions"
+    ])
     },
     watch: {
 
@@ -344,7 +348,7 @@ export default {
             this.isCitizenshipEdit = !this.isCitizenshipEdit;
         },
         updateCitizenship() {
-            ApiService.apiAxios.post(`/api/student/${this.studentID}/gradProgram/status`, this.studentCopy)
+            ApiService.apiAxios.post(`/api/scholarship/student/${this.studentID}/citizenship/status`, this.studentCopy)
                 .then(() => {
                     this.snackbarStore.showSnackbar('Student citizenship has been updated.',);
                 }).catch(error => {
