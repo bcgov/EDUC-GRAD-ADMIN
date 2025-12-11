@@ -294,6 +294,17 @@ async function putCourseEventHistory(req, res) {
   }
 }
 
+async function getAllCoreg39Courses(req, res) {
+  try {
+    const cacheService = require('./cache-service');
+    const courses = cacheService.getAllCoreg39CoursesJSON();
+    return res.status(200).json(courses);
+  } catch (e) {
+    log.error('Error getting coreg39 courses from cache:', e);
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getCourseByCodeAndLevel,
   getCourseByID,
@@ -308,4 +319,5 @@ module.exports = {
   getStudentExamDetailsLegacy,
   getCourseEventHistory,
   putCourseEventHistory,
+  getAllCoreg39Courses,
 };

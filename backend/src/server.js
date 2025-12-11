@@ -12,6 +12,19 @@ dotenv.config();
 
 const app = require('./app');
 
+if(process.env.NODE_ENV !== 'test'){  //do not cache for test environment to stop GitHub Actions test from hanging.
+  const cacheService = require('./components/cache-service');
+  const crudEnabled = config.get('frontendConfig').enableCRUD;
+  console.log(`CRUD Enabled: ${crudEnabled}`);
+  if(crudEnabled) {
+    cacheService.loadCoreg39CoursesToMap().then(() => {
+      log.info('Loaded coreg 39 courses data to memory');
+    }).catch((e) => {
+      log.error('Error loading coreg 39 courses during boot .', e);
+    });
+  }
+}
+
 /**
  * Get port from environment and store in Express.
  */

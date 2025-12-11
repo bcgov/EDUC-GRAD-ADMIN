@@ -160,7 +160,8 @@ jobs:
           ${{ secrets.GRAD_BUSINESS_NAMESPACE }} \
           ${{ secrets.STUDENT_ADMIN_NAMESPACE }} \
           ${{ secrets.STUDENT_ASSESSMENT_NAMESPACE }} \
-          ${{ secrets.SCHOLARSHIP_NAMESPACE}}
+          ${{ secrets.SCHOLARSHIP_NAMESPACE}} \
+          ${{ secrets.COREG_NAMESPACE}}
 
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.APP_NAME_BACKEND }} 

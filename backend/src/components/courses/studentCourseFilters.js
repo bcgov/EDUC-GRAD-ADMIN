@@ -39,6 +39,14 @@ function createMoreFiltersSearchCriteria(searchFilter) {
         valueType: VALUE_TYPE.STRING,
         condition: CONDITION.AND
       });
+    } else if (key === "courseID" && pValue) {
+      searchCriteriaList.push({
+        key: "courseID",
+        operation: FILTER_OPERATION.EQUAL,
+        value: pValue,
+        valueType: VALUE_TYPE.LONG,
+        condition: CONDITION.AND
+      });
     } else if (key === "courseSessionFrom" && pValue) {
       searchCriteriaList.push({
         key: "courseSession",

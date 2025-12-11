@@ -15,6 +15,7 @@ const {
   getCourseRequirements,
   getStudentCoursesLegacy,
   getStudentExamDetailsLegacy, getCourseEventHistory, putCourseEventHistory,
+  getAllCoreg39Courses,
 } = require('../components/course');
 const validate = require('../components/validator');
 const {
@@ -128,6 +129,13 @@ router.put(
   passport.authenticate('jwt', { session: false }), 
   isValidUiTokenWithEditStaffRoles,
   putCourseEventHistory
+);
+
+router.get(
+  '/coreg/all',
+  passport.authenticate('jwt', { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getAllCoreg39Courses
 );
 
 module.exports = router;

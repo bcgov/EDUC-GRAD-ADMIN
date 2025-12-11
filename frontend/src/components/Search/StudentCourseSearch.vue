@@ -121,29 +121,18 @@
             clearable
           />
         </div>
-        <div class="course-search-field col-12 col-md-2">
-          <v-text-field
-            id="course-code"
-            label="Course Code"
+        <div class="course-search-field col-12 col-md-4">
+          <v-autocomplete
+            id="course"
+            label="Course"
+            :items="courseOptions"
+            :item-title="courseTitle"
+            item-value="courseID"
             variant="outlined"
             density="compact"
             class="form__input"
-            v-model.trim="searchParams.courseCode"
+            v-model="searchParams.courseID"
             v-on:keyup="keyHandler"
-            maxlength="5"
-            clearable
-          />
-        </div>
-        <div class="course-search-field col-12 col-md-2">
-          <v-text-field
-            id="course-level"
-            label="Course Level"
-            variant="outlined"
-            density="compact"
-            class="form__input"
-            v-model.trim="searchParams.courseLevel"
-            v-on:keyup="keyHandler"
-            maxlength="3"
             clearable
           />
         </div>
@@ -535,8 +524,22 @@ export default {
       studentGradeCodes: "studentGradeCodes",
       programOptions: "programOptions",
     }),
+    courseOptions() {
+      return this.appStore.getCoregCourses.slice().sort((a, b) => {
+        return a.externalCode.localeCompare(b.externalCode);
+      });
+    },
+  },
+  created() {
+    this.appStore = useAppStore();
   },
   methods: {
+    courseTitle(item) {
+      if (item) {
+        return `${item.externalCode}`;
+      }
+      return "";
+    },
     apiSearchParamsBuilder() {
       const apiSearchParams = {};
       const searchKeys = Object.keys(this.searchParams).filter((k) => {
@@ -658,10 +661,24 @@ export default {
     },
 
     transformCourseData(item) {
-      // TODO: Implement course cache to look up courseCode and courseLevel from courseID
-      // For now, just show the courseID as placeholders
-      const courseCode = item.courseID ? item.courseID.toString() : '';
-      const courseLevel = '';
+      // Look up course code and level from coreg cache using courseID
+      let courseCode = '';
+      let courseLevel = '';
+
+      if (item.courseID) {
+        const courseIDStr = item.courseID.toString();
+        // Look up in coreg cache
+        const course = this.appStore.getCoregCourseById(courseIDStr);
+
+        if (course) {
+          courseCode = course.courseCode || '';
+          courseLevel = course.courseLevel || '';
+        } else {
+          // If not found in cache, just show the courseID
+          courseCode = courseIDStr;
+          courseLevel = '';
+        }
+      }
 
       const courseSession = item.courseSession ?
         `${item.courseSession.substring(0, 4)}-${item.courseSession.substring(4, 6)}` : '';
