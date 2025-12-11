@@ -22,7 +22,12 @@ const FILTER_OPERATION = Object.freeze(
     /**
      * In operation that does not include the DISTINCT condition
      */
-    IN_NOT_DISTINCT: 'in_not_distinct'
+    IN_NOT_DISTINCT: 'in_not_distinct',
+    /**
+     * Date range filter operation - supports optional start and/or end dates.
+     * Format: "startDate,endDate" where either can be null/empty
+     */
+    DATE_RANGE: 'date_range'
   }
 );
 const CONDITION = Object.freeze(
