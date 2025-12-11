@@ -309,7 +309,7 @@ export default defineComponent({
   },
   watch: {
     "updateStudentAssessment.provincialSpecialCaseCode"(val) {
-      if(val != null && this.updateStudentAssessment.schoolAtWriteSchoolID == null) {
+      if(val && !this.updateStudentAssessment.schoolAtWriteSchoolID) {
         this.updateStudentAssessment.schoolAtWriteSchoolID = this.schoolOfRecordId
       }
       this.$nextTick(() => {
