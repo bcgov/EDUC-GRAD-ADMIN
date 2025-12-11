@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="dialog" max-width="80%" @after-leave="closeDialog">
-    <v-form ef="editStudentAssessmentForm" v-model="isValidForm">
+    <v-form ref="editStudentAssessmentForm" v-model="isValidForm">
       <v-card>
         <v-card-title>
           <v-row no-gutters>
@@ -171,7 +171,8 @@ export default {
     ...mapState(useStudentStore, {
       studentPen: "getStudentPen",
       studentPenAndName: "formattedStudentName",
-      studentStatus: (state) => state.student.profile.studentStatus
+      studentStatus: (state) => state.student.profile.studentStatus,
+      schoolOfRecordId: (state) => state.student.profile.schoolOfRecordId
     }),
     ...mapState(useAppStore, {
       provincialSpecialCaseCodes: "provincialSpecialCaseCodes",
@@ -221,7 +222,10 @@ export default {
         this.edit(this.assessmentItem);
       }
     },
-    "updateStudentAssessment.provincialSpecialCaseCode"() {
+    "updateStudentAssessment.provincialSpecialCaseCode"(val) {
+      if(val && !this.updateStudentAssessment.schoolAtWriteSchoolID) {
+        this.updateStudentAssessment.schoolAtWriteSchoolID = this.schoolOfRecordId
+      }
       this.$nextTick(() => {
         this.$refs.editStudentAssessmentForm?.validate();
       });
