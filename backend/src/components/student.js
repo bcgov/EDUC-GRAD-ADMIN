@@ -125,14 +125,17 @@ async function transferStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/transfer`;
+    const url = `${config.get(
+      "server:studentAPIURL"
+    )}/api/v1/student/courses/transfer`;
     const response = await postData(
       token,
       url,
       {
         targetStudentId: req.params?.targetStudentID,
         sourceStudentId: req.params?.sourceStudentID,
-        studentCourseIdsToMove: req.body },
+        studentCourseIdsToMove: req.body,
+      },
       req.session?.correlationID
     );
     return res.status(200).json(response);
@@ -1004,9 +1007,9 @@ async function getStudentHistoricActivityByID(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/historic-activity/${
-      req.params?.studentID
-    }`;
+    const url = `${config.get(
+      "server:studentAPIURL"
+    )}/api/v1/student/historic-activity/${req.params?.studentID}`;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -1067,5 +1070,5 @@ module.exports = {
   // STUDENT ADOPT
   postAdoptPENStudent,
   // HISTORIC ACTIVITY
-  getStudentHistoricActivityByID
+  getStudentHistoricActivityByID,
 };
