@@ -7,6 +7,11 @@
         <v-tab value="advance" class="text-none" size="large">
           Advanced Search
         </v-tab>
+        <v-tab value="adv-search" class="text-none" size="large" v-if="enableCRUD">Student Search
+          <p class="text-caption font-weight-bold text-bcGovGold">
+            BETA
+          </p>
+        </v-tab>
         <v-tab value="assessment-search" class="text-none" size="large" v-if="enableCRUD">Assessment Search
           <p class="text-caption font-weight-bold text-bcGovGold">
             BETA
@@ -31,6 +36,9 @@
           <v-window-item value="advance">
             <StudentAdvancedSearch />
           </v-window-item>
+          <v-window-item value="adv-search">
+            <StudentAdvSearch/>
+          </v-window-item>
           <v-window-item value="assessment-search">
             <StudentAssessmentSearch />
           </v-window-item>
@@ -52,6 +60,7 @@ import StudentAssessmentSearch from "@/components/Search/StudentAssessmentSearch
 import StudentCourseSearch from "@/components/Search/StudentCourseSearch.vue";
 import {mapState} from "pinia";
 import {useAppStore} from "@/store/modules/app";
+import StudentAdvSearch from "@/components/Search/StudentAdvSearch.vue";
 
 export default {
   name: "studentSearch",
@@ -77,6 +86,7 @@ export default {
     StudentAdvancedSearch: StudentAdvancedSearch,
     StudentAssessmentSearch: StudentAssessmentSearch,
     StudentCourseSearch: StudentCourseSearch,
+    StudentAdvSearch: StudentAdvSearch,
   },
 };
 </script>
