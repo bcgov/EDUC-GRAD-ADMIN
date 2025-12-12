@@ -71,12 +71,13 @@ const isValidUiTokenWithEditStaffRoles = auth.isValidUiTokenWithRoles(
 );
 
 const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
-  "GRAD_SYSTEM_COORDINATOR",
+  "GRAD_SYSTEM_COORDINATOR && SCHOLARSHIP_ADMIN",
   [
     roles.Admin.StaffInfoOfficer,
     roles.Admin.StaffAdministration,
     roles.Admin.StaffGradProgramBA,
     roles.Admin.StaffGradAssessments,
+    roles.Admin.ScholarshipAdmin
   ]
 );
 
