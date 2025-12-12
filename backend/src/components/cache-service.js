@@ -15,8 +15,6 @@ const cacheService = {
     await retry(async () => {
       try {
         // if anything throws, we retry
-        console.log(`${config.get('server:coregAPIURL')}/all/39`);
-
         const coreg39CourseResponse = await getCommonServiceData(`${config.get('server:coregAPIURL')}/api/v1/course/information/all/39`);
         courses39 = []; // reset the value.
         courses39Map.clear();// reset the value.
