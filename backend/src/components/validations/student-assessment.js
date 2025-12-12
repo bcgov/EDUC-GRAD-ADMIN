@@ -95,35 +95,8 @@ const postTransferStudentAssessmentSchema = object({
   }).noUnknown(),
 }).noUnknown();
 
-function markAllFieldsOptional(schema) {
-  const fields = schema.fields;
-  const optionalShape = Object.fromEntries(
-    Object.entries(fields).map(([key, fieldSchema]) => [
-      key,
-      fieldSchema.optional(),
-    ])
-  );
-  return object().shape(optionalShape);
-}
-const mergeStudentAssessmentSchema = object({
-  source: studentAssessmentSchema
-    .shape({
-      assessmentID: uuidGeneric().required(),
-    })
-    .noUnknown(),
-  target: markAllFieldsOptional(studentAssessmentSchema)
-    .shape({
-      assessmentID: uuidGeneric().optional(),
-    })
-    .optional(),
-});
-
 const postMergeStudentAssessmentSchema = object({
-  body: object({
-    info: array().of(mergeStudentAssessmentSchema),
-    conflicts: array().of(mergeStudentAssessmentSchema),
-    errors: array().of(mergeStudentAssessmentSchema).optional(),
-  }),
+  body: array().of(uuidGeneric().required()),
   params: object({
     sourceStudentID: uuidGeneric().required(),
     targetStudentID: uuidGeneric().required(),

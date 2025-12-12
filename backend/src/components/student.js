@@ -149,94 +149,17 @@ async function transferStudentCoursesByStudentID(req, res) {
 async function mergeStudentAssessmentsByStudentID(req, res) {
   try {
     const token = auth.getBackendToken(req);
-    let localStudentAssessments = { ...req.body };
-
-    // Prepare data
-    let tobeDeleted =
-      localStudentAssessments.conflicts.length > 0
-        ? localStudentAssessments.conflicts
-            .map((item) => item.target?.assessmentStudentID)
-            .filter((assessmentID) => assessmentID !== undefined)
-        : [];
-
-    let tobeAdded = [
-      ...localStudentAssessments.info.map((item) => item.source),
-      ...localStudentAssessments.conflicts.map((item) => item.source),
-    ];
-
-    const createResponse = {
-      added: [],
-      deleted: [],
-      errors: [],
-    };
-
-    // Delete assessments
-    if (tobeDeleted && tobeDeleted.length > 0) {
-      for (const assessmentID of tobeDeleted) {
-        try {
-          const clonedReq = {
-            ...req,
-            query: {
-              ...req.query,
-              allowRuleOverride: "true",
-            },
-            params: { studentAssessmentId: assessmentID },
-            session: req.session,
-          };
-
-          // Assuming deleteStudentAssessmentByID returns a result
-          const deleteResult = await deleteStudentAssessmentByID(clonedReq, {
-            status: () => ({
-              json: (data) => createResponse.deleted.push(data),
-            }),
-          });
-        } catch (err) {
-          console.error(`Failed to delete assessment:`, err);
-          createResponse.errors.push({
-            type: "delete",
-            assessmentID: assessmentID,
-            error: err.message,
-          });
-        }
-      }
-    }
-
-    // Add assessments
-    if (tobeAdded && tobeAdded.length > 0) {
-      for (const assessment of tobeAdded) {
-        try {
-          const { assessmentStudentID, ...assessmentFiltered } = assessment;
-          const updatedAssessment = {
-            ...assessmentFiltered,
-            studentID: req.params["targetStudentID"],
-          };
-
-          const clonedReq = {
-            ...req,
-            body: updatedAssessment,
-            query: req.query,
-            params: req.params,
-            session: req.session,
-          };
-
-          const postResult = await postStudentAssessment(clonedReq, {
-            status: () => ({ json: (data) => createResponse.added.push(data) }),
-          });
-        } catch (err) {
-          console.error(`Failed to add assessment:`, err);
-          createResponse.errors.push({
-            type: "add",
-            assessmentID: assessment.assessmentID,
-            error: err.message,
-          });
-        }
-      }
-    }
-    // Final response
-    return res.status(200).json({
-      message: "Assessment reconciliation complete.",
-      ...createResponse,
-    });
+    const url = `${config.get("server:studentAssessmentAPIURL")}/api/v1/student-assessment/student/merge`;
+    const response = await postData(
+      token,
+      url,
+      {
+        targetStudentID: req.params?.targetStudentID,
+        sourceStudentID: req.params?.sourceStudentID,
+        studentAssessmentIDsToMove: req.body },
+      req.session?.correlationID
+    );
+    return res.status(200).json(response);
   } catch (e) {
     console.error("Error merging student assessments:", e);
     if (e?.data?.messages) {
@@ -730,88 +653,17 @@ async function getRunUpdateTranscript(req, res) {
 
 async function mergeStudentGradStatus(req, res) {
   const token = auth.getBackendToken(req);
-
   const baseURL = config.get("server:studentAPIURL");
 
-  const gradStatusPayload = Object.fromEntries(
-    Object.entries(req.body).filter(
-      ([key]) => !["optionalPrograms", "careerPrograms"].includes(key)
-    )
-  );
-
-  const mergeResponse = {
-    updated: [],
-    deleted: [],
-    errors: [],
-  };
-
-  const optionalProgramsPayload = req.body.optionalPrograms;
-  const careerProgramsPayload = {
-    careerProgramCodes:
-      req.body.careerPrograms?.map(
-        (careerProgram) => careerProgram.careerProgramCode
-      ) || [],
-  };
-
   try {
-    const gradStatusUrl = `${baseURL}/api/v1/student/gradstudent/studentid/${req.params?.trueStudentID}`;
+    const gradStatusUrl = `${baseURL}/api/v1/student/gradstudent/studentid/${req.params?.trueStudentID}?updatePrograms=true`;
     const gradStatusResponse = await postData(
       token,
       gradStatusUrl,
-      gradStatusPayload,
+      req.body,
       req.session?.correlationID
     );
-
-    mergeResponse.updated.push(gradStatusResponse);
-
-    if (!!optionalProgramsPayload && optionalProgramsPayload.length > 0) {
-      if (!!gradStatusResponse.careerPrograms) {
-        // delete career programs on target
-        for (careerProgram of gradStatusResponse.careerPrograms) {
-          let response = await deleteData(
-            token,
-            `${baseURL}/api/v1/student/${req.params?.trueStudentID}/careerPrograms/${careerProgram.careerProgramCode}`
-          );
-
-          mergeResponse.deleted.push(response);
-        }
-      }
-      if (!!gradStatusResponse.optionalPrograms) {
-        // delete opt programs on target
-
-        for (optionalProgram of gradStatusResponse.optionalPrograms) {
-          let response = await deleteData(
-            token,
-            `${baseURL}/api/v1/student/${req.params?.trueStudentID}/optionalPrograms/${optionalProgram.optionalProgramID}`
-          );
-          mergeResponse.deleted.push(response);
-        }
-      }
-    }
-
-    // add careerPrograms and optionalPrograms
-    if (careerProgramsPayload.length > 0) {
-      let response = await postData(
-        token,
-        `${baseURL}/api/v1/student/${req.params?.trueStudentID}/careerPrograms`,
-        careerProgramsPayload,
-        req.session?.correlationID
-      );
-
-      mergeResponse.updated.push(response.data);
-    }
-
-    for (optionalProgram of optionalProgramsPayload) {
-      if (optionalProgram.optionalProgramCode != "CP") {
-        let response = await postData(
-          token,
-          `${baseURL}/api/v1/student/${req.params?.trueStudentID}/optionalPrograms/${optionalProgram.optionalProgramID}`
-        );
-        mergeResponse.updated.push(response.data);
-      }
-    }
-
-    return res.status(200).json(mergeResponse);
+    return res.status(200).json(gradStatusResponse);
   } catch (e) {
     log.error("Error merging student Grad Status: ", e);
     if (e?.data?.messages) {
