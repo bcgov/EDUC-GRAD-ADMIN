@@ -23,6 +23,9 @@ export const useAppStore = defineStore("app", {
     schoolsList: [],
     schoolsMap: new Map(),
     districtsList: [],
+    coregCourses: [],
+    coregCoursesMap: new Map(),
+    coregExternalCodeMap: new Map(),
     instituteAddressTypeCodes: [],
     instituteCategoryCodes: [],
     instituteFacilityCodes: [],
@@ -81,6 +84,16 @@ export const useAppStore = defineStore("app", {
         state.districtsList.find(
           (district) => districtNumber === district.districtNumber
         );
+    },
+    getCoregCourses: (state) => state.coregCourses,
+    getCoregCourseById: (state) => {
+      return (courseId) => state.coregCoursesMap.get(courseId);
+    },
+    getCoregCourseByExternalCode: (state) => {
+      return (externalCode) => {
+        const courseId = state.coregExternalCodeMap.get(externalCode);
+        return courseId ? state.coregCoursesMap.get(courseId) : null;
+      };
     },
     getInstituteAddressTypeCodes: (state) => state.instituteAddressTypeCodes,
     getInstituteAddressTypeCode: (state) => {
@@ -182,6 +195,8 @@ export const useAppStore = defineStore("app", {
           // GET & SET INSTITUTE SCHOOL AND DISTRICT LISTS
           await this.getSchools();
           await this.getDistricts();
+          // GET & SET COREG COURSES
+          await this.loadCoregCourses();
           // GET & SET INSTITUTE CODES
           await this.getInstituteCategoryCodes();
           await this.getInstituteFacilityCodes();
@@ -325,6 +340,24 @@ export const useAppStore = defineStore("app", {
     async setDistrictsList(districts) {
       this.districtsList =
         sharedMethods.sortDistrictListByActiveAndDistrictNumber(districts);
+    },
+    async loadCoregCourses(getNewData = true) {
+      if (getNewData || !sharedMethods.dataArrayExists(this.coregCourses)) {
+        const ApiService = (await import('@/common/apiService.js')).default;
+        let response = await ApiService.getCoregCourses();
+        await this.setCoregCourses(response.data);
+      }
+    },
+    async setCoregCourses(courses) {
+      this.coregCourses = courses;
+      this.coregCoursesMap = new Map();
+      this.coregExternalCodeMap = new Map();
+      courses.forEach((course) => {
+        this.coregCoursesMap.set(course.courseID, course);
+        if (course.externalCode) {
+          this.coregExternalCodeMap.set(course.externalCode, course.courseID);
+        }
+      });
     },
     async getInstituteCategoryCodes(getNewData = true) {
       if (
