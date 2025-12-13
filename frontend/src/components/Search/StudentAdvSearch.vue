@@ -12,6 +12,18 @@
           >
           </v-text-field>
         </div>
+        <div class="assessment-search-field col-12 col-md-3">
+          <v-autocomplete id="assessment-code"
+                          v-model="searchParams.studentStatus"
+                          label="Student Status"
+                          :items="studentStatusOptions"
+                          item-title="code"
+                          item-value="code"
+                          variant="outlined"
+                          clearable
+                          density="compact"
+          ></v-autocomplete>
+        </div>
       </v-row>
       <v-row class="mt-1"></v-row>
       <v-row class="mt-1"></v-row>
@@ -40,11 +52,18 @@
   </div>
 </template>
 <script>
+import { useAppStore } from "@/store/modules/app";
+import {mapState} from "pinia";
+import {useSnackbarStore} from "@/store/modules/snackbar";
 
 export default {
 name: "StudentAdvSearch",
-  setup(){
-
+  setup() {
+    const snackbarStore = useSnackbarStore();
+    return { snackbarStore };
+  },
+  mounted() {
+    //console.log(JSON.stringify(this.studentStatusOptions));
   },
   data() {
     return {
@@ -160,6 +179,11 @@ name: "StudentAdvSearch",
       ],
     }
   },
+  computed: {
+    ...mapState(useAppStore, {
+      studentStatusOptions: "studentStatusOptions",
+    }),
+  },
   methods: {
     onSearchClicked() {
       this.hasSearched = true;
@@ -170,7 +194,7 @@ name: "StudentAdvSearch",
         return;
       }
       this.searchLoading = true;
-      console.log(`Searching for: ${this.searchParams.pen}`);
+      console.log(`Searching for: ${JSON.stringify(this.searchParams)}`);
       this.searchLoading = false;
     },
     clearInput: function () {
