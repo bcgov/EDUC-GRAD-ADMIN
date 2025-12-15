@@ -46,7 +46,7 @@ export default {
   // STUDENT ASSESSMENTS
   mergeStudentAssessments(sourceStudentID, targetStudentID, json) {
     return ApiService.apiAxios.post(
-      `/api/student/${sourceStudentID}/assessments/merge/${targetStudentID}`,
+      `/api/student-assessment/merge?sourceStudentID=${sourceStudentID}&targetStudentID=${targetStudentID}`,
       json
     );
   },

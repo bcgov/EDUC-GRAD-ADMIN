@@ -146,30 +146,6 @@ async function transferStudentCoursesByStudentID(req, res) {
   }
 }
 
-async function mergeStudentAssessmentsByStudentID(req, res) {
-  try {
-    const token = auth.getBackendToken(req);
-    const url = `${config.get("server:studentAssessmentAPIURL")}/api/v1/student-assessment/student/merge`;
-    const response = await postData(
-      token,
-      url,
-      {
-        targetStudentID: req.params?.targetStudentID,
-        sourceStudentID: req.params?.sourceStudentID,
-        studentAssessmentIDsToMove: req.body },
-      req.session?.correlationID
-    );
-    return res.status(200).json(response);
-  } catch (e) {
-    console.error("Error merging student assessments:", e);
-    if (e?.data?.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
-    } else {
-      return errorResponse(res);
-    }
-  }
-}
-
 async function mergeStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);
   try {
@@ -621,9 +597,9 @@ async function getRunUpdateTranscript(req, res) {
 async function mergeStudentGradStatus(req, res) {
   const token = auth.getBackendToken(req);
   const baseURL = config.get("server:studentAPIURL");
-
+  let trueStudentID = req.params?.trueStudentID;
   try {
-    const gradStatusUrl = `${baseURL}/api/v1/student/gradstudent/studentid/${req.params?.trueStudentID}?updatePrograms=true`;
+    const gradStatusUrl = `${baseURL}/api/v1/student/gradstudent/studentid/${trueStudentID}?updatePrograms=true`;
     const gradStatusResponse = await postData(
       token,
       gradStatusUrl,
@@ -880,8 +856,6 @@ module.exports = {
   mergeStudentCoursesByStudentID,
   completeStudentMergeByStudentID,
   getStudentCourseHistory,
-  // STUDENT ASSESSMENTS
-  mergeStudentAssessmentsByStudentID,
   // STUDENT OPTIONAL AND CAREER PROGRAMS
   getStudentCareerPrograms,
   postStudentCareerProgram,

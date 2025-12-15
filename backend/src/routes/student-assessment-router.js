@@ -9,7 +9,8 @@ const {
   postStudentAssessmentSchema,
   deleteStudentAssessmentSchema,
   getPaginatedStudentAssessmentSchema,
-  postTransferStudentAssessmentSchema
+  postTransferStudentAssessmentSchema,
+  postMergeStudentAssessmentSchema
 } = require("../components/validations/student-assessment");
 const {
   getStudentAssessmentById,
@@ -23,7 +24,8 @@ const {
   getStudentAssessmentHistoryPaginated,
   getStudentAssessmentByIdAndAssessmentId,
   transferStudentAssessments,
-  getAssessmentStudentSearchReport
+  getAssessmentStudentSearchReport,
+  mergeStudentAssessmentsByStudentID
 } = require("../components/assessments/student-assessment");
 
 const isValidUiTokenWithStaffEditRoles = auth.isValidUiTokenWithRoles(
@@ -133,6 +135,14 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getAssessmentStudentSearchReport
+);
+
+router.post(
+  "/merge",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffEditRoles,
+  validate(postMergeStudentAssessmentSchema),
+  mergeStudentAssessmentsByStudentID
 );
 
 module.exports = router;

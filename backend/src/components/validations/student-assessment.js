@@ -99,11 +99,11 @@ const postTransferStudentAssessmentSchema = object({
 
 const postMergeStudentAssessmentSchema = object({
   body: array().of(uuidGeneric().required()),
-  params: object({
+  params: object().noUnknown(),
+  query: object({
     sourceStudentID: uuidGeneric().required(),
     targetStudentID: uuidGeneric().required(),
   }),
-  query: object().noUnknown(),
 }).noUnknown();
 
 const getPaginatedStudentAssessmentSchema = object({
