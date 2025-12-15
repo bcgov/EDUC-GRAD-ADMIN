@@ -163,6 +163,18 @@ async function getCommonServiceData(url, params) {
     throw new ApiError(status, { message: "API Get error" }, e);
   }
 }
+async function getCommonServiceStream(url, params) {
+  try {
+    params = addTokenToHeader(params, await getBackendServiceToken());
+    const axiosConfig = {...params, responseType: 'stream',};
+    return await axios.get(url, axiosConfig);
+  } catch (e) {
+    log.error('getCommonServiceStream Error', e.response ? e.response.status : e.message
+    );
+    const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
+    throw new ApiError(status, { message: 'API Get error' }, e);
+  }
+}
 async function putCommonServiceData(url, data, user, putDataConfig) {
   try {
     putDataConfig = addTokenToHeader(
@@ -590,6 +602,7 @@ const utils = {
   fetchCourseDetails,
   addCourseDetails,
   sortCourses,
+  getCommonServiceStream
 };
 
 module.exports = utils;

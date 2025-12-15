@@ -3,6 +3,7 @@ import router from "@/router";
 import CodesService from "@/services/CodesService.js";
 import StudentService from "@/services/StudentService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import { useAppStore } from "@/store/modules/app";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
 import sharedMethods from "@/sharedMethods.js";
 
@@ -190,7 +191,9 @@ export const useStudentStore = defineStore("student", {
       });
     },
     loadStudentReportsAndCertificates() {
-      this.loadStudentXmlReport(this.pen);
+      if(useAppStore().getSchoolById(this.student?.gradStatus?.schoolOfRecordId)?.canIssueTranscripts) {
+        this.loadStudentXmlReport(this.pen);
+      }
       this.loadStudentTranscripts(this.id);
       this.loadStudentCertificates(this.id);
       this.loadStudentReports(this.id);
@@ -717,20 +720,15 @@ export const useStudentStore = defineStore("student", {
       targetStudentID,
       assessments
     ) {
-      try {
-        const response = await StudentService.transferStudentAssesments(
-          sourceStudentID,
-          targetStudentID,
-          assessments
-        );
-        // get student assessments for source student after transfer
-        // this.getStudentAssessments(sourceStudentID);
-        this.loadStudentGradStatus(sourceStudentID);
-        return response.data;
-      } catch (error) {
-        console.error("Error transferring student assessments: ", error);
-        return error;
-      }
+      const response = await StudentService.transferStudentAssesments(
+        sourceStudentID,
+        targetStudentID,
+        assessments
+      );
+      // get student assessments for source student after transfer
+      // this.getStudentAssessments(sourceStudentID);
+      this.loadStudentGradStatus(sourceStudentID);
+      return response.data;
     },
     addAssessmentsToTransfer(assessment) {
       this.transfer.assessments.push(assessment);
@@ -749,22 +747,17 @@ export const useStudentStore = defineStore("student", {
     },
     // Transfer student courses
     async transferStudentCourses(sourceStudentID, targetStudentID, courses) {
-      try {
-        const response = await StudentService.transferStudentCourses(
-          sourceStudentID,
-          targetStudentID,
-          courses
-        );
-        //reload student course
-        this.getStudentCourses(sourceStudentID);
-        //load course audit history
-        this.loadStudentCourseHistory(sourceStudentID);
-        this.loadStudentGradStatus(sourceStudentID);
-        return response.data;
-      } catch (error) {
-        console.error("Error transferring student courses: ", error);
-        return error;
-      }
+      const response = await StudentService.transferStudentCourses(
+        sourceStudentID,
+        targetStudentID,
+        courses
+      );
+      //reload student course
+      this.getStudentCourses(sourceStudentID);
+      //load course audit history
+      this.loadStudentCourseHistory(sourceStudentID);
+      this.loadStudentGradStatus(sourceStudentID);
+      return response.data;
     },
     addCoursesToTransfer(course) {
       this.transfer.courses.push(course);

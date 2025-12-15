@@ -7,11 +7,14 @@
           <v-tab value="assessmentLegacyTab" class="text-none" size="large"
             >Assessments</v-tab
           >
-          <v-tab v-if="enableCRUD()" value="assessmentTab" class="text-none" size="large">
+          <v-tab
+            v-if="enableCRUD"
+            value="assessmentTab"
+            class="text-none"
+            size="large"
+          >
             Assessments
-            <p class="text-caption font-weight-bold text-bcGovGold">
-              BETA
-            </p>
+            <p class="text-caption font-weight-bold text-bcGovGold">BETA</p>
           </v-tab>
           <v-tab
             value="assessmentRequirementsTab"
@@ -25,7 +28,7 @@
             <v-window-item value="assessmentLegacyTab">
               <AssessmentsLegacy />
             </v-window-item>
-            <v-window-item v-if="enableCRUD()" value="assessmentTab">
+            <v-window-item v-if="enableCRUD" value="assessmentTab">
               <Assessments />
             </v-window-item>
             <v-window-item value="assessmentRequirementsTab">
@@ -42,8 +45,8 @@
 import AssessmentRequirements from "@/components/Assessments/AssessmentRequirements.vue";
 import AssessmentsLegacy from "@/components/Assessments/AssessmentsLegacy.vue";
 import Assessments from "@/components/Assessments/Assessments.vue";
-import {mapState} from "pinia";
-import {useAppStore} from "@/store/modules/app";
+import { mapState } from "pinia";
+import { useAppStore } from "@/store/modules/app";
 export default {
   name: "assessments",
   components: {
@@ -67,6 +70,7 @@ export default {
   padding-left: 25px;
   padding-right: 25px;
 }
+
 .close-record {
   float: right;
 }

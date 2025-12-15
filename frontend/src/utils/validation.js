@@ -3,7 +3,7 @@ import {
   LocalDate,
   ResolverStyle,
 } from "@js-joda/core";
-import { groupBy, isPlainObject } from "lodash";
+import {groupBy, isPlainObject} from "lodash";
 
 const datePatternWithSlash = new DateTimeFormatterBuilder()
   .appendPattern("uuuu/MM/dd")
@@ -222,3 +222,4 @@ export function getOpenStatus(school) {
 
   return openedDate < today && !closedDate ? "Open" : "Closed";
 }
+
