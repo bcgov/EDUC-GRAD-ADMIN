@@ -17,6 +17,11 @@
             BETA
           </p>
         </v-tab>
+        <v-tab value="program-search" class="text-none" size="large" v-if="enableCRUD">Program Search
+          <p class="text-caption font-weight-bold text-bcGovGold">
+            BETA
+          </p>
+        </v-tab>
       </v-tabs>
       <v-card-text>
         <v-window v-model="tab">
@@ -37,6 +42,9 @@
           <v-window-item value="course-search">
             <StudentCourseSearch />
           </v-window-item>
+          <v-window-item value="program-search">
+            <StudentProgramSearch />
+          </v-window-item>
         </v-window>
       </v-card-text>
     </v-card>
@@ -50,6 +58,7 @@ import PenSearchForm from "@/components/StudentSearch/PenSearchForm.vue";
 import StudentAdvancedSearch from "@/components/StudentSearch/StudentAdvancedSearch.vue";
 import StudentAssessmentSearch from "@/components/Search/StudentAssessmentSearch.vue";
 import StudentCourseSearch from "@/components/Search/StudentCourseSearch.vue";
+import StudentProgramSearch from "@/components/Search/StudentProgramSearch.vue";
 import {mapState} from "pinia";
 import {useAppStore} from "@/store/modules/app";
 
@@ -77,6 +86,7 @@ export default {
     StudentAdvancedSearch: StudentAdvancedSearch,
     StudentAssessmentSearch: StudentAssessmentSearch,
     StudentCourseSearch: StudentCourseSearch,
+    StudentProgramSearch: StudentProgramSearch,
   },
 };
 </script>
