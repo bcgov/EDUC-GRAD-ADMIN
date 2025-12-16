@@ -762,12 +762,16 @@ export default {
       )
         .then((response) => {
           if (response.data) {
-            const reportData = response.data;
-            sharedMethods.base64ToFileTypeAndDownload(
-              reportData.documentData,
-              "text/csv",
-              defaultFilename
-            );
+            const blob = new Blob([response.data], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', defaultFilename);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
             this.snackbarStore.showSnackbar(
               "Report downloaded successfully",
               "success",

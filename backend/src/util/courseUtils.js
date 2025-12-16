@@ -1,7 +1,7 @@
 'use strict';
 
 function generateCourseObject(course) {
-  // Parse externalCode to extract courseCode (first 5 chars) and courseLevel (last digits)
+  // Parse externalCode to extract courseCode (first 5 chars) and courseLevel (remaining chars)
   let courseCode = '';
   let courseLevel = '';
 
@@ -16,13 +16,8 @@ function generateCourseObject(course) {
     }
     // 39 uses space separator
     else if (course.originatingSystem === '39') {
-      const cleanCode = externalCode.replace(/\s+/g, '');
-      if (cleanCode.length >= 5) {
-        courseCode = cleanCode.substring(0, 5);
-        courseLevel = cleanCode.substring(5);
-      } else {
-        courseCode = cleanCode;
-      }
+      courseCode = externalCode.substring(0, 5).trim();
+      courseLevel = externalCode.length > 5 ? externalCode.substring(5).trim() : '';
     }
     // Fallback
     else {

@@ -2,7 +2,7 @@
 const {
   logApiError,
   getCommonServiceData,
-  errorResponse,
+  errorResponse, getCommonServiceStream,
 } = require("../utils");
 const HttpStatus = require("http-status-codes");
 const utils = require("../utils");
@@ -52,31 +52,55 @@ async function getStudentCoursePaginated(req, res) {
 
 async function getCourseStudentSearchReport(req, res) {
   try {
-    let searchArray = [];
+    const search = [];
     if (req.query?.searchParams) {
-      searchArray = createMoreFiltersSearchCriteria(
-        req.query.searchParams
-      );
+      const criteriaArray = createMoreFiltersSearchCriteria(req.query.searchParams);
+      criteriaArray.forEach((criteria) => search.push(criteria));
     }
+
+    const url =
+        config.get('server:studentAPIURL') +
+        API_BASE_ROUTE +
+        '/report/course-students/search/download';
+
     const params = {
       params: {
-        searchCriteriaList: JSON.stringify(searchArray),
+        searchCriteriaList: JSON.stringify(search),
       },
     };
-    let data = await getCommonServiceData(
-      `${
-        config.get("server:studentAPIURL") + API_BASE_ROUTE
-      }/report/course-students/search/download`,
-      params
-    );
-    return res.status(200).json(data);
-  } catch (e) {
-    await logApiError(e, "Error getting student course search report");
-    if (e.data.message) {
-      return errorResponse(res, e.data.message, e.status);
+
+    const apiRes = await getCommonServiceStream(url, params);
+
+    if (apiRes.headers['content-type']) {
+      res.setHeader('Content-Type', apiRes.headers['content-type']);
     } else {
+      res.setHeader('Content-Type', 'text/csv');
+    }
+
+    if (apiRes.headers['content-disposition']) {
+      res.setHeader('Content-Disposition', apiRes.headers['content-disposition']);
+    } else {
+      res.setHeader('Content-Disposition', 'attachment; filename="download.csv"');
+    }
+
+    apiRes.data.on('error', async (err) => {
+      await logApiError(err, 'Error streaming report');
+      if (!res.headersSent) {
+        return errorResponse(res);
+      }
+      res.destroy(err);
+    });
+
+    apiRes.data.pipe(res);
+  } catch (e) {
+    await logApiError(e, 'Error getting report');
+    if (!res.headersSent) {
+      if (e.data?.message) {
+        return errorResponse(res, e.data.message, e.status);
+      }
       return errorResponse(res);
     }
+    res.destroy(e);
   }
 }
 
