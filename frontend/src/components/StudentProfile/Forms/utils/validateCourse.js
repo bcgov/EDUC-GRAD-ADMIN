@@ -84,17 +84,6 @@ export async function validateAndFetchCourse({
 
       //get the year of the student program
       const studentProgramYear = studentProgram.substring(0, 4);
-      if (
-        studentProgramYear === "SCCP" ||
-        isNaN(parseInt(studentProgramYear))
-      ) {
-        return {
-          error:
-            "This course cannot be added for the student on the" +
-            studentProgram +
-            " program.",
-        };
-      }
       const matchingProgramCourses = matchingCourses.filter((course) => {
         const examinableCourseYear = course.programYear || "2004"; // default to "2004" if empty
 
