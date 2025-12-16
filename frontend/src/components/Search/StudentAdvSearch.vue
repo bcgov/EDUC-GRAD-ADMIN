@@ -9,8 +9,12 @@
                         variant="outlined"
                         clearable
                         density="compact"
-          >
-          </v-text-field>
+                        pattern="\d*"
+                        maxlength="9"
+                        validate-on="blur lazy"
+                        :rules="[v => !v || /^\d{9}$/.test(v) || 'PEN must be exactly 9 digits']"
+                        @update:model-value="v => (searchParams.pen = (v ?? '').replace(/\D/g,'').slice(0,9) || null)"
+          />
         </div>
         <div class="assessment-search-field col-12 col-md-3">
           <v-autocomplete id="assessment-code"
@@ -25,8 +29,79 @@
           ></v-autocomplete>
         </div>
       </v-row>
-      <v-row class="mt-1"></v-row>
-      <v-row class="mt-1"></v-row>
+      <v-row class="mt-1">
+        <div class="search-field col-12 col-md-3">
+          <v-text-field id="legalLastName"
+                        v-model="searchParams.legalLastName"
+                        label="Legal Surname"
+                        variant="outlined"
+                        clearable
+                        density="compact"
+          >
+          </v-text-field>
+        </div>
+        <div class="search-field col-12 col-md-3">
+          <v-text-field id="legalGivenName"
+                        v-model="searchParams.legalFirstName"
+                        label="Legal Given Name"
+                        variant="outlined"
+                        clearable
+                        density="compact"
+          >
+          </v-text-field>
+        </div>
+        <div class="search-field col-12 col-md-3">
+          <v-text-field id="legalMiddleName"
+                        v-model="searchParams.legalMiddleNames"
+                        label="Legal Middle Name"
+                        variant="outlined"
+                        clearable
+                        density="compact"
+          >
+          </v-text-field>
+        </div>
+      </v-row>
+      <v-row class="mt-1">
+        <div class="search-field col-12 col-md-3">
+          <v-autocomplete id="gender"
+                          v-model="searchParams.genderCode"
+                          label="Gender"
+                          :items="genderCodes"
+                          item-title="genderCodes"
+                          item-value="genderCodes"
+                          variant="outlined"
+                          clearable
+                          density="compact"
+                          v-on:keyup="keyHandler"
+          ></v-autocomplete>
+        </div>
+        <div class="search-field col-12 col-md-3">
+          <v-text-field
+              id="datepicker-birthdate-from"
+              label="Birthdate From"
+              variant="outlined"
+              density="compact"
+              v-model="searchParams.dobFrom"
+              type="date"
+              max="9999-12-30"
+              autocomplete="off"
+          />
+        </div>
+        <div class="search-field col-12 col-md-3">
+          <v-text-field
+              id="datepicker-birthdate-to"
+              label="Birthdate To"
+              variant="outlined"
+              density="compact"
+              v-model="searchParams.dobTo"
+              type="date"
+              :disabled="!searchParams.dobFrom"
+              :min="searchParams.dobFrom || undefined"
+              max="9999-12-30"
+              autocomplete="off"
+          />
+        </div>
+      </v-row>
       <v-row class="mt-1">
         <div class="search-button">
           <v-btn
@@ -57,7 +132,18 @@ import {mapState} from "pinia";
 import {useSnackbarStore} from "@/store/modules/snackbar";
 
 export default {
-name: "StudentAdvSearch",
+  name: "StudentAdvSearch",
+  watch: {
+    "searchParams.dobFrom"(newFrom) {
+      if (!newFrom) {
+        this.searchParams.dobTo = null;
+        return;
+      }
+      if (this.searchParams.dobTo && this.searchParams.dobTo < newFrom) {
+        this.searchParams.dobTo = null;
+      }
+    },
+  },
   setup() {
     const snackbarStore = useSnackbarStore();
     return { snackbarStore };
@@ -67,6 +153,8 @@ name: "StudentAdvSearch",
   },
   data() {
     return {
+      // TODO: obtain gender codes from student api
+      genderCodes: ["F", "M", "X", "U"],
       searchResults: [],
       currentPage: 1,
       itemsPerPage: 10,
@@ -88,7 +176,8 @@ name: "StudentAdvSearch",
         legalFirstName: null,
         legalLastName: null,
         legalMiddleNames: null,
-        dob: null,
+        dobFrom: null,
+        dobTo: null,
         genderCode: null,
       },
       searchResultsHeaders: [
@@ -185,7 +274,7 @@ name: "StudentAdvSearch",
     }),
   },
   methods: {
-    onSearchClicked() {
+    async onSearchClicked() {
       this.hasSearched = true;
       this.search();
     },
@@ -212,7 +301,12 @@ name: "StudentAdvSearch",
           searchParams[k] = null;
         }
       }
-    }
+    },
+    keyHandler: function (e) {
+      if (e.keyCode === 13) {
+        //enter key pressed
+      }
+    },
   }
 }
 </script>
