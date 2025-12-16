@@ -424,6 +424,29 @@ async function getAssessmentStudentSearchReport(req, res) {
   }
 }
 
+async function mergeStudentAssessmentsByStudentID(req, res) {
+  try {
+    const url = `${config.get("server:studentAssessmentAPIURL")}/api/v1/student-assessment/student/merge`;
+    const response = await utils.postCommonServiceData(
+      url,
+      {
+        targetStudentID: req.query?.targetStudentID,
+        sourceStudentID: req.query?.sourceStudentID,
+        studentAssessmentIDsToMove: req.body
+      },
+      utils.getUser(req).idir_username
+    );
+    return res.status(200).json(response);
+  } catch (e) {
+    console.error("Error merging student assessments:", e);
+    if (e?.data?.messages) {
+      return errorResponse(res, e.data.messages[0].message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 module.exports = {
   getAssessmentTypeCodes,
   getStudentAssessmentById,
@@ -436,5 +459,6 @@ module.exports = {
   getStudentAssessmentHistoryPaginated,
   getStudentAssessmentByIdAndAssessmentId,
   transferStudentAssessments,
-  getAssessmentStudentSearchReport
+  getAssessmentStudentSearchReport,
+  mergeStudentAssessmentsByStudentID
 };

@@ -18,6 +18,7 @@ export default {
       params: {
         searchParams: omitBy(searchParams, isEmpty),
       },
+      responseType: 'blob',
     });
   }
 };
