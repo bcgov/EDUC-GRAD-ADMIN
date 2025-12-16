@@ -12,17 +12,21 @@ const {
   sortCourses,
   getUser,
   logApiError,
-} = require('../components/utils');
-const config = require('../config/index');
-const { STUDENT_STATUS_CODE_MAP } = require('./constants/student-status-codes');
-const log = require('../components/logger');
-const auth = require('../components/auth');
+} = require('../utils');
+const config = require('../../config');
+const { STUDENT_STATUS_CODE_MAP } = require('../constants/student-status-codes');
+const log = require('../logger');
+const auth = require('../auth');
 const {
   postStudentAssessment,
   deleteStudentAssessmentByID,
-} = require('../components/assessments/student-assessment');
+} = require('../assessments/student-assessment');
 const { add } = require('lodash');
-const cacheService = require('./cache-service');
+const cacheService = require('../cache-service');
+
+const {getCommonServiceData} = require('../utils');
+const HttpStatus = require('http-status-codes');
+const {createFiltersSearchCriteria} = require("./studentFilters");
 
 async function getStudentCourseByStudentID(req, res) {
   const token = auth.getBackendToken(req);
@@ -831,12 +835,52 @@ async function postAdoptPENStudent(req, res) {
 
 async function getStudentGenderCodes(req, res) {
   try {
-    const cacheService = require('./cache-service');
+    const cacheService = require('../cache-service');
     const genders = await cacheService.getGenderCodesJSON();
     return res.status(200).json(genders);
   } catch (e) {
     log.error('Error getting gender codes from cache:', e);
     return errorResponse(res);
+  }
+}
+
+async function getStudentsPaginated(req, res) {
+  try {
+    const search = [];
+    if (req.query?.searchParams) {
+      let criteriaArray = createFiltersSearchCriteria(
+        req.query.searchParams
+      );
+      criteriaArray.forEach((criteria) => {
+        search.push(criteria);
+      });
+    }
+    const params = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: JSON.stringify(req.query.sort),
+        searchCriteriaList: JSON.stringify(search),
+      },
+    };
+    let data = await getCommonServiceData(
+      `${config.get('server:studentAPIURL')}/api/v1/student/search/pagination`,
+      params
+    );
+    if (req?.query?.returnKey) {
+      let result = data?.content.map(
+        (student) => student[req?.query?.returnKey]
+      );
+      return res.status(HttpStatus.OK).json(result);
+    }
+    return res.status(200).json(data);
+  } catch (e) {
+    await logApiError(e, 'Error getting student search paginated list');
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
   }
 }
 
@@ -907,4 +951,5 @@ module.exports = {
   // HISTORIC ACTIVITY
   getStudentHistoricActivityByID,
   getStudentGenderCodes,
+  getStudentsPaginated
 };

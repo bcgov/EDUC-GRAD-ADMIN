@@ -195,6 +195,7 @@
 import { useAppStore } from "@/store/modules/app";
 import {mapState} from "pinia";
 import {useSnackbarStore} from "@/store/modules/snackbar";
+import StudentService from "@/services/StudentService";
 
 export default {
   name: "StudentAdvSearch",
@@ -352,12 +353,55 @@ export default {
       this.search();
     },
     search() {
+      console.log(`Searching for: ${JSON.stringify(this.searchParams)}`);
       if (!this.hasSearched) {
         return;
       }
       this.searchLoading = true;
-      console.log(`Searching for: ${JSON.stringify(this.searchParams)}`);
-      this.searchLoading = false;
+      StudentService.getStudentsBySearchCriteria(
+          this.apiSearchParamsBuilder(),
+          {},
+          this.currentPage,
+          this.itemsPerPage
+      ).then((res) => {
+        if (res.data) {
+          this.responseContent = res.data;
+          this.searchResults =
+              this.responseContent?.content;
+          this.totalElements = this.responseContent.totalElements;
+          this.totalPages = this.responseContent.totalPages;
+          this.searchMessage = (this.responseContent.totalElements === 1) ? "1 student record found. " : this.totalElements + " student records found. ";
+        }
+      }).catch((error) => {
+            if (error?.response?.status) {
+              this.snackbarStore.showSnackbar(
+                  "ERROR " + error?.response?.statusText,
+                  "error",
+                  10000,
+                  "There was an error with the Assessment Service: " +
+                  error?.response?.status
+              );
+            }
+          })
+          .finally(() => {
+            this.searchLoading = false;
+          });
+    },
+    apiSearchParamsBuilder() {
+      const EXCLUDED_KEYS = ['useBirthdateRange', 'wildcards'];
+      const apiSearchParams = {};
+      // Default fields
+      const searchKeys = Object.keys(this.searchParams).filter((k) => {
+        if (EXCLUDED_KEYS.includes(k)) return false;
+        const value = this.searchParams[k];
+        if (value === null || value === undefined) return false;
+        if (typeof value === 'string' && value.trim() === '') return false;
+        return !(Array.isArray(value) && value.length === 0);
+      });
+      searchKeys.forEach((key) => {
+        apiSearchParams[key] = (Array.isArray(this.searchParams[key])) ? this.searchParams[key].join(',') : this.searchParams[key];
+      });
+      return apiSearchParams;
     },
     clearInput: function () {
       this.searchResults = [];

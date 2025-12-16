@@ -58,7 +58,8 @@ const {
   postAdoptPENStudent,
   getStudentHistoricActivityByID,
   getStudentGenderCodes,
-} = require('../components/student');
+  getStudentsPaginated
+} = require('../components/student/student');
 
 const isValidUiTokenWithEditStaffRoles = auth.isValidUiTokenWithRoles(
   'GRAD_SYSTEM_COORDINATOR',
@@ -366,6 +367,14 @@ router.get(
   passport.authenticate('jwt', { session: false }, undefined), 
   isValidUiTokenWithReadStaffRoles, 
   getStudentGenderCodes
+);
+
+// paginated search
+router.get(
+  '/paginated',
+  passport.authenticate('jwt', { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getStudentsPaginated
 );
 
 module.exports = router;

@@ -1,19 +1,19 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const auth = require("../components/auth");
-const roles = require("../components/roles");
-const passport = require("passport");
-const validate = require("../components/validator");
-const {getStudentAddress, updateStudentAddress, getCitizenshipCodes, getCountryCodes, getProvinceCodes} = require("../components/scholarships");
+const auth = require('../components/auth');
+const roles = require('../components/roles');
+const passport = require('passport');
+const validate = require('../components/validator');
+const {getStudentAddress, updateStudentAddress, getCitizenshipCodes, getCountryCodes, getProvinceCodes} = require('../components/scholarships');
 const {
   getStudentAddressSchema,
   putStudentAddressSchema,
-} = require("../components/validations/scholarships");
+} = require('../components/validations/scholarships');
 
 const {
   postStudentGradStatus
 }
-= require("../components/student");
+= require('../components/student/student');
 const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   'SCHOLARSHIP_ADMIN',
   [
@@ -22,41 +22,41 @@ const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
 );
 
 router.get(
-  "/citizenship-codes",
-  passport.authenticate("jwt", { session: false }, undefined),
+  '/citizenship-codes',
+  passport.authenticate('jwt', { session: false }, undefined),
   getCitizenshipCodes
 );
 
 router.get(
-  "/country-codes",
-  passport.authenticate("jwt", { session: false }, undefined),
+  '/country-codes',
+  passport.authenticate('jwt', { session: false }, undefined),
   getCountryCodes
 );
 
 router.get(
-  "/province-codes",
-  passport.authenticate("jwt", { session: false }, undefined),
+  '/province-codes',
+  passport.authenticate('jwt', { session: false }, undefined),
   getProvinceCodes
 );
 
 router.get(
-  "/student/:studentID/address/",
-  passport.authenticate("jwt", { session: false }, undefined),
+  '/student/:studentID/address/',
+  passport.authenticate('jwt', { session: false }, undefined),
   validate(getStudentAddressSchema),
   getStudentAddress
 );
 
 router.put(
-  "/student/:studentID/address/:studentAddressID",
-  passport.authenticate("jwt", { session: false }, undefined),
+  '/student/:studentID/address/:studentAddressID',
+  passport.authenticate('jwt', { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   validate(putStudentAddressSchema),
   updateStudentAddress
 );
 
 router.post(
-  "/student/:studentID/citizenship/status",
-  passport.authenticate("jwt", { session: false }, undefined),
+  '/student/:studentID/citizenship/status',
+  passport.authenticate('jwt', { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   postStudentGradStatus
 );
