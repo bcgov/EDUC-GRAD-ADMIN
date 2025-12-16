@@ -17,7 +17,7 @@
           />
         </div>
         <div class="assessment-search-field col-12 col-md-3">
-          <v-autocomplete id="assessment-code"
+          <v-autocomplete id="student-status"
                           v-model="searchParams.studentStatus"
                           label="Student Status"
                           :items="studentStatusOptions"
@@ -28,10 +28,23 @@
                           density="compact"
           ></v-autocomplete>
         </div>
+        <div class="search-field col-12 col-md-3">
+          <v-autocomplete id="gender"
+                          v-model="searchParams.genderCode"
+                          label="Gender"
+                          :items="genderCodes"
+                          item-title="genderCodes"
+                          item-value="genderCodes"
+                          variant="outlined"
+                          clearable
+                          density="compact"
+                          v-on:keyup="keyHandler"
+          ></v-autocomplete>
+        </div>
       </v-row>
       <v-row class="mt-1">
         <div class="search-field col-12 col-md-3">
-          <v-text-field id="legalLastName"
+          <v-text-field id="legal-last-name"
                         v-model="searchParams.legalLastName"
                         label="Legal Surname"
                         variant="outlined"
@@ -58,7 +71,7 @@
           </v-text-field>
         </div>
         <div class="search-field col-12 col-md-3">
-          <v-text-field id="legalGivenName"
+          <v-text-field id="legal-given-name"
                         v-model="searchParams.legalFirstName"
                         label="Legal Given Name"
                         variant="outlined"
@@ -85,7 +98,7 @@
           </v-text-field>
         </div>
         <div class="search-field col-12 col-md-3">
-          <v-text-field id="legalMiddleName"
+          <v-text-field id="legal-middle-name"
                         v-model="searchParams.legalMiddleNames"
                         label="Legal Middle Name"
                         variant="outlined"
@@ -114,22 +127,9 @@
       </v-row>
       <v-row class="mt-1">
         <div class="search-field col-12 col-md-3">
-          <v-autocomplete id="gender"
-                          v-model="searchParams.genderCode"
-                          label="Gender"
-                          :items="genderCodes"
-                          item-title="genderCodes"
-                          item-value="genderCodes"
-                          variant="outlined"
-                          clearable
-                          density="compact"
-                          v-on:keyup="keyHandler"
-          ></v-autocomplete>
-        </div>
-        <div class="search-field col-12 col-md-3">
           <v-text-field
               id="datepicker-birthdate-from"
-              label="Birthdate From"
+              label="Birthdate"
               variant="outlined"
               density="compact"
               v-model="searchParams.dobFrom"
@@ -139,15 +139,27 @@
               clearable
           />
         </div>
-        <div class="search-field col-12 col-md-3">
+        <div class="range-check">
+          <v-checkbox
+              id="session-range-checkbox"
+              v-model="searchParams.useBirthdateRange"
+              class="ma-0 pa-0"
+              height="100%"
+              density="compact"
+              :label="searchParams.useBirthdateRange ? 'To:' : 'Use Range'"
+              color="#606060"
+              @update:model-value="onUseBirthdateRangeChanged"
+          />
+        </div>
+        <div class="search-field col-12 col-md-3" v-if="searchParams.useBirthdateRange">
           <v-text-field
               id="datepicker-birthdate-to"
-              label="Birthdate To"
+              label="Birthdate"
               variant="outlined"
               density="compact"
               v-model="searchParams.dobTo"
               type="date"
-              :disabled="!searchParams.dobFrom"
+
               :min="searchParams.dobFrom || undefined"
               max="9999-12-30"
               autocomplete="off"
@@ -232,6 +244,7 @@ export default {
         dobFrom: null,
         dobTo: null,
         genderCode: null,
+        useBirthdateRange: false,
         wildcards: {
           legalFirstName: false,
           legalLastName: false,
@@ -363,6 +376,12 @@ export default {
     keyHandler: function (e) {
       if (e.keyCode === 13) {
         //enter key pressed
+      }
+    },
+    onUseBirthdateRangeChanged(checked) {
+      if (!checked) {
+        this.searchParams.dobTo = null;
+        this.searchParams.useBirthdateRange = false;
       }
     },
   }
