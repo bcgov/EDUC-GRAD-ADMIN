@@ -8,6 +8,7 @@ import { useSnackbarStore } from "../../store/modules/snackbar";
 
 import sharedMethods from "@/sharedMethods.js";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
+import ApiService from "@/common/apiService";
 export const useAppStore = defineStore("app", {
   state: () => ({
     snackbarStore: useSnackbarStore(),
@@ -30,6 +31,7 @@ export const useAppStore = defineStore("app", {
     instituteCategoryCodes: [],
     instituteFacilityCodes: [],
     studentGradeCodes: [],
+    genderCodes: [],
     config: null,
     FAASTypeCodes: [],
     provincialSpecialCaseCodes: [],
@@ -188,6 +190,7 @@ export const useAppStore = defineStore("app", {
           await this.getTranscriptTypeCodes();
           await this.getCertificateTypeCodes();
           await this.getStudentGradeCodes();
+          await this.loadGenderCodes();
           await this.getLetterGradeCodes();
           await this.getFAASTypeCodes();
           //GET & SET ASSESSMENT TYPE CODES
@@ -341,6 +344,16 @@ export const useAppStore = defineStore("app", {
       this.districtsList =
         sharedMethods.sortDistrictListByActiveAndDistrictNumber(districts);
     },
+      async loadGenderCodes(getNewData = true) {
+          if (getNewData || !sharedMethods.dataArrayExists(this.genderCodes)) {
+              const ApiService = (await import('@/common/apiService.js')).default;
+              let response = await ApiService.getGenderCodes();
+              await this.setGenderCodes(response.data);
+          }
+      },
+      async setGenderCodes(genders) {
+          this.genderCodes = genders;
+      },
     async loadCoregCourses(getNewData = true) {
       if (getNewData || !sharedMethods.dataArrayExists(this.coregCourses)) {
         const ApiService = (await import('@/common/apiService.js')).default;

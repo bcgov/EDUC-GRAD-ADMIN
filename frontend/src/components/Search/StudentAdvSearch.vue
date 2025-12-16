@@ -33,8 +33,8 @@
                           v-model="searchParams.genderCode"
                           label="Gender"
                           :items="genderCodes"
-                          item-title="genderCodes"
-                          item-value="genderCodes"
+                          :item-title="item => `${item.label} (${item.genderCode})`"
+                          item-value="genderCode"
                           variant="outlined"
                           clearable
                           density="compact"
@@ -215,11 +215,12 @@ export default {
   },
   mounted() {
     //console.log(JSON.stringify(this.studentStatusOptions));
+    console.log(JSON.stringify(this.genderCodes));
   },
   data() {
     return {
       // TODO: obtain gender codes from student api
-      genderCodes: ["F", "M", "X", "U"],
+      //genderCodes: ["F", "M", "X", "U"],
       searchResults: [],
       currentPage: 1,
       itemsPerPage: 10,
@@ -342,6 +343,7 @@ export default {
   computed: {
     ...mapState(useAppStore, {
       studentStatusOptions: "studentStatusOptions",
+      genderCodes: "genderCodes",
     }),
   },
   methods: {

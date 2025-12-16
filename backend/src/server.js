@@ -20,6 +20,11 @@ if(crudEnabled) {
   }).catch((e) => {
     log.error('Error loading coreg 39 courses during boot .', e);
   });
+  cacheService.loadGenderCodes().then(() => {
+    log.info('Loaded gender codes data to memory');
+  }).catch((e) => {
+    log.error('Error loading gender codes during boot .', e);
+  });
 }
 
 
