@@ -38,6 +38,23 @@
                         clearable
                         density="compact"
           >
+            <template #append-inner>
+              <v-tooltip text="Wildcard search (contains)">
+                <template #activator="{ props }">
+                  <v-chip
+                      v-bind="props"
+                      class="wildcard-chip"
+                      size="small"
+                      label
+                      :variant="searchParams.wildcards.legalLastName ? 'elevated' : 'outlined'"
+                      :color="searchParams.wildcards.legalLastName ? 'primary' : 'grey-lighten-1'"
+                      @click.stop="searchParams.wildcards.legalLastName = !searchParams.wildcards.legalLastName"
+                  >
+                    .*
+                  </v-chip>
+                </template>
+              </v-tooltip>
+            </template>
           </v-text-field>
         </div>
         <div class="search-field col-12 col-md-3">
@@ -48,6 +65,23 @@
                         clearable
                         density="compact"
           >
+            <template #append-inner>
+              <v-tooltip text="Wildcard search (contains)">
+                <template #activator="{ props }">
+                  <v-chip
+                      v-bind="props"
+                      class="wildcard-chip"
+                      size="small"
+                      label
+                      :variant="searchParams.wildcards.legalFirstName ? 'elevated' : 'outlined'"
+                      :color="searchParams.wildcards.legalFirstName ? 'primary' : 'grey-lighten-1'"
+                      @click.stop="searchParams.wildcards.legalFirstName = !searchParams.wildcards.legalFirstName"
+                  >
+                    .*
+                  </v-chip>
+                </template>
+              </v-tooltip>
+            </template>
           </v-text-field>
         </div>
         <div class="search-field col-12 col-md-3">
@@ -58,6 +92,23 @@
                         clearable
                         density="compact"
           >
+            <template #append-inner>
+              <v-tooltip text="Wildcard search (contains)">
+                <template #activator="{ props }">
+                  <v-chip
+                      v-bind="props"
+                      class="wildcard-chip"
+                      size="small"
+                      label
+                      :variant="searchParams.wildcards.legalMiddleName ? 'elevated' : 'outlined'"
+                      :color="searchParams.wildcards.legalMiddleName ? 'primary' : 'grey-lighten-1'"
+                      @click.stop="searchParams.wildcards.legalMiddleName = !searchParams.wildcards.legalMiddleName"
+                  >
+                    .*
+                  </v-chip>
+                </template>
+              </v-tooltip>
+            </template>
           </v-text-field>
         </div>
       </v-row>
@@ -85,6 +136,7 @@
               type="date"
               max="9999-12-30"
               autocomplete="off"
+              clearable
           />
         </div>
         <div class="search-field col-12 col-md-3">
@@ -99,6 +151,7 @@
               :min="searchParams.dobFrom || undefined"
               max="9999-12-30"
               autocomplete="off"
+              clearable
           />
         </div>
       </v-row>
@@ -179,6 +232,11 @@ export default {
         dobFrom: null,
         dobTo: null,
         genderCode: null,
+        wildcards: {
+          legalFirstName: false,
+          legalLastName: false,
+          legalMiddleName: false,
+        }
       },
       searchResultsHeaders: [
         {
@@ -316,6 +374,16 @@ export default {
   align-items: center;
   padding-top: .5em;
   padding-bottom: 0;
+}
+
+:deep(.wildcard-chip) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-weight: 800;
+  cursor: pointer;
+  user-select: none;
 }
 
 .table th {
