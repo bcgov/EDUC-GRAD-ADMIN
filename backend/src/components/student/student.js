@@ -26,7 +26,7 @@ const cacheService = require('../cache-service');
 
 const {getCommonServiceData} = require('../utils');
 const HttpStatus = require('http-status-codes');
-const {createFiltersSearchCriteria} = require("./studentFilters");
+const {createFiltersSearchCriteria} = require('./studentFilters');
 
 async function getStudentCourseByStudentID(req, res) {
   const token = auth.getBackendToken(req);
