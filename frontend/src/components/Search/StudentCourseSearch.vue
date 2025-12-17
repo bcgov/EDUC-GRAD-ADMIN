@@ -304,7 +304,6 @@ import { courseSearchStore } from "@/store/modules/courseSearch";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import StudentCourseService from "@/services/StudentCourseService";
 import SchoolSelect from "@/components/Search/SchoolSelect.vue";
-import sharedMethods from "@/sharedMethods";
 
 export default {
   name: "StudentCourseSearch",
@@ -334,11 +333,11 @@ export default {
       downloadLoading: false,
       totalElements: "",
       studentStatusOptions: [
-        { title: "Current", value: "current" },
-        { title: "Archived", value: "archived" },
-        { title: "Deceased", value: "deceased" },
-        { title: "Merged", value: "merged" },
-        { title: "Terminated", value: "terminated" },
+        { title: "Current", value: "CUR" },
+        { title: "Archived", value: "ARC" },
+        { title: "Deceased", value: "DEC" },
+        { title: "Merged", value: "MER" },
+        { title: "Terminated", value: "TER" },
       ],
       programCompleteOptions: [
         { title: "Yes", value: "yes" },
@@ -634,8 +633,6 @@ export default {
             this.responseContent = response.data;
             // Transform the data to match our table structure
             this.searchResults = this.responseContent?.content?.map(item => this.transformCourseData(item)) || [];
-            // Populate school names after transformation
-            this.populateSchoolNames();
             this.totalElements = this.responseContent.totalElements;
             this.totalPages = this.responseContent.totalPages;
             this.searchMessage =
@@ -698,19 +695,45 @@ export default {
 
       const hasExam = item.studentExamId ? 'Yes' : 'No';
 
+      const statusMap = {
+        'CUR': 'Current',
+        'ARC': 'Archived',
+        'DEC': 'Deceased',
+        'MER': 'Merged',
+        'TER': 'Terminated'
+      };
+      const studentStatus = statusMap[item.gradStudent?.studentStatus] || item.gradStudent?.studentStatus;
+
+      let schoolOfRecordName = '';
+      let schoolOfGraduationName = '';
+
+      if (item.gradStudent?.schoolOfRecord) {
+        const school = this.schoolByMincode(item.gradStudent.schoolOfRecord);
+        if (school) {
+          schoolOfRecordName = school.displayName || '';
+        }
+      }
+
+      if (item.gradStudent?.schoolAtGraduation) {
+        const school = this.schoolByMincode(item.gradStudent.schoolAtGraduation);
+        if (school) {
+          schoolOfGraduationName = school.displayName || '';
+        }
+      }
+
       return {
         studentID: item.gradStudent?.studentID,
         pen: item.gradStudent?.pen,
-        studentStatus: item.gradStudent?.studentStatus,
+        studentStatus: studentStatus,
         surname: item.gradStudent?.legalLastName,
         birthdate: birthdate,
         grade: item.gradStudent?.studentGrade,
         program: item.gradStudent?.program,
         completionDate: completionDate,
         schoolOfRecordCode: item.gradStudent?.schoolOfRecord,
-        schoolOfRecordName: '', // Will be populated by populateSchoolNames()
+        schoolOfRecordName: schoolOfRecordName,
         schoolOfGraduationCode: item.gradStudent?.schoolAtGraduation,
-        schoolOfGraduationName: '', // Will be populated by populateSchoolNames()
+        schoolOfGraduationName: schoolOfGraduationName,
         courseCode: courseCode,
         courseLevel: courseLevel,
         courseSession: courseSession,
@@ -725,23 +748,6 @@ export default {
       };
     },
 
-    populateSchoolNames() {
-      this.searchResults.forEach((result) => {
-        if (result.schoolOfRecordCode) {
-          const school = this.schoolByMincode(result.schoolOfRecordCode);
-          if (school) {
-            result.schoolOfRecordName = school.displayName;
-          }
-        }
-
-        if (result.schoolOfGraduationCode) {
-          const school = this.schoolByMincode(result.schoolOfGraduationCode);
-          if (school) {
-            result.schoolOfGraduationName = school.displayName;
-          }
-        }
-      });
-    },
 
     updateDataTable({ page }) {
       this.currentPage = page;
