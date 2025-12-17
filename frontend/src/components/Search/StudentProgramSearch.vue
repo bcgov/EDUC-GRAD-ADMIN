@@ -294,11 +294,11 @@ export default {
       downloadLoading: false,
       totalElements: "",
       studentStatusOptions: [
-        { title: "Current", value: "current" },
-        { title: "Archived", value: "archived" },
-        { title: "Deceased", value: "deceased" },
-        { title: "Merged", value: "merged" },
-        { title: "Terminated", value: "terminated" },
+        { title: "Current", value: "CUR" },
+        { title: "Archived", value: "ARC" },
+        { title: "Deceased", value: "DEC" },
+        { title: "Merged", value: "MER" },
+        { title: "Terminated", value: "TER" },
       ],
       programCompleteOptions: [
         { title: "Yes", value: "yes" },
@@ -571,6 +571,15 @@ export default {
         }
       };
 
+      const statusMap = {
+        'CUR': 'Current',
+        'ARC': 'Archived',
+        'DEC': 'Deceased',
+        'MER': 'Merged',
+        'TER': 'Terminated'
+      };
+      const studentStatus = statusMap[item.studentStatus] || item.studentStatus;
+
       // Get school information
       let schoolOfRecordCode = '';
       let schoolOfRecordName = '';
@@ -596,7 +605,7 @@ export default {
       return {
         studentID: item.studentID,
         pen: item.pen,
-        studentStatus: item.studentStatus,
+        studentStatus: studentStatus,
         surname: item.legalLastName,
         givenName: item.legalFirstName,
         middleName: item.legalMiddleNames || '',
