@@ -190,6 +190,35 @@
       </v-row>
     </v-form>
   </div>
+  <div v-if="searchMessage" class="d-flex align-center mt-8 mb-2">
+    <v-alert
+        type="success"
+        variant="tonal"
+        border="start"
+        class="ml-1 py-3 width-fit-content"
+        :text="`${searchMessage}`"
+    ></v-alert>
+  </div>
+  <transition name="fade">
+    <div v-if="totalPages > 0 && hasSearched" class="table-responsive">
+      <v-data-table-server
+          v-model:items-per-page="itemsPerPage"
+          :items-per-page-options="itemsPerPageOptions"
+          :headers="searchResultsHeaders"
+          :items="searchResults"
+          :items-length="totalElements"
+          :loading="searchLoading"
+          item-value="id"
+          @update:options="updateDataTable"
+      >
+        <template v-slot:item.pen="{ item }">
+          <router-link :to="'/student-profile/' + item.studentID">
+            {{ item.pen }}
+          </router-link></template
+        >
+      </v-data-table-server>
+    </div>
+  </transition>
 </template>
 <script>
 import { useAppStore } from "@/store/modules/app";
@@ -220,8 +249,6 @@ export default {
   },
   data() {
     return {
-      // TODO: obtain gender codes from student api
-      //genderCodes: ["F", "M", "X", "U"],
       searchResults: [],
       currentPage: 1,
       itemsPerPage: 10,
@@ -233,6 +260,7 @@ export default {
         { title: "100", value: 100 },
       ],
       totalPages: "",
+      totalElements: "",
       searchMessage: "",
       errorMessage: "",
       searchLoading: false,
@@ -364,6 +392,7 @@ export default {
           this.currentPage,
           this.itemsPerPage
       ).then((res) => {
+        console.log(`Data returned from search ::: ${JSON.stringify(res.data)}`);
         if (res.data) {
           this.responseContent = res.data;
           this.searchResults =
@@ -378,7 +407,7 @@ export default {
                   "ERROR " + error?.response?.statusText,
                   "error",
                   10000,
-                  "There was an error with the Assessment Service: " +
+                  "There was an error with the Student Service: " +
                   error?.response?.status
               );
             }
@@ -386,6 +415,10 @@ export default {
           .finally(() => {
             this.searchLoading = false;
           });
+    },
+    updateDataTable({page}) {
+      this.currentPage = page;
+      this.search();
     },
     apiSearchParamsBuilder() {
       const EXCLUDED_KEYS = ['useBirthdateRange', 'wildcards'];

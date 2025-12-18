@@ -845,6 +845,7 @@ async function getStudentGenderCodes(req, res) {
 }
 
 async function getStudentsPaginated(req, res) {
+  log.debug(`getStudentsPaginated ::: ${JSON.stringify(req.query?.searchParams)}`);
   try {
     const search = [];
     if (req.query?.searchParams) {
@@ -863,6 +864,7 @@ async function getStudentsPaginated(req, res) {
         searchCriteriaList: JSON.stringify(search),
       },
     };
+    log.debug(`After createFiletersSearchCrideria ::: ${JSON.stringify(params)}`);
     let data = await getCommonServiceData(
       `${config.get('server:studentAPIURL')}/api/v1/student/search/pagination`,
       params
