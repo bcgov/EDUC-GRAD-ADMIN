@@ -47,6 +47,17 @@
                   <v-icon color="error">mdi-delete-forever</v-icon> Delete
                   Selected Courses
                 </v-list-item>
+                <v-list-item
+                  v-if="
+                    hasPermissions('STUDENT', 'studentTransfer') &&
+                    hasPermissions('STUDENT', 'courseUpdate')
+                  "
+                  :disabled="selected.length === 0"
+                  @click="showCourseTransfer"
+                >
+                  <v-icon color="error">mdi-transfer</v-icon> Transfer Selected
+                  Courses
+                </v-list-item>
               </v-list>
             </v-menu>
           </div>
@@ -59,6 +70,12 @@
             ref="courseDeleteFormRef"
           >
           </StudentCoursesDeleteForm>
+          <StudentCoursesTransferForm
+            @close="clearSelected"
+            :selectedCoursesToTransfer="selected"
+            ref="courseTransferFormRef"
+          >
+          </StudentCoursesTransferForm>
           <v-spacer />
           <StudentCoursesCreateForm type="all" />
         </v-row>
@@ -203,12 +220,14 @@ import CourseDetails from "@/components/Common/CourseDetails.vue";
 import StudentCoursesDeleteForm from "@/components/StudentProfile/Forms/StudentCoursesDeleteForm.vue";
 import StudentCoursesCreateForm from "@/components/StudentProfile/Forms/StudentCoursesCreateForm.vue";
 import StudentCoursesUpdateForm from "@/components/StudentProfile/Forms/StudentCoursesUpdateForm.vue";
+import StudentCoursesTransferForm from "@/components/StudentProfile/Forms/StudentCoursesTransferForm.vue";
 export default {
   name: "StudentCourses",
   components: {
     StudentCoursesCreateForm: StudentCoursesCreateForm,
     StudentCoursesDeleteForm: StudentCoursesDeleteForm,
     StudentCoursesUpdateForm: StudentCoursesUpdateForm,
+    StudentCoursesTransferForm: StudentCoursesTransferForm,
     CourseDetails: CourseDetails,
   },
   setup() {
@@ -363,6 +382,9 @@ export default {
     showCourseDelete() {
       this.$refs.courseDeleteFormRef.openDeleteStudentCoursesDialog();
     },
+    showCourseTransfer() {
+      this.$refs.courseTransferFormRef.openTransferStudentCoursesDialog();
+    },
     clearSelected() {
       this.selected = [];
     },
@@ -375,7 +397,18 @@ export default {
     },
     closeEditModal(modalKey) {
       this.editDialog[modalKey] = false;
-    }
+    },
+    saveStudentCourse(modalKey) {
+      this.closeEditModal(modalKey);
+    },
+    compareCourses(course1, course2) {
+      this.fields.forEach(function (field) {
+        if (course1[field] != course2[field]) {
+          return false;
+        }
+      });
+      return true;
+    },
   },
 };
 </script>
