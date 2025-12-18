@@ -663,7 +663,7 @@ export const useStudentStore = defineStore("student", {
         return response.data;
       } catch (error) {
         console.error("Error adding student courses: ", error);
-        return error;
+        throw error;
       }
     },
     addCoursesToCreate(course) {
