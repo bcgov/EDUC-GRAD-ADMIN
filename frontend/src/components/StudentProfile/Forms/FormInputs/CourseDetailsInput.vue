@@ -194,7 +194,7 @@
         </v-col>
       </v-row>
 
-      <v-row no-gutters v-if="course?.courseDetails.courseCode == 'IDS'">
+      <v-row no-gutters v-if="['IDS', 'IDSF'].includes(course?.courseDetails.courseCode)">
         <v-col cols="12" class="pt-2">
           <strong>Select Related Course</strong>
 
