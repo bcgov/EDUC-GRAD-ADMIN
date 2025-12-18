@@ -268,48 +268,56 @@
                     </v-col>
                     <v-row v-if="course.isExaminable">
                       <v-col class="ml-2"
-                        ><strong>School %</strong>&nbsp;
+                        ><strong class="mr-1">School %</strong>
                         <span v-if="course.courseExam.schoolPercentage">{{
                           course.courseExam.schoolPercentage
                         }}</span>
-                        <span v-else> <i>null</i> </span>
+                        <span v-else><i>null</i></span>
                       </v-col>
                       <v-col class="ml-2"
-                        ><strong>Best School %</strong>&nbsp;
+                        ><strong class="mr-1">Best School %</strong>
                         <span v-if="course.courseExam.bestSchoolPercentage">{{
                           course.courseExam.bestSchoolPercentage
                         }}</span>
-                        <span v-else> <i>null</i> </span>
+                        <span v-else><i>null</i></span>
                       </v-col>
                       <v-col class="ml-2"
-                        ><strong>Special Case</strong>
-                        {{ course.courseExam.specialCase }}</v-col
-                      >
+                        ><strong class="mr-1">Special Case</strong>
+                        <span v-if="course.courseExam.specialCase">{{
+                          course.courseExam.specialCase
+                        }}</span>
+                        <span v-else><i>null</i></span>
+                      </v-col>
                       <v-col class="ml-2"
-                        ><strong>Exam Best %</strong>&nbsp;
+                        ><strong class="mr-1">Exam Best %</strong>
                         <span v-if="course.courseExam.bestExamPercentage">{{
                           course.courseExam.bestExamPercentage
                         }}</span>
-                        <span v-else> <i>null</i> </span>
+                        <span v-else><i>null</i></span>
                       </v-col>
                       <v-col class="ml-2"
-                        ><strong>Final %</strong>&nbsp;
+                        ><strong class="mr-1">Final %</strong>
                         <span v-if="course.finalPercent">{{
                           course.finalPercent
                         }}</span>
-                        <span v-else> <i>null</i> </span>
+                        <span v-else><i>null</i></span>
                       </v-col>
                       <v-col class="ml-2"
-                        ><strong>Final LG</strong>
-                        {{ course.finalLetterGrade }}</v-col
-                      >
+                        ><strong class="mr-1">Final LG</strong>
+                        <span v-if="course.finalLetterGrade">{{
+                          course.finalLetterGrade
+                        }}</span>
+                        <span v-else><i>null</i></span>
+                      </v-col>
                       <v-col
-                        ><strong>Credits</strong> {{ course.credits }}</v-col
-                      >
+                        ><strong class="mr-1">Credits</strong>
+                        <span v-if="course.credits">{{ course.credits }}</span>
+                        <span v-else><i>null</i></span>
+                      </v-col>
                     </v-row>
                     <v-row v-else>
                       <v-col class="ml-3"
-                        ><strong>Interim</strong>&nbsp;
+                        ><strong class="mr-1">Interim</strong>
                         <span v-if="course.interimPercent"
                           >{{ course.interimPercent }}%
                         </span>
@@ -320,53 +328,52 @@
                           v-if="
                             !course.interimPercent && !course.interimLetterGrade
                           "
-                          ><i>null</i></span
-                        >
+                        ><i>null</i></span>
                       </v-col>
                       <v-col
-                        ><strong>Final</strong>&nbsp;
-                        <span v-if="course.finalPercent">
-                          {{ course.finalPercent }}%&nbsp;</span
-                        >
-                        <span v-if="course.finalLetterGrade">
-                          {{ course.finalLetterGrade }}</span
-                        >
+                        ><strong class="mr-1">Final</strong>
+                        <span v-if="course.finalPercent">{{
+                          course.finalPercent
+                        }}% </span>
+                        <span v-if="course.finalLetterGrade">{{
+                          course.finalLetterGrade
+                        }}</span>
                         <span
                           v-if="
                             !course.finalPercent && !course.finalLetterGrade
                           "
-                          ><i>null</i></span
-                        >
+                        ><i>null</i></span>
                       </v-col>
                       <v-col
-                        ><strong>Credits</strong> {{ course.credits }}</v-col
-                      >
-                      <v-col
-                        ><strong>FA/AS</strong>&nbsp;
-                        <span v-if="course.fineArtsAppliedSkills">
-                          {{ course.fineArtsAppliedSkills }}
-                        </span>
+                        ><strong class="mr-1">Credits</strong>
+                        <span v-if="course.credits">{{ course.credits }}</span>
                         <span v-else><i>null</i></span>
                       </v-col>
                       <v-col
-                        ><strong>Eq/Ch</strong>&nbsp;
+                        ><strong class="mr-1">FA/AS</strong>
+                        <span v-if="course.fineArtsAppliedSkills">{{
+                          course.fineArtsAppliedSkills
+                        }}</span>
+                        <span v-else><i>null</i></span>
+                      </v-col>
+                      <v-col
+                        ><strong class="mr-1">Eq/Ch</strong>
                         <span v-if="course.equivOrChallenge">
-                          {{ course.equivOrChallenge }}
-                        </span>
+                          {{ course.equivOrChallenge }}</span>
                         <span v-else><i>null</i></span>
                       </v-col>
                       <v-col
                         cols="12"
                         class="ml-3"
                         v-if="course.customizedCourseName"
-                        ><strong>Custom Course Title:</strong>
-                        {{ course.customizedCourseName }}</v-col
-                      >
+                        ><strong class="mr-1">Custom Course Title:</strong>
+                        {{ course.customizedCourseName }}
+                      </v-col>
                       <v-col
                         cols="12"
                         class="ml-3"
                         v-if="course.relatedCourseId"
-                        ><strong>Related Course:</strong>
+                        ><strong class="mr-1">Related Course:</strong>
                         {{ course.relatedCourseDetails.courseName }}
                       </v-col>
                     </v-row>
@@ -539,13 +546,14 @@
 import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
 import CourseExamDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseExamDetailsInput.vue";
 import StudentStatusAlert from "@/components/StudentProfile/Forms/StudentStatusAlert.vue";
-import { toRaw } from "vue";
+import {toRaw} from "vue";
 import useVuelidate from "@vuelidate/core";
-import { required, helpers } from "@vuelidate/validators";
-import { useAccessStore } from "@/store/modules/access";
-import { useStudentStore } from "@/store/modules/student";
-import { mapState, mapActions } from "pinia";
-import { validateAndFetchCourse } from "@/components/StudentProfile/Forms/utils/validateCourse.js";
+import {helpers} from "@vuelidate/validators";
+import {useAccessStore} from "@/store/modules/access";
+import {useStudentStore} from "@/store/modules/student";
+import {mapActions, mapState} from "pinia";
+import {validateAndFetchCourse} from "@/components/StudentProfile/Forms/utils/validateCourse.js";
+import {useSnackbarStore} from "@/store/modules/snackbar";
 
 export default {
   name: "StudentCoursesCreateForm",
@@ -587,6 +595,19 @@ export default {
               return month >= 1 && month <= 12;
             }
           ),
+          validCourseSessionYear: helpers.withMessage(
+              "Course session year must be 1984 or later",
+              (value) => {
+                if (!value) return true;
+                const stringValue = String(value);
+
+                // Only check year if format is valid (6 digits)
+                if (!/^\d{6}$/.test(stringValue)) return true;
+
+                const year = parseInt(stringValue.slice(0, 4), 10);
+                return year >= 1984;
+              }
+          ),
         },
       },
     };
@@ -599,6 +620,7 @@ export default {
       dialog: false,
       step: 0,
       validationStep: false,
+      snackbarStore: useSnackbarStore(),
 
       courseAdd: {
         code: null,
@@ -751,29 +773,36 @@ export default {
       );
       const createStudentCoursesRequestBody = toRaw(courseWithoutCourseDetails);
 
-      // Call API and get response
-      const response = await this.createStudentCourses(
-        createStudentCoursesRequestBody
-      );
-      // Enrich response with entire original course object
-
-      const enrichedResults = response.map((result) => {
-        const original = this.coursesToCreate.find(
-          (course) =>
-            course.courseID === result.courseID &&
-            course.courseSession === result.courseSession
+      try {
+        // Call API and get response
+        const response = await this.createStudentCourses(
+          createStudentCoursesRequestBody
         );
-        return {
-          ...result,
-          originalCourse: original || {},
-        };
-      });
-
-      this.createStudentResultsMessages = enrichedResults;
-      this.clearCoursesToCreate(); // optional
-      this.loadStudentCourseHistory(this.studentId);
-      this.isLoading = false;
-      this.validationStep = true;
+        // Enrich response with entire original course object
+        this.createStudentResultsMessages = response.map((result) => {
+          const original = this.coursesToCreate.find(
+              (course) =>
+                  course.courseID === result.courseID &&
+                  course.courseSession === result.courseSession
+          );
+          return {
+            ...result,
+            originalCourse: original || {},
+          };
+        });
+        this.clearCoursesToCreate(); // optional
+        this.loadStudentCourseHistory(this.studentId);
+        this.validationStep = true;
+      } catch (error) {
+        console.error('Error creating student courses:', error);
+        this.snackbarStore.showSnackbar(
+          'An error occurred while adding student courses.',
+          'error',
+          5000
+        );
+      } finally {
+        this.isLoading = false;
+      }
     },
   },
 };
