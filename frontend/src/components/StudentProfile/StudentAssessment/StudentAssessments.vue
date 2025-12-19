@@ -491,7 +491,7 @@ export default {
         return true;
       }
 
-      return specialCase === "NC";
+      return specialCase === "X" || specialCase === "Q";
     },
     async openAssessmentDetails(item) {
       this.selectedAssessmentForDetails = item;
