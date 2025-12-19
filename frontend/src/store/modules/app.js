@@ -14,6 +14,8 @@ export const useAppStore = defineStore("app", {
     pageTitle: "GRAD",
     programOptions: [],
     optionalProgramOptions: [],
+    optionalProgramIdToNameMap: {},
+    groupedOptionalProgramOptions: [],
     careerProgramOptions: [],
     studentStatusOptions: [],
     ungradReasons: [],
@@ -259,6 +261,34 @@ export const useAppStore = defineStore("app", {
     async setOptionalProgramCodes(optionalProgramCodes) {
       this.optionalProgramOptions =
         sharedMethods.applyDisplayOrder(optionalProgramCodes);
+
+      await this.setGroupedOptionalProgramCodes(optionalProgramCodes);
+    },
+    async setGroupedOptionalProgramCodes(optionalProgramCodes) {
+      // Group by optionalProgramName to handle duplicates across different graduation programs
+      const groupedByName = {};
+      const idToNameMap = {};
+
+      optionalProgramCodes.forEach(program => {
+        const name = program.optionalProgramName;
+        const id = program.optionalProgramID;
+
+        idToNameMap[id] = name;
+
+        if (!groupedByName[name]) {
+          groupedByName[name] = {
+            ...program,
+            allOptionalProgramIDs: [id]
+          };
+        } else {
+          groupedByName[name].allOptionalProgramIDs.push(id);
+        }
+      });
+
+      const uniquePrograms = Object.values(groupedByName);
+      this.groupedOptionalProgramOptions = sharedMethods.applyDisplayOrder(uniquePrograms);
+
+      this.optionalProgramIdToNameMap = idToNameMap;
     },
     async getCareerProgramCodes(getNewData = true) {
       if (
