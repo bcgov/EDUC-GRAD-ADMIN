@@ -133,6 +133,7 @@
             class="form__input"
             v-model="searchParams.courseID"
             v-on:keyup="keyHandler"
+            autocomplete="off"
             clearable
           />
         </div>
