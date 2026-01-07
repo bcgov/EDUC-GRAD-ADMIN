@@ -96,10 +96,6 @@
       </div>
     </div>
     <!-- Studnet Demo. end-->
-     {{ hasPermissions('STUDENT', 'studentAssessmentUpdate')
-                     }}
-
-                     {{ enableCRUD }}
     <div class="row m-0">
       <div class="col-12 px-0">
         <v-card class="p-0" :disabled="tabLoading">
@@ -127,6 +123,8 @@
                   class="text-none"
                   v-if="
                     hasPermissions('STUDENT', 'studentAssessmentUpdate') 
+                    &&
+                    enableCRUD
                   "
                   >Assessments ({{ assessments?.length }})
                   <p class="text-caption font-weight-bold text-bcGovGold">
@@ -256,6 +254,8 @@
                   <v-window-item
                     v-if="
                       hasPermissions('STUDENT', 'studentAssessmentUpdate') 
+                      &&
+                      enableCRUD
                     "
                     value="Assessments"
                     data-cy="assessments-window-item"
@@ -1206,6 +1206,8 @@ export default {
       this.loadAssessmentsLegacy();
       if (
         this.hasPermissions("STUDENT", "studentAssessmentUpdate") 
+        &&
+        this.enableCRUD
       ) {
         this.loadStudentAssessments(studentIdFromURL);
       }
