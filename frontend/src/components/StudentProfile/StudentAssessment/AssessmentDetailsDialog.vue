@@ -253,38 +253,23 @@ export default {
 
               questionSets.forEach(questionSet => {
                 // Find the canonical question (QUESTION_NUMBER = MASTER_QUESTION_NUMBER)
-                const canonical = questionSet.find(q => q.questionNumber === q.masterQuestionNumber)
+                const canonical = questionSet.filter(q => q.questionNumber === q.masterQuestionNumber)
 
-                if (canonical) {
+                if (canonical.length > 0) {
                   // Max scores: only count the canonical question
-                  const qv = parseFloat(canonical.questionValue) || 0
-                  const sf = this.getScaleFactor(canonical.scaleFactor)
 
-                  comp.maxRawScore += qv
-                  comp.maxScaledScore += qv * sf
-
-                  // Student scores: find the best answer in this question set
-                  let bestAnswer = null
-                  let bestScore = -1
+                  canonical.forEach(question => {
+                    comp.maxRawScore += parseFloat(question.questionValue) || 0;
+                    comp.maxScaledScore += question.questionValue * this.getScaleFactor(question.scaleFactor)
+                  })
 
                   questionSet.forEach(question => {
                     const answer = answers.find(a => a.assessmentQuestionID === question.assessmentQuestionID)
-                    if (answer && answer.score != null && answer.score > bestScore) {
-                      bestScore = answer.score
-                      bestAnswer = answer
+                    if (answer && answer.score != null) {
+                      comp.rawScore += parseFloat(answer.score) || 0
+                      comp.scaledScore += (parseFloat(answer.score) || 0) * this.getScaleFactor(question.scaleFactor);
                     }
                   })
-
-                  // Add student scores if they answered at least one question in the set
-                  if (bestAnswer) {
-                    comp.rawScore += parseFloat(bestAnswer.score) || 0
-
-                    // For scaled score, use the scale factor from the canonical question
-                    comp.scaledScore += (parseFloat(bestAnswer.score) || 0) * sf
-                  } else {
-                    // No answer found for any question in this set = non-response
-                    comp.nonResponses += 1
-                  }
                 }
               })
             }
@@ -369,6 +354,7 @@ export default {
 
               // Process each item group
               itemGroups.forEach((itemQuestions, itemNumber) => {
+                
                 if (itemQuestions.length > 1) {
                   // Multiple questions for this item = choice scenario
                   let chosenQuestion = null
@@ -390,7 +376,7 @@ export default {
 
                   // Strategy 2: If no explicit choice record, find the question with the highest score
                   if (!chosenQuestion) {
-                    let maxScore = -1
+                     let maxScore = -1
                     itemQuestions.forEach(question => {
                       const answer = studentAnswers.find(a => a.assessmentQuestionID === question.assessmentQuestionID)
                       if (answer && answer.score != null && answer.score > maxScore) {
@@ -719,27 +705,34 @@ export default {
       groups.forEach(group => {
         // pick canonical item (questionNumber == masterQuestionNumber) else first
         const canonical =
-            group.find(it => {
+            group.filter(it => {
               const q = it.originalQuestion || {}
               return q.questionNumber === q.masterQuestionNumber
-            }) || group[0]
+            })
 
-        const q = canonical.originalQuestion || {}
-        const qv = parseFloat(q.questionValue) || 0
-        const sf = this.getScaleFactor(q.scaleFactor)
+        if (canonical.length > 0) {
+           canonical.forEach(question => {
 
-        // Max from canonical only
-        totals.totalMaxRawScore += qv
-        totals.totalMaxScaledScore += qv * sf
+            const q = question.originalQuestion || {}
+            const qv = parseFloat(q.questionValue) || 0
+            const sf = this.getScaleFactor(q.scaleFactor)
 
-        // Student from canonical only (NR => 0)
-        if (canonical.rawScore !== 'NR' && canonical.rawScore !== '-') {
-          const raw = parseFloat(canonical.rawScore) || 0
-          totals.totalRawScore += raw
-          totals.answeredItems += 1
-        }
-        if (canonical.scaledScore !== 'NR' && canonical.scaledScore !== '-') {
-          totals.totalScaledScore += parseFloat(canonical.scaledScore) || 0
+            // Max from canonical only
+            totals.totalMaxRawScore += qv
+            totals.totalMaxScaledScore += qv * sf
+
+            // Student from canonical only (NR => 0)
+            if (question.rawScore !== 'NR' && question.rawScore !== '-') {
+              const raw = parseFloat(question.rawScore) || 0
+              totals.totalRawScore += raw
+              totals.answeredItems += 1
+            }
+            if (question.scaledScore !== 'NR' && question.scaledScore !== '-') {
+              totals.totalScaledScore += parseFloat(question.scaledScore) || 0
+            }
+
+          });
+          
         }
       })
 

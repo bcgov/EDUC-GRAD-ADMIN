@@ -161,7 +161,7 @@ export default {
     },
 
     getAssessmentCentre() {
-      const assessmentCenterID = this.studentDetail.assessmentCenterSchoolID || this.studentDetail.schoolAtWriteSchoolID
+      const assessmentCenterID = this.studentDetail.assessmentCenterSchoolID
       if (!assessmentCenterID) return null
 
       const school = this.getSchoolById(assessmentCenterID)
@@ -174,7 +174,7 @@ export default {
     },
 
     getMarkingSession() {
-      const markingSession = this.studentAssessmentData.sessionDate
+      const markingSession = this.studentAssessmentData.markingSession
       if (markingSession) {
         try {
           const date = new Date(markingSession)
