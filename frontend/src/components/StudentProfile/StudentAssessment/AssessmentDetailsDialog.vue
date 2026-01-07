@@ -352,112 +352,32 @@ export default {
                 itemGroups.get(itemNumber).push(question)
               })
 
-              // Process each item group
-              itemGroups.forEach((itemQuestions, itemNumber) => {
-                
-                if (itemQuestions.length > 1) {
-                  // Multiple questions for this item = choice scenario
-                  let chosenQuestion = null
-
-                  // Strategy 1: Look for explicit choice record from student choices
-                  const studentChoiceRecord = studentChoices.find(choice => {
-                    // Find the matching choice in component.assessmentChoices to get item number
-                    const assessmentChoice = choices.find(ac => ac.assessmentChoiceID === choice.assessmentChoiceID)
-                    return assessmentChoice && assessmentChoice.itemNumber === itemNumber
-                  })
-
-                  if (studentChoiceRecord) {
-                    // Find the matching choice in component.assessmentChoices
-                    const assessmentChoice = choices.find(ac => ac.assessmentChoiceID === studentChoiceRecord.assessmentChoiceID)
-                    if (assessmentChoice && assessmentChoice.chosenQuestionNumber) {
-                      chosenQuestion = itemQuestions.find(q => q.questionNumber === assessmentChoice.chosenQuestionNumber)
-                    }
-                  }
-
-                  // Strategy 2: If no explicit choice record, find the question with the highest score
-                  if (!chosenQuestion) {
-                     let maxScore = -1
-                    itemQuestions.forEach(question => {
-                      const answer = studentAnswers.find(a => a.assessmentQuestionID === question.assessmentQuestionID)
-                      if (answer && answer.score != null && answer.score > maxScore) {
-                        maxScore = answer.score
-                        chosenQuestion = question
-                      }
-                    })
-                  }
-
-                  // Strategy 3: If still no chosen question, pick the first answered question
-                  if (!chosenQuestion) {
-                    const answeredQuestions = itemQuestions.filter(question => {
-                      return studentAnswers.some(answer =>
-                        answer.assessmentQuestionID === question.assessmentQuestionID &&
-                        answer.score != null
-                      )
-                    })
-                    chosenQuestion = answeredQuestions[0]
-                  }
-
-                  // Strategy 4: If still no chosen question, pick the first question in the item
-                  if (!chosenQuestion) {
-                    chosenQuestion = itemQuestions[0]
-                  }
-
-                  // For choice scenarios, we need to add TWO rows:
-                  // 1. A "Choice" row showing which question was selected
+              studentAnswers.forEach(answer => {
+                const question = questions.find(q => q.assessmentQuestionID === answer.assessmentQuestionID);
+                if(question) {
                   targetArray.push({
-                    uniqueKey: `choice-${itemNumber}-${chosenQuestion.questionNumber}`,
-                    itemNumber: itemNumber,
-                    questionNumber: chosenQuestion.questionNumber,
-                    itemType: 'Choice',
-                    rawScore: '-',
-                    maxRawScore: '-',
-                    scaledScore: '-',
-                    maxScaledScore: '-',
-                    originalChoice: { itemNumber, chosenQuestionNumber: chosenQuestion.questionNumber }
-                  })
-
-                  // 2. A "Mark" row showing the actual scores for the chosen question
-                  const studentAnswer = studentAnswers.find(answer =>
-                    answer.assessmentQuestionID === chosenQuestion.assessmentQuestionID
-                  )
-
-                  targetArray.push({
-                    uniqueKey: `question-${itemNumber}-${chosenQuestion.questionNumber}`,
-                    itemNumber: itemNumber,
-                    questionNumber: chosenQuestion.questionNumber,
-                    itemType: 'Mark',
-                    rawScore: this.formatRawScore(studentAnswer),
-                    maxRawScore: this.formatNumber(chosenQuestion.questionValue || 0),
-                    scaledScore: this.formatScaledScore(studentAnswer, chosenQuestion),
-                    maxScaledScore: this.formatNumber((chosenQuestion.questionValue || 0) * this.getScaleFactor(chosenQuestion.scaleFactor)),
-                    originalQuestion: chosenQuestion,
-                    originalAnswer: studentAnswer
-                  })
-                } else {
-                  // Single question for this item - just add the mark row
-                  const question = itemQuestions[0]
-                  const studentAnswer = studentAnswers.find(answer =>
-                    answer.assessmentQuestionID === question.assessmentQuestionID
-                  )
-
-                  targetArray.push({
-                    uniqueKey: `question-${itemNumber}-${question.questionNumber}`,
-                    itemNumber: itemNumber,
+                    uniqueKey: `question-${question.itemNumber}-${question.questionNumber}`,
+                    itemNumber: question.itemNumber,
                     questionNumber: question.questionNumber,
                     itemType: 'Mark',
-                    rawScore: this.formatRawScore(studentAnswer),
+                    rawScore: this.formatRawScore(answer),
                     maxRawScore: this.formatNumber(question.questionValue || 0),
-                    scaledScore: this.formatScaledScore(studentAnswer, question),
+                    scaledScore: this.formatScaledScore(answer, question),
                     maxScaledScore: this.formatNumber((question.questionValue || 0) * this.getScaleFactor(question.scaleFactor)),
                     originalQuestion: question,
-                    originalAnswer: studentAnswer
+                    originalAnswer: answer
                   })
                 }
-              })
+              });
 
               // Add any standalone choice items from student choices that don't have corresponding questions
               studentChoices.forEach(studentChoice => {
-                const assessmentChoice = choices.find(ac => ac.assessmentChoiceID === studentChoice.assessmentChoiceID)
+                const assessmentChoice = choices.find(ac => ac.assessmentChoiceID === studentChoice.assessmentChoiceID);
+                const choiceQuestionSet = studentChoice.assessmentStudentChoiceQuestionSet;
+                let selectedQuestion = null;
+                if(choiceQuestionSet) {
+                  selectedQuestion = questions.find(q => q.assessmentQuestionID === choiceQuestionSet[0].assessmentQuestionID);
+                }
                 if (assessmentChoice) {
                   const existingItem = targetArray.find(item =>
                     item.itemNumber === assessmentChoice.itemNumber &&
@@ -469,7 +389,7 @@ export default {
                     targetArray.push({
                       uniqueKey: `choice-${assessmentChoice.itemNumber}-${assessmentChoice.chosenQuestionNumber || assessmentChoice.questionNumber}`,
                       itemNumber: assessmentChoice.itemNumber,
-                      questionNumber: assessmentChoice.chosenQuestionNumber || assessmentChoice.questionNumber,
+                      questionNumber: selectedQuestion.questionNumber,
                       itemType: 'Choice',
                       rawScore: '-',
                       maxRawScore: '-',
