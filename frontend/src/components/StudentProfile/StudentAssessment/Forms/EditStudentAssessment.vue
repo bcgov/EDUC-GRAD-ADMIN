@@ -187,13 +187,33 @@ export default {
       },
     },
     provincialSpecialCaseDropdown() {
+      // Work on a copy of the codes to avoid mutating the original array
+      let allowedCodes = ["A", "E", "Q"];
+      let defaultAllowedCodes = ["E"];
+
+      // Get exclusion rules for the current assessment type
+      const excludeConfig =
+        this.specialCaseCodesToExcludeFromAssessments?.[
+          this.updateStudentAssessment?.assessmentTypeCode
+        ];
+      const excludeCodes = excludeConfig?.excludeCodes || [];
+
+      // Filter out excluded codes
+      allowedCodes = allowedCodes.filter(
+        (code) => !excludeCodes.includes(code)
+      );
+      defaultAllowedCodes = defaultAllowedCodes.filter(
+        (code) => !excludeCodes.includes(code)
+      );
+
+      // Return the dropdown configuration
       return usePermissionBasedDropdown({
         items: this.provincialSpecialCaseCodes,
         currentValue: this.updateStudentAssessment?.provincialSpecialCaseCode,
         itemValueKey: "provincialSpecialCaseCode",
         permissionKey: "editAllSpecialCases",
-        allowedCodes: this.getAllowedCodes(),
-        defaultAllowedCodes: [],
+        allowedCodes: allowedCodes,
+        defaultAllowedCodes: defaultAllowedCodes,
       });
     },
     sessionDisplayValue() {
@@ -214,6 +234,12 @@ export default {
       updateStudentAssessment: null,
       isSaving: false,
       isValidForm: false,
+      specialCaseCodesToExcludeFromAssessments: {
+        NME10: { excludeCodes: ["E"] },
+        NMF10: { excludeCodes: ["E"] },
+        NMF: { excludeCodes: ["E"] },
+        NME: { excludeCodes: ["E"] },
+      },
     };
   },
   watch: {
@@ -232,13 +258,6 @@ export default {
     },
   },
   methods: {
-    getAllowedCodes(){
-      if(this.updateStudentAssessment?.proficiencyScore){
-        return ["Q"];
-      }else{
-        return ['NME', 'NMF', 'NME10', 'NMF10'].includes(this.updateStudentAssessment?.assessmentTypeCode) ? ["A", "Q"] : ["A", "Q", "E"];
-      }
-    },
     closeDialog() {
       this.updateStudentAssessment = null;
       this.isSaving = false;

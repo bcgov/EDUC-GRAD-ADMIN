@@ -64,39 +64,32 @@
                 <v-stepper-window-item value="0">
                   <v-card-text>
                     <v-row no-gutters class="p-2" v-if="showCourseInput">
-                      <v-col class="pr-1">
+                      <v-col cols="auto" class="pr-3 d-flex align-center">
                         <strong>Update Student Course</strong>
                       </v-col>
 
-                      <v-col class="pr-1">
-                        <v-text-field
-                          v-model="courseUpdate.code"
-                          label="Course Code"
-                          :error="!!courseValidationMessage"
+                      <v-spacer />
+
+                      <v-col cols="3" class="pr-1">
+                        <v-autocomplete
+                          id="course"
+                          v-model="courseUpdate.courseID"
+                          label="Course"
+                          :items="courseOptions"
+                          :item-title="courseTitle"
+                          item-value="courseID"
                           variant="outlined"
                           density="compact"
                           clearable
-                          persistent-placeholder
-                          persistent-hint
-                          :disabled="isLoading"
-                        />
-                      </v-col>
-
-                      <v-col class="pr-1">
-                        <v-text-field
-                          v-model="courseUpdate.level"
-                          label="Course Level"
                           :error="!!courseValidationMessage"
-                          variant="outlined"
-                          density="compact"
-                          clearable
                           persistent-placeholder
                           persistent-hint
                           :disabled="isLoading"
+                          autocomplete="off"
                         />
                       </v-col>
 
-                      <v-col class="pr-1">
+                      <v-col cols="3" class="pr-1">
                         <v-text-field
                           v-model="courseUpdate.courseSession"
                           label="Session Date (YYYYMM)"
@@ -113,10 +106,11 @@
                           persistent-placeholder
                           persistent-hint
                           :disabled="isLoading"
+                          autocomplete="off"
                         />
                       </v-col>
 
-                      <v-col>
+                      <v-col cols="auto">
                         <v-btn
                           :disabled="v$?.courseUpdate?.$invalid || isLoading"
                           variant="flat"
@@ -135,7 +129,7 @@
                         </v-btn>
                         <v-btn
                           :disabled="isLoading"
-                          class="pl-1"
+                          class="ml-1"
                           density="compact"
                           variant="outline"
                           color="error"
@@ -416,6 +410,7 @@ import CourseExamDetailsInput from "@/components/StudentProfile/Forms/FormInputs
 import StudentStatusAlert from "@/components/StudentProfile/Forms/StudentStatusAlert.vue";
 import {useStudentStore} from "@/store/modules/student";
 import {useAccessStore} from "@/store/modules/access";
+import {useAppStore} from "@/store/modules/app";
 import {mapActions, mapState} from "pinia";
 import {validateAndFetchCourse} from "@/components/StudentProfile/Forms/utils/validateCourse.js";
 
@@ -466,8 +461,7 @@ export default {
       },
 
       courseUpdate: {
-        code: {},
-        level: {},
+        courseID: {},
         courseSession: {
           validCourseSessionMonth: helpers.withMessage(
             "Course session must be in YYYYMM format with a valid month (01–12)",
@@ -510,8 +504,7 @@ export default {
       courseValidationMessage: null,
       selectedCourseToUpdate: {},
       courseUpdate: {
-        code: null,
-        level: null,
+        courseID: null,
         courseSession: null,
       },
       snackbarStore: useSnackbarStore(),
@@ -531,6 +524,15 @@ export default {
     studentStore() {
       return useStudentStore();
     },
+    courseOptions() {
+      return this.appStore.getCoregCourses.slice().sort((a, b) => {
+        return a.externalCode.localeCompare(b.externalCode);
+      });
+    },
+  },
+
+  created() {
+    this.appStore = useAppStore();
   },
 
   methods: {
@@ -539,10 +541,29 @@ export default {
       "updateStudentCourse",
     ]),
 
+    courseTitle(item) {
+      if (item) {
+        return `${item.externalCode}`;
+      }
+      return "";
+    },
+
     async updateCourse() {
       this.isLoading = true;
       this.courseValidationMessage = null;
-      const { code, level, courseSession } = this.courseUpdate;
+
+      const { courseID, courseSession } = this.courseUpdate;
+
+      const selectedCourse = this.courseOptions.find(c => c.courseID === courseID);
+      if (!selectedCourse) {
+        this.courseValidationMessage = "Please select a valid course";
+        this.isLoading = false;
+        return;
+      }
+
+      const code = selectedCourse.courseCode;
+      const level = selectedCourse.courseLevel;
+
       const result = await validateAndFetchCourse({
         code,
         level,
@@ -585,8 +606,7 @@ export default {
     },
     clearForm() {
       this.courseUpdate = {
-        code: null,
-        level: null,
+        courseID: null,
         courseSession: null,
       };
       this.courseValidationMessage = "";
@@ -597,10 +617,16 @@ export default {
 
       this.courseUpdate.courseDetails =
         this.selectedCourseToUpdate.courseDetails;
-      this.courseUpdate.code =
-        this.selectedCourseToUpdate.courseDetails.courseCode;
-      this.courseUpdate.level =
-        this.selectedCourseToUpdate.courseDetails.courseLevel;
+
+      const currentCourse = this.courseOptions.find(
+        c => c.courseCode === this.selectedCourseToUpdate.courseDetails.courseCode &&
+             c.courseLevel === this.selectedCourseToUpdate.courseDetails.courseLevel
+      );
+
+      if (currentCourse) {
+        this.courseUpdate.courseID = currentCourse.courseID;
+      }
+
       this.courseUpdate.courseSession =
         this.selectedCourseToUpdate.courseSession;
     },

@@ -1,8 +1,8 @@
-.<template>
-  <div class="course-search-form mb-4">
+<template>
+  <div class="optional-program-search-form mb-4">
     <v-form v-on:submit.prevent>
       <v-row class="mt-1">
-        <div class="course-search-field col-12 col-md-2">
+        <div class="optional-program-search-field col-12 col-md-2">
           <v-select
             id="student-status"
             v-model="searchParams.studentStatus"
@@ -14,7 +14,7 @@
             v-on:keyup="keyHandler"
           ></v-select>
         </div>
-        <div class="course-search-field col-12 col-md-2">
+        <div class="optional-program-search-field col-12 col-md-2">
           <SchoolSelect
             v-model="searchParams.schoolOfRecordSchoolID"
             :disabled="false"
@@ -23,7 +23,7 @@
             :item-title="schoolTitle"
           />
         </div>
-        <div class="course-search-field col-12 col-md-2">
+        <div class="optional-program-search-field col-12 col-md-2">
           <v-autocomplete
             id="district-of-record"
             v-model="searchParams.districtOfRecord"
@@ -37,7 +37,20 @@
             v-on:keyup="keyHandler"
           ></v-autocomplete>
         </div>
-        <div class="course-search-field col-12 col-md-2">
+        <div class="optional-program-search-field col-12 col-md-2">
+          <v-select
+            id="program-complete"
+            label="Program Complete?"
+            :items="programCompleteOptions"
+            variant="outlined"
+            density="compact"
+            class="form__input"
+            v-model="searchParams.programComplete"
+            v-on:keyup="keyHandler"
+            clearable
+          />
+        </div>
+        <div class="optional-program-search-field col-12 col-md-2">
           <SchoolSelect
             v-model="searchParams.schoolAtGraduationSchoolID"
             :disabled="false"
@@ -46,22 +59,54 @@
             :item-title="schoolTitle"
           />
         </div>
-        <div class="course-search-field col-12 col-md-2">
+        <div class="optional-program-search-field col-12 col-md-2">
           <v-autocomplete
-            id="grade"
-            label="Grade"
-            :items="studentGradeCodes.sort((a, b) => a.studentGradeCode.localeCompare(b.studentGradeCode))"
-            item-title="studentGradeCode"
-            item-value="studentGradeCode"
+            id="optional-program"
+            label="Optional Program"
+            :items="groupedOptionalProgramOptions"
+            item-title="optionalProgramName"
+            item-value="optionalProgramID"
             variant="outlined"
             density="compact"
             class="form__input"
-            v-model.trim="searchParams.grade"
+            v-model.trim="searchParams.optionalProgram"
             v-on:keyup="keyHandler"
             clearable
           />
         </div>
-        <div class="course-search-field col-12 col-md-2">
+      </v-row>
+      <v-row class="mt-1">
+        <div class="optional-program-search-field col-12 col-md-auto">
+          <v-text-field
+            id="optional-program-completion-date-from"
+            label="Optional Program Completion Date From"
+            variant="outlined"
+            density="compact"
+            type="date"
+            class="form__input"
+            v-model="searchParams.optionalProgramCompletionDateFrom"
+            v-on:keyup="keyHandler"
+            placeholder="YYYY-MM-DD"
+            max="9999-12-30"
+            clearable
+          />
+        </div>
+        <div class="optional-program-search-field col-12 col-md-auto">
+          <v-text-field
+            id="optional-program-completion-date-to"
+            label="Optional Program Completion Date To"
+            variant="outlined"
+            density="compact"
+            type="date"
+            class="form__input"
+            v-model="searchParams.optionalProgramCompletionDateTo"
+            v-on:keyup="keyHandler"
+            placeholder="YYYY-MM-DD"
+            max="9999-12-30"
+            clearable
+          />
+        </div>
+        <div class="optional-program-search-field col-12 col-md-2">
           <v-autocomplete
             id="program"
             label="Program"
@@ -76,155 +121,27 @@
             clearable
           />
         </div>
-      </v-row>
-      <v-row class="mt-1">
-        <div class="course-search-field col-12 col-md-2">
-          <v-select
-            id="program-complete"
-            label="Program Complete?"
-            :items="programCompleteOptions"
-            variant="outlined"
-            density="compact"
-            class="form__input"
-            v-model="searchParams.programComplete"
-            v-on:keyup="keyHandler"
-            clearable
-          />
-        </div>
-        <div class="course-search-field col-12 col-md-auto">
-          <v-text-field
-            id="completion-date-from"
-            label="Completion Date From"
-            variant="outlined"
-            density="compact"
-            type="date"
-            class="form__input"
-            v-model="searchParams.completionDateFrom"
-            v-on:keyup="keyHandler"
-            placeholder="YYYY-MM-DD"
-            max="9999-12-30"
-            clearable
-          />
-        </div>
-        <div class="course-search-field col-12 col-md-auto">
-          <v-text-field
-            id="completion-date-to"
-            label="Completion Date To"
-            variant="outlined"
-            density="compact"
-            type="date"
-            class="form__input"
-            v-model="searchParams.completionDateTo"
-            v-on:keyup="keyHandler"
-            placeholder="YYYY-MM-DD"
-            max="9999-12-30"
-            clearable
-          />
-        </div>
-        <div class="course-search-field col-12 col-md-2">
+        <div class="optional-program-search-field col-12 col-md-2">
           <v-autocomplete
-            id="course"
-            label="Course"
-            :items="courseOptions"
-            :item-title="courseTitle"
-            item-value="courseID"
+            id="grade"
+            label="Grade"
+            :items="studentGradeCodes.sort((a, b) => a.studentGradeCode.localeCompare(b.studentGradeCode))"
+            item-title="studentGradeCode"
+            item-value="studentGradeCode"
             variant="outlined"
             density="compact"
             class="form__input"
-            v-model="searchParams.courseID"
-            v-on:keyup="keyHandler"
-            autocomplete="off"
-            clearable
-          />
-        </div>
-        <div class="course-search-field col-12 col-md-2">
-          <v-select
-            id="associated-exam"
-            label="Associated Exam?"
-            :items="yesNoOptions"
-            variant="outlined"
-            density="compact"
-            class="form__input"
-            v-model="searchParams.associatedExam"
-            v-on:keyup="keyHandler"
-            clearable
-          />
-        </div>
-      </v-row>
-      <v-row class="mt-1">
-        <div class="course-search-field col-12 col-md-2">
-          <v-select
-            id="final-letter-grade"
-            label="Final Letter Grade?"
-            :items="yesNoOptions"
-            variant="outlined"
-            density="compact"
-            class="form__input"
-            v-model="searchParams.finalLetterGrade"
-            v-on:keyup="keyHandler"
-            clearable
-          />
-        </div>
-        <div class="course-search-field col-12 col-md-auto">
-          <v-text-field
-            id="course-session-from"
-            label="Course Session From"
-            variant="outlined"
-            density="compact"
-            type="month"
-            class="form__input"
-            v-model="searchParams.courseSessionFrom"
-            v-on:keyup="keyHandler"
-            placeholder="YYYY-MM"
-            clearable
-          />
-        </div>
-        <div class="course-search-field col-12 col-md-auto">
-          <v-text-field
-            id="course-session-to"
-            label="Course Session To"
-            variant="outlined"
-            density="compact"
-            type="month"
-            class="form__input"
-            v-model="searchParams.courseSessionTo"
-            v-on:keyup="keyHandler"
-            placeholder="YYYY-MM"
-            clearable
-          />
-        </div>
-        <div class="course-search-field col-12 col-md-2">
-          <v-select
-            id="equivalency-challenge"
-            label="Equivalency/Challenge"
-            :items="equivalencyChallengeOptions"
-            variant="outlined"
-            density="compact"
-            class="form__input"
-            v-model="searchParams.equivalencyChallenge"
-            v-on:keyup="keyHandler"
-            clearable
-          />
-        </div>
-        <div class="course-search-field col-12 col-md-2">
-          <v-select
-            id="fine-arts-applied-skill"
-            label="Fine Arts/Applied Skill"
-            :items="fineArtsAppliedSkillOptions"
-            variant="outlined"
-            density="compact"
-            class="form__input"
-            v-model="searchParams.fineArtsAppliedSkill"
+            v-model.trim="searchParams.grade"
             v-on:keyup="keyHandler"
             clearable
           />
         </div>
       </v-row>
       <v-row>
-        <div class="course-search-button">
+        <div class="optional-program-search-button">
           <v-btn
             prepend-icon="mdi-magnify"
-            id="course-search-submit"
+            id="optional-program-search-submit"
             v-on:click="onSearchClicked"
             :loading="searchLoading"
             :disabled="searchLoading"
@@ -235,7 +152,7 @@
           >
           <v-btn
             class="mx-2 text-none"
-            id="course-search-reset-button"
+            id="optional-program-search-reset-button"
             color="primary"
             variant="outlined"
             @click="clearInput"
@@ -284,7 +201,7 @@
           :items="searchResults"
           :items-length="totalElements"
           :loading="searchLoading"
-          item-value="id"
+          item-value="studentID"
           @update:options="updateDataTable"
         >
           <template v-slot:item.pen="{ item }">
@@ -301,13 +218,13 @@
 <script>
 import { mapState } from "pinia";
 import { useAppStore } from "@/store/modules/app";
-import { courseSearchStore } from "@/store/modules/courseSearch";
+import { optionalProgramSearchStore } from "@/store/modules/optionalProgramSearch";
 import { useSnackbarStore } from "@/store/modules/snackbar";
-import StudentCourseService from "@/services/StudentCourseService";
+import StudentOptionalProgramService from "@/services/StudentOptionalProgramService";
 import SchoolSelect from "@/components/Search/SchoolSelect.vue";
 
 export default {
-  name: "StudentCourseSearch",
+  name: "StudentOptionalProgramSearch",
   components: {
     SchoolSelect,
   },
@@ -344,19 +261,6 @@ export default {
         { title: "Yes", value: "yes" },
         { title: "No", value: "no" },
       ],
-      yesNoOptions: [
-        { title: "Yes", value: "yes" },
-        { title: "No", value: "no" },
-      ],
-      equivalencyChallengeOptions: [
-        { title: "Equivalency", value: "equivalency" },
-        { title: "Challenge", value: "challenge" },
-      ],
-      fineArtsAppliedSkillOptions: [
-        { title: "Fine Arts", value: "fineArts" },
-        { title: "Applied Skills", value: "appliedSkills" },
-        { title: "Both", value: "both" },
-      ],
       searchResultsHeaders: [
         {
           key: "pen",
@@ -375,6 +279,20 @@ export default {
         {
           key: "surname",
           title: "Surname",
+          sortable: false,
+          editable: false,
+          class: "w-1",
+        },
+        {
+          key: "givenName",
+          title: "Given Name",
+          sortable: false,
+          editable: false,
+          class: "w-1",
+        },
+        {
+          key: "middleName",
+          title: "Middle Name",
           sortable: false,
           editable: false,
           class: "w-1",
@@ -436,78 +354,15 @@ export default {
           class: "w-1",
         },
         {
-          key: "courseCode",
-          title: "Course Code",
+          key: "optionalProgram",
+          title: "Optional Program",
           sortable: false,
           editable: false,
           class: "w-1",
         },
         {
-          key: "courseLevel",
-          title: "Course Level",
-          sortable: false,
-          editable: false,
-          class: "w-1",
-        },
-        {
-          key: "courseSession",
-          title: "Course Session",
-          sortable: false,
-          editable: false,
-          class: "w-1",
-        },
-        {
-          key: "interimPercent",
-          title: "% Interim",
-          sortable: false,
-          editable: false,
-          class: "w-1",
-        },
-        {
-          key: "interimLG",
-          title: "Interim LG",
-          sortable: false,
-          editable: false,
-          class: "w-1",
-        },
-        {
-          key: "finalPercent",
-          title: "Final %",
-          sortable: false,
-          editable: false,
-          class: "w-1",
-        },
-        {
-          key: "finalLG",
-          title: "Final LG",
-          sortable: false,
-          editable: false,
-          class: "w-1",
-        },
-        {
-          key: "credits",
-          title: "Credits",
-          sortable: false,
-          editable: false,
-          class: "w-1",
-        },
-        {
-          key: "equivChall",
-          title: "Equiv./Chall",
-          sortable: false,
-          editable: false,
-          class: "w-1",
-        },
-        {
-          key: "fineArtsAppSkill",
-          title: "Fine Arts App. Skill",
-          sortable: false,
-          editable: false,
-          class: "w-1",
-        },
-        {
-          key: "hasExam",
-          title: "Has Exam?",
+          key: "optionalProgramCompletionDate",
+          title: "Optional Program Completion Date",
           sortable: false,
           editable: false,
           class: "w-1",
@@ -516,30 +371,22 @@ export default {
     };
   },
   computed: {
-    ...mapState(courseSearchStore, ["searchParams"]),
+    ...mapState(optionalProgramSearchStore, ["searchParams"]),
     ...mapState(useAppStore, {
       getSchoolsList: "getSchoolsList",
       schoolByMincode: "schoolByMincode",
       districtsList: "getDistrictList",
       studentGradeCodes: "studentGradeCodes",
       programOptions: "programOptions",
+      optionalProgramOptions: "optionalProgramOptions",
+      groupedOptionalProgramOptions: "groupedOptionalProgramOptions",
+      optionalProgramIdToNameMap: "optionalProgramIdToNameMap",
     }),
-    courseOptions() {
-      return this.appStore.getCoregCourses.slice().sort((a, b) => {
-        return a.externalCode.localeCompare(b.externalCode);
-      });
-    },
   },
   created() {
     this.appStore = useAppStore();
   },
   methods: {
-    courseTitle(item) {
-      if (item) {
-        return `${item.externalCode}`;
-      }
-      return "";
-    },
     apiSearchParamsBuilder() {
       const apiSearchParams = {};
       const searchKeys = Object.keys(this.searchParams).filter((k) => {
@@ -552,7 +399,6 @@ export default {
         if (key === "districtOfRecord") {
           const districtNumber = this.searchParams[key];
 
-          // Find the district object to get its districtId
           const district = this.districtsList.find(d => d.districtNumber === districtNumber);
 
           if (!district) {
@@ -561,7 +407,6 @@ export default {
 
           const districtId = district.districtId;
 
-          // Filter schools by districtId (UUID)
           const schoolsInDistrict = this.getSchoolsList.filter(
             (school) => school.districtId === districtId
           );
@@ -570,6 +415,18 @@ export default {
 
           if (schoolIds) {
             apiSearchParams[key] = schoolIds;
+          }
+        } else if (key === "optionalProgram") {
+          // Find the selected optional program and use all its IDs
+          const selectedProgramId = this.searchParams[key];
+          const selectedProgram = this.groupedOptionalProgramOptions?.find(
+            op => op.optionalProgramID === selectedProgramId
+          );
+
+          if (selectedProgram && selectedProgram.allOptionalProgramIDs) {
+            apiSearchParams[key] = selectedProgram.allOptionalProgramIDs.join(",");
+          } else {
+            apiSearchParams[key] = selectedProgramId;
           }
         } else {
           apiSearchParams[key] = Array.isArray(this.searchParams[key])
@@ -584,7 +441,7 @@ export default {
       this.searchResults = [];
       this.searchMessage = "";
       this.hasSearched = false;
-      courseSearchStore().clearSearchParams();
+      optionalProgramSearchStore().clearSearchParams();
     },
 
     keyHandler: function (e) {
@@ -592,7 +449,6 @@ export default {
         //enter key pressed
       }
     },
-
 
     onSearchClicked() {
       this.hasSearched = true;
@@ -623,7 +479,7 @@ export default {
       }
       this.searchLoading = true;
       let sort = {};
-      StudentCourseService.getStudentCoursesBySearchCriteria(
+      StudentOptionalProgramService.getStudentOptionalProgramsBySearchCriteria(
         this.apiSearchParamsBuilder(),
         sort,
         this.currentPage,
@@ -632,10 +488,9 @@ export default {
         .then((response) => {
           if (response.data) {
             this.responseContent = response.data;
-            // Transform the data to match our table structure
-            this.searchResults = this.responseContent?.content?.map(item => this.transformCourseData(item)) || [];
-            this.totalElements = this.responseContent.totalElements;
-            this.totalPages = this.responseContent.totalPages;
+            this.searchResults = this.responseContent?.content?.map(item => this.transformOptionalProgramData(item)) || [];
+            this.totalElements = this.responseContent.totalElements || 0;
+            this.totalPages = this.responseContent.totalPages || 0;
             this.searchMessage =
               this.responseContent.totalElements === 1
                 ? "1 result found"
@@ -643,12 +498,13 @@ export default {
           }
         })
         .catch((error) => {
+          console.error('Optional program search error:', error);
           if (error?.response?.status) {
             this.snackbarStore.showSnackbar(
               "ERROR " + error?.response?.statusText,
               "error",
               10000,
-              "There was an error with the Course Service: " +
+              "There was an error with the Optional Program Service: " +
                 error?.response?.status
             );
           }
@@ -658,43 +514,19 @@ export default {
         });
     },
 
-    transformCourseData(item) {
-      // Look up course code and level from coreg cache using courseID
-      let courseCode = '';
-      let courseLevel = '';
-
-      if (item.courseID) {
-        const courseIDStr = item.courseID.toString();
-        // Look up in coreg cache
-        const course = this.appStore.getCoregCourseById(courseIDStr);
-
-        if (course) {
-          courseCode = course.courseCode || '';
-          courseLevel = course.courseLevel || '';
-        } else {
-          // If not found in cache, just show the courseID
-          courseCode = courseIDStr;
-          courseLevel = '';
+    transformOptionalProgramData(item) {
+      const parseDate = (dateStr) => {
+        if (!dateStr) return '';
+        try {
+          if (dateStr.includes(',')) {
+            return dateStr.split(',')[0].trim();
+          }
+          return new Date(dateStr).toISOString().split('T')[0];
+        } catch (e) {
+          console.warn('Error parsing date:', dateStr, e);
+          return '';
         }
-      }
-
-      const courseSession = item.courseSession ?
-        `${item.courseSession.substring(0, 4)}-${item.courseSession.substring(4, 6)}` : '';
-
-      const birthdate = item.gradStudent?.dob ?
-        new Date(item.gradStudent.dob).toISOString().split('T')[0] : '';
-
-      const completionDate = item.gradStudent?.programCompletionDate ?
-        new Date(item.gradStudent.programCompletionDate).toISOString().split('T')[0] : '';
-
-      const equivChall = item.equivOrChallenge === 'E' ? 'E' :
-                         item.equivOrChallenge === 'C' ? 'C' : '';
-
-      const fineArtsAppSkill = item.fineArtsAppliedSkillsCode === 'F' ? 'F' :
-                               item.fineArtsAppliedSkillsCode === 'A' ? 'A' :
-                               item.fineArtsAppliedSkillsCode === 'B' ? 'B' : '';
-
-      const hasExam = item.studentExamId ? 'Yes' : 'No';
+      };
 
       const statusMap = {
         'CUR': 'Current',
@@ -703,52 +535,57 @@ export default {
         'MER': 'Merged',
         'TER': 'Terminated'
       };
-      const studentStatus = statusMap[item.gradStudent?.studentStatus] || item.gradStudent?.studentStatus;
 
+      const gradStudent = item.gradStudent || {};
+      const studentStatus = statusMap[gradStudent.studentStatus] || gradStudent.studentStatus || '';
+
+      let schoolOfRecordCode = '';
       let schoolOfRecordName = '';
+      let schoolOfGraduationCode = '';
       let schoolOfGraduationName = '';
 
-      if (item.gradStudent?.schoolOfRecord) {
-        const school = this.schoolByMincode(item.gradStudent.schoolOfRecord);
+      if (gradStudent.schoolOfRecordId) {
+        const school = this.getSchoolsList?.find(s => s.schoolId === gradStudent.schoolOfRecordId);
         if (school) {
+          schoolOfRecordCode = school.mincode || '';
           schoolOfRecordName = school.displayName || '';
         }
       }
 
-      if (item.gradStudent?.schoolAtGraduation) {
-        const school = this.schoolByMincode(item.gradStudent.schoolAtGraduation);
+      if (gradStudent.schoolAtGraduationId) {
+        const school = this.getSchoolsList?.find(s => s.schoolId === gradStudent.schoolAtGraduationId);
         if (school) {
+          schoolOfGraduationCode = school.mincode || '';
           schoolOfGraduationName = school.displayName || '';
         }
       }
 
+      let optionalProgramName = '';
+      if (item.optionalProgramID) {
+        optionalProgramName = this.optionalProgramIdToNameMap?.[item.optionalProgramID] || '';
+      }
+
       return {
-        studentID: item.gradStudent?.studentID,
-        pen: item.gradStudent?.pen,
+        studentID: gradStudent.studentID,
+        pen: gradStudent.pen,
         studentStatus: studentStatus,
-        surname: item.gradStudent?.legalLastName,
-        birthdate: birthdate,
-        grade: item.gradStudent?.studentGrade,
-        program: item.gradStudent?.program,
-        completionDate: completionDate,
-        schoolOfRecordCode: item.gradStudent?.schoolOfRecord,
+        surname: gradStudent.legalLastName,
+        givenName: gradStudent.legalFirstName,
+        middleName: gradStudent.legalMiddleNames || '',
+        birthdate: parseDate(gradStudent.dob),
+        grade: gradStudent.studentGrade,
+        program: gradStudent.program,
+        completionDate: parseDate(gradStudent.programCompletionDate),
+        schoolOfRecordCode: schoolOfRecordCode,
         schoolOfRecordName: schoolOfRecordName,
-        schoolOfGraduationCode: item.gradStudent?.schoolAtGraduation,
+        schoolOfGraduationCode: schoolOfGraduationCode,
         schoolOfGraduationName: schoolOfGraduationName,
-        courseCode: courseCode,
-        courseLevel: courseLevel,
-        courseSession: courseSession,
-        interimPercent: item.interimPercent,
-        interimLG: item.interimLetterGrade,
-        finalPercent: item.finalPercent,
-        finalLG: item.finalLetterGrade,
-        credits: item.credits,
-        equivChall: equivChall,
-        fineArtsAppSkill: fineArtsAppSkill,
-        hasExam: hasExam
+        schoolOfRecordId: gradStudent.schoolOfRecordId,
+        schoolOfGraduationId: gradStudent.schoolAtGraduationId || null,
+        optionalProgram: optionalProgramName,
+        optionalProgramCompletionDate: parseDate(item.completionDate),
       };
     },
-
 
     updateDataTable({ page }) {
       this.currentPage = page;
@@ -762,9 +599,9 @@ export default {
       const month = String(today.getMonth() + 1).padStart(2, "0");
       const day = String(today.getDate()).padStart(2, "0");
       const dateStr = `${year}${month}${day}`;
-      const defaultFilename = `StudentCourseSearch-${dateStr}.csv`;
+      const defaultFilename = `StudentOptionalProgramSearch-${dateStr}.csv`;
 
-      StudentCourseService.downloadCourseStudentSearchReport(
+      StudentOptionalProgramService.downloadOptionalProgramStudentSearchReport(
         this.apiSearchParamsBuilder()
       )
         .then((response) => {
@@ -816,29 +653,29 @@ export default {
   border-bottom: 2px solid #5475a7;
 }
 
-.course-search-form {
+.optional-program-search-form {
   background-color: #fff;
   padding-left: 10px;
   padding-right: 10px;
 }
 
-.course-search-field {
+.optional-program-search-field {
   padding-right: 10px;
 }
 
-.course-search-field label {
+.optional-program-search-field label {
   float: left;
   clear: both;
 }
 
-.course-search-field input {
+.optional-program-search-field input {
   float: left;
   clear: both;
   padding-left: 10px;
   width: 100%;
 }
 
-.course-search-button {
+.optional-program-search-button {
   margin-top: 32px;
   padding-left: 5px;
 }

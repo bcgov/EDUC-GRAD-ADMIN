@@ -253,38 +253,23 @@ export default {
 
               questionSets.forEach(questionSet => {
                 // Find the canonical question (QUESTION_NUMBER = MASTER_QUESTION_NUMBER)
-                const canonical = questionSet.find(q => q.questionNumber === q.masterQuestionNumber)
+                const canonical = questionSet.filter(q => q.questionNumber === q.masterQuestionNumber)
 
-                if (canonical) {
+                if (canonical.length > 0) {
                   // Max scores: only count the canonical question
-                  const qv = parseFloat(canonical.questionValue) || 0
-                  const sf = this.getScaleFactor(canonical.scaleFactor)
 
-                  comp.maxRawScore += qv
-                  comp.maxScaledScore += qv * sf
-
-                  // Student scores: find the best answer in this question set
-                  let bestAnswer = null
-                  let bestScore = -1
+                  canonical.forEach(question => {
+                    comp.maxRawScore += parseFloat(question.questionValue) || 0;
+                    comp.maxScaledScore += question.questionValue * this.getScaleFactor(question.scaleFactor)
+                  })
 
                   questionSet.forEach(question => {
                     const answer = answers.find(a => a.assessmentQuestionID === question.assessmentQuestionID)
-                    if (answer && answer.score != null && answer.score > bestScore) {
-                      bestScore = answer.score
-                      bestAnswer = answer
+                    if (answer && answer.score != null) {
+                      comp.rawScore += parseFloat(answer.score) || 0
+                      comp.scaledScore += (parseFloat(answer.score) || 0) * this.getScaleFactor(question.scaleFactor);
                     }
                   })
-
-                  // Add student scores if they answered at least one question in the set
-                  if (bestAnswer) {
-                    comp.rawScore += parseFloat(bestAnswer.score) || 0
-
-                    // For scaled score, use the scale factor from the canonical question
-                    comp.scaledScore += (parseFloat(bestAnswer.score) || 0) * sf
-                  } else {
-                    // No answer found for any question in this set = non-response
-                    comp.nonResponses += 1
-                  }
                 }
               })
             }
@@ -367,111 +352,32 @@ export default {
                 itemGroups.get(itemNumber).push(question)
               })
 
-              // Process each item group
-              itemGroups.forEach((itemQuestions, itemNumber) => {
-                if (itemQuestions.length > 1) {
-                  // Multiple questions for this item = choice scenario
-                  let chosenQuestion = null
-
-                  // Strategy 1: Look for explicit choice record from student choices
-                  const studentChoiceRecord = studentChoices.find(choice => {
-                    // Find the matching choice in component.assessmentChoices to get item number
-                    const assessmentChoice = choices.find(ac => ac.assessmentChoiceID === choice.assessmentChoiceID)
-                    return assessmentChoice && assessmentChoice.itemNumber === itemNumber
-                  })
-
-                  if (studentChoiceRecord) {
-                    // Find the matching choice in component.assessmentChoices
-                    const assessmentChoice = choices.find(ac => ac.assessmentChoiceID === studentChoiceRecord.assessmentChoiceID)
-                    if (assessmentChoice && assessmentChoice.chosenQuestionNumber) {
-                      chosenQuestion = itemQuestions.find(q => q.questionNumber === assessmentChoice.chosenQuestionNumber)
-                    }
-                  }
-
-                  // Strategy 2: If no explicit choice record, find the question with the highest score
-                  if (!chosenQuestion) {
-                    let maxScore = -1
-                    itemQuestions.forEach(question => {
-                      const answer = studentAnswers.find(a => a.assessmentQuestionID === question.assessmentQuestionID)
-                      if (answer && answer.score != null && answer.score > maxScore) {
-                        maxScore = answer.score
-                        chosenQuestion = question
-                      }
-                    })
-                  }
-
-                  // Strategy 3: If still no chosen question, pick the first answered question
-                  if (!chosenQuestion) {
-                    const answeredQuestions = itemQuestions.filter(question => {
-                      return studentAnswers.some(answer =>
-                        answer.assessmentQuestionID === question.assessmentQuestionID &&
-                        answer.score != null
-                      )
-                    })
-                    chosenQuestion = answeredQuestions[0]
-                  }
-
-                  // Strategy 4: If still no chosen question, pick the first question in the item
-                  if (!chosenQuestion) {
-                    chosenQuestion = itemQuestions[0]
-                  }
-
-                  // For choice scenarios, we need to add TWO rows:
-                  // 1. A "Choice" row showing which question was selected
+              studentAnswers.forEach(answer => {
+                const question = questions.find(q => q.assessmentQuestionID === answer.assessmentQuestionID);
+                if(question) {
                   targetArray.push({
-                    uniqueKey: `choice-${itemNumber}-${chosenQuestion.questionNumber}`,
-                    itemNumber: itemNumber,
-                    questionNumber: chosenQuestion.questionNumber,
-                    itemType: 'Choice',
-                    rawScore: '-',
-                    maxRawScore: '-',
-                    scaledScore: '-',
-                    maxScaledScore: '-',
-                    originalChoice: { itemNumber, chosenQuestionNumber: chosenQuestion.questionNumber }
-                  })
-
-                  // 2. A "Mark" row showing the actual scores for the chosen question
-                  const studentAnswer = studentAnswers.find(answer =>
-                    answer.assessmentQuestionID === chosenQuestion.assessmentQuestionID
-                  )
-
-                  targetArray.push({
-                    uniqueKey: `question-${itemNumber}-${chosenQuestion.questionNumber}`,
-                    itemNumber: itemNumber,
-                    questionNumber: chosenQuestion.questionNumber,
-                    itemType: 'Mark',
-                    rawScore: this.formatRawScore(studentAnswer),
-                    maxRawScore: this.formatNumber(chosenQuestion.questionValue || 0),
-                    scaledScore: this.formatScaledScore(studentAnswer, chosenQuestion),
-                    maxScaledScore: this.formatNumber((chosenQuestion.questionValue || 0) * this.getScaleFactor(chosenQuestion.scaleFactor)),
-                    originalQuestion: chosenQuestion,
-                    originalAnswer: studentAnswer
-                  })
-                } else {
-                  // Single question for this item - just add the mark row
-                  const question = itemQuestions[0]
-                  const studentAnswer = studentAnswers.find(answer =>
-                    answer.assessmentQuestionID === question.assessmentQuestionID
-                  )
-
-                  targetArray.push({
-                    uniqueKey: `question-${itemNumber}-${question.questionNumber}`,
-                    itemNumber: itemNumber,
+                    uniqueKey: `question-${question.itemNumber}-${question.questionNumber}`,
+                    itemNumber: question.itemNumber,
                     questionNumber: question.questionNumber,
                     itemType: 'Mark',
-                    rawScore: this.formatRawScore(studentAnswer),
+                    rawScore: this.formatRawScore(answer),
                     maxRawScore: this.formatNumber(question.questionValue || 0),
-                    scaledScore: this.formatScaledScore(studentAnswer, question),
+                    scaledScore: this.formatScaledScore(answer, question),
                     maxScaledScore: this.formatNumber((question.questionValue || 0) * this.getScaleFactor(question.scaleFactor)),
                     originalQuestion: question,
-                    originalAnswer: studentAnswer
+                    originalAnswer: answer
                   })
                 }
-              })
+              });
 
               // Add any standalone choice items from student choices that don't have corresponding questions
               studentChoices.forEach(studentChoice => {
-                const assessmentChoice = choices.find(ac => ac.assessmentChoiceID === studentChoice.assessmentChoiceID)
+                const assessmentChoice = choices.find(ac => ac.assessmentChoiceID === studentChoice.assessmentChoiceID);
+                const choiceQuestionSet = studentChoice.assessmentStudentChoiceQuestionSet;
+                let selectedQuestion = null;
+                if(choiceQuestionSet) {
+                  selectedQuestion = questions.find(q => q.assessmentQuestionID === choiceQuestionSet[0].assessmentQuestionID);
+                }
                 if (assessmentChoice) {
                   const existingItem = targetArray.find(item =>
                     item.itemNumber === assessmentChoice.itemNumber &&
@@ -483,7 +389,7 @@ export default {
                     targetArray.push({
                       uniqueKey: `choice-${assessmentChoice.itemNumber}-${assessmentChoice.chosenQuestionNumber || assessmentChoice.questionNumber}`,
                       itemNumber: assessmentChoice.itemNumber,
-                      questionNumber: assessmentChoice.chosenQuestionNumber || assessmentChoice.questionNumber,
+                      questionNumber: selectedQuestion.questionNumber,
                       itemType: 'Choice',
                       rawScore: '-',
                       maxRawScore: '-',
@@ -719,27 +625,34 @@ export default {
       groups.forEach(group => {
         // pick canonical item (questionNumber == masterQuestionNumber) else first
         const canonical =
-            group.find(it => {
+            group.filter(it => {
               const q = it.originalQuestion || {}
               return q.questionNumber === q.masterQuestionNumber
-            }) || group[0]
+            })
 
-        const q = canonical.originalQuestion || {}
-        const qv = parseFloat(q.questionValue) || 0
-        const sf = this.getScaleFactor(q.scaleFactor)
+        if (canonical.length > 0) {
+           canonical.forEach(question => {
 
-        // Max from canonical only
-        totals.totalMaxRawScore += qv
-        totals.totalMaxScaledScore += qv * sf
+            const q = question.originalQuestion || {}
+            const qv = parseFloat(q.questionValue) || 0
+            const sf = this.getScaleFactor(q.scaleFactor)
 
-        // Student from canonical only (NR => 0)
-        if (canonical.rawScore !== 'NR' && canonical.rawScore !== '-') {
-          const raw = parseFloat(canonical.rawScore) || 0
-          totals.totalRawScore += raw
-          totals.answeredItems += 1
-        }
-        if (canonical.scaledScore !== 'NR' && canonical.scaledScore !== '-') {
-          totals.totalScaledScore += parseFloat(canonical.scaledScore) || 0
+            // Max from canonical only
+            totals.totalMaxRawScore += qv
+            totals.totalMaxScaledScore += qv * sf
+
+            // Student from canonical only (NR => 0)
+            if (question.rawScore !== 'NR' && question.rawScore !== '-') {
+              const raw = parseFloat(question.rawScore) || 0
+              totals.totalRawScore += raw
+              totals.answeredItems += 1
+            }
+            if (question.scaledScore !== 'NR' && question.scaledScore !== '-') {
+              totals.totalScaledScore += parseFloat(question.scaledScore) || 0
+            }
+
+          });
+          
         }
       })
 

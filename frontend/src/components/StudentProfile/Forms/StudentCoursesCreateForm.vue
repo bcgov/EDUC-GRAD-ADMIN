@@ -386,37 +386,32 @@
       </v-stepper>
       <v-card-actions v-if="step == 0 && showCourseInputs">
         <v-row no-gutters class="px-3 pt-3">
-          <v-col cols="1" class="pr-1"> Select Course </v-col>
+          <v-col cols="auto" class="pr-3 d-flex align-center">
+            <strong>Select Course</strong>
+          </v-col>
 
-          <v-col class="pr-1">
-            <v-text-field
-              v-model="courseAdd.code"
-              label="Course Code"
-              :error="!!courseValidationMessage"
+          <v-spacer />
+
+          <v-col cols="3" class="pr-1">
+            <v-autocomplete
+              id="course"
+              v-model="courseAdd.courseID"
+              label="Course"
+              :items="courseOptions"
+              :item-title="courseTitle"
+              item-value="courseID"
               variant="outlined"
               density="compact"
               clearable
-              persistent-placeholder
-              persistent-hint
-              :disabled="isLoading"
-            />
-          </v-col>
-
-          <v-col class="pr-1">
-            <v-text-field
-              v-model="courseAdd.level"
-              label="Course Level"
               :error="!!courseValidationMessage"
-              variant="outlined"
-              density="compact"
-              clearable
               persistent-placeholder
               persistent-hint
               :disabled="isLoading"
+              autocomplete="off"
             />
           </v-col>
 
-          <v-col class="pr-1">
+          <v-col cols="3" class="pr-1">
             <v-text-field
               v-model="courseAdd.courseSession"
               label="Session Date (YYYYMM)"
@@ -431,10 +426,11 @@
               persistent-placeholder
               persistent-hint
               :disabled="isLoading"
+              autocomplete="off"
             />
           </v-col>
 
-          <v-col>
+          <v-col cols="auto">
             <v-btn
               :disabled="v$?.courseAdd?.$invalid || isLoading"
               variant="flat"
@@ -455,6 +451,7 @@
               :disabled="coursesToCreate.length == 0"
               color="error"
               @click="closeCourseInput"
+              class="ml-1"
             >
               <v-icon size="28">mdi-close-circle</v-icon>
             </v-btn>
@@ -551,6 +548,7 @@ import useVuelidate from "@vuelidate/core";
 import {helpers} from "@vuelidate/validators";
 import {useAccessStore} from "@/store/modules/access";
 import {useStudentStore} from "@/store/modules/student";
+import {useAppStore} from "@/store/modules/app";
 import {mapActions, mapState} from "pinia";
 import {validateAndFetchCourse} from "@/components/StudentProfile/Forms/utils/validateCourse.js";
 import {useSnackbarStore} from "@/store/modules/snackbar";
@@ -577,8 +575,7 @@ export default {
   validations() {
     return {
       courseAdd: {
-        code: {},
-        level: {},
+        courseID: {},
         courseSession: {
           validCourseSessionMonth: helpers.withMessage(
             "Course session must be in YYYYMM format with a valid month (01–12)",
@@ -623,8 +620,7 @@ export default {
       snackbarStore: useSnackbarStore(),
 
       courseAdd: {
-        code: null,
-        level: null,
+        courseID: null,
         courseSession: null,
       },
       courseValidationMessage: null,
@@ -651,6 +647,14 @@ export default {
       studentStatus: (state) => state.student.profile.studentStatus,
       studentProgram: (state) => state.student.profile.program,
     }),
+    courseOptions() {
+      return this.appStore.getCoregCourses.slice().sort((a, b) => {
+        return a.externalCode.localeCompare(b.externalCode);
+      });
+    },
+  },
+  created() {
+    this.appStore = useAppStore();
   },
   methods: {
     ...mapActions(useStudentStore, [
@@ -660,6 +664,13 @@ export default {
       "createStudentCourses",
       "loadStudentCourseHistory",
     ]),
+
+    courseTitle(item) {
+      if (item) {
+        return `${item.externalCode}`;
+      }
+      return "";
+    },
 
     openCreateStudentCoursesDialog() {
       this.isLoading = false;
@@ -687,7 +698,17 @@ export default {
       this.isLoading = true;
       this.courseValidationMessage = null;
 
-      const { code, level, courseSession } = this.courseAdd;
+      const { courseID, courseSession } = this.courseAdd;
+
+      const selectedCourse = this.courseOptions.find(c => c.courseID === courseID);
+      if (!selectedCourse) {
+        this.courseValidationMessage = "Please select a valid course";
+        this.isLoading = false;
+        return;
+      }
+
+      const code = selectedCourse.courseCode;
+      const level = selectedCourse.courseLevel;
 
       //Check if course already added
       const isCourseDuplicate = this.coursesToCreate.some(
@@ -756,8 +777,7 @@ export default {
     },
     clearForm() {
       this.courseAdd = {
-        code: null,
-        level: null,
+        courseID: null,
         courseSession: null,
         courseStartDate: null,
         courseEndDate: null,
