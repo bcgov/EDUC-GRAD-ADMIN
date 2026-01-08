@@ -15,6 +15,9 @@ try {
       await cacheService.loadStudentGradeCodes();
       log.info('Reloaded student grade codes cache');
 
+      await cacheService.loadAssessmentTypeCodes();
+      log.info('Reloaded assessment type codes cache');
+
       log.info('Scheduled cache reload completed successfully');
     } catch (e) {
       log.error('Error during scheduled cache reload:', e);

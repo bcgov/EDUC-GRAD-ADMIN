@@ -9,6 +9,7 @@ let courses39Map = new Map();
 let courses39 = [];
 let courses39ExternalCodeMap = new Map();
 let studentGradeCodes = [];
+let assessmentTypeCodes = [];
 
 const cacheService = {
   async loadCoreg39CoursesToMap() {
@@ -68,6 +69,27 @@ const cacheService = {
   },
   getStudentGradeCodesJSON() {
     return studentGradeCodes;
+  },
+  async loadAssessmentTypeCodes() {
+    log.debug('Loading assessment type codes');
+    await retry(async () => {
+      try {
+        const assessmentTypeCodesResponse = await getCommonServiceData(`${config.get('server:studentAssessmentAPIURL')}/api/v1/student-assessment/assessment-types`);
+        assessmentTypeCodes = []; // reset the value
+        if (assessmentTypeCodesResponse && assessmentTypeCodesResponse.length > 0) {
+          assessmentTypeCodes = assessmentTypeCodesResponse;
+        }
+        log.info(`Loaded ${assessmentTypeCodes.length} assessment type codes.`);
+      } catch (err) {
+        log.error('Failed to load assessment type codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getAssessmentTypeCodesJSON() {
+    return assessmentTypeCodes;
   },
 };
 
