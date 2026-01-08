@@ -139,12 +139,6 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="font-weight-medium">Consumer Education Requirement Met</td>
-                  <td class="font-weight-bold" :class="{ 'primary--text': !overrideAll }">
-                    {{ targetStudentGradStatus.consumerEducationRequirementMet }}
-                  </td>
-                </tr>
-                <tr>
                   <td class="font-weight-medium">Optional Programs</td>
                   <td class="font-weight-bold" :class="{ 'primary--text': !overrideAll }">
                     <div v-if="targetStudentGradStatus.optionalPrograms?.length > 0">
