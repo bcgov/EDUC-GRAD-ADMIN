@@ -20,6 +20,15 @@ if(crudEnabled) {
   }).catch((e) => {
     log.error('Error loading coreg 39 courses during boot .', e);
   });
+
+  cacheService.loadStudentGradeCodes().then(() => {
+    log.info('Loaded student grade codes to memory');
+  }).catch((e) => {
+    log.error('Error loading student grade codes during boot.', e);
+  });
+
+  // Start the cache reload scheduler (runs nightly at 12:15 AM)
+  require('./components/scheduler');
 }
 
 

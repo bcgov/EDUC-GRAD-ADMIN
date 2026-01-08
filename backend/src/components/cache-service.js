@@ -8,6 +8,7 @@ const {generateCourseObject} = require('../util/courseUtils');
 let courses39Map = new Map();
 let courses39 = [];
 let courses39ExternalCodeMap = new Map();
+let studentGradeCodes = [];
 
 const cacheService = {
   async loadCoreg39CoursesToMap() {
@@ -46,6 +47,27 @@ const cacheService = {
   },
   getCourseIDByExternalCode39(externalCode) {
     return courses39ExternalCodeMap.get(externalCode);
+  },
+  async loadStudentGradeCodes() {
+    log.debug('Loading student grade codes');
+    await retry(async () => {
+      try {
+        const studentGradeCodesResponse = await getCommonServiceData(`${config.get('server:studentAPIURL')}/api/v1/student/grade-codes`);
+        studentGradeCodes = []; // reset the value
+        if (studentGradeCodesResponse && studentGradeCodesResponse.length > 0) {
+          studentGradeCodes = studentGradeCodesResponse;
+        }
+        log.info(`Loaded ${studentGradeCodes.length} student grade codes.`);
+      } catch (err) {
+        log.error('Failed to load student grade codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getStudentGradeCodesJSON() {
+    return studentGradeCodes;
   },
 };
 
