@@ -33,6 +33,12 @@ if(crudEnabled) {
     log.error('Error loading assessment type codes during boot.', e);
   });
 
+  cacheService.loadGradProgramCodes().then(() => {
+    log.info('Loaded graduation program codes to memory');
+  }).catch((e) => {
+    log.error('Error loading graduation program codes during boot.', e);
+  });
+
   // Start the cache reload scheduler (runs nightly at 12:15 AM)
   require('./components/scheduler');
 }

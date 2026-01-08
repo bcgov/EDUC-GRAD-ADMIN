@@ -10,6 +10,7 @@ let courses39 = [];
 let courses39ExternalCodeMap = new Map();
 let studentGradeCodes = [];
 let assessmentTypeCodes = [];
+let gradProgramCodes = [];
 
 const cacheService = {
   async loadCoreg39CoursesToMap() {
@@ -90,6 +91,27 @@ const cacheService = {
   },
   getAssessmentTypeCodesJSON() {
     return assessmentTypeCodes;
+  },
+  async loadGradProgramCodes() {
+    log.debug('Loading graduation program codes');
+    await retry(async () => {
+      try {
+        const gradProgramCodesResponse = await getCommonServiceData(`${config.get('server:programAPIURL')}/api/v1/program/programs`);
+        gradProgramCodes = []; // reset the value
+        if (gradProgramCodesResponse && gradProgramCodesResponse.length > 0) {
+          gradProgramCodes = gradProgramCodesResponse;
+        }
+        log.info(`Loaded ${gradProgramCodes.length} graduation program codes.`);
+      } catch (err) {
+        log.error('Failed to load graduation program codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getGradProgramCodesJSON() {
+    return gradProgramCodes;
   },
 };
 

@@ -18,6 +18,9 @@ try {
       await cacheService.loadAssessmentTypeCodes();
       log.info('Reloaded assessment type codes cache');
 
+      await cacheService.loadGradProgramCodes();
+      log.info('Reloaded graduation program codes cache');
+
       log.info('Scheduled cache reload completed successfully');
     } catch (e) {
       log.error('Error during scheduled cache reload:', e);
