@@ -26,6 +26,30 @@ function createFiltersSearchCriteria(searchFilter = []) {
       searchCriteria.push({ key: 'genderCode', value: value.toString(), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
     }
 
+    if (key === 'legalLastName' && value) {
+      searchCriteria.push({ key: 'legalLastName', value: value.toString().toUpperCase(), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+    }
+
+    if (key === 'legalLastNameWild' && value) {
+      searchCriteria.push({ key: 'legalLastName', value: value.toString().toUpperCase(), operation: FILTER_OPERATION.CONTAINS, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+    }
+
+    if (key === 'legalFirstName' && value) {
+      searchCriteria.push({ key: 'legalFirstName', value: value.toString().toUpperCase(), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+    }
+
+    if (key === 'legalFirstNameWild' && value) {
+      searchCriteria.push({ key: 'legalFirstName', value: value.toString().toUpperCase(), operation: FILTER_OPERATION.CONTAINS, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+    }
+
+    if (key === 'legalMiddleNames' && value) {
+      searchCriteria.push({ key: 'legalMiddleNames', value: value.toString().toUpperCase(), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+    }
+
+    if (key === 'legalMiddleNamesWild' && value) {
+      searchCriteria.push({ key: 'legalMiddleNames', value: value.toString().toUpperCase(), operation: FILTER_OPERATION.CONTAINS, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+    }
+
   }
   const search = [];
   if (searchCriteria.length > 0) {

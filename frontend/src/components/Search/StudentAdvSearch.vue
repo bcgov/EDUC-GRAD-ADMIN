@@ -113,9 +113,9 @@
                       class="wildcard-chip"
                       size="small"
                       label
-                      :variant="searchParams.wildcards.legalMiddleName ? 'elevated' : 'outlined'"
-                      :color="searchParams.wildcards.legalMiddleName ? 'primary' : 'grey-lighten-1'"
-                      @click.stop="searchParams.wildcards.legalMiddleName = !searchParams.wildcards.legalMiddleName"
+                      :variant="searchParams.wildcards.legalMiddleNames ? 'elevated' : 'outlined'"
+                      :color="searchParams.wildcards.legalMiddleNames ? 'primary' : 'grey-lighten-1'"
+                      @click.stop="searchParams.wildcards.legalMiddleNames = !searchParams.wildcards.legalMiddleNames"
                   >
                     .*
                   </v-chip>
@@ -278,7 +278,7 @@ export default {
         wildcards: {
           legalFirstName: false,
           legalLastName: false,
-          legalMiddleName: false,
+          legalMiddleNames: false,
         }
       },
       searchResultsHeaders: [
@@ -424,20 +424,39 @@ export default {
     },
     apiSearchParamsBuilder() {
       const EXCLUDED_KEYS = ['useBirthdateRange', 'wildcards'];
+
+      const WILDCARD_RENAMES = {
+        legalFirstName:   { flag: 'legalFirstName',  apiKey: 'legalFirstNameWild' },
+        legalLastName:    { flag: 'legalLastName',   apiKey: 'legalLastNameWild' },
+        legalMiddleNames: { flag: 'legalMiddleNames', apiKey: 'legalMiddleNameWild' }, // note singular flag
+      };
+
       const apiSearchParams = {};
-      // Default fields
+      const wildcardFlags = this.searchParams.wildcards || {};
+
       const searchKeys = Object.keys(this.searchParams).filter((k) => {
         if (EXCLUDED_KEYS.includes(k)) return false;
+
         const value = this.searchParams[k];
         if (value === null || value === undefined) return false;
         if (typeof value === 'string' && value.trim() === '') return false;
         return !(Array.isArray(value) && value.length === 0);
       });
+
       searchKeys.forEach((key) => {
-        apiSearchParams[key] = (Array.isArray(this.searchParams[key])) ? this.searchParams[key].join(',') : this.searchParams[key];
+        const value = this.searchParams[key];
+        // rename key if wildcard toggle is on for that field
+        let apiKey = key;
+        const rename = WILDCARD_RENAMES[key];
+        if (rename && wildcardFlags[rename.flag]) {
+          apiKey = rename.apiKey;
+        }
+        apiSearchParams[apiKey] = Array.isArray(value) ? value.join(',') : value;
       });
+
       return apiSearchParams;
-    },
+    }
+    ,
     clearInput: function () {
       this.searchResults = [];
       this.searchMessage = "";
