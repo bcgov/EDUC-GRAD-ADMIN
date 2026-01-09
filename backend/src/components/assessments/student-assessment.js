@@ -436,8 +436,41 @@ async function mergeStudentAssessmentsByStudentID(req, res) {
   }
 }
 
+async function downloadAssessmentTypeCodesCSV(req, res) {
+  try {
+    const codes = cacheService.getAssessmentTypeCodesJSON();
+
+    if (!codes || codes.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'No assessment type codes available' });
+    }
+
+    const csvHelpers = require('../codes-csv-helpers');
+
+    const headers = [
+      'Assessment Code',
+      'Assessment Label'
+    ];
+
+    console.log(rows);
+
+    const rows = codes.map(item => [
+      csvHelpers.escapeCSV(item.assessmentTypeCode),
+      csvHelpers.escapeCSV(item.label)
+    ].join(','));
+
+    const csvContent = csvHelpers.generateCSV(headers, rows);
+    const filename = `assessment-codes-${new Date().toISOString().split('T')[0]}.csv`;
+
+    return csvHelpers.sendCSVResponse(res, csvContent, filename);
+  } catch (e) {
+    log.error(e, 'downloadAssessmentTypeCodesCSV', 'Error occurred while generating assessment type codes CSV.');
+    return errorResponse(res);
+  }
+}
+
 module.exports = {
   getAssessmentTypeCodes,
+  downloadAssessmentTypeCodesCSV,
   getStudentAssessmentById,
   getStudentAssessmentPaginated,
   updateStudentAssessmentById,

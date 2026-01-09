@@ -30,6 +30,11 @@ export default {
   getAssessmentTypeCodes() {
     return ApiService.apiAxios.get('/api/student-assessment/assessment-type-codes')
   },
+  downloadAssessmentTypeCodesCSV() {
+    return ApiService.apiAxios.get('/api/student-assessment/assessment-type-codes/download', {
+      responseType: 'blob'
+    });
+  },
   getProvincialSpecialCaseCodes() {
     return ApiService.apiAxios.get('/api/student-assessment/provincial-special-case-codes');
   },

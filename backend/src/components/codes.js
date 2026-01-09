@@ -7,7 +7,7 @@ const config = require("../config/index");
 const log = require("../components/logger");
 const auth = require("../components/auth");
 const cacheService = require("./cache-service");
-const HttpStatus = require('http-status-codes');
+const HttpStatus = require("http-status-codes");
 
 async function getStudentStatusCodes(req, res) {
   const token = auth.getBackendToken(req);
@@ -398,13 +398,186 @@ async function getBatchJobTypes(req, res) {
   }
 }
 
+async function downloadLetterGradeCodesCSV(req, res) {
+  try {
+    const codes = cacheService.getLetterGradeCodesJSON();
+
+    if (!codes || codes.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'No letter grade codes available' });
+    }
+
+    const headers = [
+      'Letter Grade',
+      'GPA Mark Value',
+      'Pass Flag',
+      'High Percent',
+      'Low Percent',
+      'Effective Date',
+      'Expiry Date'
+    ];
+
+    const formatPassFlag = (passFlag) => {
+      if (passFlag === null || passFlag === undefined) return '';
+      return passFlag ? 'Y' : 'N';
+    };
+
+    const rows = codes.map(item => [
+      csvHelpers.escapeCSV(item.grade),
+      csvHelpers.escapeCSV(item.gpaMarkValue),
+      csvHelpers.escapeCSV(formatPassFlag(item.passFlag)),
+      csvHelpers.escapeCSV(item.percentRangeHigh || ''),
+      csvHelpers.escapeCSV(item.percentRangeLow || ''),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.effectiveDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.expiryDate))
+    ].join(','));
+
+    const csvContent = csvHelpers.generateCSV(headers, rows);
+    const filename = `letter-grades-${new Date().toISOString().split('T')[0]}.csv`;
+
+    return csvHelpers.sendCSVResponse(res, csvContent, filename);
+  } catch (e) {
+    log.error(e, 'downloadLetterGradeCodesCSV', 'Error occurred while generating letter grade codes CSV.');
+    return errorResponse(res);
+  }
+}
+
+async function downloadStudentGradeCodesCSV(req, res) {
+  try {
+    const codes = cacheService.getStudentGradeCodesJSON();
+
+    if (!codes || codes.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'No student grade codes available' });
+    }
+
+    const headers = [
+      'Grade Level',
+      'Grade Description',
+      'Effective Date',
+      'Expiry Date',
+      'Expected'
+    ];
+
+    const formatExpected = (expected) => {
+      if (expected === null || expected === undefined) return '';
+      return expected ? 'Y' : 'N';
+    };
+
+    const rows = codes.map(item => [
+      csvHelpers.escapeCSV(item.studentGradeCode),
+      csvHelpers.escapeCSV(item.label),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.effectiveDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.expiryDate)),
+      csvHelpers.escapeCSV(formatExpected(item.expected))
+    ].join(','));
+
+    const csvContent = csvHelpers.generateCSV(headers, rows);
+    const filename = `student-grade-codes-${new Date().toISOString().split('T')[0]}.csv`;
+
+    return csvHelpers.sendCSVResponse(res, csvContent, filename);
+  } catch (e) {
+    log.error(e, 'downloadStudentGradeCodesCSV', 'Error occurred while generating student grade codes CSV.');
+    return errorResponse(res);
+  }
+}
+
+async function downloadGradProgramCodesCSV(req, res) {
+  try {
+    const codes = cacheService.getGradProgramCodesJSON();
+
+    if (!codes || codes.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'No graduation program codes available' });
+    }
+
+    const headers = [
+      'Program Code',
+      'Program Name'
+    ];
+
+    const rows = codes.map(item => [
+      csvHelpers.escapeCSV(item.programCode),
+      csvHelpers.escapeCSV(item.programName)
+    ].join(','));
+
+    const csvContent = csvHelpers.generateCSV(headers, rows);
+    const filename = `graduation-programs-${new Date().toISOString().split('T')[0]}.csv`;
+
+    return csvHelpers.sendCSVResponse(res, csvContent, filename);
+  } catch (e) {
+    log.error(e, 'downloadGradProgramCodesCSV', 'Error occurred while generating graduation program codes CSV.');
+    return errorResponse(res);
+  }
+}
+
+async function downloadOptionalProgramCodesCSV(req, res) {
+  try {
+    const codes = cacheService.getOptionalProgramCodesJSON();
+
+    if (!codes || codes.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'No optional program codes available' });
+    }
+
+    const headers = [
+      'Career Program Code',
+      'Career Program Name'
+    ];
+
+    const rows = codes.map(item => [
+      csvHelpers.escapeCSV(item.optProgramCode),
+      csvHelpers.escapeCSV(item.optionalProgramName)
+    ].join(','));
+
+    const csvContent = csvHelpers.generateCSV(headers, rows);
+    const filename = `optional-programs-${new Date().toISOString().split('T')[0]}.csv`;
+
+    return csvHelpers.sendCSVResponse(res, csvContent, filename);
+  } catch (e) {
+    log.error(e, 'downloadOptionalProgramCodesCSV', 'Error occurred while generating optional program codes CSV.');
+    return errorResponse(res);
+  }
+}
+
+async function downloadCareerProgramCodesCSV(req, res) {
+  try {
+    const codes = cacheService.getCareerProgramCodesJSON();
+
+    if (!codes || codes.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'No career program codes available' });
+    }
+
+    const headers = [
+      'Career Program Code',
+      'Career Program Name'
+    ];
+
+    const rows = codes.map(item => [
+      csvHelpers.escapeCSV(item.code),
+      csvHelpers.escapeCSV(item.description)
+    ].join(','));
+
+    const csvContent = csvHelpers.generateCSV(headers, rows);
+    const filename = `career-programs-${new Date().toISOString().split('T')[0]}.csv`;
+
+    return csvHelpers.sendCSVResponse(res, csvContent, filename);
+  } catch (e) {
+    log.error(e, 'downloadCareerProgramCodesCSV', 'Error occurred while generating career program codes CSV.');
+    return errorResponse(res);
+  }
+}
+
+
+const csvHelpers = require('./codes-csv-helpers');
+
 module.exports = {
   getStudentStatusCodes,
   getHistoryActivityCodes,
   getStudentGradeCodes,
+  downloadStudentGradeCodesCSV,
   getGradProgramCodes,
+  downloadGradProgramCodesCSV,
   getOptionalProgramCodes,
+  downloadOptionalProgramCodesCSV,
   getCareerProgramCodes,
+  downloadCareerProgramCodesCSV,
   getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
@@ -413,6 +586,7 @@ module.exports = {
   getInstituteFacilityCodes,
   getAssessmentSpecialCaseCodes,
   getCourseLetterGradeCodes,
+  downloadLetterGradeCodesCSV,
   getTranscriptMessagingCodes,
   getStudentUndoCompletionReasonCodes,
   getTranscriptTypeCodes,
