@@ -45,8 +45,11 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, {
-      graduationOptionalPrograms: "optionalProgramOptions",
+      optionalProgramOptions: "optionalProgramOptions",
     }),
+    graduationOptionalPrograms() {
+      return this.optionalProgramOptions || [];
+    }
   },
   data: function () {
     return {

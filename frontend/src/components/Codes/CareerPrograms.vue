@@ -7,11 +7,6 @@
       Program, would also be assigned a Career Program code(s) to identify what
       career program(s) they are on.
     </p>
-    <v-progress-circular
-      v-if="isLoading"
-      color="primary"
-      indeterminate
-    ></v-progress-circular>
     <DisplayTable
       title="Career Programs"
       v-bind:items="careerPrograms"
@@ -31,34 +26,39 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
-import CodesService from "@/services/CodesService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import { mapState, mapActions } from "pinia";
+import { useAppStore } from "@/store/modules/app";
+
 export default {
   name: "CareerPrograms",
   components: {
     DisplayTable: DisplayTable,
   },
-  created() {
-    //IMPROVEMENT: Set & Get these in app store
-    CodesService.getCareerProgramCodes()
-      .then((response) => {
-        this.careerPrograms = response.data;
-        this.isLoading = false;
-      })
-      // eslint-disable-next-line
-      .catch((error) => {
+  async beforeMount() {
+    try {
+      await this.getCareerProgramCodes(false);
+    } catch (e) {
+      if (e.response?.status) {
         this.snackbarStore.showSnackbar(
-          "ERROR" + error.response.status,
+          "There was an error: " + e.response.status,
           "error",
           5000
         );
-      });
+      }
+    }
+  },
+  computed: {
+    ...mapState(useAppStore, {
+      careerProgramOptions: "careerProgramOptions",
+    }),
+    careerPrograms() {
+      return this.careerProgramOptions || [];
+    }
   },
   data: function () {
     return {
       snackbarStore: useSnackbarStore(),
-      isLoading: true,
-      careerPrograms: [],
       careerProgramFields: [
         {
           key: "code",
@@ -85,7 +85,9 @@ export default {
       ],
     };
   },
-  methods: {},
+  methods: {
+    ...mapActions(useAppStore, ["getCareerProgramCodes"]),
+  },
 };
 </script>
 

@@ -43,6 +43,18 @@ cacheService.loadOptionalProgramCodes().then(() => {
   log.error('Error loading optional program codes during boot.', e);
 });
 
+cacheService.loadLetterGradeCodes().then(() => {
+  log.info('Loaded letter grade codes to memory');
+}).catch((e) => {
+  log.error('Error loading letter grade codes during boot.', e);
+});
+
+cacheService.loadCareerProgramCodes().then(() => {
+  log.info('Loaded career program codes to memory');
+}).catch((e) => {
+  log.error('Error loading career program codes during boot.', e);
+});
+
 // Start the cache reload scheduler (runs nightly at 12:15 AM)
 require('./components/scheduler');
 

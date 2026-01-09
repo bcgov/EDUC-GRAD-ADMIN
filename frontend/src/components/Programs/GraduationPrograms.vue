@@ -57,6 +57,7 @@ export default {
     }),
     graduationPrograms() {
       // filters out the "No Program" option until business is ready to implement
+      if (!this.programOptions) return [];
       return this.programOptions.filter((obj) => {
         return obj.programCode !== "NOPROG";
       });

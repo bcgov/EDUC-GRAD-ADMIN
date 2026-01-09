@@ -80,20 +80,12 @@ async function getOptionalProgramCodes(req, res) {
 }
 
 async function getCareerProgramCodes(req, res) {
-  const token = auth.getBackendToken(req);
-
   try {
-    const url = `${config.get(
-      "server:programAPIURL"
-    )}/api/v1/program/careerprogram`;
-    const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data);
+    const codes = cacheService.getCareerProgramCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
-    } else {
-      return errorResponse(res);
-    }
+    log.error(e, 'getCareerProgramCodes', 'Error occurred while attempting to get cached career program codes.');
+    return errorResponse(res);
   }
 }
 
@@ -219,20 +211,12 @@ async function getAssessmentSpecialCaseCodes(req, res) {
 }
 
 async function getCourseLetterGradeCodes(req, res) {
-  const token = auth.getBackendToken(req);
-
   try {
-    const url = `${config.get(
-      "server:studentGraduationAPIURL"
-    )}/api/v1/studentgraduation/lgSc/lettergrade`;
-    const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data);
+    const codes = cacheService.getLetterGradeCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
-    } else {
-      return errorResponse(res);
-    }
+    log.error(e, 'getCourseLetterGradeCodes', 'Error occurred while attempting to get cached letter grade codes.');
+    return errorResponse(res);
   }
 }
 

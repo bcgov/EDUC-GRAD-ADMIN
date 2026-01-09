@@ -20,26 +20,39 @@
 
 <script>
 import DisplayTable from "../DisplayTable.vue";
-import CodesService from "@/services/CodesService.js";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import { mapState, mapActions } from "pinia";
+import { useAppStore } from "@/store/modules/app";
+
 export default {
   name: "LetterGrades",
   components: {
     DisplayTable: DisplayTable,
   },
-  created() {
-    CodesService.getLetterGradeCodes()
-      .then((response) => {
-        this.letterGrades = response.data;
-      })
-      .catch((error) => {
-        this.snackbarStore.showSnackbar(error.message, "error", 5000);
-      });
+  async beforeMount() {
+    try {
+      await this.getLetterGradeCodes(false);
+    } catch (e) {
+      if (e.response?.status) {
+        this.snackbarStore.showSnackbar(
+          "There was an error: " + e.response.status,
+          "error",
+          5000
+        );
+      }
+    }
+  },
+  computed: {
+    ...mapState(useAppStore, {
+      letterGradeCodes: "letterGradeCodes",
+    }),
+    letterGrades() {
+      return this.letterGradeCodes || [];
+    }
   },
   data: function () {
     return {
       snackbarStore: useSnackbarStore(),
-      letterGrades: [],
       toFilterItem: [
         "grade",
         "percentRangeHigh",
@@ -105,7 +118,9 @@ export default {
       ],
     };
   },
-  methods: {},
+  methods: {
+    ...mapActions(useAppStore, ["getLetterGradeCodes"]),
+  },
 };
 </script>
 

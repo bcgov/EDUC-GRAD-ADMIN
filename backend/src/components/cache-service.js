@@ -12,6 +12,8 @@ let studentGradeCodes = [];
 let assessmentTypeCodes = [];
 let gradProgramCodes = [];
 let optionalProgramCodes = [];
+let letterGradeCodes = [];
+let careerProgramCodes = [];
 
 const cacheService = {
   async loadCoreg39CoursesToMap() {
@@ -135,6 +137,48 @@ const cacheService = {
   },
   getOptionalProgramCodesJSON() {
     return optionalProgramCodes;
+  },
+  async loadLetterGradeCodes() {
+    log.debug('Loading letter grade codes');
+    await retry(async () => {
+      try {
+        const letterGradeCodesResponse = await getCommonServiceData(`${config.get('server:studentGraduationAPIURL')}/api/v1/studentgraduation/lgSc/lettergrade`);
+        letterGradeCodes = []; // reset the value
+        if (letterGradeCodesResponse && letterGradeCodesResponse.length > 0) {
+          letterGradeCodes = letterGradeCodesResponse;
+        }
+        log.info(`Loaded ${letterGradeCodes.length} letter grade codes.`);
+      } catch (err) {
+        log.error('Failed to load letter grade codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getLetterGradeCodesJSON() {
+    return letterGradeCodes;
+  },
+  async loadCareerProgramCodes() {
+    log.debug('Loading career program codes');
+    await retry(async () => {
+      try {
+        const careerProgramCodesResponse = await getCommonServiceData(`${config.get('server:programAPIURL')}/api/v1/program/careerprogram`);
+        careerProgramCodes = []; // reset the value
+        if (careerProgramCodesResponse && careerProgramCodesResponse.length > 0) {
+          careerProgramCodes = careerProgramCodesResponse;
+        }
+        log.info(`Loaded ${careerProgramCodes.length} career program codes.`);
+      } catch (err) {
+        log.error('Failed to load career program codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getCareerProgramCodesJSON() {
+    return careerProgramCodes;
   },
 };
 

@@ -23,6 +23,12 @@ try {
       await cacheService.loadOptionalProgramCodes();
       log.info('Reloaded optional program codes cache');
 
+      await cacheService.loadLetterGradeCodes();
+      log.info('Reloaded letter grade codes cache');
+
+      await cacheService.loadCareerProgramCodes();
+      log.info('Reloaded career program codes cache');
+
       log.info('Scheduled cache reload completed successfully');
     } catch (e) {
       log.error('Error during scheduled cache reload:', e);
