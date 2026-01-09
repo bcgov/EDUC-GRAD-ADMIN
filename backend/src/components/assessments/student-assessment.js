@@ -8,6 +8,8 @@ const {
 } = require("../utils");
 const HttpStatus = require("http-status-codes");
 const utils = require("../utils");
+const cacheService = require("../cache-service");
+const log = require("../logger");
 
 const config = require("../../config");
 const { createMoreFiltersSearchCriteria } = require("./studentFilters");
@@ -19,24 +21,11 @@ const auth = require("../auth");
 
 async function getAssessmentTypeCodes(req, res) {
   try {
-    let data = await cachedApiCall(
-      "assessment-type-codes",
-      `${
-        config.get("server:studentAssessmentAPIURL") + API_BASE_ROUTE
-      }/assessment-types`
-    );
-    return res.status(200).json(data);
+    const codes = cacheService.getAssessmentTypeCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
   } catch (e) {
-    if (e?.status === 404) {
-      res.status(HttpStatus.OK).json(null);
-    } else {
-      await logApiError(e, "Error getting student assessment type codes");
-      if (e.data.message) {
-        return errorResponse(res, e.data.message, e.status);
-      } else {
-        return errorResponse(res);
-      }
-    }
+    log.error(e, 'getAssessmentTypeCodes', 'Error occurred while attempting to get cached assessment type codes.');
+    return errorResponse(res);
   }
 }
 

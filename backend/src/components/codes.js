@@ -6,6 +6,8 @@ const {
 const config = require("../config/index");
 const log = require("../components/logger");
 const auth = require("../components/auth");
+const cacheService = require("./cache-service");
+const HttpStatus = require('http-status-codes');
 
 async function getStudentStatusCodes(req, res) {
   const token = auth.getBackendToken(req);
@@ -48,72 +50,42 @@ async function getHistoryActivityCodes(req, res) {
 }
 
 async function getStudentGradeCodes(req, res) {
-  const token = auth.getBackendToken(req);
-
   try {
-    const url = `${config.get(
-      "server:studentAPIURL"
-    )}/api/v1/student/grade-codes`;
-    const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data);
+    const codes = cacheService.getStudentGradeCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
-    } else {
-      return errorResponse(res);
-    }
+    log.error(e, 'getStudentGradeCodes', 'Error occurred while attempting to get cached student grade codes.');
+    return errorResponse(res);
   }
 }
 
 async function getGradProgramCodes(req, res) {
-  const token = auth.getBackendToken(req);
-
   try {
-    const url = `${config.get("server:programAPIURL")}/api/v1/program/programs`;
-    const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data);
+    const codes = cacheService.getGradProgramCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
-    } else {
-      return errorResponse(res);
-    }
+    log.error(e, 'getGradProgramCodes', 'Error occurred while attempting to get cached graduation program codes.');
+    return errorResponse(res);
   }
 }
 
 async function getOptionalProgramCodes(req, res) {
-  const token = auth.getBackendToken(req);
-
   try {
-    const url = `${config.get(
-      "server:programAPIURL"
-    )}/api/v1/program/optionalprograms`;
-    const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data);
+    const codes = cacheService.getOptionalProgramCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
-    } else {
-      return errorResponse(res);
-    }
+    log.error(e, 'getOptionalProgramCodes', 'Error occurred while attempting to get cached optional program codes.');
+    return errorResponse(res);
   }
 }
 
 async function getCareerProgramCodes(req, res) {
-  const token = auth.getBackendToken(req);
-
   try {
-    const url = `${config.get(
-      "server:programAPIURL"
-    )}/api/v1/program/careerprogram`;
-    const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data);
+    const codes = cacheService.getCareerProgramCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
-    } else {
-      return errorResponse(res);
-    }
+    log.error(e, 'getCareerProgramCodes', 'Error occurred while attempting to get cached career program codes.');
+    return errorResponse(res);
   }
 }
 
@@ -239,20 +211,12 @@ async function getAssessmentSpecialCaseCodes(req, res) {
 }
 
 async function getCourseLetterGradeCodes(req, res) {
-  const token = auth.getBackendToken(req);
-
   try {
-    const url = `${config.get(
-      "server:studentGraduationAPIURL"
-    )}/api/v1/studentgraduation/lgSc/lettergrade`;
-    const data = await getData(token, url, req.session?.correlationID);
-    return res.status(200).json(data);
+    const codes = cacheService.getLetterGradeCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
   } catch (e) {
-    if (e.data.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
-    } else {
-      return errorResponse(res);
-    }
+    log.error(e, 'getCourseLetterGradeCodes', 'Error occurred while attempting to get cached letter grade codes.');
+    return errorResponse(res);
   }
 }
 

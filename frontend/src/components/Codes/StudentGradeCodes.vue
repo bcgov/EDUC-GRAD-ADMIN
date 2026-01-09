@@ -90,8 +90,11 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, {
-      studentGradeCodes: "studentGradeCodes",
+      studentGradeCodesData: "studentGradeCodes",
     }),
+    studentGradeCodes() {
+      return this.studentGradeCodesData || [];
+    }
   },
   methods: {
     ...mapActions(useAppStore, ["getStudentGradeCodes"]),

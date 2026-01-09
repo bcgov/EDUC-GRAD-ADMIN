@@ -455,11 +455,12 @@ export const useAppStore = defineStore("app", {
       );
     },
     async getAssessmentTypeCodes(getNewData = true) {
-      if (getNewData || this.assessmentTypeCodes.length === 0) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.assessmentTypeCodes)
+      ) {
         let response = await StudentAssessmentService.getAssessmentTypeCodes();
         await this.setAssessmentTypeCodes(response.data);
-      } else {
-        return this.assessmentTypeCodes;
       }
     },
     async getProvincialSpecialCaseCodes(getNewData = true) {
