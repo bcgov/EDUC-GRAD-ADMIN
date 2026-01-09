@@ -451,8 +451,6 @@ async function downloadAssessmentTypeCodesCSV(req, res) {
       'Assessment Label'
     ];
 
-    console.log(rows);
-
     const rows = codes.map(item => [
       csvHelpers.escapeCSV(item.assessmentTypeCode),
       csvHelpers.escapeCSV(item.label)
