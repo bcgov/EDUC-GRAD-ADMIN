@@ -64,39 +64,32 @@
                 <v-stepper-window-item value="0">
                   <v-card-text>
                     <v-row no-gutters class="p-2" v-if="showCourseInput">
-                      <v-col class="pr-1">
+                      <v-col cols="auto" class="pr-3 d-flex align-center">
                         <strong>Update Student Course</strong>
                       </v-col>
 
-                      <v-col class="pr-1">
-                        <v-text-field
-                          v-model="courseUpdate.code"
-                          label="Course Code"
-                          :error="!!courseValidationMessage"
+                      <v-spacer />
+
+                      <v-col cols="3" class="pr-1">
+                        <v-autocomplete
+                          id="course"
+                          v-model="courseUpdate.courseID"
+                          label="Course"
+                          :items="courseOptions"
+                          :item-title="courseTitle"
+                          item-value="courseID"
                           variant="outlined"
                           density="compact"
                           clearable
-                          persistent-placeholder
-                          persistent-hint
-                          :disabled="isLoading"
-                        />
-                      </v-col>
-
-                      <v-col class="pr-1">
-                        <v-text-field
-                          v-model="courseUpdate.level"
-                          label="Course Level"
                           :error="!!courseValidationMessage"
-                          variant="outlined"
-                          density="compact"
-                          clearable
                           persistent-placeholder
                           persistent-hint
                           :disabled="isLoading"
+                          autocomplete="off"
                         />
                       </v-col>
 
-                      <v-col class="pr-1">
+                      <v-col cols="3" class="pr-1">
                         <v-text-field
                           v-model="courseUpdate.courseSession"
                           label="Session Date (YYYYMM)"
@@ -113,10 +106,11 @@
                           persistent-placeholder
                           persistent-hint
                           :disabled="isLoading"
+                          autocomplete="off"
                         />
                       </v-col>
 
-                      <v-col>
+                      <v-col cols="auto">
                         <v-btn
                           :disabled="v$?.courseUpdate?.$invalid || isLoading"
                           variant="flat"
@@ -135,7 +129,7 @@
                         </v-btn>
                         <v-btn
                           :disabled="isLoading"
-                          class="pl-1"
+                          class="ml-1"
                           density="compact"
                           variant="outline"
                           color="error"
@@ -215,7 +209,7 @@
                       </v-col>
                       <v-row v-if="selectedCourseToUpdate.isExaminable">
                         <v-col class="ml-2"
-                          ><strong>School %</strong>&nbsp;
+                          ><strong class="mr-1">School %</strong>
                           <span
                             v-if="
                               selectedCourseToUpdate.courseExam.schoolPercentage
@@ -224,10 +218,10 @@
                               selectedCourseToUpdate.courseExam.schoolPercentage
                             }}</span
                           >
-                          <span v-else> <i>null</i> </span>
+                          <span v-else><i>null</i></span>
                         </v-col>
                         <v-col class="ml-2"
-                          ><strong>Best School %</strong>&nbsp;
+                          ><strong class="mr-1">Best School %</strong>
                           <span
                             v-if="
                               selectedCourseToUpdate.courseExam
@@ -238,16 +232,17 @@
                                 .bestSchoolPercentage
                             }}</span
                           >
-                          <span v-else> <i>null</i> </span>
+                          <span v-else><i>null</i></span>
                         </v-col>
                         <v-col class="ml-2"
-                          ><strong>Special Case</strong>
-                          {{
+                          ><strong class="mr-1">Special Case</strong>
+                          <span v-if="selectedCourseToUpdate.courseExam.specialCase">{{
                             selectedCourseToUpdate.courseExam.specialCase
-                          }}</v-col
-                        >
+                          }}</span>
+                          <span v-else><i>null</i></span>
+                        </v-col>
                         <v-col class="ml-2"
-                          ><strong>Exam Best %</strong>&nbsp;
+                          ><strong class="mr-1">Exam Best %</strong>
                           <span
                             v-if="
                               selectedCourseToUpdate.courseExam
@@ -258,27 +253,33 @@
                                 .bestExamPercentage
                             }}</span
                           >
-                          <span v-else> <i>null</i> </span>
+                          <span v-else><i>null</i></span>
                         </v-col>
                         <v-col class="ml-2"
-                          ><strong>Final %</strong>&nbsp;
+                          ><strong class="mr-1">Final %</strong>
                           <span v-if="selectedCourseToUpdate.finalPercent">{{
                             selectedCourseToUpdate.finalPercent
                           }}</span>
-                          <span v-else> <i>null</i> </span>
+                          <span v-else><i>null</i></span>
                         </v-col>
                         <v-col class="ml-2"
-                          ><strong>Final LG</strong>
-                          {{ selectedCourseToUpdate.finalLetterGrade }}</v-col
-                        >
+                          ><strong class="mr-1">Final LG</strong>
+                          <span v-if="selectedCourseToUpdate.finalLetterGrade">{{
+                            selectedCourseToUpdate.finalLetterGrade
+                          }}</span>
+                          <span v-else><i>null</i></span>
+                        </v-col>
                         <v-col
-                          ><strong>Credits</strong>
-                          {{ selectedCourseToUpdate.credits }}</v-col
-                        >
+                          ><strong class="mr-1">Credits</strong>
+                          <span v-if="selectedCourseToUpdate.credits">{{
+                            selectedCourseToUpdate.credits
+                          }}</span>
+                          <span v-else><i>null</i></span>
+                        </v-col>
                       </v-row>
                       <v-row v-else>
                         <v-col class="ml-3"
-                          ><strong>Interim</strong>&nbsp;
+                          ><strong class="mr-1">Interim</strong>
                           <span v-if="selectedCourseToUpdate.interimPercent"
                             >{{ selectedCourseToUpdate.interimPercent }}%
                           </span>
@@ -290,38 +291,32 @@
                               !selectedCourseToUpdate.interimLetterGrade &&
                               !selectedCourseToUpdate.interimPercent
                             "
-                          >
-                            <i>null</i></span
-                          >
+                          ><i>null</i></span>
                         </v-col>
                         <v-col
-                          ><strong>Final</strong>&nbsp;
-                          <span v-if="selectedCourseToUpdate.finalPercent">
-                            {{
-                              selectedCourseToUpdate.finalPercent
-                            }}%&nbsp;</span
-                          >
-                          <span v-if="selectedCourseToUpdate.finalLetterGrade">
-                            {{ selectedCourseToUpdate.finalLetterGrade }}</span
-                          >
+                          ><strong class="mr-1">Final</strong>
+                          <span v-if="selectedCourseToUpdate.finalPercent">{{
+                            selectedCourseToUpdate.finalPercent
+                          }}% </span>
+                          <span v-if="selectedCourseToUpdate.finalLetterGrade">{{
+                            selectedCourseToUpdate.finalLetterGrade
+                          }}</span>
                           <span
                             v-if="
                               !selectedCourseToUpdate.finalLetterGrade &&
                               !selectedCourseToUpdate.finalPercent
                             "
-                          >
-                            <i>null</i></span
-                          >
+                          ><i>null</i></span>
                         </v-col>
 
                         <v-col
-                          ><strong>Credits</strong>
+                          ><strong class="mr-1">Credits</strong>
                           <span v-if="selectedCourseToUpdate.credits">
-                            {{ selectedCourseToUpdate.credits }}</span
-                          ><span v-else><i>null</i></span></v-col
-                        >
+                            {{ selectedCourseToUpdate.credits }}</span>
+                          <span v-else><i>null</i></span>
+                        </v-col>
                         <v-col
-                          ><strong>FA/AS</strong>&nbsp;
+                          ><strong class="mr-1">FA/AS</strong>
                           <span
                             v-if="selectedCourseToUpdate.fineArtsAppliedSkills"
                           >
@@ -330,30 +325,24 @@
                           <span v-else><i>null</i></span>
                         </v-col>
                         <v-col
-                          ><strong>Eq/Ch</strong>&nbsp;
+                          ><strong class="mr-1">Eq/Ch</strong>
                           <span v-if="selectedCourseToUpdate.equivOrChallenge">
-                            {{ selectedCourseToUpdate.equivOrChallenge }}
-                          </span>
+                            {{ selectedCourseToUpdate.equivOrChallenge }}</span>
                           <span v-else><i>null</i></span>
                         </v-col>
                         <v-col
                           cols="12"
                           class="ml-3"
                           v-if="selectedCourseToUpdate.customizedCourseName"
-                          ><strong>Custom Course Title: </strong>
-                          {{
-                            selectedCourseToUpdate.customizedCourseName
-                          }}</v-col
-                        >
+                          ><strong class="mr-1">Custom Course Title:</strong>
+                          {{ selectedCourseToUpdate.customizedCourseName }}
+                        </v-col>
                         <v-col
                           cols="12"
                           class="ml-3"
                           v-if="course.relatedCourseId"
-                          ><strong>Related Course:</strong>
-                          {{
-                            selectedCourseToUpdate.relatedCourseDetails
-                              .courseName
-                          }}
+                          ><strong class="mr-1">Related Course:</strong>
+                          {{ selectedCourseToUpdate.relatedCourseDetails.courseName }}
                         </v-col>
                       </v-row>
                     </v-row>
@@ -414,15 +403,16 @@
 
 <script>
 import useVuelidate from "@vuelidate/core";
-import { useSnackbarStore } from "@/store/modules/snackbar";
-import { required, helpers } from "@vuelidate/validators";
+import {useSnackbarStore} from "@/store/modules/snackbar";
+import {helpers} from "@vuelidate/validators";
 import CourseDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseDetailsInput.vue";
 import CourseExamDetailsInput from "@/components/StudentProfile/Forms/FormInputs/CourseExamDetailsInput.vue";
 import StudentStatusAlert from "@/components/StudentProfile/Forms/StudentStatusAlert.vue";
-import { useStudentStore } from "@/store/modules/student";
-import { useAccessStore } from "@/store/modules/access";
-import { mapState, mapActions } from "pinia";
-import { validateAndFetchCourse } from "@/components/StudentProfile/Forms/utils/validateCourse.js";
+import {useStudentStore} from "@/store/modules/student";
+import {useAccessStore} from "@/store/modules/access";
+import {useAppStore} from "@/store/modules/app";
+import {mapActions, mapState} from "pinia";
+import {validateAndFetchCourse} from "@/components/StudentProfile/Forms/utils/validateCourse.js";
 
 export default {
   name: "StudentCoursesUpdateForm",
@@ -471,8 +461,7 @@ export default {
       },
 
       courseUpdate: {
-        code: {},
-        level: {},
+        courseID: {},
         courseSession: {
           validCourseSessionMonth: helpers.withMessage(
             "Course session must be in YYYYMM format with a valid month (01–12)",
@@ -489,6 +478,19 @@ export default {
               return month >= 1 && month <= 12;
             }
           ),
+          validCourseSessionYear: helpers.withMessage(
+              "Course session year must be 1984 or later",
+              (value) => {
+                if (!value) return true;
+                const stringValue = String(value);
+
+                // Only check year if format is valid (6 digits)
+                if (!/^\d{6}$/.test(stringValue)) return true;
+
+                const year = parseInt(stringValue.slice(0, 4), 10);
+                return year >= 1984;
+              }
+          ),
         },
       },
     };
@@ -502,8 +504,7 @@ export default {
       courseValidationMessage: null,
       selectedCourseToUpdate: {},
       courseUpdate: {
-        code: null,
-        level: null,
+        courseID: null,
         courseSession: null,
       },
       snackbarStore: useSnackbarStore(),
@@ -523,6 +524,15 @@ export default {
     studentStore() {
       return useStudentStore();
     },
+    courseOptions() {
+      return this.appStore.getCoregCourses.slice().sort((a, b) => {
+        return a.externalCode.localeCompare(b.externalCode);
+      });
+    },
+  },
+
+  created() {
+    this.appStore = useAppStore();
   },
 
   methods: {
@@ -531,10 +541,29 @@ export default {
       "updateStudentCourse",
     ]),
 
+    courseTitle(item) {
+      if (item) {
+        return `${item.externalCode}`;
+      }
+      return "";
+    },
+
     async updateCourse() {
       this.isLoading = true;
       this.courseValidationMessage = null;
-      const { code, level, courseSession } = this.courseUpdate;
+
+      const { courseID, courseSession } = this.courseUpdate;
+
+      const selectedCourse = this.courseOptions.find(c => c.courseID === courseID);
+      if (!selectedCourse) {
+        this.courseValidationMessage = "Please select a valid course";
+        this.isLoading = false;
+        return;
+      }
+
+      const code = selectedCourse.courseCode;
+      const level = selectedCourse.courseLevel;
+
       const result = await validateAndFetchCourse({
         code,
         level,
@@ -563,8 +592,7 @@ export default {
       this.showCourseInput = false;
       this.dialog = true;
       //add if course is examinable
-      const isExaminable = this.course.courseExam != null;
-      this.course.isExaminable = isExaminable;
+      this.course.isExaminable = this.course.courseExam != null;
       this.courseValidationMessage = "";
       this.step = 0;
       this.selectedCourseToUpdate = JSON.parse(JSON.stringify(this.course));
@@ -578,8 +606,7 @@ export default {
     },
     clearForm() {
       this.courseUpdate = {
-        code: null,
-        level: null,
+        courseID: null,
         courseSession: null,
       };
       this.courseValidationMessage = "";
@@ -590,10 +617,16 @@ export default {
 
       this.courseUpdate.courseDetails =
         this.selectedCourseToUpdate.courseDetails;
-      this.courseUpdate.code =
-        this.selectedCourseToUpdate.courseDetails.courseCode;
-      this.courseUpdate.level =
-        this.selectedCourseToUpdate.courseDetails.courseLevel;
+
+      const currentCourse = this.courseOptions.find(
+        c => c.courseCode === this.selectedCourseToUpdate.courseDetails.courseCode &&
+             c.courseLevel === this.selectedCourseToUpdate.courseDetails.courseLevel
+      );
+
+      if (currentCourse) {
+        this.courseUpdate.courseID = currentCourse.courseID;
+      }
+
       this.courseUpdate.courseSession =
         this.selectedCourseToUpdate.courseSession;
     },

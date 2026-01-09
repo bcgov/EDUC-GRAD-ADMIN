@@ -130,33 +130,39 @@
                       {{ course.courseDetails.courseName }}
                     </v-col>
                     <v-row>
-                      <v-col class="ml-3"><strong>Interim</strong>&nbsp;
-                        <span v-if="course.interimPercent">{{ course.interimPercent }}%
-                          {{ course.interimLetterGrade }}</span>
-                        <span v-else> <i>null</i> </span>
+                      <v-col class="ml-3"
+                        ><strong class="mr-1">Interim</strong>
+                        <span v-if="course.interimPercent">
+                          {{ course.interimPercent }}% {{ course.interimLetterGrade }}</span>
+                        <span v-else><i>null</i></span>
                       </v-col>
-                      <v-col><strong>Final</strong>&nbsp;
+                      <v-col><strong class="mr-1">Final</strong>
                         <span v-if="course.finalPercent">
                           {{ course.finalPercent }}%
                           {{ course.finalLetterGrade }}</span>
                         <span v-else><i>null</i></span></v-col>
-                      <!-- I don't think credits can have a null value? - Samara -->
-                      <v-col><strong>Credits</strong> {{ course.credits }}</v-col>
-                      <v-col><strong>FA/AS</strong>&nbsp;
-                        <span v-if="course.fineArtsAppliedSkills">
-                          {{ course.fineArtsAppliedSkills }}
-                        </span>
+                      <v-col
+                        ><strong class="mr-1">Credits</strong>
+                        <span v-if="course.credits">{{ course.credits }}</span>
                         <span v-else><i>null</i></span>
                       </v-col>
-                      <v-col><strong>Eq/Ch</strong>&nbsp;
+                      <v-col><strong class="mr-1">FA/AS</strong>
+                        <span v-if="course.fineArtsAppliedSkills">
+                          {{ course.fineArtsAppliedSkills }}</span>
+                        <span v-else><i>null</i></span>
+                      </v-col>
+                      <v-col><strong class="mr-1">Eq/Ch</strong>
                         <span v-if="course.equivOrChallenge">
                           {{ course.equivOrChallenge }}
                         </span>
                         <span v-else><i>null</i></span>
                       </v-col>
-                      <v-col cols="12" class="ml-3" v-if="course.customizedCourseName"><strong>Custom Course
-                          Title</strong>
-                        {{ course.customizedCourseName }}</v-col>
+                      <v-col cols="12"
+                        class="ml-3"
+                        v-if="course.customizedCourseName"
+                        ><strong class="mr-1">Custom Course Title:</strong>
+                        {{ course.customizedCourseName }}
+                      </v-col>
                     </v-row>
                   </v-row>
                 </v-alert>

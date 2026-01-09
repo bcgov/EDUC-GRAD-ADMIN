@@ -61,12 +61,6 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="font-weight-medium">Consumer Education Requirement Met</td>
-                  <td class="font-weight-bold" :class="{ 'primary--text': overrideAll }">
-                    {{ sourceStudentGradStatus.consumerEducationRequirementMet }}
-                  </td>
-                </tr>
-                <tr>
                   <td class="font-weight-medium">Optional Programs</td>
                   <td class="font-weight-bold" :class="{ 'primary--text': overrideAll }">
                     <div v-if="sourceStudentGradStatus.optionalPrograms?.length > 0">
@@ -142,12 +136,6 @@
                   <td class="font-weight-medium">Adult Start Date</td>
                   <td class="font-weight-bold" :class="{ 'primary--text': !overrideAll }">
                     {{ $filters.formatSimpleDate(targetStudentGradStatus.adultStartDate) }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="font-weight-medium">Consumer Education Requirement Met</td>
-                  <td class="font-weight-bold" :class="{ 'primary--text': !overrideAll }">
-                    {{ targetStudentGradStatus.consumerEducationRequirementMet }}
                   </td>
                 </tr>
                 <tr>

@@ -107,31 +107,55 @@
                       <v-col cols="12" class="ml-3">
                         {{ selectedCourseToUpdate.courseDetails.courseName }}
                       </v-col>
-                      <v-col class="ml-2"><strong>School %</strong>&nbsp;
+                      <v-col class="ml-2">
+                        <strong class="mr-1">School %</strong>
                         <span v-if="selectedCourseToUpdate.courseExam.schoolPercentage">{{
-                          selectedCourseToUpdate.courseExam.schoolPercentage }}</span>
-                        <span v-else> <i>null</i> </span>
-                      </v-col>
-                      <v-col class="ml-2"><strong>Best School %</strong>&nbsp;
-                        <span v-if="selectedCourseToUpdate.courseExam.bestSchoolPercentage">{{
-                          selectedCourseToUpdate.courseExam.bestSchoolPercentage }}</span>
-                        <span v-else> <i>null</i> </span>
-                      </v-col>
-                      <v-col class="ml-2"><strong>Special Case</strong> {{ selectedCourseToUpdate.courseExam.specialCase
-                      }}</v-col>
-                      <v-col class="ml-2"><strong>Exam Best %</strong>&nbsp;
-                        <span v-if="selectedCourseToUpdate.courseExam.bestExamPercentage">{{
-                          selectedCourseToUpdate.courseExam.bestExamPercentage }}</span>
-                        <span v-else> <i>null</i> </span>
-                      </v-col>
-                      <v-col class="ml-2"><strong>Final %</strong>&nbsp;
-                        <span v-if="selectedCourseToUpdate.finalPercent">{{ selectedCourseToUpdate.finalPercent
+                          selectedCourseToUpdate.courseExam.schoolPercentage
                         }}</span>
-                        <span v-else> <i>null</i> </span>
+                        <span v-else><i>null</i></span>
                       </v-col>
-                      <v-col class="ml-2"><strong>Final LG</strong> {{ selectedCourseToUpdate.finalLetterGrade
-                      }}</v-col>
-                      <v-col><strong>Credits</strong> {{ selectedCourseToUpdate.credits }}</v-col>
+                      <v-col class="ml-2">
+                        <strong class="mr-1">Best School %</strong>
+                        <span v-if="selectedCourseToUpdate.courseExam.bestSchoolPercentage">{{
+                          selectedCourseToUpdate.courseExam.bestSchoolPercentage
+                        }}</span>
+                        <span v-else><i>null</i></span>
+                      </v-col>
+                      <v-col class="ml-2">
+                        <strong class="mr-1">Special Case</strong>
+                        <span v-if="selectedCourseToUpdate.courseExam.specialCase">{{
+                          selectedCourseToUpdate.courseExam.specialCase
+                        }}</span>
+                        <span v-else><i>null</i></span>
+                      </v-col>
+                      <v-col class="ml-2">
+                        <strong class="mr-1">Exam Best %</strong>
+                        <span v-if="selectedCourseToUpdate.courseExam.bestExamPercentage">{{
+                          selectedCourseToUpdate.courseExam.bestExamPercentage
+                        }}</span>
+                        <span v-else><i>null</i></span>
+                      </v-col>
+                      <v-col class="ml-2">
+                        <strong class="mr-1">Final %</strong>
+                        <span v-if="selectedCourseToUpdate.finalPercent">{{
+                          selectedCourseToUpdate.finalPercent
+                        }}</span>
+                        <span v-else><i>null</i></span>
+                      </v-col>
+                      <v-col class="ml-2">
+                        <strong class="mr-1">Final LG</strong>
+                        <span v-if="selectedCourseToUpdate.finalLetterGrade">{{
+                          selectedCourseToUpdate.finalLetterGrade
+                        }}</span>
+                        <span v-else><i>null</i></span>
+                      </v-col>
+                      <v-col>
+                        <strong class="mr-1">Credits</strong>
+                        <span v-if="selectedCourseToUpdate.credits">{{
+                          selectedCourseToUpdate.credits
+                        }}</span>
+                        <span v-else><i>null</i></span>
+                      </v-col>
                     </v-row>
                   </v-alert>
                 </v-stepper-window-item>
@@ -229,6 +253,19 @@ export default {
               // Check month range
               return month >= 1 && month <= 12
             }
+          ),
+          validCourseSessionYear: helpers.withMessage(
+              "Course session year must be 1984 or later",
+              (value) => {
+                if (!value) return true;
+                const stringValue = String(value);
+
+                // Only check year if format is valid (6 digits)
+                if (!/^\d{6}$/.test(stringValue)) return true;
+
+                const year = parseInt(stringValue.slice(0, 4), 10);
+                return year >= 1984;
+              }
           ),
         }
       }
