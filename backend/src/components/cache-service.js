@@ -11,6 +11,7 @@ let courses39ExternalCodeMap = new Map();
 let studentGradeCodes = [];
 let assessmentTypeCodes = [];
 let gradProgramCodes = [];
+let optionalProgramCodes = [];
 
 const cacheService = {
   async loadCoreg39CoursesToMap() {
@@ -90,6 +91,7 @@ const cacheService = {
     });
   },
   getAssessmentTypeCodesJSON() {
+    console.log(assessmentTypeCodes);
     return assessmentTypeCodes;
   },
   async loadGradProgramCodes() {
@@ -112,6 +114,27 @@ const cacheService = {
   },
   getGradProgramCodesJSON() {
     return gradProgramCodes;
+  },
+  async loadOptionalProgramCodes() {
+    log.debug('Loading optional program codes');
+    await retry(async () => {
+      try {
+        const optionalProgramCodesResponse = await getCommonServiceData(`${config.get('server:programAPIURL')}/api/v1/program/optionalprograms`);
+        optionalProgramCodes = []; // reset the value
+        if (optionalProgramCodesResponse && optionalProgramCodesResponse.length > 0) {
+          optionalProgramCodes = optionalProgramCodesResponse;
+        }
+        log.info(`Loaded ${optionalProgramCodes.length} optional program codes.`);
+      } catch (err) {
+        log.error('Failed to load optional program codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getOptionalProgramCodesJSON() {
+    return optionalProgramCodes;
   },
 };
 

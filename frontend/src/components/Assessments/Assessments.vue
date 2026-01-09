@@ -15,21 +15,38 @@
 <script>
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import DisplayTable from "@/components/DisplayTable.vue";
-import {mapActions, mapState} from "pinia";
-import {useAppStore} from "@/store/modules/app";
+import { mapState, mapActions } from "pinia";
+import { useAppStore } from "@/store/modules/app";
 
 export default {
   name: "Assessments",
   components: {
     DisplayTable: DisplayTable,
   },
+  async beforeMount() {
+    try {
+      await this.getAssessmentTypeCodes(false);
+    } catch (e) {
+      if (e.response?.status) {
+        this.snackbarStore.showSnackbar(
+          "There was an error: " + e.response.status,
+          "error",
+          5000
+        );
+      }
+    }
+  },
   computed: {
-    ...mapState(useAppStore, {assessmentTypeCodes: "assessmentTypeCodes"}),
+    ...mapState(useAppStore, {
+      assessmentTypeCodes: "assessmentTypeCodes",
+    }),
+    assessments() {
+      return this.assessmentTypeCodes || [];
+    }
   },
   data() {
     return {
       snackbarStore: useSnackbarStore(),
-      assessments: [],
       assessmentFields: [
         {
           key: "assessmentTypeCode",
@@ -67,22 +84,10 @@ export default {
       ],
     };
   },
-  created() {
-    this.getAllAssessment();
-  },
   methods: {
-    ...mapActions(useAppStore, ['getAssessmentTypeCodes']),
+    ...mapActions(useAppStore, ["getAssessmentTypeCodes"]),
     formatDate(date) {
       return this.$filters.formatSimpleDate(date);
-    },
-    async getAllAssessment() {
-      try {
-        await this.getAssessmentTypeCodes();
-        this.assessments = Array.from(this.assessmentTypeCodes.values());
-      } catch(error) {
-        console.error("API error:", error);
-        this.snackbarStore.showSnackbar(error.message, "error", 5000);
-      }
     },
   },
 };

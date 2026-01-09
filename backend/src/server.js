@@ -13,36 +13,38 @@ dotenv.config();
 const app = require('./app');
 
 const cacheService = require('./components/cache-service');
-const crudEnabled = config.get('frontendConfig').enableCRUD;
-if(crudEnabled) {
-  cacheService.loadCoreg39CoursesToMap().then(() => {
-    log.info('Loaded coreg 39 courses data to memory');
-  }).catch((e) => {
-    log.error('Error loading coreg 39 courses during boot .', e);
-  });
+cacheService.loadCoreg39CoursesToMap().then(() => {
+  log.info('Loaded coreg 39 courses data to memory');
+}).catch((e) => {
+  log.error('Error loading coreg 39 courses during boot .', e);
+});
 
-  cacheService.loadStudentGradeCodes().then(() => {
-    log.info('Loaded student grade codes to memory');
-  }).catch((e) => {
-    log.error('Error loading student grade codes during boot.', e);
-  });
+cacheService.loadStudentGradeCodes().then(() => {
+  log.info('Loaded student grade codes to memory');
+}).catch((e) => {
+  log.error('Error loading student grade codes during boot.', e);
+});
 
-  cacheService.loadAssessmentTypeCodes().then(() => {
-    log.info('Loaded assessment type codes to memory');
-  }).catch((e) => {
-    log.error('Error loading assessment type codes during boot.', e);
-  });
+cacheService.loadAssessmentTypeCodes().then(() => {
+  log.info('Loaded assessment type codes to memory');
+}).catch((e) => {
+  log.error('Error loading assessment type codes during boot.', e);
+});
 
-  cacheService.loadGradProgramCodes().then(() => {
-    log.info('Loaded graduation program codes to memory');
-  }).catch((e) => {
-    log.error('Error loading graduation program codes during boot.', e);
-  });
+cacheService.loadGradProgramCodes().then(() => {
+  log.info('Loaded graduation program codes to memory');
+}).catch((e) => {
+  log.error('Error loading graduation program codes during boot.', e);
+});
 
-  // Start the cache reload scheduler (runs nightly at 12:15 AM)
-  require('./components/scheduler');
-}
+cacheService.loadOptionalProgramCodes().then(() => {
+  log.info('Loaded optional program codes to memory');
+}).catch((e) => {
+  log.error('Error loading optional program codes during boot.', e);
+});
 
+// Start the cache reload scheduler (runs nightly at 12:15 AM)
+require('./components/scheduler');
 
 /**
  * Get port from environment and store in Express.

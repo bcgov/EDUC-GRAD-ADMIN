@@ -27,9 +27,10 @@
 </template>
 
 <script>
-import CodesService from "@/services/CodesService.js";
 import DisplayTable from "../DisplayTable.vue";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import { mapState, mapActions } from "pinia";
+import { useAppStore } from "@/store/modules/app";
 
 export default {
   name: "GraduationPrograms",
@@ -37,15 +38,37 @@ export default {
     DisplayTable: DisplayTable,
   },
   props: {},
-  computed: {},
+  async beforeMount() {
+    try {
+      await this.getProgramOptionCodes(false);
+    } catch (e) {
+      if (e.response?.status) {
+        this.snackbarStore.showSnackbar(
+          "There was an error: " + e.response.status,
+          "error",
+          5000
+        );
+      }
+    }
+  },
+  computed: {
+    ...mapState(useAppStore, {
+      programOptions: "programOptions",
+    }),
+    graduationPrograms() {
+      // filters out the "No Program" option until business is ready to implement
+      return this.programOptions.filter((obj) => {
+        return obj.programCode !== "NOPROG";
+      });
+    }
+  },
   data: function () {
     return {
       snackbarStore: useSnackbarStore(),
-      isLoading: true,
+      isLoading: false,
       show: false,
       isHidden: false,
       opened: [],
-      graduationPrograms: [],
       templates: [
         {
           name: "programCode",
@@ -93,21 +116,8 @@ export default {
       selectedProgramId: "",
     };
   },
-  created() {
-    CodesService.getGradProgramCodes()
-      .then((response) => {
-        // filters out the "No Program" option until business is ready to implement
-        const gradPrograms = response.data.filter((obj) => {
-          return obj.programCode !== "NOPROG";
-        });
-        this.graduationPrograms = gradPrograms;
-        this.isLoading = false;
-      })
-      .catch((error) => {
-        this.snackbarStore.showSnackbar(error.message, "error", 5000);
-      });
-  },
   methods: {
+    ...mapActions(useAppStore, ["getProgramOptionCodes"]),
     onClickChild(value) {
       this.selectedProgramId = value;
     },

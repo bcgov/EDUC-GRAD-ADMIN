@@ -19,22 +19,39 @@
 </template>
 
 <script>
-import CodesService from "@/services/CodesService.js";
 import DisplayTable from "../DisplayTable.vue";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import { mapState, mapActions } from "pinia";
+import { useAppStore } from "@/store/modules/app";
 
 export default {
   name: "GraduationOptionalProgram",
   props: {},
-  computed: {},
   components: {
     DisplayTable: DisplayTable,
+  },
+  async beforeMount() {
+    try {
+      await this.getOptionalProgramCodes(false);
+    } catch (e) {
+      if (e.response?.status) {
+        this.snackbarStore.showSnackbar(
+          "There was an error: " + e.response.status,
+          "error",
+          5000
+        );
+      }
+    }
+  },
+  computed: {
+    ...mapState(useAppStore, {
+      graduationOptionalPrograms: "optionalProgramOptions",
+    }),
   },
   data: function () {
     return {
       snackbarStore: useSnackbarStore(),
       opened: [],
-      graduationOptionalPrograms: [],
       selectedProgramId: "",
       selectedId: "",
       graduationOptionalProgramsFields: [
@@ -88,17 +105,8 @@ export default {
       ],
     };
   },
-  created() {
-    // IMPROVEMENT: get this from app store
-    CodesService.getOptionalProgramCodes()
-      .then((response) => {
-        this.graduationOptionalPrograms = response.data;
-      })
-      .catch((error) => {
-        this.snackbarStore.showSnackbar(error.message, "error", 5000);
-      });
-  },
   methods: {
+    ...mapActions(useAppStore, ["getOptionalProgramCodes"]),
     onClickButton(id) {
       this.$emit("clicked", id);
     },
