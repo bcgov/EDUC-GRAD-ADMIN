@@ -153,7 +153,7 @@ export default {
     },
 
     getSchoolOfRecordAtWrite() {
-      const schoolId = this.studentDetail.schoolOfRecordSchoolID
+      const schoolId = this.studentDetail.schoolAtWriteSchoolID
       if (!schoolId) return null
 
       const school = this.getSchoolById(schoolId)
