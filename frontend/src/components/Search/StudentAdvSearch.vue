@@ -225,6 +225,7 @@ import { useAppStore } from "@/store/modules/app";
 import {mapState} from "pinia";
 import {useSnackbarStore} from "@/store/modules/snackbar";
 import StudentService from "@/services/StudentService";
+import schoolsService from "@/services/SchoolsService";
 
 export default {
   name: "StudentAdvSearch",
@@ -244,8 +245,7 @@ export default {
     return { snackbarStore };
   },
   mounted() {
-    //console.log(JSON.stringify(this.studentStatusOptions));
-    console.log(JSON.stringify(this.genderCodes));
+
   },
   data() {
     return {
@@ -373,6 +373,7 @@ export default {
     ...mapState(useAppStore, {
       studentStatusOptions: "studentStatusOptions",
       genderCodes: "genderCodes",
+      getSchoolById: "getSchoolById",
     }),
   },
   methods: {
@@ -397,6 +398,7 @@ export default {
           this.responseContent = res.data;
           this.searchResults =
               this.responseContent?.content;
+          this.convertSearchResults();
           this.totalElements = this.responseContent.totalElements;
           this.totalPages = this.responseContent.totalPages;
           this.searchMessage = (this.responseContent.totalElements === 1) ? "1 student record found. " : this.totalElements + " student records found. ";
@@ -463,6 +465,29 @@ export default {
         this.searchParams.useBirthdateRange = false;
       }
     },
+    convertSearchResults() {
+      const parseDate = (s) => {
+        if (!s) return null;
+        if (typeof s === "string" && s.includes(",")) return s.split(",")[0].trim();
+        return String(s).slice(0, 10);
+      };
+
+      this.searchResults = this.searchResults.map((student) => {
+        const originalSchoolId = student.schoolOfRecordId;
+        const mincode = schoolsService.schoolIdToMincode(originalSchoolId) || originalSchoolId;
+        const school = this.getSchoolById(originalSchoolId);
+        const schoolName = school?.displayName ?? null;
+
+        return {
+          ...student,
+          schoolOfRecordId: mincode,
+          dob: parseDate(student.dob),
+          programCompletionDate: parseDate(student.programCompletionDate),
+          schoolOfRecordSchoolName: schoolName,
+        };
+      });
+    }
+    ,
   }
 }
 </script>
