@@ -408,27 +408,31 @@ async function downloadLetterGradeCodesCSV(req, res) {
 
     const headers = [
       'Letter Grade',
+      'Percent Range High',
+      'Percent Range Low',
+      'Pass',
       'GPA Mark Value',
-      'Pass Flag',
-      'High Percent',
-      'Low Percent',
+      'Label',
+      'Description',
       'Effective Date',
       'Expiry Date'
     ];
 
-    const formatPassFlag = (passFlag) => {
+    const formatPass = (passFlag) => {
       if (passFlag === null || passFlag === undefined) return '';
       return passFlag ? 'Y' : 'N';
     };
 
     const rows = codes.map(item => [
       csvHelpers.escapeCSV(item.grade),
-      csvHelpers.escapeCSV(item.gpaMarkValue),
-      csvHelpers.escapeCSV(formatPassFlag(item.passFlag)),
       csvHelpers.escapeCSV(item.percentRangeHigh || ''),
       csvHelpers.escapeCSV(item.percentRangeLow || ''),
+      csvHelpers.escapeCSV(formatPass(item.passFlag)),
+      csvHelpers.escapeCSV(item.gpaMarkValue || ''),
+      csvHelpers.escapeCSV(item.label || ''),
+      csvHelpers.escapeCSV(item.description || ''),
       csvHelpers.escapeCSV(csvHelpers.formatDate(item.effectiveDate)),
-      csvHelpers.escapeCSV(csvHelpers.formatDate(item.expiryDate))
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.expiryDate))
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
@@ -450,8 +454,9 @@ async function downloadStudentGradeCodesCSV(req, res) {
     }
 
     const headers = [
-      'Grade Level',
-      'Grade Description',
+      'Code',
+      'Label',
+      'Description',
       'Effective Date',
       'Expiry Date',
       'Expected'
@@ -465,8 +470,9 @@ async function downloadStudentGradeCodesCSV(req, res) {
     const rows = codes.map(item => [
       csvHelpers.escapeCSV(item.studentGradeCode),
       csvHelpers.escapeCSV(item.label),
+      csvHelpers.escapeCSV(item.description || ''),
       csvHelpers.escapeCSV(csvHelpers.formatDate(item.effectiveDate)),
-      csvHelpers.escapeCSV(csvHelpers.formatDate(item.expiryDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.expiryDate)),
       csvHelpers.escapeCSV(formatExpected(item.expected))
     ].join(','));
 
@@ -490,16 +496,24 @@ async function downloadGradProgramCodesCSV(req, res) {
 
     const headers = [
       'Program Code',
-      'Program Name'
+      'Program Name',
+      'Description',
+      'Associated Credential',
+      'Effective Date',
+      'Expiry Date'
     ];
 
     const rows = codes.map(item => [
       csvHelpers.escapeCSV(item.programCode),
-      csvHelpers.escapeCSV(item.programName)
+      csvHelpers.escapeCSV(item.programName),
+      csvHelpers.escapeCSV(item.description || ''),
+      csvHelpers.escapeCSV(item.associatedCredential || ''),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.effectiveDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.expiryDate))
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `GraduationPrograms_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
+    const filename = `Programs_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
@@ -517,17 +531,27 @@ async function downloadOptionalProgramCodesCSV(req, res) {
     }
 
     const headers = [
-      'Career Program Code',
-      'Career Program Name'
+      'Program Code',
+      'Optional Program Code',
+      'Optional Program Name',
+      'Description',
+      'Associated Credential',
+      'Effective Date',
+      'Expiry Date'
     ];
 
     const rows = codes.map(item => [
+      csvHelpers.escapeCSV(item.graduationProgramCode || ''),
       csvHelpers.escapeCSV(item.optProgramCode),
-      csvHelpers.escapeCSV(item.optionalProgramName)
+      csvHelpers.escapeCSV(item.optionalProgramName),
+      csvHelpers.escapeCSV(item.description || ''),
+      csvHelpers.escapeCSV(item.associatedCredential || ''),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.effectiveDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.expiryDate))
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `OptionalPrograms_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
+    const filename = `OptionalProgramCodes_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
@@ -545,17 +569,21 @@ async function downloadCareerProgramCodesCSV(req, res) {
     }
 
     const headers = [
-      'Career Program Code',
-      'Career Program Name'
+      'Code',
+      'Program',
+      'Effective Date',
+      'Expiry Date'
     ];
 
     const rows = codes.map(item => [
       csvHelpers.escapeCSV(item.code),
-      csvHelpers.escapeCSV(item.description)
+      csvHelpers.escapeCSV(item.description),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.startDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.endDate))
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `CareerPrograms_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
+    const filename = `CareerProgramCodes_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
