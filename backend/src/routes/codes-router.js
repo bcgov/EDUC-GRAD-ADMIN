@@ -8,9 +8,13 @@ const {
   getStudentStatusCodes,
   getHistoryActivityCodes,
   getStudentGradeCodes,
+  downloadStudentGradeCodesCSV,
   getGradProgramCodes,
+  downloadGradProgramCodesCSV,
   getOptionalProgramCodes,
+  downloadOptionalProgramCodesCSV,
   getCareerProgramCodes,
+  downloadCareerProgramCodesCSV,
   getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
@@ -19,6 +23,7 @@ const {
   getInstituteFacilityCodes,
   getAssessmentSpecialCaseCodes,
   getCourseLetterGradeCodes,
+  downloadLetterGradeCodesCSV,
   getTranscriptMessagingCodes,
   getStudentUndoCompletionReasonCodes,
   getTranscriptTypeCodes,
@@ -63,10 +68,24 @@ router.get(
 );
 
 router.get(
+  "/studentGradeCodes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadStudentGradeCodesCSV
+);
+
+router.get(
   "/gradProgramCodes",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getGradProgramCodes
+);
+
+router.get(
+  "/gradProgramCodes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadGradProgramCodesCSV
 );
 
 router.get(
@@ -77,10 +96,24 @@ router.get(
 );
 
 router.get(
+  "/optionalProgramCodes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadOptionalProgramCodesCSV
+);
+
+router.get(
   "/careerProgramCodes",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getCareerProgramCodes
+);
+
+router.get(
+  "/careerProgramCodes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadCareerProgramCodesCSV
 );
 
 router.get(
@@ -137,6 +170,13 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getCourseLetterGradeCodes
+);
+
+router.get(
+  "/letterGradeCodes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadLetterGradeCodesCSV
 );
 
 router.get(

@@ -1,7 +1,19 @@
 <template>
   <div>
-    <h3 class="ml-2 mt-5">Student Grade Codes</h3>
-    <p class="ml-2 w-66">
+    <div class="d-flex justify-space-between align-center ml-2 mt-5 mr-3 mb-6">
+      <div>
+        <h3>Student Grade Codes</h3>
+
+      </div>
+      <DownloadLink
+        label="Download CSV"
+        icon="mdi-download"
+        :downloadAction="CodesService.downloadStudentGradeCodesCSV"
+        @success="snackbarStore.showSnackbar('CSV downloaded successfully', 'success', 3000)"
+        @error="snackbarStore.showSnackbar('Error downloading CSV', 'error', 5000)"
+      />
+    </div>
+    <p class="ml-2">
       Student grade codes refer to a students' grade codes in the GRAD system.
     </p>
     <DisplayTable
@@ -22,14 +34,17 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
+import DownloadLink from "@/components/Common/DownloadLink.vue";
 import { useSnackbarStore } from "@/store/modules/snackbar";
-import { mapState, mapActions } from "pinia";
+import {mapActions, mapState} from "pinia";
 import { useAppStore } from "@/store/modules/app";
+import CodesService from "@/services/CodesService.js";
 
 export default {
   name: "GradeCodes",
   components: {
     DisplayTable: DisplayTable,
+    DownloadLink: DownloadLink,
   },
   async beforeMount() {
     try {
@@ -47,6 +62,7 @@ export default {
   data: function () {
     return {
       snackbarStore: useSnackbarStore(),
+      CodesService: CodesService,
       studentGradeCodesFields: [
         {
           key: "studentGradeCode",

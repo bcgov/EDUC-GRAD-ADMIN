@@ -10,14 +10,34 @@ export default {
   getStudentGradeCodes() {
     return ApiService.apiAxios.get("/api/codes/studentGradeCodes");
   },
+  downloadStudentGradeCodesCSV() {
+    return ApiService.apiAxios.get("/api/codes/studentGradeCodes/download", {
+      responseType: 'blob'
+    });
+  },
   getGradProgramCodes() {
     return ApiService.apiAxios.get("/api/codes/gradProgramCodes");
+  },
+  downloadGradProgramCodesCSV() {
+    return ApiService.apiAxios.get("/api/codes/gradProgramCodes/download", {
+      responseType: 'blob'
+    });
   },
   getOptionalProgramCodes() {
     return ApiService.apiAxios.get("/api/codes/optionalProgramCodes");
   },
+  downloadOptionalProgramCodesCSV() {
+    return ApiService.apiAxios.get("/api/codes/optionalProgramCodes/download", {
+      responseType: 'blob'
+    });
+  },
   getCareerProgramCodes() {
     return ApiService.apiAxios.get("/api/codes/careerProgramCodes");
+  },
+  downloadCareerProgramCodesCSV() {
+    return ApiService.apiAxios.get("/api/codes/careerProgramCodes/download", {
+      responseType: 'blob'
+    });
   },
   getRequirementTypeCodes() {
     return ApiService.apiAxios.get("/api/codes/requirementTypeCodes");
@@ -39,6 +59,11 @@ export default {
   },
   getLetterGradeCodes() {
     return ApiService.apiAxios.get("/api/codes/letterGradeCodes");
+  },
+  downloadLetterGradeCodesCSV() {
+    return ApiService.apiAxios.get("/api/codes/letterGradeCodes/download", {
+      responseType: 'blob'
+    });
   },
   getSpecialCaseCodes() {
     return ApiService.apiAxios.get("/api/codes/assessmentSpecialCaseCodes");

@@ -1,7 +1,19 @@
 <template>
   <div>
-    <h3 class="ml-2 mt-5">Career Program Codes</h3>
-    <p class="ml-2 w-66">
+    <div class="d-flex justify-space-between align-center ml-2 mt-5 mr-3 mb-6">
+      <div>
+        <h3>Career Programs</h3>
+
+      </div>
+      <DownloadLink
+        label="Download CSV"
+        icon="mdi-download"
+        :downloadAction="CodesService.downloadCareerProgramCodesCSV"
+        @success="snackbarStore.showSnackbar('CSV downloaded successfully', 'success', 3000)"
+        @error="snackbarStore.showSnackbar('Error downloading CSV', 'error', 5000)"
+      />
+    </div>
+    <p class="w-66 ml-2 pr-2">
       The optional program Career Program in GRAD can be broken down further by
       specific career program code. A Student on the optional program CP, Career
       Program, would also be assigned a Career Program code(s) to identify what
@@ -26,14 +38,17 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
+import DownloadLink from "@/components/Common/DownloadLink.vue";
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import { mapState, mapActions } from "pinia";
 import { useAppStore } from "@/store/modules/app";
+import CodesService from "@/services/CodesService.js";
 
 export default {
   name: "CareerPrograms",
   components: {
     DisplayTable: DisplayTable,
+    DownloadLink: DownloadLink,
   },
   async beforeMount() {
     try {
@@ -59,6 +74,7 @@ export default {
   data: function () {
     return {
       snackbarStore: useSnackbarStore(),
+      CodesService: CodesService,
       careerProgramFields: [
         {
           key: "code",
