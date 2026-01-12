@@ -38,6 +38,9 @@ try {
       await cacheService.loadProvinceCodes();
       log.info('Reloaded province codes cache');
 
+      await cacheService.loadExaminableCourses();
+      log.info('Reloaded examinable courses cache');
+
       log.info('Scheduled cache reload completed successfully');
     } catch (e) {
       log.error('Error during scheduled cache reload:', e);

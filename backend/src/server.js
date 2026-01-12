@@ -73,6 +73,12 @@ cacheService.loadProvinceCodes().then(() => {
   log.error('Error loading province codes during boot.', e);
 });
 
+cacheService.loadExaminableCourses().then(() => {
+  log.info('Loaded examinable courses to memory');
+}).catch((e) => {
+  log.error('Error loading examinable courses during boot.', e);
+});
+
 // Start the cache reload scheduler (runs nightly at 12:15 AM)
 require('./components/scheduler');
 

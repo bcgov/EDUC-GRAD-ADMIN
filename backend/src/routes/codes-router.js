@@ -19,6 +19,8 @@ const {
   downloadCountryCodesCSV,
   getCitizenshipCodes,
   getProvinceCodes,
+  getExaminableCourses,
+  downloadExaminableCoursesCSV,
   getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
@@ -273,6 +275,20 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getProvinceCodes
+);
+
+router.get(
+  "/examinableCourses",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getExaminableCourses
+);
+
+router.get(
+  "/examinableCourses/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadExaminableCoursesCSV
 );
 
 module.exports = router;

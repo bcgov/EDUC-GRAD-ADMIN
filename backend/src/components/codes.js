@@ -626,6 +626,60 @@ async function getProvinceCodes(req, res) {
   }
 }
 
+async function getExaminableCourses(req, res) {
+  try {
+    const courses = cacheService.getExaminableCoursesJSON();
+    return res.status(HttpStatus.OK).json(courses);
+  } catch (e) {
+    log.error(e, 'getExaminableCourses', 'Error occurred while attempting to get cached examinable courses.');
+    return errorResponse(res);
+  }
+}
+
+async function downloadExaminableCoursesCSV(req, res) {
+  try {
+    const courses = cacheService.getExaminableCoursesJSON();
+
+    if (!courses || courses.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'No examinable courses available' });
+    }
+
+    const headers = [
+      'Course Code',
+      'Course Level',
+      'Program Year',
+      '% School Weight',
+      '% Exam Weight',
+      '% School Weight (before 1989/08)',
+      '% Exam Weight (before 1989/08)',
+      'Course Title',
+      'Examinable Start',
+      'Examinable End'
+    ];
+
+    const rows = courses.map(item => [
+      csvHelpers.escapeCSV(item.courseCode),
+      csvHelpers.escapeCSV(item.courseLevel),
+      csvHelpers.escapeCSV(item.programYear || '2004+'),
+      csvHelpers.escapeCSV(item.schoolWeightPercent || ''),
+      csvHelpers.escapeCSV(item.examWeightPercent || ''),
+      csvHelpers.escapeCSV(item.schoolWeightPercentPre1989 || ''),
+      csvHelpers.escapeCSV(item.examWeightPercentPre1989 || ''),
+      csvHelpers.escapeCSV(item.courseTitle),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.examinableStart)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.examinableEnd))
+    ].join(','));
+
+    const csvContent = csvHelpers.generateCSV(headers, rows);
+    const filename = `ExaminableCourses_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
+
+    return csvHelpers.sendCSVResponse(res, csvContent, filename);
+  } catch (e) {
+    log.error(e, 'downloadExaminableCoursesCSV', 'Error occurred while generating examinable courses CSV.');
+    return errorResponse(res);
+  }
+}
+
 
 const csvHelpers = require('./codes-csv-helpers');
 
@@ -644,6 +698,8 @@ module.exports = {
   downloadCountryCodesCSV,
   getCitizenshipCodes,
   getProvinceCodes,
+  getExaminableCourses,
+  downloadExaminableCoursesCSV,
   getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,

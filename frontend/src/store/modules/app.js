@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import CommonService from "@/services/CommonService.js";
 import SchoolsService from "@/services/SchoolsService.js";
 import CodesService from "@/services/CodesService.js";
+import CourseService from "@/services/CourseService.js";
 import sharedMethods from "@/sharedMethods.js";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
 
@@ -40,6 +41,7 @@ export const useAppStore = defineStore("app", {
     countryCodes: [],
     citizenshipCodes: [],
     provinceCodes: [],
+    examinableCourses: [],
     currentDate: "",
     currentMonth: "",
     currentYear: "",
@@ -467,6 +469,18 @@ export const useAppStore = defineStore("app", {
     },
     async setProvinceCodes(provinceCodes) {
       this.provinceCodes = provinceCodes;
+    },
+    async getExaminableCourses(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.examinableCourses)
+      ) {
+        let response = await CourseService.getCourseExaminableCourses();
+        await this.setExaminableCourses(response.data);
+      }
+    },
+    async setExaminableCourses(examinableCourses) {
+      this.examinableCourses = examinableCourses;
     },
     async setLetterGrades(letterGrades) {
       this.letterGradeCodes = letterGrades;
