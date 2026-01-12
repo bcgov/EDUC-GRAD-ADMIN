@@ -37,6 +37,9 @@ export const useAppStore = defineStore("app", {
     provincialSpecialCaseCodes: [],
     assessmentTypeCodesMap: new Map(),
     assessmentTypeCodes: [],
+    countryCodes: [],
+    citizenshipCodes: [],
+    provinceCodes: [],
     currentDate: "",
     currentMonth: "",
     currentYear: "",
@@ -428,6 +431,42 @@ export const useAppStore = defineStore("app", {
       this.studentGradeCodes = sharedMethods.filterActiveObjects(
         sharedMethods.applyDisplayOrder(gradeCodes)
       );
+    },
+    async getCountryCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.countryCodes)
+      ) {
+        let response = await CodesService.getCountryCodes();
+        await this.setCountryCodes(response.data);
+      }
+    },
+    async setCountryCodes(countryCodes) {
+      this.countryCodes = countryCodes;
+    },
+    async getCitizenshipCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.citizenshipCodes)
+      ) {
+        let response = await CodesService.getCitizenshipCodes();
+        await this.setCitizenshipCodes(response.data);
+      }
+    },
+    async setCitizenshipCodes(citizenshipCodes) {
+      this.citizenshipCodes = citizenshipCodes;
+    },
+    async getProvinceCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.provinceCodes)
+      ) {
+        let response = await CodesService.getProvinceCodes();
+        await this.setProvinceCodes(response.data);
+      }
+    },
+    async setProvinceCodes(provinceCodes) {
+      this.provinceCodes = provinceCodes;
     },
     async setLetterGrades(letterGrades) {
       this.letterGradeCodes = letterGrades;

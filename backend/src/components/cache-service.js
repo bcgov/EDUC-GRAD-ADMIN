@@ -96,7 +96,6 @@ const cacheService = {
     });
   },
   getAssessmentTypeCodesJSON() {
-    console.log(assessmentTypeCodes);
     return assessmentTypeCodes;
   },
   async loadGradProgramCodes() {

@@ -564,6 +564,38 @@ async function downloadCareerProgramCodesCSV(req, res) {
   }
 }
 
+async function downloadCountryCodesCSV(req, res) {
+  try {
+    const codes = cacheService.getCountryCodesJSON();
+
+    if (!codes || codes.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'No country codes available' });
+    }
+
+    const headers = [
+      'Code',
+      'Name',
+      'Effective Date',
+      'Expiry Date'
+    ];
+
+    const rows = codes.map(item => [
+      csvHelpers.escapeCSV(item.countryCode),
+      csvHelpers.escapeCSV(item.label),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.effectiveDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.expiryDate))
+    ].join(','));
+
+    const csvContent = csvHelpers.generateCSV(headers, rows);
+    const filename = `CountryCodes_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
+
+    return csvHelpers.sendCSVResponse(res, csvContent, filename);
+  } catch (e) {
+    log.error(e, 'downloadCountryCodesCSV', 'Error occurred while generating country codes CSV.');
+    return errorResponse(res);
+  }
+}
+
 
 const csvHelpers = require('./codes-csv-helpers');
 
@@ -578,6 +610,7 @@ module.exports = {
   downloadOptionalProgramCodesCSV,
   getCareerProgramCodes,
   downloadCareerProgramCodesCSV,
+  downloadCountryCodesCSV,
   getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,

@@ -16,6 +16,14 @@ const csvHelpers = {
     }
   },
 
+  // Format expiry date as YYYY-MM-DD, but return blank if date is 2099-12-31
+  formatExpiryDateOrBlankIfFarFuture: (dateString) => {
+    if (!dateString) return '';
+    const formatted = csvHelpers.formatDate(dateString);
+    if (formatted === '2099-12-31') return '';
+    return formatted;
+  },
+
   // Escape CSV values
   escapeCSV: (value) => {
     if (value === null || value === undefined) return '';
