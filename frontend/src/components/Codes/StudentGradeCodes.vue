@@ -6,7 +6,7 @@
 
       </div>
       <DownloadLink
-        label="Download CSV"
+        label="Student Grade Codes"
         icon="mdi-download"
         :downloadAction="CodesService.downloadStudentGradeCodesCSV"
         @success="snackbarStore.showSnackbar('CSV downloaded successfully', 'success', 3000)"

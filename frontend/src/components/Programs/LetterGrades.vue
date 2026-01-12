@@ -3,7 +3,7 @@
     <div class="d-flex justify-space-between align-center ml-3 mt-5 mr-3 mb-6">
       <h3>Letter Grades</h3>
       <DownloadLink
-        label="Download CSV"
+        label="Letter Grades"
         :downloadAction="CodesService.downloadLetterGradeCodesCSV"
         @success="snackbarStore.showSnackbar('CSV downloaded successfully', 'success', 3000)"
         @error="snackbarStore.showSnackbar('Error downloading CSV', 'error', 5000)"

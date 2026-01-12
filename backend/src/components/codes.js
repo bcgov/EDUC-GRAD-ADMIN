@@ -432,7 +432,7 @@ async function downloadLetterGradeCodesCSV(req, res) {
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `letter-grades-${new Date().toISOString().split('T')[0]}.csv`;
+    const filename = `LetterGrades_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
@@ -471,7 +471,7 @@ async function downloadStudentGradeCodesCSV(req, res) {
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `student-grade-codes-${new Date().toISOString().split('T')[0]}.csv`;
+    const filename = `StudentGradeCodes_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
@@ -499,7 +499,7 @@ async function downloadGradProgramCodesCSV(req, res) {
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `graduation-programs-${new Date().toISOString().split('T')[0]}.csv`;
+    const filename = `GraduationPrograms_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
@@ -527,7 +527,7 @@ async function downloadOptionalProgramCodesCSV(req, res) {
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `optional-programs-${new Date().toISOString().split('T')[0]}.csv`;
+    const filename = `OptionalPrograms_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
@@ -555,7 +555,7 @@ async function downloadCareerProgramCodesCSV(req, res) {
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `career-programs-${new Date().toISOString().split('T')[0]}.csv`;
+    const filename = `CareerPrograms_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
