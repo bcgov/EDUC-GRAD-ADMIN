@@ -39,9 +39,6 @@ export default {
       responseType: 'blob'
     });
   },
-  getCitizenshipCodes() {
-    return ApiService.apiAxios.get("/api/codes/citizenshipCodes");
-  },
   getCountryCodes() {
     return ApiService.apiAxios.get("/api/codes/countryCodes");
   },
@@ -49,6 +46,9 @@ export default {
     return ApiService.apiAxios.get("/api/codes/countryCodes/download", {
       responseType: 'blob'
     });
+  },
+  getCitizenshipCodes() {
+    return ApiService.apiAxios.get("/api/codes/citizenshipCodes");
   },
   getProvinceCodes() {
     return ApiService.apiAxios.get("/api/codes/provinceCodes");

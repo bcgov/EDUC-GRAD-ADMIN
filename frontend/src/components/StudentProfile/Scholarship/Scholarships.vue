@@ -209,10 +209,11 @@
 
 <script>
 import ApiService from '@/common/apiService';
-import { mapState } from "pinia";
+import { mapState, mapActions } from "pinia";
 import { useSnackbarStore } from '@/store/modules/snackbar';
 import { cloneDeep } from 'lodash';
 import { useAccessStore } from "@/store/modules/access";
+import { useAppStore } from "@/store/modules/app";
 
 export default {
     name: 'Scholarships',
@@ -238,9 +239,6 @@ export default {
             isEdit: false,
             isCitizenshipEdit: false,
             snackbarStore: useSnackbarStore(),
-            province: [],
-            country: [],
-            citizenshipCodes: [],
             requiredRule: (v) => !!v || 'Required',
             postalCodeRule: v => /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i.test(v) || 'Postal code must be valid'
         };
@@ -248,7 +246,21 @@ export default {
     computed: {
     ...mapState(useAccessStore, [
       "hasPermissions"
-    ])
+    ]),
+    ...mapState(useAppStore, {
+      provinceCodes: "provinceCodes",
+      countryCodes: "countryCodes",
+      citizenshipCodesData: "citizenshipCodes",
+    }),
+    province() {
+      return this.provinceCodes || [];
+    },
+    country() {
+      return this.countryCodes || [];
+    },
+    citizenshipCodes() {
+      return this.citizenshipCodesData || [];
+    }
     },
     watch: {
 
@@ -257,31 +269,19 @@ export default {
 
     },
     async mounted() {
-        this.getCountry();
-        this.getProvinces();
-        this.getCitizenshipCodes();
+        await this.getCountryCodes(false);
+        await this.getProvinceCodes(false);
+        await this.getCitizenshipCodesFromStore(false);
+
         this.getStudentAddress(this.studentID);
         this.getStudent();
     },
     methods: {
-        getProvinces() {
-            ApiService.apiAxios.get(`/api/scholarship/province-codes`)
-                .then(response => {
-                    this.province = response.data;
-                }).catch(error => {
-                    console.error(error);
-                    this.snackbarStore.showSnackbar('An error occurred while loading provinces/states.', "error");
-                })
-        },
-        getCitizenshipCodes() {
-            ApiService.apiAxios.get(`/api/scholarship/citizenship-codes`)
-                .then(response => {
-                    this.citizenshipCodes = response.data;
-                }).catch(error => {
-                    console.error(error);
-                    this.snackbarStore.showSnackbar('An error occurred while loading citizenship codes.', "error");
-                })
-        },
+        ...mapActions(useAppStore, {
+          getCountryCodes: "getCountryCodes",
+          getProvinceCodes: "getProvinceCodes",
+          getCitizenshipCodesFromStore: "getCitizenshipCodes",
+        }),
         async getStudent() {
             await ApiService.apiAxios.get(`/api/student/${this.studentID}/gradProgram/status`)
                 .then((response) => {
@@ -300,15 +300,6 @@ export default {
         },
         validateCitizenshipForm() {
             this.$refs?.citizenshipFormRef?.validate();
-        },
-        getCountry() {
-            ApiService.apiAxios.get(`/api/scholarship/country-codes`)
-                .then(response => {
-                    this.country = response.data;
-                }).catch(error => {
-                    console.error(error);
-                    this.snackbarStore.showSnackbar('An error occurred while loading countries.', "error");
-                })
         },
         async getStudentAddress(studentID) {
             await ApiService.apiAxios.get(`/api/scholarship/student/${studentID}/address`)

@@ -3,11 +3,11 @@ import { defineStore } from "pinia";
 import CommonService from "@/services/CommonService.js";
 import SchoolsService from "@/services/SchoolsService.js";
 import CodesService from "@/services/CodesService.js";
+import sharedMethods from "@/sharedMethods.js";
+import StudentAssessmentService from "@/services/StudentAssessmentService";
 
 import { useSnackbarStore } from "../../store/modules/snackbar";
 
-import sharedMethods from "@/sharedMethods.js";
-import StudentAssessmentService from "@/services/StudentAssessmentService";
 export const useAppStore = defineStore("app", {
   state: () => ({
     snackbarStore: useSnackbarStore(),

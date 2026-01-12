@@ -72,16 +72,6 @@ async function getCitizenshipCodes(req, res) {
   }
 }
 
-async function getCountryCodes(req, res) {
-  try {
-    const codes = cacheService.getCountryCodesJSON();
-    return res.status(HttpStatus.OK).json(codes);
-  } catch (e) {
-    log.error(e, 'getCountryCodes', 'Error occurred while attempting to get cached country codes.');
-    return errorResponse(res);
-  }
-}
-
 async function getProvinceCodes(req, res) {
   try {
     const codes = cacheService.getProvinceCodesJSON();
@@ -96,6 +86,5 @@ module.exports = {
   getStudentAddress,
   updateStudentAddress,
   getCitizenshipCodes,
-  getCountryCodes,
-  getProvinceCodes
+  getProvinceCodes,
 };

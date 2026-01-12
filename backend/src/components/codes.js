@@ -564,6 +564,16 @@ async function downloadCareerProgramCodesCSV(req, res) {
   }
 }
 
+async function getCountryCodes(req, res) {
+  try {
+    const codes = cacheService.getCountryCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
+  } catch (e) {
+    log.error(e, 'getCountryCodes', 'Error occurred while attempting to get cached country codes.');
+    return errorResponse(res);
+  }
+}
+
 async function downloadCountryCodesCSV(req, res) {
   try {
     const codes = cacheService.getCountryCodesJSON();
@@ -596,6 +606,26 @@ async function downloadCountryCodesCSV(req, res) {
   }
 }
 
+async function getCitizenshipCodes(req, res) {
+  try {
+    const codes = cacheService.getCitizenshipCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
+  } catch (e) {
+    log.error(e, 'getCitizenshipCodes', 'Error occurred while attempting to get cached citizenship codes.');
+    return errorResponse(res);
+  }
+}
+
+async function getProvinceCodes(req, res) {
+  try {
+    const codes = cacheService.getProvinceCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
+  } catch (e) {
+    log.error(e, 'getProvinceCodes', 'Error occurred while attempting to get cached province codes.');
+    return errorResponse(res);
+  }
+}
+
 
 const csvHelpers = require('./codes-csv-helpers');
 
@@ -610,7 +640,10 @@ module.exports = {
   downloadOptionalProgramCodesCSV,
   getCareerProgramCodes,
   downloadCareerProgramCodesCSV,
+  getCountryCodes,
   downloadCountryCodesCSV,
+  getCitizenshipCodes,
+  getProvinceCodes,
   getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
