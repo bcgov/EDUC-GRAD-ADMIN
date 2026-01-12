@@ -457,7 +457,7 @@ async function downloadAssessmentTypeCodesCSV(req, res) {
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `assessment-codes-${new Date().toISOString().split('T')[0]}.csv`;
+    const filename = `AssessmentCodes_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
