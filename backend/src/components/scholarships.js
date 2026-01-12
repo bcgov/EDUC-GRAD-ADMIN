@@ -5,6 +5,8 @@ const {
 } = require("./utils");
 const HttpStatus = require("http-status-codes");
 const utils = require("./utils");
+const cacheService = require("./cache-service");
+const log = require("./logger");
 
 const config = require("../config");
 const API_BASE_ROUTE = "/api/v1/scholarships";
@@ -62,58 +64,31 @@ try {
 
 async function getCitizenshipCodes(req, res) {
   try {
-    const token = auth.getBackendToken(req);
-    const data = await utils.getData(
-      token,
-      `${config.get("server:scholarshipAPIURL")+ API_BASE_ROUTE}/citizenship-codes`,
-      req.session?.correlationID
-    );
-    return res.status(200).json(data);
+    const codes = cacheService.getCitizenshipCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
   } catch (e) {
-      await logApiError(e, "Error loading citizenship codes");
-      if (e.data.message) {
-        return errorResponse(res, e.data.message, e.status);
-      } else {
-        return errorResponse(res);
-      }
+    log.error(e, 'getCitizenshipCodes', 'Error occurred while attempting to get cached citizenship codes.');
+    return errorResponse(res);
   }
 }
 
 async function getCountryCodes(req, res) {
   try {
-    const token = auth.getBackendToken(req);
-    const data = await utils.getData(
-      token,
-      `${config.get("server:scholarshipAPIURL")+ API_BASE_ROUTE}/country-codes`,
-      req.session?.correlationID
-    );
-    return res.status(200).json(data);
+    const codes = cacheService.getCountryCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
   } catch (e) {
-      await logApiError(e, "Error loading country codes");
-      if (e.data.message) {
-        return errorResponse(res, e.data.message, e.status);
-      } else {
-        return errorResponse(res);
-      }
+    log.error(e, 'getCountryCodes', 'Error occurred while attempting to get cached country codes.');
+    return errorResponse(res);
   }
 }
 
 async function getProvinceCodes(req, res) {
   try {
-    const token = auth.getBackendToken(req);
-    const data = await utils.getData(
-      token,
-      `${config.get("server:scholarshipAPIURL")+ API_BASE_ROUTE}/province-codes`,
-      req.session?.correlationID
-    );
-    return res.status(200).json(data);
+    const codes = cacheService.getProvinceCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
   } catch (e) {
-      await logApiError(e, "Error loading province codes");
-      if (e.data.message) {
-        return errorResponse(res, e.data.message, e.status);
-      } else {
-        return errorResponse(res);
-      }
+    log.error(e, 'getProvinceCodes', 'Error occurred while attempting to get cached province codes.');
+    return errorResponse(res);
   }
 }
 

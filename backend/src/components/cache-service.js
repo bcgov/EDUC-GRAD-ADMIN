@@ -14,6 +14,9 @@ let gradProgramCodes = [];
 let optionalProgramCodes = [];
 let letterGradeCodes = [];
 let careerProgramCodes = [];
+let citizenshipCodes = [];
+let countryCodes = [];
+let provinceCodes = [];
 
 const cacheService = {
   async loadCoreg39CoursesToMap() {
@@ -179,6 +182,69 @@ const cacheService = {
   },
   getCareerProgramCodesJSON() {
     return careerProgramCodes;
+  },
+  async loadCitizenshipCodes() {
+    log.debug('Loading citizenship codes');
+    await retry(async () => {
+      try {
+        const citizenshipCodesResponse = await getCommonServiceData(`${config.get('server:scholarshipAPIURL')}/api/v1/scholarships/citizenship-codes`);
+        citizenshipCodes = []; // reset the value
+        if (citizenshipCodesResponse && citizenshipCodesResponse.length > 0) {
+          citizenshipCodes = citizenshipCodesResponse;
+        }
+        log.info(`Loaded ${citizenshipCodes.length} citizenship codes.`);
+      } catch (err) {
+        log.error('Failed to load citizenship codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getCitizenshipCodesJSON() {
+    return citizenshipCodes;
+  },
+  async loadCountryCodes() {
+    log.debug('Loading country codes');
+    await retry(async () => {
+      try {
+        const countryCodesResponse = await getCommonServiceData(`${config.get('server:scholarshipAPIURL')}/api/v1/scholarships/country-codes`);
+        countryCodes = []; // reset the value
+        if (countryCodesResponse && countryCodesResponse.length > 0) {
+          countryCodes = countryCodesResponse;
+        }
+        log.info(`Loaded ${countryCodes.length} country codes.`);
+      } catch (err) {
+        log.error('Failed to load country codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getCountryCodesJSON() {
+    return countryCodes;
+  },
+  async loadProvinceCodes() {
+    log.debug('Loading province codes');
+    await retry(async () => {
+      try {
+        const provinceCodesResponse = await getCommonServiceData(`${config.get('server:scholarshipAPIURL')}/api/v1/scholarships/province-codes`);
+        provinceCodes = []; // reset the value
+        if (provinceCodesResponse && provinceCodesResponse.length > 0) {
+          provinceCodes = provinceCodesResponse;
+        }
+        log.info(`Loaded ${provinceCodes.length} province codes.`);
+      } catch (err) {
+        log.error('Failed to load province codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getProvinceCodesJSON() {
+    return provinceCodes;
   },
 };
 

@@ -29,6 +29,15 @@ try {
       await cacheService.loadCareerProgramCodes();
       log.info('Reloaded career program codes cache');
 
+      await cacheService.loadCitizenshipCodes();
+      log.info('Reloaded citizenship codes cache');
+
+      await cacheService.loadCountryCodes();
+      log.info('Reloaded country codes cache');
+
+      await cacheService.loadProvinceCodes();
+      log.info('Reloaded province codes cache');
+
       log.info('Scheduled cache reload completed successfully');
     } catch (e) {
       log.error('Error during scheduled cache reload:', e);
