@@ -723,7 +723,7 @@ async function downloadCourseRestrictionsCSV(req, res) {
     const restrictions = cacheService.getCourseRestrictionsJSON();
 
     if (!restrictions || restrictions.length === 0) {
-      return res.status(HttpStatus.NOT_FOUND).json({ message: 'No course restrictions available' });
+      return res.status(HttpStatus.NOT_FOUND).json({message: 'No course restrictions available'});
     }
 
     const headers = [
@@ -754,39 +754,31 @@ async function downloadCourseRestrictionsCSV(req, res) {
   }
 }
 
-async function refreshCourseRestrictionsCache(req, res) {
+const csvHelpers = require('./codes-csv-helpers');
+
+async function waitForCourseRestrictionsRefresh(req, res) {
   try {
-    // Refresh cache on this pod (waits for completion)
-    await cacheService.loadCourseRestrictions();
+    const CacheRefreshMessageHandler = require('../messaging/handlers/cache-refresh-handler');
 
-    // Publish NATS message to trigger cache refresh on other pods (fire and forget)
-    const NATS = require('../messaging/message-pub-sub');
-    const safeStringify = require('fast-safe-stringify');
-    const {StringCodec} = require('nats');
-
-    const message = {
-      cacheType: 'courseRestrictions',
-      timestamp: new Date().toISOString(),
-      triggeredBy: 'manual-refresh'
-    };
-
-    NATS.publishMessage('GRAD_ADMIN_CACHE_REFRESH', StringCodec().encode(safeStringify(message))).catch((natsError) => {
-      log.error('Failed to publish NATS message', natsError.message);
-    });
+    await CacheRefreshMessageHandler.waitForCacheRefresh('courseRestrictions', 10000);
 
     const restrictions = cacheService.getCourseRestrictionsJSON();
     return res.status(HttpStatus.OK).json({
-      message: 'Cache refresh triggered',
+      message: 'Cache refresh complete',
       count: restrictions.length
     });
   } catch (e) {
-    log.error(e, 'refreshCourseRestrictionsCache', 'Error occurred while refreshing course restrictions cache.');
+    if (e.message && e.message.includes('Timeout')) {
+      log.warn('Timeout waiting for cache refresh from Java API');
+      return res.status(HttpStatus.REQUEST_TIMEOUT).json({
+        message: 'Timeout waiting for cache refresh'
+      });
+    }
+    log.error(e, 'waitForCourseRestrictionsRefresh', 'Error waiting for cache refresh.');
     return errorResponse(res);
   }
 }
 
-
-const csvHelpers = require('./codes-csv-helpers');
 
 module.exports = {
   getStudentStatusCodes,
@@ -807,7 +799,7 @@ module.exports = {
   downloadExaminableCoursesCSV,
   getCourseRestrictions,
   downloadCourseRestrictionsCSV,
-  refreshCourseRestrictionsCache,
+  waitForCourseRestrictionsRefresh,
   getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,

@@ -189,7 +189,7 @@ export default {
     async onRestrictionCreated() {
       this.isRefreshing = true;
       try {
-        await CourseService.refreshCourseRestrictionsCache();
+        await CourseService.waitForCacheRefresh();
         await this.loadData();
       } catch (error) {
         console.error('Error after creating restriction:', error);
@@ -201,7 +201,7 @@ export default {
     async onRestrictionUpdated() {
       this.isRefreshing = true;
       try {
-        await CourseService.refreshCourseRestrictionsCache();
+        await CourseService.waitForCacheRefresh();
         await this.loadData();
       } catch (error) {
         console.error('Error after updating restriction:', error);

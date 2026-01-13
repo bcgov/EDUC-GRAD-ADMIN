@@ -23,7 +23,7 @@ const {
   downloadExaminableCoursesCSV,
   getCourseRestrictions,
   downloadCourseRestrictionsCSV,
-  refreshCourseRestrictionsCache,
+  waitForCourseRestrictionsRefresh,
   getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
@@ -309,10 +309,10 @@ router.get(
 );
 
 router.post(
-  "/courseRestrictions/refresh",
+  "/courseRestrictions/waitForRefresh",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
-  refreshCourseRestrictionsCache
+  waitForCourseRestrictionsRefresh
 );
 
 module.exports = router;

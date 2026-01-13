@@ -17,8 +17,8 @@ export default {
       responseType: 'blob'
     });
   },
-  refreshCourseRestrictionsCache() {
-    return ApiService.apiAxios.post("/api/codes/courseRestrictions/refresh");
+  waitForCacheRefresh() {
+    return ApiService.apiAxios.post("/api/codes/courseRestrictions/waitForRefresh");
   },
   getCourseExaminableCourses() {
     return ApiService.apiAxios.get("/api/codes/examinableCourses");
