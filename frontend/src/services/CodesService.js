@@ -39,6 +39,20 @@ export default {
       responseType: 'blob'
     });
   },
+  getCountryCodes() {
+    return ApiService.apiAxios.get("/api/codes/countryCodes");
+  },
+  downloadCountryCodesCSV() {
+    return ApiService.apiAxios.get("/api/codes/countryCodes/download", {
+      responseType: 'blob'
+    });
+  },
+  getCitizenshipCodes() {
+    return ApiService.apiAxios.get("/api/codes/citizenshipCodes");
+  },
+  getProvinceCodes() {
+    return ApiService.apiAxios.get("/api/codes/provinceCodes");
+  },
   getRequirementTypeCodes() {
     return ApiService.apiAxios.get("/api/codes/requirementTypeCodes");
   },

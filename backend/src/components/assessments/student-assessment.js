@@ -448,16 +448,22 @@ async function downloadAssessmentTypeCodesCSV(req, res) {
 
     const headers = [
       'Assessment Code',
-      'Assessment Label'
+      'Assessment Name',
+      'Language',
+      'Start Date',
+      'End Date'
     ];
 
     const rows = codes.map(item => [
       csvHelpers.escapeCSV(item.assessmentTypeCode),
-      csvHelpers.escapeCSV(item.label)
+      csvHelpers.escapeCSV(item.label),
+      csvHelpers.escapeCSV(item.language),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.effectiveDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.expiryDate))
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `assessment-codes-${new Date().toISOString().split('T')[0]}.csv`;
+    const filename = `AssessmentCodes_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {

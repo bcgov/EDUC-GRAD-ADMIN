@@ -3,7 +3,7 @@
     <div class="d-flex justify-space-between align-center ml-3 mt-5 mr-3 mb-6">
       <h3 class="my-0">Assessments</h3>
       <DownloadLink
-        label="Download CSV"
+        label="Assessments"
         icon="mdi-download"
         :downloadAction="StudentAssessmentService.downloadAssessmentTypeCodesCSV"
         @success="snackbarStore.showSnackbar('CSV downloaded successfully', 'success', 3000)"

@@ -15,6 +15,12 @@ const {
   downloadOptionalProgramCodesCSV,
   getCareerProgramCodes,
   downloadCareerProgramCodesCSV,
+  getCountryCodes,
+  downloadCountryCodesCSV,
+  getCitizenshipCodes,
+  getProvinceCodes,
+  getExaminableCourses,
+  downloadExaminableCoursesCSV,
   getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
@@ -34,6 +40,7 @@ const {
   getDigitalSignatureBlockTypeCodes,
   getBatchJobTypes,
 } = require("../components/codes");
+
 
 const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR && SCHOLARSHIP_ADMIN",
@@ -240,6 +247,48 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getBatchJobTypes
+);
+
+router.get(
+  "/countryCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getCountryCodes
+);
+
+router.get(
+  "/countryCodes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadCountryCodesCSV
+);
+
+router.get(
+  "/citizenshipCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getCitizenshipCodes
+);
+
+router.get(
+  "/provinceCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getProvinceCodes
+);
+
+router.get(
+  "/examinableCourses",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getExaminableCourses
+);
+
+router.get(
+  "/examinableCourses/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadExaminableCoursesCSV
 );
 
 module.exports = router;

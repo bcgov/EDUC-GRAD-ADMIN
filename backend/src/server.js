@@ -55,6 +55,30 @@ cacheService.loadCareerProgramCodes().then(() => {
   log.error('Error loading career program codes during boot.', e);
 });
 
+cacheService.loadCitizenshipCodes().then(() => {
+  log.info('Loaded citizenship codes to memory');
+}).catch((e) => {
+  log.error('Error loading citizenship codes during boot.', e);
+});
+
+cacheService.loadCountryCodes().then(() => {
+  log.info('Loaded country codes to memory');
+}).catch((e) => {
+  log.error('Error loading country codes during boot.', e);
+});
+
+cacheService.loadProvinceCodes().then(() => {
+  log.info('Loaded province codes to memory');
+}).catch((e) => {
+  log.error('Error loading province codes during boot.', e);
+});
+
+cacheService.loadExaminableCourses().then(() => {
+  log.info('Loaded examinable courses to memory');
+}).catch((e) => {
+  log.error('Error loading examinable courses during boot.', e);
+});
+
 // Start the cache reload scheduler (runs nightly at 12:15 AM)
 require('./components/scheduler');
 

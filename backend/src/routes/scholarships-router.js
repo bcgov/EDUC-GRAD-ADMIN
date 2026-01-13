@@ -4,7 +4,7 @@ const auth = require("../components/auth");
 const roles = require("../components/roles");
 const passport = require("passport");
 const validate = require("../components/validator");
-const {getStudentAddress, updateStudentAddress, getCitizenshipCodes, getCountryCodes, getProvinceCodes} = require("../components/scholarships");
+const {getStudentAddress, updateStudentAddress} = require("../components/scholarships");
 const {
   getStudentAddressSchema,
   putStudentAddressSchema,
@@ -19,24 +19,6 @@ const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   [
     roles.Admin.ScholarshipAdmin
   ]
-);
-
-router.get(
-  "/citizenship-codes",
-  passport.authenticate("jwt", { session: false }, undefined),
-  getCitizenshipCodes
-);
-
-router.get(
-  "/country-codes",
-  passport.authenticate("jwt", { session: false }, undefined),
-  getCountryCodes
-);
-
-router.get(
-  "/province-codes",
-  passport.authenticate("jwt", { session: false }, undefined),
-  getProvinceCodes
 );
 
 router.get(

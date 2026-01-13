@@ -408,31 +408,35 @@ async function downloadLetterGradeCodesCSV(req, res) {
 
     const headers = [
       'Letter Grade',
+      'Percent Range High',
+      'Percent Range Low',
+      'Pass',
       'GPA Mark Value',
-      'Pass Flag',
-      'High Percent',
-      'Low Percent',
+      'Label',
+      'Description',
       'Effective Date',
       'Expiry Date'
     ];
 
-    const formatPassFlag = (passFlag) => {
+    const formatPass = (passFlag) => {
       if (passFlag === null || passFlag === undefined) return '';
       return passFlag ? 'Y' : 'N';
     };
 
     const rows = codes.map(item => [
       csvHelpers.escapeCSV(item.grade),
-      csvHelpers.escapeCSV(item.gpaMarkValue),
-      csvHelpers.escapeCSV(formatPassFlag(item.passFlag)),
       csvHelpers.escapeCSV(item.percentRangeHigh || ''),
       csvHelpers.escapeCSV(item.percentRangeLow || ''),
+      csvHelpers.escapeCSV(formatPass(item.passFlag)),
+      csvHelpers.escapeCSV(item.gpaMarkValue || ''),
+      csvHelpers.escapeCSV(item.label || ''),
+      csvHelpers.escapeCSV(item.description || ''),
       csvHelpers.escapeCSV(csvHelpers.formatDate(item.effectiveDate)),
-      csvHelpers.escapeCSV(csvHelpers.formatDate(item.expiryDate))
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.expiryDate))
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `letter-grades-${new Date().toISOString().split('T')[0]}.csv`;
+    const filename = `LetterGrades_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
@@ -450,8 +454,9 @@ async function downloadStudentGradeCodesCSV(req, res) {
     }
 
     const headers = [
-      'Grade Level',
-      'Grade Description',
+      'Code',
+      'Label',
+      'Description',
       'Effective Date',
       'Expiry Date',
       'Expected'
@@ -465,13 +470,14 @@ async function downloadStudentGradeCodesCSV(req, res) {
     const rows = codes.map(item => [
       csvHelpers.escapeCSV(item.studentGradeCode),
       csvHelpers.escapeCSV(item.label),
+      csvHelpers.escapeCSV(item.description || ''),
       csvHelpers.escapeCSV(csvHelpers.formatDate(item.effectiveDate)),
-      csvHelpers.escapeCSV(csvHelpers.formatDate(item.expiryDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.expiryDate)),
       csvHelpers.escapeCSV(formatExpected(item.expected))
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `student-grade-codes-${new Date().toISOString().split('T')[0]}.csv`;
+    const filename = `StudentGradeCodes_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
@@ -490,16 +496,24 @@ async function downloadGradProgramCodesCSV(req, res) {
 
     const headers = [
       'Program Code',
-      'Program Name'
+      'Program Name',
+      'Description',
+      'Associated Credential',
+      'Effective Date',
+      'Expiry Date'
     ];
 
     const rows = codes.map(item => [
       csvHelpers.escapeCSV(item.programCode),
-      csvHelpers.escapeCSV(item.programName)
+      csvHelpers.escapeCSV(item.programName),
+      csvHelpers.escapeCSV(item.description || ''),
+      csvHelpers.escapeCSV(item.associatedCredential || ''),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.effectiveDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.expiryDate))
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `graduation-programs-${new Date().toISOString().split('T')[0]}.csv`;
+    const filename = `Programs_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
@@ -517,17 +531,27 @@ async function downloadOptionalProgramCodesCSV(req, res) {
     }
 
     const headers = [
-      'Career Program Code',
-      'Career Program Name'
+      'Program Code',
+      'Optional Program Code',
+      'Optional Program Name',
+      'Description',
+      'Associated Credential',
+      'Effective Date',
+      'Expiry Date'
     ];
 
     const rows = codes.map(item => [
+      csvHelpers.escapeCSV(item.graduationProgramCode || ''),
       csvHelpers.escapeCSV(item.optProgramCode),
-      csvHelpers.escapeCSV(item.optionalProgramName)
+      csvHelpers.escapeCSV(item.optionalProgramName),
+      csvHelpers.escapeCSV(item.description || ''),
+      csvHelpers.escapeCSV(item.associatedCredential || ''),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.effectiveDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.expiryDate))
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `optional-programs-${new Date().toISOString().split('T')[0]}.csv`;
+    const filename = `OptionalProgramCodes_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
@@ -545,21 +569,141 @@ async function downloadCareerProgramCodesCSV(req, res) {
     }
 
     const headers = [
-      'Career Program Code',
-      'Career Program Name'
+      'Code',
+      'Program',
+      'Effective Date',
+      'Expiry Date'
     ];
 
     const rows = codes.map(item => [
       csvHelpers.escapeCSV(item.code),
-      csvHelpers.escapeCSV(item.description)
+      csvHelpers.escapeCSV(item.description),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.startDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.endDate))
     ].join(','));
 
     const csvContent = csvHelpers.generateCSV(headers, rows);
-    const filename = `career-programs-${new Date().toISOString().split('T')[0]}.csv`;
+    const filename = `CareerProgramCodes_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
 
     return csvHelpers.sendCSVResponse(res, csvContent, filename);
   } catch (e) {
     log.error(e, 'downloadCareerProgramCodesCSV', 'Error occurred while generating career program codes CSV.');
+    return errorResponse(res);
+  }
+}
+
+async function getCountryCodes(req, res) {
+  try {
+    const codes = cacheService.getCountryCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
+  } catch (e) {
+    log.error(e, 'getCountryCodes', 'Error occurred while attempting to get cached country codes.');
+    return errorResponse(res);
+  }
+}
+
+async function downloadCountryCodesCSV(req, res) {
+  try {
+    const codes = cacheService.getCountryCodesJSON();
+
+    if (!codes || codes.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'No country codes available' });
+    }
+
+    const headers = [
+      'Code',
+      'Name',
+      'Effective Date',
+      'Expiry Date'
+    ];
+
+    const rows = codes.map(item => [
+      csvHelpers.escapeCSV(item.countryCode),
+      csvHelpers.escapeCSV(item.label),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.effectiveDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.expiryDate))
+    ].join(','));
+
+    const csvContent = csvHelpers.generateCSV(headers, rows);
+    const filename = `CountryCodes_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
+
+    return csvHelpers.sendCSVResponse(res, csvContent, filename);
+  } catch (e) {
+    log.error(e, 'downloadCountryCodesCSV', 'Error occurred while generating country codes CSV.');
+    return errorResponse(res);
+  }
+}
+
+async function getCitizenshipCodes(req, res) {
+  try {
+    const codes = cacheService.getCitizenshipCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
+  } catch (e) {
+    log.error(e, 'getCitizenshipCodes', 'Error occurred while attempting to get cached citizenship codes.');
+    return errorResponse(res);
+  }
+}
+
+async function getProvinceCodes(req, res) {
+  try {
+    const codes = cacheService.getProvinceCodesJSON();
+    return res.status(HttpStatus.OK).json(codes);
+  } catch (e) {
+    log.error(e, 'getProvinceCodes', 'Error occurred while attempting to get cached province codes.');
+    return errorResponse(res);
+  }
+}
+
+async function getExaminableCourses(req, res) {
+  try {
+    const courses = cacheService.getExaminableCoursesJSON();
+    return res.status(HttpStatus.OK).json(courses);
+  } catch (e) {
+    log.error(e, 'getExaminableCourses', 'Error occurred while attempting to get cached examinable courses.');
+    return errorResponse(res);
+  }
+}
+
+async function downloadExaminableCoursesCSV(req, res) {
+  try {
+    const courses = cacheService.getExaminableCoursesJSON();
+
+    if (!courses || courses.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'No examinable courses available' });
+    }
+
+    const headers = [
+      'Course Code',
+      'Course Level',
+      'Program Year',
+      '% School Weight',
+      '% Exam Weight',
+      '% School Weight (before 1989/08)',
+      '% Exam Weight (before 1989/08)',
+      'Course Title',
+      'Examinable Start',
+      'Examinable End'
+    ];
+
+    const rows = courses.map(item => [
+      csvHelpers.escapeCSV(item.courseCode),
+      csvHelpers.escapeCSV(item.courseLevel),
+      csvHelpers.escapeCSV(item.programYear || '2004+'),
+      csvHelpers.escapeCSV(item.schoolWeightPercent || ''),
+      csvHelpers.escapeCSV(item.examWeightPercent || ''),
+      csvHelpers.escapeCSV(item.schoolWeightPercentPre1989 || ''),
+      csvHelpers.escapeCSV(item.examWeightPercentPre1989 || ''),
+      csvHelpers.escapeCSV(item.courseTitle),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.examinableStart)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.examinableEnd))
+    ].join(','));
+
+    const csvContent = csvHelpers.generateCSV(headers, rows);
+    const filename = `ExaminableCourses_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
+
+    return csvHelpers.sendCSVResponse(res, csvContent, filename);
+  } catch (e) {
+    log.error(e, 'downloadExaminableCoursesCSV', 'Error occurred while generating examinable courses CSV.');
     return errorResponse(res);
   }
 }
@@ -578,6 +722,12 @@ module.exports = {
   downloadOptionalProgramCodesCSV,
   getCareerProgramCodes,
   downloadCareerProgramCodesCSV,
+  getCountryCodes,
+  downloadCountryCodesCSV,
+  getCitizenshipCodes,
+  getProvinceCodes,
+  getExaminableCourses,
+  downloadExaminableCoursesCSV,
   getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,

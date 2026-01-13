@@ -3,11 +3,12 @@ import { defineStore } from "pinia";
 import CommonService from "@/services/CommonService.js";
 import SchoolsService from "@/services/SchoolsService.js";
 import CodesService from "@/services/CodesService.js";
+import CourseService from "@/services/CourseService.js";
+import sharedMethods from "@/sharedMethods.js";
+import StudentAssessmentService from "@/services/StudentAssessmentService";
 
 import { useSnackbarStore } from "../../store/modules/snackbar";
 
-import sharedMethods from "@/sharedMethods.js";
-import StudentAssessmentService from "@/services/StudentAssessmentService";
 export const useAppStore = defineStore("app", {
   state: () => ({
     snackbarStore: useSnackbarStore(),
@@ -37,6 +38,10 @@ export const useAppStore = defineStore("app", {
     provincialSpecialCaseCodes: [],
     assessmentTypeCodesMap: new Map(),
     assessmentTypeCodes: [],
+    countryCodes: [],
+    citizenshipCodes: [],
+    provinceCodes: [],
+    examinableCourses: [],
     currentDate: "",
     currentMonth: "",
     currentYear: "",
@@ -428,6 +433,54 @@ export const useAppStore = defineStore("app", {
       this.studentGradeCodes = sharedMethods.filterActiveObjects(
         sharedMethods.applyDisplayOrder(gradeCodes)
       );
+    },
+    async getCountryCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.countryCodes)
+      ) {
+        let response = await CodesService.getCountryCodes();
+        await this.setCountryCodes(response.data);
+      }
+    },
+    async setCountryCodes(countryCodes) {
+      this.countryCodes = countryCodes;
+    },
+    async getCitizenshipCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.citizenshipCodes)
+      ) {
+        let response = await CodesService.getCitizenshipCodes();
+        await this.setCitizenshipCodes(response.data);
+      }
+    },
+    async setCitizenshipCodes(citizenshipCodes) {
+      this.citizenshipCodes = citizenshipCodes;
+    },
+    async getProvinceCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.provinceCodes)
+      ) {
+        let response = await CodesService.getProvinceCodes();
+        await this.setProvinceCodes(response.data);
+      }
+    },
+    async setProvinceCodes(provinceCodes) {
+      this.provinceCodes = provinceCodes;
+    },
+    async getExaminableCourses(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.examinableCourses)
+      ) {
+        let response = await CourseService.getCourseExaminableCourses();
+        await this.setExaminableCourses(response.data);
+      }
+    },
+    async setExaminableCourses(examinableCourses) {
+      this.examinableCourses = examinableCourses;
     },
     async setLetterGrades(letterGrades) {
       this.letterGradeCodes = letterGrades;
