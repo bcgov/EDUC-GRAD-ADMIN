@@ -89,22 +89,6 @@ cacheService.loadCourseRestrictions().then(() => {
 // Start the cache reload scheduler (runs nightly at 12:15 AM)
 require('./components/scheduler');
 
-const NATS = require('./messaging/message-pub-sub');
-
-process.on('SIGINT',() => {
-  NATS.close();
-  server.close(() => {
-    log.info('process terminated');
-  });
-});
-
-process.on('SIGTERM', () => {
-  NATS.close();
-  server.close(() => {
-    log.info('process terminated');
-  });
-});
-
 /**
  * Get port from environment and store in Express.
  */
@@ -173,6 +157,22 @@ function onListening() {
     'port ' + addr.port;
   log.info('Listening on ' + bind);
 }
+
+const NATS = require('./messaging/message-pub-sub');
+
+process.on('SIGINT',() => {
+  NATS.close();
+  server.close(() => {
+    log.info('process terminated');
+  });
+});
+
+process.on('SIGTERM', () => {
+  NATS.close();
+  server.close(() => {
+    log.info('process terminated');
+  });
+});
 
 //exports are purely for testing
 module.exports = {
