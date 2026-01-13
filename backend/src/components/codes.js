@@ -708,6 +708,83 @@ async function downloadExaminableCoursesCSV(req, res) {
   }
 }
 
+async function getCourseRestrictions(req, res) {
+  try {
+    const restrictions = cacheService.getCourseRestrictionsJSON();
+    return res.status(HttpStatus.OK).json(restrictions);
+  } catch (e) {
+    log.error(e, 'getCourseRestrictions', 'Error occurred while attempting to get cached course restrictions.');
+    return errorResponse(res);
+  }
+}
+
+async function downloadCourseRestrictionsCSV(req, res) {
+  try {
+    const restrictions = cacheService.getCourseRestrictionsJSON();
+
+    if (!restrictions || restrictions.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'No course restrictions available' });
+    }
+
+    const headers = [
+      'Course Code Main',
+      'Course Level Main',
+      'Course Code Restricted',
+      'Course Level Restricted',
+      'Restriction Start Date',
+      'Restriction End Date'
+    ];
+
+    const rows = restrictions.map(item => [
+      csvHelpers.escapeCSV(item.mainCourse),
+      csvHelpers.escapeCSV(item.mainCourseLevel),
+      csvHelpers.escapeCSV(item.restrictedCourse),
+      csvHelpers.escapeCSV(item.restrictedCourseLevel),
+      csvHelpers.escapeCSV(csvHelpers.formatDate(item.restrictionStartDate)),
+      csvHelpers.escapeCSV(csvHelpers.formatExpiryDateOrBlankIfFarFuture(item.restrictionEndDate))
+    ].join(','));
+
+    const csvContent = csvHelpers.generateCSV(headers, rows);
+    const filename = `CourseRestrictions_${new Date().toISOString().replace(/-/g, '').split('T')[0]}.csv`;
+
+    return csvHelpers.sendCSVResponse(res, csvContent, filename);
+  } catch (e) {
+    log.error(e, 'downloadCourseRestrictionsCSV', 'Error occurred while generating course restrictions CSV.');
+    return errorResponse(res);
+  }
+}
+
+async function refreshCourseRestrictionsCache(req, res) {
+  try {
+    // Refresh cache on this pod (waits for completion)
+    await cacheService.loadCourseRestrictions();
+
+    // Publish NATS message to trigger cache refresh on other pods (fire and forget)
+    const NATS = require('../messaging/message-pub-sub');
+    const safeStringify = require('fast-safe-stringify');
+    const {StringCodec} = require('nats');
+
+    const message = {
+      cacheType: 'courseRestrictions',
+      timestamp: new Date().toISOString(),
+      triggeredBy: 'manual-refresh'
+    };
+
+    NATS.publishMessage('GRAD_ADMIN_CACHE_REFRESH', StringCodec().encode(safeStringify(message))).catch((natsError) => {
+      log.error('Failed to publish NATS message', natsError.message);
+    });
+
+    const restrictions = cacheService.getCourseRestrictionsJSON();
+    return res.status(HttpStatus.OK).json({
+      message: 'Cache refresh triggered',
+      count: restrictions.length
+    });
+  } catch (e) {
+    log.error(e, 'refreshCourseRestrictionsCache', 'Error occurred while refreshing course restrictions cache.');
+    return errorResponse(res);
+  }
+}
+
 
 const csvHelpers = require('./codes-csv-helpers');
 
@@ -728,6 +805,9 @@ module.exports = {
   getProvinceCodes,
   getExaminableCourses,
   downloadExaminableCoursesCSV,
+  getCourseRestrictions,
+  downloadCourseRestrictionsCSV,
+  refreshCourseRestrictionsCache,
   getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,

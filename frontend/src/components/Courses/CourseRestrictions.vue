@@ -1,11 +1,27 @@
 <template>
   <div>
-    <v-row>
-      <h3 class="ml-4 mt-5">Course Restrictions</h3>
+    <v-row class="align-center ml-2 mt-5 mr-3 mb-0">
+      <v-col cols="auto">
+        <h3 class="my-0">Course Restrictions</h3>
+      </v-col>
       <v-spacer />
-      <span v-if="enableCRUD">
-        <CourseRestrictionsCreateForm />
-      </span>
+      <v-col cols="auto">
+        <DownloadLink
+            label="Course Restrictions"
+            icon="mdi-download"
+            :downloadAction="CourseService.downloadCourseRestrictionsCSV"
+            :disabled="isRefreshing"
+            @success="snackbarStore.showSnackbar('CSV downloaded successfully', 'success', 3000)"
+            @error="snackbarStore.showSnackbar('Error downloading CSV', 'error', 5000)"
+        />
+      </v-col>
+      <v-col cols="auto" v-if="enableCRUD">
+        <CourseRestrictionsCreateForm
+          :disabled="isRefreshing"
+          @restriction-created="onRestrictionCreated"
+        />
+      </v-col>
+
     </v-row>
     <v-spacer />
     <v-row no-gutters>
@@ -42,6 +58,8 @@
         :items-per-page="defaultItemsPerPage"
         title="courseRestriction"
         :search="search"
+        :loading="isRefreshing"
+        loading-text="Refreshing course restrictions..."
       >
         <template v-slot:item.restrictionStartDate="{ item }">
           {{ $filters.formatYYYYMMDate(item.restrictionStartDate) }}
@@ -52,6 +70,8 @@
         <template v-slot:item.edit="{ item }" v-if="enableCRUD">
           <CourseRestrictionsUpdateForm
             :selectedCourseRestrictionToUpdate="item"
+            :disabled="isRefreshing"
+            @restriction-updated="onRestrictionUpdated"
           >
           </CourseRestrictionsUpdateForm>
         </template>
@@ -61,21 +81,28 @@
 </template>
 <script>
 import { useAppStore } from "@/store/modules/app";
-import { useCourseStore } from "@/store/modules/course.js";
-import { mapState, mapActions } from "pinia";
+import { useSnackbarStore } from "@/store/modules/snackbar";
+import { mapState } from "pinia";
 import CourseRestrictionsCreateForm from "@/components/Courses/Forms/CourseRestrictionsCreateForm.vue";
 import CourseRestrictionsUpdateForm from "@/components/Courses/Forms/CourseRestrictionsUpdateForm.vue";
+import DownloadLink from "@/components/Common/DownloadLink.vue";
+import CourseService from "@/services/CourseService.js";
+
 export default {
   name: "CourseRestrictions",
   components: {
-    CourseRestrictionsCreateForm: CourseRestrictionsCreateForm,
-    CourseRestrictionsUpdateForm: CourseRestrictionsUpdateForm,
+    CourseRestrictionsCreateForm,
+    CourseRestrictionsUpdateForm,
+    DownloadLink,
+  },
+  async beforeMount() {
+    await this.loadData();
   },
   computed: {
-    ...mapState(useCourseStore, {
-      courseRestrictions: "getCourseRestrictions",
-    }),
     ...mapState(useAppStore, ["enableCRUD"]),
+    CourseService() {
+      return CourseService;
+    },
 
     courseRestrictionHeaders() {
       const tableHeaders = [
@@ -131,19 +158,27 @@ export default {
       return tableHeaders;
     },
   },
-  created() {
-    this.loadCourseRestrictions();
-  },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       defaultItemsPerPage: 20,
       rawSearchInput: "",
       search: "",
       selected: [],
+      isRefreshing: false,
+      courseRestrictions: [], // Always fetched fresh from backend cache
     };
   },
   methods: {
-    ...mapActions(useCourseStore, ["loadCourseRestrictions"]),
+    async loadData() {
+      try {
+        const response = await CourseService.getCourseRestrictions();
+        this.courseRestrictions = response.data || [];
+      } catch (error) {
+        console.error('Error loading course restrictions:', error);
+        this.snackbarStore.showSnackbar('Error loading course restrictions', 'error', 5000);
+      }
+    },
     onSearchInput(value) {
       this.search = value?.replace("-", "/");
     },
@@ -151,7 +186,32 @@ export default {
       this.search = "";
       this.rawSearchInput = "";
     },
+    async onRestrictionCreated() {
+      this.isRefreshing = true;
+      try {
+        await CourseService.refreshCourseRestrictionsCache();
+        await this.loadData();
+      } catch (error) {
+        console.error('Error after creating restriction:', error);
+        this.snackbarStore.showSnackbar('Created successfully but error refreshing list', 'warning', 5000);
+      } finally {
+        this.isRefreshing = false;
+      }
+    },
+    async onRestrictionUpdated() {
+      this.isRefreshing = true;
+      try {
+        await CourseService.refreshCourseRestrictionsCache();
+        await this.loadData();
+      } catch (error) {
+        console.error('Error after updating restriction:', error);
+        this.snackbarStore.showSnackbar('Updated successfully but error refreshing list', 'warning', 5000);
+      } finally {
+        this.isRefreshing = false;
+      }
+    },
   },
 };
 </script>
-<style scoped></style>
+<style scoped>
+</style>

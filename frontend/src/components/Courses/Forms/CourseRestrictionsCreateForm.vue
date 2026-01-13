@@ -1,9 +1,10 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="1024">
     <template v-slot:activator="{ props }">
-      <div class="pr-14">
-        <v-btn class="text-none mt-4" color="bcGovBlue" prepend-icon="mdi-plus"
-          @click="openCreateCoursRestrictionsDialog()" text="Add Course Restriction" :disabled="!hasPermissions('COURSE', 'restrictionUpdate')"/>
+      <div>
+        <v-btn class="text-none" color="bcGovBlue" prepend-icon="mdi-plus"
+          @click="openCreateCoursRestrictionsDialog()" text="Add Course Restriction"
+          :disabled="!hasPermissions('COURSE', 'restrictionUpdate') || disabled"/>
       </div>
     </template>
       
@@ -91,6 +92,13 @@ import { useSnackbarStore } from "@/store/modules/snackbar";
 
 export default {
   name: "CourseRestrictionsCreateForm",
+  emits: ['restriction-created'],
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
   components: {
     CourseRestrictionsDetailsInput: CourseRestrictionsDetailsInput,
   },  
@@ -146,7 +154,7 @@ export default {
         await this.createCourseRestriction(createCourseRestrictionRequestBody).then((response) => {                   
           this.validationStep = true;
           if (response?.hasPersisted) {
-            this.loadCourseRestrictions();
+            this.$emit('restriction-created');
             this.snackbarStore.showSnackbar("Course Restriction added", "success", 10000);
           } else {
             this.snackbarStore.showSnackbar("Failed to add Course Restriction", "error", 10000);

@@ -13,6 +13,7 @@ dotenv.config();
 const app = require('./app');
 
 const cacheService = require('./components/cache-service');
+
 cacheService.loadCoreg39CoursesToMap().then(() => {
   log.info('Loaded coreg 39 courses data to memory');
 }).catch((e) => {
@@ -79,8 +80,30 @@ cacheService.loadExaminableCourses().then(() => {
   log.error('Error loading examinable courses during boot.', e);
 });
 
+cacheService.loadCourseRestrictions().then(() => {
+  log.info('Loaded course restrictions to memory');
+}).catch((e) => {
+  log.error('Error loading course restrictions during boot.', e);
+});
+
 // Start the cache reload scheduler (runs nightly at 12:15 AM)
 require('./components/scheduler');
+
+const NATS = require('./messaging/message-pub-sub');
+
+process.on('SIGINT',() => {
+  NATS.close();
+  server.close(() => {
+    log.info('process terminated');
+  });
+});
+
+process.on('SIGTERM', () => {
+  NATS.close();
+  server.close(() => {
+    log.info('process terminated');
+  });
+});
 
 /**
  * Get port from environment and store in Express.
@@ -150,18 +173,6 @@ function onListening() {
     'port ' + addr.port;
   log.info('Listening on ' + bind);
 }
-
-process.on('SIGINT',() => {
-  server.close(() => {
-    log.info('process terminated');
-  });
-});
-
-process.on('SIGTERM', () => {
-  server.close(() => {
-    log.info('process terminated');
-  });
-});
 
 //exports are purely for testing
 module.exports = {

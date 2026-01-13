@@ -18,6 +18,7 @@ let citizenshipCodes = [];
 let countryCodes = [];
 let provinceCodes = [];
 let examinableCourses = [];
+let courseRestrictions = [];
 
 const cacheService = {
   async loadCoreg39CoursesToMap() {
@@ -266,6 +267,27 @@ const cacheService = {
   },
   getExaminableCoursesJSON() {
     return examinableCourses;
+  },
+  async loadCourseRestrictions() {
+    log.debug('Loading course restrictions');
+    await retry(async () => {
+      try {
+        const courseRestrictionsResponse = await getCommonServiceData(`${config.get('server:courseAPIURL')}/api/v1/course/restriction`);
+        courseRestrictions = []; // reset the value
+        if (courseRestrictionsResponse && courseRestrictionsResponse.length > 0) {
+          courseRestrictions = courseRestrictionsResponse;
+        }
+        log.info(`Loaded ${courseRestrictions.length} course restrictions.`);
+      } catch (err) {
+        log.error('Failed to load course restrictions, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getCourseRestrictionsJSON() {
+    return courseRestrictions;
   },
 };
 

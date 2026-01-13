@@ -41,6 +41,9 @@ try {
       await cacheService.loadExaminableCourses();
       log.info('Reloaded examinable courses cache');
 
+      await cacheService.loadCourseRestrictions();
+      log.info('Reloaded course restrictions cache');
+
       log.info('Scheduled cache reload completed successfully');
     } catch (e) {
       log.error('Error during scheduled cache reload:', e);

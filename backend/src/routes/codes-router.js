@@ -21,6 +21,9 @@ const {
   getProvinceCodes,
   getExaminableCourses,
   downloadExaminableCoursesCSV,
+  getCourseRestrictions,
+  downloadCourseRestrictionsCSV,
+  refreshCourseRestrictionsCache,
   getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
@@ -289,6 +292,27 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   downloadExaminableCoursesCSV
+);
+
+router.get(
+  "/courseRestrictions",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getCourseRestrictions
+);
+
+router.get(
+  "/courseRestrictions/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadCourseRestrictionsCSV
+);
+
+router.post(
+  "/courseRestrictions/refresh",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  refreshCourseRestrictionsCache
 );
 
 module.exports = router;

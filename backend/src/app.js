@@ -41,6 +41,11 @@ const reportsRouter = require("./routes/reports-router");
 const configRouter = require("./routes/config-router");
 const scholarshipRouter = require("./routes/scholarships-router");
 
+const messagePubSub = require('./messaging/message-pub-sub');
+messagePubSub.init().then(() => {
+  require('./messaging/handlers/cache-refresh-handler').subscribe();
+}).catch((e) => log.error(e));
+
 //initialize app
 const app = express();
 app.set("trust proxy", 1);

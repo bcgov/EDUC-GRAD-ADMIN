@@ -10,7 +10,15 @@ export default {
     return ApiService.apiAxios.get(`api/course/courseID/${courseID}`);
   },
   getCourseRestrictions() {
-    return ApiService.apiAxios.get("/api/course/courseRestrictions");
+    return ApiService.apiAxios.get("/api/codes/courseRestrictions");
+  },
+  downloadCourseRestrictionsCSV() {
+    return ApiService.apiAxios.get("/api/codes/courseRestrictions/download", {
+      responseType: 'blob'
+    });
+  },
+  refreshCourseRestrictionsCache() {
+    return ApiService.apiAxios.post("/api/codes/courseRestrictions/refresh");
   },
   getCourseExaminableCourses() {
     return ApiService.apiAxios.get("/api/codes/examinableCourses");

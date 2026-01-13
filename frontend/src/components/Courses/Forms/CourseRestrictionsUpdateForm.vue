@@ -4,7 +4,8 @@
       <template v-slot:activator="{ props }">
         <slot name="activator" v-bind="props">
           <v-btn v-bind="props" color="success" icon="mdi-pencil" density="compact" variant="text" 
-          @click="openUpdateCoursRestrictionsDialog()" :disabled="!hasPermissions('COURSE', 'restrictionUpdate')"/>
+          @click="openUpdateCoursRestrictionsDialog()"
+          :disabled="!hasPermissions('COURSE', 'restrictionUpdate') || disabled"/>
         </slot>
       </template>
 
@@ -46,11 +47,16 @@ import { mapState, mapActions } from "pinia";
 import { toRaw } from "vue";
 export default {
   name: "CourseRestrictionsUpdateForm",
+  emits: ['restriction-updated'],
   components: { CourseRestrictionsDetailsInput },
   props: {
     selectedCourseRestrictionToUpdate: {
       type: Object,
       required: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props) {
@@ -87,7 +93,7 @@ export default {
         // Call API and get response
         await this.updateCourseRestriction(updateCourseRestrictionRequestBody).then((response) => {
           if (response?.hasPersisted) {
-              this.loadCourseRestrictions();
+              this.$emit('restriction-updated');
               this.snackbarStore.showSnackbar("Course Restriction Updated", "success", 10000);
           } else {
               this.snackbarStore.showSnackbar("Failed to update Course Restriction", "error", 10000);
