@@ -6,10 +6,8 @@ import CodesService from "@/services/CodesService.js";
 import CourseService from "@/services/CourseService.js";
 import sharedMethods from "@/sharedMethods.js";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 
-import { useSnackbarStore } from "../../store/modules/snackbar";
-
-import ApiService from "@/common/apiService";
 export const useAppStore = defineStore("app", {
   state: () => ({
     snackbarStore: useSnackbarStore(),
@@ -210,6 +208,7 @@ export const useAppStore = defineStore("app", {
           await this.getInstituteCategoryCodes();
           await this.getInstituteFacilityCodes();
           await this.getProvincialSpecialCaseCodes();
+          await this.loadGenderCodes();
           // set current date string
         }
       } catch (e) {
@@ -533,5 +532,15 @@ export const useAppStore = defineStore("app", {
         provincialSpecialCaseCodes
       );
     },
+      async loadGenderCodes(getNewData = true) {
+          if (getNewData || !sharedMethods.dataArrayExists(this.genderCodes)) {
+              const ApiService = (await import('@/common/apiService.js')).default;
+              let response = await ApiService.getGenderCodes();
+              await this.setGenderCodes(response.data);
+          }
+      },
+      async setGenderCodes(genders) {
+          this.genderCodes = genders;
+      },
   },
 });

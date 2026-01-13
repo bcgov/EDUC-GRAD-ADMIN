@@ -13,7 +13,7 @@ const {
 const {
   postStudentGradStatus
 }
-= require("../components/student");
+= require("../components/student/student");
 const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   'SCHOLARSHIP_ADMIN',
   [
