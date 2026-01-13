@@ -423,39 +423,54 @@ export default {
       this.search();
     },
     apiSearchParamsBuilder() {
-      const EXCLUDED_KEYS = ['useBirthdateRange', 'wildcards'];
+      const EXCLUDED_KEYS = ['useBirthdateRange', 'wildcards', 'dobFrom', 'dobTo'];
 
+      // optional: your wildcard rename map (from earlier)
       const WILDCARD_RENAMES = {
         legalFirstName:   { flag: 'legalFirstName',  apiKey: 'legalFirstNameWild' },
         legalLastName:    { flag: 'legalLastName',   apiKey: 'legalLastNameWild' },
-        legalMiddleNames: { flag: 'legalMiddleNames', apiKey: 'legalMiddleNameWild' }, // note singular flag
+        legalMiddleNames: { flag: 'legalMiddleName', apiKey: 'legalMiddleNameWild' },
       };
 
       const apiSearchParams = {};
       const wildcardFlags = this.searchParams.wildcards || {};
 
-      const searchKeys = Object.keys(this.searchParams).filter((k) => {
-        if (EXCLUDED_KEYS.includes(k)) return false;
+      // Normal fields
+      Object.keys(this.searchParams)
+          .filter((k) => {
+            if (EXCLUDED_KEYS.includes(k)) return false;
 
-        const value = this.searchParams[k];
-        if (value === null || value === undefined) return false;
-        if (typeof value === 'string' && value.trim() === '') return false;
-        return !(Array.isArray(value) && value.length === 0);
-      });
+            const value = this.searchParams[k];
+            if (value === null || value === undefined) return false;
+            if (typeof value === 'string' && value.trim() === '') return false;
+            return !(Array.isArray(value) && value.length === 0);
+          })
+          .forEach((key) => {
+            const value = this.searchParams[key];
 
-      searchKeys.forEach((key) => {
-        const value = this.searchParams[key];
-        // rename key if wildcard toggle is on for that field
-        let apiKey = key;
-        const rename = WILDCARD_RENAMES[key];
-        if (rename && wildcardFlags[rename.flag]) {
-          apiKey = rename.apiKey;
+            let apiKey = key;
+            const rename = WILDCARD_RENAMES[key];
+            if (rename && wildcardFlags[rename.flag]) {
+              apiKey = rename.apiKey;
+            }
+
+            apiSearchParams[apiKey] = Array.isArray(value) ? value.join(',') : value;
+          });
+
+      // Birthdate logic
+      const { useBirthdateRange, dobFrom, dobTo } = this.searchParams;
+
+      if (useBirthdateRange) {
+        if (dobFrom && dobTo) {
+          apiSearchParams.dobRange = `${dobFrom},${dobTo}`;
         }
-        apiSearchParams[apiKey] = Array.isArray(value) ? value.join(',') : value;
-      });
+      } else {
+        if (dobFrom) apiSearchParams.dob = dobFrom;
+      }
 
       return apiSearchParams;
     }
+
     ,
     clearInput: function () {
       this.searchResults = [];

@@ -50,6 +50,28 @@ function createFiltersSearchCriteria(searchFilter = []) {
       searchCriteria.push({ key: 'legalMiddleNames', value: value.toString().toUpperCase(), operation: FILTER_OPERATION.CONTAINS, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
     }
 
+    if (key === 'dobRange' && value) {
+      const [start, end] = value.split(',').map(s => s.trim());
+      searchCriteria.push(
+        { key: 'dob',
+          operation: FILTER_OPERATION.DATE_RANGE,
+          value: `${start}T00:00:00,${end}T23:59:59`.toUpperCase(),
+          valueType: VALUE_TYPE.DATE,
+          condition: CONDITION.AND
+        });
+    }
+
+    if (key === 'dob' && value) {
+      const dobRange = `${value}T00:00:00,${value}T23:59:59`;
+      searchCriteria.push(
+        { key: 'dob',
+          operation: FILTER_OPERATION.DATE_RANGE,
+          value: dobRange.toUpperCase(),
+          valueType: VALUE_TYPE.DATE,
+          condition: CONDITION.AND 
+        });
+    }
+
   }
   const search = [];
   if (searchCriteria.length > 0) {
