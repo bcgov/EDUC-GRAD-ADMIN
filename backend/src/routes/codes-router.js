@@ -8,9 +8,19 @@ const {
   getStudentStatusCodes,
   getHistoryActivityCodes,
   getStudentGradeCodes,
+  downloadStudentGradeCodesCSV,
   getGradProgramCodes,
+  downloadGradProgramCodesCSV,
   getOptionalProgramCodes,
+  downloadOptionalProgramCodesCSV,
   getCareerProgramCodes,
+  downloadCareerProgramCodesCSV,
+  getCountryCodes,
+  downloadCountryCodesCSV,
+  getCitizenshipCodes,
+  getProvinceCodes,
+  getExaminableCourses,
+  downloadExaminableCoursesCSV,
   getRequirementTypeCodes,
   getFineArtsAppliedSkillsCodes,
   getEquivalentOrChallengeCodes,
@@ -19,6 +29,7 @@ const {
   getInstituteFacilityCodes,
   getAssessmentSpecialCaseCodes,
   getCourseLetterGradeCodes,
+  downloadLetterGradeCodesCSV,
   getTranscriptMessagingCodes,
   getStudentUndoCompletionReasonCodes,
   getTranscriptTypeCodes,
@@ -29,6 +40,7 @@ const {
   getDigitalSignatureBlockTypeCodes,
   getBatchJobTypes,
 } = require("../components/codes");
+
 
 const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR && SCHOLARSHIP_ADMIN",
@@ -63,10 +75,24 @@ router.get(
 );
 
 router.get(
+  "/studentGradeCodes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadStudentGradeCodesCSV
+);
+
+router.get(
   "/gradProgramCodes",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getGradProgramCodes
+);
+
+router.get(
+  "/gradProgramCodes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadGradProgramCodesCSV
 );
 
 router.get(
@@ -77,10 +103,24 @@ router.get(
 );
 
 router.get(
+  "/optionalProgramCodes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadOptionalProgramCodesCSV
+);
+
+router.get(
   "/careerProgramCodes",
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getCareerProgramCodes
+);
+
+router.get(
+  "/careerProgramCodes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadCareerProgramCodesCSV
 );
 
 router.get(
@@ -137,6 +177,13 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getCourseLetterGradeCodes
+);
+
+router.get(
+  "/letterGradeCodes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadLetterGradeCodesCSV
 );
 
 router.get(
@@ -200,6 +247,48 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getBatchJobTypes
+);
+
+router.get(
+  "/countryCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getCountryCodes
+);
+
+router.get(
+  "/countryCodes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadCountryCodesCSV
+);
+
+router.get(
+  "/citizenshipCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getCitizenshipCodes
+);
+
+router.get(
+  "/provinceCodes",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getProvinceCodes
+);
+
+router.get(
+  "/examinableCourses",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getExaminableCourses
+);
+
+router.get(
+  "/examinableCourses/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadExaminableCoursesCSV
 );
 
 module.exports = router;

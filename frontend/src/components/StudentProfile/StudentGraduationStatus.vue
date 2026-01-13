@@ -22,7 +22,7 @@
       <div class="col-12 col-xl-4 col-lg-12 px-2 pb-2">
         <GRADStatus />
       </div>
-      <div class="row col-12 col-xl-8 col-lg-12 px-0 m-0">
+      <div class="row col-12 col-xl-8 col-lg-12 px-0 m-0" v-if="isNotMerged()">
         <div class="col-12 col-lg-6 px-2">
           <NoncompletionReasons />
         </div>
@@ -79,11 +79,14 @@ export default {
     this.programDropdownList = this.programOptions;
     this.disableButton = false;
   },
-  // methods: {
-  //   getStudentStatus(code) {
-  //     return parseStudentStatus(code, this.studentStatusOptions);
-  //   },
-  // },
+  methods: {
+    isNotMerged() {
+      if(this.studentGradStatus?.studentStatus){
+        return this.studentGradStatus?.studentStatus !== 'MER';  
+      }
+      return false;
+    },
+  },
 };
 </script>
 

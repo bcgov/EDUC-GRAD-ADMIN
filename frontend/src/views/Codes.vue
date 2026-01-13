@@ -92,6 +92,9 @@
         <v-tab to="/codes/batch-types" class="text-none" size="large"
           >Batch Type Codes</v-tab
         >
+        <v-tab to="/codes/country-codes" class="text-none" size="large"
+          >Country Codes</v-tab
+        >
       </v-tabs>
       <v-card-text>
         <router-view v-bind:key="$route.fullPath"></router-view>

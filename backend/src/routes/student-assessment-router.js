@@ -19,6 +19,7 @@ const {
   postStudentAssessment,
   deleteStudentAssessmentByID,
   getAssessmentTypeCodes,
+  downloadAssessmentTypeCodesCSV,
   getAllAssessmentSessions,
   getProvincialSpecialCaseCodes,
   getStudentAssessmentHistoryPaginated,
@@ -53,6 +54,13 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getAssessmentTypeCodes
+);
+
+router.get(
+  "/assessment-type-codes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadAssessmentTypeCodesCSV
 );
 
 router.get(
