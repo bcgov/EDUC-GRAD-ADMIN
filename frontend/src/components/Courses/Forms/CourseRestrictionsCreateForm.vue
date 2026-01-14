@@ -23,7 +23,7 @@
           </v-stepper-header>
           <v-stepper-window>
             <v-stepper-window-item value="1">
-              <CourseRestrictionsDetailsInput :courseRestriction="courseRestriction" ref="CourseRestrictionsDetailsInputRef" create />
+              <CourseRestrictionsDetailsInput :courseRestriction="courseRestriction" :courseRestrictions="courseRestrictions" ref="CourseRestrictionsDetailsInputRef" create />
             </v-stepper-window-item>
 
             <v-stepper-window-item value="2">            
@@ -94,6 +94,10 @@ export default {
   name: "CourseRestrictionsCreateForm",
   emits: ['restriction-created'],
   props: {
+    courseRestrictions: {
+      type: Array,
+      default: () => []
+    },
     disabled: {
       type: Boolean,
       default: false,

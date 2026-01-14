@@ -19,7 +19,7 @@
           </v-row>
         </template>
         <v-card-text>
-          <CourseRestrictionsDetailsInput :courseRestriction="selectedCourseRestriction" update />
+          <CourseRestrictionsDetailsInput :courseRestriction="selectedCourseRestriction" :courseRestrictions="courseRestrictions" update />
         </v-card-text>
 
         <v-card-actions>
@@ -53,6 +53,10 @@ export default {
     selectedCourseRestrictionToUpdate: {
       type: Object,
       required: true,
+    },
+    courseRestrictions: {
+      type: Array,
+      default: () => []
     },
     disabled: {
       type: Boolean,

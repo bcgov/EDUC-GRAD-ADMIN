@@ -69,13 +69,16 @@ export default {
   computed: {
     ...mapState(useCourseStore, {
       snackbarStore: (state) => state.snackbarStore,
-      courseRestrictions: (state) => state.courseRestrictions,
     }),
   },
   props: {
     courseRestriction: {
       type: Object,
       required: true
+    },
+    courseRestrictions: {
+      type: Array,
+      default: () => []
     },
     create: {
       type: Boolean,

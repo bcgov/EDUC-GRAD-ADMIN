@@ -758,9 +758,9 @@ const csvHelpers = require('./codes-csv-helpers');
 
 async function waitForCourseRestrictionsRefresh(req, res) {
   try {
-    const CacheRefreshMessageHandler = require('../messaging/handlers/course-restriction-created-handler');
+    const GradCourseEventsHandler = require('../messaging/handlers/grad-course-events-handler');
 
-    await CacheRefreshMessageHandler.waitForCacheRefresh('courseRestrictions', 10000);
+    await GradCourseEventsHandler.waitForCacheRefresh('courseRestrictions', 10000);
 
     const restrictions = cacheService.getCourseRestrictionsJSON();
     return res.status(HttpStatus.OK).json({

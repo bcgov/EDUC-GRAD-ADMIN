@@ -17,6 +17,7 @@
       </v-col>
       <v-col cols="auto" v-if="enableCRUD">
         <CourseRestrictionsCreateForm
+          :courseRestrictions="courseRestrictions"
           :disabled="isRefreshing"
           @restriction-created="onRestrictionCreated"
         />
@@ -70,6 +71,7 @@
         <template v-slot:item.edit="{ item }" v-if="enableCRUD">
           <CourseRestrictionsUpdateForm
             :selectedCourseRestrictionToUpdate="item"
+            :courseRestrictions="courseRestrictions"
             :disabled="isRefreshing"
             @restriction-updated="onRestrictionUpdated"
           >
