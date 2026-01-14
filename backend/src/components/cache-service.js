@@ -25,7 +25,7 @@ const cacheService = {
     log.debug('Loading Gender Codes');
     await retry(async () => {
       try {
-        const genderCodesResponse = await getCommonServiceData(`${config.get('server:educStudentAPIURL')}api/v1/student/gender-codes`);
+        const genderCodesResponse = await getCommonServiceData(`${config.get('server:educStudentAPIURL')}/api/v1/student/gender-codes`);
         if (genderCodesResponse && genderCodesResponse.length > 0) {
           genderCodes = [];
           genderCodes = genderCodesResponse;
