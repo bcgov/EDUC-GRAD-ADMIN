@@ -280,7 +280,8 @@
       "UPDATE_GRAD_STUDENT_STATUS_CODE_DATA",
       "READ_SCHOLARSHIPS_STUDENT",
       "WRITE_SCHOLARSHIPS_STUDENT",
-      "READ_SCHOLARSHIPS_CODES"
+      "READ_SCHOLARSHIPS_CODES",
+      "READ_STUDENT_CODES"
     ],
     "optionalClientScopes": [
       "address",

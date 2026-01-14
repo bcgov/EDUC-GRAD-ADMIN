@@ -27,7 +27,8 @@ const FILTER_OPERATION = Object.freeze(
      * Date range filter operation - supports optional start and/or end dates.
      * Format: "startDate,endDate" where either can be null/empty
      */
-    DATE_RANGE: 'date_range'
+    DATE_RANGE: 'date_range',
+    DATE_TIME_RANGE: 'date_time_range'
   }
 );
 const CONDITION = Object.freeze(

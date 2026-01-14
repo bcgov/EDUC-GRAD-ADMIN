@@ -11,6 +11,9 @@ try {
       await cacheService.loadCoreg39CoursesToMap();
       log.info('Reloaded coreg 39 courses cache');
 
+      await cacheService.loadGenderCodes();
+      log.info('Reloaded gender codes cache');
+
       await cacheService.loadStudentGradeCodes();
       log.info('Reloaded student grade codes cache');
 
