@@ -382,7 +382,6 @@ export default {
       this.search();
     },
     search() {
-      console.log(`Searching for: ${JSON.stringify(this.searchParams)}`);
       if (!this.hasSearched) {
         return;
       }
@@ -393,7 +392,6 @@ export default {
           this.currentPage,
           this.itemsPerPage
       ).then((res) => {
-        console.log(`Data returned from search ::: ${JSON.stringify(res.data)}`);
         if (res.data) {
           this.responseContent = res.data;
           this.searchResults =

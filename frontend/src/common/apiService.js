@@ -81,7 +81,6 @@ export default {
 
     async getGenderCodes() {
         try {
-            console.log('apiService.getGenderCodes');
             return await apiAxios.get('/api/student/codes/gender');
         } catch(e) {
             console.log(`Failed to get gender codes from cache - ${e}`);

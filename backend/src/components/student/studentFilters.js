@@ -54,9 +54,9 @@ function createFiltersSearchCriteria(searchFilter = []) {
       const [start, end] = value.split(',').map(s => s.trim());
       searchCriteria.push(
         { key: 'dob',
-          operation: FILTER_OPERATION.DATE_RANGE,
+          operation: FILTER_OPERATION.DATE_TIME_RANGE,
           value: `${start}T00:00:00,${end}T23:59:59`.toUpperCase(),
-          valueType: VALUE_TYPE.DATE,
+          valueType: VALUE_TYPE.DATE_TIME,
           condition: CONDITION.AND
         });
     }
@@ -65,9 +65,9 @@ function createFiltersSearchCriteria(searchFilter = []) {
       const dobRange = `${value}T00:00:00,${value}T23:59:59`;
       searchCriteria.push(
         { key: 'dob',
-          operation: FILTER_OPERATION.DATE_RANGE,
+          operation: FILTER_OPERATION.DATE_TIME_RANGE,
           value: dobRange.toUpperCase(),
-          valueType: VALUE_TYPE.DATE,
+          valueType: VALUE_TYPE.DATE_TIME,
           condition: CONDITION.AND 
         });
     }

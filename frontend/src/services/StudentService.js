@@ -181,7 +181,6 @@ export default {
     return ApiService.apiAxios.get(`/api/student/${studentID}/notes`);
   },
   getStudentsBySearchCriteria(searchParams, sort, pageNumber, pageSize) {
-      console.log(`getStudentsBySearchCriteria ::: ${JSON.stringify(searchParams)}`);
       return ApiService.apiAxios
         .get('/api/student/paginated', {
             params: {
