@@ -63,6 +63,7 @@ nconf.defaults({
     studentAssessmentAPIURL: process.env.STUDENT_ASSESSMENT_API_URL,
     scholarshipAPIURL: process.env.SCHOLARSHIP_API_ENDPOINT,
     coregAPIURL: process.env.COREG_API_ENDPOINT,
+    psiSelectionAPIURL: process.env.PSI_SELECTION_ENDPOINT
     educStudentAPIURL: process.env.EDUC_STUDENT_API_URL,
   },
   oidc: {

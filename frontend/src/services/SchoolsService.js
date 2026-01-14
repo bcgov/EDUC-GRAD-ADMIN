@@ -22,6 +22,16 @@ export default {
       "/api/schools/postSecondary/search?" + params
     );
   },
+  getPSIPaginated(searchParams, sort, pageNumber, pageSize) {
+    return ApiService.apiAxios.get('/api/psi/paginated', {
+      params: {
+        pageNumber: pageNumber || 0,
+        pageSize: pageSize || 10,
+        searchParams: searchParams,
+        sort: sort || {},
+      },
+    });
+  },
   getInstituteEventHistory(params) {
     const encodedSortParams = encodeURIComponent(JSON.stringify(params.sort));
     const encodedSearchParams = encodeURIComponent(
