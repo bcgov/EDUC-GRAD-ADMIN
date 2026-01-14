@@ -1,4 +1,4 @@
-const {object} = require('yup');
+const {object, string, array} = require('yup');
 const {uuidGeneric} = require('./custom-validations');
 const { baseStudentNoteSchema } = require('./student-note');
 
@@ -30,8 +30,33 @@ const getHistoricActivitySchema = object({
   }).noUnknown()
 }).noUnknown();
 
+const mergeGradStatusBodySchema = object({
+  studentID: uuidGeneric().required(),
+  program: string().nullable(),
+  studentStatus: string().nullable(),
+  programCompletionDate: string().nullable(),
+  studentGrade: string().nullable(),
+  schoolOfRecordId: uuidGeneric().nullable(),
+  schoolAtGradId: uuidGeneric().nullable(),
+  honoursStanding: string().nullable(),
+  adultStartDate: string().nullable(),
+  consumerEducationRequirementMet: string().nullable(),
+  optionalPrograms: array().nullable(),
+  careerPrograms: array().nullable()
+}).noUnknown();
+
+const postMergeStudentGradStatusSchema = object({
+  body: mergeGradStatusBodySchema,
+  query: object().noUnknown(),
+  params: object({
+    studentID: uuidGeneric().required(),
+    trueStudentID: uuidGeneric().required()
+  }).noUnknown()
+}).noUnknown();
+
 module.exports = {
   postAdoptStudentSchema,
   postMergeCompleteStudentSchema,
-  getHistoricActivitySchema
+  getHistoricActivitySchema,
+  postMergeStudentGradStatusSchema
 };

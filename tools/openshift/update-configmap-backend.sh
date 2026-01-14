@@ -12,6 +12,7 @@ GRAD_BUSINESS_NAMESPACE=$8
 STUDENT_ADMIN_NAMESPACE=$9
 STUDENT_ASSESSMENT_NAMESPACE=${10}
 SCHOLARSHIP_NAMESPACE=${11}
+COREG_NAMESPACE=${12}
 
 SOAM_KC_REALM_ID="master"
 SOAM_KC=soam-$ENV.apps.silver.devops.gov.bc.ca
@@ -104,6 +105,8 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=RATE_LIMIT_LIMIT="1000" \
   --from-literal=STUDENT_ASSESSMENT_API_URL="http://student-assessment-api-master.$STUDENT_ASSESSMENT_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --from-literal=SCHOLARSHIP_API_ENDPOINT="http://scholarships-api-master.$SCHOLARSHIP_NAMESPACE-$ENV.svc.cluster.local:8080" \
+  --from-literal=COREG_API_ENDPOINT="http://coreg-api-master.$COREG_NAMESPACE-$ENV.svc.cluster.local:8080" \
+  --from-literal=EDUC_STUDENT_API_URL="http://student-api-master.$COMMON_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --dry-run=client -o yaml | oc apply -f -
 
 #### splunk

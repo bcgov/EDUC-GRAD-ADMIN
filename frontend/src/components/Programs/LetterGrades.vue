@@ -1,12 +1,21 @@
 <template>
   <div>
-    <h3 class="ml-3 mt-5">Letter Grades</h3>
+    <div class="d-flex justify-space-between align-center ml-3 mt-5 mr-3 mb-6">
+      <h3>Letter Grades</h3>
+      <DownloadLink
+        label="Letter Grades"
+        :downloadAction="CodesService.downloadLetterGradeCodesCSV"
+        @success="snackbarStore.showSnackbar('CSV downloaded successfully', 'success', 3000)"
+        @error="snackbarStore.showSnackbar('Error downloading CSV', 'error', 5000)"
+      />
+    </div>
     <DisplayTable
       v-bind:items="letterGrades"
       v-bind:filterOn="toFilterItem"
       v-bind:fields="letterGradesFields"
       id="letterGrade"
       showFilter="true"
+      class="pt-16"
     >
       <template v-slot:item.effectiveDate="{ item }">
         {{ $filters.formatSimpleDate(item.effectiveDate) }}
@@ -20,26 +29,43 @@
 
 <script>
 import DisplayTable from "../DisplayTable.vue";
-import CodesService from "@/services/CodesService.js";
+import DownloadLink from "@/components/Common/DownloadLink.vue";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import { mapState, mapActions } from "pinia";
+import { useAppStore } from "@/store/modules/app";
+import CodesService from "@/services/CodesService.js";
+
 export default {
   name: "LetterGrades",
   components: {
     DisplayTable: DisplayTable,
+    DownloadLink: DownloadLink,
   },
-  created() {
-    CodesService.getLetterGradeCodes()
-      .then((response) => {
-        this.letterGrades = response.data;
-      })
-      .catch((error) => {
-        this.snackbarStore.showSnackbar(error.message, "error", 5000);
-      });
+  async beforeMount() {
+    try {
+      await this.getLetterGradeCodes(false);
+    } catch (e) {
+      if (e.response?.status) {
+        this.snackbarStore.showSnackbar(
+          "There was an error: " + e.response.status,
+          "error",
+          5000
+        );
+      }
+    }
+  },
+  computed: {
+    ...mapState(useAppStore, {
+      letterGradeCodes: "letterGradeCodes",
+    }),
+    letterGrades() {
+      return this.letterGradeCodes || [];
+    }
   },
   data: function () {
     return {
       snackbarStore: useSnackbarStore(),
-      letterGrades: [],
+      CodesService: CodesService,
       toFilterItem: [
         "grade",
         "percentRangeHigh",
@@ -105,7 +131,9 @@ export default {
       ],
     };
   },
-  methods: {},
+  methods: {
+    ...mapActions(useAppStore, ["getLetterGradeCodes"]),
+  },
 };
 </script>
 

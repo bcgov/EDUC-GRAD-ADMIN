@@ -12,16 +12,23 @@ const {
   sortCourses,
   getUser,
   logApiError,
-} = require("../components/utils");
-const config = require("../config/index");
-const { STUDENT_STATUS_CODE_MAP } = require("./constants/student-status-codes");
-const log = require("../components/logger");
-const auth = require("../components/auth");
+} = require("../utils");
+const config = require("../../config");
+const {
+  STUDENT_STATUS_CODE_MAP,
+} = require("../constants/student-status-codes");
+const log = require("../logger");
+const auth = require("../auth");
 const {
   postStudentAssessment,
   deleteStudentAssessmentByID,
-} = require("../components/assessments/student-assessment");
+} = require("../assessments/student-assessment");
 const { add } = require("lodash");
+const cacheService = require("../cache-service");
+
+const { getCommonServiceData } = require("../utils");
+const HttpStatus = require("http-status-codes");
+const { createFiltersSearchCriteria } = require("./studentFilters");
 
 async function getStudentCourseByStudentID(req, res) {
   const token = auth.getBackendToken(req);
@@ -149,155 +156,21 @@ async function transferStudentCoursesByStudentID(req, res) {
   }
 }
 
-async function mergeStudentAssessmentsByStudentID(req, res) {
-  try {
-    const token = auth.getBackendToken(req);
-    let localStudentAssessments = { ...req.body };
-
-    // Prepare data
-    let tobeDeleted =
-      localStudentAssessments.conflicts.length > 0
-        ? localStudentAssessments.conflicts
-            .map((item) => item.target?.assessmentStudentID)
-            .filter((assessmentID) => assessmentID !== undefined)
-        : [];
-
-    let tobeAdded = [
-      ...localStudentAssessments.info.map((item) => item.source),
-      ...localStudentAssessments.conflicts.map((item) => item.source),
-    ];
-
-    const createResponse = {
-      added: [],
-      deleted: [],
-      errors: [],
-    };
-
-    // Delete assessments
-    if (tobeDeleted && tobeDeleted.length > 0) {
-      for (const assessmentID of tobeDeleted) {
-        try {
-          const clonedReq = {
-            ...req,
-            query: {
-              ...req.query,
-              allowRuleOverride: "true",
-            },
-            params: { studentAssessmentId: assessmentID },
-            session: req.session,
-          };
-
-          // Assuming deleteStudentAssessmentByID returns a result
-          const deleteResult = await deleteStudentAssessmentByID(clonedReq, {
-            status: () => ({
-              json: (data) => createResponse.deleted.push(data),
-            }),
-          });
-        } catch (err) {
-          console.error(`Failed to delete assessment:`, err);
-          createResponse.errors.push({
-            type: "delete",
-            assessmentID: assessmentID,
-            error: err.message,
-          });
-        }
-      }
-    }
-
-    // Add assessments
-    if (tobeAdded && tobeAdded.length > 0) {
-      for (const assessment of tobeAdded) {
-        try {
-          const { assessmentStudentID, ...assessmentFiltered } = assessment;
-          const updatedAssessment = {
-            ...assessmentFiltered,
-            studentID: req.params["targetStudentID"],
-          };
-
-          const clonedReq = {
-            ...req,
-            body: updatedAssessment,
-            query: req.query,
-            params: req.params,
-            session: req.session,
-          };
-
-          const postResult = await postStudentAssessment(clonedReq, {
-            status: () => ({ json: (data) => createResponse.added.push(data) }),
-          });
-        } catch (err) {
-          console.error(`Failed to add assessment:`, err);
-          createResponse.errors.push({
-            type: "add",
-            assessmentID: assessment.assessmentID,
-            error: err.message,
-          });
-        }
-      }
-    }
-    // Final response
-    return res.status(200).json({
-      message: "Assessment reconciliation complete.",
-      ...createResponse,
-    });
-  } catch (e) {
-    console.error("Error merging student assessments:", e);
-    if (e?.data?.messages) {
-      return errorResponse(res, e.data.messages[0].message, e.status);
-    } else {
-      return errorResponse(res);
-    }
-  }
-}
-
 async function mergeStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);
-  let localStudentCourses = { ...req.body };
-  let tobeDeleted =
-    localStudentCourses.conflicts.length > 0
-      ? localStudentCourses.conflicts
-          .map((item) => item.target?.id)
-          .filter((id) => id !== undefined)
-      : [];
-  let tobeAdded = [
-    ...localStudentCourses.info.map((item) => item.source),
-    ...localStudentCourses.conflicts.map((item) => item.source),
-  ];
-  const courseWithoutID = tobeAdded.map(({ id, ...rest }) => ({ ...rest }));
   try {
-    //Remove courses if any
-    if (tobeDeleted && tobeDeleted.length > 0) {
-      const deletUrl = `${config.get(
-        "server:studentAPIURL"
-      )}/api/v1/student/courses/${req.params?.targetStudentID}`;
-      const deleteResponse = await deleteData(
-        token,
-        deletUrl,
-        tobeDeleted,
-        req.session?.correlationID
-      );
-      const notDeleted = deleteResponse
-        .filter((course) =>
-          course.validationIssues?.some(
-            (issue) => issue.validationIssueSeverityCode === "ERROR"
-          )
-        )
-        .map((course) => course.id);
-      if (notDeleted.length > 0) {
-        console.error(
-          "Error removing student courses during merge process",
-          notDeleted
-        );
-      }
-    }
-    //Add courses
+    const body = {
+      sourceStudentId: req.params?.sourceStudentID,
+      targetStudentId: req.params?.targetStudentID,
+      studentCourseIdsToMove: req.body,
+    };
     const addUrl = `${config.get(
       "server:studentAPIURL"
-    )}/api/v1/student/courses/${req.params?.targetStudentID}`;
+    )}/api/v1/student/courses/merge`;
     const createResponse = await postData(
       token,
       addUrl,
-      courseWithoutID,
+      body,
       req.session?.correlationID
     );
     return res.status(200).json(createResponse);
@@ -733,88 +606,17 @@ async function getRunUpdateTranscript(req, res) {
 
 async function mergeStudentGradStatus(req, res) {
   const token = auth.getBackendToken(req);
-
   const baseURL = config.get("server:studentAPIURL");
-
-  const gradStatusPayload = Object.fromEntries(
-    Object.entries(req.body).filter(
-      ([key]) => !["optionalPrograms", "careerPrograms"].includes(key)
-    )
-  );
-
-  const mergeResponse = {
-    updated: [],
-    deleted: [],
-    errors: [],
-  };
-
-  const optionalProgramsPayload = req.body.optionalPrograms;
-  const careerProgramsPayload = {
-    careerProgramCodes:
-      req.body.careerPrograms?.map(
-        (careerProgram) => careerProgram.careerProgramCode
-      ) || [],
-  };
-
+  let trueStudentID = req.params?.trueStudentID;
   try {
-    const gradStatusUrl = `${baseURL}/api/v1/student/gradstudent/studentid/${req.params?.trueStudentID}`;
+    const gradStatusUrl = `${baseURL}/api/v1/student/gradstudent/studentid/${trueStudentID}?updatePrograms=true`;
     const gradStatusResponse = await postData(
       token,
       gradStatusUrl,
-      gradStatusPayload,
+      req.body,
       req.session?.correlationID
     );
-
-    mergeResponse.updated.push(gradStatusResponse);
-
-    if (!!optionalProgramsPayload && optionalProgramsPayload.length > 0) {
-      if (!!gradStatusResponse.careerPrograms) {
-        // delete career programs on target
-        for (careerProgram of gradStatusResponse.careerPrograms) {
-          let response = await deleteData(
-            token,
-            `${baseURL}/api/v1/student/${req.params?.trueStudentID}/careerPrograms/${careerProgram.careerProgramCode}`
-          );
-
-          mergeResponse.deleted.push(response);
-        }
-      }
-      if (!!gradStatusResponse.optionalPrograms) {
-        // delete opt programs on target
-
-        for (optionalProgram of gradStatusResponse.optionalPrograms) {
-          let response = await deleteData(
-            token,
-            `${baseURL}/api/v1/student/${req.params?.trueStudentID}/optionalPrograms/${optionalProgram.optionalProgramID}`
-          );
-          mergeResponse.deleted.push(response);
-        }
-      }
-    }
-
-    // add careerPrograms and optionalPrograms
-    if (careerProgramsPayload.length > 0) {
-      let response = await postData(
-        token,
-        `${baseURL}/api/v1/student/${req.params?.trueStudentID}/careerPrograms`,
-        careerProgramsPayload,
-        req.session?.correlationID
-      );
-
-      mergeResponse.updated.push(response.data);
-    }
-
-    for (optionalProgram of optionalProgramsPayload) {
-      if (optionalProgram.optionalProgramCode != "CP") {
-        let response = await postData(
-          token,
-          `${baseURL}/api/v1/student/${req.params?.trueStudentID}/optionalPrograms/${optionalProgram.optionalProgramID}`
-        );
-        mergeResponse.updated.push(response.data);
-      }
-    }
-
-    return res.status(200).json(mergeResponse);
+    return res.status(200).json(gradStatusResponse);
   } catch (e) {
     log.error("Error merging student Grad Status: ", e);
     if (e?.data?.messages) {
@@ -1036,6 +838,61 @@ async function postAdoptPENStudent(req, res) {
   }
 }
 
+async function getStudentGenderCodes(req, res) {
+  try {
+    const cacheService = require("../cache-service");
+    const genders = await cacheService.getGenderCodesJSON();
+    return res.status(200).json(genders);
+  } catch (e) {
+    log.error("Error getting gender codes from cache:", e);
+    return errorResponse(res);
+  }
+}
+
+async function getStudentsPaginated(req, res) {
+  log.debug(
+    `getStudentsPaginated ::: ${JSON.stringify(req.query?.searchParams)}`
+  );
+  try {
+    const search = [];
+    if (req.query?.searchParams) {
+      let criteriaArray = createFiltersSearchCriteria(req.query.searchParams);
+      criteriaArray.forEach((criteria) => {
+        search.push(criteria);
+      });
+    }
+    const params = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: JSON.stringify(req.query.sort),
+        searchCriteriaList: JSON.stringify(search),
+      },
+    };
+    log.debug(
+      `After createFiletersSearchCrideria ::: ${JSON.stringify(params)}`
+    );
+    let data = await getCommonServiceData(
+      `${config.get("server:studentAPIURL")}/api/v1/student/search/pagination`,
+      params
+    );
+    if (req?.query?.returnKey) {
+      let result = data?.content.map(
+        (student) => student[req?.query?.returnKey]
+      );
+      return res.status(HttpStatus.OK).json(result);
+    }
+    return res.status(200).json(data);
+  } catch (e) {
+    await logApiError(e, "Error getting student search paginated list");
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 async function getStudentHistoricActivityByID(req, res) {
   const token = auth.getBackendToken(req);
 
@@ -1064,8 +921,6 @@ module.exports = {
   mergeStudentCoursesByStudentID,
   completeStudentMergeByStudentID,
   getStudentCourseHistory,
-  // STUDENT ASSESSMENTS
-  mergeStudentAssessmentsByStudentID,
   // STUDENT OPTIONAL AND CAREER PROGRAMS
   getStudentCareerPrograms,
   postStudentCareerProgram,
@@ -1104,4 +959,6 @@ module.exports = {
   postAdoptPENStudent,
   // HISTORIC ACTIVITY
   getStudentHistoricActivityByID,
+  getStudentGenderCodes,
+  getStudentsPaginated,
 };

@@ -7,6 +7,31 @@
         <v-tab value="advance" class="text-none" size="large">
           Advanced Search
         </v-tab>
+        <v-tab value="adv-search" class="text-none" size="large" v-if="enableCRUD">Student Search
+          <p class="text-caption font-weight-bold text-bcGovGold">
+            BETA
+          </p>
+        </v-tab>
+        <v-tab value="assessment-search" class="text-none" size="large" v-if="enableCRUD">Assessment Search
+          <p class="text-caption font-weight-bold text-bcGovGold">
+            BETA
+          </p>
+        </v-tab>
+        <v-tab value="course-search" class="text-none" size="large" v-if="enableCRUD">Course Search
+          <p class="text-caption font-weight-bold text-bcGovGold">
+            BETA
+          </p>
+        </v-tab>
+        <v-tab value="program-search" class="text-none" size="large" v-if="enableCRUD">Program Search
+          <p class="text-caption font-weight-bold text-bcGovGold">
+            BETA
+          </p>
+        </v-tab>
+        <v-tab value="optional-program-search" class="text-none" size="large" v-if="enableCRUD">Optional Program Search
+          <p class="text-caption font-weight-bold text-bcGovGold">
+            BETA
+          </p>
+        </v-tab>
       </v-tabs>
       <v-card-text>
         <v-window v-model="tab">
@@ -21,6 +46,21 @@
           <v-window-item value="advance">
             <StudentAdvancedSearch />
           </v-window-item>
+          <v-window-item value="adv-search">
+            <StudentAdvSearch/>
+          </v-window-item>
+          <v-window-item value="assessment-search">
+            <StudentAssessmentSearch />
+          </v-window-item>
+          <v-window-item value="course-search">
+            <StudentCourseSearch />
+          </v-window-item>
+          <v-window-item value="program-search">
+            <StudentProgramSearch />
+          </v-window-item>
+          <v-window-item value="optional-program-search">
+            <StudentOptionalProgramSearch />
+          </v-window-item>
         </v-window>
       </v-card-text>
     </v-card>
@@ -32,6 +72,13 @@ import { useSnackbarStore } from "@/store/modules/snackbar";
 import DisplayTable from "@/components/DisplayTable.vue";
 import PenSearchForm from "@/components/StudentSearch/PenSearchForm.vue";
 import StudentAdvancedSearch from "@/components/StudentSearch/StudentAdvancedSearch.vue";
+import StudentAssessmentSearch from "@/components/Search/StudentAssessmentSearch.vue";
+import StudentCourseSearch from "@/components/Search/StudentCourseSearch.vue";
+import StudentProgramSearch from "@/components/Search/StudentProgramSearch.vue";
+import StudentOptionalProgramSearch from "@/components/Search/StudentOptionalProgramSearch.vue";
+import {mapState} from "pinia";
+import {useAppStore} from "@/store/modules/app";
+import StudentAdvSearch from "@/components/Search/StudentAdvSearch.vue";
 
 export default {
   name: "studentSearch",
@@ -46,10 +93,20 @@ export default {
       tab: null,
     };
   },
+  computed: {
+    ...mapState(useAppStore, {
+      enableCRUD: "enableCRUD",
+    }),
+  },
   components: {
     DisplayTable: DisplayTable,
     PenSearchForm: PenSearchForm,
     StudentAdvancedSearch: StudentAdvancedSearch,
+    StudentAssessmentSearch: StudentAssessmentSearch,
+    StudentCourseSearch: StudentCourseSearch,
+    StudentProgramSearch: StudentProgramSearch,
+    StudentAdvSearch: StudentAdvSearch,
+    StudentOptionalProgramSearch: StudentOptionalProgramSearch,
   },
 };
 </script>
@@ -58,34 +115,7 @@ export default {
   padding-left: 25px;
   padding-right: 25px;
 }
-.alert,
-.card,
-.pen-search {
-  width: 100%;
-  margin-right: 9px;
-  float: left;
-}
 h6 {
   font-size: 1.5rem;
-}
-.loading-spinner {
-  float: left;
-  margin-left: 10px;
-}
-.sample-pens {
-  float: left;
-  clear: both;
-  margin-top: 15px;
-}
-
-.fade-enter-active {
-  transition: opacity 0.8s;
-}
-
-.fade-enter,
-  .fade-leave-to
-
-  /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
 }
 </style>

@@ -18,6 +18,7 @@ import ProgramCertificateTranscripts from "../components/Codes/ProgramCertificat
 import ReportTypes from "../components/Codes/ReportTypes.vue";
 import StatusCodes from "../components/Codes/StatusCodes.vue";
 import GradeCodes from "../components/Codes/StudentGradeCodes.vue";
+import CountryCodes from "../components/Codes/CountryCodes.vue";
 import UngradReasons from "../components/Codes/UngradReasons.vue";
 import HistoryActivityCodes from "../components/Codes/HistoryActivityCodes.vue";
 import DocumentStatusCode from "../components/Codes/DocumentStatusCode.vue";
@@ -427,6 +428,13 @@ const router = createRouter({
         {
           path: "/codes/student-grade-codes",
           component: GradeCodes,
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
+          path: "/codes/country-codes",
+          component: CountryCodes,
           meta: {
             requiresAuth: true,
           },

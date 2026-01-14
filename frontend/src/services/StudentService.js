@@ -1,4 +1,5 @@
 import ApiService from "../common/apiService";
+import {isEmpty, omitBy} from "lodash";
 
 export default {
   // STUDENT COURSES
@@ -46,7 +47,7 @@ export default {
   // STUDENT ASSESSMENTS
   mergeStudentAssessments(sourceStudentID, targetStudentID, json) {
     return ApiService.apiAxios.post(
-      `/api/student/${sourceStudentID}/assessments/merge/${targetStudentID}`,
+      `/api/student-assessment/merge?sourceStudentID=${sourceStudentID}&targetStudentID=${targetStudentID}`,
       json
     );
   },
@@ -179,7 +180,19 @@ export default {
   getStudentNotes(studentID) {
     return ApiService.apiAxios.get(`/api/student/${studentID}/notes`);
   },
+  getStudentsBySearchCriteria(searchParams, sort, pageNumber, pageSize) {
+      return ApiService.apiAxios
+        .get('/api/student/paginated', {
+            params: {
+                pageNumber: pageNumber - 1,
+                pageSize: pageSize,
+                searchParams: omitBy(searchParams, isEmpty),
+                sort: sort,
+            },
+        })
+  },
   // STUDENT DEMOGRAPHICS
+  // getStudentsByAdvancedSearch below will be deprecated. Use getStudentStudentsBySearchCriteria instead
   getStudentsByAdvancedSearch(advancedSearchInput) {
     let queryString = "";
     for (const key in advancedSearchInput) {

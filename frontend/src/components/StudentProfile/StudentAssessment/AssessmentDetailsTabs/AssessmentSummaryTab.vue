@@ -153,7 +153,7 @@ export default {
     },
 
     getSchoolOfRecordAtWrite() {
-      const schoolId = this.studentDetail.schoolOfRecordSchoolID
+      const schoolId = this.studentDetail.schoolAtWriteSchoolID
       if (!schoolId) return null
 
       const school = this.getSchoolById(schoolId)
@@ -161,7 +161,7 @@ export default {
     },
 
     getAssessmentCentre() {
-      const assessmentCenterID = this.studentDetail.assessmentCenterSchoolID || this.studentDetail.schoolAtWriteSchoolID
+      const assessmentCenterID = this.studentDetail.assessmentCenterSchoolID
       if (!assessmentCenterID) return null
 
       const school = this.getSchoolById(assessmentCenterID)
@@ -174,7 +174,7 @@ export default {
     },
 
     getMarkingSession() {
-      const markingSession = this.studentAssessmentData.sessionDate
+      const markingSession = this.studentAssessmentData.markingSession
       if (markingSession) {
         try {
           const date = new Date(markingSession)

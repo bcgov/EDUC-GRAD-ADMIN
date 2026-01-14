@@ -1,12 +1,22 @@
 <template>
   <div>
-    <h3 class="ml-3 mt-5">Assessments</h3>
+    <div class="d-flex justify-space-between align-center ml-3 mt-5 mr-3 mb-6">
+      <h3 class="my-0">Assessments</h3>
+      <DownloadLink
+        label="Assessments"
+        icon="mdi-download"
+        :downloadAction="StudentAssessmentService.downloadAssessmentTypeCodesCSV"
+        @success="snackbarStore.showSnackbar('CSV downloaded successfully', 'success', 3000)"
+        @error="snackbarStore.showSnackbar('Error downloading CSV', 'error', 5000)"
+      />
+    </div>
     <DisplayTable
       v-if="assessments"
       v-bind:items="assessments"
       v-bind:fields="assessmentFields"
       id="assessmentCode"
       showFilter="true"
+      class="pt-16"
     >
     </DisplayTable>
   </div>
@@ -15,21 +25,42 @@
 <script>
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import DisplayTable from "@/components/DisplayTable.vue";
-import {mapActions, mapState} from "pinia";
-import {useAppStore} from "@/store/modules/app";
+import DownloadLink from "@/components/Common/DownloadLink.vue";
+import { mapState, mapActions } from "pinia";
+import { useAppStore } from "@/store/modules/app";
+import StudentAssessmentService from "@/services/StudentAssessmentService.js";
 
 export default {
   name: "Assessments",
   components: {
     DisplayTable: DisplayTable,
+    DownloadLink: DownloadLink,
+  },
+  async beforeMount() {
+    try {
+      await this.getAssessmentTypeCodes(false);
+    } catch (e) {
+      if (e.response?.status) {
+        this.snackbarStore.showSnackbar(
+          "There was an error: " + e.response.status,
+          "error",
+          5000
+        );
+      }
+    }
   },
   computed: {
-    ...mapState(useAppStore, {assessmentTypeCodes: "assessmentTypeCodes"}),
+    ...mapState(useAppStore, {
+      assessmentTypeCodes: "assessmentTypeCodes",
+    }),
+    assessments() {
+      return this.assessmentTypeCodes || [];
+    }
   },
   data() {
     return {
       snackbarStore: useSnackbarStore(),
-      assessments: [],
+      StudentAssessmentService: StudentAssessmentService,
       assessmentFields: [
         {
           key: "assessmentTypeCode",
@@ -67,22 +98,10 @@ export default {
       ],
     };
   },
-  created() {
-    this.getAllAssessment();
-  },
   methods: {
-    ...mapActions(useAppStore, ['getAssessmentTypeCodes']),
+    ...mapActions(useAppStore, ["getAssessmentTypeCodes"]),
     formatDate(date) {
       return this.$filters.formatSimpleDate(date);
-    },
-    async getAllAssessment() {
-      try {
-        await this.getAssessmentTypeCodes();
-        this.assessments = Array.from(this.assessmentTypeCodes.values());
-      } catch(error) {
-        console.error("API error:", error);
-        this.snackbarStore.showSnackbar(error.message, "error", 5000);
-      }
     },
   },
 };

@@ -3,17 +3,19 @@ import { defineStore } from "pinia";
 import CommonService from "@/services/CommonService.js";
 import SchoolsService from "@/services/SchoolsService.js";
 import CodesService from "@/services/CodesService.js";
-
-import { useSnackbarStore } from "../../store/modules/snackbar";
-
+import CourseService from "@/services/CourseService.js";
 import sharedMethods from "@/sharedMethods.js";
 import StudentAssessmentService from "@/services/StudentAssessmentService";
+import { useSnackbarStore } from "@/store/modules/snackbar";
+
 export const useAppStore = defineStore("app", {
   state: () => ({
     snackbarStore: useSnackbarStore(),
     pageTitle: "GRAD",
     programOptions: [],
     optionalProgramOptions: [],
+    optionalProgramIdToNameMap: {},
+    groupedOptionalProgramOptions: [],
     careerProgramOptions: [],
     studentStatusOptions: [],
     ungradReasons: [],
@@ -23,15 +25,23 @@ export const useAppStore = defineStore("app", {
     schoolsList: [],
     schoolsMap: new Map(),
     districtsList: [],
+    coregCourses: [],
+    coregCoursesMap: new Map(),
+    coregExternalCodeMap: new Map(),
     instituteAddressTypeCodes: [],
     instituteCategoryCodes: [],
     instituteFacilityCodes: [],
     studentGradeCodes: [],
+    genderCodes: [],
     config: null,
     FAASTypeCodes: [],
     provincialSpecialCaseCodes: [],
     assessmentTypeCodesMap: new Map(),
     assessmentTypeCodes: [],
+    countryCodes: [],
+    citizenshipCodes: [],
+    provinceCodes: [],
+    examinableCourses: [],
     currentDate: "",
     currentMonth: "",
     currentYear: "",
@@ -81,6 +91,16 @@ export const useAppStore = defineStore("app", {
         state.districtsList.find(
           (district) => districtNumber === district.districtNumber
         );
+    },
+    getCoregCourses: (state) => state.coregCourses,
+    getCoregCourseById: (state) => {
+      return (courseId) => state.coregCoursesMap.get(courseId);
+    },
+    getCoregCourseByExternalCode: (state) => {
+      return (externalCode) => {
+        const courseId = state.coregExternalCodeMap.get(externalCode);
+        return courseId ? state.coregCoursesMap.get(courseId) : null;
+      };
     },
     getInstituteAddressTypeCodes: (state) => state.instituteAddressTypeCodes,
     getInstituteAddressTypeCode: (state) => {
@@ -182,10 +202,13 @@ export const useAppStore = defineStore("app", {
           // GET & SET INSTITUTE SCHOOL AND DISTRICT LISTS
           await this.getSchools();
           await this.getDistricts();
+          // GET & SET COREG COURSES
+          await this.loadCoregCourses();
           // GET & SET INSTITUTE CODES
           await this.getInstituteCategoryCodes();
           await this.getInstituteFacilityCodes();
           await this.getProvincialSpecialCaseCodes();
+          await this.loadGenderCodes();
           // set current date string
         }
       } catch (e) {
@@ -244,6 +267,34 @@ export const useAppStore = defineStore("app", {
     async setOptionalProgramCodes(optionalProgramCodes) {
       this.optionalProgramOptions =
         sharedMethods.applyDisplayOrder(optionalProgramCodes);
+
+      await this.setGroupedOptionalProgramCodes(optionalProgramCodes);
+    },
+    async setGroupedOptionalProgramCodes(optionalProgramCodes) {
+      // Group by optionalProgramName to handle duplicates across different graduation programs
+      const groupedByName = {};
+      const idToNameMap = {};
+
+      optionalProgramCodes.forEach(program => {
+        const name = program.optionalProgramName;
+        const id = program.optionalProgramID;
+
+        idToNameMap[id] = name;
+
+        if (!groupedByName[name]) {
+          groupedByName[name] = {
+            ...program,
+            allOptionalProgramIDs: [id]
+          };
+        } else {
+          groupedByName[name].allOptionalProgramIDs.push(id);
+        }
+      });
+
+      const uniquePrograms = Object.values(groupedByName);
+      this.groupedOptionalProgramOptions = sharedMethods.applyDisplayOrder(uniquePrograms);
+
+      this.optionalProgramIdToNameMap = idToNameMap;
     },
     async getCareerProgramCodes(getNewData = true) {
       if (
@@ -326,6 +377,24 @@ export const useAppStore = defineStore("app", {
       this.districtsList =
         sharedMethods.sortDistrictListByActiveAndDistrictNumber(districts);
     },
+    async loadCoregCourses(getNewData = true) {
+      if (getNewData || !sharedMethods.dataArrayExists(this.coregCourses)) {
+        const ApiService = (await import('@/common/apiService.js')).default;
+        let response = await ApiService.getCoregCourses();
+        await this.setCoregCourses(response.data);
+      }
+    },
+    async setCoregCourses(courses) {
+      this.coregCourses = courses;
+      this.coregCoursesMap = new Map();
+      this.coregExternalCodeMap = new Map();
+      courses.forEach((course) => {
+        this.coregCoursesMap.set(course.courseID, course);
+        if (course.externalCode) {
+          this.coregExternalCodeMap.set(course.externalCode, course.courseID);
+        }
+      });
+    },
     async getInstituteCategoryCodes(getNewData = true) {
       if (
         getNewData ||
@@ -366,6 +435,54 @@ export const useAppStore = defineStore("app", {
         sharedMethods.applyDisplayOrder(gradeCodes)
       );
     },
+    async getCountryCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.countryCodes)
+      ) {
+        let response = await CodesService.getCountryCodes();
+        await this.setCountryCodes(response.data);
+      }
+    },
+    async setCountryCodes(countryCodes) {
+      this.countryCodes = countryCodes;
+    },
+    async getCitizenshipCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.citizenshipCodes)
+      ) {
+        let response = await CodesService.getCitizenshipCodes();
+        await this.setCitizenshipCodes(response.data);
+      }
+    },
+    async setCitizenshipCodes(citizenshipCodes) {
+      this.citizenshipCodes = citizenshipCodes;
+    },
+    async getProvinceCodes(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.provinceCodes)
+      ) {
+        let response = await CodesService.getProvinceCodes();
+        await this.setProvinceCodes(response.data);
+      }
+    },
+    async setProvinceCodes(provinceCodes) {
+      this.provinceCodes = provinceCodes;
+    },
+    async getExaminableCourses(getNewData = true) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.examinableCourses)
+      ) {
+        let response = await CourseService.getCourseExaminableCourses();
+        await this.setExaminableCourses(response.data);
+      }
+    },
+    async setExaminableCourses(examinableCourses) {
+      this.examinableCourses = examinableCourses;
+    },
     async setLetterGrades(letterGrades) {
       this.letterGradeCodes = letterGrades;
     },
@@ -392,11 +509,12 @@ export const useAppStore = defineStore("app", {
       );
     },
     async getAssessmentTypeCodes(getNewData = true) {
-      if (getNewData || this.assessmentTypeCodes.length === 0) {
+      if (
+        getNewData ||
+        !sharedMethods.dataArrayExists(this.assessmentTypeCodes)
+      ) {
         let response = await StudentAssessmentService.getAssessmentTypeCodes();
         await this.setAssessmentTypeCodes(response.data);
-      } else {
-        return this.assessmentTypeCodes;
       }
     },
     async getProvincialSpecialCaseCodes(getNewData = true) {
@@ -414,5 +532,15 @@ export const useAppStore = defineStore("app", {
         provincialSpecialCaseCodes
       );
     },
+      async loadGenderCodes(getNewData = true) {
+          if (getNewData || !sharedMethods.dataArrayExists(this.genderCodes)) {
+              const ApiService = (await import('@/common/apiService.js')).default;
+              let response = await ApiService.getGenderCodes();
+              await this.setGenderCodes(response.data);
+          }
+      },
+      async setGenderCodes(genders) {
+          this.genderCodes = genders;
+      },
   },
 });

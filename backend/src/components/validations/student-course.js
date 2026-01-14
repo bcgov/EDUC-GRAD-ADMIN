@@ -65,36 +65,8 @@ const postTransferStudentCourseSchema = object({
   query: object().noUnknown(),
 }).noUnknown();
 
-function markAllFieldsOptional(schema) {
-  const fields = schema.fields;
-  const optionalShape = Object.fromEntries(
-    Object.entries(fields).map(([key, fieldSchema]) => [
-      key,
-      fieldSchema.optional(),
-    ])
-  );
-  return object().shape(optionalShape);
-}
-
-const mergeStudentCourseSchema = object({
-  source: studentCourseSchema
-    .shape({
-      id: uuidGeneric().required(),
-    })
-    .noUnknown(),
-  target: markAllFieldsOptional(studentCourseSchema)
-    .shape({
-      id: uuidGeneric().optional(),
-    })
-    .optional(),
-});
-
 const postMergeStudentCourseSchema = object({
-  body: object({
-    info: array().of(mergeStudentCourseSchema),
-    conflicts: array().of(mergeStudentCourseSchema),
-    errors: array().of(mergeStudentCourseSchema).optional(),
-  }),
+  body: array().of(uuidGeneric().required()),
   params: object({
     sourceStudentID: uuidGeneric().required(),
     targetStudentID: uuidGeneric().required(),

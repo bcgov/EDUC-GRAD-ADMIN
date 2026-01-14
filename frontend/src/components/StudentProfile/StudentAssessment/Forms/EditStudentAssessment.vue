@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="dialog" max-width="80%" @after-leave="closeDialog">
-    <v-form ef="editStudentAssessmentForm" v-model="isValidForm">
+    <v-form ref="editStudentAssessmentForm" v-model="isValidForm">
       <v-card>
         <v-card-title>
           <v-row no-gutters>
@@ -171,7 +171,8 @@ export default {
     ...mapState(useStudentStore, {
       studentPen: "getStudentPen",
       studentPenAndName: "formattedStudentName",
-      studentStatus: (state) => state.student.profile.studentStatus
+      studentStatus: (state) => state.student.profile.studentStatus,
+      schoolOfRecordId: (state) => state.student.profile.schoolOfRecordId
     }),
     ...mapState(useAppStore, {
       provincialSpecialCaseCodes: "provincialSpecialCaseCodes",
@@ -186,13 +187,33 @@ export default {
       },
     },
     provincialSpecialCaseDropdown() {
+      // Work on a copy of the codes to avoid mutating the original array
+      let allowedCodes = ["A", "E", "Q"];
+      let defaultAllowedCodes = ["E"];
+
+      // Get exclusion rules for the current assessment type
+      const excludeConfig =
+        this.specialCaseCodesToExcludeFromAssessments?.[
+          this.updateStudentAssessment?.assessmentTypeCode
+        ];
+      const excludeCodes = excludeConfig?.excludeCodes || [];
+
+      // Filter out excluded codes
+      allowedCodes = allowedCodes.filter(
+        (code) => !excludeCodes.includes(code)
+      );
+      defaultAllowedCodes = defaultAllowedCodes.filter(
+        (code) => !excludeCodes.includes(code)
+      );
+
+      // Return the dropdown configuration
       return usePermissionBasedDropdown({
         items: this.provincialSpecialCaseCodes,
         currentValue: this.updateStudentAssessment?.provincialSpecialCaseCode,
         itemValueKey: "provincialSpecialCaseCode",
         permissionKey: "editAllSpecialCases",
-        allowedCodes: ['NME', 'NMF', 'NME10', 'NMF10'].includes(this.updateStudentAssessment?.assessmentTypeCode) ? ["A", "Q"] : ["A", "Q", "E"],
-        defaultAllowedCodes: [],
+        allowedCodes: allowedCodes,
+        defaultAllowedCodes: defaultAllowedCodes,
       });
     },
     sessionDisplayValue() {
@@ -213,6 +234,12 @@ export default {
       updateStudentAssessment: null,
       isSaving: false,
       isValidForm: false,
+      specialCaseCodesToExcludeFromAssessments: {
+        NME10: { excludeCodes: ["E"] },
+        NMF10: { excludeCodes: ["E"] },
+        NMF: { excludeCodes: ["E"] },
+        NME: { excludeCodes: ["E"] },
+      },
     };
   },
   watch: {
@@ -221,7 +248,10 @@ export default {
         this.edit(this.assessmentItem);
       }
     },
-    "updateStudentAssessment.provincialSpecialCaseCode"() {
+    "updateStudentAssessment.provincialSpecialCaseCode"(val) {
+      if(val && !this.updateStudentAssessment.schoolAtWriteSchoolID) {
+        this.updateStudentAssessment.schoolAtWriteSchoolID = this.schoolOfRecordId
+      }
       this.$nextTick(() => {
         this.$refs.editStudentAssessmentForm?.validate();
       });

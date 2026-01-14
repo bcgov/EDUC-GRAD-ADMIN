@@ -1,227 +1,192 @@
 <template>
   <v-col>
-    <v-row no-gutters
-      ><v-col cols="4"></v-col>
-      <v-col cols="4">
-        <router-link
-          :to="'/student-profile/' + sourceStudentData.studentID"
-          target="_blank"
-          >{{ sourceStudentName
-          }}<v-icon color="info" :size="18" class="ml-1 mb-1"
-            >mdi-open-in-new</v-icon
-          ></router-link
-        >
-      </v-col>
-      <v-col cols="4"
-        ><router-link
-          :to="'/student-profile/' + targetStudentData.studentID"
-          target="_blank"
-          >{{ targetStudentName
-          }}<v-icon color="info" :size="18" class="ml-1 mb-1"
-            >mdi-open-in-new</v-icon
-          ></router-link
-        ></v-col
-      >
-    </v-row>
-    <v-row no-gutters
-      ><v-col cols="4"
-        ><v-checkbox
-          v-model="keysToOverride.program"
-          label="Program"
-          hide-details
-      /></v-col>
-      <v-col cols="4">{{ sourceStudentGradStatus.program }}</v-col>
-      <v-col v-if="keysToOverride.program" cols="4"
-        ><strong>{{ sourceStudentGradStatus.program }}</strong></v-col
-      >
-      <v-col v-else cols="4">{{ targetStudentGradStatus.program }}</v-col>
-    </v-row>
-    <v-row no-gutters
-      ><v-col cols="4"
-        ><v-checkbox
-          v-model="keysToOverride.programCompletionDate"
-          label="Program Completion Date"
-          hide-details
-      /></v-col>
-      <v-col cols="4">{{
-        $filters.formatYYYYMMDate(sourceStudentGradStatus.programCompletionDate)
-      }}</v-col>
-      <v-col v-if="keysToOverride.programCompletionDate" cols="4"
-        ><strong>{{
-          $filters.formatYYYYMMDate(
-            sourceStudentGradStatus.programCompletionDate
-          )
-        }}</strong></v-col
-      >
-      <v-col v-else cols="4">{{
-        $filters.formatYYYYMMDate(targetStudentGradStatus.programCompletionDate)
-      }}</v-col>
-    </v-row>
-    <v-row no-gutters
-      ><v-col cols="4"
-        ><v-checkbox
-          v-model="keysToOverride.studentGrade"
-          label="Student Grade"
-          hide-details
-      /></v-col>
-      <v-col cols="4">{{ sourceStudentGradStatus.studentGrade }}</v-col>
-      <v-col v-if="keysToOverride.studentGrade" cols="4"
-        ><strong>{{ sourceStudentGradStatus.studentGrade }}</strong></v-col
-      >
-      <v-col v-else cols="4">{{ targetStudentGradStatus.studentGrade }}</v-col>
-    </v-row>
-    <v-row no-gutters
-      ><v-col cols="4"
-        ><v-checkbox
-          v-model="keysToOverride.schoolOfRecord"
-          label="School of Record"
-          hide-details
-      /></v-col>
-      <v-col cols="4">{{
-        formatSchoolName(sourceStudentSchoolOfRecord)
-      }}</v-col>
-      <v-col v-if="keysToOverride.schoolOfRecord" cols="4"
-        ><strong>{{
-          formatSchoolName(sourceStudentSchoolOfRecord)
-        }}</strong></v-col
-      >
-      <v-col v-else cols="4">{{
-        formatSchoolName(targetStudentSchoolOfRecord)
-      }}</v-col>
-    </v-row>
-    <v-row no-gutters
-      ><v-col cols="4"
-        ><v-checkbox
-          v-model="keysToOverride.schoolAtGrad"
-          label="School at Graduation"
-          hide-details
-      /></v-col>
-      <v-col cols="4">{{ formatSchoolName(sourceStudentSchoolAtGrad) }}</v-col>
-      <v-col v-if="keysToOverride.schoolAtGrad" cols="4"
-        ><strong>{{
-          formatSchoolName(sourceStudentSchoolAtGrad)
-        }}</strong></v-col
-      >
-      <v-col v-else cols="4">{{
-        formatSchoolName(targetStudentSchoolAtGrad)
-      }}</v-col>
-    </v-row>
-    <v-row no-gutters
-      ><v-col cols="4"
-        ><v-checkbox
-          v-model="keysToOverride.honoursStanding"
-          label="Honours Standing"
-          hide-details
-      /></v-col>
-      <v-col cols="4">{{ sourceStudentGradStatus.honoursStanding }}</v-col>
-      <v-col v-if="keysToOverride.honoursStanding" cols="4"
-        ><strong>{{ sourceStudentGradStatus.honoursStanding }}</strong></v-col
-      >
-      <v-col v-else cols="4">{{
-        targetStudentGradStatus.honoursStanding
-      }}</v-col>
-    </v-row>
-    <v-row no-gutters
-      ><v-col cols="4"
-        ><v-checkbox
-          v-model="keysToOverride.adultStartDate"
-          label="Adult Start Date"
-          hide-details
-      /></v-col>
-      <v-col cols="4">{{
-        $filters.formatSimpleDate(sourceStudentGradStatus.adultStartDate)
-      }}</v-col>
-      <v-col v-if="keysToOverride.adultStartDate" cols="4"
-        ><strong>{{
-          $filters.formatSimpleDate(sourceStudentGradStatus.adultStartDate)
-        }}</strong></v-col
-      >
-      <v-col v-else cols="4">{{
-        $filters.formatSimpleDate(targetStudentGradStatus.adultStartDate)
-      }}</v-col>
-    </v-row>
-    <v-row no-gutters
-      ><v-col cols="4"
-        ><v-checkbox
-          v-model="keysToOverride.consumerEducationRequirementMet"
-          label="Consumer Education Requirement Met"
-          hide-details
-      /></v-col>
-      <v-col cols="4">{{
-        sourceStudentGradStatus.consumerEducationRequirementMet
-      }}</v-col>
-      <v-col v-if="keysToOverride.consumerEducationRequirementMet" cols="4"
-        ><strong>{{
-          sourceStudentGradStatus.consumerEducationRequirementMet
-        }}</strong></v-col
-      >
-      <v-col v-else cols="4">{{
-        targetStudentGradStatus.consumerEducationRequirementMet
-      }}</v-col>
-    </v-row>
-    <v-row no-gutters
-      ><v-col cols="4"
-        ><v-checkbox
-          v-model="keysToOverride.optionalPrograms"
-          label="Optional Programs"
-          hide-details
-      /></v-col>
-      <v-col cols="4">
-        <ul
-          class="p-0"
-          v-if="sourceStudentGradStatus.optionalPrograms?.length > 0"
-        >
-          <li
-            v-for="item in sourceStudentGradStatus.optionalPrograms"
-            :key="item.optionalProgramCode"
-          >
-            {{ item.optionalProgramCode }} - {{ item.optionalProgramName }}
-          </li>
-        </ul></v-col
-      >
-      <v-col v-if="keysToOverride.optionalPrograms" cols="4">
-        <strong>
-          <ul
-            class="p-0"
-            v-if="sourceStudentGradStatus.optionalPrograms?.length > 0"
-          >
-            <li
-              v-for="item in sourceStudentGradStatus.optionalPrograms"
-              :key="item.optionalProgramCode"
+    <v-row no-gutters class="mb-6">
+      <v-col cols="12" md="6" class="pr-md-2">
+        <v-card class="mb-2">
+          <v-card-title class="pb-2">
+            <router-link
+              :to="'/student-profile/' + sourceStudentData.studentID"
+              target="_blank"
+              class="text-decoration-none"
             >
-              {{ item.optionalProgramCode }} - {{ item.optionalProgramName }}
-            </li>
-          </ul>
-        </strong>
+              <span class="text-h6">
+                {{ sourceStudentName }}
+                <v-icon :size="16" class="ml-1">mdi-open-in-new</v-icon>
+              </span>
+            </router-link>
+          </v-card-title>
+          <v-card-text>
+            <v-table dense>
+              <tbody>
+                <tr>
+                  <td class="font-weight-medium">Program</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': overrideAll }">
+                    {{ sourceStudentGradStatus.program }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">Program Completion Date</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': overrideAll }">
+                    {{ $filters.formatYYYYMMDate(sourceStudentGradStatus.programCompletionDate) }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">Student Grade</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': overrideAll }">
+                    {{ sourceStudentGradStatus.studentGrade }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">School of Record</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': overrideAll }">
+                    {{ formatSchoolName(sourceStudentSchoolOfRecord) }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">School at Graduation</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': overrideAll }">
+                    {{ formatSchoolName(sourceStudentSchoolAtGrad) }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">Honours Standing</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': overrideAll }">
+                    {{ sourceStudentGradStatus.honoursStanding }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">Adult Start Date</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': overrideAll }">
+                    {{ $filters.formatSimpleDate(sourceStudentGradStatus.adultStartDate) }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">Optional Programs</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': overrideAll }">
+                    <div v-if="sourceStudentGradStatus.optionalPrograms?.length > 0">
+                      <div
+                        v-for="item in sourceStudentGradStatus.optionalPrograms"
+                        :key="item.optionalProgramCode"
+                      >
+                        {{ item.optionalProgramCode }} - {{ item.optionalProgramName }}
+                      </div>
+                    </div>
+                    <span v-else class="text--secondary">None</span>
+                  </td>
+                </tr>
+              </tbody>
+            </v-table>
+          </v-card-text>
+        </v-card>
       </v-col>
-      <v-col v-else cols="4">
-        <ul
-          class="p-0"
-          v-if="targetStudentGradStatus.optionalPrograms?.length > 0"
-        >
-          <li
-            v-for="item in targetStudentGradStatus.optionalPrograms"
-            :key="item.optionalProgramCode"
-          >
-            {{ item.optionalProgramCode }} - {{ item.optionalProgramName }}
-          </li>
-        </ul></v-col
-      >
+      <v-col cols="12" md="6" class="pl-md-2">
+        <v-card class="mb-2">
+          <v-card-title class="pb-2">
+            <router-link
+              :to="'/student-profile/' + targetStudentData.studentID"
+              target="_blank"
+              class="text-decoration-none"
+            >
+              <span class="text-h6">
+                {{ targetStudentName }}
+                <v-icon :size="16" class="ml-1">mdi-open-in-new</v-icon>
+              </span>
+            </router-link>
+          </v-card-title>
+          <v-card-text>
+            <v-table dense>
+              <tbody>
+                <tr>
+                  <td class="font-weight-medium">Program</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': !overrideAll }">
+                    {{ targetStudentGradStatus.program }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">Program Completion Date</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': !overrideAll }">
+                    {{ $filters.formatYYYYMMDate(targetStudentGradStatus.programCompletionDate) }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">Student Grade</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': !overrideAll }">
+                    {{ targetStudentGradStatus.studentGrade }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">School of Record</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': !overrideAll }">
+                    {{ formatSchoolName(targetStudentSchoolOfRecord) }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">School at Graduation</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': !overrideAll }">
+                    {{ formatSchoolName(targetStudentSchoolAtGrad) }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">Honours Standing</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': !overrideAll }">
+                    {{ targetStudentGradStatus.honoursStanding }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">Adult Start Date</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': !overrideAll }">
+                    {{ $filters.formatSimpleDate(targetStudentGradStatus.adultStartDate) }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-medium">Optional Programs</td>
+                  <td class="font-weight-bold" :class="{ 'primary--text': !overrideAll }">
+                    <div v-if="targetStudentGradStatus.optionalPrograms?.length > 0">
+                      <div
+                        v-for="item in targetStudentGradStatus.optionalPrograms"
+                        :key="item.optionalProgramCode"
+                      >
+                        {{ item.optionalProgramCode }} - {{ item.optionalProgramName }}
+                      </div>
+                    </div>
+                    <span v-else class="text--secondary">None</span>
+                  </td>
+                </tr>
+              </tbody>
+            </v-table>
+          </v-card-text>
+        </v-card>
+      </v-col>
     </v-row>
+    <v-radio-group v-model="overrideAll" class="mb-6">
+      <v-row no-gutters>
+        <v-col cols="12" md="6" class="pr-md-2">
+          <v-radio
+            :value="true"
+            :label="`Copy over all values from ${sourceStudentData.pen}`"
+            hide-details />
+        </v-col>
+        <v-col cols="12" md="6" class="pl-md-2">
+          <v-radio :value="false" :label="`Keep all values from ${targetStudentData.pen}`" hide-details />
+        </v-col>
+      </v-row>
+    </v-radio-group>
   </v-col>
 </template>
 <script>
-import { useStudentStore } from "@/store/modules/student";
-import { useAppStore } from "@/store/modules/app";
+import {useStudentStore} from "@/store/modules/student";
+import {useAppStore} from "@/store/modules/app";
 import sharedMethods from "@/sharedMethods.js";
-import { mapState, mapActions } from "pinia";
+import {mapActions, mapState} from "pinia";
 
 export default {
   name: "GRADStatusReviewAndReconcile",
+  data() {
+    return {
+      overrideAll: false,
+    };
+  },
   computed: {
-    ...mapState(useStudentStore, {
-      gradStatusToMerge: (state) => state.merge.gradStatus,
-    }),
     ...mapState(useAppStore, {
       getSchoolById: "getSchoolById",
       optionalProgramsByGradProgram: "optionalProgramsByGradProgram",
@@ -273,73 +238,69 @@ export default {
       "setGradStatusToMerge",
       "clearGradStatusToMerge",
     ]),
-    updateKey(key, value) {
-      const updated = { ...this.modelValue, [key]: value };
-      this.$emit("update:keysToOverride", updated);
-      this.updateGradStatusToMerge(); // update submission model
-    },
     formatSchoolName(school) {
       return !!school ? `${school.mincode} - ${school.displayName}` : "";
     },
-
     updateGradStatusToMerge() {
-      if (Object.values(this.keysToOverride).every((val) => val === false)) {
+      if (!this.overrideAll) {
+        // Keep all target values - clear the merge
         this.clearGradStatusToMerge();
+        // Update keysToOverride to all false
+        const allFalse = {
+          program: false,
+          programCompletionDate: false,
+          studentGrade: false,
+          schoolOfRecord: false,
+          schoolAtGrad: false,
+          honoursStanding: false,
+          adultStartDate: false,
+          consumerEducationRequirementMet: false,
+          optionalPrograms: false,
+        };
+        this.$emit("update:keysToOverride", allFalse);
       } else {
+        // Override all from source - set all keys to true
+        const allTrue = {
+          program: true,
+          programCompletionDate: true,
+          studentGrade: true,
+          schoolOfRecord: true,
+          schoolAtGrad: true,
+          honoursStanding: true,
+          adultStartDate: true,
+          consumerEducationRequirementMet: true,
+          optionalPrograms: true,
+        };
+        this.$emit("update:keysToOverride", allTrue);
+
+        // Build merged object with all source values
         const merged = {
           studentID: this.targetStudentData.studentID,
-          program: this.keysToOverride.program
-            ? this.sourceStudentGradStatus.program
-            : this.targetStudentGradStatus.program,
-
+          program: this.sourceStudentGradStatus.program,
           studentStatus: this.targetStudentGradStatus.studentStatus,
-
-          programCompletionDate: this.keysToOverride.programCompletionDate
-            ? this.sourceStudentGradStatus.programCompletionDate
-            : this.targetStudentGradStatus.programCompletionDate,
-
-          studentGrade: this.keysToOverride.studentGrade
-            ? this.sourceStudentGradStatus.studentGrade
-            : this.targetStudentGradStatus.studentGrade,
-
-          schoolOfRecordId: this.keysToOverride.schoolOfRecord
-            ? this.sourceStudentGradStatus.schoolOfRecordId
-            : this.targetStudentGradStatus.schoolOfRecordId,
-
-          schoolAtGradId: this.keysToOverride.schoolAtGrad
-            ? this.sourceStudentGradStatus.schoolAtGradId
-            : this.targetStudentGradStatus.schoolAtGradId,
-
-          honoursStanding: this.keysToOverride.honoursStanding
-            ? this.sourceStudentGradStatus.honoursStanding
-            : this.targetStudentGradStatus.honoursStanding,
-
-          adultStartDate: this.keysToOverride.adultStartDate
-            ? this.sourceStudentGradStatus.adultStartDate
-            : this.targetStudentGradStatus.adultStartDate,
-
-          consumerEducationRequirementMet: this.keysToOverride
-            .consumerEducationRequirementMet
-            ? this.sourceStudentGradStatus.consumerEducationRequirementMet
-            : this.targetStudentGradStatus.consumerEducationRequirementMet,
-
-          optionalPrograms: this.keysToOverride.optionalPrograms
-            ? this.setOptionalProgramsToOverride(
-                this.sourceStudentGradStatus.optionalPrograms
-              )
-            : this.targetStudentGradStatus.optionalPrograms,
-
-          careerPrograms: this.keysToOverride.optionalPrograms
-            ? this.sourceStudentGradStatus.careerPrograms
-            : this.targetStudentGradStatus.careerPrograms,
+          programCompletionDate: this.sourceStudentGradStatus.programCompletionDate,
+          studentGrade: this.sourceStudentGradStatus.studentGrade,
+          schoolOfRecordId: this.sourceStudentGradStatus.schoolOfRecordId,
+          schoolAtGradId: this.sourceStudentGradStatus.schoolAtGradId,
+          honoursStanding: this.sourceStudentGradStatus.honoursStanding,
+          adultStartDate: this.sourceStudentGradStatus.adultStartDate,
+          consumerEducationRequirementMet:
+            this.sourceStudentGradStatus.consumerEducationRequirementMet,
+          optionalPrograms: this.setOptionalProgramsToOverride(
+            this.sourceStudentGradStatus.optionalPrograms
+          ),
+          careerPrograms: this.sourceStudentGradStatus.careerPrograms,
         };
 
         this.setGradStatusToMerge(merged);
       }
     },
     setOptionalProgramsToOverride(sourceOptionalPrograms) {
+      if (!sourceOptionalPrograms || sourceOptionalPrograms.length === 0) {
+        return [];
+      }
       let gradProgramOptionalPrograms = this.optionalProgramsByGradProgram(
-        this.gradStatusToMerge.program
+        this.sourceStudentGradStatus.program
       );
       return sourceOptionalPrograms
         .map((sourceOptProgram) => {
@@ -353,12 +314,21 @@ export default {
     },
   },
   watch: {
-    keysToOverride: {
-      deep: true,
-      handler() {
-        this.updateGradStatusToMerge();
-      },
+    overrideAll() {
+      this.updateGradStatusToMerge();
     },
+  },
+  mounted() {
+    // If any key is true, set overrideAll to true
+    this.overrideAll = Object.values(this.keysToOverride).some(
+        (val) => val === true
+    );
   },
 };
 </script>
+
+<style scoped>
+.v-radio :deep(.v-label) {
+  margin-bottom: 0 !important;
+}
+</style>

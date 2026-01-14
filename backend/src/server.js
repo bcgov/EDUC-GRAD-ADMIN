@@ -12,6 +12,82 @@ dotenv.config();
 
 const app = require('./app');
 
+const cacheService = require('./components/cache-service');
+cacheService.loadCoreg39CoursesToMap().then(() => {
+  log.info('Loaded coreg 39 courses data to memory');
+}).catch((e) => {
+  log.error('Error loading coreg 39 courses during boot .', e);
+});
+
+cacheService.loadGenderCodes().then(() => {
+  log.info('Loaded gender codes data to memory');
+}).catch((e) => {
+  log.error('Error loading gender codes during boot .', e);
+});
+
+cacheService.loadStudentGradeCodes().then(() => {
+  log.info('Loaded student grade codes to memory');
+}).catch((e) => {
+  log.error('Error loading student grade codes during boot.', e);
+});
+
+cacheService.loadAssessmentTypeCodes().then(() => {
+  log.info('Loaded assessment type codes to memory');
+}).catch((e) => {
+  log.error('Error loading assessment type codes during boot.', e);
+});
+
+cacheService.loadGradProgramCodes().then(() => {
+  log.info('Loaded graduation program codes to memory');
+}).catch((e) => {
+  log.error('Error loading graduation program codes during boot.', e);
+});
+
+cacheService.loadOptionalProgramCodes().then(() => {
+  log.info('Loaded optional program codes to memory');
+}).catch((e) => {
+  log.error('Error loading optional program codes during boot.', e);
+});
+
+cacheService.loadLetterGradeCodes().then(() => {
+  log.info('Loaded letter grade codes to memory');
+}).catch((e) => {
+  log.error('Error loading letter grade codes during boot.', e);
+});
+
+cacheService.loadCareerProgramCodes().then(() => {
+  log.info('Loaded career program codes to memory');
+}).catch((e) => {
+  log.error('Error loading career program codes during boot.', e);
+});
+
+cacheService.loadCitizenshipCodes().then(() => {
+  log.info('Loaded citizenship codes to memory');
+}).catch((e) => {
+  log.error('Error loading citizenship codes during boot.', e);
+});
+
+cacheService.loadCountryCodes().then(() => {
+  log.info('Loaded country codes to memory');
+}).catch((e) => {
+  log.error('Error loading country codes during boot.', e);
+});
+
+cacheService.loadProvinceCodes().then(() => {
+  log.info('Loaded province codes to memory');
+}).catch((e) => {
+  log.error('Error loading province codes during boot.', e);
+});
+
+cacheService.loadExaminableCourses().then(() => {
+  log.info('Loaded examinable courses to memory');
+}).catch((e) => {
+  log.error('Error loading examinable courses during boot.', e);
+});
+
+// Start the cache reload scheduler (runs nightly at 12:15 AM)
+require('./components/scheduler');
+
 /**
  * Get port from environment and store in Express.
  */

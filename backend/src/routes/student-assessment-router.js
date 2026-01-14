@@ -9,7 +9,8 @@ const {
   postStudentAssessmentSchema,
   deleteStudentAssessmentSchema,
   getPaginatedStudentAssessmentSchema,
-  postTransferStudentAssessmentSchema
+  postTransferStudentAssessmentSchema,
+  postMergeStudentAssessmentSchema
 } = require("../components/validations/student-assessment");
 const {
   getStudentAssessmentById,
@@ -18,11 +19,14 @@ const {
   postStudentAssessment,
   deleteStudentAssessmentByID,
   getAssessmentTypeCodes,
+  downloadAssessmentTypeCodesCSV,
   getAllAssessmentSessions,
   getProvincialSpecialCaseCodes,
   getStudentAssessmentHistoryPaginated,
   getStudentAssessmentByIdAndAssessmentId,
-  transferStudentAssessments
+  transferStudentAssessments,
+  getAssessmentStudentSearchReport,
+  mergeStudentAssessmentsByStudentID
 } = require("../components/assessments/student-assessment");
 
 const isValidUiTokenWithStaffEditRoles = auth.isValidUiTokenWithRoles(
@@ -35,12 +39,13 @@ const isValidUiTokenWithStaffEditRoles = auth.isValidUiTokenWithRoles(
 );
 
 const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
-  "GRAD_SYSTEM_COORDINATOR",
+  "GRAD_SYSTEM_COORDINATOR && SCHOLARSHIP_ADMIN",
   [
     roles.Admin.StaffAdministration,
     roles.Admin.StaffInfoOfficer,
     roles.Admin.StaffGradAssessments,
     roles.Admin.StaffGradProgramBA,
+    roles.Admin.ScholarshipAdmin
   ]
 );
 
@@ -49,6 +54,13 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getAssessmentTypeCodes
+);
+
+router.get(
+  "/assessment-type-codes/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadAssessmentTypeCodesCSV
 );
 
 router.get(
@@ -125,6 +137,21 @@ router.post(
   isValidUiTokenWithStaffEditRoles,
   validate(postTransferStudentAssessmentSchema),
   transferStudentAssessments
+);
+
+router.get(
+  "/report/assessment-students/search/download",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getAssessmentStudentSearchReport
+);
+
+router.post(
+  "/merge",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithStaffEditRoles,
+  validate(postMergeStudentAssessmentSchema),
+  mergeStudentAssessmentsByStudentID
 );
 
 module.exports = router;

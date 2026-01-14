@@ -1,0 +1,293 @@
+'use strict';
+const config = require('../config/index');
+const log = require('../components/logger');
+const {getCommonServiceData} = require('../components/utils');
+const retry = require('async-retry');
+const {generateCourseObject} = require('../util/courseUtils');
+
+let courses39Map = new Map();
+let courses39 = [];
+let courses39ExternalCodeMap = new Map();
+let studentGradeCodes = [];
+let assessmentTypeCodes = [];
+let gradProgramCodes = [];
+let optionalProgramCodes = [];
+let letterGradeCodes = [];
+let careerProgramCodes = [];
+let genderCodes = [];
+let citizenshipCodes = [];
+let countryCodes = [];
+let provinceCodes = [];
+let examinableCourses = [];
+
+const cacheService = {
+  async loadGenderCodes() {
+    log.debug('Loading Gender Codes');
+    await retry(async () => {
+      try {
+        const genderCodesResponse = await getCommonServiceData(`${config.get('server:educStudentAPIURL')}api/v1/student/gender-codes`);
+        if (genderCodesResponse && genderCodesResponse.length > 0) {
+          genderCodes = [];
+          genderCodes = genderCodesResponse;
+        }
+      } catch (err) {
+        log.error('Failed to load gender codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  async getGenderCodesJSON(){
+    return genderCodes;
+  },
+  async loadCoreg39CoursesToMap() {
+    log.debug('Loading all courses39');
+    await retry(async () => {
+      try {
+        // if anything throws, we retry
+        const coreg39CourseResponse = await getCommonServiceData(`${config.get('server:coregAPIURL')}/api/v1/course/information/all/39`);
+        courses39 = []; // reset the value.
+        courses39Map.clear();// reset the value.
+        courses39ExternalCodeMap.clear(); // reset the externalCode map
+        if (coreg39CourseResponse && coreg39CourseResponse.length > 0) {
+          for (const course of coreg39CourseResponse) {
+            const courseObject = generateCourseObject(course);
+            courses39Map.set(courseObject.courseID, courseObject);
+            courses39.push(courseObject);
+            if (courseObject.externalCode) {
+              courses39ExternalCodeMap.set(courseObject.externalCode, courseObject.courseID);
+            }
+          }
+        }
+        log.info(`Loaded ${courses39Map.size} coreg39Courses.`);
+      } catch (err) {
+        log.error('Failed to load coreg39 courses, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getAllCoreg39CoursesJSON() {
+    return courses39;
+  },
+  getCoreg39CourseByID(courseID) {
+    return courses39Map.get(courseID);
+  },
+  getCourseIDByExternalCode39(externalCode) {
+    return courses39ExternalCodeMap.get(externalCode);
+  },
+  async loadStudentGradeCodes() {
+    log.debug('Loading student grade codes');
+    await retry(async () => {
+      try {
+        const studentGradeCodesResponse = await getCommonServiceData(`${config.get('server:studentAPIURL')}/api/v1/student/grade-codes`);
+        studentGradeCodes = []; // reset the value
+        if (studentGradeCodesResponse && studentGradeCodesResponse.length > 0) {
+          studentGradeCodes = studentGradeCodesResponse;
+        }
+        log.info(`Loaded ${studentGradeCodes.length} student grade codes.`);
+      } catch (err) {
+        log.error('Failed to load student grade codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getStudentGradeCodesJSON() {
+    return studentGradeCodes;
+  },
+  async loadAssessmentTypeCodes() {
+    log.debug('Loading assessment type codes');
+    await retry(async () => {
+      try {
+        const assessmentTypeCodesResponse = await getCommonServiceData(`${config.get('server:studentAssessmentAPIURL')}/api/v1/student-assessment/assessment-types`);
+        assessmentTypeCodes = []; // reset the value
+        if (assessmentTypeCodesResponse && assessmentTypeCodesResponse.length > 0) {
+          assessmentTypeCodes = assessmentTypeCodesResponse;
+        }
+        log.info(`Loaded ${assessmentTypeCodes.length} assessment type codes.`);
+      } catch (err) {
+        log.error('Failed to load assessment type codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getAssessmentTypeCodesJSON() {
+    return assessmentTypeCodes;
+  },
+  async loadGradProgramCodes() {
+    log.debug('Loading graduation program codes');
+    await retry(async () => {
+      try {
+        const gradProgramCodesResponse = await getCommonServiceData(`${config.get('server:programAPIURL')}/api/v1/program/programs`);
+        gradProgramCodes = []; // reset the value
+        if (gradProgramCodesResponse && gradProgramCodesResponse.length > 0) {
+          gradProgramCodes = gradProgramCodesResponse;
+        }
+        log.info(`Loaded ${gradProgramCodes.length} graduation program codes.`);
+      } catch (err) {
+        log.error('Failed to load graduation program codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getGradProgramCodesJSON() {
+    return gradProgramCodes;
+  },
+  async loadOptionalProgramCodes() {
+    log.debug('Loading optional program codes');
+    await retry(async () => {
+      try {
+        const optionalProgramCodesResponse = await getCommonServiceData(`${config.get('server:programAPIURL')}/api/v1/program/optionalprograms`);
+        optionalProgramCodes = []; // reset the value
+        if (optionalProgramCodesResponse && optionalProgramCodesResponse.length > 0) {
+          optionalProgramCodes = optionalProgramCodesResponse;
+        }
+        log.info(`Loaded ${optionalProgramCodes.length} optional program codes.`);
+      } catch (err) {
+        log.error('Failed to load optional program codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getOptionalProgramCodesJSON() {
+    return optionalProgramCodes;
+  },
+  async loadLetterGradeCodes() {
+    log.debug('Loading letter grade codes');
+    await retry(async () => {
+      try {
+        const letterGradeCodesResponse = await getCommonServiceData(`${config.get('server:studentGraduationAPIURL')}/api/v1/studentgraduation/lgSc/lettergrade`);
+        letterGradeCodes = []; // reset the value
+        if (letterGradeCodesResponse && letterGradeCodesResponse.length > 0) {
+          letterGradeCodes = letterGradeCodesResponse;
+        }
+        log.info(`Loaded ${letterGradeCodes.length} letter grade codes.`);
+      } catch (err) {
+        log.error('Failed to load letter grade codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getLetterGradeCodesJSON() {
+    return letterGradeCodes;
+  },
+  async loadCareerProgramCodes() {
+    log.debug('Loading career program codes');
+    await retry(async () => {
+      try {
+        const careerProgramCodesResponse = await getCommonServiceData(`${config.get('server:programAPIURL')}/api/v1/program/careerprogram`);
+        careerProgramCodes = []; // reset the value
+        if (careerProgramCodesResponse && careerProgramCodesResponse.length > 0) {
+          careerProgramCodes = careerProgramCodesResponse;
+        }
+        log.info(`Loaded ${careerProgramCodes.length} career program codes.`);
+      } catch (err) {
+        log.error('Failed to load career program codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getCareerProgramCodesJSON() {
+    return careerProgramCodes;
+  },
+  async loadCitizenshipCodes() {
+    log.debug('Loading citizenship codes');
+    await retry(async () => {
+      try {
+        const citizenshipCodesResponse = await getCommonServiceData(`${config.get('server:scholarshipAPIURL')}/api/v1/scholarships/citizenship-codes`);
+        citizenshipCodes = []; // reset the value
+        if (citizenshipCodesResponse && citizenshipCodesResponse.length > 0) {
+          citizenshipCodes = citizenshipCodesResponse;
+        }
+        log.info(`Loaded ${citizenshipCodes.length} citizenship codes.`);
+      } catch (err) {
+        log.error('Failed to load citizenship codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getCitizenshipCodesJSON() {
+    return citizenshipCodes;
+  },
+  async loadCountryCodes() {
+    log.debug('Loading country codes');
+    await retry(async () => {
+      try {
+        const countryCodesResponse = await getCommonServiceData(`${config.get('server:scholarshipAPIURL')}/api/v1/scholarships/country-codes`);
+        countryCodes = []; // reset the value
+        if (countryCodesResponse && countryCodesResponse.length > 0) {
+          countryCodes = countryCodesResponse;
+        }
+        log.info(`Loaded ${countryCodes.length} country codes.`);
+      } catch (err) {
+        log.error('Failed to load country codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getCountryCodesJSON() {
+    return countryCodes;
+  },
+  async loadProvinceCodes() {
+    log.debug('Loading province codes');
+    await retry(async () => {
+      try {
+        const provinceCodesResponse = await getCommonServiceData(`${config.get('server:scholarshipAPIURL')}/api/v1/scholarships/province-codes`);
+        provinceCodes = []; // reset the value
+        if (provinceCodesResponse && provinceCodesResponse.length > 0) {
+          provinceCodes = provinceCodesResponse;
+        }
+        log.info(`Loaded ${provinceCodes.length} province codes.`);
+      } catch (err) {
+        log.error('Failed to load province codes, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getProvinceCodesJSON() {
+    return provinceCodes;
+  },
+  async loadExaminableCourses() {
+    log.debug('Loading examinable courses');
+    await retry(async () => {
+      try {
+        const examinableCoursesResponse = await getCommonServiceData(`${config.get('server:courseAPIURL')}/api/v1/course/examinablecourses`);
+        examinableCourses = []; // reset the value
+        if (examinableCoursesResponse && examinableCoursesResponse.length > 0) {
+          examinableCourses = examinableCoursesResponse;
+        }
+        log.info(`Loaded ${examinableCourses.length} examinable courses.`);
+      } catch (err) {
+        log.error('Failed to load examinable courses, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getExaminableCoursesJSON() {
+    return examinableCourses;
+  },
+};
+
+module.exports = cacheService;

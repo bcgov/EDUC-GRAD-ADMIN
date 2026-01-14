@@ -122,7 +122,8 @@
                   value="Assessments"
                   class="text-none"
                   v-if="
-                    hasPermissions('STUDENT', 'studentAssessmentUpdate') &&
+                    hasPermissions('STUDENT', 'studentAssessmentUpdate') 
+                    &&
                     enableCRUD
                   "
                   >Assessments ({{ assessments?.length }})
@@ -252,7 +253,8 @@
                   </v-window-item>
                   <v-window-item
                     v-if="
-                      hasPermissions('STUDENT', 'studentAssessmentUpdate') &&
+                      hasPermissions('STUDENT', 'studentAssessmentUpdate') 
+                      &&
                       enableCRUD
                     "
                     value="Assessments"
@@ -1287,7 +1289,8 @@ export default {
       this.loadStudentProfile();
       this.loadAssessmentsLegacy();
       if (
-        this.hasPermissions("STUDENT", "studentAssessmentUpdate") &&
+        this.hasPermissions("STUDENT", "studentAssessmentUpdate") 
+        &&
         this.enableCRUD
       ) {
         this.loadStudentAssessments(studentIdFromURL);

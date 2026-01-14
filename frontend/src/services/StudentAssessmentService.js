@@ -14,7 +14,7 @@ export default {
       })
   },
   getStudentAssessmentHistoryBySearchCriteria(searchParams, sort, pageNumber, pageSize) {
-    return ApiService.apiAxios
+      return ApiService.apiAxios
         .get('/api/student-assessment/student-history/paginated', {
           params: {
             pageNumber: pageNumber - 1,
@@ -29,6 +29,11 @@ export default {
     },
   getAssessmentTypeCodes() {
     return ApiService.apiAxios.get('/api/student-assessment/assessment-type-codes')
+  },
+  downloadAssessmentTypeCodesCSV() {
+    return ApiService.apiAxios.get('/api/student-assessment/assessment-type-codes/download', {
+      responseType: 'blob'
+    });
   },
   getProvincialSpecialCaseCodes() {
     return ApiService.apiAxios.get('/api/student-assessment/provincial-special-case-codes');
@@ -53,5 +58,13 @@ export default {
   async deleteAssessmentStudent(assessmentStudentId, allowRuleOverride) {
     const params = allowRuleOverride ? { allowRuleOverride: 'true' } : {};
     return ApiService.apiAxios.delete('/api/student-assessment/student/' + assessmentStudentId, { params });
+  },
+  downloadAssessmentStudentSearchReport(searchParams) {
+    return ApiService.apiAxios.get('/api/student-assessment/report/assessment-students/search/download', {
+      params: {
+        searchParams: omitBy(searchParams, isEmpty),
+      },
+      responseType: 'blob'
+    });
   }
 };

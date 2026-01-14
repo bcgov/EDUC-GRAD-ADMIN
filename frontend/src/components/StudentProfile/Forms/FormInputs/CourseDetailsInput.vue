@@ -157,9 +157,13 @@
             density="compact"
             class="pa-1"
             clearable
-            hide-details
-            persistent-placeholder
+            :counter="40"
             persistent-hint
+            :error="
+              v$.course.customizedCourseName.$invalid &&
+              v$.course.customizedCourseName.$dirty
+            "
+            @blur="v$.course.customizedCourseName.$touch"
           />
         </v-col>
       </v-row>
@@ -194,7 +198,7 @@
         </v-col>
       </v-row>
 
-      <v-row no-gutters v-if="course?.courseDetails.courseCode == 'IDS'">
+      <v-row no-gutters v-if="['IDS', 'IDSF'].includes(course?.courseDetails.courseCode)">
         <v-col cols="12" class="pt-2">
           <strong>Select Related Course</strong>
 
@@ -212,15 +216,13 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "pinia";
+import { mapState } from "pinia";
 import { useAppStore } from "@/store/modules/app";
 import { useStudentStore } from "@/store/modules/student";
 import { useAccessStore } from "@/store/modules/access";
 import useVuelidate from "@vuelidate/core";
-import { required, helpers, numeric } from "@vuelidate/validators";
+import { helpers } from "@vuelidate/validators";
 import CourseInput from "@/components/Common/CourseInput.vue";
-
-import sharedMethods from "@/sharedMethods";
 
 export default {
   name: "CourseDetailsInput",
@@ -389,6 +391,13 @@ export default {
               value === undefined ||
               typeof value === "string"
           ),
+          maxLength: helpers.withMessage(
+            "Customized Course Title must be 40 characters or less",
+            (value) => {
+              if (!value) return true;
+              return typeof value === "string" && value.length <= 40;
+            }
+          ),
         },
       },
     };
@@ -426,7 +435,6 @@ export default {
         this.course.courseDetails.courseCategory?.description || "";
       const trimmedProgram = this.studentProgram?.trim();
 
-      const warnings = [];
       this.updateWarnings();
       if (
         newVal &&

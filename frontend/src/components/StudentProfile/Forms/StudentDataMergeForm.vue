@@ -87,7 +87,7 @@
                   <GRADStatusReviewAndReconcile :sourceStudentData="sourceStudentData"
                     :targetStudentData="targetStudentData" :sourceStudentGradStatus="sourceStudentReconcileData.gradStatus
                       " :targetStudentGradStatus="targetStudentReconcileData.gradStatus
-                        " :keysToOverride.sync="gradStatusKeysToMerge" />
+                        " v-model:keysToOverride="gradStatusKeysToMerge" />
                 </div>
               </v-stepper-window-item>
               <!-- Step 5 -->
@@ -483,7 +483,7 @@ export default {
         this.targetStudentReconcileData.assessments = studentAssessments;
         //update source student assessmnets with validation errors and warnings
 
-        const assessmentsValidationIssues = response.data.added.map(assessment => ({
+        const assessmentsValidationIssues = response.data.map(assessment => ({
           assessmentID: assessment.assessmentID,
           sessionID: assessment.sessionID,
           validationIssues: assessment.assessmentStudentValidationIssues,
@@ -681,8 +681,11 @@ export default {
             localStudentAssessments.conflicts
           )
           : [];
-      const { errors, ...mergeStudentAssessments } = localStudentAssessments;
-      const mergeStudentAssessmentsRequestBody = toRaw(mergeStudentAssessments);
+      const mergeStudentAssessmentsRequestBody = [
+        ...localStudentAssessments.info.map(item => item.source.assessmentStudentID),
+        ...localStudentAssessments.conflicts.map(item => item.source.assessmentStudentID)
+      ];
+      console.log(mergeStudentAssessmentsRequestBody)
       try {
         return await this.mergeStudentAssessments(
           this.sourceStudentData.studentID,
@@ -763,8 +766,11 @@ export default {
             isExaminable
           )
           : [];
-      const { errors, ...mergeStudentCourses } = localStudentCourses;
-      const mergeStudentCoursesRequestBody = toRaw(mergeStudentCourses);
+      const mergeStudentCoursesRequestBody = [
+        ...localStudentCourses.info.map(item => item.source.id),
+        ...localStudentCourses.conflicts.map(item => item.source.id)
+      ];
+      
       try {
         return await this.mergeStudentCourses(
           this.sourceStudentData.studentID,

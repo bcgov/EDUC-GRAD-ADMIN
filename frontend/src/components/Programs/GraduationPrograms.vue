@@ -1,11 +1,15 @@
 <template>
   <div id="graduation-programs">
-    <h3 class="ml-3 mt-5">Programs</h3>
-    <v-progress-circular
-      v-if="isLoading"
-      color="primary"
-      indeterminate
-    ></v-progress-circular>
+    <div class="d-flex justify-space-between align-center ml-3 mt-5 mr-3 mb-6">
+      <h3>Programs</h3>
+      <DownloadLink
+        label="Programs"
+        icon="mdi-download"
+        :downloadAction="CodesService.downloadGradProgramCodesCSV"
+        @success="snackbarStore.showSnackbar('CSV downloaded successfully', 'success', 3000)"
+        @error="snackbarStore.showSnackbar('Error downloading CSV', 'error', 5000)"
+      />
+    </div>
     <div v-if="!selectedProgramCode">
       <DisplayTable
         v-bind:items="graduationPrograms"
@@ -13,6 +17,7 @@
         id="programCode"
         showFilter="true"
         pagination="true"
+        class="pt-16"
       >
         <template v-slot:item.effectiveDate="{ item }">
           {{ $filters.formatSimpleDate(item.effectiveDate) }}
@@ -27,25 +32,56 @@
 </template>
 
 <script>
-import CodesService from "@/services/CodesService.js";
 import DisplayTable from "../DisplayTable.vue";
+import DownloadLink from "@/components/Common/DownloadLink.vue";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import { mapState, mapActions } from "pinia";
+import { useAppStore } from "@/store/modules/app";
+import CodesService from "@/services/CodesService.js";
 
 export default {
   name: "GraduationPrograms",
   components: {
     DisplayTable: DisplayTable,
+    DownloadLink: DownloadLink,
   },
   props: {},
-  computed: {},
+  async beforeMount() {
+    try {
+      await this.getProgramOptionCodes(false);
+    } catch (e) {
+      if (e.response?.status) {
+        this.snackbarStore.showSnackbar(
+          "There was an error: " + e.response.status,
+          "error",
+          5000
+        );
+      }
+    }
+  },
+  computed: {
+    CodesService() {
+      return CodesService
+    },
+    ...mapState(useAppStore, {
+      programOptions: "programOptions",
+    }),
+    graduationPrograms() {
+      // filters out the "No Program" option until business is ready to implement
+      if (!this.programOptions) return [];
+      return this.programOptions.filter((obj) => {
+        return obj.programCode !== "NOPROG";
+      });
+    }
+  },
   data: function () {
     return {
       snackbarStore: useSnackbarStore(),
-      isLoading: true,
+      CodesService: CodesService,
+      isLoading: false,
       show: false,
       isHidden: false,
       opened: [],
-      graduationPrograms: [],
       templates: [
         {
           name: "programCode",
@@ -93,21 +129,8 @@ export default {
       selectedProgramId: "",
     };
   },
-  created() {
-    CodesService.getGradProgramCodes()
-      .then((response) => {
-        // filters out the "No Program" option until business is ready to implement
-        const gradPrograms = response.data.filter((obj) => {
-          return obj.programCode !== "NOPROG";
-        });
-        this.graduationPrograms = gradPrograms;
-        this.isLoading = false;
-      })
-      .catch((error) => {
-        this.snackbarStore.showSnackbar(error.message, "error", 5000);
-      });
-  },
   methods: {
+    ...mapActions(useAppStore, ["getProgramOptionCodes"]),
     onClickChild(value) {
       this.selectedProgramId = value;
     },

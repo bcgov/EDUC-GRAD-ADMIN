@@ -15,6 +15,7 @@ const {
   getCourseRequirements,
   getStudentCoursesLegacy,
   getStudentExamDetailsLegacy, getCourseEventHistory, putCourseEventHistory,
+  getAllCoreg39Courses,
 } = require('../components/course');
 const validate = require('../components/validator');
 const {
@@ -23,12 +24,13 @@ const {
 } = require('../components/validations/course');
 
 const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
-  'GRAD_SYSTEM_COORDINATOR',
+  'GRAD_SYSTEM_COORDINATOR && SCHOLARSHIP_ADMIN',
   [
     roles.Admin.StaffInfoOfficer,
     roles.Admin.StaffAdministration,
     roles.Admin.StaffGradProgramBA,
     roles.Admin.StaffGradAssessments,
+    roles.Admin.ScholarshipAdmin
   ]
 );
 
@@ -128,6 +130,13 @@ router.put(
   passport.authenticate('jwt', { session: false }), 
   isValidUiTokenWithEditStaffRoles,
   putCourseEventHistory
+);
+
+router.get(
+  '/coreg/all',
+  passport.authenticate('jwt', { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getAllCoreg39Courses
 );
 
 module.exports = router;

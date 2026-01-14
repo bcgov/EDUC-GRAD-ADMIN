@@ -92,4 +92,22 @@ export default {
       throw e;
     }
   },
+
+  async getCoregCourses() {
+    try {
+      return await apiAxios.get('/api/course/coreg/all');
+    } catch(e) {
+      console.log(`Failed to get coreg courses from cache - ${e}`);
+      throw e;
+    }
+  },
+
+    async getGenderCodes() {
+        try {
+            return await apiAxios.get('/api/student/codes/gender');
+        } catch(e) {
+            console.log(`Failed to get gender codes from cache - ${e}`);
+            throw e;
+        }
+    }
 };

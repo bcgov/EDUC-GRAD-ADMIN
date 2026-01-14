@@ -13,9 +13,14 @@ export default {
     return ApiService.apiAxios.get("/api/course/courseRestrictions");
   },
   getCourseExaminableCourses() {
-    return ApiService.apiAxios.get("/api/course/examinableCourseSessions");
+    return ApiService.apiAxios.get("/api/codes/examinableCourses");
   },
-  getCourseRestriction(mainCourseLevel, mainCourseCode) {
+  downloadExaminableCoursesCSV() {
+    return ApiService.apiAxios.get("/api/codes/examinableCourses/download", {
+      responseType: 'blob'
+    });
+  },
+  getCourseBlendingRules() {
     return ApiService.apiAxios.get(
       "/api/course/courseRestriction?mainCourseLevel=" +
         mainCourseLevel +
