@@ -2,6 +2,8 @@
   <div class="psi-view">
     <h1>Post Secondary Institutions</h1>
     <v-card no-body>
+      <PSISearch v-if="enableCRUD" />
+      <template v-else>
       <v-form v-on:submit.prevent id="psiReqForm">
         <div class="advanced-search-form mt-7">
           <div class="row mt-3 ml-1">
@@ -227,6 +229,7 @@
           </template>
         </DisplayTable>
       </v-card-text>
+      </template>
     </v-card>
   </div>
 </template>
@@ -234,11 +237,20 @@
 <script>
 import SchoolsService from "../services/SchoolsService.js";
 import DisplayTable from "@/components/DisplayTable.vue";
+import PSISearch from "@/components/Search/PSISearch.vue";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import {mapState} from "pinia";
+import {useAppStore} from "@/store/modules/app";
 export default {
   name: "psi",
   components: {
     DisplayTable: DisplayTable,
+    PSISearch: PSISearch,
+  },
+  computed: {
+    ...mapState(useAppStore, {
+      enableCRUD: "enableCRUD",
+    }),
   },
   data() {
     return {
