@@ -1,41 +1,39 @@
 'use strict';
 const log = require('../../components/logger');
 const NATS = require('../message-pub-sub');
-const {StringCodec} = require('nats');
 const cacheService = require('../../components/cache-service');
 const EventEmitter = require('events');
-const sc = StringCodec();
 
-const CACHE_REFRESH_TOPIC = 'CACHE_REFRESH';
+const COURSE_RESTRICTION_TOPIC = 'COURSE_RESTRICTION_CREATED';
 const cacheRefreshEmitter = new EventEmitter();
 
-async function subscribeToCacheRefreshTopic(nats) {
+async function subscribeToCourseRestrictionTopic(nats) {
   const opts = {};
 
-  const sub = nats.subscribe(CACHE_REFRESH_TOPIC, opts);
-  log.debug(`Service listening to ${CACHE_REFRESH_TOPIC}`);
+  const sub = nats.subscribe(COURSE_RESTRICTION_TOPIC, opts);
+  log.debug(`Service listening to ${COURSE_RESTRICTION_TOPIC}`);
 
   for await (const msg of sub) {
-    const dataStr = sc.decode(msg.data);
-    const data = JSON.parse(dataStr);
-    log.debug(`Received cache refresh message  :: cacheType: ${data.cacheType}, triggeredBy: ${data.triggeredBy}`);
+    if (msg) {
+      log.debug('Received course restriction event, refreshing cache');
 
-    try {
-      if (data.cacheType === 'courseRestrictions') {
+      try {
         await cacheService.loadCourseRestrictions();
         log.debug('Course restrictions cache refreshed successfully');
         cacheRefreshEmitter.emit('courseRestrictions:refreshed');
+      } catch (error) {
+        log.error('Error refreshing course restrictions cache:', error);
+        cacheRefreshEmitter.emit('courseRestrictions:error', error);
       }
-    } catch (error) {
-      log.error(`Error refreshing ${data.cacheType} cache:`, error);
-      cacheRefreshEmitter.emit('courseRestrictions:error', error);
     }
   }
 }
 
 const CacheRefreshMessageHandler = {
   subscribe() {
-    subscribeToCacheRefreshTopic(NATS.getConnection());
+    subscribeToCourseRestrictionTopic(NATS.getConnection()).catch((error) => {
+      log.error('Error in course restriction subscription:', error);
+    });
   },
 
   // Wait for next cache refresh to complete

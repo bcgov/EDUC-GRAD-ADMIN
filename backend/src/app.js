@@ -43,7 +43,7 @@ const scholarshipRouter = require("./routes/scholarships-router");
 
 const messagePubSub = require('./messaging/message-pub-sub');
 messagePubSub.init().then(() => {
-  require('./messaging/handlers/cache-refresh-handler').subscribe();
+  require('./messaging/handlers/course-restriction-created-handler').subscribe();
 }).catch((e) => log.error(e));
 
 //initialize app
