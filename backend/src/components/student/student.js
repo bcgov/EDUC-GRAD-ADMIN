@@ -12,16 +12,23 @@ const {
   sortCourses,
   getUser,
   logApiError,
-} = require("../components/utils");
-const config = require("../config/index");
-const { STUDENT_STATUS_CODE_MAP } = require("./constants/student-status-codes");
-const log = require("../components/logger");
-const auth = require("../components/auth");
+} = require("../utils");
+const config = require("../../config");
+const {
+  STUDENT_STATUS_CODE_MAP,
+} = require("../constants/student-status-codes");
+const log = require("../logger");
+const auth = require("../auth");
 const {
   postStudentAssessment,
   deleteStudentAssessmentByID,
-} = require("../components/assessments/student-assessment");
+} = require("../assessments/student-assessment");
 const { add } = require("lodash");
+const cacheService = require("../cache-service");
+
+const { getCommonServiceData } = require("../utils");
+const HttpStatus = require("http-status-codes");
+const { createFiltersSearchCriteria } = require("./studentFilters");
 
 async function getStudentCourseByStudentID(req, res) {
   const token = auth.getBackendToken(req);
@@ -125,14 +132,17 @@ async function transferStudentCoursesByStudentID(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/courses/transfer`;
+    const url = `${config.get(
+      "server:studentAPIURL"
+    )}/api/v1/student/courses/transfer`;
     const response = await postData(
       token,
       url,
       {
         targetStudentId: req.params?.targetStudentID,
         sourceStudentId: req.params?.sourceStudentID,
-        studentCourseIdsToMove: req.body },
+        studentCourseIdsToMove: req.body,
+      },
       req.session?.correlationID
     );
     return res.status(200).json(response);
@@ -152,7 +162,7 @@ async function mergeStudentCoursesByStudentID(req, res) {
     const body = {
       sourceStudentId: req.params?.sourceStudentID,
       targetStudentId: req.params?.targetStudentID,
-      studentCourseIdsToMove: req.body
+      studentCourseIdsToMove: req.body,
     };
     const addUrl = `${config.get(
       "server:studentAPIURL"
@@ -828,13 +838,68 @@ async function postAdoptPENStudent(req, res) {
   }
 }
 
+async function getStudentGenderCodes(req, res) {
+  try {
+    const cacheService = require("../cache-service");
+    const genders = await cacheService.getGenderCodesJSON();
+    return res.status(200).json(genders);
+  } catch (e) {
+    log.error("Error getting gender codes from cache:", e);
+    return errorResponse(res);
+  }
+}
+
+async function getStudentsPaginated(req, res) {
+  log.debug(
+    `getStudentsPaginated ::: ${JSON.stringify(req.query?.searchParams)}`
+  );
+  try {
+    const search = [];
+    if (req.query?.searchParams) {
+      let criteriaArray = createFiltersSearchCriteria(req.query.searchParams);
+      criteriaArray.forEach((criteria) => {
+        search.push(criteria);
+      });
+    }
+    const params = {
+      params: {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sort: JSON.stringify(req.query.sort),
+        searchCriteriaList: JSON.stringify(search),
+      },
+    };
+    log.debug(
+      `After createFiletersSearchCrideria ::: ${JSON.stringify(params)}`
+    );
+    let data = await getCommonServiceData(
+      `${config.get("server:studentAPIURL")}/api/v1/student/search/pagination`,
+      params
+    );
+    if (req?.query?.returnKey) {
+      let result = data?.content.map(
+        (student) => student[req?.query?.returnKey]
+      );
+      return res.status(HttpStatus.OK).json(result);
+    }
+    return res.status(200).json(data);
+  } catch (e) {
+    await logApiError(e, "Error getting student search paginated list");
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 async function getStudentHistoricActivityByID(req, res) {
   const token = auth.getBackendToken(req);
 
   try {
-    const url = `${config.get("server:studentAPIURL")}/api/v1/student/historic-activity/${
-      req.params?.studentID
-    }`;
+    const url = `${config.get(
+      "server:studentAPIURL"
+    )}/api/v1/student/historic-activity/${req.params?.studentID}`;
     const data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
@@ -893,5 +958,7 @@ module.exports = {
   // STUDENT ADOPT
   postAdoptPENStudent,
   // HISTORIC ACTIVITY
-  getStudentHistoricActivityByID
+  getStudentHistoricActivityByID,
+  getStudentGenderCodes,
+  getStudentsPaginated,
 };

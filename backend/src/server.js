@@ -20,6 +20,12 @@ cacheService.loadCoreg39CoursesToMap().then(() => {
   log.error('Error loading coreg 39 courses during boot .', e);
 });
 
+cacheService.loadGenderCodes().then(() => {
+  log.info('Loaded gender codes data to memory');
+}).catch((e) => {
+  log.error('Error loading gender codes during boot .', e);
+});
+
 cacheService.loadStudentGradeCodes().then(() => {
   log.info('Loaded student grade codes to memory');
 }).catch((e) => {
