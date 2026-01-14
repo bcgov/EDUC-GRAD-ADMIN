@@ -220,7 +220,6 @@ import { useSnackbarStore } from "@/store/modules/snackbar";
 import schoolsService from "@/services/SchoolsService";
 import OpenStatusBadge from "@/components/Common/OpenStatusBadge.vue";
 import SchoolSelect from "@/components/Search/SchoolSelect.vue";
-import sharedMethods from "@/sharedMethods";
 
 export default {
   name: "StudentAssessmentSearch",

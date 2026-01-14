@@ -106,6 +106,7 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap "$APP_NAME"-backend-config-map \
   --from-literal=STUDENT_ASSESSMENT_API_URL="http://student-assessment-api-master.$STUDENT_ASSESSMENT_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --from-literal=SCHOLARSHIP_API_ENDPOINT="http://scholarships-api-master.$SCHOLARSHIP_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --from-literal=COREG_API_ENDPOINT="http://coreg-api-master.$COREG_NAMESPACE-$ENV.svc.cluster.local:8080" \
+  --from-literal=EDUC_STUDENT_API_URL="http://student-api-master.$COMMON_NAMESPACE-$ENV.svc.cluster.local:8080" \
   --dry-run=client -o yaml | oc apply -f -
 
 #### splunk
