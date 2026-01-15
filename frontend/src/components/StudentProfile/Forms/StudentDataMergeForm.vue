@@ -106,8 +106,25 @@
         </v-stepper>
         <v-card-actions>
           <v-btn v-if="step == 0" color="error" variant="outlined" class="text-none" @click="close">Cancel</v-btn>
-          <v-btn v-else-if="step >= 1 && step <= 4" @click="step--" color="bcGovBlue" variant="outlined"
-            :disabled="validationStep || isNextDisabled()">Back</v-btn>
+          <v-tooltip
+              v-else-if="step >= 1 && step <= 4"
+              location="top"
+              :text="'Please complete this step by saving or uncheck your selections to enable access to the previous step.'"
+              :disabled="!(validationStep || isNextDisabled())"
+          >
+            <template #activator="{ props }">
+              <span v-bind="props" style="display:inline-block;">
+                <v-btn
+                    @click="step--"
+                    color="bcGovBlue"
+                    variant="outlined"
+                    :disabled="validationStep || isNextDisabled()"
+                >
+                  Back
+                </v-btn>
+              </span>
+            </template>
+          </v-tooltip>
           <v-spacer />
           <v-btn v-if="step === 0" color="error" variant="flat" class="text-none" @click="saveExaminableStudentCourses"
             :disabled="validationStep ||
@@ -134,8 +151,25 @@
               (val) => val === false
             )
             ">Save GRAD Status</v-btn>
-          <v-btn v-if="step < 4" color="bcGovBlue" variant="flat" class="text-none" @click="step++"
-            :disabled="isNextDisabled()">Next</v-btn>
+          <v-tooltip
+              v-else-if="step < 4"
+              location="top"
+              :text="'Please complete this step by saving or uncheck your selections to enable access to the next step.'"
+              :disabled="!isNextDisabled()"
+          >
+            <template #activator="{ props }">
+              <span v-bind="props" style="display:inline-block;">
+                <v-btn
+                    v-if="step < 4"
+                    color="bcGovBlue"
+                    variant="flat"
+                    class="text-none"
+                    @click="step++"
+                    :disabled="isNextDisabled()">Next</v-btn>
+              </span>
+            </template>
+          </v-tooltip>
+
           <v-btn v-if="step === 4" color="error" variant="flat" class="text-none" @click="completeMerge" :disabled="validationStep || !studentDataToMerge.note.mergeCompleted
             ">Complete Student Merge</v-btn>
         </v-card-actions>
