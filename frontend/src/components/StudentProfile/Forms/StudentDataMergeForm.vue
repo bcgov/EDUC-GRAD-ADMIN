@@ -107,7 +107,7 @@
         <v-card-actions>
           <v-btn v-if="step == 0" color="error" variant="outlined" class="text-none" @click="close">Cancel</v-btn>
           <v-btn v-else-if="step >= 1 && step <= 4" @click="step--" color="bcGovBlue" variant="outlined"
-            :disabled="validationStep">Back</v-btn>
+            :disabled="validationStep || isNextDisabled()">Back</v-btn>
           <v-spacer />
           <v-btn v-if="step === 0" color="error" variant="flat" class="text-none" @click="saveExaminableStudentCourses"
             :disabled="validationStep ||
