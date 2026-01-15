@@ -4,10 +4,12 @@ const {
   postData,
   putData,
   formatQueryParamString,
-} = require("./utils");
-const config = require("../config/index");
-const auth = require("./auth");
-const log = require("./logger");
+  getCommonServiceStream,
+  logApiError,
+} = require('./utils');
+const config = require('../config/index');
+const auth = require('./auth');
+const log = require('./logger');
 
 async function getCourseByCodeAndLevel(req, res) {
   const token = auth.getBackendToken(req);
@@ -294,6 +296,44 @@ async function putCourseEventHistory(req, res) {
   }
 }
 
+async function downloadCourseRestrictionsCSV(req, res) {
+  try {
+    const url = `${config.get('server:courseAPIURL')}/api/v2/course/course-restrictions/download`;
+    const apiRes = await getCommonServiceStream(url, {});
+
+    if (apiRes.headers['content-type']) {
+      res.setHeader('Content-Type', apiRes.headers['content-type']);
+    } else {
+      res.setHeader('Content-Type', 'text/csv');
+    }
+
+    if (apiRes.headers['content-disposition']) {
+      res.setHeader('Content-Disposition', apiRes.headers['content-disposition']);
+    } else {
+      res.setHeader('Content-Disposition', 'attachment; filename="CourseRestrictions.csv"');
+    }
+
+    apiRes.data.on('error', async (err) => {
+      await logApiError(err, 'Error streaming course restrictions CSV');
+      if (!res.headersSent) {
+        return errorResponse(res);
+      }
+      res.destroy(err);
+    });
+
+    apiRes.data.pipe(res);
+  } catch (e) {
+    log.error('downloadCourseRestrictionsCSV error:', e);
+    await logApiError(e, 'Error downloading course restrictions CSV');
+    if (!res.headersSent) {
+      if (e.data?.message) {
+        return errorResponse(res, e.data.message, e.status);
+      }
+      return errorResponse(res);
+    }
+  }
+}
+
 async function getAllCoreg39Courses(req, res) {
   try {
     const cacheService = require('./cache-service');
@@ -319,5 +359,6 @@ module.exports = {
   getStudentExamDetailsLegacy,
   getCourseEventHistory,
   putCourseEventHistory,
+  downloadCourseRestrictionsCSV,
   getAllCoreg39Courses,
 };
