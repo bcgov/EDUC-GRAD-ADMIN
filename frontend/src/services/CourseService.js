@@ -12,6 +12,11 @@ export default {
   getCourseRestrictions() {
     return ApiService.apiAxios.get("/api/course/courseRestrictions");
   },
+  downloadCourseRestrictionsCSV() {
+    return ApiService.apiAxios.get("/api/course/courseRestrictions/download", {
+      responseType: 'blob'
+    });
+  },
   getCourseExaminableCourses() {
     return ApiService.apiAxios.get("/api/codes/examinableCourses");
   },

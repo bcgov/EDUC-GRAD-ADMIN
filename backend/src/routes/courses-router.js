@@ -15,6 +15,7 @@ const {
   getCourseRequirements,
   getStudentCoursesLegacy,
   getStudentExamDetailsLegacy, getCourseEventHistory, putCourseEventHistory,
+  downloadCourseRestrictionsCSV,
   getAllCoreg39Courses,
 } = require('../components/course');
 const validate = require('../components/validator');
@@ -51,6 +52,13 @@ router.get(
   passport.authenticate('jwt', { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getCourseByID
+);
+
+router.get(
+  '/courseRestrictions/download',
+  passport.authenticate('jwt', { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  downloadCourseRestrictionsCSV
 );
 
 router.get(

@@ -1,11 +1,24 @@
 <template>
   <div>
-    <v-row>
-      <h3 class="ml-4 mt-5">Course Restrictions</h3>
+
+    <v-row class="align-center ml-2 mt-5 mr-3 mb-0">
+      <v-col cols="auto">
+        <h3 class="my-0">Course Restrictions</h3>
+      </v-col>
       <v-spacer />
-      <span v-if="enableCRUD">
+
+      <v-col cols="auto">
+        <DownloadLink
+          label="Course Restrictions"
+          icon="mdi-download"
+          :downloadAction="CourseService.downloadCourseRestrictionsCSV"
+          @success="snackbarStore.showSnackbar('CSV downloaded successfully', 'success', 3000)"
+          @error="snackbarStore.showSnackbar('Error downloading CSV', 'error', 5000)"
+        />
+      </v-col>
+      <v-col cols="auto" v-if="enableCRUD">
         <CourseRestrictionsCreateForm />
-      </span>
+      </v-col>
     </v-row>
     <v-spacer />
     <v-row no-gutters>
@@ -34,7 +47,7 @@
       </v-row>
 
       <v-data-table
-        v-if="courseRestrictions.length > 0"
+        v-if="!loading && courseRestrictions.length > 0"
         v-model="selected"
         :items="courseRestrictions"
         :headers="courseRestrictionHeaders"
@@ -57,25 +70,40 @@
         </template>
       </v-data-table>
     </v-row>
+    <v-row justify="center">
+      <v-progress-circular
+          v-if="loading"
+          color="primary"
+          indeterminate
+      ></v-progress-circular>
+    </v-row>
+
   </div>
 </template>
 <script>
 import { useAppStore } from "@/store/modules/app";
 import { useCourseStore } from "@/store/modules/course.js";
+import { useSnackbarStore } from "@/store/modules/snackbar";
 import { mapState, mapActions } from "pinia";
 import CourseRestrictionsCreateForm from "@/components/Courses/Forms/CourseRestrictionsCreateForm.vue";
 import CourseRestrictionsUpdateForm from "@/components/Courses/Forms/CourseRestrictionsUpdateForm.vue";
+import DownloadLink from "@/components/Common/DownloadLink.vue";
+import CourseService from "@/services/CourseService.js";
 export default {
   name: "CourseRestrictions",
   components: {
     CourseRestrictionsCreateForm: CourseRestrictionsCreateForm,
     CourseRestrictionsUpdateForm: CourseRestrictionsUpdateForm,
+    DownloadLink: DownloadLink,
   },
   computed: {
     ...mapState(useCourseStore, {
       courseRestrictions: "getCourseRestrictions",
     }),
     ...mapState(useAppStore, ["enableCRUD"]),
+    CourseService() {
+      return CourseService;
+    },
 
     courseRestrictionHeaders() {
       const tableHeaders = [
@@ -132,14 +160,18 @@ export default {
     },
   },
   created() {
-    this.loadCourseRestrictions();
+    this.loadCourseRestrictions().finally(() => {
+      this.loading = false;
+    });
   },
   data() {
     return {
+      snackbarStore: useSnackbarStore(),
       defaultItemsPerPage: 20,
       rawSearchInput: "",
       search: "",
       selected: [],
+      loading: true,
     };
   },
   methods: {

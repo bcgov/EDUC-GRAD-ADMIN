@@ -1,8 +1,8 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="1024">
     <template v-slot:activator="{ props }">
-      <div class="pr-14">
-        <v-btn class="text-none mt-4" color="bcGovBlue" prepend-icon="mdi-plus"
+      <div>
+        <v-btn class="text-none" color="bcGovBlue" prepend-icon="mdi-plus"
           @click="openCreateCoursRestrictionsDialog()" text="Add Course Restriction" :disabled="!hasPermissions('COURSE', 'restrictionUpdate')"/>
       </div>
     </template>
