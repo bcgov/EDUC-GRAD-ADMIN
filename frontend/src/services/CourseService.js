@@ -71,4 +71,14 @@ export default {
   putCourseEventHistory(json) {
     return ApiService.apiAxios.put("/api/course/eventHistory", json);
   },
+  getCoursePaginated(pageNumber, pageSize, sort, searchCriteriaList) {
+    return ApiService.apiAxios.get("/api/course/paginated", {
+      params: {
+        pageNumber,
+        pageSize,
+        sort: JSON.stringify(sort),
+        searchCriteriaList: JSON.stringify(searchCriteriaList)
+      }
+    });
+  },
 };
