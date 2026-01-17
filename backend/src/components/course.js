@@ -1,6 +1,7 @@
 const {
   errorResponse,
   getData,
+  getDataWithParams,
   postData,
   putData,
   formatQueryParamString,
@@ -334,6 +335,38 @@ async function downloadCourseRestrictionsCSV(req, res) {
   }
 }
 
+async function getCoursePaginated(req, res) {
+  try {
+    const token = await auth.getBackendServiceToken();
+    const url = `${config.get('server:coregAPIURL')}/api/v1/course/information/paginated`;
+
+    const pageNumber = req.query.pageNumber;
+    const pageSize = req.query.pageSize;
+    const sort = req.query.sort;
+    const searchCriteriaList = req.query.searchCriteriaList;
+
+    const params = {
+      params: {
+        pageNumber,
+        pageSize,
+        sort,
+        searchCriteriaList
+      }
+    };
+
+    const response = await getDataWithParams(token, url, params, req.session?.correlationID);
+
+
+    return res.status(200).json(response);
+  } catch (e) {
+    log.error('Error getting paginated courses:', e);
+    if (e.data?.message) {
+      return errorResponse(res, e.data.message, e.status);
+    }
+    return errorResponse(res);
+  }
+}
+
 async function getAllCoreg39Courses(req, res) {
   try {
     const cacheService = require('./cache-service');
@@ -360,5 +393,6 @@ module.exports = {
   getCourseEventHistory,
   putCourseEventHistory,
   downloadCourseRestrictionsCSV,
+  getCoursePaginated,
   getAllCoreg39Courses,
 };
