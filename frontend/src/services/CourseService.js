@@ -81,4 +81,9 @@ export default {
       }
     });
   },
+  downloadCoursesCSV() {
+    return ApiService.apiAxios.get("/api/course/download", {
+      responseType: 'blob'
+    });
+  },
 };
