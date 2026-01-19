@@ -37,6 +37,7 @@ import RequirementTypes from "../components/Programs/RequirementTypes.vue";
 import GraduationProgramTranscriptMessage from "../components/Programs/GraduationProgramTranscriptMessage.vue";
 
 //Courses
+import CoursesTable from "../components/Courses/CoursesTable.vue";
 import ExaminableCourses from "../components/Courses/ExaminableCourses.vue";
 import CourseRestrictions from "../components/Courses/CourseRestrictions.vue";
 import CourseRequirements from "../components/Courses/CourseRequirementsSearch.vue";
@@ -205,7 +206,14 @@ const router = createRouter({
        children: [
         {
           path: "",
-          component: CourseRestrictions,
+          component: CoursesTable,
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
+          path: "courses",
+          component: CoursesTable,
           meta: {
             requiresAuth: true,
           },

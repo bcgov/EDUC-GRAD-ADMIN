@@ -4,6 +4,7 @@
     <div>
       <v-card no-body>
         <v-tabs v-model="tab" bg-color="bcGovLightGrey">
+          <v-tab to="/courses/courses" class="text-none" size="large">Courses</v-tab>
           <v-tab to="/courses/course-restrictions" class="text-none" size="large">Course Restrictions</v-tab>
           <v-tab to="/courses/course-requirements/" class="text-none" size="large">Course Requirements</v-tab>
           <v-tab to="/courses/examinable-courses/" class="text-none" size="large">Examinable Courses</v-tab>
@@ -27,6 +28,7 @@
 <script>
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import DisplayTable from "@/components/DisplayTable.vue";
+import CoursesTable from "@/components/Courses/CoursesTable.vue";
 import CourseRestrictions from "@/components/Courses/CourseRestrictions.vue";
 import CourseRequirementsSearch from "@/components/Courses/CourseRequirementsSearch.vue";
 import FineArtsAppliedSkillsCodes from "@/components/Courses/FineArtsAppliedSkillsCodes.vue";
@@ -37,6 +39,7 @@ export default {
   name: "courses",
   components: {
     DisplayTable: DisplayTable,
+    CoursesTable: CoursesTable,
     CourseRestrictions: CourseRestrictions,
     CourseRequirementsSearch: CourseRequirementsSearch,
     FineArtsAppliedSkillsCodes: FineArtsAppliedSkillsCodes,
