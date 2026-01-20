@@ -518,7 +518,7 @@ export default {
   computed: {
     ...mapState(courseSearchStore, ["searchParams"]),
     ...mapState(useAppStore, {
-      getSchoolsList: "getSchoolsList",
+      getSchoolsList: "getNonPSISchoolsList",
       schoolByMincode: "schoolByMincode",
       districtsList: "getDistrictList",
       studentGradeCodes: "studentGradeCodes",
