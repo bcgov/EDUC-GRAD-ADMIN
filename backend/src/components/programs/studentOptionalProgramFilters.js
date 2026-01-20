@@ -98,16 +98,42 @@ function createMoreFiltersSearchCriteria(searchFilter) {
   });
 
   if (searchFilter.optionalProgramCompletionDateFrom || searchFilter.optionalProgramCompletionDateTo) {
-    const startDate = searchFilter.optionalProgramCompletionDateFrom ? `${searchFilter.optionalProgramCompletionDateFrom}T00:00:00` : '';
-    const endDate = searchFilter.optionalProgramCompletionDateTo ? `${searchFilter.optionalProgramCompletionDateTo}T23:59:59` : '';
+    if (searchFilter.optionalProgramCompletionDateFrom && searchFilter.optionalProgramCompletionDateTo) {
+      const startDate = `${searchFilter.optionalProgramCompletionDateFrom}T00:00:00`;
+      const endDate = `${searchFilter.optionalProgramCompletionDateTo}T23:59:59`;
 
-    searchCriteriaList.push({
-      key: 'completionDate',
-      operation: FILTER_OPERATION.DATE_RANGE,
-      value: `${startDate},${endDate}`,
-      valueType: VALUE_TYPE.DATE_TIME,
-      condition: CONDITION.AND
-    });
+      searchCriteriaList.push({
+        key: 'completionDate',
+        operation: FILTER_OPERATION.DATE_RANGE,
+        value: `${startDate},${endDate}`,
+        valueType: VALUE_TYPE.DATE_TIME,
+        condition: CONDITION.AND
+      });
+    }
+    else if (searchFilter.optionalProgramCompletionDateFrom) {
+      const exactDate = `${searchFilter.optionalProgramCompletionDateFrom}T00:00:00`;
+      const endOfDay = `${searchFilter.optionalProgramCompletionDateFrom}T23:59:59`;
+
+      searchCriteriaList.push({
+        key: 'completionDate',
+        operation: FILTER_OPERATION.DATE_RANGE,
+        value: `${exactDate},${endOfDay}`,
+        valueType: VALUE_TYPE.DATE_TIME,
+        condition: CONDITION.AND
+      });
+    }
+    else if (searchFilter.optionalProgramCompletionDateTo) {
+      const exactDate = `${searchFilter.optionalProgramCompletionDateTo}T00:00:00`;
+      const endOfDay = `${searchFilter.optionalProgramCompletionDateTo}T23:59:59`;
+
+      searchCriteriaList.push({
+        key: 'completionDate',
+        operation: FILTER_OPERATION.DATE_RANGE,
+        value: `${exactDate},${endOfDay}`,
+        valueType: VALUE_TYPE.DATE_TIME,
+        condition: CONDITION.AND
+      });
+    }
   }
 
   const search = [];
