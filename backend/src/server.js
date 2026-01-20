@@ -85,6 +85,18 @@ cacheService.loadExaminableCourses().then(() => {
   log.error('Error loading examinable courses during boot.', e);
 });
 
+cacheService.loadInstituteSchools().then(() => {
+  log.info('Loaded institute schools to memory');
+}).catch((e) => {
+  log.error('Error loading institute schools during boot.', e);
+});
+
+cacheService.loadInstituteDistricts().then(() => {
+  log.info('Loaded institute districts to memory');
+}).catch((e) => {
+  log.error('Error loading institute districts during boot.', e);
+});
+
 // Start the cache reload scheduler (runs nightly at 12:15 AM)
 require('./components/scheduler');
 

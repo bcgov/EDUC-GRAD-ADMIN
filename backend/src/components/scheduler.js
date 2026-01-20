@@ -44,6 +44,12 @@ try {
       await cacheService.loadExaminableCourses();
       log.info('Reloaded examinable courses cache');
 
+      await cacheService.loadInstituteSchools();
+      log.info('Reloaded institute schools cache');
+
+      await cacheService.loadInstituteDistricts();
+      log.info('Reloaded institute districts cache');
+
       log.info('Scheduled cache reload completed successfully');
     } catch (e) {
       log.error('Error during scheduled cache reload:', e);

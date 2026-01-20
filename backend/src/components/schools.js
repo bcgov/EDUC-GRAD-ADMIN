@@ -4,19 +4,19 @@ const {
   getCommonServiceData,
   putData,
   formatQueryParamString,
-} = require("./utils");
-const config = require("../config/index");
-const auth = require("./auth");
-const log = require("../components/logger");
+} = require('./utils');
+const config = require('../config/index');
+const auth = require('./auth');
+const log = require('../components/logger');
+const cacheService = require('./cache-service');
 
 async function getInstituteSchoolsList(req, res) {
-  const token = auth.getBackendToken(req);
   try {
-    const url = `${config.get("server:gradTraxAPIURL")}/api/v2/trax/school`;
-    const data = await getData(token, url, req.session?.correlationID);
+    const data = cacheService.getInstituteSchoolsJSON();
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.message) {
+    log.error('Error getting institute schools list from cache:', e);
+    if (e.data?.message) {
       return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);
@@ -26,13 +26,11 @@ async function getInstituteSchoolsList(req, res) {
 
 async function getInstituteDistrictsList(_req, res) {
   try {
-    const url = `${config.get(
-      "server:instituteAPIURL"
-    )}/api/v1/institute/district`;
-    const data = await getCommonServiceData(url);
+    const data = cacheService.getInstituteDistrictsJSON();
     return res.status(200).json(data);
   } catch (e) {
-    if (e.data.message) {
+    log.error('Error getting institute districts list from cache:', e);
+    if (e.data?.message) {
       return errorResponse(res, e.data.message, e.status);
     } else {
       return errorResponse(res);

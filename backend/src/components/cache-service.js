@@ -19,6 +19,8 @@ let citizenshipCodes = [];
 let countryCodes = [];
 let provinceCodes = [];
 let examinableCourses = [];
+let instituteSchools = [];
+let instituteDistricts = [];
 
 const cacheService = {
   async loadGenderCodes() {
@@ -287,6 +289,48 @@ const cacheService = {
   },
   getExaminableCoursesJSON() {
     return examinableCourses;
+  },
+  async loadInstituteSchools() {
+    log.debug('Loading institute schools');
+    await retry(async () => {
+      try {
+        const instituteSchoolsResponse = await getCommonServiceData(`${config.get('server:gradTraxAPIURL')}/api/v2/trax/school`);
+        instituteSchools = []; // reset the value
+        if (instituteSchoolsResponse && instituteSchoolsResponse.length > 0) {
+          instituteSchools = instituteSchoolsResponse;
+        }
+        log.info(`Loaded ${instituteSchools.length} institute schools.`);
+      } catch (err) {
+        log.error('Failed to load institute schools, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getInstituteSchoolsJSON() {
+    return instituteSchools;
+  },
+  async loadInstituteDistricts() {
+    log.debug('Loading institute districts');
+    await retry(async () => {
+      try {
+        const instituteDistrictsResponse = await getCommonServiceData(`${config.get('server:instituteAPIURL')}/api/v1/institute/district`);
+        instituteDistricts = []; // reset the value
+        if (instituteDistrictsResponse && instituteDistrictsResponse.length > 0) {
+          instituteDistricts = instituteDistrictsResponse;
+        }
+        log.info(`Loaded ${instituteDistricts.length} institute districts.`);
+      } catch (err) {
+        log.error('Failed to load institute districts, will retry:', err);
+        throw err;
+      }
+    }, {
+      retries: 50
+    });
+  },
+  getInstituteDistrictsJSON() {
+    return instituteDistricts;
   },
 };
 
