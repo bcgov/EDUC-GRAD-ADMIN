@@ -227,7 +227,7 @@
             id="course-search-submit"
             v-on:click="onSearchClicked"
             :loading="searchLoading"
-            :disabled="searchLoading"
+            :disabled="searchLoading || !hasCourseSearch"
             variant="flat"
             color="primary"
             class="text-none"
@@ -527,6 +527,22 @@ export default {
     courseOptions() {
       return this.appStore.getCoregCourses.slice().sort((a, b) => {
         return a.externalCode.localeCompare(b.externalCode);
+      });
+    },
+    hasCourseSearch() {
+      const courseFields = [
+        this.searchParams.courseID,
+        this.searchParams.associatedExam,
+        this.searchParams.finalLetterGrade,
+        this.searchParams.courseSessionFrom,
+        this.searchParams.courseSessionTo,
+        this.searchParams.equivalencyChallenge,
+        this.searchParams.fineArtsAppliedSkill,
+      ];
+
+      return courseFields.some(field => {
+        if (field === null || field === undefined) return false;
+        return !(typeof field === 'string' && field.trim() === '');
       });
     },
   },
