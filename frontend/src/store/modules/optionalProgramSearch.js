@@ -11,8 +11,6 @@ export const optionalProgramSearchStore = defineStore("optionalProgramSearch", {
       optionalProgram: null,
       optionalProgramCompletionDateFrom: null,
       optionalProgramCompletionDateTo: null,
-      program: null,
-      grade: null,
     },
   }),
   getters: {
@@ -32,8 +30,6 @@ export const optionalProgramSearchStore = defineStore("optionalProgramSearch", {
         optionalProgram: null,
         optionalProgramCompletionDateFrom: null,
         optionalProgramCompletionDateTo: null,
-        program: null,
-        grade: null,
       };
     },
   },

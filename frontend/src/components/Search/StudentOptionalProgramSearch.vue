@@ -106,36 +106,6 @@
             clearable
           />
         </div>
-        <div class="optional-program-search-field col-12 col-md-2">
-          <v-autocomplete
-            id="program"
-            label="Program"
-            :items="programOptions"
-            item-title="programCode"
-            item-value="programCode"
-            variant="outlined"
-            density="compact"
-            class="form__input"
-            v-model.trim="searchParams.program"
-            v-on:keyup="keyHandler"
-            clearable
-          />
-        </div>
-        <div class="optional-program-search-field col-12 col-md-2">
-          <v-autocomplete
-            id="grade"
-            label="Grade"
-            :items="studentGradeCodes.sort((a, b) => a.studentGradeCode.localeCompare(b.studentGradeCode))"
-            item-title="studentGradeCode"
-            item-value="studentGradeCode"
-            variant="outlined"
-            density="compact"
-            class="form__input"
-            v-model.trim="searchParams.grade"
-            v-on:keyup="keyHandler"
-            clearable
-          />
-        </div>
       </v-row>
       <v-row>
         <div class="optional-program-search-button">
@@ -376,8 +346,6 @@ export default {
       getSchoolsList: "getSchoolsList",
       schoolByMincode: "schoolByMincode",
       districtsList: "getDistrictList",
-      studentGradeCodes: "studentGradeCodes",
-      programOptions: "programOptions",
       optionalProgramOptions: "optionalProgramOptions",
       groupedOptionalProgramOptions: "groupedOptionalProgramOptions",
       optionalProgramIdToNameMap: "optionalProgramIdToNameMap",
