@@ -5,6 +5,15 @@
         <h3 class="my-0">Courses</h3>
       </v-col>
       <v-spacer />
+      <v-col cols="auto">
+        <DownloadLink
+          label="Courses"
+          icon="mdi-download"
+          :downloadAction="downloadCourses"
+          @success="snackbarStore.showSnackbar('CSV downloaded successfully', 'success', 3000)"
+          @error="snackbarStore.showSnackbar('Error downloading CSV', 'error', 5000)"
+        />
+      </v-col>
     </v-row>
     <v-spacer />
     <v-row no-gutters>
@@ -75,9 +84,13 @@
 <script>
 import { useSnackbarStore } from "@/store/modules/snackbar";
 import CourseService from "@/services/CourseService.js";
+import DownloadLink from "@/components/Common/DownloadLink.vue";
 
 export default {
   name: "CoursesTable",
+  components: {
+    DownloadLink,
+  },
   beforeUnmount() {
     if (this.searchDebounceTimer) {
       clearTimeout(this.searchDebounceTimer);
@@ -283,6 +296,9 @@ export default {
         itemsPerPage: 10,
         sortBy: [],
       });
+    },
+    downloadCourses() {
+      return CourseService.downloadCoursesCSV();
     },
   },
 };

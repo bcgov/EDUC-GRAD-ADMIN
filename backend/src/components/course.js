@@ -367,6 +367,26 @@ async function getCoursePaginated(req, res) {
   }
 }
 
+async function downloadCoursesCSV(req, res) {
+  try {
+    const url = `${config.get('server:coregAPIURL')}/api/v1/course/information/download`;
+
+    log.debug('Streaming course search CSV download');
+    const response = await getCommonServiceStream(url);
+
+    res.setHeader('Content-Type', response.headers['content-type']);
+    res.setHeader('Content-Disposition', response.headers['content-disposition'] || 'attachment; filename="Courses.csv"');
+
+    response.data.pipe(res);
+  } catch (e) {
+    log.error('Error downloading course search CSV:', e);
+    if (e.data?.message) {
+      return errorResponse(res, e.data.message, e.status);
+    }
+    return errorResponse(res);
+  }
+}
+
 async function getAllCoreg39Courses(req, res) {
   try {
     const cacheService = require('./cache-service');
@@ -394,5 +414,6 @@ module.exports = {
   putCourseEventHistory,
   downloadCourseRestrictionsCSV,
   getCoursePaginated,
+  downloadCoursesCSV,
   getAllCoreg39Courses,
 };
