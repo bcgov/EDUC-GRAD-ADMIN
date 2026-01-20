@@ -36,22 +36,6 @@ function createMoreFiltersSearchCriteria(searchFilter) {
           condition: CONDITION.AND
         });
       }
-    } else if (key === 'program' && pValue) {
-      searchCriteriaList.push({
-        key: 'graduationStudentRecordEntity.program',
-        operation: FILTER_OPERATION.EQUAL,
-        value: pValue,
-        valueType: VALUE_TYPE.STRING,
-        condition: CONDITION.AND
-      });
-    } else if (key === 'grade' && pValue) {
-      searchCriteriaList.push({
-        key: 'graduationStudentRecordEntity.studentGrade',
-        operation: FILTER_OPERATION.EQUAL,
-        value: pValue,
-        valueType: VALUE_TYPE.STRING,
-        condition: CONDITION.AND
-      });
     } else if (key === 'programComplete' && pValue) {
       if (pValue === 'yes') {
         searchCriteriaList.push({
