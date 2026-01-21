@@ -330,7 +330,8 @@
       "READ_GRAD_LETTER_GRADE_DATA",
       "READ_GRAD_COURSE_DATA",
       "READ_GRAD_STUDENT_COURSE_DATA",
-      "READ_PSI"
+      "READ_PSI",
+      "READ_GRAD_SCHOOL_DATA"
     ]
   }
 ]

@@ -330,7 +330,7 @@ export default {
   computed: {
     ...mapState(assessmentSearchStore, ['searchParams', 'wroteFlagOptions']),
     ...mapState(useAppStore, {
-      getSchoolsList: "getSchoolsList",
+      getSchoolsList: "getNonPSISchoolsList",
       displaySchoolCategoryCode: "displaySchoolCategoryCode",
       getSchoolById: "getSchoolById",
       provincialSpecialCaseCodes: "provincialSpecialCaseCodes",

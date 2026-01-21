@@ -54,6 +54,11 @@ export const useAppStore = defineStore("app", {
     getStudentStatusOptions: (state) => state.studentStatusOptions,
     getUngradReasons: (state) => state.ungradReasons,
     getSchoolsList: (state) => state.schoolsList,
+    getNonPSISchoolsList: (state) => {
+      return state.schoolsList.filter(school =>
+        school.schoolCategoryCode !== 'POST_SEC'
+      );
+    },
     getSchoolById: (state) => {
       return (schoolId) =>
         state.schoolsList.find((school) => schoolId === school.schoolId);

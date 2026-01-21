@@ -343,7 +343,7 @@ export default {
   computed: {
     ...mapState(optionalProgramSearchStore, ["searchParams"]),
     ...mapState(useAppStore, {
-      getSchoolsList: "getSchoolsList",
+      getSchoolsList: "getNonPSISchoolsList",
       schoolByMincode: "schoolByMincode",
       districtsList: "getDistrictList",
       optionalProgramOptions: "optionalProgramOptions",
