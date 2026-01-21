@@ -152,7 +152,7 @@
             )
             ">Save GRAD Status</v-btn>
           <v-tooltip
-              v-else-if="step < 4"
+              v-if="step < 4"
               location="top"
               :text="'Please complete this step by saving or uncheck your selections to enable access to the next step.'"
               :disabled="!isNextDisabled()"
