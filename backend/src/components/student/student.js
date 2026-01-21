@@ -911,6 +911,58 @@ async function getStudentHistoricActivityByID(req, res) {
   }
 }
 
+async function getStudentSearchReport(req, res) {
+  try {
+    const search = [];
+    if (req.query?.searchParams) {
+      const criteriaArray = createFiltersSearchCriteria(req.query.searchParams);
+      criteriaArray.forEach((criteria) => search.push(criteria));
+    }
+
+    const url = `${config.get('server:studentAPIURL')}/api/v1/student/report/students/search/download`;
+
+    const params = {
+      params: {
+        searchCriteriaList: JSON.stringify(search),
+      },
+    };
+
+    const { getCommonServiceStream } = require('../utils');
+    const apiRes = await getCommonServiceStream(url, params);
+
+    if (apiRes.headers['content-type']) {
+      res.setHeader('Content-Type', apiRes.headers['content-type']);
+    } else {
+      res.setHeader('Content-Type', 'text/csv');
+    }
+
+    if (apiRes.headers['content-disposition']) {
+      res.setHeader('Content-Disposition', apiRes.headers['content-disposition']);
+    } else {
+      res.setHeader('Content-Disposition', 'attachment; filename="students.csv"');
+    }
+
+    apiRes.data.on('error', async (err) => {
+      await logApiError(err, 'Error streaming student search report');
+      if (!res.headersSent) {
+        return errorResponse(res);
+      }
+      res.destroy(err);
+    });
+
+    apiRes.data.pipe(res);
+  } catch (e) {
+    await logApiError(e, 'Error getting student search report');
+    if (!res.headersSent) {
+      if (e.data?.message) {
+        return errorResponse(res, e.data.message, e.status);
+      }
+      return errorResponse(res);
+    }
+    res.destroy(e);
+  }
+}
+
 module.exports = {
   // STUDENT COURSES
   getStudentCourseByStudentID,
@@ -961,4 +1013,5 @@ module.exports = {
   getStudentHistoricActivityByID,
   getStudentGenderCodes,
   getStudentsPaginated,
+  getStudentSearchReport,
 };
