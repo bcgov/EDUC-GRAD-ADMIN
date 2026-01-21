@@ -939,13 +939,15 @@ export default {
   destroyed() {
     window.removeEventListener("resize", this.handleResize);
   },
-  beforeRouteUpdate(next) {
-    StudentService.getStudentByID(this.quickSearchId)
+  beforeRouteUpdate(to, from, next) {
+    const newStudentId = to.params.studentId;
+    StudentService.getStudentByID(newStudentId)
       .then((response) => {
         this.pen = response.data.pen;
         this.setStudentPen(this.pen);
-        this.setStudentId(this.quickSearchId);
-        this.loadStudent(this.quickSearchId);
+        this.setStudentId(newStudentId);
+        this.loadStudent(newStudentId);
+        next();
       })
       .catch((error) => {
         if (error.handledByInterceptor) {
@@ -953,7 +955,8 @@ export default {
           console.warn(
             "Error already handled by interceptor, skipping component snackbar."
           );
-          return; // <--- STOP EXECUTION
+          next(false);
+          return;
         }
         if (error.response.status) {
           this.snackbarStore.showSnackbar(
@@ -962,8 +965,8 @@ export default {
             5000
           );
         }
+        next(false);
       });
-    next();
   },
   methods: {
     ...mapActions(useStudentStore, [
