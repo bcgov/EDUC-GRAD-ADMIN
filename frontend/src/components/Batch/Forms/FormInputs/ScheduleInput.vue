@@ -168,7 +168,7 @@
 </template>
 <script>
 import { ref, watch } from "vue";
-import { VTimePicker } from "vuetify/components";
+import { VTimePicker } from "vuetify/labs/VTimePicker";
 import { useDate } from "vuetify";
 import { useVuelidate } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
