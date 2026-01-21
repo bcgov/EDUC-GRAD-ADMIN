@@ -214,9 +214,6 @@ export default {
   beforeDestroy() {
     window.removeEventListener("resize", this.updateDimensions);
   },
-  async created() {
-    this.loadStudent = loadStudent; // Assign loadStudent to this context
-  },
   methods: {
     updateDimensions() {
       //console.log(window.innerWidth); // Log the current window width for debugging
