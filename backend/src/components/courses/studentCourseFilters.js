@@ -48,21 +48,41 @@ function createMoreFiltersSearchCriteria(searchFilter) {
         condition: CONDITION.AND
       });
     } else if (key === 'courseSessionFrom' && pValue) {
-      searchCriteriaList.push({
-        key: 'courseSession',
-        operation: FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO,
-        value: pValue.replace('-', ''),
-        valueType: VALUE_TYPE.STRING,
-        condition: CONDITION.AND
-      });
+      if (searchFilter.courseSessionTo) {
+        searchCriteriaList.push({
+          key: 'courseSession',
+          operation: FILTER_OPERATION.GREATER_THAN_OR_EQUAL_TO,
+          value: pValue.replace('-', ''),
+          valueType: VALUE_TYPE.STRING,
+          condition: CONDITION.AND
+        });
+      } else {
+        searchCriteriaList.push({
+          key: 'courseSession',
+          operation: FILTER_OPERATION.EQUAL,
+          value: pValue.replace('-', ''),
+          valueType: VALUE_TYPE.STRING,
+          condition: CONDITION.AND
+        });
+      }
     } else if (key === 'courseSessionTo' && pValue) {
-      searchCriteriaList.push({
-        key: 'courseSession',
-        operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO,
-        value: pValue.replace('-', ''),
-        valueType: VALUE_TYPE.STRING,
-        condition: CONDITION.AND
-      });
+      if (searchFilter.courseSessionFrom) {
+        searchCriteriaList.push({
+          key: 'courseSession',
+          operation: FILTER_OPERATION.LESS_THAN_OR_EQUAL_TO,
+          value: pValue.replace('-', ''),
+          valueType: VALUE_TYPE.STRING,
+          condition: CONDITION.AND
+        });
+      } else {
+        searchCriteriaList.push({
+          key: 'courseSession',
+          operation: FILTER_OPERATION.EQUAL,
+          value: pValue.replace('-', ''),
+          valueType: VALUE_TYPE.STRING,
+          condition: CONDITION.AND
+        });
+      }
     } else if (key === 'equivalencyChallenge' && pValue) {
       let codeValue = '';
       if (pValue === 'equivalency') {
@@ -169,16 +189,42 @@ function createMoreFiltersSearchCriteria(searchFilter) {
   });
 
   if (searchFilter.completionDateFrom || searchFilter.completionDateTo) {
-    const startDate = searchFilter.completionDateFrom ? `${searchFilter.completionDateFrom}T00:00:00` : '';
-    const endDate = searchFilter.completionDateTo ? `${searchFilter.completionDateTo}T23:59:59` : '';
+    if (searchFilter.completionDateFrom && searchFilter.completionDateTo) {
+      const startDate = `${searchFilter.completionDateFrom}T00:00:00`;
+      const endDate = `${searchFilter.completionDateTo}T23:59:59`;
 
-    searchCriteriaList.push({
-      key: 'graduationStudentRecordEntity.programCompletionDate',
-      operation: FILTER_OPERATION.DATE_RANGE,
-      value: `${startDate},${endDate}`,
-      valueType: VALUE_TYPE.DATE_TIME,
-      condition: CONDITION.AND
-    });
+      searchCriteriaList.push({
+        key: 'graduationStudentRecordEntity.programCompletionDate',
+        operation: FILTER_OPERATION.DATE_RANGE,
+        value: `${startDate},${endDate}`,
+        valueType: VALUE_TYPE.DATE_TIME,
+        condition: CONDITION.AND
+      });
+    }
+    else if (searchFilter.completionDateFrom) {
+      const exactDate = `${searchFilter.completionDateFrom}T00:00:00`;
+      const endOfDay = `${searchFilter.completionDateFrom}T23:59:59`;
+
+      searchCriteriaList.push({
+        key: 'graduationStudentRecordEntity.programCompletionDate',
+        operation: FILTER_OPERATION.DATE_RANGE,
+        value: `${exactDate},${endOfDay}`,
+        valueType: VALUE_TYPE.DATE_TIME,
+        condition: CONDITION.AND
+      });
+    }
+    else if (searchFilter.completionDateTo) {
+      const exactDate = `${searchFilter.completionDateTo}T00:00:00`;
+      const endOfDay = `${searchFilter.completionDateTo}T23:59:59`;
+
+      searchCriteriaList.push({
+        key: 'graduationStudentRecordEntity.programCompletionDate',
+        operation: FILTER_OPERATION.DATE_RANGE,
+        value: `${exactDate},${endOfDay}`,
+        valueType: VALUE_TYPE.DATE_TIME,
+        condition: CONDITION.AND
+      });
+    }
   }
 
   const search = [];

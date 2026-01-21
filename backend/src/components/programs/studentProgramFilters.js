@@ -113,29 +113,81 @@ function createMoreFiltersSearchCriteria(searchFilter) {
   });
 
   if (searchFilter.completionDateFrom || searchFilter.completionDateTo) {
-    const startDate = searchFilter.completionDateFrom ? `${searchFilter.completionDateFrom}T00:00:00` : '';
-    const endDate = searchFilter.completionDateTo ? `${searchFilter.completionDateTo}T23:59:59` : '';
+    if (searchFilter.completionDateFrom && searchFilter.completionDateTo) {
+      const startDate = `${searchFilter.completionDateFrom}T00:00:00`;
+      const endDate = `${searchFilter.completionDateTo}T23:59:59`;
 
-    searchCriteriaList.push({
-      key: 'programCompletionDate',
-      operation: FILTER_OPERATION.DATE_RANGE,
-      value: `${startDate},${endDate}`,
-      valueType: VALUE_TYPE.DATE_TIME,
-      condition: CONDITION.AND
-    });
+      searchCriteriaList.push({
+        key: 'programCompletionDate',
+        operation: FILTER_OPERATION.DATE_RANGE,
+        value: `${startDate},${endDate}`,
+        valueType: VALUE_TYPE.DATE_TIME,
+        condition: CONDITION.AND
+      });
+    }
+    else if (searchFilter.completionDateFrom) {
+      const exactDate = `${searchFilter.completionDateFrom}T00:00:00`;
+      const endOfDay = `${searchFilter.completionDateFrom}T23:59:59`;
+
+      searchCriteriaList.push({
+        key: 'programCompletionDate',
+        operation: FILTER_OPERATION.DATE_RANGE,
+        value: `${exactDate},${endOfDay}`,
+        valueType: VALUE_TYPE.DATE_TIME,
+        condition: CONDITION.AND
+      });
+    }
+    else if (searchFilter.completionDateTo) {
+      const exactDate = `${searchFilter.completionDateTo}T00:00:00`;
+      const endOfDay = `${searchFilter.completionDateTo}T23:59:59`;
+
+      searchCriteriaList.push({
+        key: 'programCompletionDate',
+        operation: FILTER_OPERATION.DATE_RANGE,
+        value: `${exactDate},${endOfDay}`,
+        valueType: VALUE_TYPE.DATE_TIME,
+        condition: CONDITION.AND
+      });
+    }
   }
 
   if (searchFilter.adultStartDateFrom || searchFilter.adultStartDateTo) {
-    const startDate = searchFilter.adultStartDateFrom ? `${searchFilter.adultStartDateFrom}T00:00:00` : '';
-    const endDate = searchFilter.adultStartDateTo ? `${searchFilter.adultStartDateTo}T23:59:59` : '';
+    if (searchFilter.adultStartDateFrom && searchFilter.adultStartDateTo) {
+      const startDate = `${searchFilter.adultStartDateFrom}T00:00:00`;
+      const endDate = `${searchFilter.adultStartDateTo}T23:59:59`;
 
-    searchCriteriaList.push({
-      key: 'adultStartDate',
-      operation: FILTER_OPERATION.DATE_RANGE,
-      value: `${startDate},${endDate}`,
-      valueType: VALUE_TYPE.DATE_TIME,
-      condition: CONDITION.AND
-    });
+      searchCriteriaList.push({
+        key: 'adultStartDate',
+        operation: FILTER_OPERATION.DATE_RANGE,
+        value: `${startDate},${endDate}`,
+        valueType: VALUE_TYPE.DATE_TIME,
+        condition: CONDITION.AND
+      });
+    }
+    else if (searchFilter.adultStartDateFrom) {
+      const exactDate = `${searchFilter.adultStartDateFrom}T00:00:00`;
+      const endOfDay = `${searchFilter.adultStartDateFrom}T23:59:59`;
+
+      searchCriteriaList.push({
+        key: 'adultStartDate',
+        operation: FILTER_OPERATION.DATE_RANGE,
+        value: `${exactDate},${endOfDay}`,
+        valueType: VALUE_TYPE.DATE_TIME,
+        condition: CONDITION.AND
+      });
+    }
+    else if (searchFilter.adultStartDateTo) {
+      const exactDate = `${searchFilter.adultStartDateTo}T00:00:00`;
+      const endOfDay = `${searchFilter.adultStartDateTo}T23:59:59`;
+
+      searchCriteriaList.push({
+        key: 'adultStartDate',
+        operation: FILTER_OPERATION.DATE_RANGE,
+        value: `${exactDate},${endOfDay}`,
+        valueType: VALUE_TYPE.DATE_TIME,
+        condition: CONDITION.AND
+      });
+    }
   }
 
   const search = [];
