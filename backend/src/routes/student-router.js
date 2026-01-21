@@ -58,7 +58,8 @@ const {
   postAdoptPENStudent,
   getStudentHistoricActivityByID,
   getStudentGenderCodes,
-  getStudentsPaginated
+  getStudentsPaginated,
+  getStudentSearchReport
 } = require('../components/student/student');
 
 const isValidUiTokenWithEditStaffRoles = auth.isValidUiTokenWithRoles(
@@ -375,6 +376,14 @@ router.get(
   passport.authenticate('jwt', { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getStudentsPaginated
+);
+
+// download student search report
+router.get(
+  '/students/search/download',
+  passport.authenticate('jwt', { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getStudentSearchReport
 );
 
 module.exports = router;

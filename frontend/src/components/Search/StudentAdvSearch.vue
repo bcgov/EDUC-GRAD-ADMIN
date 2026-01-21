@@ -198,6 +198,26 @@
         class="ml-1 py-3 width-fit-content"
         :text="`${searchMessage}`"
     ></v-alert>
+    <v-spacer></v-spacer>
+    <div class="export-link-container">
+      <a
+        id="export-results-link"
+        @click="totalElements > 0 && !downloadLoading ? downloadReport() : null"
+        :class="{ 'disabled-link': totalElements === 0, 'loading-link': downloadLoading }"
+        class="export-results-link"
+      >
+        <v-progress-circular
+          v-if="downloadLoading"
+          indeterminate
+          size="16"
+          width="2"
+          color="rgb(56, 89, 138)"
+          class="mr-1"
+        ></v-progress-circular>
+        <v-icon v-else size="small" class="mr-1">mdi-download</v-icon>
+        <span>Export Results</span>
+      </a>
+    </div>
   </div>
   <transition name="fade">
     <div v-if="totalPages > 0 && hasSearched" class="table-responsive">
@@ -518,8 +538,59 @@ export default {
           schoolOfRecordSchoolName: schoolName,
         };
       });
-    }
-    ,
+    },
+    downloadReport() {
+      this.downloadLoading = true;
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
+      const dateStr = `${year}${month}${day}`;
+      const defaultFilename = `StudentSearch-${dateStr}.csv`;
+
+      StudentService.downloadStudentSearchReport(
+        this.apiSearchParamsBuilder()
+      )
+        .then((response) => {
+          if (response.data) {
+            let filename = defaultFilename;
+            const contentDisposition = response.headers['content-disposition'];
+            if (contentDisposition) {
+              const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+              if (filenameMatch && filenameMatch[1]) {
+                filename = filenameMatch[1];
+              }
+            }
+
+            const blob = new Blob([response.data], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+            this.snackbarStore.showSnackbar(
+              "Report downloaded successfully",
+              "success",
+              3000
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("Error downloading report:", error);
+          this.snackbarStore.showSnackbar(
+            "Error downloading report: " + (error.message || "Unknown error"),
+            "error",
+            5000
+          );
+        })
+        .finally(() => {
+          this.downloadLoading = false;
+        });
+    },
   }
 }
 </script>
