@@ -29,6 +29,12 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
       searchCriteriaList.push({ key: 'localID', value: value.toString(), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
     }
 
+    if (key === 'includeMerged' && value && value === 'true') {
+      searchCriteriaList.push({ key: 'studentStatusCode', value: 'MERGED,ACTIVE', operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+    }else if (key === 'includeMerged' && value && value === 'false') {
+      searchCriteriaList.push({ key: 'studentStatusCode', value: 'ACTIVE', operation: FILTER_OPERATION.IN, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
+    }
+
     if (key === 'districtNameNumber' && value) {
       searchCriteriaList.push({ key: 'districtID', value: value.toString(), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.UUID, condition: CONDITION.AND });
     }
@@ -46,7 +52,7 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     }
 
     if (key === 'gradeAtRegistration' && value) {
-      searchCriteriaList.push({ key: 'gradeAtRegistration', value: value.toString(), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.INTEGER, condition: CONDITION.AND });
+      searchCriteriaList.push({ key: 'gradeAtRegistration', value: value.toString(), operation: FILTER_OPERATION.EQUAL, valueType: VALUE_TYPE.STRING, condition: CONDITION.AND });
     }
 
     if (key === 'studentId' && value) {
@@ -92,6 +98,7 @@ function createMoreFiltersSearchCriteria(searchFilter = []) {
     }
 
   }
+  
   const search = [];
   if (searchCriteriaList.length > 0) {
     search.push({

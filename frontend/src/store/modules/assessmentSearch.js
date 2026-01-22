@@ -14,7 +14,8 @@ export const assessmentSearchStore = defineStore('assessmentSearch', {
             gradeAtRegistration: null,
             proficiencyScoreValue: null,
             provincialSpecialCaseCode: [],
-            wroteFlag: null
+            wroteFlag: null,
+            includeMerged: false
         },
         wroteFlagOptions: [
             { title: 'Yes', value: 'yes' },

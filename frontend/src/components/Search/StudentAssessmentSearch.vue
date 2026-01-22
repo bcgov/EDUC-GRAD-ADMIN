@@ -133,6 +133,18 @@
           />
         </div>
       </v-row>
+      <v-row no-gutters>
+        <div class="range-check">
+          <v-checkbox
+              v-model="searchParams.includeMerged"
+              height="100%"
+              density="compact"
+              label="Include Records for Merged Students"
+              color="#606060"
+              @update:model-value="includeMergedChanged"
+          />
+        </div>
+      </v-row>
       <v-row>
         <div class="assessment-search-button">
           <v-btn
@@ -344,7 +356,7 @@ export default {
           s => s.sessionID === startId
       );
       if (startIndex === -1) return [];
-      return this.assessmentSessions.slice(startIndex + 1);
+      return this.assessmentSessions.slice(0, startIndex);
     },
   },
   async mounted() {
@@ -376,6 +388,13 @@ export default {
       searchKeys.forEach((key) => {
         apiSearchParams[key] = (Array.isArray(this.searchParams[key])) ? this.searchParams[key].join(',') : this.searchParams[key];
       });
+
+      if(this.searchParams.includeMerged){
+        apiSearchParams.includeMerged = 'true';
+      }else{
+        apiSearchParams.includeMerged = 'false';
+      }
+
       return apiSearchParams;
     },
 
@@ -387,12 +406,10 @@ export default {
     },
     convertSchoolIDsToMincodes: function () {
       this.searchResults.forEach((student) => {
-        student.schoolOfRecordSchoolID =
-            schoolsService.schoolIdToMincode(student.schoolOfRecordSchoolID)
-            ?? student.schoolOfRecordSchoolID;
-        student.schoolAtWriteSchoolID =
-            schoolsService.schoolIdToMincode(student.schoolAtWriteSchoolID)
-            ?? student.schoolAtWriteSchoolID;
+        let schoolRecord = schoolsService.getSchoolBySchoolID(student.schoolOfRecordSchoolID);
+        let schoolAtWrite = schoolsService.getSchoolBySchoolID(student.schoolAtWriteSchoolID);
+        student.schoolOfRecordSchoolID = schoolRecord !== null ? schoolRecord.mincode + ' - ' + schoolRecord.displayName : student.schoolOfRecordSchoolID;
+        student.schoolAtWriteSchoolID = schoolAtWrite !== null ? schoolAtWrite.mincode + ' - ' + schoolAtWrite.displayName : student.schoolAtWriteSchoolID;
       });
     },
     convertSessionIdsToSessionDates: function () {
@@ -458,6 +475,9 @@ export default {
         this.searchParams.sessionIdEnd = null;
         this.searchParams.useSessionRange = false;
       }
+    },
+    includeMergedChanged(checked){
+      this.searchParams.includeMerged = checked;
     },
     schoolTitle(item) {
       if (item) {
@@ -606,7 +626,6 @@ export default {
 }
 
 .assessment-search-button {
-  margin-top: 32px;
   padding-left: 15px;
 }
 

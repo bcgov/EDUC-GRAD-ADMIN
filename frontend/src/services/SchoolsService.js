@@ -52,4 +52,11 @@ export default {
       );
       return schoolIdMap.get(schoolId)?.mincode ?? null;
   },
+  getSchoolBySchoolID(schoolId) {
+    const appStore = useAppStore();
+    const schoolIdMap = new Map(
+        appStore.getSchoolsList.map((school) => [school.schoolId, school])
+    );
+    return schoolIdMap.get(schoolId) ?? null;
+  },
 };

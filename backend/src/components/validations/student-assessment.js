@@ -25,7 +25,8 @@ const studentAssessmentSchema = object({
   schoolOfRecordSchoolID: uuidGeneric().required(),
   sessionID: uuidGeneric().notRequired(),
   wroteFlag: boolean().notRequired(),
-  didNotAttemptFlag: boolean().notRequired()
+  didNotAttemptFlag: boolean().notRequired(),
+  includeMerged: string().notRequired()
 });
 
 const putStudentAssessmentSchema = object({
@@ -123,6 +124,7 @@ const getPaginatedStudentAssessmentSchema = object({
       proficiencyScoreValue: string().optional(),
       provincialSpecialCaseCode: string().optional(),
       wroteFlag: string().optional(),
+      includeMerged: string().notRequired()
     })
       .required()
       .noUnknown(),
