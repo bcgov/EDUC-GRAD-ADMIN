@@ -167,6 +167,17 @@
           />
         </div>
       </v-row>
+      <v-row v-if="dateRangeError" class="mt-0">
+        <div class="col-12">
+          <v-alert
+            type="error"
+            variant="tonal"
+            density="compact"
+            class="ml-1 py-2"
+            :text="dateRangeError"
+          ></v-alert>
+        </div>
+      </v-row>
       <v-row class="mt-1">
         <div class="search-button">
           <v-btn
@@ -283,6 +294,7 @@ export default {
       totalElements: "",
       searchMessage: "",
       errorMessage: "",
+      dateRangeError: "",
       searchLoading: false,
       downloadLoading: false,
       searchParams: {
@@ -405,6 +417,19 @@ export default {
       if (!this.hasSearched) {
         return;
       }
+
+      this.dateRangeError = "";
+      if (
+        this.searchParams.dobFrom &&
+        this.searchParams.dobTo &&
+        new Date(this.searchParams.dobFrom) >
+          new Date(this.searchParams.dobTo)
+      ) {
+        this.dateRangeError =
+          "Birthdate From cannot be after Birthdate To.";
+        return;
+      }
+
       this.searchLoading = true;
       StudentService.getStudentsBySearchCriteria(
           this.apiSearchParamsBuilder(),
@@ -493,6 +518,7 @@ export default {
     clearInput: function () {
       this.searchResults = [];
       this.searchMessage = "";
+      this.dateRangeError = "";
       this.hasSearched = false;
       this.clearSearchParams(this.searchParams);
     },

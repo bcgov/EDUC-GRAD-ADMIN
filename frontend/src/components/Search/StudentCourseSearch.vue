@@ -117,6 +117,7 @@
             v-model="searchParams.completionDateTo"
             v-on:keyup="keyHandler"
             placeholder="YYYY-MM-DD"
+            :min="searchParams.completionDateFrom || undefined"
             max="9999-12-30"
             clearable
           />
@@ -149,6 +150,17 @@
             v-on:keyup="keyHandler"
             clearable
           />
+        </div>
+      </v-row>
+      <v-row v-if="dateRangeError" class="mt-0">
+        <div class="col-12">
+          <v-alert
+            type="error"
+            variant="tonal"
+            density="compact"
+            class="ml-1 py-2"
+            :text="dateRangeError"
+          ></v-alert>
         </div>
       </v-row>
       <v-row class="mt-1">
@@ -190,6 +202,7 @@
             v-model="searchParams.courseSessionTo"
             v-on:keyup="keyHandler"
             placeholder="YYYY-MM"
+            :min="searchParams.courseSessionFrom || undefined"
             clearable
           />
         </div>
@@ -218,6 +231,17 @@
             v-on:keyup="keyHandler"
             clearable
           />
+        </div>
+      </v-row>
+      <v-row v-if="sessionRangeError" class="mt-0">
+        <div class="col-12">
+          <v-alert
+            type="error"
+            variant="tonal"
+            density="compact"
+            class="ml-1 py-2"
+            :text="sessionRangeError"
+          ></v-alert>
         </div>
       </v-row>
       <v-row>
@@ -311,6 +335,30 @@ export default {
   components: {
     SchoolSelect,
   },
+  watch: {
+    "searchParams.completionDateFrom"(newFrom) {
+      if (!newFrom) {
+        return;
+      }
+      if (
+        this.searchParams.completionDateTo &&
+        this.searchParams.completionDateTo < newFrom
+      ) {
+        this.searchParams.completionDateTo = null;
+      }
+    },
+    "searchParams.courseSessionFrom"(newFrom) {
+      if (!newFrom) {
+        return;
+      }
+      if (
+        this.searchParams.courseSessionTo &&
+        this.searchParams.courseSessionTo < newFrom
+      ) {
+        this.searchParams.courseSessionTo = null;
+      }
+    },
+  },
   setup() {
     const snackbarStore = useSnackbarStore();
     return { snackbarStore };
@@ -330,6 +378,8 @@ export default {
       totalPages: "",
       searchMessage: "",
       errorMessage: "",
+      dateRangeError: "",
+      sessionRangeError: "",
       searchLoading: false,
       downloadLoading: false,
       totalElements: "",
@@ -599,6 +649,8 @@ export default {
     clearInput: function () {
       this.searchResults = [];
       this.searchMessage = "";
+      this.dateRangeError = "";
+      this.sessionRangeError = "";
       this.hasSearched = false;
       courseSearchStore().clearSearchParams();
     },
@@ -637,6 +689,30 @@ export default {
       if (!this.hasSearched) {
         return;
       }
+
+      this.dateRangeError = "";
+      if (
+        this.searchParams.completionDateFrom &&
+        this.searchParams.completionDateTo &&
+        new Date(this.searchParams.completionDateFrom) >
+          new Date(this.searchParams.completionDateTo)
+      ) {
+        this.dateRangeError =
+          "Completion Date From cannot be after Completion Date To.";
+        return;
+      }
+
+      this.sessionRangeError = "";
+      if (
+        this.searchParams.courseSessionFrom &&
+        this.searchParams.courseSessionTo &&
+        this.searchParams.courseSessionFrom > this.searchParams.courseSessionTo
+      ) {
+        this.sessionRangeError =
+          "Course Session From cannot be after Course Session To.";
+        return;
+      }
+
       this.searchLoading = true;
       let sort = {};
       StudentCourseService.getStudentCoursesBySearchCriteria(

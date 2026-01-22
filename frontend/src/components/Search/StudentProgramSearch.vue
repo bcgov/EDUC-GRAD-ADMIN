@@ -83,9 +83,21 @@
             v-model="searchParams.completionDateTo"
             v-on:keyup="keyHandler"
             placeholder="YYYY-MM-DD"
+            :min="searchParams.completionDateFrom || undefined"
             max="9999-12-30"
             clearable
           />
+        </div>
+      </v-row>
+      <v-row v-if="dateRangeError" class="mt-0">
+        <div class="col-12">
+          <v-alert
+            type="error"
+            variant="tonal"
+            density="compact"
+            class="ml-1 py-2"
+            :text="dateRangeError"
+          ></v-alert>
         </div>
       </v-row>
       <v-row class="mt-1">
@@ -271,6 +283,19 @@ export default {
   components: {
     SchoolSelect,
   },
+  watch: {
+    "searchParams.completionDateFrom"(newFrom) {
+      if (!newFrom) {
+        return;
+      }
+      if (
+        this.searchParams.completionDateTo &&
+        this.searchParams.completionDateTo < newFrom
+      ) {
+        this.searchParams.completionDateTo = null;
+      }
+    },
+  },
   setup() {
     const snackbarStore = useSnackbarStore();
     return { snackbarStore };
@@ -290,6 +315,7 @@ export default {
       totalPages: "",
       searchMessage: "",
       errorMessage: "",
+      dateRangeError: "",
       searchLoading: false,
       downloadLoading: false,
       totalElements: "",
@@ -479,6 +505,7 @@ export default {
     clearInput: function () {
       this.searchResults = [];
       this.searchMessage = "";
+      this.dateRangeError = "";
       this.hasSearched = false;
       programSearchStore().clearSearchParams();
     },
@@ -516,6 +543,19 @@ export default {
       if (!this.hasSearched) {
         return;
       }
+
+      this.dateRangeError = "";
+      if (
+        this.searchParams.completionDateFrom &&
+        this.searchParams.completionDateTo &&
+        new Date(this.searchParams.completionDateFrom) >
+          new Date(this.searchParams.completionDateTo)
+      ) {
+        this.dateRangeError =
+          "Completion Date From cannot be after Completion Date To.";
+        return;
+      }
+
       this.searchLoading = true;
       let sort = {};
       StudentProgramService.getStudentProgramsBySearchCriteria(
