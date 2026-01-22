@@ -37,7 +37,7 @@
           </div>
           <div class="info-item">
             <strong>Adapted Assessment:</strong>
-            <span>{{ getDisplayValue(getAdaptedAssessment()) }}</span>
+            <span>{{ getAdaptedAssessment() }}</span>
           </div>
           <div class="info-item">
             <strong>Marking Session:</strong>
@@ -170,15 +170,21 @@ export default {
 
     getAdaptedAssessment() {
       const adaptedCode = this.studentAssessmentData.adaptedAssessmentCode
-      return adaptedCode ? 'Yes' : 'No'
+      if(adaptedCode == null || adaptedCode == undefined || adaptedCode == '') {
+        return '-'
+      } else if (adaptedCode == 'BRAILLE') {
+        return 'B - Braille'
+      } else if (adaptedCode == 'LARGEPRINT') {
+        return 'L - Large Print'
+      }
+      return adaptedCode;
     },
 
     getMarkingSession() {
       const markingSession = this.studentAssessmentData.markingSession
       if (markingSession) {
         try {
-          const date = new Date(markingSession)
-          return date.toLocaleString(undefined, { month: 'long', year: 'numeric' })
+          return markingSession.substring(0, 4) + "/" + markingSession.substring(4);
         } catch {
           return markingSession
         }
