@@ -332,7 +332,6 @@ export default {
         },
         mapProvinceCode(code) {
             let selection = this.province.filter(prov => code === prov.provinceCode);
-            console.log('SelectioN: ' + JSON.stringify(selection));
             return selection && selection[0] ? selection[0]?.provinceCode + '-' + selection[0]?.description : code;
         },
         editCitizenship() {
