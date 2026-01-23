@@ -257,7 +257,7 @@
                   <v-select
                     data-cy="student-status-select"
                     v-model="editedGradStatus.studentStatus"
-                    :items="studentStatusOptions"
+                    :items="filteredStudentStatusOptions"
                     item-title="label"
                     item-value="code"
                     label="Select"
@@ -793,6 +793,17 @@ export default {
     mergedStudent() {
       return this.studentGradStatus?.studentStatus === "MER";
     },
+    filteredStudentStatusOptions() {
+      const restrictedCodes = ['MER', 'DEC'];
+      const currentStatus = this.editedGradStatus?.studentStatus;
+
+      return this.studentStatusOptions.filter(option => {
+        if (option.code === currentStatus) {
+          return true;
+        }
+        return !restrictedCodes.includes(option.code);
+      });
+    }
   },
   data() {
     return {
