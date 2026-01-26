@@ -83,9 +83,21 @@
             v-model="searchParams.completionDateTo"
             v-on:keyup="keyHandler"
             placeholder="YYYY-MM-DD"
+            :min="searchParams.completionDateFrom || undefined"
             max="9999-12-30"
             clearable
           />
+        </div>
+      </v-row>
+      <v-row v-if="dateRangeError" class="mt-0">
+        <div class="col-12">
+          <v-alert
+            type="error"
+            variant="tonal"
+            density="compact"
+            class="ml-1 py-2"
+            :text="dateRangeError"
+          ></v-alert>
         </div>
       </v-row>
       <v-row class="mt-1">
@@ -147,9 +159,21 @@
             v-model="searchParams.adultStartDateTo"
             v-on:keyup="keyHandler"
             placeholder="YYYY-MM-DD"
+            :min="searchParams.adultStartDateFrom || undefined"
             max="9999-12-30"
             clearable
           />
+        </div>
+      </v-row>
+      <v-row v-if="adultStartDateRangeError" class="mt-0">
+        <div class="col-12">
+          <v-alert
+            type="error"
+            variant="tonal"
+            density="compact"
+            class="ml-1 py-2"
+            :text="adultStartDateRangeError"
+          ></v-alert>
         </div>
       </v-row>
       <v-row class="mt-1">
@@ -271,6 +295,30 @@ export default {
   components: {
     SchoolSelect,
   },
+  watch: {
+    "searchParams.completionDateFrom"(newFrom) {
+      if (!newFrom) {
+        return;
+      }
+      if (
+        this.searchParams.completionDateTo &&
+        this.searchParams.completionDateTo < newFrom
+      ) {
+        this.searchParams.completionDateTo = null;
+      }
+    },
+    "searchParams.adultStartDateFrom"(newFrom) {
+      if (!newFrom) {
+        return;
+      }
+      if (
+        this.searchParams.adultStartDateTo &&
+        this.searchParams.adultStartDateTo < newFrom
+      ) {
+        this.searchParams.adultStartDateTo = null;
+      }
+    },
+  },
   setup() {
     const snackbarStore = useSnackbarStore();
     return { snackbarStore };
@@ -290,6 +338,8 @@ export default {
       totalPages: "",
       searchMessage: "",
       errorMessage: "",
+      dateRangeError: "",
+      adultStartDateRangeError: "",
       searchLoading: false,
       downloadLoading: false,
       totalElements: "",
@@ -479,6 +529,8 @@ export default {
     clearInput: function () {
       this.searchResults = [];
       this.searchMessage = "";
+      this.dateRangeError = "";
+      this.adultStartDateRangeError = "";
       this.hasSearched = false;
       programSearchStore().clearSearchParams();
     },
@@ -516,6 +568,31 @@ export default {
       if (!this.hasSearched) {
         return;
       }
+
+      this.dateRangeError = "";
+      if (
+        this.searchParams.completionDateFrom &&
+        this.searchParams.completionDateTo &&
+        new Date(this.searchParams.completionDateFrom) >
+          new Date(this.searchParams.completionDateTo)
+      ) {
+        this.dateRangeError =
+          "Completion Date From cannot be after Completion Date To.";
+        return;
+      }
+
+      this.adultStartDateRangeError = "";
+      if (
+        this.searchParams.adultStartDateFrom &&
+        this.searchParams.adultStartDateTo &&
+        new Date(this.searchParams.adultStartDateFrom) >
+          new Date(this.searchParams.adultStartDateTo)
+      ) {
+        this.adultStartDateRangeError =
+          "Adult Start Date From cannot be after Adult Start Date To.";
+        return;
+      }
+
       this.searchLoading = true;
       let sort = {};
       StudentProgramService.getStudentProgramsBySearchCriteria(
@@ -525,18 +602,15 @@ export default {
         this.itemsPerPage
       )
         .then((response) => {
-          console.log('Program search response:', response.data);
           if (response.data) {
             this.responseContent = response.data;
             this.searchResults = this.responseContent?.content?.map(item => this.transformProgramData(item)) || [];
-            console.log('Transformed search results with schools:', this.searchResults);
             this.totalElements = this.responseContent.totalElements || 0;
             this.totalPages = this.responseContent.totalPages || 0;
             this.searchMessage =
               this.responseContent.totalElements === 1
                 ? "1 result found"
                 : this.totalElements + " results found";
-            console.log('Total elements:', this.totalElements, 'Total pages:', this.totalPages, 'Search results length:', this.searchResults.length);
           }
         })
         .catch((error) => {

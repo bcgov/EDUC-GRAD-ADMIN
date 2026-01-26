@@ -102,9 +102,21 @@
             v-model="searchParams.optionalProgramCompletionDateTo"
             v-on:keyup="keyHandler"
             placeholder="YYYY-MM-DD"
+            :min="searchParams.optionalProgramCompletionDateFrom || undefined"
             max="9999-12-30"
             clearable
           />
+        </div>
+      </v-row>
+      <v-row v-if="dateRangeError" class="mt-0">
+        <div class="col-12">
+          <v-alert
+            type="error"
+            variant="tonal"
+            density="compact"
+            class="ml-1 py-2"
+            :text="dateRangeError"
+          ></v-alert>
         </div>
       </v-row>
       <v-row>
@@ -198,6 +210,19 @@ export default {
   components: {
     SchoolSelect,
   },
+  watch: {
+    "searchParams.optionalProgramCompletionDateFrom"(newFrom) {
+      if (!newFrom) {
+        return;
+      }
+      if (
+        this.searchParams.optionalProgramCompletionDateTo &&
+        this.searchParams.optionalProgramCompletionDateTo < newFrom
+      ) {
+        this.searchParams.optionalProgramCompletionDateTo = null;
+      }
+    },
+  },
   setup() {
     const snackbarStore = useSnackbarStore();
     return { snackbarStore };
@@ -217,6 +242,7 @@ export default {
       totalPages: "",
       searchMessage: "",
       errorMessage: "",
+      dateRangeError: "",
       searchLoading: false,
       downloadLoading: false,
       totalElements: "",
@@ -408,6 +434,7 @@ export default {
     clearInput: function () {
       this.searchResults = [];
       this.searchMessage = "";
+      this.dateRangeError = "";
       this.hasSearched = false;
       optionalProgramSearchStore().clearSearchParams();
     },
@@ -445,6 +472,19 @@ export default {
       if (!this.hasSearched) {
         return;
       }
+
+      this.dateRangeError = "";
+      if (
+        this.searchParams.optionalProgramCompletionDateFrom &&
+        this.searchParams.optionalProgramCompletionDateTo &&
+        new Date(this.searchParams.optionalProgramCompletionDateFrom) >
+          new Date(this.searchParams.optionalProgramCompletionDateTo)
+      ) {
+        this.dateRangeError =
+          "Optional Program Completion Date From cannot be after Optional Program Completion Date To.";
+        return;
+      }
+
       this.searchLoading = true;
       let sort = {};
       StudentOptionalProgramService.getStudentOptionalProgramsBySearchCriteria(
