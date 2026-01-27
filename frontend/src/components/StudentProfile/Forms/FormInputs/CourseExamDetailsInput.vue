@@ -200,6 +200,34 @@ export default {
   validations() {
     return {
       course: {
+        courseSession: {
+          validSessionDateForInfoOfficer: helpers.withMessage(
+            "Course session cannot be beyond the current reporting period or prior to 198401",
+            function (value) {
+              const isSystemCoordinator = this.getRoles.includes("GRAD_SYSTEM_COORDINATOR");
+
+              if (isSystemCoordinator) {
+                return true;
+              }
+
+              const currentYear = Number(this.currentYear);
+              const currentMonth = Number(this.currentMonth);
+
+              let endYear;
+              if (currentMonth >= 10) {
+                endYear = currentYear + 1;
+              } else {
+                endYear = currentYear;
+              }
+              const maxSession = Number(`${endYear}09`);
+
+              if (!value) return true;
+              const sessionValue = Number(value);
+
+              return sessionValue >= 198401 && sessionValue <= maxSession;
+            }
+          ),
+        },
         courseExam: {
           schoolPercentage: {
             isValidPercent: helpers.withMessage(
@@ -258,25 +286,6 @@ export default {
               }
             ),
           },
-        },
-        finalPercent: {
-          isValidPercent: helpers.withMessage(
-            'Final % must be a valid number between 0 and 100',
-            (value) => {
-              if (value === '' || value === null || value === undefined) return true; // allow empty if needed
-
-              const strVal = String(value).trim();
-
-              // Reject if contains any minus sign or invalid characters:
-              if (strVal.includes('-')) return false;
-
-              // Regex: only digits and optional decimal point
-              if (!/^\d*\.?\d+$/.test(strVal)) return false;
-
-              const numberValue = Number(strVal);
-              return numberValue >= 0 && numberValue <= 100;
-            }
-          ),
         },
         finalPercent: {
           isValidPercent: helpers.withMessage(
@@ -461,8 +470,12 @@ export default {
         this.warnings.push(`Course session date is before the course start date (${startDate})`)
       }
 
+      const isSystemCoordinator = this.getRoles.includes("GRAD_SYSTEM_COORDINATOR");
+
       if (this.course.courseSession < 198401 || this.course.courseSession > this.maxSession) {
-        warnings.push("Course session cannot be after the current reporting period or prior to 198401")
+        if (isSystemCoordinator) {
+          warnings.push("Course session cannot be after the current reporting period or prior to 198401")
+        }
       }
       if (this.course.isExaminable) {
         warnings.push("This course required an exam at the time of the course session date")

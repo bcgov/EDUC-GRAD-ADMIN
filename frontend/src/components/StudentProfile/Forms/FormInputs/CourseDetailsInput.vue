@@ -268,6 +268,34 @@ export default {
   validations() {
     return {
       course: {
+        courseSession: {
+          validSessionDateForInfoOfficer: helpers.withMessage(
+            "Course session cannot be beyond the current reporting period or prior to 198401",
+            function (value) {
+              const isSystemCoordinator = this.getRoles.includes("GRAD_SYSTEM_COORDINATOR");
+
+              if (isSystemCoordinator) {
+                return true;
+              }
+
+              const currentYear = Number(this.currentYear);
+              const currentMonth = Number(this.currentMonth);
+
+              let endYear;
+              if (currentMonth >= 9) {
+                endYear = currentYear + 1;
+              } else {
+                endYear = currentYear;
+              }
+              const maxSession = Number(`${endYear}09`);
+
+              if (!value) return true;
+              const sessionValue = Number(value);
+
+              return sessionValue >= 198401 && sessionValue <= maxSession;
+            }
+          ),
+        },
         interimPercent: {
           isValidPercent: helpers.withMessage(
             "Interim % must be a valid number between 0 and 100",
@@ -610,13 +638,18 @@ export default {
       this.minSession = `${startYear}09`;
       this.maxSession = `${endYear}09`;
       this.currentReportingPeriod = `${currentYear}09`;
+
+      const isSystemCoordinator = this.getRoles.includes("GRAD_SYSTEM_COORDINATOR");
+
       if (
         this.course.courseSession < 198401 ||
         this.course.courseSession > this.maxSession
       ) {
-        this.warnings.push(
-          "Course session cannot be after the current reporting period or prior to 1984-01"
-        );
+        if (isSystemCoordinator) {
+          this.warnings.push(
+            "Course session cannot be after the current reporting period or prior to 1984-01"
+          );
+        }
       }
 
       if (
