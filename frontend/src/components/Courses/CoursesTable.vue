@@ -46,6 +46,7 @@
         :headers="courseHeaders"
         :items-length="totalCourses"
         :loading="loading"
+        :items-per-page-options="[10, 25, 50, 100]"
         @update:options="loadCourses"
         title="courses"
       >
