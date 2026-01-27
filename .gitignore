@@ -17,3 +17,6 @@ testing/
 #ignore modules
 backend/node_modules
 backend/src/config/local.json
+
+# Codex agent instructions
+AGENTS.md
