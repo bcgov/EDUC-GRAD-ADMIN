@@ -270,6 +270,10 @@ export default {
                       comp.scaledScore += (parseFloat(answer.score) || 0) * this.getScaleFactor(question.scaleFactor);
                     }
                   })
+
+                  if(comp.rawScore == 0) {
+                    comp.nonResponses += 1
+                  }
                 }
               })
             }
@@ -312,6 +316,7 @@ export default {
                 itemNumber: question.itemNumber,
                 questionNumber: question.questionNumber,
                 rawScore: this.formatRawScore(studentAnswer),
+                scalingFactor: question.scaleFactor != null ? this.formatNumber(question.scaleFactor/100) : question.scaleFactor,
                 maxRawScore: this.formatNumber(question.questionValue),
                 scaledScore: this.formatScaledScore(studentAnswer, question),
                 maxScaledScore: this.formatNumber(question.questionValue * this.getScaleFactor(question.scaleFactor)),
@@ -352,15 +357,33 @@ export default {
                 itemGroups.get(itemNumber).push(question)
               })
 
-              studentAnswers.forEach(answer => {
-                const question = questions.find(q => q.assessmentQuestionID === answer.assessmentQuestionID);
-                if(question) {
+              var choiceQues = studentChoices.map(stc => stc.assessmentStudentChoiceQuestionSet);
+              questions.forEach(question => {
+                const answer = studentAnswers.find(ans => question.assessmentQuestionID === ans.assessmentQuestionID);
+                const selectedQuestion = choiceQues[0].find(ans => question.assessmentQuestionID === ans.assessmentQuestionID);
+
+                if(question.assessmentChoiceID === null) {
                   targetArray.push({
                     uniqueKey: `question-${question.itemNumber}-${question.questionNumber}`,
                     itemNumber: question.itemNumber,
                     questionNumber: question.questionNumber,
                     itemType: 'Mark',
                     rawScore: this.formatRawScore(answer),
+                    scalingFactor: question.scaleFactor != null ? this.formatNumber(question.scaleFactor/100) : question.scaleFactor,
+                    maxRawScore: this.formatNumber(question.questionValue || 0),
+                    scaledScore: this.formatScaledScore(answer, question),
+                    maxScaledScore: this.formatNumber((question.questionValue || 0) * this.getScaleFactor(question.scaleFactor)),
+                    originalQuestion: question,
+                    originalAnswer: answer
+                  })
+                } else if(question.assessmentChoiceID !== null && selectedQuestion!== undefined) {
+                  targetArray.push({
+                    uniqueKey: `question-${question.itemNumber}-${question.questionNumber}`,
+                    itemNumber: question.itemNumber,
+                    questionNumber: question.questionNumber,
+                    itemType: 'Mark',
+                    rawScore: this.formatRawScore(answer),
+                    scalingFactor: question.scaleFactor != null ? this.formatNumber(question.scaleFactor/100) : question.scaleFactor,
                     maxRawScore: this.formatNumber(question.questionValue || 0),
                     scaledScore: this.formatScaledScore(answer, question),
                     maxScaledScore: this.formatNumber((question.questionValue || 0) * this.getScaleFactor(question.scaleFactor)),
@@ -392,6 +415,7 @@ export default {
                       questionNumber: selectedQuestion.questionNumber,
                       itemType: 'Choice',
                       rawScore: '-',
+                      scalingFactor: '-',
                       maxRawScore: '-',
                       scaledScore: '-',
                       maxScaledScore: '-',

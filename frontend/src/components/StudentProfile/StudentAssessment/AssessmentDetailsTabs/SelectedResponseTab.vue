@@ -57,6 +57,10 @@
               <span class="font-mono">{{ item.rawScore }}</span>
             </template>
 
+            <template v-slot:item.scalingFactor="{ item }">
+              <span class="font-mono">{{ item.scalingFactor }}</span>
+            </template>
+
             <template v-slot:item.maxRawScore="{ item }">
               <span class="font-mono">{{ item.maxRawScore }}</span>
             </template>
@@ -102,9 +106,10 @@ export default {
         { title: 'Item #', key: 'itemNumber', sortable: true, align: 'center', width: '80px' },
         { title: 'Question #', key: 'questionNumber', sortable: true, align: 'center', width: '100px' },
         { title: 'Raw Score', key: 'rawScore', sortable: true, align: 'center', width: '90px' },
-        { title: 'Max Raw', key: 'maxRawScore', sortable: true, align: 'center', width: '90px' },
+        { title: 'Max Raw Score', key: 'maxRawScore', sortable: true, align: 'center', width: '90px' },
+        { title: 'Scaling Factor', key: 'scalingFactor', sortable: true, align: 'center', width: '90px' },
         { title: 'Scaled Score', key: 'scaledScore', sortable: true, align: 'center', width: '100px' },
-        { title: 'Max Scaled', key: 'maxScaledScore', sortable: true, align: 'center', width: '100px' }
+        { title: 'Max Scaled Score', key: 'maxScaledScore', sortable: true, align: 'center', width: '100px' }
       ]
     },
 
