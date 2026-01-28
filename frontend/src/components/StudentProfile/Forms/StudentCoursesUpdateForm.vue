@@ -481,7 +481,7 @@ export default {
           validCourseSessionYear: helpers.withMessage(
               "Course session year must be 1984 or later",
               (value) => {
-                if (!value) return true;
+                if (!value || this.getRoles.includes("GRAD_SYSTEM_COORDINATOR")) return true;
                 const stringValue = String(value);
 
                 // Only check year if format is valid (6 digits)
