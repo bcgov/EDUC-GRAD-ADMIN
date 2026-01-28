@@ -66,9 +66,10 @@
         </v-col>
 
         <v-col>
-          <v-select v-model="course.credits" :items="creditsAvailableForCourseSession" item-title="creditValue"
+          <v-select v-model="course.credits" :items="creditsOptionsBasedOnLetterGrade" item-title="creditValue"
             item-value="creditValue" label="Credits" variant="outlined" density="compact" class="pa-1"
-            persistent-placeholder persistent-hint />
+            persistent-placeholder persistent-hint :disabled="disableCreditsInput"
+            :placeholder="disableCreditsInput && !isFinalLetterGradeWOrF ? 'N/A' : ''" />
         </v-col>
 
 
@@ -356,15 +357,32 @@ export default {
   },
   watch: {
     'course.finalPercent'(newVal) {
-      if (newVal && newVal != 0) {
+      const isWOrF = this.course.finalLetterGrade === "W" || this.course.finalLetterGrade === "F";
+
+      if (newVal && newVal !== 0 && !isWOrF) {
         this.course.finalLetterGrade = this.filteredFinalLetterGrades[0] ?? '';
-      } else {
+      } else if (!newVal && !isWOrF) {
         this.course.finalLetterGrade = ""
       }
       this.updateWarnings();
     },
-    'course.finalLetterGrade'(newVal) {
-      this.updateWarnings();
+    'course.finalLetterGrade': {
+      immediate: true,
+      handler(newVal, oldVal) {
+        if (newVal === "W" || newVal === "F") {
+          this.course.credits = "0";
+        }
+        else if (oldVal === "W" || oldVal === "F") {
+          if (this.creditsAvailableForCourseSession.length > 0) {
+            this.course.credits = this.creditsAvailableForCourseSession[0];
+          }
+        }
+        else if ((oldVal === "W" || oldVal === "F") && !newVal) {
+          this.course.credits = null;
+        }
+
+        this.updateWarnings();
+      }
     },
     'course.fineArtsAppliedSkills'(newVal) {
       this.updateWarnings();
@@ -447,6 +465,21 @@ export default {
         return this.examSpecialCaseCodes.filter(code => code.examSpecialCaseCode === "A");
       }
       return this.examSpecialCaseCodes.filter(code => code.examSpecialCaseCode === "A" || code.examSpecialCaseCode === "N");
+    },
+
+    isFinalLetterGradeWOrF() {
+      return this.course.finalLetterGrade === "W" || this.course.finalLetterGrade === "F";
+    },
+
+    creditsOptionsBasedOnLetterGrade() {
+      if (this.isFinalLetterGradeWOrF) {
+        return ["0"];
+      }
+      return this.creditsAvailableForCourseSession;
+    },
+
+    disableCreditsInput() {
+      return this.isFinalLetterGradeWOrF;
     },
   },
   methods: {
