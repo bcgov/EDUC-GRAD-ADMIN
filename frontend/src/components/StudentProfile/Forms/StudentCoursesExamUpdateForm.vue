@@ -406,7 +406,7 @@ export default {
 
         // Check for validation issues in response data (backend returns 200 even with validation errors)
         const responseData = response.data;
-        if (response.status == 200 && responseData.hasPersisted === false && responseData.validationIssues && responseData.validationIssues.length > 0) {
+        if (response.status === 200 && responseData.hasPersisted === false && responseData.validationIssues && responseData.validationIssues.length > 0) {
           this.validationIssues = responseData.validationIssues;
 
           this.step = 0;
@@ -421,7 +421,7 @@ export default {
           return;
         }
 
-        if (response.status == 200) {
+        if (response.status === 200) {
           this.snackbarStore.showSnackbar(
             `${courseDetails.courseCode} ${courseDetails.courseLevel} - ${courseWithoutCourseDetails.courseSession} successfully updated.`,
             "success",
