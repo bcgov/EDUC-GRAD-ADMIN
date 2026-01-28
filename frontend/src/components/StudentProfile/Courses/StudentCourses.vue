@@ -1,19 +1,6 @@
 <template>
   <div>
     <v-card>
-      <v-alert
-        v-if="enableCRUD"
-        color="debug"
-        variant="tonal"
-        icon="mdi-progress-wrench"
-        border="start"
-        class="mt-6 mb-0 ml-1 py-3 width-fit-content"
-      >
-        Until student course CRUD is live, student courses will not be kept in
-        sync via ongoing updates. Instead there will be a gradual data
-        migration.
-        <br />
-      </v-alert>
       <v-card-text>
         <v-alert v-if="!courses" class="container">
           This student does not have any courses.

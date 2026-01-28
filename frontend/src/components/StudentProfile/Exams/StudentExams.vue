@@ -1,16 +1,4 @@
 <template>
-  <div v-if="enableCRUD" class="col-12 px-3 py-0 width-fit-content">
-    <v-alert
-      color="debug"
-      variant="tonal"
-      icon="mdi-progress-wrench"
-      border="start"
-    >
-      Until student course CRUD is live, student courses will not be kept in
-      sync via ongoing updates. Instead there will be a gradual data migration.
-      <br />
-    </v-alert>
-  </div>
   <div class="col-12 px-3 py-3">
     <BlendingRules />
     <div
