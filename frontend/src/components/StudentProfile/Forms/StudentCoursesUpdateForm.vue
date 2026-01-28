@@ -175,6 +175,35 @@
                         </CourseDetailsInput>
                       </div>
                     </div>
+
+                    <!-- Validation Issues Display -->
+                    <v-alert
+                      v-if="validationIssues.length > 0"
+                      type="error"
+                      class="mt-4"
+                      border="start"
+                      elevation="2"
+                      variant="tonal"
+                    >
+                      <div class="mb-2">
+                        <strong>Validation Errors - Please fix the following issues:</strong>
+                      </div>
+                      <div
+                        v-for="(issue, i) in validationIssues"
+                        :key="i"
+                        class="pl-3 d-flex align-center mb-2"
+                      >
+                        <v-icon
+                          :color="issue.validationIssueSeverityCode === 'ERROR' ? 'error' : 'warning'"
+                          class="me-2"
+                          size="18"
+                        >
+                          {{ issue.validationIssueSeverityCode === "ERROR" ? "mdi-alert-circle" : "mdi-alert" }}
+                        </v-icon>
+                        <strong>{{ issue.validationFieldName }}:</strong>&nbsp;{{ issue.validationIssueMessage }}
+                      </div>
+                    </v-alert>
+
                   </v-card-text>
                 </v-stepper-window-item>
 
@@ -502,6 +531,7 @@ export default {
       dialog: false,
       showCourseInput: false,
       courseValidationMessage: null,
+      validationIssues: [],
       selectedCourseToUpdate: {},
       courseUpdate: {
         courseID: null,
@@ -594,6 +624,7 @@ export default {
       //add if course is examinable
       this.course.isExaminable = this.course.courseExam != null;
       this.courseValidationMessage = "";
+      this.validationIssues = [];
       this.step = 0;
       this.selectedCourseToUpdate = JSON.parse(JSON.stringify(this.course));
     },
@@ -637,6 +668,8 @@ export default {
     },
     async confirmUpdate() {
       try {
+        this.validationIssues = [];
+
         //remove courseDetails from payload
         const {
           courseDetails,
@@ -646,7 +679,25 @@ export default {
         const response = await this.updateStudentCourse(
           courseWithoutCourseDetails
         );
-        if (response.status == 200) {
+
+        // Check for validation issues in response data (backend returns 200 even with validation errors)
+        const responseData = response.data;
+        if (response.status === 200 && responseData.hasPersisted === false && responseData.validationIssues && responseData.validationIssues.length > 0) {
+          this.validationIssues = responseData.validationIssues;
+
+          this.step = 0;
+
+          this.snackbarStore.showSnackbar(
+            "Please fix the validation errors shown below",
+            "danger",
+            5000,
+            "Validation Error"
+          );
+
+          return;
+        }
+
+        if (response.status === 200) {
           this.loadStudentCourseHistory(this.studentId);
           this.snackbarStore.showSnackbar(
             `${courseDetails.courseCode} ${courseDetails.courseLevel} - ${courseWithoutCourseDetails.courseSession} successfully updated.`,

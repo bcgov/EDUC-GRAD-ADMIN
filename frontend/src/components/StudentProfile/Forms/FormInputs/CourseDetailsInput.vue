@@ -100,7 +100,7 @@
         <v-col>
           <v-select
             v-model="course.credits"
-            :items="creditsAvailableForCourseSession"
+            :items="creditsOptionsBasedOnLetterGrade"
             item-title="creditValue"
             item-value="creditValue"
             label="Credits"
@@ -109,8 +109,8 @@
             class="pa-1"
             persistent-placeholder
             persistent-hint
-            :disabled="disableCreditsInputIfNoAllowableCredits"
-            :placeholder="disableCreditsInputIfNoAllowableCredits ? 'N/A' : ''"
+            :disabled="disableCreditsInput"
+            :placeholder="disableCreditsInput && !isFinalLetterGradeWOrF ? 'N/A' : ''"
           />
         </v-col>
 
@@ -384,19 +384,13 @@ export default {
                 return true;
               }
             ),
-          creditsMustBe0IfLetterGradeIsW: helpers.withMessage(
-            "Credits for W letter grade must be 0",
+          creditsMustBe0IfLetterGradeIsWOrF: helpers.withMessage(
+            "Credits for W or F letter grade must be 0",
             function (value) {
-              if (this.course.finalLetterGrade == "W") {
-                this.course.credits = 0;
-                return this.course.credits == 0;
-              } else if (
-                this.course.credits == 0 &&
-                this.course.finalLetterGrade != "W"
-              ) {
-                this.course.credits = this.creditsAvailableForCourseSession[0];
-                return true;
-              } else return true;
+              if (this.course.finalLetterGrade === "W" || this.course.finalLetterGrade === "F") {
+                return this.course.credits === 0 || this.course.credits === "0";
+              }
+              return true;
             }
           ),
         },
@@ -431,15 +425,23 @@ export default {
     };
   },
   watch: {
-    "course.finalLetterGrade"(newVal) {
-      if (newVal) {
-        //set credits to 0 if lettergrade is set to W
-        if (newVal == "W") {
-          this.course.credits = 0;
+    "course.finalLetterGrade": {
+      immediate: true,
+      handler(newVal, oldVal) {
+        if (newVal === "W" || newVal === "F") {
+          this.course.credits = "0";
         }
-        // Trigger re-validation to clear stale silent errors
+        else if (oldVal === "W" || oldVal === "F") {
+          if (this.creditsAvailableForCourseSession.length > 0) {
+            this.course.credits = this.creditsAvailableForCourseSession[0];
+          }
+        }
+        else if ((oldVal === "W" || oldVal === "F") && !newVal) {
+          this.course.credits = null;
+        }
+
+        this.updateWarnings();
       }
-      this.updateWarnings();
     },
 
     "course.interimPercent"(newVal) {
@@ -451,9 +453,11 @@ export default {
       }
     },
     "course.finalPercent"(newVal) {
-      if (newVal) {
+      const isWOrF = this.course.finalLetterGrade === "W" || this.course.finalLetterGrade === "F";
+
+      if (newVal && !isWOrF) {
         this.course.finalLetterGrade = this.filteredFinalLetterGrades[0] ?? "";
-      } else {
+      } else if (!newVal && !isWOrF) {
         this.course.finalLetterGrade = "";
       }
       this.updateWarnings();
@@ -572,6 +576,21 @@ export default {
 
     filteredFinalLetterGrades() {
       return this.getGradesForPercent(this.course.finalPercent);
+    },
+
+    isFinalLetterGradeWOrF() {
+      return this.course.finalLetterGrade === "W" || this.course.finalLetterGrade === "F";
+    },
+
+    creditsOptionsBasedOnLetterGrade() {
+      if (this.isFinalLetterGradeWOrF) {
+        return ["0"];
+      }
+      return this.creditsAvailableForCourseSession;
+    },
+
+    disableCreditsInput() {
+      return this.disableCreditsInputIfNoAllowableCredits || this.isFinalLetterGradeWOrF;
     },
   },
   methods: {
