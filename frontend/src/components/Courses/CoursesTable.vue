@@ -46,6 +46,7 @@
         :headers="courseHeaders"
         :items-length="totalCourses"
         :loading="loading"
+        :items-per-page-options="[10, 25, 50, 100]"
         @update:options="loadCourses"
         title="courses"
       >
@@ -180,8 +181,15 @@ export default {
       try {
         const { page, itemsPerPage, sortBy } = options;
 
-        // sort by course ID desc as default
-        const sortCriteria = sortBy && sortBy.length > 0 ? { [sortBy[0].key]: sortBy[0].order } : { courseID: 'desc' };
+        // Map frontend column names to backend field names
+        let sortCriteria;
+        if (sortBy && sortBy.length > 0) {
+          const sortKey = sortBy[0].key === 'generic' ? 'genericCourseType' : sortBy[0].key;
+          sortCriteria = { [sortKey]: sortBy[0].order };
+        } else {
+          // sort by course ID desc as default
+          sortCriteria = { courseID: 'desc' };
+        }
 
         const response = await CourseService.getCoursePaginated(
           page - 1,
