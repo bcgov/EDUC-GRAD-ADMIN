@@ -455,7 +455,7 @@ export default {
       const WILDCARD_RENAMES = {
         legalFirstName:   { flag: 'legalFirstName',  apiKey: 'legalFirstNameWild' },
         legalLastName:    { flag: 'legalLastName',   apiKey: 'legalLastNameWild' },
-        legalMiddleNames: { flag: 'legalMiddleName', apiKey: 'legalMiddleNameWild' },
+        legalMiddleNames: { flag: 'legalMiddleNames', apiKey: 'legalMiddleNamesWild' },
       };
 
       const apiSearchParams = {};
