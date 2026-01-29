@@ -357,10 +357,11 @@ export default {
                 itemGroups.get(itemNumber).push(question)
               })
 
-              var choiceQues = studentChoices.map(stc => stc.assessmentStudentChoiceQuestionSet);
+              var choiceQues = studentChoices.flatMap(stc => stc.assessmentStudentChoiceQuestionSet);
+              
               questions.forEach(question => {
                 const answer = studentAnswers.find(ans => question.assessmentQuestionID === ans.assessmentQuestionID);
-                const selectedQuestion = choiceQues[0].find(ans => question.assessmentQuestionID === ans.assessmentQuestionID);
+                const selectedQuestion = choiceQues.find(ans => question.assessmentQuestionID === ans.assessmentQuestionID);
 
                 if(question.assessmentChoiceID === null) {
                   targetArray.push({
