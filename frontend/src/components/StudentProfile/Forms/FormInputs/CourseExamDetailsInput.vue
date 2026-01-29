@@ -357,12 +357,13 @@ export default {
   },
   watch: {
     'course.finalPercent'(newVal) {
-      const isWOrF = this.course.finalLetterGrade === "W" || this.course.finalLetterGrade === "F";
-
-      if (newVal && newVal !== 0 && !isWOrF) {
+      if (newVal && newVal !== 0) {
         this.course.finalLetterGrade = this.filteredFinalLetterGrades[0] ?? '';
-      } else if (!newVal && !isWOrF) {
-        this.course.finalLetterGrade = ""
+      } else {
+        const isWOrF = this.course.finalLetterGrade === "W" || this.course.finalLetterGrade === "F";
+        if (!isWOrF) {
+          this.course.finalLetterGrade = "";
+        }
       }
       this.updateWarnings();
     },
