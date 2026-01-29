@@ -628,16 +628,6 @@ export default {
     getConstructedResponseTotals(type) {
       const constructedItems = this.constructedResponseItems || { written: [], oral: [] }
       const items = type === 'oral' ? constructedItems.oral : constructedItems.written
-      const groups = new Map()
-
-      items.forEach(item => {
-        if (item.itemType !== 'Mark') return
-        const q = item.originalQuestion || {}
-        const key = q.masterQuestionNumber ?? q.questionNumber ?? item.questionNumber
-        if (!groups.has(key)) groups.set(key, [])
-        groups.get(key).push(item)
-      })
-
       const totals = {
         totalRawScore: 0,
         totalMaxRawScore: 0,
@@ -647,39 +637,25 @@ export default {
         markItems: 0
       }
 
-      groups.forEach(group => {
-        // pick canonical item (questionNumber == masterQuestionNumber) else first
-        const canonical =
-            group.filter(it => {
-              const q = it.originalQuestion || {}
-              return q.questionNumber === q.masterQuestionNumber
-            })
-
-        if (canonical.length > 0) {
-           canonical.forEach(question => {
-
-            const q = question.originalQuestion || {}
-            const qv = parseFloat(q.questionValue) || 0
-            const sf = this.getScaleFactor(q.scaleFactor)
-
-            // Max from canonical only
-            totals.totalMaxRawScore += qv
-            totals.totalMaxScaledScore += qv * sf
-
-            // Student from canonical only (NR => 0)
-            if (question.rawScore !== 'NR' && question.rawScore !== '-') {
-              const raw = parseFloat(question.rawScore) || 0
-              totals.totalRawScore += raw
-              totals.answeredItems += 1
-            }
-            if (question.scaledScore !== 'NR' && question.scaledScore !== '-') {
-              totals.totalScaledScore += parseFloat(question.scaledScore) || 0
-            }
-
-          });
+      items.forEach(item => {
+        if (item.itemType === 'Mark') {
+          if(item.maxRawScore !== '-' && item.maxRawScore !== 'NR') {
+            totals.totalMaxRawScore += parseFloat(item.maxRawScore) || 0;
+          }
           
+          if(item.maxScaledScore !== '-' && item.maxScaledScore !== 'NR') {
+            totals.totalMaxScaledScore += parseFloat(item.maxScaledScore) || 0;
+          }
+
+          if(item.rawScore !== '-' && item.rawScore !== 'NR') {
+            totals.totalRawScore += parseFloat(item.rawScore) || 0;
+          }
+
+          if(item.scaledScore !== '-' && item.scaledScore !== 'NR') {
+            totals.totalScaledScore += parseFloat(item.scaledScore) || 0;
+          }
         }
-      })
+      });
 
       totals.totalRawScore = this.formatNumber(totals.totalRawScore)
       totals.totalMaxRawScore = this.formatNumber(totals.totalMaxRawScore)
