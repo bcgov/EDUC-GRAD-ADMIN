@@ -360,26 +360,25 @@ export default {
       if (newVal && newVal !== 0) {
         this.course.finalLetterGrade = this.filteredFinalLetterGrades[0] ?? '';
       } else {
-        const isWOrF = this.course.finalLetterGrade === "W" || this.course.finalLetterGrade === "F";
-        if (!isWOrF) {
-          this.course.finalLetterGrade = "";
-        }
+        this.course.finalLetterGrade = "";
+        this.course.credits = null;
       }
       this.updateWarnings();
     },
     'course.finalLetterGrade': {
       immediate: true,
       handler(newVal, oldVal) {
-        if (newVal === "W" || newVal === "F") {
+        if (!newVal && oldVal) {
+          this.course.finalPercent = null;
+          this.course.credits = null;
+        }
+        else if (newVal === "W" || newVal === "F") {
           this.course.credits = "0";
         }
         else if (oldVal === "W" || oldVal === "F") {
           if (this.creditsAvailableForCourseSession.length > 0) {
             this.course.credits = this.creditsAvailableForCourseSession[0];
           }
-        }
-        else if ((oldVal === "W" || oldVal === "F") && !newVal) {
-          this.course.credits = null;
         }
 
         this.updateWarnings();
