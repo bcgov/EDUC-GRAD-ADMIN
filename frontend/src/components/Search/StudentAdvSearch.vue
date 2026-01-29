@@ -129,7 +129,7 @@
         <div class="search-field col-12 col-md-3">
           <v-text-field
               id="datepicker-birthdate-from"
-              label="Birthdate"
+              label="Birthdate From"
               variant="outlined"
               density="compact"
               v-model="searchParams.dobFrom"
@@ -139,22 +139,10 @@
               clearable
           />
         </div>
-        <div class="range-check">
-          <v-checkbox
-              id="session-range-checkbox"
-              v-model="searchParams.useBirthdateRange"
-              class="ma-0 pa-0"
-              height="100%"
-              density="compact"
-              :label="searchParams.useBirthdateRange ? 'To:' : 'Use Range'"
-              color="#606060"
-              @update:model-value="onUseBirthdateRangeChanged"
-          />
-        </div>
-        <div class="search-field col-12 col-md-3" v-if="searchParams.useBirthdateRange">
+        <div class="search-field col-12 col-md-3">
           <v-text-field
               id="datepicker-birthdate-to"
-              label="Birthdate"
+              label="Birthdate To"
               variant="outlined"
               density="compact"
               v-model="searchParams.dobTo"
@@ -262,11 +250,7 @@ export default {
   name: "StudentAdvSearch",
   watch: {
     "searchParams.dobFrom"(newFrom) {
-      if (!newFrom) {
-        this.searchParams.dobTo = null;
-        return;
-      }
-      if (this.searchParams.dobTo && this.searchParams.dobTo < newFrom) {
+      if (newFrom && this.searchParams.dobTo && this.searchParams.dobTo < newFrom) {
         this.searchParams.dobTo = null;
       }
     },
@@ -306,7 +290,6 @@ export default {
         dobFrom: null,
         dobTo: null,
         genderCode: null,
-        useBirthdateRange: false,
         wildcards: {
           legalFirstName: false,
           legalLastName: false,
@@ -466,7 +449,7 @@ export default {
       this.search();
     },
     apiSearchParamsBuilder() {
-      const EXCLUDED_KEYS = ['useBirthdateRange', 'wildcards', 'dobFrom', 'dobTo'];
+      const EXCLUDED_KEYS = ['wildcards', 'dobFrom', 'dobTo'];
 
       // optional: your wildcard rename map (from earlier)
       const WILDCARD_RENAMES = {
@@ -500,21 +483,16 @@ export default {
             apiSearchParams[apiKey] = Array.isArray(value) ? value.join(',') : value;
           });
 
-      // Birthdate logic
-      const { useBirthdateRange, dobFrom, dobTo } = this.searchParams;
+      const { dobFrom, dobTo } = this.searchParams;
 
-      if (useBirthdateRange) {
-        if (dobFrom && dobTo) {
-          apiSearchParams.dobRange = `${dobFrom},${dobTo}`;
-        }
-      } else {
-        if (dobFrom) apiSearchParams.dob = dobFrom;
+      if (dobFrom && dobTo) {
+        apiSearchParams.dobRange = `${dobFrom},${dobTo}`;
+      } else if (dobFrom || dobTo) {
+        apiSearchParams.dob = dobFrom || dobTo;
       }
 
       return apiSearchParams;
-    }
-
-    ,
+    },
     clearInput: function () {
       this.searchResults = [];
       this.searchMessage = "";
@@ -535,12 +513,6 @@ export default {
     keyHandler: function (e) {
       if (e.keyCode === 13) {
         //enter key pressed
-      }
-    },
-    onUseBirthdateRangeChanged(checked) {
-      if (!checked) {
-        this.searchParams.dobTo = null;
-        this.searchParams.useBirthdateRange = false;
       }
     },
     convertSearchResults() {
@@ -621,12 +593,6 @@ export default {
 }
 </script>
 <style scoped>
-.range-check :deep(.v-label.v-label--clickable) {
-  display: flex;
-  align-items: center;
-  padding-top: .5em;
-  padding-bottom: 0;
-}
 
 :deep(.wildcard-chip) {
   display: inline-flex;
