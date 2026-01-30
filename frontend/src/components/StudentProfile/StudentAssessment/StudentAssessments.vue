@@ -31,7 +31,7 @@
       </StudentAssessmentsTransferForm>
     </v-row>
 
-    <v-data-table v-if="processedAssessments" :items="processedAssessments" :headers="fields"
+    <v-data-table v-if="processedAssessments" :items="processedAssessments" :headers="fields" items-per-page="1000"
       :loading="isLoadingAssessments" showFilter="true" hide-default-footer :show-select="allowUpdateStudentAssessments"
       v-model="selected" :item-value="(item) => item">
       <template v-slot:item.data-table-expand="{
