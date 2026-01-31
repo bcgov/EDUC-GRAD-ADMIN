@@ -59,12 +59,16 @@ export default {
     const params = allowRuleOverride ? { allowRuleOverride: 'true' } : {};
     return ApiService.apiAxios.delete('/api/student-assessment/student/' + assessmentStudentId, { params });
   },
-  downloadAssessmentStudentSearchReport(searchParams) {
-    return ApiService.apiAxios.get('/api/student-assessment/report/assessment-students/search/download', {
+  downloadAssessmentStudentSearchReport(searchParams, signal = null) {
+    const config = {
       params: {
         searchParams: omitBy(searchParams, isEmpty),
       },
       responseType: 'blob'
-    });
+    };
+    if (signal) {
+      config.signal = signal;
+    }
+    return ApiService.apiAxios.get('/api/student-assessment/report/assessment-students/search/download', config);
   }
 };

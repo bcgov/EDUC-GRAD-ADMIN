@@ -13,13 +13,17 @@ export default {
         },
       })
   },
-  downloadProgramStudentSearchReport(searchParams) {
-    return ApiService.apiAxios.get('/api/student-program/report/program-students/search/download', {
+  downloadProgramStudentSearchReport(searchParams, signal = null) {
+    const config = {
       params: {
         searchParams: omitBy(searchParams, isEmpty),
       },
       responseType: 'blob',
-    });
+    };
+    if (signal) {
+      config.signal = signal;
+    }
+    return ApiService.apiAxios.get('/api/student-program/report/program-students/search/download', config);
   }
 };
 

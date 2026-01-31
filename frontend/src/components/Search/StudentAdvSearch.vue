@@ -260,7 +260,20 @@ export default {
     return { snackbarStore };
   },
   mounted() {
-
+    this.handleBeforeUnload = () => {
+      if (this.downloadAbortController) {
+        this.downloadAbortController.abort();
+      }
+    };
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
+  beforeUnmount() {
+    if (this.downloadAbortController) {
+      this.downloadAbortController.abort();
+    }
+    if (this.handleBeforeUnload) {
+      window.removeEventListener('beforeunload', this.handleBeforeUnload);
+    }
   },
   data() {
     return {
@@ -281,6 +294,7 @@ export default {
       dateRangeError: "",
       searchLoading: false,
       downloadLoading: false,
+      downloadAbortController: null,
       searchParams: {
         pen: null,
         studentStatus: null,
@@ -538,6 +552,12 @@ export default {
       });
     },
     downloadReport() {
+      if (this.downloadAbortController) {
+        this.downloadAbortController.abort();
+      }
+
+      this.downloadAbortController = new AbortController();
+
       this.downloadLoading = true;
       const today = new Date();
       const year = today.getFullYear();
@@ -547,7 +567,8 @@ export default {
       const defaultFilename = `StudentSearch-${dateStr}.csv`;
 
       StudentService.downloadStudentSearchReport(
-        this.apiSearchParamsBuilder()
+        this.apiSearchParamsBuilder(),
+        this.downloadAbortController.signal
       )
         .then((response) => {
           if (response.data) {
@@ -578,6 +599,9 @@ export default {
           }
         })
         .catch((error) => {
+          if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {return;
+          }
+
           console.error("Error downloading report:", error);
           this.snackbarStore.showSnackbar(
             "Error downloading report: " + (error.message || "Unknown error"),
@@ -587,9 +611,10 @@ export default {
         })
         .finally(() => {
           this.downloadLoading = false;
+          this.downloadAbortController = null;
         });
     },
-  }
+  },
 }
 </script>
 <style scoped>
