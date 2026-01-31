@@ -7,6 +7,7 @@ const {
 } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../../config');
+const log = require('../logger');
 const { createMoreFiltersSearchCriteria } = require('../programs/studentOptionalProgramFilters');
 const API_BASE_ROUTE = '/api/v1/student';
 
@@ -50,8 +51,6 @@ async function getStudentOptionalProgramPaginated(req, res) {
 }
 
 async function getOptionalProgramStudentSearchReport(req, res) {
-  let upstreamAborted = false;
-
   try {
     const search = [];
     if (req.query?.searchParams) {
@@ -84,43 +83,13 @@ async function getOptionalProgramStudentSearchReport(req, res) {
       res.setHeader('Content-Disposition', 'attachment; filename="download.csv"');
     }
 
-    const checkInterval = setInterval(() => {
-      if (!res.writable || res.destroyed || req.destroyed) {
-        if (!upstreamAborted) {
-          upstreamAborted = true;
-          clearInterval(checkInterval);
-          if (apiRes.data && !apiRes.data.destroyed) {
-            apiRes.data.destroy();
-          }
-        }
-      }
-    }, 100);
-
     req.on('close', () => {
-      if (!res.writableEnded && !upstreamAborted) {
-        upstreamAborted = true;
-        clearInterval(checkInterval);
-        if (apiRes.data && !apiRes.data.destroyed) {
-          apiRes.data.destroy();
-        }
-      }
-    });
-
-    res.on('close', () => {
-      if (!upstreamAborted) {
-        upstreamAborted = true;
-        clearInterval(checkInterval);
-        if (apiRes.data && !apiRes.data.destroyed) {
-          apiRes.data.destroy();
-        }
+      if (!res.writableEnded) {
+        apiRes.data.destroy();
       }
     });
 
     apiRes.data.on('error', async (err) => {
-      clearInterval(checkInterval);
-      if (err.message && err.message.includes('Client disconnected')) {
-        return;
-      }
       await logApiError(err, 'Error streaming report');
       if (!res.headersSent) {
         return errorResponse(res);
@@ -128,25 +97,13 @@ async function getOptionalProgramStudentSearchReport(req, res) {
       res.destroy(err);
     });
 
-    apiRes.data.on('end', () => {
-      clearInterval(checkInterval);
-    });
-
     res.on('error', (err) => {
-      if (!upstreamAborted) {
-        upstreamAborted = true;
-        clearInterval(checkInterval);
-        if (apiRes.data && !apiRes.data.destroyed) {
-          apiRes.data.destroy();
-        }
-      }
+      log.error('Error writing to client response:', err);
+      apiRes.data.destroy();
     });
 
     apiRes.data.pipe(res);
   } catch (e) {
-    if (e.message && (e.message.includes('cancel') || e.message.includes('Client disconnected'))) {
-      return;
-    }
     await logApiError(e, 'Error getting report');
     if (!res.headersSent) {
       if (e.data?.message) {
