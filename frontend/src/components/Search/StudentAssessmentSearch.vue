@@ -261,6 +261,7 @@ export default {
       errorMessage: "",
       searchLoading: false,
       downloadLoading: false,
+      downloadAbortController: null,
       isLoadingSessions: true,
       showAdvancedSearchForm: false,
       totalElements: "",
@@ -361,6 +362,21 @@ export default {
   },
   async mounted() {
     await this.loadAssessmentSessions();
+
+    this.handleBeforeUnload = () => {
+      if (this.downloadAbortController) {
+        this.downloadAbortController.abort();
+      }
+    };
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
+  beforeUnmount() {
+    if (this.downloadAbortController) {
+      this.downloadAbortController.abort();
+    }
+    if (this.handleBeforeUnload) {
+      window.removeEventListener('beforeunload', this.handleBeforeUnload);
+    }
   },
   methods: {
     apiSearchParamsBuilder() {
@@ -530,6 +546,12 @@ export default {
       this.search();
     },
     downloadReport() {
+      if (this.downloadAbortController) {
+        this.downloadAbortController.abort();
+      }
+
+      this.downloadAbortController = new AbortController();
+
       this.downloadLoading = true;
       const today = new Date();
       const year = today.getFullYear();
@@ -539,7 +561,8 @@ export default {
       const defaultFilename = `StudentAssessmentSearch-${dateStr}.csv`;
 
       StudentAssessmentService.downloadAssessmentStudentSearchReport(
-          this.apiSearchParamsBuilder()
+          this.apiSearchParamsBuilder(),
+          this.downloadAbortController.signal
       )
           .then((response) => {
             const blob = response.data;
@@ -569,6 +592,10 @@ export default {
             );
           })
           .catch((error) => {
+            if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
+              return;
+            }
+
             if (error?.response?.status) {
               this.snackbarStore.showSnackbar(
                   'ERROR ' + error.response.statusText,
@@ -587,6 +614,7 @@ export default {
           })
           .finally(() => {
             this.downloadLoading = false;
+            this.downloadAbortController = null;
           });
     }
   },

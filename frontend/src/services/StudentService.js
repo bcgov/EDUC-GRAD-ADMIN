@@ -191,13 +191,17 @@ export default {
             },
         })
   },
-  downloadStudentSearchReport(searchParams) {
-    return ApiService.apiAxios.get('/api/student/students/search/download', {
+  downloadStudentSearchReport(searchParams, signal = null) {
+    const config = {
       params: {
         searchParams: omitBy(searchParams, isEmpty),
       },
       responseType: 'blob',
-    });
+    };
+    if (signal) {
+      config.signal = signal;
+    }
+    return ApiService.apiAxios.get('/api/student/students/search/download', config);
   },
   // STUDENT DEMOGRAPHICS
   // getStudentsByAdvancedSearch below will be deprecated. Use getStudentStudentsBySearchCriteria instead

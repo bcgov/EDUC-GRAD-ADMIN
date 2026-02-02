@@ -928,7 +928,7 @@ async function getStudentSearchReport(req, res) {
     };
 
     const { getCommonServiceStream } = require('../utils');
-    const apiRes = await getCommonServiceStream(url, params);
+    const apiRes = await getCommonServiceStream(url, params, req);
 
     if (apiRes.headers['content-type']) {
       res.setHeader('Content-Type', apiRes.headers['content-type']);
@@ -942,12 +942,22 @@ async function getStudentSearchReport(req, res) {
       res.setHeader('Content-Disposition', 'attachment; filename="students.csv"');
     }
 
+    req.on('close', () => {
+      if (!res.writableEnded) {apiRes.data.destroy();
+      }
+    });
+
     apiRes.data.on('error', async (err) => {
       await logApiError(err, 'Error streaming student search report');
       if (!res.headersSent) {
         return errorResponse(res);
       }
       res.destroy(err);
+    });
+
+    res.on('error', (err) => {
+      console.error('Error writing to client response:', err);
+      apiRes.data.destroy();
     });
 
     apiRes.data.pipe(res);

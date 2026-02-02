@@ -378,7 +378,7 @@ async function getAssessmentStudentSearchReport(req, res) {
       },
     };
 
-    const apiRes = await getCommonServiceStream(url, params);
+    const apiRes = await getCommonServiceStream(url, params, req);
 
     if (apiRes.headers['content-type']) {
       res.setHeader('Content-Type', apiRes.headers['content-type']);
@@ -392,12 +392,23 @@ async function getAssessmentStudentSearchReport(req, res) {
       res.setHeader('Content-Disposition', 'attachment; filename="download.csv"');
     }
 
+    req.on('close', () => {
+      if (!res.writableEnded) {
+        apiRes.data.destroy();
+      }
+    });
+
     apiRes.data.on('error', async (err) => {
       await logApiError(err, 'Error streaming report');
       if (!res.headersSent) {
         return errorResponse(res);
       }
       res.destroy(err);
+    });
+
+    res.on('error', (err) => {
+      console.error('Error writing to client response:', err);
+      apiRes.data.destroy();
     });
 
     apiRes.data.pipe(res);
