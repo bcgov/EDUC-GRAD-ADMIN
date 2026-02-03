@@ -82,11 +82,11 @@
         </tr>
       </template>
       <template v-slot:item.edit="{ item }">
-        <v-tooltip v-if="!canDeleteStudentAssessment(item)"
-          text="You do not have permission to edit this provincial specialty code">
+        <v-tooltip v-if="!canEditStudentAssessment(item)"
+          :text="getEditDisabledTooltip(item)">
           <template v-slot:activator="{ props }">
             <div v-bind="props">
-              <v-btn variant="text" icon="mdi-pencil" :disabled="!canDeleteStudentAssessment(item)"
+              <v-btn variant="text" icon="mdi-pencil" :disabled="!canEditStudentAssessment(item)"
                 @click="remove(item)">
               </v-btn>
             </div>
@@ -97,7 +97,7 @@
       </template>
       <template v-slot:item.delete="{ item }">
         <v-tooltip v-if="!canDeleteStudentAssessment(item)"
-          text="You do not have permission to delete this provincial specialty code">
+          :text="getDeleteDisabledTooltip(item)">
           <template v-slot:activator="{ props }">
             <div v-bind="props">
               <v-btn variant="text" color="error" icon="mdi-delete-forever"
@@ -147,7 +147,7 @@
             @click="showDeleteDialog = false" />
           <v-spacer></v-spacer>
           <v-btn color="error" variant="flat" class="text-none" density="default" text="Delete" :loading="isDeleting"
-            :disabled="!canDeleteStudentAssessment" @click="confirmDelete(true)" />
+            :disabled="!canDeleteStudentAssessment(studentToDelete)" @click="confirmDelete(true)" />
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -295,6 +295,30 @@ export default {
     },
     canDeleteStudentAssessment() {
       return (studentAssessment) => {
+        if (studentAssessment?.proficiencyScore) {
+          return false;
+        }
+        if (!studentAssessment?.provincialSpecialCaseCode) {
+          return true;
+        }
+        const assessmentAllowedCodes = ["A", "E", "Q"];
+        const gradAllowedCode = "E";
+        if (this.hasPermissions("STUDENT", "editAllSpecialCases")) {
+          return assessmentAllowedCodes.includes(
+            studentAssessment?.provincialSpecialCaseCode
+          );
+        } else {
+          return (
+            studentAssessment?.provincialSpecialCaseCode === gradAllowedCode
+          );
+        }
+      };
+    },
+    canEditStudentAssessment() {
+      return (studentAssessment) => {
+        if (studentAssessment?.proficiencyScore) {
+          return this.hasPermissions("STUDENT", "editAllSpecialCases");
+        }
         if (!studentAssessment?.provincialSpecialCaseCode) {
           return true;
         }
@@ -473,6 +497,18 @@ export default {
             specialCaseCode.provincialSpecialCaseCode === code
         );
       return specialCase ? specialCase.label : "";
+    },
+    getEditDisabledTooltip(studentAssessment) {
+      if (studentAssessment?.proficiencyScore) {
+        return "Cannot edit a record with a proficiency score.";
+      }
+      return "You do not have permission to edit this provincial specialty code.";
+    },
+    getDeleteDisabledTooltip(studentAssessment) {
+      if (studentAssessment?.proficiencyScore) {
+        return "Cannot delete a record with a proficiency score.";
+      }
+      return "You do not have permission to delete this provincial specialty code.";
     },
     showAssessmentTransfer() {
       this.$refs.assessmentTransferFormRef.openTransferStudentAssessmentsDialog();

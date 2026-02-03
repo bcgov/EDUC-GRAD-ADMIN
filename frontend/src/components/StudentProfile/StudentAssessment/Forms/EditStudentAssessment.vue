@@ -191,20 +191,29 @@ export default {
       let allowedCodes = ["A", "E", "Q"];
       let defaultAllowedCodes = ["E"];
 
-      // Get exclusion rules for the current assessment type
-      const excludeConfig =
-        this.specialCaseCodesToExcludeFromAssessments?.[
-          this.updateStudentAssessment?.assessmentTypeCode
-        ];
-      const excludeCodes = excludeConfig?.excludeCodes || [];
+      //only Assessment users can edit if there's a proficiency score, and only to disqualify them
+      if(this.updateStudentAssessment?.proficiencyScore && this.hasPermissions("STUDENT", "editAllSpecialCases")) {
+        allowedCodes = ["Q"];
+        defaultAllowedCodes = [];
+      } else if(this.updateStudentAssessment?.proficiencyScore) {
+        allowedCodes = [];
+        defaultAllowedCodes = [];
+      } else {
+        // Get exclusion rules for the current assessment type
+        const excludeConfig =
+            this.specialCaseCodesToExcludeFromAssessments?.[
+                this.updateStudentAssessment?.assessmentTypeCode
+                ];
+        const excludeCodes = excludeConfig?.excludeCodes || [];
 
-      // Filter out excluded codes
-      allowedCodes = allowedCodes.filter(
-        (code) => !excludeCodes.includes(code)
-      );
-      defaultAllowedCodes = defaultAllowedCodes.filter(
-        (code) => !excludeCodes.includes(code)
-      );
+        // Filter out excluded codes
+        allowedCodes = allowedCodes.filter(
+            (code) => !excludeCodes.includes(code)
+        );
+        defaultAllowedCodes = defaultAllowedCodes.filter(
+            (code) => !excludeCodes.includes(code)
+        );
+      }
 
       // Return the dropdown configuration
       return usePermissionBasedDropdown({
