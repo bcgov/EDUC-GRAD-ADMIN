@@ -133,6 +133,20 @@
             v-on:keyup="keyHandler"
           ></v-autocomplete>
         </div>
+        <div class="program-search-field col-12 col-md-2">
+          <v-autocomplete
+            id="district-at-graduation"
+            v-model="searchParams.districtAtGraduation"
+            label="District at Graduation"
+            :items="districtsList"
+            :item-title="districtTitle"
+            item-value="districtNumber"
+            variant="outlined"
+            clearable
+            density="compact"
+            v-on:keyup="keyHandler"
+          ></v-autocomplete>
+        </div>
         <div class="program-search-field col-12 col-md-auto">
           <v-text-field
             id="adult-start-date-from"
@@ -515,6 +529,26 @@ export default {
       });
       searchKeys.forEach((key) => {
         if (key === "districtOfRecord") {
+          const districtNumber = this.searchParams[key];
+
+          const district = this.districtsList.find(d => d.districtNumber === districtNumber);
+
+          if (!district) {
+            return;
+          }
+
+          const districtId = district.districtId;
+
+          const schoolsInDistrict = this.getSchoolsList.filter(
+            (school) => school.districtId === districtId
+          );
+
+          const schoolIds = schoolsInDistrict.map((school) => school.schoolId).join(",");
+
+          if (schoolIds) {
+            apiSearchParams[key] = schoolIds;
+          }
+        } else if (key === "districtAtGraduation") {
           const districtNumber = this.searchParams[key];
 
           const district = this.districtsList.find(d => d.districtNumber === districtNumber);
