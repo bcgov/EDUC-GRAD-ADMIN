@@ -51,6 +51,19 @@
           />
         </div>
         <div class="optional-program-search-field col-12 col-md-2">
+          <v-select
+            id="optional-program-complete"
+            label="Optional Program Complete?"
+            :items="optionalProgramCompleteOptions"
+            variant="outlined"
+            density="compact"
+            class="form__input"
+            v-model="searchParams.optionalProgramComplete"
+            v-on:keyup="keyHandler"
+            clearable
+          />
+        </div>
+        <div class="optional-program-search-field col-12 col-md-2">
           <SchoolSelect
             v-model="searchParams.schoolAtGraduationSchoolID"
             :disabled="false"
@@ -74,37 +87,35 @@
             clearable
           />
         </div>
-      </v-row>
-      <v-row class="mt-1">
         <div class="optional-program-search-field col-12 col-md-auto">
           <v-text-field
-            id="optional-program-completion-date-from"
-            label="Optional Program Completion Date From"
-            variant="outlined"
-            density="compact"
-            type="date"
-            class="form__input"
-            v-model="searchParams.optionalProgramCompletionDateFrom"
-            v-on:keyup="keyHandler"
-            placeholder="YYYY-MM-DD"
-            max="9999-12-30"
-            clearable
+              id="optional-program-completion-date-from"
+              label="Optional Program Completion Date From"
+              variant="outlined"
+              density="compact"
+              type="date"
+              class="form__input"
+              v-model="searchParams.optionalProgramCompletionDateFrom"
+              v-on:keyup="keyHandler"
+              placeholder="YYYY-MM-DD"
+              max="9999-12-30"
+              clearable
           />
         </div>
         <div class="optional-program-search-field col-12 col-md-auto">
           <v-text-field
-            id="optional-program-completion-date-to"
-            label="Optional Program Completion Date To"
-            variant="outlined"
-            density="compact"
-            type="date"
-            class="form__input"
-            v-model="searchParams.optionalProgramCompletionDateTo"
-            v-on:keyup="keyHandler"
-            placeholder="YYYY-MM-DD"
-            :min="searchParams.optionalProgramCompletionDateFrom || undefined"
-            max="9999-12-30"
-            clearable
+              id="optional-program-completion-date-to"
+              label="Optional Program Completion Date To"
+              variant="outlined"
+              density="compact"
+              type="date"
+              class="form__input"
+              v-model="searchParams.optionalProgramCompletionDateTo"
+              v-on:keyup="keyHandler"
+              placeholder="YYYY-MM-DD"
+              :min="searchParams.optionalProgramCompletionDateFrom || undefined"
+              max="9999-12-30"
+              clearable
           />
         </div>
       </v-row>
@@ -255,6 +266,10 @@ export default {
         { title: "Terminated", value: "TER" },
       ],
       programCompleteOptions: [
+        { title: "Yes", value: "yes" },
+        { title: "No", value: "no" },
+      ],
+      optionalProgramCompleteOptions: [
         { title: "Yes", value: "yes" },
         { title: "No", value: "no" },
       ],

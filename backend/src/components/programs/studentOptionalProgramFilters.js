@@ -54,6 +54,24 @@ function createMoreFiltersSearchCriteria(searchFilter) {
           condition: CONDITION.AND
         });
       }
+    } else if (key === 'optionalProgramComplete' && pValue) {
+      if (pValue === 'yes') {
+        searchCriteriaList.push({
+          key: 'completionDate',
+          operation: FILTER_OPERATION.NOT_EQUAL,
+          value: null,
+          valueType: VALUE_TYPE.STRING,
+          condition: CONDITION.AND
+        });
+      } else {
+        searchCriteriaList.push({
+          key: 'completionDate',
+          operation: FILTER_OPERATION.EQUAL,
+          value: null,
+          valueType: VALUE_TYPE.STRING,
+          condition: CONDITION.AND
+        });
+      }
     } else if (key === 'schoolAtGraduationSchoolID' && pValue) {
       searchCriteriaList.push({
         key: 'graduationStudentRecordEntity.schoolAtGraduationId',
