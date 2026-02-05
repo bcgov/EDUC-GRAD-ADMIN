@@ -169,17 +169,17 @@
 
                         <v-row no-gutters>
                             <v-col cols="4" class="d-flex">
-                                <v-select id="country" v-model="studentAddressCopy.countryCode" :items="country"
+                                <v-autocomplete id="country" v-model="studentAddressCopy.countryCode" :items="country"
                                     item-title="label" item-value="countryCode" :rules="[requiredRule]" dense
-                                    variant="underlined" label="Country" outlined />
+                                    variant="underlined" label="Country" outlined clearable />
                             </v-col>
                         </v-row>
 
                         <v-row no-gutters v-if="studentAddressCopy.countryCode === 'CN'">
                             <v-col cols="4" class="d-flex">
-                                <v-select id="province" v-model="studentAddressCopy.provinceStateCode" :items="province"
+                                <v-autocomplete id="province" v-model="studentAddressCopy.provinceStateCode" :items="province"
                                     item-title="label" variant="underlined" item-value="provinceCode" dense
-                                    label="Province/State" outlined :rules="[requiredRule]" />
+                                    label="Province/State" outlined :rules="[requiredRule]" clearable />
                             </v-col>
                         </v-row>
 
