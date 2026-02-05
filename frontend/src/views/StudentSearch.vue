@@ -3,8 +3,8 @@
     <h1>Student Search</h1>
     <v-card>
       <v-tabs v-model="tab" bg-color="bcGovLightGrey">
-        <v-tab value="pen" class="text-none" size="large"> PEN Search </v-tab>
-        <v-tab value="advance" class="text-none" size="large">
+        <v-tab value="pen" class="text-none" size="large" v-if="showLegacy"> PEN Search </v-tab>
+        <v-tab value="advance" class="text-none" size="large" v-if="showLegacy">
           Advanced Search
         </v-tab>
         <v-tab value="adv-search" class="text-none" size="large" v-if="enableCRUD">Student Search
@@ -35,7 +35,7 @@
       </v-tabs>
       <v-card-text>
         <v-window v-model="tab">
-          <v-window-item value="pen">
+          <v-window-item value="pen" v-if="showLegacy">
             <h3>PEN Search</h3>
             <p class="px-1">
               Search by Personal Education Number(PEN) or use the advanced
@@ -43,7 +43,7 @@
             </p>
             <PenSearchForm />
           </v-window-item>
-          <v-window-item value="advance">
+          <v-window-item value="advance" v-if="showLegacy">
             <StudentAdvancedSearch />
           </v-window-item>
           <v-window-item value="adv-search">
@@ -96,6 +96,7 @@ export default {
   computed: {
     ...mapState(useAppStore, {
       enableCRUD: "enableCRUD",
+      showLegacy: "showLegacy",
     }),
   },
   components: {

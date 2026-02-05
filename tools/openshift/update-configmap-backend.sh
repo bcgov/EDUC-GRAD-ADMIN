@@ -24,7 +24,7 @@ if [ "$ENV" != "prod" ]
 then
   siteMinderLogoutUrl="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl="
   crudEnabled=true
-  showLegacy=true
+  showLegacy=false
 else
   siteMinderLogoutUrl="https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl="
   crudEnabled=false
