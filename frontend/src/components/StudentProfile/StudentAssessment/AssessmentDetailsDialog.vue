@@ -233,7 +233,6 @@ export default {
           name: oralName, rawScore: 0, maxRawScore: 0, scaledScore: 0, maxScaledScore: 0, nonResponses: 0, type: 'OPEN_ENDED', subType: 'ORAL'
         })
 
-        // Process Constructed Response components
         this.assessmentForms.forEach(form => {
           form.assessmentComponents?.forEach(component => {
             if (component.componentTypeCode === 'OPEN_ENDED') {
@@ -241,18 +240,19 @@ export default {
               const comp = componentMap.get(isOral ? oralName : writtenName)
               const questions = component.assessmentQuestions || []
               const studentChoices = this.getStudentChoicesForComponent(component.assessmentComponentID)
-              // Answers may now live on the top-level assessmentStudentComponents for the student.
+
               const answers = this.getStudentAnswersForComponent(component.assessmentComponentID) || component.assessmentAnswers || component.studentAnswers || []
 
               var choiceQues = studentChoices.flatMap(stc => stc.assessmentStudentChoiceQuestionSet);
-              var masterQuesArr = []
+              var masterQuesArrWithChoice = [];
+              var multipleMarkerQues = [];
               questions.forEach(question => {
                 const answer = answers.find(ans => question.assessmentQuestionID === ans.assessmentQuestionID);
                 const selectedQuestion = choiceQues.find(ans => question.assessmentQuestionID === ans.assessmentQuestionID);
 
                 if(selectedQuestion !== undefined && answer === undefined) {
-                  if(!masterQuesArr.find(val => val == question.masterQuestionNumber)) {
-                    masterQuesArr.push(question.masterQuestionNumber);
+                  if(!masterQuesArrWithChoice.find(val => val == question.masterQuestionNumber)) {
+                    masterQuesArrWithChoice.push(question.masterQuestionNumber);
                     comp.nonResponses += 1
                   }
                   comp.maxRawScore += parseFloat(question.questionValue) || 0;
@@ -262,6 +262,15 @@ export default {
                   comp.scaledScore += (parseFloat(answer.score) || 0) * this.getScaleFactor(question.scaleFactor);
                   comp.maxRawScore += parseFloat(question.questionValue) || 0;
                   comp.maxScaledScore += question.questionValue * this.getScaleFactor(question.scaleFactor)
+                } 
+                else if(question.assessmentChoiceID === null && selectedQuestion === undefined && answer === undefined 
+                    && !masterQuesArrWithChoice.find(val => val == question.masterQuestionNumber)) {
+                  if(!multipleMarkerQues.find(val => val == question.questionNumber)) {
+                    multipleMarkerQues.push(question.questionNumber);
+                    comp.nonResponses += 1;
+                  }
+                  comp.maxRawScore += parseFloat(question.questionValue) || 0;
+                  comp.maxScaledScore += question.questionValue * this.getScaleFactor(question.scaleFactor);
                 }
               });
             }
