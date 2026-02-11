@@ -568,14 +568,17 @@ export default {
         this.targetStudentReconcileData.examinableCourses =
           studentCourses.filter((course) => course.courseExam !== null);
 
-        const courseValidationIssues = response.data.map(course => ({
-          courseID: course.courseID,
-          courseSession: course.courseSession,
-          validationIssues: course.validationIssues,
-        }));
+        let courseValidationIssues;
+        if(!!response?.data) {
+          courseValidationIssues = response.data.map(course => ({
+            courseID: course.courseID,
+            courseSession: course.courseSession,
+            validationIssues: course.validationIssues,
+          }));
+        }
 
         this.sourceStudentReconcileData.examinableCourses = this.sourceStudentReconcileData.examinableCourses.map(examinableCourse => {
-          const match = courseValidationIssues.find(
+          const match = courseValidationIssues?.find(
             vi =>
               vi.courseID === examinableCourse.courseID &&
               vi.sessionID === examinableCourse.sessionID
@@ -588,7 +591,6 @@ export default {
           };
         });
 
-        console.log(this.sourceStudentReconcileData.examinableCourses)
         this.snackbarStore.showSnackbar(
           "Successfully merged examinable courses",
           "success",
@@ -623,14 +625,17 @@ export default {
 
         //update source student courses with validation errors and warnings
 
-        const courseValidationIssues = response.data.map(course => ({
-          courseID: course.courseID,
-          courseSession: course.courseSession,
-          validationIssues: course.validationIssues,
-        }));
+        let courseValidationIssues;
+        if(!!response?.data) {
+          courseValidationIssues = response.data.map(course => ({
+            courseID: course.courseID,
+            courseSession: course.courseSession,
+            validationIssues: course.validationIssues,
+          }));
+        }
 
         this.sourceStudentReconcileData.nonExaminableCourses = this.sourceStudentReconcileData.nonExaminableCourses.map(nonExaminableCourse => {
-          const match = courseValidationIssues.find(
+          const match = courseValidationIssues?.find(
             vi =>
               vi.courseID === nonExaminableCourse.courseID &&
               vi.sessionID === nonExaminableCourse.sessionID
