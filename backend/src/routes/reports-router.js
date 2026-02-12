@@ -5,8 +5,7 @@ const auth = require("../components/auth");
 const roles = require("../components/roles");
 const {
   getSchoolReport,
-  getDistrictReport,
-  getDigitalSignatures,
+  getDistrictReport
 } = require("../components/reports");
 const isValidUiTokenWithReadStaffRoles = auth.isValidUiTokenWithRoles(
   "GRAD_SYSTEM_COORDINATOR",
@@ -30,13 +29,6 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getDistrictReport
-);
-
-router.get(
-  "/signatures",
-  passport.authenticate("jwt", { session: false }, undefined),
-  isValidUiTokenWithReadStaffRoles,
-  getDigitalSignatures
 );
 
 module.exports = router;

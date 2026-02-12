@@ -47,7 +47,6 @@ export const useReportStore = defineStore("report", {
         async updateDigitalSignature(digitalSignature) {
             try {
                 const response = await SignaturesService.updateDigitalSignature(
-                    digitalSignature.gradReportSignatureCode,
                     this.toDigitalSignaturePayload(digitalSignature)
                 );
                 return response.data;
@@ -73,6 +72,7 @@ export const useReportStore = defineStore("report", {
         // Transform to API payload format
         toDigitalSignaturePayload(digitalSignature) {
             return {
+                signatureId: digitalSignature.signatureId,
                 gradReportSignatureCode: digitalSignature.gradReportSignatureCode,
                 gradReportSignatureName: digitalSignature.gradReportSignatureName,
                 gradReportSignatureOrganizationName: digitalSignature.gradReportSignatureOrganizationName,

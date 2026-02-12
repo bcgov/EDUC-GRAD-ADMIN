@@ -1,6 +1,7 @@
 const {
   errorResponse,
   getData,
+  postData,
   getCommonServiceData,
 } = require("../components/utils");
 const config = require("../config/index");
@@ -382,6 +383,43 @@ async function getDigitalSignatureBlockTypeCodes(req, res) {
   }
 }
 
+async function getDigitalSignatures(req, res) {
+  const token = auth.getBackendToken(req);
+  try {
+    const url = `${config.get(
+        "server:reportAPIURL"
+    )}/api/v1/reports/signatures/get/all`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function saveDigitalSignature(req, res) {
+  const token = auth.getBackendToken(req);
+  try {
+    const url = `${config.get(
+        "server:reportAPIURL"
+    )}/api/v1/reports/signatures/save`;
+
+    const data = await postData(token, url, req.body, req.session?.correlationID);
+
+    return res.status(200).json(data);
+  } catch (e) {
+
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 async function getBatchJobTypes(req, res) {
   const token = auth.getBackendToken(req);
 
@@ -746,4 +784,6 @@ module.exports = {
   getDocumentStatusCodes,
   getDigitalSignatureBlockTypeCodes,
   getBatchJobTypes,
+  getDigitalSignatures,
+  saveDigitalSignature,
 };

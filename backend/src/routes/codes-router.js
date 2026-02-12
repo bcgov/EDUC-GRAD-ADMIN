@@ -39,6 +39,8 @@ const {
   getDocumentStatusCodes,
   getDigitalSignatureBlockTypeCodes,
   getBatchJobTypes,
+  getDigitalSignatures,
+  saveDigitalSignature,
 } = require("../components/codes");
 
 
@@ -240,6 +242,20 @@ router.get(
   passport.authenticate("jwt", { session: false }, undefined),
   isValidUiTokenWithReadStaffRoles,
   getDigitalSignatureBlockTypeCodes
+);
+
+router.get(
+  "/signatures",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getDigitalSignatures
+);
+
+router.post(
+  "/signatures/save",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  saveDigitalSignature
 );
 
 router.get(

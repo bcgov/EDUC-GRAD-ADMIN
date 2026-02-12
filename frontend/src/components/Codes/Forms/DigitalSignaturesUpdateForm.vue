@@ -63,6 +63,7 @@ export default {
   data() {
     return {
       snackbarStore: useSnackbarStore(),
+      selectedSignatureCode: '', // Store the code for display in title
     };
   },
   computed: {
@@ -78,6 +79,9 @@ export default {
       "loadDigitalSignatures"
     ]),
     openUpdateDigitalSignatureDialog() {
+      // Store the signature code for the title before opening dialog
+      this.selectedSignatureCode = this.selectedDigitalSignatureToUpdate.gradReportSignatureCode;
+
       this.dialog = true;
       this.updateSelectedDigitalSignature(this.selectedDigitalSignatureToUpdate);
     },
@@ -102,14 +106,15 @@ export default {
     close() {
       this.dialog = false;
       this.clearDigitalSignature();
+      this.selectedSignatureCode = '';
     },
     updateSelectedDigitalSignature(digitalSignatureToUpdate) {
-      //this.selectedDigitalSignature.signatureId = digitalSignatureToUpdate.signatureId;
-      //this.selectedDigitalSignature.gradReportSignatureCode = digitalSignatureToUpdate.gradReportSignatureCode;
+      this.selectedDigitalSignature.signatureId = digitalSignatureToUpdate.signatureId;
+      this.selectedDigitalSignature.gradReportSignatureCode = digitalSignatureToUpdate.gradReportSignatureCode;
       this.selectedDigitalSignature.gradReportSignatureName = digitalSignatureToUpdate.gradReportSignatureName;
       this.selectedDigitalSignature.gradReportSignatureOrganizationName = digitalSignatureToUpdate.gradReportSignatureOrganizationName;
       this.selectedDigitalSignature.signatureContent = digitalSignatureToUpdate.signatureContent;
-      this.selectedDigitalSignature.hasValidationError = false; // Set to false initially, form will validate
+      this.selectedDigitalSignature.hasValidationError = false;
     },
   },
 };

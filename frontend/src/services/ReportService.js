@@ -11,7 +11,4 @@ export default {
       `/api/reports/schoolReports/district/${districtID}`
     );
   },
-  /*getDigitalSignatures() {
-    return ApiService.apiAxios.get("/api/reports/signatures");
-  },*/
 };
