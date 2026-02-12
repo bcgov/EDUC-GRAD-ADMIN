@@ -91,6 +91,19 @@
               <CourseReview :course="item.source" />
             </div>
           </div>
+          <v-row v-if="item?.source?.courseStudentValidationIssues">
+            <v-col v-for="(issue, index) in item.source.courseStudentValidationIssues" :key="index" cols="12"
+                   class="d-flex align-center">
+              <v-icon :color="issue.validationIssueSeverityCode === 'ERROR' ? 'red' : 'orange'" class="mr-2" small>
+                {{ issue.validationIssueSeverityCode === 'ERROR' ? 'mdi-alert-circle' : 'mdi-alert' }}
+              </v-icon>
+
+              <div>
+                <strong>{{ issue.validationFieldName }}:</strong>
+                {{ issue.validationIssueMessage }}
+              </div>
+            </v-col>
+          </v-row>
         </template>
       </v-data-table>
     </v-row>
