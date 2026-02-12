@@ -7,6 +7,7 @@ const {
 } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const config = require('../../config');
+const log = require('../logger');
 const { createMoreFiltersSearchCriteria } = require('../programs/studentOptionalProgramFilters');
 const API_BASE_ROUTE = '/api/v1/student';
 
@@ -68,7 +69,7 @@ async function getOptionalProgramStudentSearchReport(req, res) {
       },
     };
 
-    const apiRes = await getCommonServiceStream(url, params);
+    const apiRes = await getCommonServiceStream(url, params, req);
 
     if (apiRes.headers['content-type']) {
       res.setHeader('Content-Type', apiRes.headers['content-type']);
@@ -82,12 +83,23 @@ async function getOptionalProgramStudentSearchReport(req, res) {
       res.setHeader('Content-Disposition', 'attachment; filename="download.csv"');
     }
 
+    req.on('close', () => {
+      if (!res.writableEnded) {
+        apiRes.data.destroy();
+      }
+    });
+
     apiRes.data.on('error', async (err) => {
       await logApiError(err, 'Error streaming report');
       if (!res.headersSent) {
         return errorResponse(res);
       }
       res.destroy(err);
+    });
+
+    res.on('error', (err) => {
+      log.error('Error writing to client response:', err);
+      apiRes.data.destroy();
     });
 
     apiRes.data.pipe(res);
@@ -107,4 +119,3 @@ module.exports = {
   getStudentOptionalProgramPaginated,
   getOptionalProgramStudentSearchReport
 };
-

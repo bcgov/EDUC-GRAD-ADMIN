@@ -133,6 +133,20 @@
             v-on:keyup="keyHandler"
           ></v-autocomplete>
         </div>
+        <div class="program-search-field col-12 col-md-2">
+          <v-autocomplete
+            id="district-at-graduation"
+            v-model="searchParams.districtAtGraduation"
+            label="District at Graduation"
+            :items="districtsList"
+            :item-title="districtTitle"
+            item-value="districtNumber"
+            variant="outlined"
+            clearable
+            density="compact"
+            v-on:keyup="keyHandler"
+          ></v-autocomplete>
+        </div>
         <div class="program-search-field col-12 col-md-auto">
           <v-text-field
             id="adult-start-date-from"
@@ -342,6 +356,7 @@ export default {
       adultStartDateRangeError: "",
       searchLoading: false,
       downloadLoading: false,
+      downloadAbortController: null,
       totalElements: "",
       studentStatusOptions: [
         { title: "Current", value: "CUR" },
@@ -487,6 +502,22 @@ export default {
   created() {
     this.appStore = useAppStore();
   },
+  mounted() {
+    this.handleBeforeUnload = () => {
+      if (this.downloadAbortController) {
+        this.downloadAbortController.abort();
+      }
+    };
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
+  beforeUnmount() {
+    if (this.downloadAbortController) {
+      this.downloadAbortController.abort();
+    }
+    if (this.handleBeforeUnload) {
+      window.removeEventListener('beforeunload', this.handleBeforeUnload);
+    }
+  },
   methods: {
     apiSearchParamsBuilder() {
       const apiSearchParams = {};
@@ -498,6 +529,26 @@ export default {
       });
       searchKeys.forEach((key) => {
         if (key === "districtOfRecord") {
+          const districtNumber = this.searchParams[key];
+
+          const district = this.districtsList.find(d => d.districtNumber === districtNumber);
+
+          if (!district) {
+            return;
+          }
+
+          const districtId = district.districtId;
+
+          const schoolsInDistrict = this.getSchoolsList.filter(
+            (school) => school.districtId === districtId
+          );
+
+          const schoolIds = schoolsInDistrict.map((school) => school.schoolId).join(",");
+
+          if (schoolIds) {
+            apiSearchParams[key] = schoolIds;
+          }
+        } else if (key === "districtAtGraduation") {
           const districtNumber = this.searchParams[key];
 
           const district = this.districtsList.find(d => d.districtNumber === districtNumber);
@@ -705,6 +756,12 @@ export default {
     },
 
     downloadReport() {
+      if (this.downloadAbortController) {
+        this.downloadAbortController.abort();
+      }
+
+      this.downloadAbortController = new AbortController();
+
       this.downloadLoading = true;
       const today = new Date();
       const year = today.getFullYear();
@@ -714,7 +771,8 @@ export default {
       const defaultFilename = `StudentProgramSearch-${dateStr}.csv`;
 
       StudentProgramService.downloadProgramStudentSearchReport(
-        this.apiSearchParamsBuilder()
+        this.apiSearchParamsBuilder(),
+        this.downloadAbortController.signal
       )
         .then((response) => {
           if (response.data) {
@@ -736,6 +794,10 @@ export default {
           }
         })
         .catch((error) => {
+          if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
+            return;
+          }
+
           if (error?.response?.status) {
             this.snackbarStore.showSnackbar(
               "ERROR " + error?.response?.statusText,
@@ -754,6 +816,7 @@ export default {
         })
         .finally(() => {
           this.downloadLoading = false;
+          this.downloadAbortController = null;
         });
     },
   },

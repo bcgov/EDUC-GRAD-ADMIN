@@ -233,49 +233,46 @@ export default {
           name: oralName, rawScore: 0, maxRawScore: 0, scaledScore: 0, maxScaledScore: 0, nonResponses: 0, type: 'OPEN_ENDED', subType: 'ORAL'
         })
 
-        // Process Constructed Response components
         this.assessmentForms.forEach(form => {
           form.assessmentComponents?.forEach(component => {
             if (component.componentTypeCode === 'OPEN_ENDED') {
               const isOral = this.isOralComponent(component)
               const comp = componentMap.get(isOral ? oralName : writtenName)
               const questions = component.assessmentQuestions || []
-              // Answers may now live on the top-level assessmentStudentComponents for the student.
+              const studentChoices = this.getStudentChoicesForComponent(component.assessmentComponentID)
+
               const answers = this.getStudentAnswersForComponent(component.assessmentComponentID) || component.assessmentAnswers || component.studentAnswers || []
 
-              // Group questions by master question number (question sets)
-              const questionSets = new Map()
-              questions.forEach(q => {
-                const key = q.masterQuestionNumber
-                if (!questionSets.has(key)) questionSets.set(key, [])
-                questionSets.get(key).push(q)
-              })
+              var choiceQues = studentChoices.flatMap(stc => stc.assessmentStudentChoiceQuestionSet);
+              var masterQuesArrWithChoice = [];
+              var multipleMarkerQues = [];
+              questions.forEach(question => {
+                const answer = answers.find(ans => question.assessmentQuestionID === ans.assessmentQuestionID);
+                const selectedQuestion = choiceQues.find(ans => question.assessmentQuestionID === ans.assessmentQuestionID);
 
-              questionSets.forEach(questionSet => {
-                // Find the canonical question (QUESTION_NUMBER = MASTER_QUESTION_NUMBER)
-                const canonical = questionSet.filter(q => q.questionNumber === q.masterQuestionNumber)
-
-                if (canonical.length > 0) {
-                  // Max scores: only count the canonical question
-
-                  canonical.forEach(question => {
-                    comp.maxRawScore += parseFloat(question.questionValue) || 0;
-                    comp.maxScaledScore += question.questionValue * this.getScaleFactor(question.scaleFactor)
-                  })
-
-                  questionSet.forEach(question => {
-                    const answer = answers.find(a => a.assessmentQuestionID === question.assessmentQuestionID)
-                    if (answer && answer.score != null) {
-                      comp.rawScore += parseFloat(answer.score) || 0
-                      comp.scaledScore += (parseFloat(answer.score) || 0) * this.getScaleFactor(question.scaleFactor);
-                    }
-                  })
-
-                  if(comp.rawScore == 0) {
+                if(selectedQuestion !== undefined && answer === undefined) {
+                  if(!masterQuesArrWithChoice.find(val => val == question.masterQuestionNumber)) {
+                    masterQuesArrWithChoice.push(question.masterQuestionNumber);
                     comp.nonResponses += 1
                   }
+                  comp.maxRawScore += parseFloat(question.questionValue) || 0;
+                  comp.maxScaledScore += question.questionValue * this.getScaleFactor(question.scaleFactor)
+                } else if(answer && answer.score != null) {
+                  comp.rawScore += parseFloat(answer.score) || 0
+                  comp.scaledScore += (parseFloat(answer.score) || 0) * this.getScaleFactor(question.scaleFactor);
+                  comp.maxRawScore += parseFloat(question.questionValue) || 0;
+                  comp.maxScaledScore += question.questionValue * this.getScaleFactor(question.scaleFactor)
+                } 
+                else if(question.assessmentChoiceID === null && selectedQuestion === undefined && answer === undefined 
+                    && !masterQuesArrWithChoice.find(val => val == question.masterQuestionNumber)) {
+                  if(!multipleMarkerQues.find(val => val == question.questionNumber)) {
+                    multipleMarkerQues.push(question.questionNumber);
+                    comp.nonResponses += 1;
+                  }
+                  comp.maxRawScore += parseFloat(question.questionValue) || 0;
+                  comp.maxScaledScore += question.questionValue * this.getScaleFactor(question.scaleFactor);
                 }
-              })
+              });
             }
           })
         })
@@ -345,17 +342,6 @@ export default {
               const studentChoices = this.getStudentChoicesForComponent(component.assessmentComponentID)
               const isOral = this.isOralComponent(component)
               const targetArray = isOral ? oralItems : writtenItems
-
-              // Group questions by item number
-              const itemGroups = new Map()
-
-              questions.forEach(question => {
-                const itemNumber = question.itemNumber
-                if (!itemGroups.has(itemNumber)) {
-                  itemGroups.set(itemNumber, [])
-                }
-                itemGroups.get(itemNumber).push(question)
-              })
 
               var choiceQues = studentChoices.flatMap(stc => stc.assessmentStudentChoiceQuestionSet);
               

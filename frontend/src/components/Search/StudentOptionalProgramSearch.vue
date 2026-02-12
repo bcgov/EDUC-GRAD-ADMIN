@@ -51,6 +51,19 @@
           />
         </div>
         <div class="optional-program-search-field col-12 col-md-2">
+          <v-select
+            id="optional-program-complete"
+            label="Optional Program Complete?"
+            :items="optionalProgramCompleteOptions"
+            variant="outlined"
+            density="compact"
+            class="form__input"
+            v-model="searchParams.optionalProgramComplete"
+            v-on:keyup="keyHandler"
+            clearable
+          />
+        </div>
+        <div class="optional-program-search-field col-12 col-md-2">
           <SchoolSelect
             v-model="searchParams.schoolAtGraduationSchoolID"
             :disabled="false"
@@ -74,37 +87,35 @@
             clearable
           />
         </div>
-      </v-row>
-      <v-row class="mt-1">
         <div class="optional-program-search-field col-12 col-md-auto">
           <v-text-field
-            id="optional-program-completion-date-from"
-            label="Optional Program Completion Date From"
-            variant="outlined"
-            density="compact"
-            type="date"
-            class="form__input"
-            v-model="searchParams.optionalProgramCompletionDateFrom"
-            v-on:keyup="keyHandler"
-            placeholder="YYYY-MM-DD"
-            max="9999-12-30"
-            clearable
+              id="optional-program-completion-date-from"
+              label="Optional Program Completion Date From"
+              variant="outlined"
+              density="compact"
+              type="date"
+              class="form__input"
+              v-model="searchParams.optionalProgramCompletionDateFrom"
+              v-on:keyup="keyHandler"
+              placeholder="YYYY-MM-DD"
+              max="9999-12-30"
+              clearable
           />
         </div>
         <div class="optional-program-search-field col-12 col-md-auto">
           <v-text-field
-            id="optional-program-completion-date-to"
-            label="Optional Program Completion Date To"
-            variant="outlined"
-            density="compact"
-            type="date"
-            class="form__input"
-            v-model="searchParams.optionalProgramCompletionDateTo"
-            v-on:keyup="keyHandler"
-            placeholder="YYYY-MM-DD"
-            :min="searchParams.optionalProgramCompletionDateFrom || undefined"
-            max="9999-12-30"
-            clearable
+              id="optional-program-completion-date-to"
+              label="Optional Program Completion Date To"
+              variant="outlined"
+              density="compact"
+              type="date"
+              class="form__input"
+              v-model="searchParams.optionalProgramCompletionDateTo"
+              v-on:keyup="keyHandler"
+              placeholder="YYYY-MM-DD"
+              :min="searchParams.optionalProgramCompletionDateFrom || undefined"
+              max="9999-12-30"
+              clearable
           />
         </div>
       </v-row>
@@ -245,6 +256,7 @@ export default {
       dateRangeError: "",
       searchLoading: false,
       downloadLoading: false,
+      downloadAbortController: null,
       totalElements: "",
       studentStatusOptions: [
         { title: "Current", value: "CUR" },
@@ -254,6 +266,10 @@ export default {
         { title: "Terminated", value: "TER" },
       ],
       programCompleteOptions: [
+        { title: "Yes", value: "yes" },
+        { title: "No", value: "no" },
+      ],
+      optionalProgramCompleteOptions: [
         { title: "Yes", value: "yes" },
         { title: "No", value: "no" },
       ],
@@ -379,6 +395,22 @@ export default {
   },
   created() {
     this.appStore = useAppStore();
+  },
+  mounted() {
+    this.handleBeforeUnload = () => {
+      if (this.downloadAbortController) {
+        this.downloadAbortController.abort();
+      }
+    };
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
+  beforeUnmount() {
+    if (this.downloadAbortController) {
+      this.downloadAbortController.abort();
+    }
+    if (this.handleBeforeUnload) {
+      window.removeEventListener('beforeunload', this.handleBeforeUnload);
+    }
   },
   methods: {
     apiSearchParamsBuilder() {
@@ -601,6 +633,12 @@ export default {
     },
 
     downloadReport() {
+      if (this.downloadAbortController) {
+        this.downloadAbortController.abort();
+      }
+
+      this.downloadAbortController = new AbortController();
+
       this.downloadLoading = true;
       const today = new Date();
       const year = today.getFullYear();
@@ -610,7 +648,8 @@ export default {
       const defaultFilename = `StudentOptionalProgramSearch-${dateStr}.csv`;
 
       StudentOptionalProgramService.downloadOptionalProgramStudentSearchReport(
-        this.apiSearchParamsBuilder()
+        this.apiSearchParamsBuilder(),
+        this.downloadAbortController.signal
       )
         .then((response) => {
           if (response.data) {
@@ -632,6 +671,10 @@ export default {
           }
         })
         .catch((error) => {
+          if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
+            return;
+          }
+
           if (error?.response?.status) {
             this.snackbarStore.showSnackbar(
               "ERROR " + error?.response?.statusText,
@@ -650,6 +693,7 @@ export default {
         })
         .finally(() => {
           this.downloadLoading = false;
+          this.downloadAbortController = null;
         });
     },
   },

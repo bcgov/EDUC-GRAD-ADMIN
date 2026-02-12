@@ -73,6 +73,14 @@ function createMoreFiltersSearchCriteria(searchFilter) {
         valueType: VALUE_TYPE.UUID,
         condition: CONDITION.AND
       });
+    } else if (key === 'districtAtGraduation' && pValue) {
+      searchCriteriaList.push({
+        key: 'schoolAtGraduationId',
+        operation: FILTER_OPERATION.IN,
+        value: pValue,
+        valueType: VALUE_TYPE.UUID,
+        condition: CONDITION.AND
+      });
     } else if (key === 'recalculateGradStatus' && pValue) {
       if (pValue === 'Y') {
         searchCriteriaList.push({

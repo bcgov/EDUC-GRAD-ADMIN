@@ -163,14 +163,35 @@ async function getCommonServiceData(url, params) {
     throw new ApiError(status, { message: 'API Get error' }, e);
   }
 }
-async function getCommonServiceStream(url, params) {
+async function getCommonServiceStream(url, params, req = null) {
   try {
     params = addTokenToHeader(params, await getBackendServiceToken());
-    const axiosConfig = {...params, responseType: 'stream',};
-    return await axios.get(url, axiosConfig);
+    const axiosConfig = {...params, responseType: 'stream'};
+
+    let axiosResponse = null;
+    let streamDestroyed = false;
+
+    if (req) {
+      const destroyStream = () => {
+        if (streamDestroyed) return;
+        streamDestroyed = true;
+        if (axiosResponse && axiosResponse.data && !axiosResponse.data.destroyed) {
+          log.debug('Client disconnected, destroying upstream stream');
+          axiosResponse.data.destroy();
+        }
+      };
+
+      req.on('close', destroyStream);
+      req.on('aborted', destroyStream);
+      if (req.res) {
+        req.res.on('close', destroyStream);
+      }
+    }
+
+    axiosResponse = await axios.get(url, axiosConfig);
+    return axiosResponse;
   } catch (e) {
-    log.error('getCommonServiceStream Error', e.response ? e.response.status : e.message
-    );
+    log.error('getCommonServiceStream Error', e.response ? e.response.status : e.message);
     const status = e.response ? e.response.status : HttpStatus.INTERNAL_SERVER_ERROR;
     throw new ApiError(status, { message: 'API Get error' }, e);
   }
