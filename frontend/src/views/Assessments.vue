@@ -14,7 +14,6 @@
             size="large"
           >
             Assessments
-            <p class="text-caption font-weight-bold text-bcGovGold">BETA</p>
           </v-tab>
           <v-tab
             value="assessmentRequirementsTab"
