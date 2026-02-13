@@ -107,10 +107,8 @@
                   >Courses ({{ coursesLegacy.length }})</v-tab
                 >
                 <v-tab value="Courses" class="text-none" v-if="enableCRUD"
-                  >Courses ({{ courses.length }})
-                  <p class="text-caption font-weight-bold text-bcGovGold">
-                    BETA
-                  </p></v-tab
+                  >Courses ({{ courses.length }})</v-tab
+
                 >
                 <v-tab
                   value="AssessmentsLegacy"
@@ -127,18 +125,13 @@
                     enableCRUD
                   "
                   >Assessments ({{ assessments?.length }})
-                  <p class="text-caption font-weight-bold text-bcGovGold">
-                    BETA
-                  </p>
                 </v-tab>
                 <v-tab value="ExamsLegacy" class="text-none" v-if="showLegacy"
                   >Exams Details ({{ examsLegacy.length }})</v-tab
                 >
                 <v-tab value="Exams" class="text-none" v-if="enableCRUD"
                   >Exams ({{ exams.length }})
-                  <p class="text-caption font-weight-bold text-bcGovGold">
-                    BETA
-                  </p></v-tab
+                  </v-tab
                 >
                 <v-tab value="Optional" class="text-none"
                   >Optional Programs ({{ optionalPrograms.length }})</v-tab
@@ -230,7 +223,6 @@
                     </v-progress-circular>
                     <StudentCoursesLegacy />
                   </v-window-item>
-                  <!--TODO: add condition to display this tab for onn PROD envs ONLY until Student Course CRUD goes live -->
                   <v-window-item value="Courses">
                     <v-progress-circular
                       v-if="tabLoading"

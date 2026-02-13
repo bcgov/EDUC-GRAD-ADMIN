@@ -3,39 +3,24 @@
     <h1>Student Search</h1>
     <v-card>
       <v-tabs v-model="tab" bg-color="bcGovLightGrey">
-        <v-tab value="pen" class="text-none" size="large" v-if="showLegacy"> PEN Search </v-tab>
+        <v-tab value="pen" class="text-none" size="large"> PEN Search </v-tab>
         <v-tab value="advance" class="text-none" size="large" v-if="showLegacy">
           Advanced Search
         </v-tab>
         <v-tab value="adv-search" class="text-none" size="large" v-if="enableCRUD">Student Search
-          <p class="text-caption font-weight-bold text-bcGovGold">
-            BETA
-          </p>
         </v-tab>
         <v-tab value="assessment-search" class="text-none" size="large" v-if="enableCRUD">Assessment Search
-          <p class="text-caption font-weight-bold text-bcGovGold">
-            BETA
-          </p>
         </v-tab>
         <v-tab value="course-search" class="text-none" size="large" v-if="enableCRUD">Course Search
-          <p class="text-caption font-weight-bold text-bcGovGold">
-            BETA
-          </p>
         </v-tab>
         <v-tab value="program-search" class="text-none" size="large" v-if="enableCRUD">Program Search
-          <p class="text-caption font-weight-bold text-bcGovGold">
-            BETA
-          </p>
         </v-tab>
         <v-tab value="optional-program-search" class="text-none" size="large" v-if="enableCRUD">Optional Program Search
-          <p class="text-caption font-weight-bold text-bcGovGold">
-            BETA
-          </p>
         </v-tab>
       </v-tabs>
       <v-card-text>
         <v-window v-model="tab">
-          <v-window-item value="pen" v-if="showLegacy">
+          <v-window-item value="pen" >
             <h3>PEN Search</h3>
             <p class="px-1">
               Search by Personal Education Number(PEN) or use the advanced
