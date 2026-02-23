@@ -27,8 +27,8 @@ then
   showLegacy=false
 else
   siteMinderLogoutUrl="https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl="
-  crudEnabled=false
-  showLegacy=true
+  crudEnabled=true
+  showLegacy=false
 fi
 
 echo Fetching SOAM token
