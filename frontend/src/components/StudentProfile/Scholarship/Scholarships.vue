@@ -148,15 +148,15 @@
                         <v-row no-gutters>
                             <v-col cols="4">
                                 <v-text-field id="mailAddressLine1" v-model="studentAddressCopy.addressLine1"
-                                    variant="underlined" label="Address Line 1" :rules="[requiredRule]" :maxlength="255"
-                                    class="pb-5" hide-details="auto" />
+                                    variant="underlined" label="Address Line 1" :rules="[requiredRule, noSpecialCharsRule]" :maxlength="255"
+                                    class="pb-5 uppercase-input" hide-details="auto" />
                             </v-col>
                         </v-row>
 
                         <v-row no-gutters>
                             <v-col cols="4">
                                 <v-text-field id="addressLine2" v-model="studentAddressCopy.addressLine2"
-                                    variant="underlined" label="Address Line 2" :maxlength="255" class="pb-5"
+                                    variant="underlined" label="Address Line 2" :rules="[noSpecialCharsRule]" :maxlength="255" class="pb-5 uppercase-input"
                                     hide-details="auto" />
                             </v-col>
                         </v-row>
@@ -164,7 +164,7 @@
                         <v-row no-gutters>
                             <v-col cols="4">
                                 <v-text-field id="city" v-model="studentAddressCopy.city" variant="underlined"
-                                    label="City" :rules="[requiredRule]" :maxlength="255" class="pb-5"
+                                    label="City" :rules="[noSpecialCharsRule]" :maxlength="255" class="pb-5 uppercase-input"
                                     hide-details="auto" />
                             </v-col>
                         </v-row>
@@ -189,15 +189,15 @@
                             <v-col cols="4">
                                 <v-text-field id="province" v-model="studentAddressCopy.provinceStateCode"
                                     variant="underlined" label="Province/State" :maxlength="2"
-                                    class="pb-5" hide-details="auto" />
+                                    class="pb-5 uppercase-input" hide-details="auto" />
                             </v-col>
                         </v-row>
 
                         <v-row no-gutters>
                             <v-col cols="4">
                                 <v-text-field id="postal" v-model="studentAddressCopy.postalZip" variant="underlined"
-                                    label="Postal/Zip"
-                                    :rules="studentAddressCopy.countryCode === 'CN' ? [requiredRule, postalCodeRule] : [requiredRule]" />
+                                    label="Postal/Zip" class="uppercase-input" :maxlength="10"
+                                    :rules="studentAddressCopy.countryCode === 'CN' ? [requiredRule, postalCodeRule] : []" />
                             </v-col>
                         </v-row>
                     </v-form>
@@ -243,6 +243,7 @@ export default {
             isLoading: true,
             snackbarStore: useSnackbarStore(),
             requiredRule: (v) => !!v || 'Required',
+            noSpecialCharsRule: (v) => !v || !/[.,]/.test(v) || 'Periods (.) and commas (,) are not permitted',
             postalCodeRule: v => /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i.test(v) || 'Postal code must be valid'
         };
     },
@@ -365,5 +366,8 @@ export default {
 <style scoped>
 .header-text {
     color: gray;
+}
+.uppercase-input :deep(input) {
+    text-transform: uppercase;
 }
 </style>
