@@ -20,7 +20,8 @@
                     </v-row>
                 </v-card-title>
                 <v-card-text>
-                    <div v-if="!isCitizenshipEdit">
+                    <v-skeleton-loader v-if="isLoading" type="text" width="200" />
+                    <div v-else-if="!isCitizenshipEdit">
                         <v-row>
                             <v-col class="header-text" cols="4">
                                 Citizenship
@@ -67,7 +68,8 @@
                     </v-row>
                 </v-card-title>
                 <v-card-text>
-                    <div v-if="!isEdit">
+                    <v-skeleton-loader v-if="isLoading" type="text@16" />
+                    <div v-else-if="!isEdit">
                         <v-row>
                             <v-col class="header-text" cols="4">
                                 Address line 1
@@ -238,6 +240,7 @@ export default {
             isCitizenshipFormValid: false,
             isEdit: false,
             isCitizenshipEdit: false,
+            isLoading: true,
             snackbarStore: useSnackbarStore(),
             requiredRule: (v) => !!v || 'Required',
             postalCodeRule: v => /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i.test(v) || 'Postal code must be valid'
@@ -273,8 +276,9 @@ export default {
         await this.getProvinceCodes(false);
         await this.getCitizenshipCodesFromStore(false);
 
-        this.getStudentAddress(this.studentID);
-        this.getStudent();
+        await this.getStudentAddress(this.studentID);
+        await this.getStudent();
+        this.isLoading = false;
     },
     methods: {
         ...mapActions(useAppStore, {
