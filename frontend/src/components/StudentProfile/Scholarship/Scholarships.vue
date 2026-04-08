@@ -188,7 +188,7 @@
                         <v-row v-else no-gutters>
                             <v-col cols="4">
                                 <v-text-field id="province" v-model="studentAddressCopy.provinceStateCode"
-                                    variant="underlined" label="Province/State" :rules="[requiredRule]" :maxlength="2"
+                                    variant="underlined" label="Province/State" :maxlength="2"
                                     class="pb-5" hide-details="auto" />
                             </v-col>
                         </v-row>
@@ -332,7 +332,7 @@ export default {
         },
         mapCountryCode(code) {
             let selection = this.country.filter(cntry => code === cntry.countryCode);
-            return selection ? selection[0]?.countryCode + '-' + selection[0]?.description : code + '-';
+            return selection && selection[0] ? selection[0]?.countryCode + '-' + selection[0]?.description : code;
         },
         mapProvinceCode(code) {
             let selection = this.province.filter(prov => code === prov.provinceCode);
