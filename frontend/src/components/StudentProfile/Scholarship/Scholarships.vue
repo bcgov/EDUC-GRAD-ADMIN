@@ -2,7 +2,7 @@
     <v-row>
         <v-col cols="6">
             <v-card>
-                 <v-card-title>
+                <v-card-title>
                     <v-row>
                         <v-col class="font-weight-bold d-flex justify-start" cols="4">
                             Citizenship
@@ -20,7 +20,8 @@
                     </v-row>
                 </v-card-title>
                 <v-card-text>
-                    <div v-if="!isCitizenshipEdit">
+                    <v-skeleton-loader v-if="isLoading" type="text" width="200" />
+                    <div v-else-if="!isCitizenshipEdit">
                         <v-row>
                             <v-col class="header-text" cols="4">
                                 Citizenship
@@ -67,7 +68,8 @@
                     </v-row>
                 </v-card-title>
                 <v-card-text>
-                    <div v-if="!isEdit">
+                    <v-skeleton-loader v-if="isLoading" type="text@16" />
+                    <div v-else-if="!isEdit">
                         <v-row>
                             <v-col class="header-text" cols="4">
                                 Address line 1
@@ -238,6 +240,7 @@ export default {
             isCitizenshipFormValid: false,
             isEdit: false,
             isCitizenshipEdit: false,
+            isLoading: true,
             snackbarStore: useSnackbarStore(),
             requiredRule: (v) => !!v || 'Required',
             postalCodeRule: v => /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i.test(v) || 'Postal code must be valid'
@@ -273,8 +276,9 @@ export default {
         await this.getProvinceCodes(false);
         await this.getCitizenshipCodesFromStore(false);
 
-        this.getStudentAddress(this.studentID);
-        this.getStudent();
+        await this.getStudentAddress(this.studentID);
+        await this.getStudent();
+        this.isLoading = false;
     },
     methods: {
         ...mapActions(useAppStore, {
@@ -328,7 +332,7 @@ export default {
         },
         mapCountryCode(code) {
             let selection = this.country.filter(cntry => code === cntry.countryCode);
-            return selection ? selection[0]?.countryCode + '-' + selection[0]?.description : code + '-';
+            return selection && selection[0] ? selection[0]?.countryCode + '-' + selection[0]?.description : code;
         },
         mapProvinceCode(code) {
             let selection = this.province.filter(prov => code === prov.provinceCode);
