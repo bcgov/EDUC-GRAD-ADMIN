@@ -145,9 +145,7 @@ export default {
           this.validationMessage = "";
           if (value === "") return true;
           if (value.length === 3) {
-            let psi = await SchoolsService.getPSIByAdvancedSearch(
-              `psiCode=${value}`
-            );
+            let psi = await SchoolsService.getPSIByCode(value);
             if (psi.data[0]) {
               this.psiInfo = {
                 psiCode: psi.data[0].psiCode,
@@ -203,9 +201,7 @@ export default {
       this.validationMessage = "";
       if (this.psi === "") return true;
       if (this.psi.length === 3) {
-        let psi = await SchoolsService.getPSIByAdvancedSearch(
-          `psiCode=${this.psi}`
-        );
+        let psi = await SchoolsService.getPSIByCode(this.psi);
         if (psi.data[0]) {
           this.psiInfo = {
             psiCode: psi.data[0].psiCode,

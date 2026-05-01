@@ -101,6 +101,26 @@ async function getPSISearch(req, res) {
   }
 }
 
+async function getPSIByCode(req, res) {
+  const token = auth.getBackendToken(req);
+  try {
+    const url = `${config.get(
+      'server:gradTraxAPIURL'
+    )}/api/v1/trax/psi/${req.params.psiCode}`;
+
+    const data = await getData(token, url, req.session?.correlationID);
+
+    return res.status(200).json(data);
+  } catch (e) {
+    log.error(e, 'getPSIByCode', 'Error occurred while attempting to get PSI by code');
+    if (e.data?.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 async function getInstituteEventHistory(req, res) {
   const token = auth.getBackendToken(req);
 
@@ -167,6 +187,7 @@ module.exports = {
   getInstituteSchool,
   getInstituteDistrict,
   getPSISearch,
+  getPSIByCode,
   getInstituteEventHistory,
   putInstituteEventHistory,
 };

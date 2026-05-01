@@ -22,6 +22,11 @@ export default {
       "/api/schools/postSecondary/search?" + params
     );
   },
+  getPSIByCode(psiCode) {
+    return ApiService.apiAxios.get(
+        "/api/schools/psi/" + psiCode
+    );
+  },
   getPSIPaginated(searchParams, sort, pageNumber, pageSize) {
     return ApiService.apiAxios.get('/api/psi/paginated', {
       params: {
