@@ -106,7 +106,7 @@ async function getPSIByCode(req, res) {
   try {
     const url = `${config.get(
       'server:gradTraxAPIURL'
-    )}/api/v1/trax/psi/${req.params?.psiCode}`;
+    )}/api/v1/trax/psi/search${formatQueryParamString(req.query)}`;
 
     const data = await getData(token, url, req.session?.correlationID);
 
