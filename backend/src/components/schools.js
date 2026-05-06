@@ -41,7 +41,7 @@ async function getInstituteDistrictsList(_req, res) {
 async function getInstituteSchool(req, res) {
   const token = auth.getBackendToken(req);
   try {
-    `${config.get("server:gradTraxAPIURL")}/api/v2/trax/school/${
+    `${config.get('server:gradTraxAPIURL')}/api/v2/trax/school/${
       req.params?.schoolID
     }`;
     const data = await getData(token, url, req.session?.correlationID);
@@ -75,17 +75,10 @@ async function getPSISearch(req, res) {
   const token = auth.getBackendToken(req);
   try {
     let data;
-    if(config.get("frontendConfig").enableCRUD === 'true') {
-      const url = `${config.get(
-        "server:psiSelectionAPIURL"
-      )}/api/v1/psi/search${formatQueryParamString(req.query)}`;
-      data = await getCommonServiceData(url);
-    } else {
-      const url = `${config.get(
-        "server:gradTraxAPIURL"
-      )}/api/v1/trax/psi/search${formatQueryParamString(req.query)}`;
-      data = await getData(token, url, req.session?.correlationID);
-    }
+    const url = `${config.get(
+      "server:gradTraxAPIURL"
+    )}/api/v1/trax/psi/search${formatQueryParamString(req.query)}`;
+    data = await getData(token, url, req.session?.correlationID);
     return res.status(200).json(data);
   } catch (e) {
     log.error(
