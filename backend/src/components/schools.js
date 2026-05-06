@@ -41,7 +41,7 @@ async function getInstituteDistrictsList(_req, res) {
 async function getInstituteSchool(req, res) {
   const token = auth.getBackendToken(req);
   try {
-    `${config.get('server:gradTraxAPIURL')}/api/v2/trax/school/${
+    `${config.get("server:gradTraxAPIURL")}/api/v2/trax/school/${
       req.params?.schoolID
     }`;
     const data = await getData(token, url, req.session?.correlationID);
