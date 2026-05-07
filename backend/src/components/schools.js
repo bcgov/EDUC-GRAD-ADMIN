@@ -58,7 +58,7 @@ async function getInstituteSchool(req, res) {
 async function getInstituteDistrict(req, res) {
   try {
     const url = `${config.get(
-      'server:instituteAPIURL'
+      "server:instituteAPIURL"
     )}/api/v1/institute/district/${req.params?.districtID}`;
     const data = await getCommonServiceData(url);
     return res.status(200).json(data);
@@ -74,7 +74,7 @@ async function getInstituteDistrict(req, res) {
 async function getPSISearch(req, res) {
   try {
     let data;
-    if(config.get('frontendConfig').enableCRUD === 'true') {
+    if(config.get("frontendConfig").enableCRUD === 'true') {
       const url = `${config.get(
         "server:psiSelectionAPIURL"
       )}/api/v1/psi/paginated${formatQueryParamString(req.query)}`;
@@ -84,8 +84,8 @@ async function getPSISearch(req, res) {
   } catch (e) {
     log.error(
       e,
-      'getPSISearch',
-      'Error occurred while attempting to get PSI search results'
+      "getPSISearch",
+      "Error occurred while attempting to get PSI search results"
     );
     if (e.data?.message) {
       return errorResponse(res, e.data.message, e.status);
@@ -99,18 +99,18 @@ async function getInstituteEventHistory(req, res) {
   const token = auth.getBackendToken(req);
 
   const sort =
-    typeof req.query?.sort === 'string'
+    typeof req.query?.sort === "string"
       ? JSON.parse(req.query.sort)
       : req.query.sort;
 
   const searchParams =
-    typeof req.query?.searchParams === 'string'
+    typeof req.query?.searchParams === "string"
       ? JSON.parse(req.query.searchParams)
       : req.query.searchParams;
 
   try {
     const url = `${config.get(
-      'server:gradTraxAPIURL'
+      "server:gradTraxAPIURL"
     )}/api/v1/trax/event/history/paginated?pageNumber=${
       req.query?.pageNumber
     }&pageSize=${req.query?.pageSize}&sort=${encodeURIComponent(
@@ -121,8 +121,8 @@ async function getInstituteEventHistory(req, res) {
   } catch (e) {
     log.error(
       e,
-      'eventHistoryError',
-      'Error occurred while attempting to get institute events'
+      "eventHistoryError",
+      "Error occurred while attempting to get institute events"
     );
     if (e.data.message) {
       return response(res, e.data.message, e.status);
@@ -137,7 +137,7 @@ async function putInstituteEventHistory(req, res) {
 
   try {
     const url = `${config.get(
-      'server:gradTraxAPIURL'
+      "server:gradTraxAPIURL"
     )}/api/v1/trax/event/history`;
     const data = await putData(
       token,
