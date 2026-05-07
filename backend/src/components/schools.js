@@ -72,19 +72,13 @@ async function getInstituteDistrict(req, res) {
 }
 
 async function getPSISearch(req, res) {
-  const token = auth.getBackendToken(req);
   try {
     let data;
     if(config.get("frontendConfig").enableCRUD === 'true') {
       const url = `${config.get(
         "server:psiSelectionAPIURL"
-      )}/api/v1/psi/search${formatQueryParamString(req.query)}`;
+      )}/api/v1/psi/paginated${formatQueryParamString(req.query)}`;
       data = await getCommonServiceData(url);
-    } else {
-      const url = `${config.get(
-        "server:gradTraxAPIURL"
-      )}/api/v1/trax/psi/search${formatQueryParamString(req.query)}`;
-      data = await getData(token, url, req.session?.correlationID);
     }
     return res.status(200).json(data);
   } catch (e) {
