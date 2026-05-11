@@ -47,6 +47,15 @@
         >
           <div class="error-msg">{{ error.$message }}</div>
         </div>
+        <v-alert
+          v-if="validationMessage"
+          type="warning"
+          variant="tonal"
+          density="compact"
+          class="mt-1"
+        >
+          {{ validationMessage }}
+        </v-alert>
         <v-checkbox
           v-model="selectAll"
           @change="selectAllPSICheckbox($event)"
@@ -56,7 +65,7 @@
       <v-col sm="2">
         <v-btn
           @click="addPSI"
-          :disabled="!psi || selectAll"
+          :disabled="!psiInfo || selectAll"
           class="float-right"
           color="bcGovBlue"
           small
@@ -155,6 +164,7 @@ export default {
               };
               return true;
             }
+            this.validationMessage = "No PSI found for the entered code.";
           }
           return false;
         },
@@ -173,6 +183,7 @@ export default {
     },
     clearPSIInfo() {
       this.psiInfo = "";
+      this.validationMessage = "";
     },
     clearPSI() {
       this.psi = "";
