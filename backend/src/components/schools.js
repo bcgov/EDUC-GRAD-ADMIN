@@ -9,6 +9,7 @@ const config = require('../config/index');
 const auth = require('./auth');
 const log = require('../components/logger');
 const cacheService = require('./cache-service');
+const { createMoreFiltersSearchCriteria } = require('./psiFilters');
 
 async function getInstituteSchoolsList(req, res) {
   try {
@@ -76,10 +77,26 @@ async function getPSISearch(req, res) {
   try {
     let data;
     if(config.get("frontendConfig").enableCRUD === 'true') {
-      const url = `${config.get(
-        "server:psiSelectionAPIURL"
-      )}/api/v1/psi/search${formatQueryParamString(req.query)}`;
-      data = await getCommonServiceData(url);
+      const search = [];
+      if (req.query) {
+        const criteriaArray = createMoreFiltersSearchCriteria(req.query);
+        criteriaArray.forEach((criteria) => {
+          search.push(criteria);
+        });
+      }
+      const params = {
+        params: {
+          pageNumber: 0,
+          pageSize: 1,
+          sort: JSON.stringify({}),
+          searchCriteriaList: JSON.stringify(search),
+        },
+      };
+      const paginatedData = await getCommonServiceData(
+        `${config.get("server:psiSelectionAPIURL")}/api/v1/psi/paginated`,
+        params
+      );
+      data = paginatedData?.content || [];
     } else {
       const url = `${config.get(
         "server:gradTraxAPIURL"
