@@ -9,6 +9,7 @@ const {
   getInstituteSchool,
   getInstituteDistrict,
   getPSISearch,
+  getPSIByCode,
   getInstituteEventHistory,
   putInstituteEventHistory,
 } = require("../components/schools");
@@ -63,8 +64,15 @@ router.get(
 );
 
 router.get(
+  "/psi/:psiCode",
+  passport.authenticate('jwt', { session: false }),
+  isValidUiTokenWithReadStaffRoles,
+  getPSIByCode
+);
+
+router.get(
   "/eventHistory",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate('jwt', { session: false }),
   isValidUiTokenWithReadStaffRoles,
   getInstituteEventHistory
 );
