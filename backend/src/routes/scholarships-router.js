@@ -4,9 +4,10 @@ const auth = require("../components/auth");
 const roles = require("../components/roles");
 const passport = require("passport");
 const validate = require("../components/validator");
-const {getStudentAddress, updateStudentAddress} = require("../components/scholarships");
+const {getStudentAddress, createStudentAddress, updateStudentAddress} = require("../components/scholarships");
 const {
   getStudentAddressSchema,
+  postStudentAddressSchema,
   putStudentAddressSchema,
 } = require("../components/validations/scholarships");
 
@@ -34,6 +35,14 @@ router.put(
   isValidUiTokenWithReadStaffRoles,
   validate(putStudentAddressSchema),
   updateStudentAddress
+);
+
+router.post(
+  "/student/:studentID/address",
+  passport.authenticate("jwt", { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  validate(postStudentAddressSchema),
+  createStudentAddress
 );
 
 router.post(

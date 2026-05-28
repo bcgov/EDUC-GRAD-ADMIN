@@ -148,6 +148,7 @@
                         <v-row no-gutters>
                             <v-col cols="4">
                                 <v-text-field id="mailAddressLine1" v-model="studentAddressCopy.addressLine1"
+                                    @update:model-value="studentAddressCopy.addressLine1 = toUpperCaseValue($event)"
                                     variant="underlined" label="Address Line 1" :rules="[requiredRule]" :maxlength="255"
                                     class="pb-5" hide-details="auto" />
                             </v-col>
@@ -156,6 +157,7 @@
                         <v-row no-gutters>
                             <v-col cols="4">
                                 <v-text-field id="addressLine2" v-model="studentAddressCopy.addressLine2"
+                                    @update:model-value="studentAddressCopy.addressLine2 = toUpperCaseValue($event)"
                                     variant="underlined" label="Address Line 2" :maxlength="255" class="pb-5"
                                     hide-details="auto" />
                             </v-col>
@@ -164,6 +166,7 @@
                         <v-row no-gutters>
                             <v-col cols="4">
                                 <v-text-field id="city" v-model="studentAddressCopy.city" variant="underlined"
+                                    @update:model-value="studentAddressCopy.city = toUpperCaseValue($event)"
                                     label="City" :rules="[requiredRule]" :maxlength="255" class="pb-5"
                                     hide-details="auto" />
                             </v-col>
@@ -188,6 +191,7 @@
                         <v-row v-else no-gutters>
                             <v-col cols="4">
                                 <v-text-field id="province" v-model="studentAddressCopy.provinceStateCode"
+                                    @update:model-value="studentAddressCopy.provinceStateCode = toUpperCaseValue($event)"
                                     variant="underlined" label="Province/State" :rules="[requiredRule]" :maxlength="2"
                                     class="pb-5" hide-details="auto" />
                             </v-col>
@@ -196,6 +200,7 @@
                         <v-row no-gutters>
                             <v-col cols="4">
                                 <v-text-field id="postal" v-model="studentAddressCopy.postalZip" variant="underlined"
+                                    @update:model-value="studentAddressCopy.postalZip = toUpperCaseValue($event)"
                                     label="Postal/Zip"
                                     :rules="studentAddressCopy.countryCode === 'CN' ? [requiredRule, postalCodeRule] : [requiredRule]" />
                             </v-col>
@@ -290,6 +295,21 @@ export default {
           getProvinceCodes: "getProvinceCodes",
           getCitizenshipCodesFromStore: "getCitizenshipCodes",
         }),
+        buildEmptyStudentAddress() {
+            return {
+                studentAddressId: null,
+                studentID: this.studentID,
+                addressLine1: '',
+                addressLine2: '',
+                city: '',
+                postalZip: '',
+                provinceStateCode: '',
+                countryCode: ''
+            };
+        },
+        toUpperCaseValue(value) {
+            return typeof value === 'string' ? value.toUpperCase() : value;
+        },
         async getStudent() {
             await ApiService.apiAxios.get(`/api/student/${this.studentID}/gradProgram/status`)
                 .then((response) => {
@@ -319,13 +339,20 @@ export default {
                 })
         },
         edit() {
-            this.studentAddressCopy = cloneDeep(this.studentAddress);
+            this.studentAddressCopy = this.studentAddress
+                ? cloneDeep(this.studentAddress)
+                : this.buildEmptyStudentAddress();
             this.isEdit = !this.isEdit;
         },
         save() {
-            ApiService.apiAxios.put(`/api/scholarship/student/${this.studentID}/address/${this.studentAddressCopy.studentAddressId}`, this.studentAddressCopy)
+            const isNewAddress = !this.studentAddressCopy?.studentAddressId;
+            const request = isNewAddress
+                ? ApiService.apiAxios.post(`/api/scholarship/student/${this.studentID}/address`, this.studentAddressCopy)
+                : ApiService.apiAxios.put(`/api/scholarship/student/${this.studentID}/address/${this.studentAddressCopy.studentAddressId}`, this.studentAddressCopy);
+
+            request
                 .then(() => {
-                    this.snackbarStore.showSnackbar('Student address has been updated.',);
+                    this.snackbarStore.showSnackbar(`Student address has been ${isNewAddress ? 'created' : 'updated'}.`,);
                 }).catch(error => {
                     console.error(error);
                     this.snackbarStore.showSnackbar('An error occurred while trying to save student address. Please try again later.', "error");
