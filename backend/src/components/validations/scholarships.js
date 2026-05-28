@@ -9,9 +9,9 @@ const getStudentAddressSchema = object({
   query: object().noUnknown()
 }).noUnknown();
 
-const putStudentAddressSchema = object({
+const studentAddressBodySchema = object({
   body: object({
-    studentAddressId: string(),
+    studentAddressId: string().nullable(),
     studentID: string(),
     addressLine1: string(),
     addressLine2: string().nullable(),
@@ -20,14 +20,24 @@ const putStudentAddressSchema = object({
     provinceStateCode: string().nullable(),
     countryCode: string().nullable(),
   }).concat(baseRequestSchema).noUnknown(),
+  query: object().noUnknown()
+}).noUnknown();
+
+const postStudentAddressSchema = studentAddressBodySchema.concat(object({
+  params: object({
+    studentID: string()
+  }).noUnknown(),
+})).noUnknown();
+
+const putStudentAddressSchema = studentAddressBodySchema.concat(object({
   params: object({
     studentID: string(),
     studentAddressID: string()
   }).noUnknown(),
-  query: object().noUnknown()
-}).noUnknown();
+})).noUnknown();
 
 module.exports = {
   getStudentAddressSchema,
+  postStudentAddressSchema,
   putStudentAddressSchema
 };
