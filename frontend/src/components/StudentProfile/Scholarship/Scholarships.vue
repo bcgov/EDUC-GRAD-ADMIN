@@ -272,6 +272,10 @@ export default {
 
     },
     async mounted() {
+        if (!this.studentID) {
+            this.isLoading = false;
+            return;
+        }
         await this.getCountryCodes(false);
         await this.getProvinceCodes(false);
         await this.getCitizenshipCodesFromStore(false);

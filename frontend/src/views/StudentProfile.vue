@@ -329,7 +329,11 @@
                     <StudentUndoCompletionReasons></StudentUndoCompletionReasons>
                   </v-window-item>
                   <v-window-item value="scholarships">
-                    <Scholarships :student-ID="studentId" />
+                    <Scholarships
+                      v-if="studentId"
+                      :key="studentId"
+                      :student-ID="studentId"
+                    />
                   </v-window-item>
                 </v-window>
               </v-card-text>
