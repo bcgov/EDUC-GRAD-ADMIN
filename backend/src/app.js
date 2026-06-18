@@ -99,7 +99,8 @@ const cookie = {
   httpOnly: true,
   maxAge: config.get("server:session:maxAge") || 1800000, //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
 };
-if ("local" === config.get("environment")) {
+const environment = config.get("environment");
+if (environment && environment.startsWith("local")) {
   cookie.secure = false;
 }
 //sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
