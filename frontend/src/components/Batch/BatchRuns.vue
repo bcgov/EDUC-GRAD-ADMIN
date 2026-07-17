@@ -176,6 +176,20 @@
               </div>
             </div>
           </template>
+          <template v-slot:item.healthStatus="{ item }">
+            <div class="batch-health-cell">
+              <v-tooltip v-if="shouldShowHealthDot(item)" location="top">
+                <template v-slot:activator="{ props }">
+                  <span
+                    v-bind="props"
+                    class="batch-health-dot"
+                    :class="getBatchHealthClass(item)"
+                  />
+                </template>
+                {{ getBatchHealthTooltip(item) }}
+              </v-tooltip>
+            </div>
+          </template>
         </v-data-table-server>
       </v-col>
 
@@ -257,6 +271,8 @@ export default {
       ],
       snackbarStore: useSnackbarStore(),
       appStore: useAppStore(),
+      pipelineStatusPoller: null,
+      pipelineRunHealth: {},
       batchRunHeaders: [
         {
           key: "jobDownload",
@@ -330,16 +346,25 @@ export default {
           class: "text-center",
           sortable: false,
         },
+        {
+          key: "healthStatus",
+          title: "",
+          class: "text-center",
+          sortable: false,
+        },
       ],
     };
   },
-  created() {},
+  beforeUnmount() {
+    this.stopPipelineStatusPolling();
+  },
   computed: {
     ...mapState(useBatchProcessingStore, {
       batchRuns: "getBatchRuns",
       totalElements: "getBatchRunsTotalElements",
       currentPage: "getBatchRunsCurrentPage",
       isBatchJobsLoading: "getIsGettingBatchJobsLoading",
+      activeTab: "getActiveTab",
     }),
     ...mapState(useAppStore, {
       getSchoolMincodeById: "getSchoolMincodeById",
@@ -487,6 +512,73 @@ export default {
     getTimeDifference(startTime, endTime) {
       return sharedMethods.getTimeDifference(startTime, endTime);
     },
+    fetchBatchPipelineStatus() {
+      BatchProcessingService.getBatchPipelineStatus()
+        .then((response) => {
+          const activeRuns = response?.data?.activeRuns ?? [];
+          const staleRuns = response?.data?.staleRuns ?? [];
+          const runHealthMap = {};
+
+          [...activeRuns, ...staleRuns].forEach((run) => {
+            if (run?.jobExecutionId) {
+              runHealthMap[run.jobExecutionId] = run;
+            }
+          });
+
+          this.pipelineRunHealth = runHealthMap;
+        })
+        .catch(() => {
+          this.pipelineRunHealth = {};
+        });
+    },
+    shouldShowHealthDot(item) {
+      return Boolean(this.pipelineRunHealth[item.jobExecutionId]);
+    },
+    getBatchHealthClass(item) {
+      const healthStatus =
+        this.pipelineRunHealth[item.jobExecutionId]?.healthStatus;
+      if (healthStatus === "warning") {
+        return "batch-health-dot--warning";
+      }
+      if (healthStatus === "please_inspect") {
+        return "batch-health-dot--inspect";
+      }
+      return "batch-health-dot--ok";
+    },
+    getBatchHealthTooltip(item) {
+      const run = this.pipelineRunHealth[item.jobExecutionId];
+      if (!run) {
+        return "";
+      }
+      return `${run.jobType} ${run.status.toLowerCase()} (${run.healthStatus})`;
+    },
+    startPipelineStatusPolling() {
+      if (this.pipelineStatusPoller) {
+        return;
+      }
+      this.fetchBatchPipelineStatus();
+      this.pipelineStatusPoller = setInterval(() => {
+        this.fetchBatchPipelineStatus();
+      }, 10000);
+    },
+    stopPipelineStatusPolling() {
+      if (this.pipelineStatusPoller) {
+        clearInterval(this.pipelineStatusPoller);
+        this.pipelineStatusPoller = null;
+      }
+    },
+  },
+  watch: {
+    activeTab: {
+      immediate: true,
+      handler(newValue) {
+        if (newValue === "batchRuns") {
+          this.startPipelineStatusPolling();
+          return;
+        }
+        this.stopPipelineStatusPolling();
+      },
+    },
   },
 };
 </script>
@@ -500,5 +592,31 @@ input {
 }
 .v-btn-link.selected {
   font-weight: bold;
+}
+
+.batch-health-cell {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.batch-health-dot {
+  border: 2px solid transparent;
+  border-radius: 50%;
+  display: inline-block;
+  height: 14px;
+  width: 14px;
+}
+
+.batch-health-dot--ok {
+  background-color: #2e8540;
+}
+
+.batch-health-dot--warning {
+  background-color: #f9c642;
+}
+
+.batch-health-dot--inspect {
+  background-color: #d8292f;
 }
 </style>
