@@ -15,11 +15,14 @@
     </v-overlay>
     <v-data-table
       :headers="scheduledRoutinesFields"
-      :items="batchRoutines"
+      :items="displayBatchRoutines"
       :items-per-page="5"
       class="elevation-1"
       :show-filter="false"
     >
+      <template v-slot:item.startTime="{ item }">
+        <span>{{ getStartTimeLabel(item) }}</span>
+      </template>
       <template v-slot:item.enabled="{ item }">
         <v-switch
           :disabled="!hasPermissions('BATCH', 'toggleBatchRoutines')"
@@ -31,6 +34,40 @@
       </template>
       <template v-slot:item.updateDate="{ item }">
         {{ item.updateDate.replace("T", ", ") }}
+      </template>
+      <template v-slot:item.actions="{ item }">
+        <div
+          v-if="item.jobType === 'REGALG'"
+          class="routine-action-cell routine-action-icons"
+        >
+          <v-tooltip text="Manually start REGALG">
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                icon="mdi-play"
+                variant="text"
+                color="primary"
+                :disabled="isPipelineRunning"
+                @click="handleManualStart"
+              />
+            </template>
+          </v-tooltip>
+          <v-tooltip text="Change start time">
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                icon="mdi-pencil"
+                variant="text"
+                color="primary"
+                :disabled="isPipelineRunning"
+                @click="openStartTimeDialog(item)"
+              />
+            </template>
+          </v-tooltip>
+        </div>
+        <div v-else class="routine-action-cell">
+          <span class="text-body-2 text-medium-emphasis">Linked</span>
+        </div>
       </template>
     </v-data-table>
 
@@ -45,6 +82,31 @@
           <v-spacer></v-spacer>
           <v-btn text @click="confirmToggle">Confirm</v-btn>
           <v-btn color="grey" text @click="cancelToggle">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="startTimeDialogVisible" max-width="420">
+      <v-card>
+        <v-card-title class="headline">Change Start Time</v-card-title>
+        <v-card-text>
+          <div class="text-body-2 mb-4">
+            Set the REGALG start time. TVRRUN will continue to follow REGALG
+            after completion.
+          </div>
+          <v-text-field
+            v-model="selectedStartTime"
+            type="time"
+            label="Start Time"
+            density="comfortable"
+            :min="minimumStartTime"
+            hide-details
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click="startTimeDialogVisible = false">Cancel</v-btn>
+          <v-btn color="primary" @click="saveStartTime">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -76,20 +138,19 @@ export default {
       snackbarColor: "",
       jobTypeToToggle: null,
       processingIdToToggle: null,
+      startTimeDialogVisible: false,
+      selectedStartTime: "",
+      selectedRoutine: null,
       switchState: {}, // Store the visual state of the switches
       originalState: null, // Store the original state of the toggle
       scheduledRoutinesFields: [
         { key: "jobType", title: "Type", sortable: true },
-        { key: "cronExpression", title: "Cron Expression", sortable: true },
-        {
-          key: "scheduleOccurrence",
-          title: "Scheduled Occurrence",
-          sortable: true,
-        },
+        { key: "startTime", title: "Start Time", sortable: false },
         { key: "createUser", title: "Created By", sortable: true },
         { key: "updateUser", title: "Updated By", sortable: true },
         { key: "updateDate", title: "Updated Date/Time", sortable: true },
         { key: "enabled", title: "Enabled", sortable: true },
+        { key: "actions", title: "", sortable: false, align: "center" },
       ],
     };
   },
@@ -114,6 +175,31 @@ export default {
   },
   methods: {
     ...mapActions(useBatchProcessingStore, ["setBatchRoutines"]),
+
+    openStartTimeDialog(item) {
+      this.selectedRoutine = item;
+      this.selectedStartTime = this.getRoutineTimeValue(item);
+      this.startTimeDialogVisible = true;
+    },
+
+    saveStartTime() {
+      if (!this.isSelectedStartTimeValid) {
+        this.showSnackbar(
+          "Start time must be later than the current time",
+          "error"
+        );
+        return;
+      }
+      this.startTimeDialogVisible = false;
+      this.showSnackbar(
+        "Start time save is ready for batch API wiring",
+        "success"
+      );
+    },
+
+    handleManualStart() {
+      this.showSnackbar("Manual batch start will be wired next", "success");
+    },
 
     prepareToggleRoutine(item) {
       this.jobTypeToToggle = item.jobType;
@@ -162,6 +248,36 @@ export default {
       this.snackbarVisible = true;
       this.snackbarColor = type === "error" ? "red" : "success";
     },
+
+    getRoutineTimeValue(item) {
+      if (!item?.cronExpression) {
+        return "";
+      }
+      const cronParts = item.cronExpression.trim().split(/\s+/);
+      if (cronParts.length < 3) {
+        return "";
+      }
+      const minutes = cronParts[1].padStart(2, "0");
+      const hours = cronParts[2].padStart(2, "0");
+      return `${hours}:${minutes}`;
+    },
+
+    getStartTimeLabel(item) {
+      if (item.jobType === "TVRRUN") {
+        return "Follows REGALG";
+      }
+      const timeValue = this.getRoutineTimeValue(item);
+      if (!timeValue) {
+        return "--";
+      }
+      const [hours, minutes] = timeValue.split(":").map(Number);
+      const displayDate = new Date();
+      displayDate.setHours(hours, minutes, 0, 0);
+      return new Intl.DateTimeFormat("en-CA", {
+        hour: "numeric",
+        minute: "2-digit",
+      }).format(displayDate);
+    },
   },
   computed: {
     ...mapState(useBatchProcessingStore, {
@@ -169,10 +285,43 @@ export default {
       isBatchRoutinesLoading: "getIsGettingBatchRoutinesLoading",
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
+    displayBatchRoutines() {
+      const allowedTypes = ["REGALG", "TVRRUN"];
+      return this.batchRoutines.filter((routine) =>
+        allowedTypes.includes(routine.jobType)
+      );
+    },
+    minimumStartTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      return `${hours}:${minutes}`;
+    },
+    isSelectedStartTimeValid() {
+      if (!this.selectedStartTime) {
+        return false;
+      }
+      return this.selectedStartTime >= this.minimumStartTime;
+    },
+    isPipelineRunning() {
+      return false;
+    },
   },
 };
 </script>
 
 <style scoped>
-/* Add any additional styles if needed */
+.routine-action-icons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.routine-action-cell {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 0.75rem;
+  width: 100%;
+}
 </style>
