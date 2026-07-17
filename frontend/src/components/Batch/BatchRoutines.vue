@@ -47,7 +47,6 @@
                 icon="mdi-play"
                 variant="text"
                 color="primary"
-                :disabled="isPipelineRunning"
                 @click="handleManualStart"
               />
             </template>
@@ -111,6 +110,31 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="manualStartDialogVisible" max-width="520">
+      <v-card>
+        <v-card-title class="headline">Another Batch Is Running</v-card-title>
+        <v-card-text>
+          <p class="mb-4">
+            A REGALG or TVRRUN batch appears to be running already. Do you want
+            to proceed anyway?
+          </p>
+          <div
+            v-for="run in activePipelineRuns"
+            :key="run.jobExecutionId"
+            class="text-body-2 mb-2"
+          >
+            {{ run.jobType }} batch {{ run.jobExecutionId }} is
+            {{ run.status.toLowerCase() }}.
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click="cancelManualStart">No</v-btn>
+          <v-btn color="primary" @click="confirmManualStart">Yes</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- Snackbar for Notifications -->
     <v-snackbar
       v-model="snackbarVisible"
@@ -139,8 +163,10 @@ export default {
       jobTypeToToggle: null,
       processingIdToToggle: null,
       startTimeDialogVisible: false,
+      manualStartDialogVisible: false,
       selectedStartTime: "",
       selectedRoutine: null,
+      activePipelineRuns: [],
       switchState: {}, // Store the visual state of the switches
       originalState: null, // Store the original state of the toggle
       scheduledRoutinesFields: [
@@ -198,7 +224,44 @@ export default {
     },
 
     handleManualStart() {
-      this.showSnackbar("Manual batch start will be wired next", "success");
+      BatchProcessingService.getBatchPipelineStatus()
+        .then((response) => {
+          const activeRuns = response?.data?.activeRuns ?? [];
+          if (activeRuns.length > 0) {
+            this.activePipelineRuns = activeRuns;
+            this.manualStartDialogVisible = true;
+            return;
+          }
+          this.runManualStartRequest();
+        })
+        .catch((error) => {
+          this.showSnackbar("ERROR " + error.response.statusText, "error");
+        });
+    },
+
+    confirmManualStart() {
+      this.manualStartDialogVisible = false;
+      this.runManualStartRequest();
+    },
+
+    cancelManualStart() {
+      this.manualStartDialogVisible = false;
+      this.activePipelineRuns = [];
+    },
+
+    runManualStartRequest() {
+      BatchProcessingService.runManualRegalgBatch()
+        .then((response) => {
+          const batchId = response?.data?.batchId;
+          const message = batchId
+            ? `Batch ${batchId} scheduled`
+            : "Batch scheduled";
+          this.activePipelineRuns = [];
+          this.showSnackbar(message, "success");
+        })
+        .catch((error) => {
+          this.showSnackbar("ERROR " + error.response.statusText, "error");
+        });
     },
 
     prepareToggleRoutine(item) {
