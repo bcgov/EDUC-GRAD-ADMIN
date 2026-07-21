@@ -546,6 +546,7 @@ export default {
       immediate: true,
       handler(newValue) {
         if (newValue === "batchRuns") {
+          this.getBatchDashboard();
           this.startPipelineStatusPolling();
           return;
         }
