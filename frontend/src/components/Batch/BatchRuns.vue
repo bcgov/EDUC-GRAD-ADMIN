@@ -176,20 +176,6 @@
               </div>
             </div>
           </template>
-          <template v-slot:item.healthStatus="{ item }">
-            <div class="batch-health-cell">
-              <v-tooltip v-if="shouldShowHealthDot(item)" location="top">
-                <template v-slot:activator="{ props }">
-                  <span
-                    v-bind="props"
-                    class="batch-health-dot"
-                    :class="getBatchHealthClass(item)"
-                  />
-                </template>
-                {{ getBatchHealthTooltip(item) }}
-              </v-tooltip>
-            </div>
-          </template>
         </v-data-table-server>
       </v-col>
 
@@ -272,7 +258,7 @@ export default {
       snackbarStore: useSnackbarStore(),
       appStore: useAppStore(),
       pipelineStatusPoller: null,
-      pipelineRunHealth: {},
+      lastPipelineStatusSnapshot: null,
       batchRunHeaders: [
         {
           key: "jobDownload",
@@ -343,12 +329,6 @@ export default {
         {
           key: "failedStudentsProcessed",
           title: "Error",
-          class: "text-center",
-          sortable: false,
-        },
-        {
-          key: "healthStatus",
-          title: "",
           class: "text-center",
           sortable: false,
         },
@@ -517,40 +497,32 @@ export default {
         .then((response) => {
           const activeRuns = response?.data?.activeRuns ?? [];
           const staleRuns = response?.data?.staleRuns ?? [];
-          const runHealthMap = {};
-
-          [...activeRuns, ...staleRuns].forEach((run) => {
-            if (run?.jobExecutionId) {
-              runHealthMap[run.jobExecutionId] = run;
-            }
+          const nextSnapshot = JSON.stringify({
+            activeRuns: this.normalizePipelineRuns(activeRuns),
+            staleRuns: this.normalizePipelineRuns(staleRuns),
           });
 
-          this.pipelineRunHealth = runHealthMap;
+          if (
+            this.lastPipelineStatusSnapshot !== null &&
+            this.lastPipelineStatusSnapshot !== nextSnapshot
+          ) {
+            this.getBatchDashboard();
+          }
+
+          this.lastPipelineStatusSnapshot = nextSnapshot;
         })
-        .catch(() => {
-          this.pipelineRunHealth = {};
-        });
+        .catch(() => {});
     },
-    shouldShowHealthDot(item) {
-      return Boolean(this.pipelineRunHealth[item.jobExecutionId]);
-    },
-    getBatchHealthClass(item) {
-      const healthStatus =
-        this.pipelineRunHealth[item.jobExecutionId]?.healthStatus;
-      if (healthStatus === "warning") {
-        return "batch-health-dot--warning";
-      }
-      if (healthStatus === "please_inspect") {
-        return "batch-health-dot--inspect";
-      }
-      return "batch-health-dot--ok";
-    },
-    getBatchHealthTooltip(item) {
-      const run = this.pipelineRunHealth[item.jobExecutionId];
-      if (!run) {
-        return "";
-      }
-      return `${run.jobType} ${run.status.toLowerCase()} (${run.healthStatus})`;
+    normalizePipelineRuns(runs) {
+      return [...runs]
+        .filter((run) => run?.jobExecutionId)
+        .map((run) => ({
+          jobExecutionId: run.jobExecutionId,
+          jobType: run.jobType,
+          status: run.status,
+          healthStatus: run.healthStatus,
+        }))
+        .sort((left, right) => left.jobExecutionId - right.jobExecutionId);
     },
     startPipelineStatusPolling() {
       if (this.pipelineStatusPoller) {
@@ -566,6 +538,7 @@ export default {
         clearInterval(this.pipelineStatusPoller);
         this.pipelineStatusPoller = null;
       }
+      this.lastPipelineStatusSnapshot = null;
     },
   },
   watch: {
@@ -592,31 +565,5 @@ input {
 }
 .v-btn-link.selected {
   font-weight: bold;
-}
-
-.batch-health-cell {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.batch-health-dot {
-  border: 2px solid transparent;
-  border-radius: 50%;
-  display: inline-block;
-  height: 14px;
-  width: 14px;
-}
-
-.batch-health-dot--ok {
-  background-color: #2e8540;
-}
-
-.batch-health-dot--warning {
-  background-color: #f9c642;
-}
-
-.batch-health-dot--inspect {
-  background-color: #d8292f;
 }
 </style>

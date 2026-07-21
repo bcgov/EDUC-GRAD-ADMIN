@@ -167,6 +167,7 @@ export default {
       selectedStartTime: "",
       selectedRoutine: null,
       activePipelineRuns: [],
+      batchRunsRefreshTimeout: null,
       switchState: {}, // Store the visual state of the switches
       originalState: null, // Store the original state of the toggle
       scheduledRoutinesFields: [
@@ -199,8 +200,14 @@ export default {
         this.showSnackbar("ERROR " + error.response.statusText, "error");
       });
   },
+  beforeUnmount() {
+    if (this.batchRunsRefreshTimeout) {
+      clearTimeout(this.batchRunsRefreshTimeout);
+      this.batchRunsRefreshTimeout = null;
+    }
+  },
   methods: {
-    ...mapActions(useBatchProcessingStore, ["setBatchRoutines"]),
+    ...mapActions(useBatchProcessingStore, ["setBatchRoutines", "setBatchJobs"]),
 
     openStartTimeDialog(item) {
       this.selectedRoutine = item;
@@ -257,6 +264,7 @@ export default {
             ? `Batch ${batchId} scheduled`
             : "Batch scheduled";
           this.activePipelineRuns = [];
+          this.refreshBatchRunsInBackground();
           this.showSnackbar(message, "success");
         })
         .catch((error) => {
@@ -310,6 +318,19 @@ export default {
       this.snackbarMessage = message;
       this.snackbarVisible = true;
       this.snackbarColor = type === "error" ? "red" : "success";
+    },
+
+    refreshBatchRunsInBackground() {
+      this.setBatchJobs();
+
+      if (this.batchRunsRefreshTimeout) {
+        clearTimeout(this.batchRunsRefreshTimeout);
+      }
+
+      this.batchRunsRefreshTimeout = setTimeout(() => {
+        this.setBatchJobs();
+        this.batchRunsRefreshTimeout = null;
+      }, 3000);
     },
 
     getRoutineTimeValue(item) {
