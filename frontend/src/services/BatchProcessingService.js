@@ -7,6 +7,14 @@ export default {
       `/api/batch/history?pageNumber=${params.pageNumber}&pageSize=${params.pageSize}&sort=${encodedSortParams}`
     );
   },
+
+  // Kicks off the manual regalg batch
+  runManualRegalgBatch(){
+    return ApiService.apiAxios.get("/api/batch/run/graduation/regalg");
+  },
+  getBatchPipelineStatus() {
+    return ApiService.apiAxios.get("/api/batch/status");
+  },
   runREGALG(request, cronTime = "") {
     if (cronTime) {
       let scheduledRequest = {};
