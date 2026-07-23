@@ -15,11 +15,14 @@
     </v-overlay>
     <v-data-table
       :headers="scheduledRoutinesFields"
-      :items="batchRoutines"
+      :items="displayBatchRoutines"
       :items-per-page="5"
       class="elevation-1"
       :show-filter="false"
     >
+      <template v-slot:item.startTime="{ item }">
+        <span>{{ getStartTimeLabel(item) }}</span>
+      </template>
       <template v-slot:item.enabled="{ item }">
         <v-switch
           :disabled="!hasPermissions('BATCH', 'toggleBatchRoutines')"
@@ -31,6 +34,40 @@
       </template>
       <template v-slot:item.updateDate="{ item }">
         {{ item.updateDate.replace("T", ", ") }}
+      </template>
+      <template v-slot:item.actions="{ item }">
+        <div
+          v-if="item.jobType === 'REGALG'"
+          class="routine-action-cell routine-action-icons"
+        >
+          <v-tooltip text="Manually start REGALG">
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                icon="mdi-play"
+                variant="text"
+                color="primary"
+                :disabled="item.enabled !== 'Y'"
+                @click="handleManualStart"
+              />
+            </template>
+          </v-tooltip>
+          <v-tooltip text="Change start time">
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                icon="mdi-pencil"
+                variant="text"
+                color="primary"
+                :disabled="isPipelineRunning"
+                @click="openStartTimeDialog(item)"
+              />
+            </template>
+          </v-tooltip>
+        </div>
+        <div v-else class="routine-action-cell">
+          <span class="text-body-2 text-medium-emphasis">Linked</span>
+        </div>
       </template>
     </v-data-table>
 
@@ -45,6 +82,56 @@
           <v-spacer></v-spacer>
           <v-btn text @click="confirmToggle">Confirm</v-btn>
           <v-btn color="grey" text @click="cancelToggle">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="startTimeDialogVisible" max-width="420">
+      <v-card>
+        <v-card-title class="headline">Change Start Time</v-card-title>
+        <v-card-text>
+          <div class="text-body-2 mb-4">
+            Set the REGALG start time. TVRRUN will continue to follow REGALG
+            after completion.
+          </div>
+          <v-text-field
+            v-model="selectedStartTime"
+            type="time"
+            label="Start Time"
+            density="comfortable"
+            :min="minimumStartTime"
+            hide-details
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click="startTimeDialogVisible = false">Cancel</v-btn>
+          <v-btn color="primary" @click="saveStartTime">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="manualStartDialogVisible" max-width="520">
+      <v-card>
+        <v-card-title class="headline">Another Batch Is Running</v-card-title>
+        <v-card-text>
+          <p class="mb-4">
+            A REGALG or TVRRUN batch appears to be running already. Do you want
+            to proceed anyway?
+          </p>
+          <div
+            v-for="run in activePipelineRuns"
+            :key="run.jobExecutionId"
+            class="text-body-2 mb-2"
+          >
+            {{ run.jobType }} batch {{ run.jobExecutionId }} is
+            {{ run.status.toLowerCase() }}.
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click="cancelManualStart">No</v-btn>
+          <v-btn color="primary" @click="confirmManualStart">Yes</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -76,44 +163,169 @@ export default {
       snackbarColor: "",
       jobTypeToToggle: null,
       processingIdToToggle: null,
+      startTimeDialogVisible: false,
+      manualStartDialogVisible: false,
+      selectedStartTime: "",
+      selectedRoutine: null,
+      activePipelineRuns: [],
+      pipelineRunning: false,
+      pipelineStatusPoller: null,
+      batchRunsRefreshTimeout: null,
       switchState: {}, // Store the visual state of the switches
       originalState: null, // Store the original state of the toggle
       scheduledRoutinesFields: [
         { key: "jobType", title: "Type", sortable: true },
-        { key: "cronExpression", title: "Cron Expression", sortable: true },
-        {
-          key: "scheduleOccurrence",
-          title: "Scheduled Occurrence",
-          sortable: true,
-        },
+        { key: "startTime", title: "Start Time", sortable: false },
         { key: "createUser", title: "Created By", sortable: true },
         { key: "updateUser", title: "Updated By", sortable: true },
         { key: "updateDate", title: "Updated Date/Time", sortable: true },
         { key: "enabled", title: "Enabled", sortable: true },
+        { key: "actions", title: "", sortable: false, align: "center" },
       ],
     };
   },
   created() {
-    BatchProcessingService.batchProcessingRoutines()
-      .then((response) => {
-        this.setBatchRoutines(response.data);
-
-        // Initialize switch state for each routine based on the enabled status using slice
-        let updatedSwitchState = { ...this.switchState };
-        response.data.forEach((item) => {
-          updatedSwitchState = {
-            ...updatedSwitchState,
-            [item.id]: item.enabled === "Y",
-          };
-        });
-        this.switchState = updatedSwitchState;
-      })
-      .catch((error) => {
-        this.showSnackbar("ERROR " + error.response.statusText, "error");
-      });
+    this.loadBatchRoutines();
+    this.refreshPipelineStatus();
+  },
+  beforeUnmount() {
+    this.stopPipelineStatusPolling();
+    if (this.batchRunsRefreshTimeout) {
+      clearTimeout(this.batchRunsRefreshTimeout);
+      this.batchRunsRefreshTimeout = null;
+    }
   },
   methods: {
-    ...mapActions(useBatchProcessingStore, ["setBatchRoutines"]),
+    ...mapActions(useBatchProcessingStore, ["setBatchRoutines", "setBatchJobs"]),
+
+    loadBatchRoutines() {
+      BatchProcessingService.batchProcessingRoutines()
+        .then((response) => {
+          this.setBatchRoutines(response.data);
+
+          let updatedSwitchState = { ...this.switchState };
+          response.data.forEach((item) => {
+            updatedSwitchState = {
+              ...updatedSwitchState,
+              [item.id]: item.enabled === "Y",
+            };
+          });
+          this.switchState = updatedSwitchState;
+        })
+        .catch((error) => {
+          this.showSnackbar(this.getErrorMessage(error), "error");
+        });
+    },
+
+    refreshPipelineStatus() {
+      BatchProcessingService.getBatchPipelineStatus()
+        .then((response) => {
+          const activeRuns = response?.data?.activeRuns ?? [];
+          this.activePipelineRuns = activeRuns;
+          this.pipelineRunning = !!response?.data?.running;
+        })
+        .catch(() => {
+          this.activePipelineRuns = [];
+          this.pipelineRunning = false;
+        });
+    },
+
+    openStartTimeDialog(item) {
+      this.selectedRoutine = item;
+      BatchProcessingService.getBatchProcessingRoutineSchedule(item.jobType)
+        .then((response) => {
+          this.selectedStartTime =
+            response?.data?.startTime || this.getRoutineTimeValue(item);
+          this.startTimeDialogVisible = true;
+        })
+        .catch((error) => {
+          this.showSnackbar(this.getErrorMessage(error), "error");
+        });
+    },
+
+    saveStartTime() {
+      if (!this.isSelectedStartTimeValid) {
+        this.showSnackbar(
+          "Start time must be later than the current time",
+          "error"
+        );
+        return;
+      }
+      if (!this.selectedRoutine?.jobType) {
+        this.showSnackbar("No routine selected", "error");
+        return;
+      }
+
+      const today = new Date();
+      const [hours, minutes] = this.selectedStartTime.split(":");
+      const scheduledDateTime = `${today.getFullYear()}-${String(
+        today.getMonth() + 1
+      ).padStart(2, "0")}-${String(today.getDate()).padStart(
+        2,
+        "0"
+      )}T${hours}:${minutes}:00`;
+
+      BatchProcessingService.updateBatchProcessingRoutineSchedule(
+        this.selectedRoutine.jobType,
+        {
+          scheduledDateTime,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        }
+      )
+        .then(() => {
+          this.startTimeDialogVisible = false;
+          this.loadBatchRoutines();
+          this.refreshPipelineStatus();
+          this.showSnackbar("Start time updated", "success");
+        })
+        .catch((error) => {
+          this.showSnackbar(this.getErrorMessage(error), "error");
+        });
+    },
+
+    handleManualStart() {
+      BatchProcessingService.getBatchPipelineStatus()
+        .then((response) => {
+          const activeRuns = response?.data?.activeRuns ?? [];
+          if (activeRuns.length > 0) {
+            this.activePipelineRuns = activeRuns;
+            this.pipelineRunning = !!response?.data?.running;
+            this.manualStartDialogVisible = true;
+            return;
+          }
+          this.runManualStartRequest();
+        })
+        .catch((error) => {
+          this.showSnackbar(this.getErrorMessage(error), "error");
+        });
+    },
+
+    confirmManualStart() {
+      this.manualStartDialogVisible = false;
+      this.runManualStartRequest();
+    },
+
+    cancelManualStart() {
+      this.manualStartDialogVisible = false;
+      this.activePipelineRuns = [];
+    },
+
+    runManualStartRequest() {
+      BatchProcessingService.runManualRegalgBatch()
+        .then((response) => {
+          const batchId = response?.data?.batchId;
+          const message = batchId
+            ? `Batch ${batchId} scheduled`
+            : "Batch scheduled";
+          this.activePipelineRuns = [];
+          this.refreshPipelineStatus();
+          this.refreshBatchRunsInBackground();
+          this.showSnackbar(message, "success");
+        })
+        .catch((error) => {
+          this.showSnackbar(this.getErrorMessage(error), "error");
+        });
+    },
 
     prepareToggleRoutine(item) {
       this.jobTypeToToggle = item.jobType;
@@ -137,11 +349,12 @@ export default {
         this.processingIdToToggle
       )
         .then(() => {
+          this.refreshPipelineStatus();
           this.showSnackbar("Job Updated", "success");
           this.dialogVisible = false; // Hide the dialog after confirming
         })
         .catch((error) => {
-          this.showSnackbar("ERROR " + error.response.statusText, "error");
+          this.showSnackbar(this.getErrorMessage(error), "error");
           this.dialogVisible = false; // Hide the dialog in case of an error
         });
     },
@@ -162,17 +375,132 @@ export default {
       this.snackbarVisible = true;
       this.snackbarColor = type === "error" ? "red" : "success";
     },
+
+    getErrorMessage(error) {
+      return (
+        error?.response?.data?.messages?.[0]?.message ||
+        error?.response?.data?.message ||
+        error?.response?.statusText ||
+        "An unexpected error occurred"
+      );
+    },
+
+    startPipelineStatusPolling() {
+      if (this.pipelineStatusPoller) {
+        return;
+      }
+      this.refreshPipelineStatus();
+      this.pipelineStatusPoller = setInterval(() => {
+        this.refreshPipelineStatus();
+      }, 10000);
+    },
+
+    stopPipelineStatusPolling() {
+      if (this.pipelineStatusPoller) {
+        clearInterval(this.pipelineStatusPoller);
+        this.pipelineStatusPoller = null;
+      }
+    },
+
+    refreshBatchRunsInBackground() {
+      this.setBatchJobs();
+
+      if (this.batchRunsRefreshTimeout) {
+        clearTimeout(this.batchRunsRefreshTimeout);
+      }
+
+      this.batchRunsRefreshTimeout = setTimeout(() => {
+        this.setBatchJobs();
+        this.batchRunsRefreshTimeout = null;
+      }, 3000);
+    },
+
+    getRoutineTimeValue(item) {
+      if (!item?.cronExpression) {
+        return "";
+      }
+      const cronParts = item.cronExpression.trim().split(/\s+/);
+      if (cronParts.length < 3) {
+        return "";
+      }
+      const minutes = cronParts[1].padStart(2, "0");
+      const hours = cronParts[2].padStart(2, "0");
+      return `${hours}:${minutes}`;
+    },
+
+    getStartTimeLabel(item) {
+      if (item.jobType === "TVRRUN") {
+        return "Follows REGALG";
+      }
+      const timeValue = this.getRoutineTimeValue(item);
+      if (!timeValue) {
+        return "--";
+      }
+      const [hours, minutes] = timeValue.split(":").map(Number);
+      const displayDate = new Date();
+      displayDate.setHours(hours, minutes, 0, 0);
+      return new Intl.DateTimeFormat("en-CA", {
+        hour: "numeric",
+        minute: "2-digit",
+      }).format(displayDate);
+    },
   },
   computed: {
     ...mapState(useBatchProcessingStore, {
+      activeTab: "getActiveTab",
       batchRoutines: "getBatchRoutines",
       isBatchRoutinesLoading: "getIsGettingBatchRoutinesLoading",
     }),
     ...mapState(useAccessStore, ["hasPermissions"]),
+    displayBatchRoutines() {
+      const allowedTypes = ["REGALG", "TVRRUN"];
+      return this.batchRoutines.filter((routine) =>
+        allowedTypes.includes(routine.jobType)
+      );
+    },
+    minimumStartTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      return `${hours}:${minutes}`;
+    },
+    isSelectedStartTimeValid() {
+      if (!this.selectedStartTime) {
+        return false;
+      }
+      return this.selectedStartTime >= this.minimumStartTime;
+    },
+    isPipelineRunning() {
+      return this.pipelineRunning;
+    },
+  },
+  watch: {
+    activeTab: {
+      immediate: true,
+      handler(newValue) {
+        if (newValue === "batchRoutines") {
+          this.startPipelineStatusPolling();
+          return;
+        }
+        this.stopPipelineStatusPolling();
+      },
+    },
   },
 };
 </script>
 
 <style scoped>
-/* Add any additional styles if needed */
+.routine-action-icons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.routine-action-cell {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 0.75rem;
+  width: 100%;
+}
 </style>
