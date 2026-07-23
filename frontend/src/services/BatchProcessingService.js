@@ -276,6 +276,15 @@ export default {
   batchProcessingToggleRoutine(jobType) {
     return ApiService.apiAxios.put("/api/batch/routines/toggle/" + jobType);
   },
+  getBatchProcessingRoutineSchedule(jobType) {
+    return ApiService.apiAxios.get("/api/batch/routines/schedule/" + jobType);
+  },
+  updateBatchProcessingRoutineSchedule(jobType, payload) {
+    return ApiService.apiAxios.put(
+      "/api/batch/routines/schedule/" + jobType,
+      payload
+    );
+  },
   rerunBatchSchoolReports(batchID) {
     return ApiService.apiAxios.get(
       `/api/batch/history/${batchID}/schoolReport/rerun`

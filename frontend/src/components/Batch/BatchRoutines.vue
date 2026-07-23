@@ -47,6 +47,7 @@
                 icon="mdi-play"
                 variant="text"
                 color="primary"
+                :disabled="item.enabled !== 'Y'"
                 @click="handleManualStart"
               />
             </template>
@@ -167,6 +168,8 @@ export default {
       selectedStartTime: "",
       selectedRoutine: null,
       activePipelineRuns: [],
+      pipelineRunning: false,
+      pipelineStatusPoller: null,
       batchRunsRefreshTimeout: null,
       switchState: {}, // Store the visual state of the switches
       originalState: null, // Store the original state of the toggle
@@ -182,25 +185,11 @@ export default {
     };
   },
   created() {
-    BatchProcessingService.batchProcessingRoutines()
-      .then((response) => {
-        this.setBatchRoutines(response.data);
-
-        // Initialize switch state for each routine based on the enabled status using slice
-        let updatedSwitchState = { ...this.switchState };
-        response.data.forEach((item) => {
-          updatedSwitchState = {
-            ...updatedSwitchState,
-            [item.id]: item.enabled === "Y",
-          };
-        });
-        this.switchState = updatedSwitchState;
-      })
-      .catch((error) => {
-        this.showSnackbar("ERROR " + error.response.statusText, "error");
-      });
+    this.loadBatchRoutines();
+    this.refreshPipelineStatus();
   },
   beforeUnmount() {
+    this.stopPipelineStatusPolling();
     if (this.batchRunsRefreshTimeout) {
       clearTimeout(this.batchRunsRefreshTimeout);
       this.batchRunsRefreshTimeout = null;
@@ -209,10 +198,49 @@ export default {
   methods: {
     ...mapActions(useBatchProcessingStore, ["setBatchRoutines", "setBatchJobs"]),
 
+    loadBatchRoutines() {
+      BatchProcessingService.batchProcessingRoutines()
+        .then((response) => {
+          this.setBatchRoutines(response.data);
+
+          let updatedSwitchState = { ...this.switchState };
+          response.data.forEach((item) => {
+            updatedSwitchState = {
+              ...updatedSwitchState,
+              [item.id]: item.enabled === "Y",
+            };
+          });
+          this.switchState = updatedSwitchState;
+        })
+        .catch((error) => {
+          this.showSnackbar(this.getErrorMessage(error), "error");
+        });
+    },
+
+    refreshPipelineStatus() {
+      BatchProcessingService.getBatchPipelineStatus()
+        .then((response) => {
+          const activeRuns = response?.data?.activeRuns ?? [];
+          this.activePipelineRuns = activeRuns;
+          this.pipelineRunning = !!response?.data?.running;
+        })
+        .catch(() => {
+          this.activePipelineRuns = [];
+          this.pipelineRunning = false;
+        });
+    },
+
     openStartTimeDialog(item) {
       this.selectedRoutine = item;
-      this.selectedStartTime = this.getRoutineTimeValue(item);
-      this.startTimeDialogVisible = true;
+      BatchProcessingService.getBatchProcessingRoutineSchedule(item.jobType)
+        .then((response) => {
+          this.selectedStartTime =
+            response?.data?.startTime || this.getRoutineTimeValue(item);
+          this.startTimeDialogVisible = true;
+        })
+        .catch((error) => {
+          this.showSnackbar(this.getErrorMessage(error), "error");
+        });
     },
 
     saveStartTime() {
@@ -223,11 +251,36 @@ export default {
         );
         return;
       }
-      this.startTimeDialogVisible = false;
-      this.showSnackbar(
-        "Start time save is ready for batch API wiring",
-        "success"
-      );
+      if (!this.selectedRoutine?.jobType) {
+        this.showSnackbar("No routine selected", "error");
+        return;
+      }
+
+      const today = new Date();
+      const [hours, minutes] = this.selectedStartTime.split(":");
+      const scheduledDateTime = `${today.getFullYear()}-${String(
+        today.getMonth() + 1
+      ).padStart(2, "0")}-${String(today.getDate()).padStart(
+        2,
+        "0"
+      )}T${hours}:${minutes}:00`;
+
+      BatchProcessingService.updateBatchProcessingRoutineSchedule(
+        this.selectedRoutine.jobType,
+        {
+          scheduledDateTime,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        }
+      )
+        .then(() => {
+          this.startTimeDialogVisible = false;
+          this.loadBatchRoutines();
+          this.refreshPipelineStatus();
+          this.showSnackbar("Start time updated", "success");
+        })
+        .catch((error) => {
+          this.showSnackbar(this.getErrorMessage(error), "error");
+        });
     },
 
     handleManualStart() {
@@ -236,13 +289,14 @@ export default {
           const activeRuns = response?.data?.activeRuns ?? [];
           if (activeRuns.length > 0) {
             this.activePipelineRuns = activeRuns;
+            this.pipelineRunning = !!response?.data?.running;
             this.manualStartDialogVisible = true;
             return;
           }
           this.runManualStartRequest();
         })
         .catch((error) => {
-          this.showSnackbar("ERROR " + error.response.statusText, "error");
+          this.showSnackbar(this.getErrorMessage(error), "error");
         });
     },
 
@@ -264,11 +318,12 @@ export default {
             ? `Batch ${batchId} scheduled`
             : "Batch scheduled";
           this.activePipelineRuns = [];
+          this.refreshPipelineStatus();
           this.refreshBatchRunsInBackground();
           this.showSnackbar(message, "success");
         })
         .catch((error) => {
-          this.showSnackbar("ERROR " + error.response.statusText, "error");
+          this.showSnackbar(this.getErrorMessage(error), "error");
         });
     },
 
@@ -294,11 +349,12 @@ export default {
         this.processingIdToToggle
       )
         .then(() => {
+          this.refreshPipelineStatus();
           this.showSnackbar("Job Updated", "success");
           this.dialogVisible = false; // Hide the dialog after confirming
         })
         .catch((error) => {
-          this.showSnackbar("ERROR " + error.response.statusText, "error");
+          this.showSnackbar(this.getErrorMessage(error), "error");
           this.dialogVisible = false; // Hide the dialog in case of an error
         });
     },
@@ -318,6 +374,32 @@ export default {
       this.snackbarMessage = message;
       this.snackbarVisible = true;
       this.snackbarColor = type === "error" ? "red" : "success";
+    },
+
+    getErrorMessage(error) {
+      return (
+        error?.response?.data?.messages?.[0]?.message ||
+        error?.response?.data?.message ||
+        error?.response?.statusText ||
+        "An unexpected error occurred"
+      );
+    },
+
+    startPipelineStatusPolling() {
+      if (this.pipelineStatusPoller) {
+        return;
+      }
+      this.refreshPipelineStatus();
+      this.pipelineStatusPoller = setInterval(() => {
+        this.refreshPipelineStatus();
+      }, 10000);
+    },
+
+    stopPipelineStatusPolling() {
+      if (this.pipelineStatusPoller) {
+        clearInterval(this.pipelineStatusPoller);
+        this.pipelineStatusPoller = null;
+      }
     },
 
     refreshBatchRunsInBackground() {
@@ -365,6 +447,7 @@ export default {
   },
   computed: {
     ...mapState(useBatchProcessingStore, {
+      activeTab: "getActiveTab",
       batchRoutines: "getBatchRoutines",
       isBatchRoutinesLoading: "getIsGettingBatchRoutinesLoading",
     }),
@@ -388,7 +471,19 @@ export default {
       return this.selectedStartTime >= this.minimumStartTime;
     },
     isPipelineRunning() {
-      return false;
+      return this.pipelineRunning;
+    },
+  },
+  watch: {
+    activeTab: {
+      immediate: true,
+      handler(newValue) {
+        if (newValue === "batchRoutines") {
+          this.startPipelineStatusPolling();
+          return;
+        }
+        this.stopPipelineStatusPolling();
+      },
     },
   },
 };

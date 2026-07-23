@@ -15,6 +15,8 @@ const {
   deleteScheduledJob,
   getBatchProcessingRoutines,
   putBatchProcessingRoutineToggle,
+  getBatchProcessingRoutineSchedule,
+  putBatchProcessingRoutineSchedule,
   postRegularGraduationAlgorithmBatch,
   postTranscriptVerificationReportBatch,
   postMonthlyDistributionRun,
@@ -133,6 +135,20 @@ router.put(
   passport.authenticate('jwt', { session: false }, undefined),
   isValidUiTokenWithStaffUpdateRoles,
   putBatchProcessingRoutineToggle
+);
+
+router.get(
+  '/routines/schedule/:jobType',
+  passport.authenticate('jwt', { session: false }, undefined),
+  isValidUiTokenWithReadStaffRoles,
+  getBatchProcessingRoutineSchedule
+);
+
+router.put(
+  '/routines/schedule/:jobType',
+  passport.authenticate('jwt', { session: false }, undefined),
+  isValidUiTokenWithStaffUpdateRoles,
+  putBatchProcessingRoutineSchedule
 );
 
 // NEW BATCH REQUESTS

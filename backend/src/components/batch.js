@@ -197,6 +197,45 @@ async function putBatchProcessingRoutineToggle(req, res) {
   }
 }
 
+async function getBatchProcessingRoutineSchedule(req, res) {
+  const token = auth.getBackendToken(req);
+  try {
+    const url = `${config.get(
+      'server:batchAPIURL'
+    )}/api/v1/batch/processing/schedule/${req.params?.jobType}`;
+    const data = await getData(token, url, req.session?.correlationID);
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+async function putBatchProcessingRoutineSchedule(req, res) {
+  const token = auth.getBackendToken(req);
+  try {
+    const url = `${config.get(
+      'server:batchAPIURL'
+    )}/api/v1/batch/processing/schedule/${req.params?.jobType}`;
+    const data = await putData(
+      token,
+      url,
+      req.body,
+      req.session?.correlationID
+    );
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
 async function postRegularGraduationAlgorithmBatch(req, res) {
   const token = auth.getBackendToken(req);
   try {
@@ -627,6 +666,8 @@ module.exports = {
   deleteScheduledJob,
   getBatchProcessingRoutines,
   putBatchProcessingRoutineToggle,
+  getBatchProcessingRoutineSchedule,
+  putBatchProcessingRoutineSchedule,
   postRegularGraduationAlgorithmBatch,
   postTranscriptVerificationReportBatch,
   postMonthlyDistributionRun,
