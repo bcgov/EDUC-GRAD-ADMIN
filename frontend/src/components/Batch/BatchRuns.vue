@@ -257,6 +257,8 @@ export default {
       ],
       snackbarStore: useSnackbarStore(),
       appStore: useAppStore(),
+      pipelineStatusPoller: null,
+      lastPipelineStatusSnapshot: null,
       batchRunHeaders: [
         {
           key: "jobDownload",
@@ -333,13 +335,16 @@ export default {
       ],
     };
   },
-  created() {},
+  beforeUnmount() {
+    this.stopPipelineStatusPolling();
+  },
   computed: {
     ...mapState(useBatchProcessingStore, {
       batchRuns: "getBatchRuns",
       totalElements: "getBatchRunsTotalElements",
       currentPage: "getBatchRunsCurrentPage",
       isBatchJobsLoading: "getIsGettingBatchJobsLoading",
+      activeTab: "getActiveTab",
     }),
     ...mapState(useAppStore, {
       getSchoolMincodeById: "getSchoolMincodeById",
@@ -486,6 +491,67 @@ export default {
     },
     getTimeDifference(startTime, endTime) {
       return sharedMethods.getTimeDifference(startTime, endTime);
+    },
+    fetchBatchPipelineStatus() {
+      BatchProcessingService.getBatchPipelineStatus()
+        .then((response) => {
+          const activeRuns = response?.data?.activeRuns ?? [];
+          const staleRuns = response?.data?.staleRuns ?? [];
+          const nextSnapshot = JSON.stringify({
+            activeRuns: this.normalizePipelineRuns(activeRuns),
+            staleRuns: this.normalizePipelineRuns(staleRuns),
+          });
+
+          if (
+            this.lastPipelineStatusSnapshot !== null &&
+            this.lastPipelineStatusSnapshot !== nextSnapshot
+          ) {
+            this.getBatchDashboard();
+          }
+
+          this.lastPipelineStatusSnapshot = nextSnapshot;
+        })
+        .catch(() => {});
+    },
+    normalizePipelineRuns(runs) {
+      return [...runs]
+        .filter((run) => run?.jobExecutionId)
+        .map((run) => ({
+          jobExecutionId: run.jobExecutionId,
+          jobType: run.jobType,
+          status: run.status,
+          healthStatus: run.healthStatus,
+        }))
+        .sort((left, right) => left.jobExecutionId - right.jobExecutionId);
+    },
+    startPipelineStatusPolling() {
+      if (this.pipelineStatusPoller) {
+        return;
+      }
+      this.fetchBatchPipelineStatus();
+      this.pipelineStatusPoller = setInterval(() => {
+        this.fetchBatchPipelineStatus();
+      }, 10000);
+    },
+    stopPipelineStatusPolling() {
+      if (this.pipelineStatusPoller) {
+        clearInterval(this.pipelineStatusPoller);
+        this.pipelineStatusPoller = null;
+      }
+      this.lastPipelineStatusSnapshot = null;
+    },
+  },
+  watch: {
+    activeTab: {
+      immediate: true,
+      handler(newValue) {
+        if (newValue === "batchRuns") {
+          this.getBatchDashboard();
+          this.startPipelineStatusPolling();
+          return;
+        }
+        this.stopPipelineStatusPolling();
+      },
     },
   },
 };
