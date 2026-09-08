@@ -117,6 +117,7 @@ objects:
     metadata:
       annotations:
         openshift.io/host.generated: 'true'
+        haproxy.router.openshift.io/timeout: 120s
       labels:
         app: "${APP_NAME}-backend"
       name: "${APP_NAME}-backend-${ENVIRONMENT}"
