@@ -39,10 +39,11 @@
                 <v-list-item
                   :disabled="
                     studentGradStatus.studentStatus === 'MER' ||
-                    isProgramComplete(
-                      studentGradStatus.programCompletionDate,
-                      studentGradStatus.program
-                    )
+                    (studentGradStatus.program !== 'SCCP' &&
+                      isProgramComplete(
+                        studentGradStatus.programCompletionDate,
+                        studentGradStatus.program
+                      ))
                   "
                   v-on:click="graduateStudent"
                   >Update Grad Status</v-list-item
