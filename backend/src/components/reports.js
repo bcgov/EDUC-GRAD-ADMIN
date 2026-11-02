@@ -1,4 +1,4 @@
-const { errorResponse, getData } = require("../components/utils");
+const { errorResponse, getData, postData } = require("../components/utils");
 const config = require("../config/index");
 const log = require("../components/logger");
 const auth = require("../components/auth");
@@ -58,4 +58,44 @@ async function getDigitalSignatures(req, res) {
   }
 }
 
-module.exports = { getSchoolReport, getDistrictReport, getDigitalSignatures };
+async function saveDigitalSignature(req, res) {
+  const token = auth.getBackendToken(req);
+  try {
+    const url = `${config.get(
+      "server:reportAPIURL"
+    )}/api/v1/reports/signatures/save`;
+    const {
+      signatureId,
+      gradReportSignatureCode,
+      gradReportSignatureName,
+      gradReportSignatureOrganizationName,
+      signatureContent,
+    } = req.body;
+    const data = await postData(
+      token,
+      url,
+      {
+        signatureId,
+        gradReportSignatureCode,
+        gradReportSignatureName,
+        gradReportSignatureOrganizationName,
+        signatureContent,
+      },
+      req.session?.correlationID
+    );
+    return res.status(200).json(data);
+  } catch (e) {
+    if (e.data.message) {
+      return errorResponse(res, e.data.message, e.status);
+    } else {
+      return errorResponse(res);
+    }
+  }
+}
+
+module.exports = {
+  getSchoolReport,
+  getDistrictReport,
+  getDigitalSignatures,
+  saveDigitalSignature,
+};
