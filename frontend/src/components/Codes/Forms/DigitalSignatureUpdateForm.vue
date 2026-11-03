@@ -228,9 +228,12 @@ export default {
         this.close();
       } catch (error) {
         console.error("Error updating digital signature:", error);
+        // only 400s carry the report API's validation messages; anything else is a raw server error
+        const validationMessage =
+          error.response?.status === 400 ? error.response.data?.message : null;
         this.snackbarStore.showSnackbar(
-          error.response?.data?.message ||
-            "Failed to update Digital Signature",
+          validationMessage ||
+            "Failed to update Digital Signature, please try again",
           "error",
           10000
         );

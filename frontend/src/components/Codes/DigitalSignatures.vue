@@ -115,7 +115,11 @@ export default {
           this.isLoading = false;
           // eslint-disable-next-line
           console.error("API error:", error);
-          this.snackbarStore.showSnackbar(error.message, "error", 5000);
+          this.snackbarStore.showSnackbar(
+            "Could not load Digital Signatures, please try again",
+            "error",
+            5000
+          );
         });
     },
     formatLastUpdatedDate(updatedTimestamp) {
