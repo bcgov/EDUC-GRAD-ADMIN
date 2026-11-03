@@ -84,7 +84,7 @@
             density="default"
             @click="submitForm"
             :loading="isSaving"
-            :disabled="!isFormValid || isSaving"
+            :disabled="!isFormValid || isSaving || signatureFileBeingRead !== null"
           >
             Save Digital Signature
           </v-btn>
@@ -127,6 +127,8 @@ export default {
       organizationName: "",
       signatureContent: "",
       signatureFile: null,
+      // set while FileReader loads the selected file, so Save can't send the previous image
+      signatureFileBeingRead: null,
       signatureFileRules: [
         (files) => {
           const selectedFile = getSelectedFile(files);
@@ -161,6 +163,7 @@ export default {
         this.digitalSignatureToUpdate.gradReportSignatureOrganizationName;
       this.signatureContent = this.digitalSignatureToUpdate.signatureContent;
       this.signatureFile = null;
+      this.signatureFileBeingRead = null;
       this.dialog = true;
       // validate prefilled values so Save is enabled when only the image changes
       await this.$nextTick();
@@ -168,6 +171,8 @@ export default {
     },
     onSignatureFileSelected(files) {
       const selectedFile = getSelectedFile(files);
+      // a new selection, or clearing the input, makes any read still in progress stale
+      this.signatureFileBeingRead = null;
       if (!selectedFile) {
         this.signatureContent = this.digitalSignatureToUpdate.signatureContent;
         return;
@@ -178,10 +183,28 @@ export default {
       ) {
         return;
       }
+      this.signatureFileBeingRead = selectedFile;
       const reader = new FileReader();
       reader.onload = (event) => {
+        if (this.signatureFileBeingRead !== selectedFile) {
+          return;
+        }
         // strip the "data:image/png;base64," prefix; the API expects plain base64
         this.signatureContent = event.target.result.split(",")[1];
+        this.signatureFileBeingRead = null;
+      };
+      reader.onerror = () => {
+        if (this.signatureFileBeingRead !== selectedFile) {
+          return;
+        }
+        this.signatureFileBeingRead = null;
+        this.signatureFile = null;
+        this.signatureContent = this.digitalSignatureToUpdate.signatureContent;
+        this.snackbarStore.showSnackbar(
+          "Could not read the signature file, please select it again",
+          "error",
+          10000
+        );
       };
       reader.readAsDataURL(selectedFile);
     },
