@@ -537,7 +537,7 @@ export default {
       }
     },
     formatDate(value) {
-      return value.toLocaleString("en-CA", { timeZone: "PST" });
+      return value.toLocaleString("en-CA", { timeZone: "America/Vancouver" });
     },
     updateAllDashboards() {
       this.updateDashboards();
