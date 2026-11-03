@@ -14,4 +14,7 @@ export default {
   getDigitalSignatures() {
     return ApiService.apiAxios.get("/api/reports/signatures");
   },
+  saveDigitalSignature(digitalSignature) {
+    return ApiService.apiAxios.post("/api/reports/signatures", digitalSignature);
+  },
 };

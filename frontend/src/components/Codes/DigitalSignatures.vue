@@ -24,7 +24,13 @@
         </v-card>
       </template>
       <template v-slot:item.updatedTimestamp="{ item }">
-        {{ $filters.formatTime(item.updatedTimestamp) }}
+        {{ formatLastUpdatedDate(item.updatedTimestamp) }}
+      </template>
+      <template v-slot:item.edit="{ item }">
+        <DigitalSignatureUpdateForm
+          :digitalSignatureToUpdate="item"
+          @saved="loadDigitalSignatures"
+        />
       </template>
     </DisplayTable>
   </div>
@@ -32,26 +38,20 @@
 
 <script>
 import DisplayTable from "@/components/DisplayTable.vue";
+import DigitalSignatureUpdateForm from "@/components/Codes/Forms/DigitalSignatureUpdateForm.vue";
 import ReportService from "@/services/ReportService.js";
+import { useAppStore } from "@/store/modules/app";
 import { useSnackbarStore } from "@/store/modules/snackbar";
+import { mapState } from "pinia";
 
 export default {
   name: "DigitalSignatures",
   components: {
     DisplayTable: DisplayTable,
+    DigitalSignatureUpdateForm: DigitalSignatureUpdateForm,
   },
   created() {
-    ReportService.getDigitalSignatures()
-      .then((response) => {
-        this.isLoading = false;
-        this.digitalSignatures = response.data;
-      })
-      .catch((error) => {
-        this.isLoading = false;
-        // eslint-disable-next-line
-        console.error("API error:", error);
-        this.snackbarStore.showSnackbar(error.message, "error", 5000);
-      });
+    this.loadDigitalSignatures();
   },
 
   data: function () {
@@ -61,7 +61,12 @@ export default {
       snackbarMessage: "",
       isLoading: true,
       digitalSignatures: [],
-      digitalSignaturesFields: [
+    };
+  },
+  computed: {
+    ...mapState(useAppStore, ["enableCRUD"]),
+    digitalSignaturesFields() {
+      const tableFields = [
         {
           key: "signatureContent",
           title: "Signature",
@@ -87,10 +92,43 @@ export default {
           title: "Last Updated",
           sortable: true,
         },
-      ],
-    };
+      ];
+
+      if (this.enableCRUD) {
+        tableFields.push({
+          key: "edit",
+          title: "Edit",
+        });
+      }
+
+      return tableFields;
+    },
   },
-  methods: {},
+  methods: {
+    loadDigitalSignatures() {
+      ReportService.getDigitalSignatures()
+        .then((response) => {
+          this.isLoading = false;
+          this.digitalSignatures = response.data;
+        })
+        .catch((error) => {
+          this.isLoading = false;
+          // eslint-disable-next-line
+          console.error("API error:", error);
+          this.snackbarStore.showSnackbar(
+            "Could not load Digital Signatures, please try again",
+            "error",
+            5000
+          );
+        });
+    },
+    formatLastUpdatedDate(updatedTimestamp) {
+      // local date, not UTC, so evening updates in BC don't show as the next day
+      return updatedTimestamp
+        ? new Date(updatedTimestamp).toLocaleDateString("en-CA")
+        : "";
+    },
+  },
 };
 </script>
 

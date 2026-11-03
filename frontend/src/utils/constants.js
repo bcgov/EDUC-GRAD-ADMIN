@@ -141,6 +141,11 @@ export const RolePermissions = Object.freeze({
       allowed: ["GRAD_SYSTEM_COORDINATOR"],
     }
   },
+  CODES: {
+    updateDigitalSignature: {
+      allowed: ["GRAD_SYSTEM_COORDINATOR"],
+    }
+  },
   SCHOLARSHIP: {
     scholarshipViewAndEdit: {
       allowed: ["SCHOLARSHIP_ADMIN"]
