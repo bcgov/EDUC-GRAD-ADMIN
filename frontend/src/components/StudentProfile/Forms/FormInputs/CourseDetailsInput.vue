@@ -34,7 +34,7 @@
             persistent-placeholder
             :disabled="
               course.courseSession < 199409 ||
-              courseSessionLessThanReportingPeriod
+              isCourseSessionBeforeCurrentMonth
             "
             persistent-hint
             :error="
@@ -49,7 +49,7 @@
           <v-select
             v-model="course.interimLetterGrade"
             :items="filteredInterimLetterGrades"
-            :disabled="courseSessionLessThanReportingPeriod"
+            :disabled="isCourseSessionBeforeCurrentMonth"
             label="Interim LG"
             variant="outlined"
             density="compact"
@@ -494,16 +494,12 @@ export default {
       studentProgram: (state) => state.getStudentProgram,
     }),
     ...mapState(useAccessStore, ["getRoles"]),
-    courseSessionLessThanReportingPeriod() {
+    // Interim marks can be entered for current and future months, so compare YYYYMM, not the full date.
+    isCourseSessionBeforeCurrentMonth() {
       const session = this.course.courseSession;
       if (!session || session.length !== 6) return false;
 
-      const year = session.slice(0, 4);
-      const month = session.slice(4, 6);
-      const sessionDate = `${year}-${month}-01`;
-
-      const today = this.currentDate;
-      return sessionDate < today;
+      return session < `${this.currentYear}${this.currentMonth}`;
     },
 
     courseSessionGreaterThanReportingPeriod() {

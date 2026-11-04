@@ -399,18 +399,6 @@ export default {
       studentProgram: (state) => state.getStudentProgram,
     }),
     ...mapState(useAccessStore, ["getRoles"]),
-    courseSessionLessThanReportingPeriod() {
-      const session = this.course.courseSession;
-      if (!session || session.length !== 6) return false;
-
-      const year = session.slice(0, 4);
-      const month = session.slice(4, 6);
-      const sessionDate = `${year}-${month}-01`;
-
-      const today = this.currentDate;
-      return sessionDate < today;
-    },
-
     courseSessionGreaterThanReportingPeriod() {
       const session = this.course.courseSession;
       if (!session || session.length !== 6) return false;
