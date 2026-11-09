@@ -27,6 +27,8 @@ jobs:
     environment: dev
     env:
       OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-dev
+    permissions:
+      packages: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
