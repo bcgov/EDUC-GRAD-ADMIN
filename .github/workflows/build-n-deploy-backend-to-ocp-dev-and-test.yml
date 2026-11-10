@@ -29,6 +29,7 @@ jobs:
       OPENSHIFT_NAMESPACE: ${{ secrets.UI_NAMESPACE }}-dev
     permissions:
       packages: write
+      contents: read
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
